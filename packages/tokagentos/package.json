@@ -1,10 +1,13 @@
 {
-  "name": "tokagentos",
+  "name": "@tokamak-network/tokagentos",
   "version": "2.0.0-alpha.223",
   "description": "tokagentOS CLI - Create and upgrade tokagentOS project templates",
   "type": "module",
   "bin": {
-    "tokagentos": "./dist/cli.js"
+    "tokagentos": "dist/cli.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -60,7 +63,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "url": "git+https://github.com/tokamak-network/Tokamak-AI-Layer.git",
     "directory": "tokagentos"
   },
   "homepage": "https://tokagentos.ai",
