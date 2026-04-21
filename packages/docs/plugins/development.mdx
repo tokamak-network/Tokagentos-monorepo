@@ -123,7 +123,7 @@ The scaffolded plugin includes:
 - ✅ Proper TypeScript configuration
 - ✅ Build setup with Bun.build (and Vite for full plugins)
 - ✅ Example action and provider to extend
-- ✅ Integration with `@elizaos/core`
+- ✅ Integration with `@tokagentos/core`
 - ✅ Development scripts ready to use
 - ✅ Basic tests structure
 
@@ -148,7 +148,7 @@ bun init
 
 ```bash
 # Core dependency
-bun add @elizaos/core
+bun add @tokagentos/core
 
 # Development dependencies
 bun add -d typescript @types/node
@@ -196,7 +196,7 @@ Create `build.ts`:
 import { existsSync } from "node:fs";
 import { rm } from "node:fs/promises";
 
-const externalDeps = ["@elizaos/core"];
+const externalDeps = ["@tokagentos/core"];
 
 async function buildPlugin() {
   console.log("🔨 Building plugin...\n");
@@ -257,7 +257,7 @@ buildPlugin().catch((error) => {
 Create `src/index.ts`:
 
 ```typescript
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import { myAction } from "./actions/myAction";
 import { myProvider } from "./providers/myProvider";
 import { MyService } from "./services/myService";
@@ -457,7 +457,7 @@ import {
   type Evaluator,
   ModelType,
   logger,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 ```
 
 ### Creating Test Utilities
@@ -471,8 +471,8 @@ import {
   type State,
   type Character,
   type UUID,
-} from "@elizaos/core";
-import { AgentRuntime } from "@elizaos/core";
+} from "@tokagentos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 
 /**
@@ -554,7 +554,7 @@ import {
   createTestMemory,
   createTestState,
 } from "./test-utils";
-import type { IAgentRuntime, Memory, State } from "@elizaos/core";
+import type { IAgentRuntime, Memory, State } from "@tokagentos/core";
 
 describe("MyAction", () => {
   let runtime: IAgentRuntime;
@@ -647,7 +647,7 @@ import {
   createTestMemory,
   createTestState,
 } from "./test-utils";
-import type { IAgentRuntime, Memory, State } from "@elizaos/core";
+import type { IAgentRuntime, Memory, State } from "@tokagentos/core";
 
 describe("MyProvider", () => {
   let runtime: IAgentRuntime;
@@ -690,7 +690,7 @@ describe("MyProvider", () => {
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { MyService } from "../src/services/myService";
 import { createTestRuntime, cleanupRuntime } from "./test-utils";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 describe("MyService", () => {
   let runtime: IAgentRuntime;
@@ -881,7 +881,7 @@ npm version major  # 0.1.0 -> 1.0.0
 ### Enable Debug Logging
 
 ```typescript
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 // In your plugin
 logger.debug("Plugin initialized", { config });
@@ -918,7 +918,7 @@ Create `.vscode/launch.json`:
 
 ### Issue: TypeScript errors
 
-**Solution**: Ensure `@elizaos/core` is installed and TypeScript is configured correctly.
+**Solution**: Ensure `@tokagentos/core` is installed and TypeScript is configured correctly.
 
 ### Issue: Service not available
 

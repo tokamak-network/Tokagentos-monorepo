@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-llama",
+  "name": "@tokagentos/capacitor-llama",
   "version": "0.1.0",
   "description": "Milady mobile llama.cpp adapter — wraps llama-cpp-capacitor and maps its contextId-based API onto Milady's LocalInferenceLoader contract.",
   "keywords": [

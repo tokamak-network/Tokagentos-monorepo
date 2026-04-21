@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-swabble",
+  "name": "@tokagentos/capacitor-swabble",
   "version": "1.0.0",
   "description": "Detects wake words and transcribes live speech with microphone state events.",
   "keywords": [

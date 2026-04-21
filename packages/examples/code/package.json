@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-code",
+  "name": "@tokagentos/example-code",
   "version": "2.0.0-alpha",
   "description": "Async coding agent terminal app - Claude Code meets TokagentOS",
   "type": "module",

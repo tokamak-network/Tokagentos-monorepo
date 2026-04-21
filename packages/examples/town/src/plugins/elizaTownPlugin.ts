@@ -9,7 +9,7 @@ import type {
   Room,
   State,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { TownAgent, Vector2 } from "../../shared/types";
 import {
   DEFAULT_AUDIO_RANGE_TILES,

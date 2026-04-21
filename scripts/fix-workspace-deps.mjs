@@ -302,7 +302,7 @@ for (const dir of workspaceDirs) {
 }
 
 // 3. Find and fix dangling workspace:* refs to packages that don't exist
-//    (e.g. "@elizaos/cli" which was deleted but still referenced)
+//    (e.g. "@tokagentos/cli" which was deleted but still referenced)
 let removeCount = 0;
 const danglingIssues = [];
 

@@ -5,11 +5,11 @@ import type {
   LifeOpsGmailTriageFeed,
   LifeOpsGoogleCapability,
   LifeOpsGoogleConnectorStatus,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { CalendarDays, Mail } from "lucide-react";
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { client } from "@elizaos/app-core/api";
+import { client } from "@tokagentos/app-core/api";
 import { useGoogleLifeOpsConnector } from "../../../../hooks/useGoogleLifeOpsConnector.js";
 
 const GOOGLE_WIDGET_REFRESH_INTERVAL_MS = 15_000;

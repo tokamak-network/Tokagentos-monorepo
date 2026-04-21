@@ -21,7 +21,7 @@
     "paths": {
       "@tokagentos/core": ["../typescript/src/index.node.ts"],
       "@tokagentos/core/*": ["../typescript/src/*"],
-      "@elizaos/native-activity-tracker": [
+      "@tokagentos/native-activity-tracker": [
         "../native-plugins/activity-tracker/src/index.ts"
       ],
       "@tokagentos/app-lifeops": ["../../apps/app-lifeops/src/index.ts"],

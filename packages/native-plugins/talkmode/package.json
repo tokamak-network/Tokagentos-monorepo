@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-talkmode",
+  "name": "@tokagentos/capacitor-talkmode",
   "version": "1.0.0",
   "description": "Runs voice conversations with live transcription, chat orchestration, and spoken replies.",
   "keywords": [

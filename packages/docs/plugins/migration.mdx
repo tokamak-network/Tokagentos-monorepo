@@ -74,7 +74,7 @@ rm -f *.lock.json *.yml.lock
 ```json
 {
   "dependencies": {
-    "@elizaos/core": "^2.0.0"
+    "@tokagentos/core": "^2.0.0"
   },
   "devDependencies": {
     "prettier": "^3.0.0",
@@ -130,7 +130,7 @@ Update `tsconfig.json`:
 import { Action, Memory, State } from "@ai16z/eliza";
 
 // NEW (1.x)
-import { Action, Memory, State, ActionResult } from "@elizaos/core";
+import { Action, Memory, State, ActionResult } from "@tokagentos/core";
 ```
 
 ## Step 6: Update Actions
@@ -286,7 +286,7 @@ All tests use **real runtime instances** with PGLite - no mocks:
 // Using Vitest for tests with real runtime
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { createTestRuntime, cleanupRuntime } from "./test-utils";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 let runtime: IAgentRuntime;
 
@@ -310,7 +310,7 @@ npx vitest
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { myAction } from "../src/actions/myAction";
 import { createTestRuntime, cleanupRuntime } from "./test-utils";
-import type { IAgentRuntime, Memory } from "@elizaos/core";
+import type { IAgentRuntime, Memory } from "@tokagentos/core";
 
 describe("MyAction", () => {
   let runtime: IAgentRuntime;
@@ -361,7 +361,7 @@ Current goals: {{goals}}
 ### Using composePromptFromState
 
 ```typescript
-import { composePromptFromState } from "@elizaos/core";
+import { composePromptFromState } from "@tokagentos/core";
 
 const prompt = composePromptFromState({
   state,
@@ -553,7 +553,7 @@ npm publish --access public
 
 ## Migration Completion Checklist
 
-- [ ] All imports updated to `@elizaos/core`
+- [ ] All imports updated to `@tokagentos/core`
 - [ ] Actions return `ActionResult` with `success` field
 - [ ] Callbacks implemented in action handlers
 - [ ] Tests use Vitest for test framework

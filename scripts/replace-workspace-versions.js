@@ -79,7 +79,7 @@ function getWorkspacePackageNames(packagePaths) {
     if (existsSync(pkgJsonPath)) {
       try {
         const pkg = JSON.parse(readFileSync(pkgJsonPath, "utf-8"));
-        if (pkg.name?.startsWith("@elizaos/")) {
+        if (pkg.name?.startsWith("@tokagentos/")) {
           names.add(pkg.name);
         }
       } catch {

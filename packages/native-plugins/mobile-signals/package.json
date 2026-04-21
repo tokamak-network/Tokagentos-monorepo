@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-mobile-signals",
+  "name": "@tokagentos/capacitor-mobile-signals",
   "version": "1.0.0",
   "description": "Bridges mobile wake, lock, battery, and protected-data state into LifeOps.",
   "keywords": [

@@ -15,7 +15,7 @@ import type {
   Memory,
 } from "@tokagentos/core";
 import { logger } from "@tokagentos/core";
-import { isSupportedPlatform } from "@elizaos/native-activity-tracker";
+import { isSupportedPlatform } from "@tokagentos/native-activity-tracker";
 import {
   getActivityReport,
   getTimeOnApp,

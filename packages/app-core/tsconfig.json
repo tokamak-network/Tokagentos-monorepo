@@ -55,7 +55,7 @@
       "@tokagentos/skills/*": ["./packages/skills/src/*"],
       "@tokagentos/core": ["./packages/typescript/src/index.ts"],
       "@tokagentos/core/*": ["./packages/typescript/src/*"],
-      "@elizaos/native-activity-tracker": [
+      "@tokagentos/native-activity-tracker": [
         "./packages/native-plugins/activity-tracker/src/index.ts"
       ],
       "react": ["./packages/app-core/node_modules/@types/react/index.d.ts"],

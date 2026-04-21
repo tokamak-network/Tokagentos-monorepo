@@ -732,7 +732,7 @@ This section documents actual patterns and structures used in production elizaOS
 Every plugin follows this core structure pattern (from `plugin-starter`):
 
 ```typescript
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 
 export const myPlugin: Plugin = {
   name: "plugin-name",
@@ -756,7 +756,7 @@ export const myPlugin: Plugin = {
 
 ### BasicCapabilities Plugin Pattern
 
-The basic-capabilities plugin is built into `@elizaos/core` and automatically registered during runtime initialization. It provides core functionality through:
+The basic-capabilities plugin is built into `@tokagentos/core` and automatically registered during runtime initialization. It provides core functionality through:
 
 ```typescript
 // The basic-capabilities plugin is created internally using createBasicCapabilitiesPlugin()

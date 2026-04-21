@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/macosalarm",
+  "name": "@tokagentos/macosalarm",
   "version": "0.1.0",
   "description": "macOS native alarm helper plugin. Schedules UNUserNotificationCenter calendar-trigger alarms via a self-contained Swift CLI invoked from the Tokagent runtime.",
   "type": "module",

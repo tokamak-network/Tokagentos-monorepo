@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-gateway",
+  "name": "@tokagentos/capacitor-gateway",
   "version": "1.0.0",
   "description": "Connects the app to an Tokagent Gateway with discovery, RPC, and realtime events.",
   "keywords": [

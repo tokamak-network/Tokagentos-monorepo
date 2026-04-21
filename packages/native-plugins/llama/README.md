@@ -1,4 +1,4 @@
-# @elizaos/capacitor-llama
+# @tokagentos/capacitor-llama
 
 Mobile llama.cpp adapter for Milady. A **thin wrapper** over
 [`llama-cpp-capacitor`](https://github.com/arusatech/annadata-llama-cpp) that
@@ -37,7 +37,7 @@ transparently.
    runtime bootstrap that owns the mobile `AgentRuntime`):
 
    ```ts
-   import { registerCapacitorLlamaLoader } from "@elizaos/capacitor-llama";
+   import { registerCapacitorLlamaLoader } from "@tokagentos/capacitor-llama";
 
    // After runtime boot, before the Model Hub is mounted:
    registerCapacitorLlamaLoader(runtime);

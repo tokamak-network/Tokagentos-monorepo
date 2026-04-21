@@ -1,5 +1,5 @@
-import { CodingAgentTasksPanel as AppCodingAgentTasksPanel } from "@elizaos/app-task-coordinator";
-import { Button } from "@elizaos/ui";
+import { CodingAgentTasksPanel as AppCodingAgentTasksPanel } from "@tokagentos/app-task-coordinator";
+import { Button } from "@tokagentos/ui";
 import {
   Activity,
   AlertTriangle,

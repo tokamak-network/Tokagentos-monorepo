@@ -176,7 +176,7 @@ async function tryRegisterCapacitorLoader(
     | undefined;
   if (!cap?.isNativePlatform?.()) return false;
   try {
-    const mod = (await import("@elizaos/capacitor-llama")) as unknown as {
+    const mod = (await import("@tokagentos/capacitor-llama")) as unknown as {
       registerCapacitorLlamaLoader?: (r: AgentRuntime) => void;
     };
     if (typeof mod.registerCapacitorLlamaLoader === "function") {

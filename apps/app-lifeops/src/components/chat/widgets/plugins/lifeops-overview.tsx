@@ -9,7 +9,7 @@ import type {
   LifeOpsOverview,
   LifeOpsOverviewSection,
   LifeOpsScheduleInsight,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   Bell,
   BellRing,
@@ -34,20 +34,20 @@ import {
 } from "lucide-react";
 import type { PropsWithChildren, ReactElement } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Badge, Button } from "@elizaos/ui";
-import { client } from "@elizaos/app-core/api";
-import { isApiError } from "@elizaos/app-core/api/client-types-core";
+import { Badge, Button } from "@tokagentos/ui";
+import { client } from "@tokagentos/app-core/api";
+import { isApiError } from "@tokagentos/app-core/api/client-types-core";
 import { useLifeOpsAppState } from "../../../../hooks/useLifeOpsAppState.js";
 import { useDiscordConnector } from "../../../../hooks/useDiscordConnector.js";
-import { useApp } from "@elizaos/app-core/state";
+import { useApp } from "@tokagentos/app-core/state";
 import {
   EmptyWidgetState,
   WidgetSection,
-} from "@elizaos/app-core/components/chat/widgets/shared";
+} from "@tokagentos/app-core/components/chat/widgets/shared";
 import type {
   ChatSidebarWidgetDefinition,
   ChatSidebarWidgetProps,
-} from "@elizaos/app-core/components/chat/widgets/types";
+} from "@tokagentos/app-core/components/chat/widgets/types";
 import { humanizeLifeOpsLabel } from "../../../lifeops-labels.js";
 import { GoogleGlanceSection } from "./lifeops.js";
 

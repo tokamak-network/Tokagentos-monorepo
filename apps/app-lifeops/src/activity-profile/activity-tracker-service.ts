@@ -16,7 +16,7 @@ import {
   type ActivityCollectorHandle,
   isSupportedPlatform,
   startActivityCollector,
-} from "@elizaos/native-activity-tracker";
+} from "@tokagentos/native-activity-tracker";
 import { insertActivityEvent } from "./activity-tracker-repo.js";
 
 export type ActivityTrackerMode = "running" | "disabled-non-darwin" | "failed";

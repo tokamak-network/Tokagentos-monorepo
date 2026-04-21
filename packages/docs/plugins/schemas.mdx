@@ -107,7 +107,7 @@ Create a repository class to handle database operations. This follows the patter
 
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
-import { UUID } from "@elizaos/core";
+import { UUID } from "@tokagentos/core";
 import { userPreferencesTable } from "../schema.ts";
 
 export interface UserPreferences {
@@ -298,8 +298,8 @@ import type {
   IAgentRuntime,
   Memory,
   ActionResult,
-} from "@elizaos/core";
-import { parseKeyValueXml } from "@elizaos/core";
+} from "@tokagentos/core";
+import { parseKeyValueXml } from "@tokagentos/core";
 import { UserPreferencesRepository } from "../repositories/user-preferences-repository.ts";
 
 export const storeUserPreferencesAction: Action = {
@@ -398,7 +398,7 @@ export const batchImportAction: Action = {
 Providers make data available to agents during conversations:
 
 ```typescript
-import type { Provider, IAgentRuntime, Memory } from "@elizaos/core";
+import type { Provider, IAgentRuntime, Memory } from "@tokagentos/core";
 import { UserPreferencesRepository } from "../repositories/user-preferences-repository.ts";
 
 export const userPreferencesProvider: Provider = {
@@ -487,7 +487,7 @@ export const cachedDataProvider: Provider = {
 Register your schema, actions, and providers in your plugin:
 
 ```typescript
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 
 export const myPlugin: Plugin = {
   name: "my-plugin",

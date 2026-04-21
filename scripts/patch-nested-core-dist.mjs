@@ -35,7 +35,7 @@ if (!existsSync(join(localCoreDist, "node", "index.node.js"))) {
 let patched = 0;
 
 for (const entry of readdirSync(bunCacheDir)) {
-  if (!entry.startsWith("@elizaos+")) continue;
+  if (!entry.startsWith("@tokagentos+")) continue;
 
   const nestedCore = join(
     bunCacheDir,

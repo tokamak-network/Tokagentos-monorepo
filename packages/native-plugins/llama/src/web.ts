@@ -1,5 +1,5 @@
 /**
- * Web fallback for `@elizaos/capacitor-llama`.
+ * Web fallback for `@tokagentos/capacitor-llama`.
  *
  * On web (Vite dev server, Electrobun renderer) this package resolves to the
  * main adapter but its `load`/`generate` methods reject with a clear

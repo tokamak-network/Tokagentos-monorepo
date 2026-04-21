@@ -565,7 +565,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
               });
             } catch {
               try {
-                const agentPluginId = "@elizaos/capacitor-agent";
+                const agentPluginId = "@tokagentos/capacitor-agent";
                 const { Agent } = await import(
                   /* @vite-ignore */ agentPluginId
                 );

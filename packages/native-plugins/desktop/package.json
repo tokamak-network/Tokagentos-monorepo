@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-desktop",
+  "name": "@tokagentos/capacitor-desktop",
   "version": "1.0.0",
   "description": "Adds tray icons, global shortcuts, notifications, and other desktop-only controls.",
   "keywords": [

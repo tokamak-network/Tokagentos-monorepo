@@ -119,7 +119,7 @@ function selfTest() {
 	expect('ElizaOS pascal', substitute('ElizaOS', allow), 'TokagentOS');
 	expect('elizaOS camel', substitute('elizaOS', allow), 'tokagentOS');
 	expect('ELIZAOS upper', substitute('ELIZAOS', allow), 'TOKAGENTOS');
-	expect('@elizaos/core allowlisted', substitute('@elizaos/core', allow), '@tokagentos/core');
+	expect('@tokagentos/core allowlisted', substitute('@tokagentos/core', allow), '@tokagentos/core');
 	expect('@elizaos/client allowlisted', substitute('@elizaos/client', allow), '@tokagentos/client');
 	expect('@elizaos/plugin-x not allowlisted', substitute('@elizaos/plugin-anthropic', allow), '@elizaos/plugin-anthropic');
 	expect('bare eliza', substitute('eliza', allow), 'tokagent');

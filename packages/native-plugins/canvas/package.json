@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-canvas",
+  "name": "@tokagentos/capacitor-canvas",
   "version": "1.0.0",
   "description": "Creates interactive canvases with layers, drawing primitives, and A2UI integration.",
   "keywords": [

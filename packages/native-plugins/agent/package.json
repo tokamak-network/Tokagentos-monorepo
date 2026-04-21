@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-agent",
+  "name": "@tokagentos/capacitor-agent",
   "version": "1.0.0",
   "description": "Starts, stops, and monitors the embedded Tokagent agent runtime.",
   "keywords": [

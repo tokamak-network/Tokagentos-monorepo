@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/capacitor-appblocker",
+  "name": "@tokagentos/capacitor-appblocker",
   "version": "1.0.0",
   "description": "Blocks selected apps on Android with Usage Access and an overlay shield, and on iPhone with Family Controls.",
   "keywords": [

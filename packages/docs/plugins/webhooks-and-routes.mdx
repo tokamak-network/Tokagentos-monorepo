@@ -32,7 +32,7 @@ type Route = {
 ### Basic Route Example
 
 ```typescript
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 
 export const myPlugin: Plugin = {
   name: "webhook-plugin",
@@ -144,8 +144,8 @@ To send a message as an agent, your route handler needs to make a POST request t
 Here's a complete example of a plugin that receives GitHub webhooks and makes the agent comment on events:
 
 ```typescript
-import type { Plugin, Route } from "@elizaos/core";
-import { validateUuid } from "@elizaos/core";
+import type { Plugin, Route } from "@tokagentos/core";
+import { validateUuid } from "@tokagentos/core";
 
 const githubWebhookRoute: Route = {
   name: "github-webhook",
@@ -474,7 +474,7 @@ Component tests verify route handler logic using a real runtime. All tests use P
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { createTestRuntimeWithCleanup } from "./test-utils";
 import { webhookPlugin } from "../index";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 describe("Webhook Plugin Routes", () => {
   let runtime: IAgentRuntime;
@@ -584,7 +584,7 @@ describe("Webhook Plugin Routes", () => {
 E2E tests validate the complete webhook flow with a live agent runtime:
 
 ```typescript src/__tests__/webhook-e2e.test.ts
-import { TestSuite } from "@elizaos/core";
+import { TestSuite } from "@tokagentos/core";
 
 export const webhookE2ETests: TestSuite = {
   name: "Webhook Integration E2E Tests",

@@ -67,7 +67,7 @@ function collectManagedPackages() {
       continue;
     }
 
-    if (!pkg.name.startsWith("@elizaos/")) {
+    if (!pkg.name.startsWith("@tokagentos/")) {
       continue;
     }
 

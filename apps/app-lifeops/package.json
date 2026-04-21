@@ -52,7 +52,7 @@
     "@tokagentos/agent": "workspace:*",
     "@tokagentos/app-core": "workspace:*",
     "@tokagentos/core": "workspace:*",
-    "@elizaos/native-activity-tracker": "workspace:*",
+    "@tokagentos/native-activity-tracker": "workspace:*",
     "@elizaos/plugin-signal": "workspace:*",
     "@elizaos/plugin-telegram": "workspace:*",
     "@tokagentos/shared": "workspace:*",

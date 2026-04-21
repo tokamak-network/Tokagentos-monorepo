@@ -45,7 +45,7 @@ This file turns the review into explicit TODOs. Each item records the problem, t
 
 ## 4. Native activity tracking is still wired to a stub package
 
-- [x] Replace the local stub imports with the real `@elizaos/native-activity-tracker` package and remove the stub file if nothing references it.
+- [x] Replace the local stub imports with the real `@tokagentos/native-activity-tracker` package and remove the stub file if nothing references it.
 - Why this was broken: the package dependency already exists, but the app still imported a local file that always disabled itself.
 - Options considered:
   - Keep the stub and gate it behind an env toggle.

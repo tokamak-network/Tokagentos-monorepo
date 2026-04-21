@@ -307,9 +307,9 @@ const plugins = [
 
 elizaOS includes essential plugins that provide foundational functionality:
 
-### BasicCapabilities (Built into @elizaos/core)
+### BasicCapabilities (Built into @tokagentos/core)
 
-The basic-capabilities plugin is built into `@elizaos/core` and automatically registered during runtime initialization. You don't need to import or configure it - it's included automatically when you create an AgentRuntime. It provides essential functionality for message processing, knowledge management, and basic agent operations:
+The basic-capabilities plugin is built into `@tokagentos/core` and automatically registered during runtime initialization. You don't need to import or configure it - it's included automatically when you create an AgentRuntime. It provides essential functionality for message processing, knowledge management, and basic agent operations:
 
 - 13 essential actions (REPLY, SEND_MESSAGE, etc.)
 - Core providers (time, character, recent messages)
@@ -332,7 +332,7 @@ Database integration and management for elizaOS. Features:
 3. **Service Initialization**: Handle missing API tokens gracefully in service constructors
 4. **Event Handlers**: Keep event handlers focused and delegate to specialized functions
 5. **Error Handling**: Use try-catch blocks and log errors appropriately
-6. **Type Safety**: Use TypeScript types from `@elizaos/core` for all plugin components
+6. **Type Safety**: Use TypeScript types from `@tokagentos/core` for all plugin components
 7. **Priority Management**: Set appropriate priorities for plugins that need to load early
 8. **Configuration**: Use `runtime.getSetting()` for consistent configuration access
 

@@ -1,5 +1,5 @@
 /**
- * @elizaos/capacitor-llama
+ * @tokagentos/capacitor-llama
  *
  * Thin adapter that maps `llama-cpp-capacitor`'s contextId-based API onto
  * Milady's `LocalInferenceLoader` contract. At most one native context lives

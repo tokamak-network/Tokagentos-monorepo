@@ -1,5 +1,5 @@
 /**
- * @elizaos/capacitor-agent — Agent lifecycle management for Capacitor.
+ * @tokagentos/capacitor-agent — Agent lifecycle management for Capacitor.
  *
  * Provides a cross-platform interface for starting, stopping, and
  * communicating with the embedded Tokagent agent.

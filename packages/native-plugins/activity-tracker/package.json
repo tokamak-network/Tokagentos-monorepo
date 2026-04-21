@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/native-activity-tracker",
+  "name": "@tokagentos/native-activity-tracker",
   "version": "0.0.0",
   "private": true,
   "description": "macOS activity-tracker native helper (Swift) plus a small TypeScript driver that spawns and line-parses the collector process.",

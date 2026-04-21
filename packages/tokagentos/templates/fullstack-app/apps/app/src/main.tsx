@@ -65,8 +65,8 @@ import {
   applyUiTheme,
   loadUiTheme,
 } from "@tokagentos/app-core/state";
-import { Agent } from "@elizaos/capacitor-agent";
-import { Desktop } from "@elizaos/capacitor-desktop";
+import { Agent } from "@tokagentos/capacitor-agent";
+import { Desktop } from "@tokagentos/capacitor-desktop";
 import { ErrorBoundary } from "@tokagentos/ui";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

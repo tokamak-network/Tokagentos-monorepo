@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-convex",
+  "name": "@tokagentos/example-convex",
   "version": "2.0.0-alpha",
   "description": "tokagentOS agent running on Convex \u2014 messages processed via messageService.handleMessage with real-time persistence",
   "type": "module",
