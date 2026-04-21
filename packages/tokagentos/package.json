@@ -1,5 +1,5 @@
 {
-  "name": "@mehdi-tokamak/tokagentos",
+  "name": "@tokagent/tokagentos",
   "version": "2.0.0-alpha.223",
   "description": "tokagentOS CLI - Create and upgrade tokagentOS project templates",
   "type": "module",
