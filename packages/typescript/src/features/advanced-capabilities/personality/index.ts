@@ -1,6 +1,6 @@
 /**
  * Personality / self-modification — bundled with advanced capabilities.
- * Replaces the standalone `@elizaos/plugin-personality` package for TypeScript core.
+ * Replaces the standalone `@tokagentos/plugin-personality` package for TypeScript core.
  */
 
 export { modifyCharacterAction } from "./actions/modify-character.ts";

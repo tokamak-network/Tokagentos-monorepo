@@ -176,7 +176,7 @@ def _scan_local_plugins() -> dict[str, RegistryPlugin]:
             continue
         try:
             data = json.loads(manifest.read_text())
-            name = data.get("id") or f"@elizaos/{entry.name}"
+            name = data.get("id") or f"@tokagentos/{entry.name}"
             description = data.get("description", "")
             repo = (
                 (data.get("repository", "") or "")
@@ -264,7 +264,7 @@ def _resolve_plugin(
     if p:
         return p
     if not name.startswith("@"):
-        p = registry.get(f"@elizaos/{name}")
+        p = registry.get(f"@tokagentos/{name}")
         if p:
             return p
     bare = re.sub(r"^@[^/]+/", "", name)
@@ -286,7 +286,7 @@ def _compute_search_score(plugin: RegistryPlugin, query: str) -> int:
     ld = plugin.description.lower()
 
     score = 0
-    if ln == lq or ln == f"@elizaos/{lq}":
+    if ln == lq or ln == f"@tokagentos/{lq}":
         score += 100
     elif lq in ln:
         score += 50

@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-chat",
+  "name": "@tokagentos/example-chat",
   "version": "2.0.0-alpha",
   "description": "Interactive CLI chat with an AI agent using tokagentOS - supports OpenAI, Claude, xAI, Gemini, and Groq",
   "type": "module",
@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-openai": "alpha",
-    "@elizaos/plugin-anthropic": "alpha",
-    "@elizaos/plugin-xai": "alpha",
-    "@elizaos/plugin-google-genai": "alpha",
-    "@elizaos/plugin-groq": "alpha",
-    "@elizaos/plugin-sql": "alpha",
+    "@tokagentos/plugin-openai": "alpha",
+    "@tokagentos/plugin-anthropic": "alpha",
+    "@tokagentos/plugin-xai": "alpha",
+    "@tokagentos/plugin-google-genai": "alpha",
+    "@tokagentos/plugin-groq": "alpha",
+    "@tokagentos/plugin-sql": "alpha",
     "dotenv": "^16.4.5",
     "uuid": "^13.0.0"
   },

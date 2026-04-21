@@ -1,7 +1,7 @@
 import { AgentRuntime, createCharacter } from "@tokagentos/core";
-import { openaiPlugin } from "@elizaos/plugin-openai";
-import { robloxPlugin } from "@elizaos/plugin-roblox";
-import sqlPlugin from "@elizaos/plugin-sql";
+import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { robloxPlugin } from "@tokagentos/plugin-roblox";
+import sqlPlugin from "@tokagentos/plugin-sql";
 import { createRobloxBridgeApp } from "./app";
 import { tokagentClassicXmlPlugin } from "./tokagentClassicXmlPlugin";
 

@@ -40,14 +40,14 @@ open index.html  # Or use a local server
   {
     "imports": {
       "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
-      "@elizaos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js"
+      "@tokagentos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js"
     }
   }
 </script>
 
 <script type="module">
   import { AgentRuntime, ModelType } from "@tokagentos/core";
-  import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
+  import { tokagentClassicPlugin } from "@tokagentos/plugin-eliza-classic";
 
   const runtime = new AgentRuntime({
     character: { name: "Tokagent", bio: "A psychotherapist simulation." },
@@ -102,8 +102,8 @@ examples/react/
 ```tsx
 // tokagent-runtime.ts
 import { AgentRuntime } from "@tokagentos/core";
-import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
-import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
+import { tokagentClassicPlugin } from "@tokagentos/plugin-eliza-classic";
+import { plugin as sqlPlugin } from "@tokagentos/plugin-sql";
 
 let runtime: AgentRuntime | null = null;
 
@@ -241,8 +241,8 @@ examples/next/
 // app/api/chat/route.ts
 import { NextResponse } from "next/server";
 import { AgentRuntime } from "@tokagentos/core";
-import { openaiPlugin } from "@elizaos/plugin-openai";
-import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
+import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { plugin as sqlPlugin } from "@tokagentos/plugin-sql";
 
 let runtime: AgentRuntime | null = null;
 

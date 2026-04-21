@@ -8,7 +8,7 @@
  *   DEV (default — no flag, or `--dev`):
  *     1. `git submodule update --init` for each configured path
  *     2. Append `plugins/.../typescript` entries to root package.json workspaces
- *     3. Remove self-dependencies on the package name (e.g. @elizaos/plugin-sql → itself)
+ *     3. Remove self-dependencies on the package name (e.g. @tokagentos/plugin-sql → itself)
  *        so bun does not hit a workspace dependency loop
  *     4. Run `scripts/fix-workspace-deps.mjs` when `--check` fails (otherwise skip)
  *
@@ -52,17 +52,17 @@ const PLUGIN_SUBMODULES = [
 	{
 		submodulePath: "plugins/plugin-sql",
 		workspaceEntry: "plugins/plugin-sql/typescript",
-		packageName: "@elizaos/plugin-sql",
+		packageName: "@tokagentos/plugin-sql",
 	},
 	{
 		submodulePath: "plugins/plugin-ollama",
 		workspaceEntry: "plugins/plugin-ollama/typescript",
-		packageName: "@elizaos/plugin-ollama",
+		packageName: "@tokagentos/plugin-ollama",
 	},
 	{
 		submodulePath: "plugins/plugin-local-ai",
 		workspaceEntry: "plugins/plugin-local-ai/typescript",
-		packageName: "@elizaos/plugin-local-ai",
+		packageName: "@tokagentos/plugin-local-ai",
 	},
 ];
 

@@ -1,4 +1,4 @@
-declare module "@elizaos/signal-native";
+declare module "@tokagentos/signal-native";
 
 declare module "three/examples/jsm/libs/meshopt_decoder.module.js" {
   export const MeshoptDecoder: {

@@ -27,7 +27,7 @@
 #   - Image name:   tokagent/agent:{tag}
 #
 # What this does:
-#   1. Patches apps/app/vite.config.ts to resolve @elizaos/* from node_modules
+#   1. Patches apps/app/vite.config.ts to resolve @tokagentos/* from node_modules
 #      (the committed config points to Shaw's local ../tokagent/ submodule)
 #   2. Runs bun install --ignore-scripts
 #   3. Runs npx tsdown to compile TypeScript → dist/
@@ -168,7 +168,7 @@ run() {
 #   "packages/ui/src/index.ts"                       ← monorepo path
 #
 # We patch to:
-#   tokagentRoot = path.resolve(appRoot, "node_modules/@elizaos")
+#   tokagentRoot = path.resolve(appRoot, "node_modules/@tokagentos")
 #   "agent/src/index.ts"   (packages/ prefix removed)
 #   "app-core/src/index.ts"     (packages/ prefix removed)
 #   "ui/dist/index.js"          (tokagentos/ui ships compiled — use dist, not src)
@@ -186,9 +186,9 @@ fi
 patch_vite() {
   local file="apps/app/vite.config.ts"
 
-  # 1. tokagentRoot: "../tokagent" → "node_modules/@elizaos"
+  # 1. tokagentRoot: "../tokagent" → "node_modules/@tokagentos"
   #    This is the root cause — Shaw's local tokagent checkout path → npm installed path
-  sedi 's|path\.resolve(appRoot, "\.\./tokagent")|path.resolve(appRoot, "node_modules/@elizaos")|g' "$file"
+  sedi 's|path\.resolve(appRoot, "\.\./tokagent")|path.resolve(appRoot, "node_modules/@tokagentos")|g' "$file"
 
   # 2. Remove "packages/" prefix from tokagentos/agent paths
   #    Both the index and wildcard variants (multi-line and single-line)

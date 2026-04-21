@@ -211,13 +211,13 @@ export const getPluginDetailsAction: Action = {
 			{
 				name: "{{user1}}",
 				content: {
-					text: "Tell me more about @elizaos/plugin-solana",
+					text: "Tell me more about @tokagentos/plugin-solana",
 				},
 			},
 			{
 				name: "{{agentName}}",
 				content: {
-					text: "**@elizaos/plugin-solana** Details:\n\nDescription: Comprehensive Solana blockchain integration\n\nTags: blockchain, solana, defi, transaction\n\nVersion: 2.0.0-alpha.3\nRepository: https://github.com/tokagentos-plugins/plugin-solana",
+					text: "**@tokagentos/plugin-solana** Details:\n\nDescription: Comprehensive Solana blockchain integration\n\nTags: blockchain, solana, defi, transaction\n\nVersion: 2.0.0-alpha.3\nRepository: https://github.com/tokagentos-plugins/plugin-solana",
 				},
 			},
 		],
@@ -240,7 +240,7 @@ export const getPluginDetailsAction: Action = {
 		if (!pluginMatch) {
 			if (callback) {
 				await callback({
-					text: 'Please specify which plugin you\'d like to know more about.\n\nExample: "Tell me more about @elizaos/plugin-solana"',
+					text: 'Please specify which plugin you\'d like to know more about.\n\nExample: "Tell me more about @tokagentos/plugin-solana"',
 				});
 			}
 			return undefined;
@@ -248,7 +248,7 @@ export const getPluginDetailsAction: Action = {
 
 		let pluginName = pluginMatch[1];
 		if (!pluginName.startsWith("@") && !pluginName.includes("/")) {
-			pluginName = `@elizaos/${pluginName}`;
+			pluginName = `@tokagentos/${pluginName}`;
 		}
 
 		const details = await getPluginDetails(pluginName);

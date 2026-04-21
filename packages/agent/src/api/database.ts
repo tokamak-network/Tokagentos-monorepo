@@ -678,7 +678,7 @@ async function handleTestConnection(
       success: false,
       serverVersion: null,
       error:
-        "PostgreSQL client library (pg) is not available. Ensure @elizaos/plugin-sql is installed.",
+        "PostgreSQL client library (pg) is not available. Ensure @tokagentos/plugin-sql is installed.",
       durationMs: Date.now() - start,
     } satisfies ConnectionTestResult);
     return;

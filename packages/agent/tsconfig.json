@@ -60,7 +60,7 @@
         "../app-core/node_modules/@types/react/jsx-dev-runtime.d.ts"
       ],
       "react-dom": ["../app-core/node_modules/@types/react-dom/index.d.ts"],
-      "@elizaos/*": ["../../node_modules/@elizaos/*"]
+      "@tokagentos/*": ["../../node_modules/@tokagentos/*"]
     }
   },
   "include": ["src"],

@@ -102,7 +102,7 @@ export async function createScenarioRuntime(
     enableAutonomy: false,
   });
 
-  const { default: pluginSql } = (await import("@elizaos/plugin-sql")) as {
+  const { default: pluginSql } = (await import("@tokagentos/plugin-sql")) as {
     default: Plugin;
   };
   await runtime.registerPlugin(pluginSql);
@@ -119,7 +119,7 @@ export async function createScenarioRuntime(
 
   try {
     const localEmbedding = (await import(
-      "@elizaos/plugin-local-embedding"
+      "@tokagentos/plugin-local-embedding"
     )) as { default: Plugin };
     await runtime.registerPlugin(localEmbedding.default);
   } catch (err) {
@@ -141,12 +141,12 @@ export async function createScenarioRuntime(
   }
   await runtime.registerPlugin(providerPlugin);
 
-  // Default-load @elizaos/plugin-agent-skills so scenarios that declare it in
+  // Default-load @tokagentos/plugin-agent-skills so scenarios that declare it in
   // `requires.plugins` resolve without ad-hoc wiring. Graceful-degrade when the
   // package cannot be resolved (fresh checkout, not yet installed).
   try {
     const agentSkillsModule = (await import(
-      "@elizaos/plugin-agent-skills"
+      "@tokagentos/plugin-agent-skills"
     )) as Record<string, unknown>;
     const agentSkillsPlugin = extractPlugin(agentSkillsModule, [
       "default",
@@ -156,12 +156,12 @@ export async function createScenarioRuntime(
       await runtime.registerPlugin(agentSkillsPlugin);
     } else {
       logger.warn(
-        "[scenario-runner] @elizaos/plugin-agent-skills did not export a Plugin; skipping",
+        "[scenario-runner] @tokagentos/plugin-agent-skills did not export a Plugin; skipping",
       );
     }
   } catch (err) {
     logger.warn(
-      `[scenario-runner] @elizaos/plugin-agent-skills unavailable: ${err instanceof Error ? err.message : String(err)}`,
+      `[scenario-runner] @tokagentos/plugin-agent-skills unavailable: ${err instanceof Error ? err.message : String(err)}`,
     );
   }
 

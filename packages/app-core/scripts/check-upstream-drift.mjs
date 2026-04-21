@@ -3,7 +3,7 @@
 /**
  * scripts/check-upstream-drift.mjs
  *
- * Verifies that any explicitly pinned `@elizaos/*` dependency specs in the root package.json
+ * Verifies that any explicitly pinned `@tokagentos/*` dependency specs in the root package.json
  * match the actual version present in the vendored upstream checkouts.
  * Fails with an error if there is drift.
  */
@@ -30,18 +30,18 @@ function readPackageJson(dir) {
 function checkUpstreamDrift() {
   let hasDrift = false;
 
-  // Get all explicitly pinned (non-workspace:*) @elizaos/* deps from root
+  // Get all explicitly pinned (non-workspace:*) @tokagentos/* deps from root
   const pinnedDeps = getPublishedTokagentPackageSpecs(ROOT);
 
   if (pinnedDeps.length === 0) {
     console.log(
-      "[check-upstream-drift] No explicitly pinned @elizaos/* dependency specs found. Everything uses workspace:*. No drift possible.",
+      "[check-upstream-drift] No explicitly pinned @tokagentos/* dependency specs found. Everything uses workspace:*. No drift possible.",
     );
     return;
   }
 
   console.log(
-    `[check-upstream-drift] Found ${pinnedDeps.length} pinned @elizaos/* dependency spec(s). Verifying against vendored sources...`,
+    `[check-upstream-drift] Found ${pinnedDeps.length} pinned @tokagentos/* dependency spec(s). Verifying against vendored sources...`,
   );
 
   // Build a map of packageName -> local vendored directory

@@ -10,13 +10,13 @@ import {
   type UUID,
 } from "@tokagentos/core";
 import type { AutonomyService } from "@tokagentos/core";
-import { openaiPlugin } from "@elizaos/plugin-openai";
-import anthropicPlugin from "@elizaos/plugin-anthropic";
-import googleGenAIPlugin from "@elizaos/plugin-google-genai";
-import groqPlugin from "@elizaos/plugin-groq";
-import XAIPlugin from "@elizaos/plugin-xai";
-import sqlPlugin from "@elizaos/plugin-sql";
-import polymarketPlugin from "@elizaos/plugin-polymarket";
+import { openaiPlugin } from "@tokagentos/plugin-openai";
+import anthropicPlugin from "@tokagentos/plugin-anthropic";
+import googleGenAIPlugin from "@tokagentos/plugin-google-genai";
+import groqPlugin from "@tokagentos/plugin-groq";
+import XAIPlugin from "@tokagentos/plugin-xai";
+import sqlPlugin from "@tokagentos/plugin-sql";
+import polymarketPlugin from "@tokagentos/plugin-polymarket";
 import { Wallet } from "@ethersproject/wallet";
 import { ClobClient } from "@polymarket/clob-client";
 import {

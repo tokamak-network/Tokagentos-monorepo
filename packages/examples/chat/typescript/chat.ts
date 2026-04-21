@@ -10,7 +10,7 @@ import {
   type UUID,
   type Plugin,
 } from "@tokagentos/core";
-import sqlPlugin from "@elizaos/plugin-sql";
+import sqlPlugin from "@tokagentos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
 
 // ============================================================================
@@ -28,31 +28,31 @@ const LLM_PROVIDERS: LLMProvider[] = [
   {
     name: "OpenAI",
     envKey: "OPENAI_API_KEY",
-    importPath: "@elizaos/plugin-openai",
+    importPath: "@tokagentos/plugin-openai",
     exportName: "openaiPlugin",
   },
   {
     name: "Anthropic (Claude)",
     envKey: "ANTHROPIC_API_KEY",
-    importPath: "@elizaos/plugin-anthropic",
+    importPath: "@tokagentos/plugin-anthropic",
     exportName: "anthropicPlugin",
   },
   {
     name: "xAI (Grok)",
     envKey: "XAI_API_KEY",
-    importPath: "@elizaos/plugin-xai",
+    importPath: "@tokagentos/plugin-xai",
     exportName: "xaiPlugin",
   },
   {
     name: "Google GenAI (Gemini)",
     envKey: "GOOGLE_GENERATIVE_AI_API_KEY",
-    importPath: "@elizaos/plugin-google-genai",
+    importPath: "@tokagentos/plugin-google-genai",
     exportName: "googleGenaiPlugin",
   },
   {
     name: "Groq",
     envKey: "GROQ_API_KEY",
-    importPath: "@elizaos/plugin-groq",
+    importPath: "@tokagentos/plugin-groq",
     exportName: "groqPlugin",
   },
 ];

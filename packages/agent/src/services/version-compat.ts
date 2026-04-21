@@ -47,15 +47,15 @@ export interface VersionCompatReport {
  * the agent is completely non-functional — no responses can be generated.
  */
 export const AI_PROVIDER_PLUGINS: readonly string[] = [
-  "@elizaos/plugin-anthropic",
-  "@elizaos/plugin-openai",
-  "@elizaos/plugin-openrouter",
-  "@elizaos/plugin-ollama",
-  "@elizaos/plugin-google-genai",
-  "@elizaos/plugin-groq",
-  "@elizaos/plugin-xai",
+  "@tokagentos/plugin-anthropic",
+  "@tokagentos/plugin-openai",
+  "@tokagentos/plugin-openrouter",
+  "@tokagentos/plugin-ollama",
+  "@tokagentos/plugin-google-genai",
+  "@tokagentos/plugin-groq",
+  "@tokagentos/plugin-xai",
   "@homunculuslabs/plugin-zai",
-  "@elizaos/plugin-elizacloud",
+  "@tokagentos/plugin-elizacloud",
 ];
 
 /**
@@ -265,7 +265,7 @@ export function diagnoseNoAIProvider(
     const names = versionSkewPlugins.map((f) => f.name).join(", ");
     return (
       `Version skew detected: ${names} failed to import required symbols from ` +
-      `@elizaos/core. This usually means the plugin version is ahead of the ` +
+      `@tokagentos/core. This usually means the plugin version is ahead of the ` +
       `installed core version. Pin the affected plugins to a version compatible ` +
       `with your installed @tokagentos/core, or upgrade core. ` +
       `See: https://github.com/tokagentos/tokagent/issues/10`

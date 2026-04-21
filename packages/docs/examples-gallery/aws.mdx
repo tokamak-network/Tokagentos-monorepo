@@ -38,7 +38,7 @@ sam deploy --guided --parameter-overrides OpenAIApiKey=$OPENAI_API_KEY
 ```typescript
 import { APIGatewayProxyHandler } from "aws-lambda";
 import { AgentRuntime } from "@tokagentos/core";
-import { openaiPlugin } from "@elizaos/plugin-openai";
+import { openaiPlugin } from "@tokagentos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
 

@@ -121,7 +121,7 @@ export async function runNightlyTrajectoryExport(
 
   // privacy filter applied above
   // exportTrajectoryTaskDatasets expects the typed Trajectory shape from
-  // @elizaos/agent. Our FilterableTrajectory is structurally compatible
+  // @tokagentos/agent. Our FilterableTrajectory is structurally compatible
   // for the fields the export reader uses; we cast through unknown to
   // satisfy the boundary without a wider relax of the export signature.
   const summary = await exportTrajectoryTaskDatasets(

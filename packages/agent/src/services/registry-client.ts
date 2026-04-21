@@ -365,7 +365,7 @@ export async function refreshRegistry(): Promise<
   return getRegistryPlugins();
 }
 
-/** Look up a plugin by name (exact → @elizaos/ prefix → bare suffix). */
+/** Look up a plugin by name (exact → @tokagentos/ prefix → bare suffix). */
 export async function getPluginInfo(
   name: string,
 ): Promise<RegistryPluginInfo | null> {

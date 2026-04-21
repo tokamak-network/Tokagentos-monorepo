@@ -193,13 +193,13 @@ export async function createRealTestRuntime(
     });
 
     // Always register plugin-sql for PGLite database
-    const { default: pluginSql } = await import("@elizaos/plugin-sql");
+    const { default: pluginSql } = await import("@tokagentos/plugin-sql");
     await runtime.registerPlugin(pluginSql);
 
     if (options?.withLLM) {
       try {
         const { default: localEmbeddingPlugin } = await import(
-          "@elizaos/plugin-local-embedding"
+          "@tokagentos/plugin-local-embedding"
         );
         configureLocalEmbeddingPlugin(localEmbeddingPlugin);
         await runtime.registerPlugin(localEmbeddingPlugin);
@@ -256,7 +256,7 @@ export async function createRealTestRuntime(
     if (options?.withDiscord && process.env.DISCORD_BOT_TOKEN?.trim()) {
       try {
         const { default: discordPlugin } = await import(
-          "@elizaos/plugin-discord"
+          "@tokagentos/plugin-discord"
         );
         await runtime.registerPlugin(discordPlugin);
         logger.info("[real-runtime] Registered Discord plugin");
@@ -269,7 +269,7 @@ export async function createRealTestRuntime(
     if (options?.withTelegram && process.env.TELEGRAM_BOT_TOKEN?.trim()) {
       try {
         const { default: telegramPlugin } = await import(
-          "@elizaos/plugin-telegram"
+          "@tokagentos/plugin-telegram"
         );
         await runtime.registerPlugin(telegramPlugin);
         logger.info("[real-runtime] Registered Telegram plugin");

@@ -44,5 +44,5 @@ declare module "@tokagentos/capacitor-websiteblocker" {
   export * from "../../../tokagent/packages/native-plugins/websiteblocker/src/index";
 }
 
-declare module "@elizaos/signal-native";
+declare module "@tokagentos/signal-native";
 declare module "qrcode";

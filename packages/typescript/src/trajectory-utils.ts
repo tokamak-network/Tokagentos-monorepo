@@ -69,7 +69,7 @@ type TrajectoryLoggerLike = {
 	 * extend an existing step row with the new schema fields (kind, script,
 	 * childSteps, usedSkills). The plugin-executecode action uses this to
 	 * record its parent step + collected child step IDs without depending
-	 * directly on @elizaos/agent.
+	 * directly on @tokagentos/agent.
 	 */
 	annotateStep?: (params: TrajectoryAnnotateParams) => Promise<void> | void;
 };

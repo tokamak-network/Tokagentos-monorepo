@@ -114,7 +114,7 @@ export * from "./types/message-service";
 export * from "./types/onboarding";
 export * from "./types/plugin-manifest";
 // Bun can drop these runtime exports when they are only surfaced through the
-// ./types barrel, which breaks plugin imports of @elizaos/core.
+// ./types barrel, which breaks plugin imports of @tokagentos/core.
 export * as proto from "./types/proto";
 export {
 	fromJson,

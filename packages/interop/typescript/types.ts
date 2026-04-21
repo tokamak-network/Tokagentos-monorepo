@@ -5,7 +5,7 @@
  * different language runtimes (Rust, TypeScript, Python).
  *
  * Standalone definitions matching proto schemas in /schemas/tokagent/v1/ipc.proto.
- * For full proto-generated types, import from @elizaos/core.
+ * For full proto-generated types, import from @tokagentos/core.
  */
 
 import type { Content, Memory, State } from "@tokagentos/core";

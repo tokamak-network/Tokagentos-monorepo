@@ -60,9 +60,9 @@ export function registerDiscordHandlers(runtime: AgentRuntime): void {
             content: `👋 Hi! I'm **DiscordTokagent**, an AI assistant powered by tokagentOS.
             
 I use:
-• \`@elizaos/plugin-discord\` for Discord integration
-• \`@elizaos/plugin-openai\` for language understanding
-• \`@elizaos/plugin-sql\` for memory persistence
+• \`@tokagentos/plugin-discord\` for Discord integration
+• \`@tokagentos/plugin-openai\` for language understanding
+• \`@tokagentos/plugin-sql\` for memory persistence
 
 Mention me or reply to my messages to chat!`,
             ephemeral: true,

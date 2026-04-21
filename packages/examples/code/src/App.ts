@@ -6,7 +6,7 @@ import {
   CombinedAutocompleteProvider,
   Container,
   TUI,
-} from "@elizaos/tui";
+} from "@tokagentos/tui";
 import { ChatPane } from "./components/ChatPane.js";
 import { HelpOverlay } from "./components/HelpOverlay.js";
 import { StatusBar } from "./components/StatusBar.js";

@@ -7,7 +7,7 @@
  * 3. Type-safe test data factories
  *
  * DO NOT add mock factories here. For integration testing:
- * - Use @elizaos/plugin-sql with PGLite for real database
+ * - Use @tokagentos/plugin-sql with PGLite for real database
  * - Use real runtime initialization
  */
 

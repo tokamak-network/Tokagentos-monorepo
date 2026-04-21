@@ -35,9 +35,9 @@ const skipLocalUpstreams =
   process.env.MILADY_SKIP_LOCAL_UPSTREAMS === "1" ||
   process.env.TOKAGENT_SKIP_LOCAL_UPSTREAMS === "1";
 const OPTIONAL_PLUGIN_FALLBACK_VERSIONS = new Map([
-  ["@elizaos/plugin-sql", "alpha"],
-  ["@elizaos/plugin-ollama", "alpha"],
-  ["@elizaos/plugin-local-ai", "alpha"],
+  ["@tokagentos/plugin-sql", "alpha"],
+  ["@tokagentos/plugin-ollama", "alpha"],
+  ["@tokagentos/plugin-local-ai", "alpha"],
 ]);
 
 const publishManifest = {

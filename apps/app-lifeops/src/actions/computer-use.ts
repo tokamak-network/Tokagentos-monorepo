@@ -1,7 +1,7 @@
 /**
  * LifeOps computer-use action.
  *
- * Thin wrapper over @elizaos/plugin-computeruse's useComputerAction with
+ * Thin wrapper over @tokagentos/plugin-computeruse's useComputerAction with
  * LifeOps-specific access control (owner-only) and an opt-out feature flag
  * (TOKAGENT_LIFEOPS_COMPUTER_USE_ENABLED=0). If the plugin package is not
  * installed in the workspace, exports a stub action that returns a clear
@@ -189,7 +189,7 @@ async function loadComputerUseActions(): Promise<LoadedComputerUseActions | null
   try {
     // Dynamic import so a missing peer dependency does not break plugin load.
     const mod = (await import(
-      /* @vite-ignore */ "@elizaos/plugin-computeruse" as unknown as string
+      /* @vite-ignore */ "@tokagentos/plugin-computeruse" as unknown as string
     )) as {
       default?: { actions?: readonly Action[] };
       computerUsePlugin?: { actions?: readonly Action[] };
@@ -247,7 +247,7 @@ const stubExamples: ActionExample[][] = [
     {
       name: "{{agentName}}",
       content: {
-        text: "The @elizaos/plugin-computeruse package is not installed. Install it and restart the agent to enable desktop automation.",
+        text: "The @tokagentos/plugin-computeruse package is not installed. Install it and restart the agent to enable desktop automation.",
       },
     },
   ],
@@ -286,7 +286,7 @@ export const lifeOpsComputerUseAction: Action & {
   ],
   description:
     "Control the owner's desktop (screenshots, mouse, keyboard, browser, " +
-    "windows, files, terminal) via @elizaos/plugin-computeruse. Use this for " +
+    "windows, files, terminal) via @tokagentos/plugin-computeruse. Use this for " +
     "portal uploads, Finder/Desktop tasks like creating folders or taking " +
     "screenshots, browser form-filling, and other on-machine workflows the " +
     "assistant should perform directly, including standing instructions like " +
@@ -431,7 +431,7 @@ export const lifeOpsComputerUseAction: Action & {
       : null;
     if (!base) {
       return {
-        text: "The @elizaos/plugin-computeruse package is not installed. Install it and restart the agent to enable desktop automation.",
+        text: "The @tokagentos/plugin-computeruse package is not installed. Install it and restart the agent to enable desktop automation.",
         success: false,
         values: { success: false, error: "COMPUTER_USE_NOT_INSTALLED" },
         data: { actionName: ACTION_NAME },

@@ -29,22 +29,22 @@ export function validatePluginPath(resolved: string): void {
 
 /**
  * Normalize a user-provided plugin name to its fully-qualified form.
- * Accepts `@scope/plugin-x`, `plugin-x`, or shorthand `x` (→ `@elizaos/plugin-x`).
+ * Accepts `@scope/plugin-x`, `plugin-x`, or shorthand `x` (→ `@tokagentos/plugin-x`).
  */
 export function normalizePluginName(name: string): string {
   // Already fully qualified (starts with @) or plugin- prefix
   if (name.startsWith("@") || name.startsWith("plugin-")) {
     return name;
   }
-  // Shorthand: add @elizaos/plugin- prefix
-  return `@elizaos/plugin-${name}`;
+  // Shorthand: add @tokagentos/plugin- prefix
+  return `@tokagentos/plugin-${name}`;
 }
 
 /**
  * Parse plugin name and optional version from user input.
  * Examples:
- *   - "twitter" → { name: "@elizaos/plugin-twitter", version: undefined }
- *   - "twitter@1.2.3" → { name: "@elizaos/plugin-twitter", version: "1.2.3" }
+ *   - "twitter" → { name: "@tokagentos/plugin-twitter", version: undefined }
+ *   - "twitter@1.2.3" → { name: "@tokagentos/plugin-twitter", version: "1.2.3" }
  *   - "@custom/plugin-x@2.0.0" → { name: "@custom/plugin-x", version: "2.0.0" }
  */
 export function parsePluginSpec(input: string): {

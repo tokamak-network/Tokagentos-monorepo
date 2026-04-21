@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# bump-tokagentos.sh — Bump @elizaos/* packages to a target version
+# bump-tokagentos.sh — Bump @tokagentos/* packages to a target version
 #
 # Usage:
 #   ./scripts/bump-tokagentos.sh <version> [OPTIONS]
@@ -20,7 +20,7 @@
 #   1. Normalises the version to 2.0.0-alpha.{N}
 #   2. Updates package.json: pins @tokagentos/agent, @tokagentos/core,
 #      @tokagentos/app-core, @tokagentos/app-core, @tokagentos/prompts,
-#      @elizaos/sweagent-root to the target version
+#      @tokagentos/sweagent-root to the target version
 #   3. Checks if @tokagentos/core at that version ships dist/node/index.node.js
 #      (the native node binding needed for production)
 #   4. If core is broken at that version, finds the latest working version
@@ -111,7 +111,7 @@ TOKAGENTOS_PACKAGES=(
   "@tokagentos/app-core"
   "@tokagentos/app-core"
   "@tokagentos/prompts"
-  "@elizaos/sweagent-root"
+  "@tokagentos/sweagent-root"
 )
 
 # ─────────────────────────────────────────────────────────────────────────────

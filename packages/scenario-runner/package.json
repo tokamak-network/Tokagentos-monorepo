@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@tokagentos/core": "workspace:*",
-    "@elizaos/plugin-sql": "workspace:*",
+    "@tokagentos/plugin-sql": "workspace:*",
     "@tokagentos/scenario-schema": "workspace:*"
   },
   "devDependencies": {

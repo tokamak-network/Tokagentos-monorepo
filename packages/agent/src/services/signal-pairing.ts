@@ -1,7 +1,7 @@
 /**
  * Signal pairing service — manages device linking via QR code.
  *
- * Mirrors whatsapp-pairing.ts but uses @elizaos/signal-native instead of
+ * Mirrors whatsapp-pairing.ts but uses @tokagentos/signal-native instead of
  * Baileys. Signal linking produces a single provisioning URL (not a refresh
  * loop) — if it times out, restart the session.
  */
@@ -13,7 +13,7 @@ import { createInterface } from "node:readline";
 import { promisify } from "node:util";
 
 const LOG_PREFIX = "[signal-pairing]";
-const SIGNAL_NATIVE_MODULE_ID = "@elizaos/signal-native";
+const SIGNAL_NATIVE_MODULE_ID = "@tokagentos/signal-native";
 const execFileAsync = promisify(execFile);
 const DEFAULT_SIGNAL_CLI_NAME = "signal-cli";
 const DEFAULT_SIGNAL_DEVICE_NAME = "Tokagent Mac";

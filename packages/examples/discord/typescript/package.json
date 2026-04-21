@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-discord",
+  "name": "@tokagentos/example-discord",
   "version": "2.0.0-alpha",
   "description": "Full-featured Discord AI agent using tokagentOS",
   "type": "module",
@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-discord": "alpha",
-    "@elizaos/plugin-openai": "alpha",
-    "@elizaos/plugin-sql": "alpha",
+    "@tokagentos/plugin-discord": "alpha",
+    "@tokagentos/plugin-openai": "alpha",
+    "@tokagentos/plugin-sql": "alpha",
     "dotenv": "^17.2.3",
     "uuid": "^13.0.0"
   },

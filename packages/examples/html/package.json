@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos-examples/html-tokagent",
+  "name": "@tokagentos-examples/html-tokagent",
   "version": "2.0.0-alpha",
   "private": true,
   "description": "tokagentOS browser demo using AgentRuntime with plugin-localdb and plugin-tokagent-classic",

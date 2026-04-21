@@ -22,15 +22,15 @@ Services fill this gap. They start with your agent and run continuously.
 
 | Service Type      | Purpose               | Plugin                       |
 | ----------------- | --------------------- | ---------------------------- |
-| `TRANSCRIPTION`   | Audio → Text          | `@elizaos/plugin-openai`     |
-| `VIDEO`           | Video processing      | `@elizaos/plugin-video`      |
-| `BROWSER`         | Web automation        | `@elizaos/plugin-browser`    |
-| `PDF`             | PDF processing        | `@elizaos/plugin-pdf`        |
-| `REMOTE_FILES`    | AWS S3, cloud storage | `@elizaos/plugin-s3`         |
-| `WEB_SEARCH`      | Search queries        | `@elizaos/plugin-web-search` |
-| `EMAIL`           | Email sending         | `@elizaos/plugin-email`      |
+| `TRANSCRIPTION`   | Audio → Text          | `@tokagentos/plugin-openai`     |
+| `VIDEO`           | Video processing      | `@tokagentos/plugin-video`      |
+| `BROWSER`         | Web automation        | `@tokagentos/plugin-browser`    |
+| `PDF`             | PDF processing        | `@tokagentos/plugin-pdf`        |
+| `REMOTE_FILES`    | AWS S3, cloud storage | `@tokagentos/plugin-s3`         |
+| `WEB_SEARCH`      | Search queries        | `@tokagentos/plugin-web-search` |
+| `EMAIL`           | Email sending         | `@tokagentos/plugin-email`      |
 | `TASK`            | Background tasks      | `@tokagentos/core`              |
-| `WALLET`          | Crypto wallets        | `@elizaos/plugin-evm`        |
+| `WALLET`          | Crypto wallets        | `@tokagentos/plugin-evm`        |
 | `MESSAGE_SERVICE` | Real-time messaging   | `@tokagentos/core`              |
 
 ---
@@ -602,7 +602,7 @@ MCP (Model Context Protocol) allows your TokagentOS agent to use external tools 
 ### MCP Plugin Setup
 
 ```bash
-bun add @elizaos/plugin-mcp
+bun add @tokagentos/plugin-mcp
 ```
 
 Add MCP to your character's plugins:
@@ -611,8 +611,8 @@ Add MCP to your character's plugins:
 export const character: Character = {
   name: "YourAgent",
   plugins: [
-    "@elizaos/plugin-sql",
-    "@elizaos/plugin-mcp", // Add MCP plugin
+    "@tokagentos/plugin-sql",
+    "@tokagentos/plugin-mcp", // Add MCP plugin
     // ... other plugins
   ],
   // ... rest of configuration
@@ -630,7 +630,7 @@ STDIO servers run as local processes and communicate through standard input/outp
 ```typescript
 export const character: Character = {
   name: "WebSearchAgent",
-  plugins: ["@elizaos/plugin-mcp"],
+  plugins: ["@tokagentos/plugin-mcp"],
   settings: {
     mcp: {
       servers: {
@@ -664,7 +664,7 @@ SSE (Server-Sent Events) servers connect to remote APIs through HTTP.
 ```typescript
 export const character: Character = {
   name: "APIAgent",
-  plugins: ["@elizaos/plugin-mcp"],
+  plugins: ["@tokagentos/plugin-mcp"],
   settings: {
     mcp: {
       servers: {
@@ -694,10 +694,10 @@ import { type Character } from "@tokagentos/core";
 export const character: Character = {
   name: "Tokagent",
   plugins: [
-    "@elizaos/plugin-sql",
-    ...(process.env.ANTHROPIC_API_KEY ? ["@elizaos/plugin-anthropic"] : []),
-    ...(process.env.OPENAI_API_KEY ? ["@elizaos/plugin-openai"] : []),
-    "@elizaos/plugin-mcp",
+    "@tokagentos/plugin-sql",
+    ...(process.env.ANTHROPIC_API_KEY ? ["@tokagentos/plugin-anthropic"] : []),
+    ...(process.env.OPENAI_API_KEY ? ["@tokagentos/plugin-openai"] : []),
+    "@tokagentos/plugin-mcp",
   ],
   settings: {
     mcp: {
@@ -742,7 +742,7 @@ bun run start
 ### MCP Troubleshooting
 
 - **Server not connecting**: Check that the command/URL is correct
-- **Tools not available**: Ensure `@elizaos/plugin-mcp` is in your plugins array
+- **Tools not available**: Ensure `@tokagentos/plugin-mcp` is in your plugins array
 - **Permission errors**: For STDIO servers, ensure the command can be executed
 - **CORS issues**: For SSE servers, ensure proper CORS headers are configured
 

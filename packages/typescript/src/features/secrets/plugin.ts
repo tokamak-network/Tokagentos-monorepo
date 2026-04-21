@@ -64,7 +64,7 @@ export interface SecretsManagerPluginConfig {
  *
  * **Usage:**
  * ```typescript
- * import { secretsManagerPlugin } from '@elizaos/plugin-secrets-manager';
+ * import { secretsManagerPlugin } from '@tokagentos/plugin-secrets-manager';
  *
  * const runtime = createAgentRuntime({
  *   plugins: [secretsManagerPlugin],
@@ -81,7 +81,7 @@ export interface SecretsManagerPluginConfig {
  * ```
  */
 export const secretsManagerPlugin: Plugin = {
-	name: "@elizaos/plugin-secrets-manager",
+	name: "@tokagentos/plugin-secrets-manager",
 	description:
 		"Multi-level secret management with encryption, dynamic plugin activation, and conversational onboarding",
 

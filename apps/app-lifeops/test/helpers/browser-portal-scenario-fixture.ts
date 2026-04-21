@@ -447,7 +447,7 @@ export async function createBrowserPortalScenarioRuntime(agentId: string) {
     runtime as unknown as {
       plugins?: Array<{ name: string }>;
     }
-  ).plugins = [{ name: "@elizaos/plugin-agent-skills" }];
+  ).plugins = [{ name: "@tokagentos/plugin-agent-skills" }];
 
   service = await createService(runtime);
   return runtime;

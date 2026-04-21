@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-localdb": "alpha",
+    "@tokagentos/plugin-localdb": "alpha",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },

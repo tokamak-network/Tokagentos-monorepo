@@ -1,8 +1,8 @@
 import { describe, expect, test } from "vitest";
 
 import { AgentRuntime, createCharacter, type Character } from "@tokagentos/core";
-import sqlPlugin from "@elizaos/plugin-sql";
-import { initializeClobClient } from "@elizaos/plugin-polymarket";
+import sqlPlugin from "@tokagentos/plugin-sql";
+import { initializeClobClient } from "@tokagentos/plugin-polymarket";
 
 describe("live integration (Polymarket CLOB)", () => {
   test("fetches markets from real API (gated)", async () => {

@@ -62,7 +62,7 @@ bun run test:coverage
 ## Non-negotiable runtime invariants
 
 - `NODE_PATH` setup is required for dynamic plugin imports.
-- The Bun exports patch is required for some published `@elizaos/*` packages.
+- The Bun exports patch is required for some published `@tokagentos/*` packages.
 - Electrobun startup guards keep the desktop UI usable when the runtime fails.
 
 ## Default skill seeding

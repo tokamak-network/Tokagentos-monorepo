@@ -11,9 +11,9 @@
  */
 
 import { AgentRuntime } from "@tokagentos/core";
-import discordPlugin from "@elizaos/plugin-discord";
-import { openaiPlugin } from "@elizaos/plugin-openai";
-import sqlPlugin from "@elizaos/plugin-sql";
+import discordPlugin from "@tokagentos/plugin-discord";
+import { openaiPlugin } from "@tokagentos/plugin-openai";
+import sqlPlugin from "@tokagentos/plugin-sql";
 import { config } from "dotenv";
 
 import { character } from "./character";

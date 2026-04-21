@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-browser-extension-safari",
+  "name": "@tokagentos/example-browser-extension-safari",
   "version": "1.0.0",
   "description": "Safari extension wrapper for Chat with Webpage - see README.md for build instructions",
   "private": true,

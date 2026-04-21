@@ -1,7 +1,7 @@
 /**
  * WhatsApp pairing service — manages Baileys sessions for QR code authentication.
  *
- * This service is separate from `@elizaos/plugin-whatsapp` because the plugin
+ * This service is separate from `@tokagentos/plugin-whatsapp` because the plugin
  * initializes during runtime startup (too late for interactive QR flow).
  * Once pairing succeeds, the auth state is persisted to disk so the plugin
  * can reconnect automatically on subsequent startups.

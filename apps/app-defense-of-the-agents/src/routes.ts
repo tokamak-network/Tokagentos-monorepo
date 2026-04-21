@@ -274,7 +274,7 @@ let pushSystemEventFn:
 async function loadPushSystemEvent(): Promise<void> {
   if (pushSystemEventFn) return;
   try {
-    const mod = await import(/* webpackIgnore: true */ "@elizaos/plugin-cron");
+    const mod = await import(/* webpackIgnore: true */ "@tokagentos/plugin-cron");
     if (typeof mod.pushSystemEvent === "function") {
       pushSystemEventFn = mod.pushSystemEvent;
     }

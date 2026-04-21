@@ -237,5 +237,5 @@ plugin = Plugin(
         python_plugin_starter_test_suite,
     ],
     # Plugin dependencies (if any)
-    # dependencies=["@elizaos/plugin-sql"],
+    # dependencies=["@tokagentos/plugin-sql"],
 )

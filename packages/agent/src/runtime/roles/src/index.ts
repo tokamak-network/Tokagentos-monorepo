@@ -26,7 +26,7 @@ import {
 } from "./utils";
 
 const BOOTSTRAP_RETRY_TIMERS_KEY = Symbol.for(
-  "@elizaos/runtime.roles.bootstrapRetries",
+  "@tokagentos/runtime.roles.bootstrapRetries",
 );
 const BOOTSTRAP_RETRY_LIMIT = 3;
 const CONNECTOR_ADMINS_SETTING_KEY = "TOKAGENT_ROLES_CONNECTOR_ADMINS_JSON";

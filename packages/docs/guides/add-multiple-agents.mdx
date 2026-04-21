@@ -69,9 +69,9 @@ Add `plugin-discord` to Hemingway so he can join Shakespeare in our Discord serv
 ```json hemingway.json
 {
   "plugins": [
-    "@elizaos/plugin-sql",
-    "@elizaos/plugin-openai",
-    "@elizaos/plugin-discord" // [!code ++]
+    "@tokagentos/plugin-sql",
+    "@tokagentos/plugin-openai",
+    "@tokagentos/plugin-discord" // [!code ++]
   ]
 }
 ```
@@ -162,10 +162,10 @@ Now let's add `plugin-elevenlabs` to provide high-quality voice synthesis for ou
 ```json hemingway.json
 {
   "plugins": [
-    "@elizaos/plugin-sql",
-    "@elizaos/plugin-openai",
-    "@elizaos/plugin-discord",
-    "@elizaos/plugin-elevenlabs" // [!code ++]
+    "@tokagentos/plugin-sql",
+    "@tokagentos/plugin-openai",
+    "@tokagentos/plugin-discord",
+    "@tokagentos/plugin-elevenlabs" // [!code ++]
   ]
 }
 ```
@@ -173,10 +173,10 @@ Now let's add `plugin-elevenlabs` to provide high-quality voice synthesis for ou
 ```typescript src/character.ts
 export const character: Character = {
   plugins: [
-    "@elizaos/plugin-sql",
-    "@elizaos/plugin-discord",
-    "@elizaos/plugin-elevenlabs", // [!code ++]
-    ...(process.env.OPENAI_API_KEY?.trim() ? ["@elizaos/plugin-openai"] : []),
+    "@tokagentos/plugin-sql",
+    "@tokagentos/plugin-discord",
+    "@tokagentos/plugin-elevenlabs", // [!code ++]
+    ...(process.env.OPENAI_API_KEY?.trim() ? ["@tokagentos/plugin-openai"] : []),
   ],
 };
 ```

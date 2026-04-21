@@ -42,7 +42,7 @@ const DEFAULT_REPO_ROOT = resolveRepoRootFromImportMeta(import.meta.url);
 /**
  * Standalone plugin source directories to link into node_modules. Each
  * entry points at a directory containing a `package.json` whose `name`
- * field starts with `@elizaos/` or `@elizaos/`. Paths may be absolute
+ * field starts with `@tokagentos/` or `@tokagentos/`. Paths may be absolute
  * or relative to the repo root. Missing paths are skipped.
  */
 export const EXTERNAL_PLUGIN_SOURCES = [
@@ -60,7 +60,7 @@ export const EXTERNAL_PLUGIN_SOURCES = [
 ];
 
 /**
- * The three node_modules locations where Tokagent expects `@elizaos/*`
+ * The three node_modules locations where Tokagent expects `@tokagentos/*`
  * packages to resolve from — matches the list used by
  * setup-upstreams.mjs so dynamic imports work from every entry
  * point (root CLI, apps/app Vite shell, apps/home dashboard).
@@ -145,10 +145,10 @@ export function linkExternalPlugins(
     const pluginCoreLink = path.join(
       sourceDir,
       "node_modules",
-      "@elizaos",
+      "@tokagentos",
       "core",
     );
-    const rootCore = path.join(repoRoot, "node_modules", "@elizaos", "core");
+    const rootCore = path.join(repoRoot, "node_modules", "@tokagentos", "core");
     if (existsSync(rootCore)) {
       try {
         mkdirSync(path.dirname(pluginCoreLink), { recursive: true });

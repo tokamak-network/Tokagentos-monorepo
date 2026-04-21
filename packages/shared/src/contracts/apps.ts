@@ -332,7 +332,7 @@ export const TOKAGENT_CURATED_APP_DEFINITIONS: readonly TokagentCuratedAppDefini
     {
       slug: "shopify",
       canonicalName: "@tokagentos/app-shopify",
-      aliases: ["@elizaos/plugin-shopify"],
+      aliases: ["@tokagentos/plugin-shopify"],
     },
     {
       slug: "clawville",

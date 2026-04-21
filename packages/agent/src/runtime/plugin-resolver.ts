@@ -51,7 +51,7 @@ import {
 } from "./plugin-types.js";
 
 const LAST_FAILED_PLUGIN_NAMES = Symbol.for(
-  "@elizaos/plugin-resolver/last-failed-plugin-names",
+  "@tokagentos/plugin-resolver/last-failed-plugin-names",
 );
 
 type GlobalWithLastFailedPluginNames = typeof globalThis & {
@@ -411,7 +411,7 @@ function wrapPluginWithErrorBoundary(
  *   2. git layout:  <installPath>/ is the package root directly  (from `git clone`)
  *
  * @param installPath  Root directory of the installation (e.g. ~/.tokagent/plugins/installed/foo/).
- * @param packageName  The npm package name (e.g. "@elizaos/plugin-discord") — used
+ * @param packageName  The npm package name (e.g. "@tokagentos/plugin-discord") — used
  *                     to navigate directly into node_modules when present.
  */
 export async function importPluginModuleFromPath(
@@ -822,7 +822,7 @@ async function stagePluginImportRoot(params: {
 }
 
 /**
- * Resolve a statically-imported @elizaos plugin by name.
+ * Resolve a statically-imported @tokagentos plugin by name.
  * Returns the module if found in STATIC_TOKAGENT_PLUGINS, otherwise null.
  */
 function resolveStaticTokagentPlugin(pluginName: string): unknown | null {
@@ -970,7 +970,7 @@ export async function resolvePlugins(
     plugin: Plugin;
   } | null> {
     const isCore = corePluginSet.has(pluginName);
-    const isOfficialTokagentPlugin = pluginName.startsWith("@elizaos/plugin-");
+    const isOfficialTokagentPlugin = pluginName.startsWith("@tokagentos/plugin-");
     const ejectedRecord = ejectedRecords[pluginName];
     const installRecord = installRecords[pluginName];
     const workspaceOverridePath = getWorkspacePluginOverridePath(pluginName);
@@ -983,7 +983,7 @@ export async function resolvePlugins(
         )) as PluginModuleShape;
 
     // Pre-flight: ensure native dependencies are available for special plugins.
-    if (pluginName === "@elizaos/plugin-browser") {
+    if (pluginName === "@tokagentos/plugin-browser") {
       if (!ensureBrowserServerLink()) {
         failedPlugins.push({
           name: pluginName,

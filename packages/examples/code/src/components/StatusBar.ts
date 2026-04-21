@@ -1,4 +1,4 @@
-import type { Component } from "@elizaos/tui";
+import type { Component } from "@tokagentos/tui";
 import chalk from "chalk";
 import { getCwd } from "../lib/cwd.js";
 import { useStore } from "../lib/store.js";

@@ -8,7 +8,7 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
+import { plugin as localdbPlugin } from "@tokagentos/plugin-localdb";
 import {
   TOKAGENTGOTCHI_STATE_UPDATED_EVENT,
   type TokagentgotchiStateUpdatedPayload,

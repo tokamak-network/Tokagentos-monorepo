@@ -110,9 +110,9 @@ describeIf(LIVE_SUITE_ENABLED)(
       };
       character.secrets = selectedProviderEnv;
 
-      const sqlPlugin = await loadPlugin("@elizaos/plugin-sql");
+      const sqlPlugin = await loadPlugin("@tokagentos/plugin-sql");
       const localEmbeddingPlugin = await loadPlugin(
-        "@elizaos/plugin-local-embedding",
+        "@tokagentos/plugin-local-embedding",
       );
       const providerPlugin = selectedLiveProvider
         ? await loadPlugin(selectedLiveProvider.plugin)

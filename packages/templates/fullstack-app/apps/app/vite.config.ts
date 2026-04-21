@@ -53,9 +53,9 @@ function getTokagentPinnedTokagentCoreVersion(): string {
   return "2.0.0-alpha.109";
 }
 
-/** Bun cache dir names look like `@elizaos+core@2.0.0-alpha.109+<hash>`. */
+/** Bun cache dir names look like `@tokagentos+core@2.0.0-alpha.109+<hash>`. */
 function tokagentCoreAlphaPrerelease(dir: string): number {
-  const m = dir.match(/@elizaos\+core@[\d.]+-alpha\.(\d+)/);
+  const m = dir.match(/@tokagentos\+core@[\d.]+-alpha\.(\d+)/);
   return m?.[1] ? parseInt(m[1], 10) : -1;
 }
 
@@ -82,10 +82,10 @@ function findTokagentCoreBundleInBunStore(
     return null;
   }
   const pinned = getTokagentPinnedTokagentCoreVersion();
-  const pinnedPrefix = `@elizaos+core@${pinned}+`;
+  const pinnedPrefix = `@tokagentos+core@${pinned}+`;
 
   const withDist = entries.filter((dir) => {
-    if (!dir.startsWith("@elizaos+core@")) return false;
+    if (!dir.startsWith("@tokagentos+core@")) return false;
     return fs.existsSync(path.join(bunDir, dir, rel));
   });
 
@@ -553,7 +553,7 @@ function nativeModuleStubPlugin(): Plugin {
     "pty-state-capture",
     "electron",
     "undici",
-    "@elizaos/plugin-local-embedding",
+    "@tokagentos/plugin-local-embedding",
   ]);
   const nativeScopeRe = /^@node-llama-cpp\//;
 
@@ -623,7 +623,7 @@ function nativeModuleStubPlugin(): Plugin {
           "const handler = { get: (_, p) => (p === Symbol.toPrimitive ? () => 0 : typeof p === 'string' ? (() => {}) : undefined) };",
           "const stub = new Proxy({}, handler);",
           "export default stub;",
-          // Known named exports used by @elizaos/plugin-local-embedding and
+          // Known named exports used by @tokagentos/plugin-local-embedding and
           // other consumers — extend as needed:
           "export const getLlama = () => Promise.resolve(stub);",
           "export const LlamaLogLevel = Object.freeze({ error: 0, warn: 1, info: 2, debug: 3 });",
@@ -711,7 +711,7 @@ function nativeModuleStubPlugin(): Plugin {
       }
 
       // async_hooks — AsyncLocalStorage must be a real constructor because
-      // langsmith and @elizaos packages do `new AsyncLocalStorage()` at the
+      // langsmith and @tokagentos packages do `new AsyncLocalStorage()` at the
       // top level. Uses function-constructor syntax (not class expressions)
       // for maximum WebView compatibility. The renderChunk plugin
       // (asyncLocalStoragePatchPlugin) also patches the final bundle output
@@ -975,50 +975,50 @@ export default defineConfig({
       ]),
       // Capacitor plugins — resolve to local plugin sources
       {
-        find: /^@elizaos\/capacitor-agent$/,
+        find: /^@tokagentos\/capacitor-agent$/,
         replacement: path.join(nativePluginsRoot, "agent/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-camera$/,
+        find: /^@tokagentos\/capacitor-camera$/,
         replacement: path.join(nativePluginsRoot, "camera/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-canvas$/,
+        find: /^@tokagentos\/capacitor-canvas$/,
         replacement: path.join(nativePluginsRoot, "canvas/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-desktop$/,
+        find: /^@tokagentos\/capacitor-desktop$/,
         replacement: path.join(nativePluginsRoot, "desktop/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-gateway$/,
+        find: /^@tokagentos\/capacitor-gateway$/,
         replacement: path.join(nativePluginsRoot, "gateway/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-location$/,
+        find: /^@tokagentos\/capacitor-location$/,
         replacement: path.join(nativePluginsRoot, "location/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-mobile-signals$/,
+        find: /^@tokagentos\/capacitor-mobile-signals$/,
         replacement: path.join(
           nativePluginsRoot,
           "mobile-signals/src/index.ts",
         ),
       },
       {
-        find: /^@elizaos\/capacitor-screencapture$/,
+        find: /^@tokagentos\/capacitor-screencapture$/,
         replacement: path.join(nativePluginsRoot, "screencapture/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-swabble$/,
+        find: /^@tokagentos\/capacitor-swabble$/,
         replacement: path.join(nativePluginsRoot, "swabble/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-talkmode$/,
+        find: /^@tokagentos\/capacitor-talkmode$/,
         replacement: path.join(nativePluginsRoot, "talkmode/src/index.ts"),
       },
       {
-        find: /^@elizaos\/capacitor-websiteblocker$/,
+        find: /^@tokagentos\/capacitor-websiteblocker$/,
         replacement: path.join(
           nativePluginsRoot,
           "websiteblocker/src/index.ts",
@@ -1101,7 +1101,7 @@ export default defineConfig({
           // @tokagentos/agent/contracts/onboarding are used.  Map the bare import
           // to an empty module so Vite never traverses the server-side tree.
           {
-            find: /^@elizaos\/agent$/,
+            find: /^@tokagentos\/agent$/,
             replacement: path.join(
               appCoreSrcRoot,
               "platform/empty-node-module.ts",
@@ -1112,7 +1112,7 @@ export default defineConfig({
           // main workspace copy's browser entry.  The browser entry has all
           // needed exports and avoids pulling in createRequire/node:fs/etc.
           {
-            find: /^@elizaos\/core$/,
+            find: /^@tokagentos\/core$/,
             replacement: resolveTokagentCoreBundlePath(),
           },
         ];
@@ -1207,12 +1207,12 @@ export default defineConfig({
       "node-llama-cpp",
       "@node-llama-cpp/mac-arm64-metal",
       // Contains native-only pty-state-capture import; skip pre-bundling.
-      "@elizaos/plugin-agent-orchestrator",
-      // @elizaos/plugin-secrets-manager is now built into @tokagentos/core features
+      "@tokagentos/plugin-agent-orchestrator",
+      // @tokagentos/plugin-secrets-manager is now built into @tokagentos/core features
       // Node-only HTTP client — crashes in browser, stub via nativeModuleStubPlugin
       "undici",
       // Native LLM embedding — uses node-llama-cpp, never runs in browser
-      "@elizaos/plugin-local-embedding",
+      "@tokagentos/plugin-local-embedding",
     ],
   },
   build: {

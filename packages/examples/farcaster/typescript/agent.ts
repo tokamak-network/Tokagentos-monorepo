@@ -42,9 +42,9 @@ async function main(): Promise<void> {
   }
 
   // Dynamically import workspace plugins (matches other examples).
-  const sqlPlugin = (await import("@elizaos/plugin-sql")).default;
-  const openaiPlugin = (await import("@elizaos/plugin-openai")).default;
-  const farcasterPlugin = (await import("@elizaos/plugin-farcaster")).default;
+  const sqlPlugin = (await import("@tokagentos/plugin-sql")).default;
+  const openaiPlugin = (await import("@tokagentos/plugin-openai")).default;
+  const farcasterPlugin = (await import("@tokagentos/plugin-farcaster")).default;
 
   const runtime = new AgentRuntime({
     character,

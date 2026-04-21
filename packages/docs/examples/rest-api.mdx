@@ -114,8 +114,8 @@ curl -X POST http://localhost:3000/chat \
 ```typescript
 import express from 'express';
 import { AgentRuntime, ModelType } from '@tokagentos/core';
-import { tokagentClassicPlugin } from '@elizaos/plugin-eliza-classic';
-import { plugin as localdbPlugin } from '@elizaos/plugin-localdb';
+import { tokagentClassicPlugin } from '@tokagentos/plugin-eliza-classic';
+import { plugin as localdbPlugin } from '@tokagentos/plugin-localdb';
 import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
@@ -465,8 +465,8 @@ To use OpenAI instead of pattern matching, swap the plugin:
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import { openaiPlugin } from '@elizaos/plugin-openai';
-import { plugin as sqlPlugin } from '@elizaos/plugin-sql';
+import { openaiPlugin } from '@tokagentos/plugin-openai';
+import { plugin as sqlPlugin } from '@tokagentos/plugin-sql';
 
 const runtime = new AgentRuntime({
 character,

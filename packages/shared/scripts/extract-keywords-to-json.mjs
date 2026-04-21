@@ -10,7 +10,7 @@
  * walks the VALIDATION_KEYWORD_DOCS tree, and writes JSON to:
  *   src/i18n/keywords/shared.keywords.json
  *
- * Also extracts from @elizaos/typescript if available.
+ * Also extracts from @tokagentos/typescript if available.
  */
 
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";

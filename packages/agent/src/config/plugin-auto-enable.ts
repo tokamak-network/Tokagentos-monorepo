@@ -28,131 +28,131 @@ export interface ApplyPluginAutoEnableParams {
 }
 
 export const CONNECTOR_PLUGINS: Record<string, string> = {
-  bluebubbles: "@elizaos/plugin-bluebubbles",
-  telegram: "@elizaos/plugin-telegram",
-  discord: "@elizaos/plugin-discord",
-  discordLocal: "@elizaos/plugin-discord-local",
-  slack: "@elizaos/plugin-slack",
-  twitter: "@elizaos/plugin-twitter",
+  bluebubbles: "@tokagentos/plugin-bluebubbles",
+  telegram: "@tokagentos/plugin-telegram",
+  discord: "@tokagentos/plugin-discord",
+  discordLocal: "@tokagentos/plugin-discord-local",
+  slack: "@tokagentos/plugin-slack",
+  twitter: "@tokagentos/plugin-twitter",
   // Internal connector built from src/plugins/whatsapp (not an npm package).
-  whatsapp: "@elizaos/plugin-whatsapp",
+  whatsapp: "@tokagentos/plugin-whatsapp",
   // Internal connector built from src/plugins/signal (not an npm package).
-  signal: "@elizaos/plugin-signal",
-  imessage: "@elizaos/plugin-imessage",
-  farcaster: "@elizaos/plugin-farcaster",
-  lens: "@elizaos/plugin-lens",
-  msteams: "@elizaos/plugin-msteams",
-  feishu: "@elizaos/plugin-feishu",
-  matrix: "@elizaos/plugin-matrix",
-  nostr: "@elizaos/plugin-nostr",
-  blooio: "@elizaos/plugin-blooio",
-  twitch: "@elizaos/plugin-twitch",
-  mattermost: "@elizaos/plugin-mattermost",
-  googlechat: "@elizaos/plugin-google-chat",
+  signal: "@tokagentos/plugin-signal",
+  imessage: "@tokagentos/plugin-imessage",
+  farcaster: "@tokagentos/plugin-farcaster",
+  lens: "@tokagentos/plugin-lens",
+  msteams: "@tokagentos/plugin-msteams",
+  feishu: "@tokagentos/plugin-feishu",
+  matrix: "@tokagentos/plugin-matrix",
+  nostr: "@tokagentos/plugin-nostr",
+  blooio: "@tokagentos/plugin-blooio",
+  twitch: "@tokagentos/plugin-twitch",
+  mattermost: "@tokagentos/plugin-mattermost",
+  googlechat: "@tokagentos/plugin-google-chat",
 };
 
 export const STREAMING_PLUGINS: Record<string, string> = {
-  twitch: "@elizaos/plugin-twitch-streaming",
-  youtube: "@elizaos/plugin-youtube-streaming",
-  customRtmp: "@elizaos/plugin-custom-rtmp",
-  pumpfun: "@elizaos/plugin-pumpfun-streaming",
-  x: "@elizaos/plugin-x-streaming",
+  twitch: "@tokagentos/plugin-twitch-streaming",
+  youtube: "@tokagentos/plugin-youtube-streaming",
+  customRtmp: "@tokagentos/plugin-custom-rtmp",
+  pumpfun: "@tokagentos/plugin-pumpfun-streaming",
+  x: "@tokagentos/plugin-x-streaming",
 };
 
 const PROVIDER_PLUGINS: Record<string, string> = {
-  "google-antigravity": "@elizaos/plugin-google-antigravity",
-  "google-genai": "@elizaos/plugin-google-genai",
-  "vercel-ai-gateway": "@elizaos/plugin-vercel-ai-gateway",
-  openai: "@elizaos/plugin-openai",
-  anthropic: "@elizaos/plugin-anthropic",
-  qwen: "@elizaos/plugin-qwen",
-  minimax: "@elizaos/plugin-minimax",
-  groq: "@elizaos/plugin-groq",
-  xai: "@elizaos/plugin-xai",
-  openrouter: "@elizaos/plugin-openrouter",
-  ollama: "@elizaos/plugin-ollama",
+  "google-antigravity": "@tokagentos/plugin-google-antigravity",
+  "google-genai": "@tokagentos/plugin-google-genai",
+  "vercel-ai-gateway": "@tokagentos/plugin-vercel-ai-gateway",
+  openai: "@tokagentos/plugin-openai",
+  anthropic: "@tokagentos/plugin-anthropic",
+  qwen: "@tokagentos/plugin-qwen",
+  minimax: "@tokagentos/plugin-minimax",
+  groq: "@tokagentos/plugin-groq",
+  xai: "@tokagentos/plugin-xai",
+  openrouter: "@tokagentos/plugin-openrouter",
+  ollama: "@tokagentos/plugin-ollama",
   zai: "@homunculuslabs/plugin-zai",
-  deepseek: "@elizaos/plugin-deepseek",
-  together: "@elizaos/plugin-together",
-  mistral: "@elizaos/plugin-mistral",
-  cohere: "@elizaos/plugin-cohere",
-  perplexity: "@elizaos/plugin-perplexity",
+  deepseek: "@tokagentos/plugin-deepseek",
+  together: "@tokagentos/plugin-together",
+  mistral: "@tokagentos/plugin-mistral",
+  cohere: "@tokagentos/plugin-cohere",
+  perplexity: "@tokagentos/plugin-perplexity",
 };
 
 export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
-  ANTHROPIC_API_KEY: "@elizaos/plugin-anthropic",
-  CLAUDE_API_KEY: "@elizaos/plugin-anthropic",
-  OPENAI_API_KEY: "@elizaos/plugin-openai",
-  AI_GATEWAY_API_KEY: "@elizaos/plugin-vercel-ai-gateway",
-  AIGATEWAY_API_KEY: "@elizaos/plugin-vercel-ai-gateway",
-  GOOGLE_API_KEY: "@elizaos/plugin-google-genai",
-  GOOGLE_GENERATIVE_AI_API_KEY: "@elizaos/plugin-google-genai",
-  GOOGLE_CLOUD_API_KEY: "@elizaos/plugin-google-antigravity",
-  GROQ_API_KEY: "@elizaos/plugin-groq",
-  XAI_API_KEY: "@elizaos/plugin-xai",
-  GROK_API_KEY: "@elizaos/plugin-xai",
-  OPENROUTER_API_KEY: "@elizaos/plugin-openrouter",
-  OLLAMA_BASE_URL: "@elizaos/plugin-ollama",
+  ANTHROPIC_API_KEY: "@tokagentos/plugin-anthropic",
+  CLAUDE_API_KEY: "@tokagentos/plugin-anthropic",
+  OPENAI_API_KEY: "@tokagentos/plugin-openai",
+  AI_GATEWAY_API_KEY: "@tokagentos/plugin-vercel-ai-gateway",
+  AIGATEWAY_API_KEY: "@tokagentos/plugin-vercel-ai-gateway",
+  GOOGLE_API_KEY: "@tokagentos/plugin-google-genai",
+  GOOGLE_GENERATIVE_AI_API_KEY: "@tokagentos/plugin-google-genai",
+  GOOGLE_CLOUD_API_KEY: "@tokagentos/plugin-google-antigravity",
+  GROQ_API_KEY: "@tokagentos/plugin-groq",
+  XAI_API_KEY: "@tokagentos/plugin-xai",
+  GROK_API_KEY: "@tokagentos/plugin-xai",
+  OPENROUTER_API_KEY: "@tokagentos/plugin-openrouter",
+  OLLAMA_BASE_URL: "@tokagentos/plugin-ollama",
   ZAI_API_KEY: "@homunculuslabs/plugin-zai",
-  DEEPSEEK_API_KEY: "@elizaos/plugin-deepseek",
-  TOGETHER_API_KEY: "@elizaos/plugin-together",
-  MISTRAL_API_KEY: "@elizaos/plugin-mistral",
-  COHERE_API_KEY: "@elizaos/plugin-cohere",
-  PERPLEXITY_API_KEY: "@elizaos/plugin-perplexity",
-  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-elizacloud",
-  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-elizacloud",
-  CUA_API_KEY: "@elizaos/plugin-cua",
-  CUA_HOST: "@elizaos/plugin-cua",
-  OBSIDIAN_VAULT_PATH: "@elizaos/plugin-obsidian",
-  OBSIDAN_VAULT_PATH: "@elizaos/plugin-obsidian",
-  REPOPROMPT_CLI_PATH: "@elizaos/plugin-repoprompt",
-  CLAUDE_CODE_WORKBENCH_ENABLED: "@elizaos/plugin-claude-code-workbench",
+  DEEPSEEK_API_KEY: "@tokagentos/plugin-deepseek",
+  TOGETHER_API_KEY: "@tokagentos/plugin-together",
+  MISTRAL_API_KEY: "@tokagentos/plugin-mistral",
+  COHERE_API_KEY: "@tokagentos/plugin-cohere",
+  PERPLEXITY_API_KEY: "@tokagentos/plugin-perplexity",
+  TOKAGENTOS_CLOUD_API_KEY: "@tokagentos/plugin-elizacloud",
+  TOKAGENTOS_CLOUD_ENABLED: "@tokagentos/plugin-elizacloud",
+  CUA_API_KEY: "@tokagentos/plugin-cua",
+  CUA_HOST: "@tokagentos/plugin-cua",
+  OBSIDIAN_VAULT_PATH: "@tokagentos/plugin-obsidian",
+  OBSIDAN_VAULT_PATH: "@tokagentos/plugin-obsidian",
+  REPOPROMPT_CLI_PATH: "@tokagentos/plugin-repoprompt",
+  CLAUDE_CODE_WORKBENCH_ENABLED: "@tokagentos/plugin-claude-code-workbench",
   // EVM plugin gated behind explicit opt-in flag instead of EVM_PRIVATE_KEY.
   // plugin-evm's CROSS_CHAIN_TRANSFER action has a 'BRIDGE' simile that
   // crashes with 'Action spec not found: BRIDGE' during startup.
   // Gate behind ENABLE_EVM_PLUGIN=1 until the spec registration is fixed.
-  ENABLE_EVM_PLUGIN: "@elizaos/plugin-evm",
-  SOLANA_PRIVATE_KEY: "@elizaos/plugin-solana",
-  LASTFM_API_KEY: "@elizaos/plugin-music-library",
-  GENIUS_API_KEY: "@elizaos/plugin-music-library",
-  THEAUDIODB_API_KEY: "@elizaos/plugin-music-library",
-  SPOTIFY_CLIENT_ID: "@elizaos/plugin-music-library",
-  SPOTIFY_CLIENT_SECRET: "@elizaos/plugin-music-library",
+  ENABLE_EVM_PLUGIN: "@tokagentos/plugin-evm",
+  SOLANA_PRIVATE_KEY: "@tokagentos/plugin-solana",
+  LASTFM_API_KEY: "@tokagentos/plugin-music-library",
+  GENIUS_API_KEY: "@tokagentos/plugin-music-library",
+  THEAUDIODB_API_KEY: "@tokagentos/plugin-music-library",
+  SPOTIFY_CLIENT_ID: "@tokagentos/plugin-music-library",
+  SPOTIFY_CLIENT_SECRET: "@tokagentos/plugin-music-library",
   RS_SDK_BOT_NAME: "@tokagentos/app-2004scape",
-  SHOPIFY_ACCESS_TOKEN: "@elizaos/plugin-shopify",
+  SHOPIFY_ACCESS_TOKEN: "@tokagentos/plugin-shopify",
 };
 
 const FEATURE_PLUGINS: Record<string, string> = {
-  browser: "@elizaos/plugin-browser",
-  cua: "@elizaos/plugin-cua",
-  obsidian: "@elizaos/plugin-obsidian",
-  cron: "@elizaos/plugin-cron",
-  shell: "@elizaos/plugin-shell",
-  executeCode: "@elizaos/plugin-executecode",
-  imageGen: "@elizaos/plugin-image-generation",
-  tts: "@elizaos/plugin-edge-tts",
-  stt: "@elizaos/plugin-stt",
-  agentSkills: "@elizaos/plugin-agent-skills",
-  // directives: "@elizaos/plugin-directives", // not yet ready — package doesn't exist
-  commands: "@elizaos/plugin-commands",
-  diagnosticsOtel: "@elizaos/plugin-diagnostics-otel",
-  webhooks: "@elizaos/plugin-webhooks",
-  gmailWatch: "@elizaos/plugin-gmail-watch",
+  browser: "@tokagentos/plugin-browser",
+  cua: "@tokagentos/plugin-cua",
+  obsidian: "@tokagentos/plugin-obsidian",
+  cron: "@tokagentos/plugin-cron",
+  shell: "@tokagentos/plugin-shell",
+  executeCode: "@tokagentos/plugin-executecode",
+  imageGen: "@tokagentos/plugin-image-generation",
+  tts: "@tokagentos/plugin-edge-tts",
+  stt: "@tokagentos/plugin-stt",
+  agentSkills: "@tokagentos/plugin-agent-skills",
+  // directives: "@tokagentos/plugin-directives", // not yet ready — package doesn't exist
+  commands: "@tokagentos/plugin-commands",
+  diagnosticsOtel: "@tokagentos/plugin-diagnostics-otel",
+  webhooks: "@tokagentos/plugin-webhooks",
+  gmailWatch: "@tokagentos/plugin-gmail-watch",
   // personality and form are now built-in advanced capabilities
-  x402: "@elizaos/plugin-x402",
+  x402: "@tokagentos/plugin-x402",
   // Media generation plugins
-  fal: "@elizaos/plugin-fal",
-  suno: "@elizaos/plugin-suno",
-  musicLibrary: "@elizaos/plugin-music-library",
-  musicPlayer: "@elizaos/plugin-music-player",
-  vision: "@elizaos/plugin-vision",
-  computeruse: "@elizaos/plugin-computeruse",
-  repoprompt: "@elizaos/plugin-repoprompt",
-  claudeCodeWorkbench: "@elizaos/plugin-claude-code-workbench",
+  fal: "@tokagentos/plugin-fal",
+  suno: "@tokagentos/plugin-suno",
+  musicLibrary: "@tokagentos/plugin-music-library",
+  musicPlayer: "@tokagentos/plugin-music-player",
+  vision: "@tokagentos/plugin-vision",
+  computeruse: "@tokagentos/plugin-computeruse",
+  repoprompt: "@tokagentos/plugin-repoprompt",
+  claudeCodeWorkbench: "@tokagentos/plugin-claude-code-workbench",
   rs2004scape: "@tokagentos/app-2004scape",
 };
 
-const EVM_PLUGIN_PACKAGE = "@elizaos/plugin-evm";
+const EVM_PLUGIN_PACKAGE = "@tokagentos/plugin-evm";
 const EVM_PLUGIN_SHORT_ID = "evm";
 
 const STEWARD_TOKAGENT_PLUGIN_PACKAGE = "@stwd/tokagent-plugin";
@@ -358,7 +358,7 @@ export function applyPluginAutoEnable(
       const pluginName = STREAMING_PLUGINS[destName];
       if (!pluginName) continue;
       if (!isStreamingDestinationConfigured(destName, destConfig)) continue;
-      // Derive short ID from the package name (e.g. "@elizaos/plugin-twitch-streaming" → "twitch-streaming")
+      // Derive short ID from the package name (e.g. "@tokagentos/plugin-twitch-streaming" → "twitch-streaming")
       const shortId = pluginName.includes("/plugin-")
         ? pluginName.slice(
             pluginName.lastIndexOf("/plugin-") + "/plugin-".length,
@@ -402,7 +402,7 @@ export function applyPluginAutoEnable(
   //
   // Exception: Anthropic subscriptions are restricted to the Claude Code
   // CLI by TOS.  Their tokens cannot be used by the runtime, so we must
-  // NOT force-enable @elizaos/plugin-anthropic based on subscription alone.
+  // NOT force-enable @tokagentos/plugin-anthropic based on subscription alone.
   // A direct ANTHROPIC_API_KEY (set below via env-var detection) will still
   // enable the plugin if available.
   const subscriptionProvider = getSubscriptionProvider(updatedConfig);
@@ -487,7 +487,7 @@ export function applyPluginAutoEnable(
   ) {
     addToAllowlist(
       pluginsConfig.allow,
-      "@elizaos/plugin-edge-tts",
+      "@tokagentos/plugin-edge-tts",
       "edge-tts",
       changes,
       "cloud-provisioned voice output",
@@ -532,7 +532,7 @@ export function applyPluginAutoEnable(
     const connectorPackage = CONNECTOR_PLUGINS[entryId];
     const featurePackage = FEATURE_PLUGINS[entryId];
     const pluginName =
-      connectorPackage ?? featurePackage ?? `@elizaos/plugin-${entryId}`;
+      connectorPackage ?? featurePackage ?? `@tokagentos/plugin-${entryId}`;
     addToAllowlist(
       pluginsConfig.allow,
       pluginName,
@@ -550,7 +550,7 @@ export function applyPluginAutoEnable(
       addToAllowlist(
         pluginsConfig.allow,
         webhooksPlugin,
-        webhooksPlugin.replace("@elizaos/plugin-", ""),
+        webhooksPlugin.replace("@tokagentos/plugin-", ""),
         changes,
         "hooks.token",
       );
@@ -564,7 +564,7 @@ export function applyPluginAutoEnable(
         addToAllowlist(
           pluginsConfig.allow,
           gmailPlugin,
-          gmailPlugin.replace("@elizaos/plugin-", ""),
+          gmailPlugin.replace("@tokagentos/plugin-", ""),
           changes,
           "hooks.gmail.account",
         );
@@ -656,7 +656,7 @@ export function applyPluginAutoEnable(
   // process, so auto-enable is gated on `cloudAuthed` alone regardless of
   // `localEnabled`.
   {
-    const n8nPluginName = "@elizaos/plugin-n8n-workflow";
+    const n8nPluginName = "@tokagentos/plugin-n8n-workflow";
     const n8nPluginId = "n8n-workflow";
     const n8nConfig = updatedConfig.n8n;
     const n8nMasterEnabled = n8nConfig?.enabled !== false;
@@ -730,7 +730,7 @@ export function applyPluginSelfDeclaredAutoEnable(
     const { envKeys, connectorKeys, shouldEnable } = plugin.autoEnable;
 
     // Derive a short ID from the plugin name for allow-list and entries lookup.
-    // e.g. "@elizaos/plugin-telegram" → "telegram", "shopify" → "shopify"
+    // e.g. "@tokagentos/plugin-telegram" → "telegram", "shopify" → "shopify"
     const pluginName = plugin.name;
     const shortId = pluginName.includes("/plugin-")
       ? pluginName.slice(pluginName.lastIndexOf("/plugin-") + "/plugin-".length)

@@ -124,11 +124,11 @@ export async function createTokagentBuildConfig(
 	// Filter out the package being built to avoid self-referential imports
 	const tokagentExternals = [
 		"@tokagentos/core",
-		"@elizaos/server",
-		"@elizaos/client",
-		"@elizaos/api-client",
+		"@tokagentos/server",
+		"@tokagentos/client",
+		"@tokagentos/api-client",
 		"@tokagentos/shared",
-		"@elizaos/plugin-*",
+		"@tokagentos/plugin-*",
 	].filter((pkg) => pkg !== selfPackageName);
 
 	// Filter out empty strings and clean up the external array
@@ -743,7 +743,7 @@ async function buildTesting() {
 			outdir: "dist/testing",
 			target: "node",
 			format: "esm",
-			external: [...nodeExternals, "@elizaos/plugin-sql"],
+			external: [...nodeExternals, "@tokagentos/plugin-sql"],
 			sourcemap: true,
 			minify: false,
 			generateDts: false,

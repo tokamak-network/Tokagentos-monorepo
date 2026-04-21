@@ -234,8 +234,8 @@ export async function loadAndPreparePlugin(
 		return null;
 	}
 	const expectedFunctionName = `${pluginName
-		.replace(/^@elizaos\/plugin-/, "")
-		.replace(/^@elizaos\//, "")
+		.replace(/^@tokagentos\/plugin-/, "")
+		.replace(/^@tokagentos\//, "")
 		.replace(/-./g, (match) => match[1].toUpperCase())}Plugin`;
 
 	const moduleObj = pluginModule as Record<string, unknown>;
@@ -287,7 +287,7 @@ export function resolvePluginDependencies(
 			lookupMap.set(plugin.name, plugin);
 		}
 		if (!plugin.name.startsWith("@")) {
-			lookupMap.set(`@elizaos/plugin-${plugin.name}`, plugin);
+			lookupMap.set(`@tokagentos/plugin-${plugin.name}`, plugin);
 		}
 		const normalizedKey = normalizePluginName(key);
 		if (normalizedKey !== key) {

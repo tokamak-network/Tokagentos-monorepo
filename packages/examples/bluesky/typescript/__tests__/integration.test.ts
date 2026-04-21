@@ -20,7 +20,7 @@ config({ path: "../../.env" });
 config();
 
 const isLiveTest = process.env.LIVE_TEST === "true";
-const blueskyModuleId: string = "@elizaos/plugin-bluesky";
+const blueskyModuleId: string = "@tokagentos/plugin-bluesky";
 
 const loadBlueSkyClient = async (): Promise<BlueSkyModule> => {
   return (await import(blueskyModuleId)) as BlueSkyModule;

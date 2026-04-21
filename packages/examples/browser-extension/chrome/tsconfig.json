@@ -15,7 +15,7 @@
     "outDir": "./dist",
     "baseUrl": "..",
     "paths": {
-      "@elizaos/*": ["../../packages/*", "../../plugins/*"]
+      "@tokagentos/*": ["../../packages/*", "../../plugins/*"]
     },
     "types": ["chrome"]
   },

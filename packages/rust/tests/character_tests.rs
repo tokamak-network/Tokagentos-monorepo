@@ -31,7 +31,7 @@ fn test_load_full_character() {
         "system": "You are a comprehensive test agent.",
         "topics": ["testing", "development", "rust"],
         "adjectives": ["thorough", "careful", "precise"],
-        "plugins": ["@elizaos/plugin-sql"],
+        "plugins": ["@tokagentos/plugin-sql"],
         "settings": {
             "debugMode": true,
             "maxTokens": 1000
@@ -142,8 +142,8 @@ fn test_build_plugins_empty_env() {
     let plugins = build_character_plugins(&env);
 
     // Should have sql and ollama (fallback)
-    assert!(plugins.contains(&"@elizaos/plugin-sql".to_string()));
-    assert!(plugins.contains(&"@elizaos/plugin-ollama".to_string()));
+    assert!(plugins.contains(&"@tokagentos/plugin-sql".to_string()));
+    assert!(plugins.contains(&"@tokagentos/plugin-ollama".to_string()));
 }
 
 /// Test building plugins with OpenAI key
@@ -154,9 +154,9 @@ fn test_build_plugins_with_openai() {
 
     let plugins = build_character_plugins(&env);
 
-    assert!(plugins.contains(&"@elizaos/plugin-openai".to_string()));
+    assert!(plugins.contains(&"@tokagentos/plugin-openai".to_string()));
     // Should not have ollama fallback
-    assert!(!plugins.contains(&"@elizaos/plugin-ollama".to_string()));
+    assert!(!plugins.contains(&"@tokagentos/plugin-ollama".to_string()));
 }
 
 /// Test building plugins with Discord token
@@ -167,7 +167,7 @@ fn test_build_plugins_with_discord() {
 
     let plugins = build_character_plugins(&env);
 
-    assert!(plugins.contains(&"@elizaos/plugin-discord".to_string()));
+    assert!(plugins.contains(&"@tokagentos/plugin-discord".to_string()));
 }
 
 /// Test building plugins with tokagentOS Cloud
@@ -180,8 +180,8 @@ fn test_build_plugins_with_cloud() {
 
     // Cloud settings are not part of the core TypeScript/Python plugin builder.
     // Rust should ignore these keys and follow the standard ordering.
-    assert!(plugins.contains(&"@elizaos/plugin-sql".to_string()));
-    assert!(!plugins.contains(&"@elizaos/plugin-elizacloud".to_string()));
+    assert!(plugins.contains(&"@tokagentos/plugin-sql".to_string()));
+    assert!(!plugins.contains(&"@tokagentos/plugin-elizacloud".to_string()));
 }
 
 /// Test character bio_string method

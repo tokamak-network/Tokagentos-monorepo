@@ -4,7 +4,7 @@ import {
   Editor,
   type Focusable,
   type TUI,
-} from "@elizaos/tui";
+} from "@tokagentos/tui";
 import chalk from "chalk";
 import { useStore } from "../lib/store.js";
 import type { Message } from "../types.js";

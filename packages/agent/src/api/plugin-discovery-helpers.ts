@@ -700,7 +700,7 @@ export function discoverInstalledPlugins(
   const entries: PluginEntry[] = [];
 
   for (const [packageName, record] of Object.entries(installs)) {
-    // Derive a short id from the package name (e.g. "@elizaos/plugin-foo" -> "foo")
+    // Derive a short id from the package name (e.g. "@tokagentos/plugin-foo" -> "foo")
     const id = packageName
       .replace(/^@[^/]+\/plugin-/, "")
       .replace(/^@[^/]+\//, "")
@@ -1196,7 +1196,7 @@ export function deriveTokagentRepositoryUrl(
   npmName: string | undefined,
   dirName: string | undefined,
 ): string | undefined {
-  if (!npmName?.startsWith("@elizaos/")) return undefined;
+  if (!npmName?.startsWith("@tokagentos/")) return undefined;
   if (!dirName?.startsWith("plugin-")) return undefined;
   return `${TOKAGENT_REPO_ROOT}/tree/main/packages/${dirName}`;
 }

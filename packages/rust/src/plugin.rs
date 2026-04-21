@@ -31,11 +31,11 @@ pub fn register_plugin_factory(name: &str, factory: PluginFactory) {
 
     // Register scoped alias if input is short name
     if !name.starts_with('@') {
-        registry.insert(format!("@elizaos/plugin-{}", name), factory.clone());
+        registry.insert(format!("@tokagentos/plugin-{}", name), factory.clone());
     }
 
     // Register short alias if input is scoped name
-    if let Some(short) = name.strip_prefix("@elizaos/plugin-") {
+    if let Some(short) = name.strip_prefix("@tokagentos/plugin-") {
         registry.insert(short.to_string(), factory);
     }
 }
@@ -122,8 +122,8 @@ pub fn load_plugin(name: &str) -> Result<Plugin> {
 
 /// Normalize a plugin name by extracting the short name from scoped packages
 pub fn normalize_plugin_name(name: &str) -> String {
-    // Match patterns like @elizaos/plugin-{name}
-    if let Some(captures) = name.strip_prefix("@elizaos/plugin-") {
+    // Match patterns like @tokagentos/plugin-{name}
+    if let Some(captures) = name.strip_prefix("@tokagentos/plugin-") {
         return captures.to_string();
     }
     if let Some(captures) = name.strip_prefix("@").and_then(|s| s.split('/').nth(1)) {
@@ -291,8 +291,8 @@ mod tests {
 
     #[test]
     fn test_normalize_plugin_name() {
-        assert_eq!(normalize_plugin_name("@elizaos/plugin-discord"), "discord");
-        assert_eq!(normalize_plugin_name("@elizaos/plugin-sql"), "sql");
+        assert_eq!(normalize_plugin_name("@tokagentos/plugin-discord"), "discord");
+        assert_eq!(normalize_plugin_name("@tokagentos/plugin-sql"), "sql");
         assert_eq!(
             normalize_plugin_name("basic_capabilities"),
             "basic_capabilities"

@@ -50,8 +50,8 @@ async function main(): Promise<void> {
   }
 
   // Dynamically import workspace plugins (matches other examples).
-  const sqlPlugin = (await import("@elizaos/plugin-sql")).default;
-  const { XAIPlugin } = await import("@elizaos/plugin-xai");
+  const sqlPlugin = (await import("@tokagentos/plugin-sql")).default;
+  const { XAIPlugin } = await import("@tokagentos/plugin-xai");
 
   const runtime = new AgentRuntime({
     character,

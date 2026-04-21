@@ -1,5 +1,5 @@
 /**
- * Patch @elizaos packages whose exports["."].bun points to ./src/index.ts
+ * Patch @tokagentos packages whose exports["."].bun points to ./src/index.ts
  * (missing in published tarball). Exported for use by patch-deps.mjs and tests.
  * See docs/plugin-resolution-and-node-path.md "Bun and published package exports".
  */
@@ -245,7 +245,7 @@ export function patchTokagentCoreRolesSubpath(root, log = console.log) {
 
 function findTokagentPluginPackageJsonPaths(root) {
   const candidates = [];
-  const rootScopeDir = resolve(root, "node_modules", "@elizaos");
+  const rootScopeDir = resolve(root, "node_modules", "@tokagentos");
 
   if (existsSync(rootScopeDir)) {
     for (const entry of readdirSync(rootScopeDir)) {
@@ -258,7 +258,7 @@ function findTokagentPluginPackageJsonPaths(root) {
   const bunCache = resolve(root, "node_modules/.bun");
   if (existsSync(bunCache)) {
     for (const entry of readdirSync(bunCache)) {
-      const scopeDir = resolve(bunCache, entry, "node_modules", "@elizaos");
+      const scopeDir = resolve(bunCache, entry, "node_modules", "@tokagentos");
       if (!existsSync(scopeDir)) continue;
       for (const scopedEntry of readdirSync(scopeDir)) {
         if (!scopedEntry.startsWith("plugin-")) continue;
@@ -282,7 +282,7 @@ export function pruneNestedTokagentPluginCoreCopies(root, log = console.log) {
   const rootCorePkgPath = resolve(
     root,
     "node_modules",
-    "@elizaos",
+    "@tokagentos",
     "core",
     "package.json",
   );
@@ -310,7 +310,7 @@ export function pruneNestedTokagentPluginCoreCopies(root, log = console.log) {
     const nestedCoreDir = resolve(
       pluginDir,
       "node_modules",
-      "@elizaos",
+      "@tokagentos",
       "core",
     );
     if (!existsSync(nestedCoreDir)) continue;
@@ -525,7 +525,7 @@ export function patchTokagentCoreStreamingRetryPlaceholder(
  * Runs once per package.json version (stamp-guarded).
  *
  * Bun cache entry format: @scope+pkg@version+contenthash
- * e.g. @elizaos+core@2.0.0-alpha.77+f9c270f5561f2899
+ * e.g. @tokagentos+core@2.0.0-alpha.77+f9c270f5561f2899
  */
 export function warnStaleBunCache(root, log = console.log) {
   const bunCacheDir = resolve(root, "node_modules/.bun");
@@ -544,11 +544,11 @@ export function warnStaleBunCache(root, log = console.log) {
   }
 
   const prefixes = [
-    "@elizaos+core@",
-    "@elizaos+autonomous@",
-    "@elizaos+app-core@",
-    "@elizaos+prompts@",
-    "@elizaos+skills@",
+    "@tokagentos+core@",
+    "@tokagentos+autonomous@",
+    "@tokagentos+app-core@",
+    "@tokagentos+prompts@",
+    "@tokagentos+skills@",
   ];
   let staleCount = 0;
 
@@ -652,7 +652,7 @@ export function applyExtensionlessJsExportAliases(pkgPath) {
 }
 
 /**
- * Some upstream @elizaos packages (notably @tokagentos/agent and @tokagentos/ui)
+ * Some upstream @tokagentos packages (notably @tokagentos/agent and @tokagentos/ui)
  * publish exports maps where glob subpath targets still carry the source
  * extension before the .js / .d.ts suffix — e.g. "./packages/agent/src/runtime/*.ts.js".
  * That breaks Bun resolution because the on-disk files are "*.js" / "*.d.ts".
@@ -1035,7 +1035,7 @@ export function patchAutonomousTokagentOnboardingPresets(
 }
 
 /**
- * @elizaos/plugin-vision currently defaults to CAMERA mode and keeps retrying
+ * @tokagentos/plugin-vision currently defaults to CAMERA mode and keeps retrying
  * imagesnap/fswebcam/ffmpeg when OS camera permission is denied. In the
  * desktop app this spams logs and can interfere with startup. Patch the
  * published bundle so camera capture defaults to OFF and a permission denial
@@ -1135,7 +1135,7 @@ export function applyPluginVisionPermissionPatch(filePath) {
 export function patchPluginVisionPermissionHandling(root, log = console.log) {
   const candidates = findPackageFilePaths(
     root,
-    "@elizaos/plugin-vision",
+    "@tokagentos/plugin-vision",
     "dist/index.js",
   );
 
@@ -1144,7 +1144,7 @@ export function patchPluginVisionPermissionHandling(root, log = console.log) {
     if (!applyPluginVisionPermissionPatch(filePath)) continue;
     patched = true;
     log(
-      `[patch-deps] Patched @elizaos/plugin-vision camera permission handling: ${filePath}`,
+      `[patch-deps] Patched @tokagentos/plugin-vision camera permission handling: ${filePath}`,
     );
   }
 

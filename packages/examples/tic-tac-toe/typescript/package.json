@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-tic-tac-toe",
+  "name": "@tokagentos/example-tic-tac-toe",
   "version": "2.0.0-alpha",
   "description": "Tic-tac-toe game with perfect AI using minimax algorithm - no LLM required",
   "type": "module",
@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-sql": "alpha",
+    "@tokagentos/plugin-sql": "alpha",
     "@clack/prompts": "^0.11.0"
   },
   "devDependencies": {

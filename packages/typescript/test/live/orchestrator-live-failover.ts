@@ -3,9 +3,9 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
-import type { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
-import { PTYService } from "@elizaos/plugin-agent-orchestrator";
-import { tokagentOSCloudPlugin } from "@elizaos/plugin-elizacloud";
+import type { SwarmCoordinator } from "@tokagentos/plugin-agent-orchestrator";
+import { PTYService } from "@tokagentos/plugin-agent-orchestrator";
+import { tokagentOSCloudPlugin } from "@tokagentos/plugin-elizacloud";
 import { createTestRuntime } from "../helpers/pglite-runtime.ts";
 
 async function waitFor(

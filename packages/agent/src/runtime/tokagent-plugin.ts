@@ -128,7 +128,7 @@ export function createTokagentPlugin(config?: TokagentPluginConfig): Plugin {
           let registerCommand: (cmd: Record<string, unknown>) => void;
           let initForRuntime: (agentId: string) => void;
           try {
-            const cmds = require("@elizaos/plugin-commands");
+            const cmds = require("@tokagentos/plugin-commands");
             registerCommand = cmds.registerCommand;
             initForRuntime = cmds.initForRuntime;
           } catch {

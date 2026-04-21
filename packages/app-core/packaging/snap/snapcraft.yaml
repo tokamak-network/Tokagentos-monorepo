@@ -116,7 +116,7 @@ parts:
       # Remove plugin source directories so tsc/build does not attempt
       # to compile them (their deps like coding-agent-adapters are
       # absent from the snap sandbox). The workspace rewrite above
-      # already remapped `@elizaos/plugin-*: workspace:*` → registry
+      # already remapped `@tokagentos/plugin-*: workspace:*` → registry
       # pins for the ones that need them at build time, so removing
       # the on-disk plugin sources is safe.
       node -e '
@@ -242,7 +242,7 @@ parts:
 
       # The cloud-agent template is a release helper workspace, not a
       # snap runtime dependency. Keeping it in the workspace graph
-      # pulls the published @elizaos/plugin-sql package, whose current
+      # pulls the published @tokagentos/plugin-sql package, whose current
       # alpha manifest self-pins an unavailable alpha.114 build.
       node -e '
         const fs = require("fs");

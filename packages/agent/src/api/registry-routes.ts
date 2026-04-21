@@ -87,7 +87,7 @@ export async function handleRegistryRoutes(
             null,
           loaded:
             loadedNames.has(plugin.name) ||
-            loadedNames.has(plugin.name.replace("@elizaos/", "")),
+            loadedNames.has(plugin.name.replace("@tokagentos/", "")),
           bundled,
           compatibility: classifyRegistryPluginRelease({
             packageName: plugin.name,

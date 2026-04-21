@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Ensure generated i18n keyword data exists for @tokagentos/shared and
- * @elizaos/core. Source of truth is packages/shared/src/i18n/keywords/*.keywords.json
+ * @tokagentos/core. Source of truth is packages/shared/src/i18n/keywords/*.keywords.json
  * and the generator is packages/shared/scripts/generate-keywords.mjs.
  *
  * The generated files are gitignored, so Vite/Rolldown builds (docker-ci-smoke,

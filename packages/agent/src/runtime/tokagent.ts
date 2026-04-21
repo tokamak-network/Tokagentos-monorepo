@@ -75,11 +75,11 @@ import {
   type TargetInfo,
   type UUID,
 } from "@tokagentos/core";
-import * as pluginAgentSkills from "@elizaos/plugin-agent-skills";
-import * as pluginAnthropic from "@elizaos/plugin-anthropic";
-import * as pluginLocalEmbedding from "@elizaos/plugin-local-embedding";
-import * as pluginPdf from "@elizaos/plugin-pdf";
-import * as pluginSql from "@elizaos/plugin-sql";
+import * as pluginAgentSkills from "@tokagentos/plugin-agent-skills";
+import * as pluginAnthropic from "@tokagentos/plugin-anthropic";
+import * as pluginLocalEmbedding from "@tokagentos/plugin-local-embedding";
+import * as pluginPdf from "@tokagentos/plugin-pdf";
+import * as pluginSql from "@tokagentos/plugin-sql";
 import {
   isTokagentSettingsDebugEnabled,
   settingsDebugCloudSummary,
@@ -150,12 +150,12 @@ import rolesPlugin from "./roles.js";
 import { shouldEnableTrajectoryLoggingByDefault } from "./trajectory-persistence.js";
 
 const require = createRequire(import.meta.url);
-// Agent orchestrator ships as the standalone @elizaos/plugin-agent-orchestrator package.
+// Agent orchestrator ships as the standalone @tokagentos/plugin-agent-orchestrator package.
 // Use top-level dynamic import because the package is ESM-only and fails under
 // createRequire() in bun runtime; the await is resolved before module consumers read the binding.
 let pluginAgentOrchestrator: unknown = null;
 try {
-  pluginAgentOrchestrator = await import("@elizaos/plugin-agent-orchestrator");
+  pluginAgentOrchestrator = await import("@tokagentos/plugin-agent-orchestrator");
 } catch {
   pluginAgentOrchestrator = null;
 }
@@ -164,7 +164,7 @@ try {
 // CLI/bootstrap in published-only CI.
 let pluginShell: unknown = null;
 try {
-  pluginShell = require("@elizaos/plugin-shell");
+  pluginShell = require("@tokagentos/plugin-shell");
 } catch {
   pluginShell = null;
 }
@@ -173,19 +173,19 @@ try {
 // ESM import here makes the CLI fail before it can print --help/--version.
 let pluginCommands: unknown = null;
 try {
-  pluginCommands = require("@elizaos/plugin-commands");
+  pluginCommands = require("@tokagentos/plugin-commands");
 } catch {
   pluginCommands = null;
 }
 // plugin-plugin-manager, plugin-secrets-manager, and plugin-trust are now
-// built-in core capabilities in @elizaos/core. Enable via character settings:
+// built-in core capabilities in @tokagentos/core. Enable via character settings:
 // ENABLE_PLUGIN_MANAGER, ENABLE_SECRETS_MANAGER, ENABLE_TRUST.
 // Keep plugin-cron behind a guarded runtime require for the same reason. Some
 // published alpha builds resolve through package.json but are missing the
 // shipped dist/index.js entry, which breaks CLI bootstrap before help/version.
 let pluginCron: unknown = null;
 try {
-  pluginCron = require("@elizaos/plugin-cron");
+  pluginCron = require("@tokagentos/plugin-cron");
 } catch {
   pluginCron = null;
 }
@@ -194,7 +194,7 @@ try {
 // that ESM entry, which breaks CLI bootstrap in published-only CI.
 let pluginTokagentcloud: unknown = null;
 try {
-  pluginTokagentcloud = require("@elizaos/plugin-elizacloud");
+  pluginTokagentcloud = require("@tokagentos/plugin-elizacloud");
 } catch {
   pluginTokagentcloud = null;
 }
@@ -203,7 +203,7 @@ try {
 // entry, which breaks CLI bootstrap and startup smokes in published-only CI.
 let pluginOllama: unknown = null;
 try {
-  pluginOllama = require("@elizaos/plugin-ollama");
+  pluginOllama = require("@tokagentos/plugin-ollama");
 } catch {
   pluginOllama = null;
 }
@@ -212,7 +212,7 @@ try {
 // which breaks CLI bootstrap and validation in published-only CI.
 let pluginOpenai: unknown = null;
 try {
-  pluginOpenai = require("@elizaos/plugin-openai");
+  pluginOpenai = require("@tokagentos/plugin-openai");
 } catch {
   pluginOpenai = null;
 }
@@ -290,7 +290,7 @@ function registerSignalShutdownHandlers(context: SignalShutdownContext): void {
 }
 
 /**
- * Map of baseline bundled @elizaos plugin names to their statically imported
+ * Map of baseline bundled @tokagentos plugin names to their statically imported
  * modules.
  *
  * Post-release plugins are intentionally excluded so the packaged runtime can
@@ -300,34 +300,34 @@ function registerSignalShutdownHandlers(context: SignalShutdownContext): void {
 // Populate the shared STATIC_TOKAGENT_PLUGINS registry (defined in plugin-types.ts)
 // so plugin-resolver.ts can read it without importing this module directly.
 Object.assign(STATIC_TOKAGENT_PLUGINS, {
-  "@elizaos/plugin-sql": pluginSql,
-  "@elizaos/plugin-local-embedding": pluginLocalEmbedding,
+  "@tokagentos/plugin-sql": pluginSql,
+  "@tokagentos/plugin-local-embedding": pluginLocalEmbedding,
   // secrets-manager: now built-in core capability (ENABLE_SECRETS_MANAGER)
   ...(pluginAgentOrchestrator
     ? { "agent-orchestrator": pluginAgentOrchestrator }
     : {}),
-  ...(pluginCron ? { "@elizaos/plugin-cron": pluginCron } : {}),
-  ...(pluginShell ? { "@elizaos/plugin-shell": pluginShell } : {}),
+  ...(pluginCron ? { "@tokagentos/plugin-cron": pluginCron } : {}),
+  ...(pluginShell ? { "@tokagentos/plugin-shell": pluginShell } : {}),
   // plugin-manager: now built-in core capability (ENABLE_PLUGIN_MANAGER)
-  "@elizaos/plugin-agent-skills": pluginAgentSkills,
-  ...(pluginCommands ? { "@elizaos/plugin-commands": pluginCommands } : {}),
-  "@elizaos/plugin-pdf": pluginPdf,
-  ...(pluginOpenai ? { "@elizaos/plugin-openai": pluginOpenai } : {}),
-  "@elizaos/plugin-anthropic": pluginAnthropic,
-  ...(pluginOllama ? { "@elizaos/plugin-ollama": pluginOllama } : {}),
+  "@tokagentos/plugin-agent-skills": pluginAgentSkills,
+  ...(pluginCommands ? { "@tokagentos/plugin-commands": pluginCommands } : {}),
+  "@tokagentos/plugin-pdf": pluginPdf,
+  ...(pluginOpenai ? { "@tokagentos/plugin-openai": pluginOpenai } : {}),
+  "@tokagentos/plugin-anthropic": pluginAnthropic,
+  ...(pluginOllama ? { "@tokagentos/plugin-ollama": pluginOllama } : {}),
   ...(pluginTokagentcloud
-    ? { "@elizaos/plugin-elizacloud": pluginTokagentcloud }
+    ? { "@tokagentos/plugin-elizacloud": pluginTokagentcloud }
     : {}),
   // trust: now built-in core capability (ENABLE_TRUST)
   "@tokagentos/app-lifeops": pluginAppLifeops,
   "@tokagentos/app-companion": pluginAppCompanion,
-  "@elizaos/plugin-discord-local": discordLocalPlugin,
+  "@tokagentos/plugin-discord-local": discordLocalPlugin,
   // personality: now built-in advanced capability (advancedCapabilities: true)
 });
 
-// NODE_PATH so dynamic plugin imports (e.g. @elizaos/plugin-*) resolve.
+// NODE_PATH so dynamic plugin imports (e.g. @tokagentos/plugin-*) resolve.
 // WHY: When tokagent is loaded from dist/ or by a test runner, Node's resolution does not
-// search repo root node_modules; import("@elizaos/plugin-*") then fails. We prepend
+// search repo root node_modules; import("@tokagentos/plugin-*") then fails. We prepend
 // repo root node_modules only if not already in NODE_PATH (run-node.mjs may have set it)
 // to avoid duplicate entries; _initPaths() makes Node re-read NODE_PATH. See docs/plugin-resolution-and-node-path.md.
 // We walk up from this file to find node_modules — we do not assume a fixed depth
@@ -479,7 +479,7 @@ export function configureLocalEmbeddingPlugin(
 
   // Normalize Google AI API key aliases — the tokagentOS plugin and @google/genai
   // SDK expect different env var names. Canonicalize to the long form that
-  // @elizaos/plugin-google-genai reads via runtime.getSetting(). Users can set
+  // @tokagentos/plugin-google-genai reads via runtime.getSetting(). Users can set
   // any of: GEMINI_API_KEY, GOOGLE_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY.
   setEnvIfMissing(
     "GOOGLE_GENERATIVE_AI_API_KEY",
@@ -745,7 +745,7 @@ export function normalizeOpenAiCompatibleProviderConfig(
   }
 
   logger.warn(
-    "[tokagent] Detected Groq routed through OPENAI_BASE_URL; normalizing runtime settings to use @elizaos/plugin-groq",
+    "[tokagent] Detected Groq routed through OPENAI_BASE_URL; normalizing runtime settings to use @tokagentos/plugin-groq",
   );
 
   return true;
@@ -1015,9 +1015,9 @@ export { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS };
  * NOT by default — they crash if their prerequisites are missing.
  */
 const _OPTIONAL_NATIVE_PLUGINS: readonly string[] = [
-  "@elizaos/plugin-browser", // requires browser server binary
-  "@elizaos/plugin-vision", // requires @tensorflow/tfjs-node native addon
-  "@elizaos/plugin-computeruse", // requires platform-specific binaries
+  "@tokagentos/plugin-browser", // requires browser server binary
+  "@tokagentos/plugin-vision", // requires @tensorflow/tfjs-node native addon
+  "@tokagentos/plugin-computeruse", // requires platform-specific binaries
 ];
 
 // CHANNEL_PLUGIN_MAP, PROVIDER_PLUGIN_MAP, and OPTIONAL_PLUGIN_MAP live in
@@ -1088,7 +1088,7 @@ function assertPersistentDatabaseRequired(
     normalized === "on"
   ) {
     throw new Error(
-      `Tokagent requires persistent database storage and does not permit ALLOW_NO_DATABASE (agent ${runtime.agentId}). Remove ALLOW_NO_DATABASE from config/env and use @elizaos/plugin-sql.`,
+      `Tokagent requires persistent database storage and does not permit ALLOW_NO_DATABASE (agent ${runtime.agentId}). Remove ALLOW_NO_DATABASE from config/env and use @tokagentos/plugin-sql.`,
     );
   }
 }
@@ -1369,7 +1369,7 @@ export function applyCloudConfigToEnv(config: TokagentConfig): void {
     // credential — never set the literal "[REDACTED]" placeholder (which can
     // leak into the config via UI round-trips through the redacted GET → PUT
     // cycle). WHY: when enabled is false (BYOK / disconnected), leaving the key
-    // in process.env still auto-loads @elizaos/plugin-elizacloud and steals
+    // in process.env still auto-loads @tokagentos/plugin-elizacloud and steals
     // TEXT_LARGE even if the JSON says cloud is off.
     const isRealApiKey =
       cloud?.apiKey && cloud.apiKey.trim().toUpperCase() !== "[REDACTED]";
@@ -1496,7 +1496,7 @@ export function applyCloudConfigToEnv(config: TokagentConfig): void {
 
 /**
  * Translate `config.database` into the environment variables that
- * `@elizaos/plugin-sql` reads at init time (`POSTGRES_URL`, `PGLITE_DATA_DIR`).
+ * `@tokagentos/plugin-sql` reads at init time (`POSTGRES_URL`, `PGLITE_DATA_DIR`).
  *
  * When the provider is "postgres", we build a connection string from the
  * credentials (or use the explicit `connectionString` field) and set
@@ -1519,7 +1519,7 @@ export function applyX402ConfigToEnv(config: TokagentConfig): void {
 }
 
 /**
- * Resolve N8N_HOST + N8N_API_KEY for @elizaos/plugin-n8n-workflow.
+ * Resolve N8N_HOST + N8N_API_KEY for @tokagentos/plugin-n8n-workflow.
  *
  * Precedence:
  *   1. Existing process.env values (user override) — respected as-is.
@@ -2110,7 +2110,7 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
 
   // Wrap getSetting() to fall back to process.env for known keys when the
   // core returns null. tokagentOS core returns null for missing keys, but some
-  // plugins (e.g. @elizaos/plugin-google-genai) check `!== undefined` and
+  // plugins (e.g. @tokagentos/plugin-google-genai) check `!== undefined` and
   // convert null to the string "null", causing API calls like `models/null`.
   // Scoped to an allowlist to avoid leaking arbitrary env vars to plugins.
   const GETSETTING_ENV_ALLOWLIST = new Set([
@@ -2801,7 +2801,7 @@ export interface StartTokagentOptions {
 export interface BootTokagentRuntimeOptions {
   /**
    * When true, require an existing ~/.tokagent/tokagent.json config file.
-   * This is used by non-CLI UIs (like the @elizaos/tui interface) where interactive
+   * This is used by non-CLI UIs (like the @tokagentos/tui interface) where interactive
    * onboarding prompts would break the alternate screen.
    */
   requireConfig?: boolean;
@@ -3088,7 +3088,7 @@ export async function startTokagent(
   await autoFetchCloudGithubToken(config.cloud?.agentId?.trim() || agentId);
 
   // 5b. Pump N8N_HOST + N8N_API_KEY into process.env for
-  //     @elizaos/plugin-n8n-workflow. Must run AFTER applyCloudConfigToEnv
+  //     @tokagentos/plugin-n8n-workflow. Must run AFTER applyCloudConfigToEnv
   //     (2b above) and AFTER agentId is derived — the cloud gateway URL
   //     embeds the agent id. Prefer the persisted cloud-agent id when set;
   //     fall back to the derived local agent slug.
@@ -3173,10 +3173,10 @@ export async function startTokagent(
   //    are NOT core and don't have ordering dependencies.
   const PREREGISTER_PLUGINS = new Set(CORE_PLUGINS);
   const sqlPlugin = resolvedPlugins.find(
-    (p) => p.name === "@elizaos/plugin-sql",
+    (p) => p.name === "@tokagentos/plugin-sql",
   );
   const localEmbeddingPlugin = resolvedPlugins.find(
-    (p) => p.name === "@elizaos/plugin-local-embedding",
+    (p) => p.name === "@tokagentos/plugin-local-embedding",
   );
   const otherPlugins = resolvedPlugins.filter(
     (p) => !PREREGISTER_PLUGINS.has(p.name),
@@ -3306,7 +3306,7 @@ export async function startTokagent(
   }
 
   // ── Strip upstream skill providers ──────────────────────────────────────
-  // The upstream @elizaos/plugin-agent-skills registers providers that dump
+  // The upstream @tokagentos/plugin-agent-skills registers providers that dump
   // ALL loaded skills into every prompt (~2000-4000 tokens).  Tokagent replaces
   // them with a BM25-lite dynamic provider (see providers/skill-provider.ts)
   // that injects only the most relevant skills per turn.
@@ -3323,7 +3323,7 @@ export async function startTokagent(
     ]);
     for (const plugin of pluginsForRuntime) {
       if (
-        plugin.name === "@elizaos/plugin-agent-skills" &&
+        plugin.name === "@tokagentos/plugin-agent-skills" &&
         Array.isArray(plugin.providers)
       ) {
         const before = plugin.providers.length;
@@ -3390,7 +3390,7 @@ export async function startTokagent(
       VALIDATION_LEVEL: "fast",
       // Forward non-sensitive Tokagent config.env vars as runtime settings so
       // plugins can access them via runtime.getSetting(). This fixes a bug where
-      // plugins (e.g. @elizaos/plugin-google-genai) call runtime.getSetting()
+      // plugins (e.g. @tokagentos/plugin-google-genai) call runtime.getSetting()
       // which returns null for keys not in settings, but the plugin checks
       // !== undefined causing it to use "null" as the model name.
       //
@@ -3470,11 +3470,11 @@ export async function startTokagent(
   } else {
     const loadedNames = resolvedPlugins.map((p) => p.name).join(", ");
     logger.error(
-      `[tokagent] @elizaos/plugin-sql was NOT found among resolved plugins. ` +
+      `[tokagent] @tokagentos/plugin-sql was NOT found among resolved plugins. ` +
         `Loaded: [${loadedNames}]`,
     );
     throw new Error(
-      "@elizaos/plugin-sql is required but was not loaded. " +
+      "@tokagentos/plugin-sql is required but was not loaded. " +
         "Ensure the package is installed and built (check for import errors above).",
     );
   }
@@ -3493,7 +3493,7 @@ export async function startTokagent(
     );
   } else {
     logger.warn(
-      "[tokagent] @elizaos/plugin-local-embedding not found — embeddings " +
+      "[tokagent] @tokagentos/plugin-local-embedding not found — embeddings " +
         "will fall back to whatever TEXT_EMBEDDING handler is registered by " +
         "other plugins (may incur cloud API costs)",
     );
@@ -3514,8 +3514,8 @@ export async function startTokagent(
     }
 
     const alreadyPreRegistered = new Set([
-      "@elizaos/plugin-sql",
-      "@elizaos/plugin-local-embedding",
+      "@tokagentos/plugin-sql",
+      "@tokagentos/plugin-local-embedding",
     ]);
     for (const name of CORE_PLUGINS) {
       if (alreadyPreRegistered.has(name)) continue;
@@ -3982,10 +3982,10 @@ export async function startTokagent(
           // Re-derive from freshly resolved plugins (not outer closure) so
           // hot-reload picks up any plugin updates.
           const freshSqlPlugin = resolvedPlugins.find(
-            (p) => p.name === "@elizaos/plugin-sql",
+            (p) => p.name === "@tokagentos/plugin-sql",
           );
           const freshLocalEmbeddingPlugin = resolvedPlugins.find(
-            (p) => p.name === "@elizaos/plugin-local-embedding",
+            (p) => p.name === "@tokagentos/plugin-local-embedding",
           );
           if (freshSqlPlugin) {
             await registerSqlPluginWithRecovery(
@@ -4013,8 +4013,8 @@ export async function startTokagent(
             }
 
             const alreadyPreRegistered = new Set([
-              "@elizaos/plugin-sql",
-              "@elizaos/plugin-local-embedding",
+              "@tokagentos/plugin-sql",
+              "@tokagentos/plugin-local-embedding",
             ]);
             for (const name of CORE_PLUGINS) {
               if (alreadyPreRegistered.has(name)) continue;

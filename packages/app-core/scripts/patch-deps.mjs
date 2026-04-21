@@ -2,7 +2,7 @@
 /**
  * Post-install patches for remaining third-party/runtime packaging issues.
  *
- * First-party @elizaos and @elizaos source fixes should land in their own
+ * First-party @tokagentos and @tokagentos source fixes should land in their own
  * packages and releases instead of being maintained here.
  *
  * Current responsibilities:
@@ -52,7 +52,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolveRepoRootFromImportMeta(import.meta.url);
 
 // ---------------------------------------------------------------------------
-// Bust stale Bun cache entries for @elizaos packages.
+// Bust stale Bun cache entries for @tokagentos packages.
 // See warnStaleBunCache() in lib/patch-bun-exports.mjs for details.
 // ---------------------------------------------------------------------------
 warnStaleBunCache(root);
@@ -181,10 +181,10 @@ function collectInstalledPackageDirs(
 }
 
 // ---------------------------------------------------------------------------
-// @elizaos/plugin-openrouter — this repo uses workspace:* during local
+// @tokagentos/plugin-openrouter — this repo uses workspace:* during local
 // development, but the last known-good published tarball remains 2.0.0-alpha.10.
 //
-// WHY: npm @elizaos/plugin-openrouter@2.0.0-alpha.12 shipped truncated
+// WHY: npm @tokagentos/plugin-openrouter@2.0.0-alpha.12 shipped truncated
 // dist/node/index.node.js and dist/browser/index.browser.js: only the config
 // helper chunk is present, but the module still exports openrouterPlugin /
 // default aliases for symbols that are never defined. Bun then fails loading
@@ -193,8 +193,8 @@ function collectInstalledPackageDirs(
 // missing entirely (unlike plugin-pdf's wrong export identifier).
 //
 // Before bumping: verify the new tarball's dist entry defines the plugin, or
-// run: bun build node_modules/@elizaos/plugin-openrouter/dist/node/index.node.js --target=bun
-// Docs: docs/plugin-resolution-and-node-path.md (Pinned: @elizaos/plugin-openrouter)
+// run: bun build node_modules/@tokagentos/plugin-openrouter/dist/node/index.node.js --target=bun
+// Docs: docs/plugin-resolution-and-node-path.md (Pinned: @tokagentos/plugin-openrouter)
 // ---------------------------------------------------------------------------
 
 /**
@@ -417,7 +417,7 @@ patchJsdomCanvasAutoload();
 
 /**
  * Vite caches prebundled dependencies under node_modules/.vite. When patch-deps
- * rewrites installed @elizaos packages, that cache can keep serving the old
+ * rewrites installed @tokagentos packages, that cache can keep serving the old
  * upstream app-core bundle until it is cleared or Vite is forced to rebuild.
  * Always drop the optimize cache here so the frontend picks up patched deps.
  */
@@ -549,7 +549,7 @@ function patchCssstyleColorCompat() {
   }
 
   const needle = 'require("@asamuzakjp/css-color")';
-  const replacement = 'require("@elizaos/css-color-cjs")';
+  const replacement = 'require("@tokagentos/css-color-cjs")';
 
   let patched = 0;
   for (const dir of searchDirs) {
@@ -575,7 +575,7 @@ patchCssstyleColorCompat();
 // RETIRED FORK PATCHES
 //
 // The following patches have been retired because the workspace submodule
-// source (@tokagentos/core, @elizaos/plugin-sql) already includes these fixes
+// source (@tokagentos/core, @tokagentos/plugin-sql) already includes these fixes
 // and they resolve via workspace:* rather than npm tarballs:
 //
 // - patchPluginSqlCountMemoriesSignature (plugin-sql supports both signatures)

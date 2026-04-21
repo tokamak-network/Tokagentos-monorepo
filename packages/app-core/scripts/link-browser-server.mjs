@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { execSync } from "node:child_process";
 /**
- * Post-install setup for @elizaos/plugin-browser:
+ * Post-install setup for @tokagentos/plugin-browser:
  *
  * 1. Builds the stagehand-server if dist/index.js is missing but source exists.
  *
@@ -35,11 +35,11 @@ const repoRoot = resolveRepoRootFromImportMeta(import.meta.url);
 let pluginRoot;
 try {
   const req = createRequire(join(repoRoot, "package.json"));
-  const pkgJson = req.resolve("@elizaos/plugin-browser/package.json");
+  const pkgJson = req.resolve("@tokagentos/plugin-browser/package.json");
   pluginRoot = dirname(pkgJson);
 } catch {
   console.log(
-    "[link-browser-server] @elizaos/plugin-browser not installed — skipping",
+    "[link-browser-server] @tokagentos/plugin-browser not installed — skipping",
   );
   process.exit(0);
 }

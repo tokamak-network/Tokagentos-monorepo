@@ -58,7 +58,7 @@ describe("importPluginModuleFromPath", () => {
 
     const pluginModule = await importPluginModuleFromPath(
       pluginRoot,
-      "@elizaos/plugin-cron",
+      "@tokagentos/plugin-cron",
     );
     expect(pluginModule.cronPlugin).toBeDefined();
 

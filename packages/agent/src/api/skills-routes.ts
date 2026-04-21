@@ -468,7 +468,7 @@ export async function handleSkillsRoutes(
       if (!service || typeof service.install !== "function") {
         error(
           res,
-          "AgentSkillsService not available — ensure @elizaos/plugin-agent-skills is loaded",
+          "AgentSkillsService not available — ensure @tokagentos/plugin-agent-skills is loaded",
           501,
         );
         return true;
@@ -546,7 +546,7 @@ export async function handleSkillsRoutes(
       if (!service || typeof service.uninstall !== "function") {
         error(
           res,
-          "AgentSkillsService not available — ensure @elizaos/plugin-agent-skills is loaded",
+          "AgentSkillsService not available — ensure @tokagentos/plugin-agent-skills is loaded",
           501,
         );
         return true;
@@ -1311,7 +1311,7 @@ export async function handleSkillsRoutes(
         if (!service || typeof service.install !== "function") {
           error(
             res,
-            "AgentSkillsService not available — ensure @elizaos/plugin-agent-skills is loaded",
+            "AgentSkillsService not available — ensure @tokagentos/plugin-agent-skills is loaded",
             501,
           );
           return true;

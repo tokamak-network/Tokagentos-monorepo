@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-openai": "alpha",
+    "@tokagentos/plugin-openai": "alpha",
     "uuid": "^11.0.5"
   },
   "devDependencies": {

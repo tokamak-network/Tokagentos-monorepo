@@ -1,7 +1,7 @@
 import type { AgentRuntime } from "@tokagentos/core";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CodeTaskService = any;
-import { type Component, Editor, type Focusable, type TUI } from "@elizaos/tui";
+import { type Component, Editor, type Focusable, type TUI } from "@tokagentos/tui";
 import chalk from "chalk";
 import { useStore } from "../lib/store.js";
 import type {

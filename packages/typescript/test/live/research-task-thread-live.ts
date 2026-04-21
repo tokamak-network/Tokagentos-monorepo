@@ -4,7 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
-import { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
+import { SwarmCoordinator } from "@tokagentos/plugin-agent-orchestrator";
 import { createTestRuntime } from "../helpers/pglite-runtime.ts";
 
 type CodexEvent =

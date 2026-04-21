@@ -1,5 +1,5 @@
 /**
- * Auto-enable `@elizaos/plugin-plugin-manager` via `plugins.allow` so the
+ * Auto-enable `@tokagentos/plugin-plugin-manager` via `plugins.allow` so the
  * dashboard "Install Plugin" flow works. The plugin is bundled but optional
  * (see OPTIONAL_CORE_PLUGINS in the agent runtime).
  *
@@ -51,7 +51,7 @@ export async function ensurePluginManagerAllowed(): Promise<PluginManagerGuardRe
       "@tokagentos/agent/config/config"
     );
     const config = loadTokagentConfig();
-    const PKG = "@elizaos/plugin-plugin-manager";
+    const PKG = "@tokagentos/plugin-plugin-manager";
     const entries =
       config.plugins?.entries ?? ({} as Record<string, { enabled?: boolean }>);
     const id = "plugin-manager";

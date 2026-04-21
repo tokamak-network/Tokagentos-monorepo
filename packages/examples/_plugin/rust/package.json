@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/rust-plugin-starter",
+  "name": "@tokagentos/rust-plugin-starter",
   "private": true,
   "description": "Starter template for tokagentOS Rust plugins with cross-language support",
   "version": "2.0.0-alpha",

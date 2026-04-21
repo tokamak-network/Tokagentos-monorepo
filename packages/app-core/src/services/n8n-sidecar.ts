@@ -1,7 +1,7 @@
 /**
  * n8n local sidecar: lifecycle + readiness + API-key provisioning.
  *
- * Fallback for the @elizaos/plugin-n8n-workflow plugin when the user has
+ * Fallback for the @tokagentos/plugin-n8n-workflow plugin when the user has
  * no Tokagent Cloud session. Spawns `bunx n8n@<pinned>` (no package.json
  * dependency on n8n — that tree is ~300MB), polls `/rest/login` until
  * the instance is reachable, then provisions a personal API key via

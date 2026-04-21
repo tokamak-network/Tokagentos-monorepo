@@ -6,7 +6,7 @@ import {
   Box,
   type Component,
   type Focusable,
-} from "@elizaos/tui";
+} from "@tokagentos/tui";
 import chalk from "chalk";
 import { v4 as uuidv4 } from "uuid";
 import {

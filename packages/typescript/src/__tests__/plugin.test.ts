@@ -109,7 +109,7 @@ describe("Plugin Functions", () => {
 
 		test("should handle plugin loading errors gracefully", async () => {
 			// Test with a non-existent plugin
-			const result = await loadPlugin("@elizaos/non-existent-plugin");
+			const result = await loadPlugin("@tokagentos/non-existent-plugin");
 
 			expect(result).toBeNull();
 		});
@@ -252,7 +252,7 @@ describe("Plugin Functions", () => {
 		test("should handle scoped plugin names with short name dependencies", async () => {
 			// Plugin with scoped name
 			const pluginDiscord: Plugin = {
-				name: "@elizaos/plugin-discord",
+				name: "@tokagentos/plugin-discord",
 				description: "Discord plugin",
 				actions: [],
 				services: [],
@@ -275,13 +275,13 @@ describe("Plugin Functions", () => {
 
 			// Discord should come before setup due to dependency
 			const indexDiscord = resolved.findIndex(
-				(p) => p.name === "@elizaos/plugin-discord",
+				(p) => p.name === "@tokagentos/plugin-discord",
 			);
 			const indexSetup = resolved.findIndex((p) => p.name === "setup");
 			expect(indexDiscord).toBeLessThan(indexSetup);
 
 			// Verify both plugins are present
-			expect(resolved.some((p) => p.name === "@elizaos/plugin-discord")).toBe(
+			expect(resolved.some((p) => p.name === "@tokagentos/plugin-discord")).toBe(
 				true,
 			);
 			expect(resolved.some((p) => p.name === "setup")).toBe(true);
@@ -290,7 +290,7 @@ describe("Plugin Functions", () => {
 		test("should not queue dependency twice when plugin has scoped name", async () => {
 			// Plugin with scoped name
 			const pluginDiscord: Plugin = {
-				name: "@elizaos/plugin-discord",
+				name: "@tokagentos/plugin-discord",
 				description: "Discord plugin",
 				actions: [],
 				services: [],
@@ -322,17 +322,17 @@ describe("Plugin Functions", () => {
 
 			// Count occurrences of discord plugin
 			const discordCount = resolved.filter(
-				(p) => p.name === "@elizaos/plugin-discord",
+				(p) => p.name === "@tokagentos/plugin-discord",
 			).length;
 			expect(discordCount).toBe(1);
 		});
 	});
 
 	describe("normalizePluginName", () => {
-		test("should extract short name from @elizaos scoped packages", () => {
-			expect(normalizePluginName("@elizaos/plugin-discord")).toBe("discord");
-			expect(normalizePluginName("@elizaos/plugin-sql")).toBe("sql");
-			expect(normalizePluginName("@elizaos/plugin-telegram")).toBe("telegram");
+		test("should extract short name from @tokagentos scoped packages", () => {
+			expect(normalizePluginName("@tokagentos/plugin-discord")).toBe("discord");
+			expect(normalizePluginName("@tokagentos/plugin-sql")).toBe("sql");
+			expect(normalizePluginName("@tokagentos/plugin-telegram")).toBe("telegram");
 		});
 
 		test("should extract short name from other scoped packages", () => {
@@ -368,7 +368,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "music-player",
 				description: "Music player plugin",
-				dependencies: ["@elizaos/plugin-discord"], // Scoped name
+				dependencies: ["@tokagentos/plugin-discord"], // Scoped name
 				actions: [],
 				services: [],
 			};
@@ -425,7 +425,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "discord",
 				description: "Discord plugin",
-				dependencies: ["@elizaos/plugin-sql"], // Scoped name
+				dependencies: ["@tokagentos/plugin-sql"], // Scoped name
 				actions: [],
 				services: [],
 			};
@@ -458,7 +458,7 @@ describe("Plugin Functions", () => {
 			const pluginA: Plugin = {
 				name: "music-player",
 				description: "Music player plugin",
-				dependencies: ["@elizaos/plugin-nonexistent"],
+				dependencies: ["@tokagentos/plugin-nonexistent"],
 				actions: [],
 				services: [],
 			};
@@ -474,9 +474,9 @@ describe("Plugin Functions", () => {
 		});
 
 		test("should not create double-scoped names in lookup map", () => {
-			// Plugin with scoped name - this should not create '@elizaos/plugin-@elizaos/plugin-discord'
+			// Plugin with scoped name - this should not create '@tokagentos/plugin-@tokagentos/plugin-discord'
 			const pluginDiscord: Plugin = {
-				name: "@elizaos/plugin-discord",
+				name: "@tokagentos/plugin-discord",
 				description: "Discord plugin",
 				actions: [],
 				services: [],
@@ -491,7 +491,7 @@ describe("Plugin Functions", () => {
 			};
 
 			const pluginMap = new Map<string, Plugin>();
-			pluginMap.set("@elizaos/plugin-discord", pluginDiscord);
+			pluginMap.set("@tokagentos/plugin-discord", pluginDiscord);
 			pluginMap.set("setup", pluginSetup);
 
 			const resolved = resolvePluginDependencies(pluginMap);
@@ -499,14 +499,14 @@ describe("Plugin Functions", () => {
 			// Should resolve correctly without creating double-scoped names
 			expect(resolved).toHaveLength(2);
 			const indexDiscord = resolved.findIndex(
-				(p) => p.name === "@elizaos/plugin-discord",
+				(p) => p.name === "@tokagentos/plugin-discord",
 			);
 			const indexSetup = resolved.findIndex((p) => p.name === "setup");
 			// Discord should come before setup due to dependency
 			expect(indexDiscord).toBeLessThan(indexSetup);
 
 			// Verify the plugin is found correctly
-			expect(resolved.some((p) => p.name === "@elizaos/plugin-discord")).toBe(
+			expect(resolved.some((p) => p.name === "@tokagentos/plugin-discord")).toBe(
 				true,
 			);
 		});
@@ -522,7 +522,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "setup",
 				description: "Setup plugin",
-				dependencies: ["@elizaos/plugin-sql"],
+				dependencies: ["@tokagentos/plugin-sql"],
 				actions: [],
 				services: [],
 			};
@@ -538,7 +538,7 @@ describe("Plugin Functions", () => {
 			const pluginD: Plugin = {
 				name: "music-player",
 				description: "Music player plugin",
-				dependencies: ["@elizaos/plugin-discord", "setup"],
+				dependencies: ["@tokagentos/plugin-discord", "setup"],
 				actions: [],
 				services: [],
 			};
@@ -578,7 +578,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "test-plugin",
 				description: "Test plugin",
-				dependencies: ["@elizaos/plugin-sql"],
+				dependencies: ["@tokagentos/plugin-sql"],
 				actions: [],
 				services: [],
 			};
@@ -602,7 +602,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "test-plugin",
 				description: "Test plugin",
-				testDependencies: ["@elizaos/plugin-sql"],
+				testDependencies: ["@tokagentos/plugin-sql"],
 				actions: [],
 				services: [],
 			};
@@ -676,7 +676,7 @@ describe("Plugin Functions", () => {
 			};
 
 			const result = await tryInstallPlugin(
-				"@elizaos/test-no-plugin-auto-install",
+				"@tokagentos/test-no-plugin-auto-install",
 			);
 			expect(result).toBe(false);
 			expect(called).toBe(0);
@@ -691,7 +691,7 @@ describe("Plugin Functions", () => {
 				return { exited: Promise.resolve(0) };
 			};
 
-			const result = await tryInstallPlugin("@elizaos/test-no-auto-install");
+			const result = await tryInstallPlugin("@tokagentos/test-no-auto-install");
 			expect(result).toBe(false);
 			expect(called).toBe(0);
 		});
@@ -705,7 +705,7 @@ describe("Plugin Functions", () => {
 				return { exited: Promise.resolve(0) };
 			};
 
-			const result = await tryInstallPlugin("@elizaos/test-ci-env");
+			const result = await tryInstallPlugin("@tokagentos/test-ci-env");
 			expect(result).toBe(false);
 			expect(called).toBe(0);
 		});
@@ -719,7 +719,7 @@ describe("Plugin Functions", () => {
 				return { exited: Promise.resolve(0) };
 			};
 
-			const result = await tryInstallPlugin("@elizaos/test-test-mode");
+			const result = await tryInstallPlugin("@tokagentos/test-test-mode");
 			expect(result).toBe(false);
 			expect(called).toBe(0);
 		});
@@ -733,11 +733,11 @@ describe("Plugin Functions", () => {
 				return { exited: Promise.resolve(0) };
 			};
 
-			const result = await tryInstallPlugin("@elizaos/test-success");
+			const result = await tryInstallPlugin("@tokagentos/test-success");
 			expect(result).toBe(true);
 			expect(calls.length).toBe(2);
 			expect(calls[0]).toEqual(["bun", "--version"]);
-			expect(calls[1]).toEqual(["bun", "add", "@elizaos/test-success"]);
+			expect(calls[1]).toEqual(["bun", "add", "@tokagentos/test-success"]);
 		});
 
 		test("fails when bun --version exits non-zero", async () => {
@@ -751,7 +751,7 @@ describe("Plugin Functions", () => {
 				return { exited: Promise.resolve(0) };
 			};
 
-			const result = await tryInstallPlugin("@elizaos/test-bun-version-fail");
+			const result = await tryInstallPlugin("@tokagentos/test-bun-version-fail");
 			expect(result).toBe(false);
 			expect(versionCalls).toBe(1);
 		});
@@ -764,7 +764,7 @@ describe("Plugin Functions", () => {
 				return { exited: Promise.resolve(isVersion ? 0 : 1) };
 			};
 
-			const result = await tryInstallPlugin("@elizaos/test-bun-add-fail");
+			const result = await tryInstallPlugin("@tokagentos/test-bun-add-fail");
 			expect(result).toBe(false);
 			expect(calls.length).toBe(2);
 		});
@@ -784,7 +784,7 @@ describe("Plugin Functions", () => {
 				};
 			};
 
-			const result = await tryInstallPlugin("@elizaos/plugin-unique-test");
+			const result = await tryInstallPlugin("@tokagentos/plugin-unique-test");
 			expect(result).toBe(true);
 			expect(versionResolved).toBe(true);
 			expect(addResolved).toBe(true);

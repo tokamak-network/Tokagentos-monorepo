@@ -56,7 +56,7 @@ export const syncPluginAction: Action = {
     {
       name: "pluginId",
       description:
-        "Plugin ID or npm package to sync (e.g. 'discord' or '@elizaos/plugin-discord')",
+        "Plugin ID or npm package to sync (e.g. 'discord' or '@tokagentos/plugin-discord')",
       required: true,
       schema: { type: "string" as const },
     },
@@ -72,7 +72,7 @@ export const syncPluginAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Synced @elizaos/plugin-discord.",
+          text: "Synced @tokagentos/plugin-discord.",
         },
       },
     ],
@@ -86,7 +86,7 @@ export const syncPluginAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Synced @elizaos/plugin-telegram.",
+          text: "Synced @tokagentos/plugin-telegram.",
         },
       },
     ],

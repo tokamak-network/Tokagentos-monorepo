@@ -288,7 +288,7 @@ function canonicalizeCuratedRegistryPlugin<T extends RegistryPluginInfo>(
   next.name = canonicalName;
   // Only rewrite npm.package if it was derived from the name (no separate
   // runtime plugin). When npm.package differs from name (e.g. Hyperscape:
-  // app=@hyperscape/plugin-hyperscape, plugin=@elizaos/plugin-hyperscape),
+  // app=@hyperscape/plugin-hyperscape, plugin=@tokagentos/plugin-hyperscape),
   // preserve the original so resolvePluginPackageName stays correct.
   if (!next.npm.package || next.npm.package === appInfo.name) {
     next.npm = {

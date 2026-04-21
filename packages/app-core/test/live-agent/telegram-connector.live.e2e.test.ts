@@ -1,7 +1,7 @@
 /**
  * Telegram Connector Validation Tests
  *
- * Comprehensive E2E tests for validating the Telegram connector (@elizaos/plugin-telegram).
+ * Comprehensive E2E tests for validating the Telegram connector (@tokagentos/plugin-telegram).
  *
  * Test Categories:
  *   1. Setup & Authentication
@@ -790,6 +790,6 @@ describeIfLive("Telegram Connector - Enhanced Features", () => {
 describe("Telegram Connector - Integration", () => {
   it("Telegram connector is mapped in plugin auto-enable", async () => {
     const mod = await import("@tokagentos/app-core");
-    expect(mod.CONNECTOR_PLUGINS.telegram).toBe("@elizaos/plugin-telegram");
+    expect(mod.CONNECTOR_PLUGINS.telegram).toBe("@tokagentos/plugin-telegram");
   });
 });

@@ -1,6 +1,6 @@
 import type { GenerateTextParams, IAgentRuntime, Plugin } from "@tokagentos/core";
 import { ModelType } from "@tokagentos/core";
-import { generateTokagentResponse } from "@elizaos/plugin-eliza-classic";
+import { generateTokagentResponse } from "@tokagentos/plugin-eliza-classic";
 
 function escapeXml(text: string): string {
   return text

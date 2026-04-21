@@ -138,11 +138,11 @@
     "@tokagentos/app-task-coordinator": "workspace:*",
     "@tokagentos/app-training": "workspace:*",
     "@tokagentos/core": "workspace:*",
-    "@elizaos/plugin-agent-orchestrator": "workspace:*",
-    "@elizaos/plugin-ollama": "workspace:*",
-    "@elizaos/plugin-pdf": "workspace:*",
-    "@elizaos/plugin-solana": "workspace:*",
-    "@elizaos/plugin-sql": "workspace:*",
+    "@tokagentos/plugin-agent-orchestrator": "workspace:*",
+    "@tokagentos/plugin-ollama": "workspace:*",
+    "@tokagentos/plugin-pdf": "workspace:*",
+    "@tokagentos/plugin-solana": "workspace:*",
+    "@tokagentos/plugin-sql": "workspace:*",
     "@tokagentos/shared": "workspace:*",
     "@tokagentos/skills": "workspace:*",
     "@hapi/boom": "^10.0.1",
@@ -167,10 +167,10 @@
     "zod": "^4.3.6"
   },
   "peerDependencies": {
-    "@elizaos/signal-native": "*"
+    "@tokagentos/signal-native": "*"
   },
   "peerDependenciesMeta": {
-    "@elizaos/signal-native": {
+    "@tokagentos/signal-native": {
       "optional": true
     }
   },

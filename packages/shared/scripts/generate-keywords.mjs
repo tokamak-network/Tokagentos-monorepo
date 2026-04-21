@@ -355,7 +355,7 @@ if (target === "ts" || target === "all") {
   console.log(`  TypeScript (shared): ${outPath}`);
 
   // Also generate for the typescript (@tokagentos/core) package — same data,
-  // standalone file with no import dependency on @elizaos/shared.
+  // standalone file with no import dependency on @tokagentos/shared.
   const tsCorePath = join(
     __dirname,
     "..",

@@ -1,4 +1,4 @@
-import type { Component } from "@elizaos/tui";
+import type { Component } from "@tokagentos/tui";
 import chalk from "chalk";
 
 export class HelpOverlay implements Component {

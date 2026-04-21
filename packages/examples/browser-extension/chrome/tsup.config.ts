@@ -6,9 +6,9 @@ const monorepoRoot = path.resolve(__dirname, "../../..");
 const packagesDir = path.join(monorepoRoot, "packages");
 const pluginsDir = path.join(monorepoRoot, "plugins");
 
-// Helper to resolve @elizaos packages from monorepo
+// Helper to resolve @tokagentos packages from monorepo
 function resolvePackage(pkg: string, browserPath?: string): string {
-  const pkgName = pkg.replace("@elizaos/", "");
+  const pkgName = pkg.replace("@tokagentos/", "");
   
   // Check if it's a core package or a plugin
   let basePath: string;
@@ -62,12 +62,12 @@ export default defineConfig([
       };
       options.alias = {
         "@tokagentos/core": resolvePackage("@tokagentos/core"),
-        "@elizaos/plugin-openai": resolvePackage("@elizaos/plugin-openai"),
-        "@elizaos/plugin-anthropic": resolvePackage("@elizaos/plugin-anthropic"),
-        "@elizaos/plugin-groq": resolvePackage("@elizaos/plugin-groq"),
-        "@elizaos/plugin-google-genai": resolvePackage("@elizaos/plugin-google-genai"),
-        "@elizaos/plugin-eliza-classic": resolvePackage("@elizaos/plugin-eliza-classic"),
-        "@elizaos/plugin-localdb": resolvePackage("@elizaos/plugin-localdb"),
+        "@tokagentos/plugin-openai": resolvePackage("@tokagentos/plugin-openai"),
+        "@tokagentos/plugin-anthropic": resolvePackage("@tokagentos/plugin-anthropic"),
+        "@tokagentos/plugin-groq": resolvePackage("@tokagentos/plugin-groq"),
+        "@tokagentos/plugin-google-genai": resolvePackage("@tokagentos/plugin-google-genai"),
+        "@tokagentos/plugin-eliza-classic": resolvePackage("@tokagentos/plugin-eliza-classic"),
+        "@tokagentos/plugin-localdb": resolvePackage("@tokagentos/plugin-localdb"),
       };
     },
   },
@@ -100,12 +100,12 @@ console.log("[TokagentOS] Offscreen bundle starting...");`,
       };
       options.alias = {
         "@tokagentos/core": resolvePackage("@tokagentos/core", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-openai": resolvePackage("@elizaos/plugin-openai", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-anthropic": resolvePackage("@elizaos/plugin-anthropic", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-groq": resolvePackage("@elizaos/plugin-groq", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-google-genai": resolvePackage("@elizaos/plugin-google-genai", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-eliza-classic": resolvePackage("@elizaos/plugin-eliza-classic", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-localdb": resolvePackage("@elizaos/plugin-localdb", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-openai": resolvePackage("@tokagentos/plugin-openai", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-anthropic": resolvePackage("@tokagentos/plugin-anthropic", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-groq": resolvePackage("@tokagentos/plugin-groq", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-google-genai": resolvePackage("@tokagentos/plugin-google-genai", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-eliza-classic": resolvePackage("@tokagentos/plugin-eliza-classic", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-localdb": resolvePackage("@tokagentos/plugin-localdb", "dist/browser/index.browser.js"),
         "@vercel/oidc": path.join(__dirname, "src/stubs/empty.js"),
         dotenv: path.join(__dirname, "src/stubs/empty.js"),
         "fast-redact": path.join(__dirname, "src/stubs/fast-redact.js"),
@@ -152,15 +152,15 @@ console.log("[TokagentOS] Bundle starting...");`,
         "process.env.NODE_DEBUG": '""',
         global: "globalThis",
       };
-      // Use browser builds of @elizaos packages
+      // Use browser builds of @tokagentos packages
       options.alias = {
         "@tokagentos/core": resolvePackage("@tokagentos/core", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-openai": resolvePackage("@elizaos/plugin-openai", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-anthropic": resolvePackage("@elizaos/plugin-anthropic", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-groq": resolvePackage("@elizaos/plugin-groq", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-google-genai": resolvePackage("@elizaos/plugin-google-genai", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-eliza-classic": resolvePackage("@elizaos/plugin-eliza-classic", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-localdb": resolvePackage("@elizaos/plugin-localdb", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-openai": resolvePackage("@tokagentos/plugin-openai", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-anthropic": resolvePackage("@tokagentos/plugin-anthropic", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-groq": resolvePackage("@tokagentos/plugin-groq", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-google-genai": resolvePackage("@tokagentos/plugin-google-genai", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-eliza-classic": resolvePackage("@tokagentos/plugin-eliza-classic", "dist/browser/index.browser.js"),
+        "@tokagentos/plugin-localdb": resolvePackage("@tokagentos/plugin-localdb", "dist/browser/index.browser.js"),
         // Stub Node.js packages
         "@vercel/oidc": path.join(__dirname, "src/stubs/empty.js"),
         "dotenv": path.join(__dirname, "src/stubs/empty.js"),

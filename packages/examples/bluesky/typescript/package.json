@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-bluesky",
+  "name": "@tokagentos/example-bluesky",
   "version": "2.0.0-alpha",
   "description": "Full-featured Bluesky AI agent using tokagentOS",
   "type": "module",
@@ -16,9 +16,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-bluesky": "alpha",
-    "@elizaos/plugin-openai": "alpha",
-    "@elizaos/plugin-sql": "alpha",
+    "@tokagentos/plugin-bluesky": "alpha",
+    "@tokagentos/plugin-openai": "alpha",
+    "@tokagentos/plugin-sql": "alpha",
     "dotenv": "^17.2.3",
     "uuid": "^13.0.0",
     "zod": "^4.3.6"

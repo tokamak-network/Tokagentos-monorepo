@@ -19,7 +19,7 @@ const FETCH_TIMEOUT_MS = 30_000;
 
 /**
  * Minimal scan report shape used by the marketplace installer.
- * Full type definition lives in @elizaos/plugin-agent-skills/security/types.
+ * Full type definition lives in @tokagentos/plugin-agent-skills/security/types.
  */
 type ScanSeverity = "info" | "warn" | "critical";
 

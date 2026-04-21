@@ -251,7 +251,7 @@ class CoreManagerService(Service):
     async def _resolve_installed_core_version(self) -> str:
         """Best-effort resolution of the installed @tokagentos/core version."""
         try:
-            core_pkg = Path.cwd() / "node_modules" / "@elizaos" / "core" / "package.json"
+            core_pkg = Path.cwd() / "node_modules" / "@tokagentos" / "core" / "package.json"
             if core_pkg.exists():
                 data = json.loads(core_pkg.read_text())
                 return data.get("version", "unknown")

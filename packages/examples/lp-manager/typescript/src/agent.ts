@@ -100,9 +100,9 @@ class LpManagerAgent {
   }
 
   private async loadPlugins(): Promise<Plugin[]> {
-    const sql = (await import("@elizaos/plugin-sql")).default;
+    const sql = (await import("@tokagentos/plugin-sql")).default;
     const lp = (
-      (await import("@elizaos/plugin-lp-manager")) as { default: Plugin }
+      (await import("@tokagentos/plugin-lp-manager")) as { default: Plugin }
     ).default;
     return [sql, lp];
   }

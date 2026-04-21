@@ -104,13 +104,13 @@ export class PluginManagerService extends Service implements PluginRegistry {
 	// Protected plugins that cannot be registered, loaded, or unloaded by external code
 	private readonly PROTECTED_PLUGINS = new Set<string>([
 		"plugin-manager",
-		"@elizaos/plugin-sql",
+		"@tokagentos/plugin-sql",
 		"bootstrap",
 		"game-api",
 		"inference",
 		"autonomy",
 		"knowledge",
-		"@elizaos/plugin-personality",
+		"@tokagentos/plugin-personality",
 		"experience",
 		"goals",
 		"todo",
@@ -613,13 +613,13 @@ export class PluginManagerService extends Service implements PluginRegistry {
 		if (this.PROTECTED_PLUGINS.has(pluginName)) {
 			return true;
 		}
-		const withoutPrefix = pluginName.replace(/^@elizaos\//, "");
+		const withoutPrefix = pluginName.replace(/^@tokagentos\//, "");
 		if (this.PROTECTED_PLUGINS.has(withoutPrefix)) {
 			return true;
 		}
 		if (
-			!pluginName.startsWith("@elizaos/") &&
-			this.PROTECTED_PLUGINS.has(`@elizaos/${pluginName}`)
+			!pluginName.startsWith("@tokagentos/") &&
+			this.PROTECTED_PLUGINS.has(`@tokagentos/${pluginName}`)
 		) {
 			return true;
 		}
@@ -642,10 +642,10 @@ export class PluginManagerService extends Service implements PluginRegistry {
 		if (this.PROTECTED_PLUGINS.has(pluginName)) {
 			return `${pluginName} is a core system plugin and cannot be unloaded`;
 		}
-		const withoutPrefix = pluginName.replace(/^@elizaos\//, "");
+		const withoutPrefix = pluginName.replace(/^@tokagentos\//, "");
 		if (
 			this.PROTECTED_PLUGINS.has(withoutPrefix) ||
-			this.PROTECTED_PLUGINS.has(`@elizaos/${pluginName}`)
+			this.PROTECTED_PLUGINS.has(`@tokagentos/${pluginName}`)
 		) {
 			return `${pluginName} is a core system plugin and cannot be unloaded`;
 		}

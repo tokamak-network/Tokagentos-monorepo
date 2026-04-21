@@ -21,7 +21,7 @@ export default defineConfig({
         global: 'globalThis',
       },
     },
-    exclude: ['@elizaos/plugin-auto-trader'],
+    exclude: ['@tokagentos/plugin-auto-trader'],
   },
   build: {
     rollupOptions: {
@@ -43,8 +43,8 @@ export default defineConfig({
         'path',
         'node:async_hooks',
         'vm',
-        '@elizaos/plugin-auto-trader',
-        '@elizaos/plugin-trajectory-logger',
+        '@tokagentos/plugin-auto-trader',
+        '@tokagentos/plugin-trajectory-logger',
       ],
     },
   },

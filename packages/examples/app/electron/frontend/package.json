@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-app-electron-renderer",
+  "name": "@tokagentos/example-app-electron-renderer",
   "version": "2.0.0-alpha",
   "private": true,
   "type": "module",

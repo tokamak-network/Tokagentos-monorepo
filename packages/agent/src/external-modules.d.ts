@@ -1,7 +1,7 @@
-declare module "@elizaos/plugin-agent-orchestrator";
-declare module "@elizaos/plugin-agent-skills";
-declare module "@elizaos/plugin-computeruse";
-declare module "@elizaos/plugin-telegram/account-auth-service" {
+declare module "@tokagentos/plugin-agent-orchestrator";
+declare module "@tokagentos/plugin-agent-skills";
+declare module "@tokagentos/plugin-computeruse";
+declare module "@tokagentos/plugin-telegram/account-auth-service" {
   export interface TelegramAccountAuthSessionLike {
     getSnapshot(): TelegramAccountAuthSnapshot;
     getResolvedConnectorConfig(): TelegramAccountConnectorConfig | null;
@@ -125,16 +125,16 @@ declare module "telegram/sessions" {
     [key: string]: unknown;
   }
 }
-declare module "@elizaos/plugin-elizacloud";
-declare module "@elizaos/plugin-commands";
-declare module "@elizaos/plugin-cron";
-declare module "@elizaos/plugin-edge-tts";
-declare module "@elizaos/plugin-edge-tts/node";
-declare module "@elizaos/plugin-local-embedding";
-declare module "@elizaos/plugin-ollama";
-declare module "@elizaos/plugin-openai";
-declare module "@elizaos/plugin-shell";
-declare module "@elizaos/signal-native";
+declare module "@tokagentos/plugin-elizacloud";
+declare module "@tokagentos/plugin-commands";
+declare module "@tokagentos/plugin-cron";
+declare module "@tokagentos/plugin-edge-tts";
+declare module "@tokagentos/plugin-edge-tts/node";
+declare module "@tokagentos/plugin-local-embedding";
+declare module "@tokagentos/plugin-ollama";
+declare module "@tokagentos/plugin-openai";
+declare module "@tokagentos/plugin-shell";
+declare module "@tokagentos/signal-native";
 declare module "qrcode";
 
 declare module "@tokagentos/app-knowledge/routes" {
@@ -384,7 +384,7 @@ declare module "@tokagentos/core/roles" {
   ): void;
 }
 
-declare module "@elizaos/plugin-sql" {
+declare module "@tokagentos/plugin-sql" {
   import type { Plugin } from "@tokagentos/core";
 
   export const PGLITE_ERROR_CODES: {

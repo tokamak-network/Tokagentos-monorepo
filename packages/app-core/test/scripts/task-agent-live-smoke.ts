@@ -10,7 +10,7 @@ import {
   PTYService,
   sendToAgentAction,
   spawnAgentAction,
-} from "@elizaos/plugin-agent-orchestrator";
+} from "@tokagentos/plugin-agent-orchestrator";
 import { createTestRuntime } from "../helpers/pglite-runtime";
 
 type Framework = "claude" | "codex";

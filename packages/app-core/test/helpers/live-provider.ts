@@ -123,7 +123,7 @@ export type LiveProviderConfig = {
   baseUrl: string;
   smallModel: string;
   largeModel: string;
-  /** The @elizaos/plugin-* package name to register with the runtime. */
+  /** The @tokagentos/plugin-* package name to register with the runtime. */
   pluginPackage: string;
   /** Env vars to set for the runtime process. */
   env: Record<string, string>;
@@ -156,7 +156,7 @@ const PROVIDERS: Array<{
 }> = [
   {
     name: "groq",
-    plugin: "@elizaos/plugin-groq",
+    plugin: "@tokagentos/plugin-groq",
     keyEnvVars: ["GROQ_API_KEY"],
     keyEnvVarAliases: ["TOKAGENT_E2E_GROQ_API_KEY"],
     defaultBaseUrl: "https://api.groq.com/openai/v1",
@@ -167,7 +167,7 @@ const PROVIDERS: Array<{
   },
   {
     name: "openai",
-    plugin: "@elizaos/plugin-openai",
+    plugin: "@tokagentos/plugin-openai",
     keyEnvVars: ["OPENAI_API_KEY"],
     keyEnvVarAliases: ["TOKAGENT_E2E_OPENAI_API_KEY"],
     baseUrlEnvVar: "OPENAI_BASE_URL",
@@ -179,7 +179,7 @@ const PROVIDERS: Array<{
   },
   {
     name: "anthropic",
-    plugin: "@elizaos/plugin-anthropic",
+    plugin: "@tokagentos/plugin-anthropic",
     keyEnvVars: ["ANTHROPIC_API_KEY"],
     keyEnvVarAliases: ["TOKAGENT_E2E_ANTHROPIC_API_KEY"],
     defaultBaseUrl: "https://api.anthropic.com",
@@ -190,7 +190,7 @@ const PROVIDERS: Array<{
   },
   {
     name: "google",
-    plugin: "@elizaos/plugin-google-genai",
+    plugin: "@tokagentos/plugin-google-genai",
     keyEnvVars: ["GOOGLE_GENERATIVE_AI_API_KEY", "GOOGLE_API_KEY"],
     keyEnvVarAliases: ["TOKAGENT_E2E_GOOGLE_GENERATIVE_AI_API_KEY"],
     defaultBaseUrl: "https://generativelanguage.googleapis.com/v1beta",
@@ -201,7 +201,7 @@ const PROVIDERS: Array<{
   },
   {
     name: "openrouter",
-    plugin: "@elizaos/plugin-openrouter",
+    plugin: "@tokagentos/plugin-openrouter",
     keyEnvVars: ["OPENROUTER_API_KEY"],
     keyEnvVarAliases: ["TOKAGENT_E2E_OPENROUTER_API_KEY"],
     defaultBaseUrl: "https://openrouter.ai/api/v1",
@@ -308,7 +308,7 @@ export function selectLiveProvider(
       baseUrl: TOKAGENT_CLOUD_OPENAI_BASE_URL,
       smallModel,
       largeModel,
-      pluginPackage: "@elizaos/plugin-openai",
+      pluginPackage: "@tokagentos/plugin-openai",
       env: {
         OPENAI_API_KEY: cloudApiKey,
         OPENAI_BASE_URL: TOKAGENT_CLOUD_OPENAI_BASE_URL,

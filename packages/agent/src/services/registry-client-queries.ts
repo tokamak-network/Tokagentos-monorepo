@@ -17,7 +17,7 @@ export function normalizePluginLookupAlias(name: string): string {
   const lower = trimmed.toLowerCase();
   if (lower === "obsidan") return "obsidian";
   if (lower === "plugin-obsidan") return "plugin-obsidian";
-  if (lower === "@elizaos/plugin-obsidan") return "@elizaos/plugin-obsidian";
+  if (lower === "@tokagentos/plugin-obsidan") return "@tokagentos/plugin-obsidian";
 
   return trimmed;
 }
@@ -32,10 +32,10 @@ export function getPluginInfoFromRegistry(
   const requestedBare = name.replace(/^@[^/]+\//, "").toLowerCase();
 
   if (!name.startsWith("@")) {
-    p = registry.get(`@elizaos/${name}`);
+    p = registry.get(`@tokagentos/${name}`);
     if (p) return p;
 
-    p = registry.get(`@elizaos/plugin-${name}`);
+    p = registry.get(`@tokagentos/plugin-${name}`);
     if (p) return p;
 
     p = registry.get(`@tokagentos/app-${name}`);
@@ -82,7 +82,7 @@ export function scoreEntries<T extends RegistryPluginInfo>(
     const aliases = extraNames?.(p) ?? [];
     let s = 0;
 
-    if (ln === lq || ln === `@elizaos/${lq}` || aliases.some((a) => a === lq))
+    if (ln === lq || ln === `@tokagentos/${lq}` || aliases.some((a) => a === lq))
       s += 100;
     else if (ln.includes(lq) || aliases.some((a) => a.includes(lq))) s += 50;
     if (ld.includes(lq)) s += 30;

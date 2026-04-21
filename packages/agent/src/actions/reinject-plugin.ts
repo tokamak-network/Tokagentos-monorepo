@@ -60,7 +60,7 @@ export const reinjectPluginAction: Action = {
     {
       name: "pluginId",
       description:
-        "Plugin ID or npm package to reinject (e.g. 'discord' or '@elizaos/plugin-discord')",
+        "Plugin ID or npm package to reinject (e.g. 'discord' or '@tokagentos/plugin-discord')",
       required: true,
       schema: { type: "string" as const },
     },
@@ -76,7 +76,7 @@ export const reinjectPluginAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Removed ejected plugin @elizaos/plugin-discord. Restarting to load npm version.",
+          text: "Removed ejected plugin @tokagentos/plugin-discord. Restarting to load npm version.",
         },
       },
     ],
@@ -90,7 +90,7 @@ export const reinjectPluginAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Removed ejected plugin @elizaos/plugin-telegram. Restarting to load npm version.",
+          text: "Removed ejected plugin @tokagentos/plugin-telegram. Restarting to load npm version.",
         },
       },
     ],

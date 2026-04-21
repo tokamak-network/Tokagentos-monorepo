@@ -70,7 +70,7 @@ function expandPackagePaths(patterns) {
   return packages;
 }
 
-// Get all @elizaos package names from the workspace
+// Get all @tokagentos package names from the workspace
 function getWorkspacePackageNames(packagePaths) {
   const names = new Set();
 
@@ -109,7 +109,7 @@ function replaceWorkspaceRefs(pkgJsonPath, version, workspacePackageNames) {
     if (!pkg[depType]) continue;
 
     for (const [depName, depVersion] of Object.entries(pkg[depType])) {
-      // Only replace workspace:* for @elizaos packages that are part of this workspace
+      // Only replace workspace:* for @tokagentos packages that are part of this workspace
       if (
         typeof depVersion === "string" &&
         depVersion.startsWith("workspace:") &&
@@ -160,7 +160,7 @@ function main() {
   // Get all workspace package names
   const workspacePackageNames = getWorkspacePackageNames(packagePaths);
   console.log(
-    `🏷️  Found ${workspacePackageNames.size} @elizaos packages in workspace\n`,
+    `🏷️  Found ${workspacePackageNames.size} @tokagentos packages in workspace\n`,
   );
 
   let totalModified = 0;

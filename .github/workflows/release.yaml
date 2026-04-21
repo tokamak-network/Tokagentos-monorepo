@@ -530,7 +530,7 @@ jobs:
 
           # Build plugin-sql WASM (if exists)
           if [ -d "plugins/plugin-sql/rust" ]; then
-            echo "Building @elizaos/plugin-sql WASM..."
+            echo "Building @tokagentos/plugin-sql WASM..."
             cd plugins/plugin-sql/rust
             wasm-pack build --target web --out-dir pkg/web --features wasm --no-default-features || echo "WASM web build skipped"
             wasm-pack build --target nodejs --out-dir pkg/node --features wasm --no-default-features || echo "WASM node build skipped"
@@ -756,7 +756,7 @@ jobs:
 
             Install the CLI globally to get started:
             ```bash
-            bun i -g @elizaos/cli@${{ steps.release_type.outputs.dist_tag }}
+            bun i -g @tokagentos/cli@${{ steps.release_type.outputs.dist_tag }}
             ```
 
             Or add packages to your project:
@@ -790,7 +790,7 @@ jobs:
           echo "## Quick Start" >> $GITHUB_STEP_SUMMARY
           echo "Install the CLI globally:" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "bun i -g @elizaos/cli@${{ steps.release_type.outputs.dist_tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "bun i -g @tokagentos/cli@${{ steps.release_type.outputs.dist_tag }}" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Or add to your project:" >> $GITHUB_STEP_SUMMARY

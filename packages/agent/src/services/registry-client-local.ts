@@ -106,7 +106,7 @@ function resolveWorkspaceRoots(): string[] {
     path.resolve(cwd, "..", ".."),
   ].filter((candidate): candidate is string => Boolean(candidate));
 
-  // Monorepos (e.g. Tokagent) hoist `@elizaos/*` under the repo root, while this
+  // Monorepos (e.g. Tokagent) hoist `@tokagentos/*` under the repo root, while this
   // module lives in `packages/agent`. When the process cwd is deep (`apps/...`,
   // Electrobun bundle, etc.), cwd-based roots never reach that `node_modules`.
   // Walk up from the agent package so `getPluginInfo` can resolve vendored
@@ -525,8 +525,8 @@ async function discoverNodeModulePlugins(): Promise<
   const discovered = new Map<string, RegistryPluginInfo>();
 
   for (const workspaceRoot of resolveWorkspaceRoots()) {
-    const tokagentosDir = path.join(workspaceRoot, "node_modules", "@elizaos");
-    const entries = await readDirectoryEntries(tokagentosDir, "@elizaos dir", {
+    const tokagentosDir = path.join(workspaceRoot, "node_modules", "@tokagentos");
+    const entries = await readDirectoryEntries(tokagentosDir, "@tokagentos dir", {
       suppressMissing: true,
     });
 
@@ -626,7 +626,7 @@ async function discoverPackagesFolderPlugins(): Promise<
         packageJson.agentConfig !== undefined;
       if (!isPlugin) continue;
       if (packageJson.tokagentos?.kind === "app") continue;
-      if (!packageJson.name.startsWith("@elizaos/plugin-")) continue;
+      if (!packageJson.name.startsWith("@tokagentos/plugin-")) continue;
 
       const repo = parseRepositoryMetadata(packageJson.repository);
       const version = packageJson.version ?? null;

@@ -20,7 +20,7 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { openaiPlugin } from "@elizaos/plugin-openai";
+import { openaiPlugin } from "@tokagentos/plugin-openai";
 import { v4 as uuidv4 } from "uuid";
 
 export interface Env {

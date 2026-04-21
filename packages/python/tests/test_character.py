@@ -97,7 +97,7 @@ class TestValidateCharacterConfig:
             system="You are a complete agent.",
             topics=["all", "topics"],
             adjectives=["thorough", "complete"],
-            plugins=["@elizaos/plugin-sql"],
+            plugins=["@tokagentos/plugin-sql"],
         )
         result = validate_character_config(character)
         assert result["isValid"] is True
@@ -128,18 +128,18 @@ class TestMergeCharacterDefaults:
 class TestBuildCharacterPlugins:
     def test_default_plugins(self) -> None:
         plugins = build_character_plugins({})
-        assert "@elizaos/plugin-sql" in plugins
-        assert "@elizaos/plugin-ollama" in plugins
+        assert "@tokagentos/plugin-sql" in plugins
+        assert "@tokagentos/plugin-ollama" in plugins
 
     def test_with_openai(self) -> None:
         plugins = build_character_plugins({"OPENAI_API_KEY": "test-key"})
-        assert "@elizaos/plugin-openai" in plugins
-        assert "@elizaos/plugin-ollama" not in plugins
+        assert "@tokagentos/plugin-openai" in plugins
+        assert "@tokagentos/plugin-ollama" not in plugins
 
     def test_with_anthropic(self) -> None:
         plugins = build_character_plugins({"ANTHROPIC_API_KEY": "test-key"})
-        assert "@elizaos/plugin-anthropic" in plugins
-        assert "@elizaos/plugin-ollama" not in plugins
+        assert "@tokagentos/plugin-anthropic" in plugins
+        assert "@tokagentos/plugin-ollama" not in plugins
 
     def test_with_discord(self) -> None:
         plugins = build_character_plugins(
@@ -148,7 +148,7 @@ class TestBuildCharacterPlugins:
                 "OPENAI_API_KEY": "test-key",
             }
         )
-        assert "@elizaos/plugin-discord" in plugins
+        assert "@tokagentos/plugin-discord" in plugins
 
     def test_plugin_order(self) -> None:
         plugins = build_character_plugins(
@@ -158,6 +158,6 @@ class TestBuildCharacterPlugins:
                 "DISCORD_API_TOKEN": "token",
             }
         )
-        assert plugins.index("@elizaos/plugin-sql") == 0
-        assert plugins.index("@elizaos/plugin-anthropic") < plugins.index("@elizaos/plugin-openai")
-        assert plugins.index("@elizaos/plugin-discord") > plugins.index("@elizaos/plugin-openai")
+        assert plugins.index("@tokagentos/plugin-sql") == 0
+        assert plugins.index("@tokagentos/plugin-anthropic") < plugins.index("@tokagentos/plugin-openai")
+        assert plugins.index("@tokagentos/plugin-discord") > plugins.index("@tokagentos/plugin-openai")

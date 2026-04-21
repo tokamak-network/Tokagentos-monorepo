@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-a2a-server",
+  "name": "@tokagentos/example-a2a-server",
   "version": "2.0.0-alpha",
   "description": "tokagentOS A2A (Agent-to-Agent) Server - HTTP API for agent communication",
   "type": "module",
@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-eliza-classic": "alpha",
-    "@elizaos/plugin-inmemorydb": "alpha",
-    "@elizaos/plugin-openai": "alpha",
-    "@elizaos/plugin-sql": "alpha",
+    "@tokagentos/plugin-eliza-classic": "alpha",
+    "@tokagentos/plugin-inmemorydb": "alpha",
+    "@tokagentos/plugin-openai": "alpha",
+    "@tokagentos/plugin-sql": "alpha",
     "express": "^4.18.0",
     "uuid": "^13.0.0"
   },

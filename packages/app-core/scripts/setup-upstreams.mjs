@@ -30,7 +30,7 @@ export const TOKAGENT_BRANCH = "develop";
 export const TOKAGENT_REQUIRED_FILES = ["package.json"];
 export const TOKAGENT_BUILD_STEPS = [
   {
-    // Fresh CI checkouts do not track generated protobuf types for @elizaos/core.
+    // Fresh CI checkouts do not track generated protobuf types for @tokagentos/core.
     // Build the package once so src/types/generated exists before root typecheck/tests.
     check: path.join(
       "packages",
@@ -236,7 +236,7 @@ function discoverTokagentPackageDirs(tokagentRoot) {
       }
       const packageDir = path.join(searchRoot, entry.name);
       const packageJson = readPackageJson(packageDir);
-      if (packageJson?.name?.startsWith("@elizaos/")) {
+      if (packageJson?.name?.startsWith("@tokagentos/")) {
         packageDirs.push(packageDir);
       }
     }
@@ -266,7 +266,7 @@ function discoverPluginPackageDirs(pluginsRoot) {
     const repoDir = path.join(pluginsRoot, entry.name);
     const tsDir = path.join(repoDir, "typescript");
     const tsPackage = readPackageJson(tsDir);
-    if (tsPackage?.name?.startsWith("@elizaos/")) {
+    if (tsPackage?.name?.startsWith("@tokagentos/")) {
       packageDirs.push(tsDir);
       continue;
     }
@@ -509,7 +509,7 @@ export function ensurePluginDependencyLinks(
   for (const packageDir of discoverPluginPackageDirs(pluginsRoot)) {
     const packageJson = readPackageJson(packageDir);
     const packageName = packageJson?.name;
-    if (!packageName?.startsWith("@elizaos/")) {
+    if (!packageName?.startsWith("@tokagentos/")) {
       continue;
     }
 
@@ -582,7 +582,7 @@ export function getPublishedTokagentPackageSpecs(repoRoot = DEFAULT_REPO_ROOT) {
 
     for (const [packageName, version] of Object.entries(dependencyGroup)) {
       if (
-        !packageName.startsWith("@elizaos/") ||
+        !packageName.startsWith("@tokagentos/") ||
         typeof version !== "string" ||
         version.startsWith("workspace:")
       ) {
@@ -627,7 +627,7 @@ export function ensurePublishedTokagentPackageLinks(repoRoot = DEFAULT_REPO_ROOT
 
   if (linkedEntries > 0) {
     console.log(
-      `[setup-upstreams] Linked ${linkedEntries} published @elizaos package ${linkedEntries === 1 ? "entry" : "entries"}`,
+      `[setup-upstreams] Linked ${linkedEntries} published @tokagentos package ${linkedEntries === 1 ? "entry" : "entries"}`,
     );
   }
 
@@ -726,7 +726,7 @@ export async function ensurePluginBuildOutputs(
 ) {
   for (const packageDir of discoverPluginPackageDirs(pluginsRoot)) {
     const packageJson = readPackageJson(packageDir);
-    if (!packageJson?.name?.startsWith("@elizaos/")) {
+    if (!packageJson?.name?.startsWith("@tokagentos/")) {
       continue;
     }
 
@@ -799,11 +799,11 @@ export async function setupUpstreams(repoRoot = DEFAULT_REPO_ROOT) {
 
   if (updatedLinks === 0) {
     console.log(
-      "[setup-upstreams] Repo-local @elizaos package links already up to date",
+      "[setup-upstreams] Repo-local @tokagentos package links already up to date",
     );
   } else {
     console.log(
-      `[setup-upstreams] Linked ${updatedLinks} repo-local @elizaos package ${updatedLinks === 1 ? "entry" : "entries"}`,
+      `[setup-upstreams] Linked ${updatedLinks} repo-local @tokagentos package ${updatedLinks === 1 ? "entry" : "entries"}`,
     );
   }
 

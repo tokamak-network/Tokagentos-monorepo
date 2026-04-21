@@ -250,7 +250,7 @@ export function normalizeRepositoryUrl(repository) {
 }
 
 function deriveRepositoryUrl(npmName, dirName) {
-  if (!npmName?.startsWith("@elizaai/") && !npmName?.startsWith("@elizaos/")) {
+  if (!npmName?.startsWith("@elizaai/") && !npmName?.startsWith("@tokagentos/")) {
     return undefined;
   }
   if (!dirName?.startsWith("plugin-")) return undefined;
@@ -761,16 +761,16 @@ async function main() {
 
   const entries = [];
 
-  // Registry format: { registry: { "@elizaos/plugin-xxx": { ... } } }
+  // Registry format: { registry: { "@tokagentos/plugin-xxx": { ... } } }
   const packages = registry.registry || {};
   const publishedPackageMetadata = await fetchPublishedPackageManifestMap(
     Object.entries(packages)
       .filter(
         ([npmName, pkgInfo]) =>
-          npmName.startsWith("@elizaos/plugin-") &&
+          npmName.startsWith("@tokagentos/plugin-") &&
           pkgInfo.supports?.v2 &&
           !NATIVE_RUNTIME_FEATURE_PLUGIN_IDS.has(
-            npmName.replace("@elizaos/plugin-", ""),
+            npmName.replace("@tokagentos/plugin-", ""),
           ),
       )
       .map(([npmName, pkgInfo]) => ({
@@ -780,13 +780,13 @@ async function main() {
   );
 
   for (const [npmName, pkgInfo] of Object.entries(packages)) {
-    // Only process @elizaos/plugin-* packages
-    if (!npmName.startsWith("@elizaos/plugin-")) continue;
+    // Only process @tokagentos/plugin-* packages
+    if (!npmName.startsWith("@tokagentos/plugin-")) continue;
 
     // Skip if no v2 support (we're using next/alpha versions)
     if (!pkgInfo.supports?.v2) continue;
 
-    const id = npmName.replace("@elizaos/plugin-", "");
+    const id = npmName.replace("@tokagentos/plugin-", "");
     if (NATIVE_RUNTIME_FEATURE_PLUGIN_IDS.has(id)) continue;
     const dirName = `plugin-${id}`;
     // Use v2 npm version (next/alpha)
@@ -903,7 +903,7 @@ async function main() {
     });
   }
 
-  // Vendored @elizaos plugins not yet in tokagentos-plugins/registry.
+  // Vendored @tokagentos plugins not yet in tokagentos-plugins/registry.
   const localAdditionsPath = path.join(
     __dirname,
     "plugin-index-local-additions.json",
@@ -917,7 +917,7 @@ async function main() {
         const id = base.id;
         if (NATIVE_RUNTIME_FEATURE_PLUGIN_IDS.has(id)) continue;
         const dirName = base.dirName || `plugin-${id}`;
-        const npmName = base.npmName || `@elizaos/plugin-${id}`;
+        const npmName = base.npmName || `@tokagentos/plugin-${id}`;
         const localMeta = readLocalPackageMetadata(dirName, npmName);
         const override = metadataOverrides[id] ?? {};
         const inferredCategory = categorize(id);

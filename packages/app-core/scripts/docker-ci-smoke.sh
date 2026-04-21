@@ -183,7 +183,7 @@ popd >/dev/null
 if [[ "${MILADY_SKIP_LOCAL_UPSTREAMS:-0}" == "1" ]]; then
   log "Skipping @tokagentos/core source build in published-only mode"
 else
-  log "Building @tokagentos/core and @elizaos/plugin-agent-orchestrator"
+  log "Building @tokagentos/core and @tokagentos/plugin-agent-orchestrator"
   pushd tokagent/packages/typescript >/dev/null
   bun run build:node
   popd >/dev/null

@@ -327,12 +327,12 @@ function resolveStealthImportFlags() {
     const pluginEntries = config.plugins?.entries;
     const openaiPluginStealth = readPluginStealthFlag(pluginEntries, [
       "openai",
-      "@elizaos/plugin-openai",
+      "@tokagentos/plugin-openai",
       "openai-codex-stealth",
     ]);
     const claudePluginStealth = readPluginStealthFlag(pluginEntries, [
       "anthropic",
-      "@elizaos/plugin-anthropic",
+      "@tokagentos/plugin-anthropic",
       "claude-code-stealth",
     ]);
 

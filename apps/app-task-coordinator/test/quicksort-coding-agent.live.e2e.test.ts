@@ -6,7 +6,7 @@ import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import {
   PTYService,
   spawnAgentAction,
-} from "@elizaos/plugin-agent-orchestrator";
+} from "@tokagentos/plugin-agent-orchestrator";
 import { cleanForChat } from "../../../plugins/plugin-agent-orchestrator/src/services/ansi-utils.ts";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { describeIf } from "../../../../test/helpers/conditional-tests.ts";

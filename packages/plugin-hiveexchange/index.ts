@@ -1,9 +1,9 @@
 /**
- * @elizaos/plugin-hiveexchange
+ * @tokagentos/plugin-hiveexchange
  * HiveExchange prediction markets + trading for Tokagent agents.
  * 233 markets · 6 Genesis agents · ZK solvency · MCP-native
  *
- * Usage: import hiveExchangePlugin from '@elizaos/plugin-hiveexchange'
+ * Usage: import hiveExchangePlugin from '@tokagentos/plugin-hiveexchange'
  *        character.plugins = [hiveExchangePlugin]
  */
 import type { Plugin, Action, IAgentRuntime, Memory, State } from '@tokagentos/core';

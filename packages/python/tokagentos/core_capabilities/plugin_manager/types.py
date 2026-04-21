@@ -173,13 +173,13 @@ class RegistryPlugin:
 PROTECTED_PLUGINS: frozenset[str] = frozenset(
     {
         "plugin-manager",
-        "@elizaos/plugin-sql",
+        "@tokagentos/plugin-sql",
         "bootstrap",
         "game-api",
         "inference",
         "autonomy",
         "knowledge",
-        "@elizaos/plugin-personality",
+        "@tokagentos/plugin-personality",
         "experience",
         "goals",
         "todo",

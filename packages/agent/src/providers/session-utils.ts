@@ -36,7 +36,7 @@ export function resolveDefaultSessionStorePath(agentId?: string): string {
 export function getSessionProviders(_options?: {
   storePath?: string;
 }): Provider[] {
-  // Session providers are not yet available in npm @elizaos/core.
+  // Session providers are not yet available in npm @tokagentos/core.
   // Return empty array to allow startup without session tracking.
   return [];
 }

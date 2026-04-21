@@ -41,7 +41,7 @@ describeIf(shouldRunRuntimeDebug)("Runtime init debug", () => {
       secrets: { ...selectedLiveProvider.env },
     });
 
-    const sqlMod = await import("@elizaos/plugin-sql");
+    const sqlMod = await import("@tokagentos/plugin-sql");
     const sqlPlugin = (sqlMod.default?.default ||
       sqlMod.default ||
       sqlMod) as Plugin;

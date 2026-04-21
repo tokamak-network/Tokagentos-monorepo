@@ -173,7 +173,7 @@ export class CoreManagerService extends Service {
 			const corePkgPath = path.resolve(
 				process.cwd(),
 				"node_modules",
-				"@elizaos",
+				"@tokagentos",
 				"core",
 				"package.json",
 			);

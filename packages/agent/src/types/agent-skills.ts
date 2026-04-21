@@ -1,7 +1,7 @@
 /**
  * Shared AgentSkillsService interface.
  *
- * Subset of the AgentSkillsService type as exposed by @elizaos/plugin-agent-skills.
+ * Subset of the AgentSkillsService type as exposed by @tokagentos/plugin-agent-skills.
  * Declared here to avoid importing the package from multiple consumers.
  */
 

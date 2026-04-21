@@ -184,7 +184,7 @@ def build_provider_keywords(
 def keywords_from_plugin_names(plugin_names: list[str]) -> list[str]:
     """Extract relevance keywords from a list of plugin names.
 
-    Strips scopes (``@elizaos/``), common prefixes (``plugin-``), and
+    Strips scopes (``@tokagentos/``), common prefixes (``plugin-``), and
     generic tokens to produce a meaningful keyword set.
     """
     seen: set[str] = set()

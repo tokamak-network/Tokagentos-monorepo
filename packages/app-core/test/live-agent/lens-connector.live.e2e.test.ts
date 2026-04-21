@@ -1,7 +1,7 @@
 /**
  * Lens Protocol Connector Validation Tests
  *
- * Comprehensive E2E tests for validating the Lens Protocol connector (@elizaos/plugin-lens).
+ * Comprehensive E2E tests for validating the Lens Protocol connector (@tokagentos/plugin-lens).
  *
  * Test Categories:
  *   1. Setup & Authentication
@@ -66,7 +66,7 @@ let lensAccessToken: string | null = null;
 const LENS_PLUGIN_IMPORT = resolveLensPluginImportSpecifier();
 const hasPlugin = LENS_PLUGIN_IMPORT !== null;
 
-// Plugin-dependent tests (need @elizaos/plugin-lens installed)
+// Plugin-dependent tests (need @tokagentos/plugin-lens installed)
 const describeIfPluginAvailable = describeIf(hasPlugin);
 
 // API-level live tests (need creds only, plugin NOT required)
@@ -970,7 +970,7 @@ describe("Lens Connector - Integration", () => {
       logger.warn("[lens-connector] Workspace not built — skipping");
       return;
     }
-    expect(mod.CONNECTOR_PLUGINS.lens).toBe("@elizaos/plugin-lens");
+    expect(mod.CONNECTOR_PLUGINS.lens).toBe("@tokagentos/plugin-lens");
   });
 
   it("Lens is mapped in CHANNEL_PLUGIN_MAP", async () => {
@@ -988,6 +988,6 @@ describe("Lens Connector - Integration", () => {
       );
       return;
     }
-    expect(mod.CHANNEL_PLUGIN_MAP.lens).toBe("@elizaos/plugin-lens");
+    expect(mod.CHANNEL_PLUGIN_MAP.lens).toBe("@tokagentos/plugin-lens");
   });
 });

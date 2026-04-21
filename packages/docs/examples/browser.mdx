@@ -82,8 +82,8 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
       {
         "imports": {
           "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
-          "@elizaos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js",
-          "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/dist/browser/index.browser.js"
+          "@tokagentos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js",
+          "@tokagentos/plugin-localdb": "../../plugins/plugin-localdb/dist/browser/index.browser.js"
         }
       }
     </script>
@@ -98,8 +98,8 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
 
     <script type="module">
       import { AgentRuntime, ModelType, stringToUuid } from "@tokagentos/core";
-      import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
-      import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
+      import { tokagentClassicPlugin } from "@tokagentos/plugin-eliza-classic";
+      import { plugin as localdbPlugin } from "@tokagentos/plugin-localdb";
 
       // Create runtime
       const runtime = new AgentRuntime({
@@ -160,8 +160,8 @@ Full React application with PGLite for in-browser PostgreSQL-compatible storage.
 ```typescript
 // tokagent-runtime.ts
 import { AgentRuntime, stringToUuid } from "@tokagentos/core";
-import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
-import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
+import { tokagentClassicPlugin } from "@tokagentos/plugin-eliza-classic";
+import { plugin as sqlPlugin } from "@tokagentos/plugin-sql";
 
 let runtime: AgentRuntime | null = null;
 
@@ -305,8 +305,8 @@ Full-stack Next.js application with server-side rendering and API routes.
 // app/api/chat/route.ts
 import { NextResponse } from "next/server";
 import { AgentRuntime } from "@tokagentos/core";
-import { openaiPlugin } from "@elizaos/plugin-openai";
-import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
+import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { plugin as sqlPlugin } from "@tokagentos/plugin-sql";
 
 let runtime: AgentRuntime | null = null;
 

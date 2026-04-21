@@ -11,27 +11,27 @@ export default defineConfig({
   resolve: {
     alias: [
       {
-        find: /^@elizaos\/app-core$/,
+        find: /^@tokagentos\/app-core$/,
         replacement: path.join(appCoreSrcRoot, "index.ts"),
       },
       {
-        find: /^@elizaos\/app-core\/(.*)$/,
+        find: /^@tokagentos\/app-core\/(.*)$/,
         replacement: path.join(appCoreSrcRoot, "$1"),
       },
       {
-        find: /^@elizaos\/app-steward$/,
+        find: /^@tokagentos\/app-steward$/,
         replacement: path.join(appStewardSrcRoot, "index.ts"),
       },
       {
-        find: /^@elizaos\/app-steward\/(.*)$/,
+        find: /^@tokagentos\/app-steward\/(.*)$/,
         replacement: path.join(appStewardSrcRoot, "$1"),
       },
       {
-        find: /^@elizaos\/shared$/,
+        find: /^@tokagentos\/shared$/,
         replacement: path.join(sharedSrcRoot, "index.ts"),
       },
       {
-        find: /^@elizaos\/shared\/(.*)$/,
+        find: /^@tokagentos\/shared\/(.*)$/,
         replacement: path.join(sharedSrcRoot, "$1"),
       },
       {

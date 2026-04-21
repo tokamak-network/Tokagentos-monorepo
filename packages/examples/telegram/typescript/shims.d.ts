@@ -1,4 +1,4 @@
-declare module "@elizaos/plugin-telegram" {
+declare module "@tokagentos/plugin-telegram" {
   import type { Plugin } from "@tokagentos/core";
 
   const telegramPlugin: Plugin;

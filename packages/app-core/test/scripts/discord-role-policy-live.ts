@@ -18,7 +18,7 @@ import {
   PTYService,
   sendToAgentAction,
   startCodingTaskAction,
-} from "@elizaos/plugin-agent-orchestrator";
+} from "@tokagentos/plugin-agent-orchestrator";
 import { v4 as uuid } from "uuid";
 import { createTestRuntime } from "../helpers/pglite-runtime";
 

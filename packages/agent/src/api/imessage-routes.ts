@@ -1,7 +1,7 @@
 /**
  * iMessage connector HTTP routes.
  *
- * Exposes the @elizaos/plugin-imessage service state through Tokagent's
+ * Exposes the @tokagentos/plugin-imessage service state through Tokagent's
  * HTTP API so downstream UI layers (the dashboard, a future CLI, third-
  * party integrations) can read and write against the macOS Messages.app
  * world without each client having to go straight to chat.db or to
@@ -38,7 +38,7 @@ import type { RouteHelpers, RouteRequestMeta } from "./route-helpers.js";
  * Narrow structural type for the IMessageService methods we call from
  * this route file. Declared here rather than imported from the plugin
  * package so Tokagent doesn't take a direct build-time dependency on
- * @elizaos/plugin-imessage — the plugin is loaded dynamically at
+ * @tokagentos/plugin-imessage — the plugin is loaded dynamically at
  * runtime via NODE_PATH and this file stays compile-safe even when the
  * plugin is absent.
  */

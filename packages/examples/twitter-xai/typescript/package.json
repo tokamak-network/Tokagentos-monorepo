@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-xai-x",
+  "name": "@tokagentos/example-xai-x",
   "version": "2.0.0-alpha",
   "description": "X (Twitter) agent using Grok (xAI) + X API via tokagentOS",
   "type": "module",
@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-sql": "alpha",
-    "@elizaos/plugin-xai": "alpha",
+    "@tokagentos/plugin-sql": "alpha",
+    "@tokagentos/plugin-xai": "alpha",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {

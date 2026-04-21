@@ -4,7 +4,7 @@ import { isStewardEvmBridgeActive } from "../services/steward-evm-bridge";
 import { getWalletAddresses } from "./wallet";
 import { resolveWalletRpcReadiness } from "./wallet-rpc";
 
-export const EVM_PLUGIN_PACKAGE = "@elizaos/plugin-evm";
+export const EVM_PLUGIN_PACKAGE = "@tokagentos/plugin-evm";
 
 export interface WalletCapabilityStatus {
   walletSource: "local" | "managed" | "none";
@@ -44,7 +44,7 @@ export function isPluginLoadedByName(
   pluginName: string,
 ): boolean {
   if (!runtime || !Array.isArray(runtime.plugins)) return false;
-  const shortId = pluginName.replace("@elizaos/plugin-", "");
+  const shortId = pluginName.replace("@tokagentos/plugin-", "");
   const packageSuffix = `plugin-${shortId}`;
   return runtime.plugins.some((plugin) => {
     const name = typeof plugin?.name === "string" ? plugin.name : "";

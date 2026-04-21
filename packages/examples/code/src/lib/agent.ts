@@ -1,14 +1,14 @@
 import "dotenv/config";
 import { AgentRuntime, type Character, type Plugin } from "@tokagentos/core";
-import anthropicPlugin from "@elizaos/plugin-anthropic";
-import { coderPlugin } from "@elizaos/plugin-code";
-import goalsPlugin from "@elizaos/plugin-goals";
-import mcpPlugin from "@elizaos/plugin-mcp";
-import openaiPlugin from "@elizaos/plugin-openai";
-import { shellPlugin } from "@elizaos/plugin-shell";
-import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
-import todoPlugin from "@elizaos/plugin-todo";
-import trajectoryLoggerPlugin from "@elizaos/plugin-trajectory-logger";
+import anthropicPlugin from "@tokagentos/plugin-anthropic";
+import { coderPlugin } from "@tokagentos/plugin-code";
+import goalsPlugin from "@tokagentos/plugin-goals";
+import mcpPlugin from "@tokagentos/plugin-mcp";
+import openaiPlugin from "@tokagentos/plugin-openai";
+import { shellPlugin } from "@tokagentos/plugin-shell";
+import { plugin as sqlPlugin } from "@tokagentos/plugin-sql";
+import todoPlugin from "@tokagentos/plugin-todo";
+import trajectoryLoggerPlugin from "@tokagentos/plugin-trajectory-logger";
 import { resolveModelProvider } from "./model-provider.js";
 import { CODE_ASSISTANT_SYSTEM_PROMPT } from "./prompts.js";
 
@@ -66,7 +66,7 @@ The current working directory is dynamically provided.`,
   }
 };
 
-import { agentOrchestratorPlugin } from "@elizaos/plugin-agent-orchestrator";
+import { agentOrchestratorPlugin } from "@tokagentos/plugin-agent-orchestrator";
 
 /**
  * Initialize the Tokagent runtime with coding capabilities

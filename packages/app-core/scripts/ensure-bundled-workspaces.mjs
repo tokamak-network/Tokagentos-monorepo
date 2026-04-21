@@ -12,7 +12,7 @@ const DEFAULT_REPO_ROOT = resolveRepoRootFromImportMeta(import.meta.url);
 
 export const BUNDLED_WORKSPACE_BUILDS = [
   {
-    label: "@elizaos/plugin-agent-skills",
+    label: "@tokagentos/plugin-agent-skills",
     cwd: path.join("plugins", "plugin-agent-skills", "typescript"),
     manifest: path.join(
       "plugins",

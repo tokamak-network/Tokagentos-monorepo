@@ -8,7 +8,7 @@ describe("analyzePluginStateDrift", () => {
       [
         {
           id: "discord",
-          npmName: "@elizaos/plugin-discord",
+          npmName: "@tokagentos/plugin-discord",
           category: "connector",
           enabled: true,
           isActive: true,
@@ -22,7 +22,7 @@ describe("analyzePluginStateDrift", () => {
       {
         discord: { enabled: true },
       },
-      new Set(["@elizaos/plugin-discord", "discord"]),
+      new Set(["@tokagentos/plugin-discord", "discord"]),
     );
 
     expect(report.summary.withDrift).toBe(0);
@@ -38,7 +38,7 @@ describe("analyzePluginStateDrift", () => {
       [
         {
           id: "discord",
-          npmName: "@elizaos/plugin-discord",
+          npmName: "@tokagentos/plugin-discord",
           category: "connector",
           enabled: true,
           isActive: true,
@@ -52,7 +52,7 @@ describe("analyzePluginStateDrift", () => {
       {
         discord: { enabled: true },
       },
-      new Set(["@elizaos/plugin-discord", "discord"]),
+      new Set(["@tokagentos/plugin-discord", "discord"]),
     );
 
     expect(report.summary.withDrift).toBe(1);
@@ -65,7 +65,7 @@ describe("analyzePluginStateDrift", () => {
       [
         {
           id: "pdf",
-          npmName: "@elizaos/plugin-pdf",
+          npmName: "@tokagentos/plugin-pdf",
           category: "other",
           enabled: false,
           isActive: false,
@@ -88,7 +88,7 @@ describe("analyzePluginStateDrift", () => {
       [
         {
           id: "discord",
-          npmName: "@elizaos/plugin-discord",
+          npmName: "@tokagentos/plugin-discord",
           category: "connector",
           enabled: false,
           isActive: false,
@@ -116,7 +116,7 @@ describe("analyzePluginStateDrift", () => {
       [
         {
           id: "discord",
-          npmName: "@elizaos/plugin-discord",
+          npmName: "@tokagentos/plugin-discord",
           category: "connector",
           enabled: false,
           isActive: true,

@@ -3,7 +3,7 @@
 import { CONNECTOR_IDS as _upstreamConnectorIds } from "@tokagentos/agent/config";
 
 const TOKAGENT_COMPAT_CONNECTOR_IDS = ["telegramAccount"] as const;
-/** App-local connectors not present in upstream @elizaos/agent. */
+/** App-local connectors not present in upstream @tokagentos/agent. */
 export const TOKAGENT_LOCAL_CONNECTOR_IDS = ["wechat"] as const;
 
 export const CONNECTOR_IDS = Array.from(

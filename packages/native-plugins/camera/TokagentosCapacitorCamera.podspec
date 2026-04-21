@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
   s.summary = package['description']
   s.license = package['license'] || { :type => 'MIT' }
   s.homepage = 'https://tokagentos.ai'
-  s.authors = { 'tokagentOS' => 'dev@elizaos.ai' }
+  s.authors = { 'tokagentOS' => 'dev@tokagentos.ai' }
   s.source = { :git => 'https://github.com/tokagentOS/tokagent.git', :tag => s.version.to_s }
   s.source_files = 'ios/Sources/**/*.{swift,h,m}'
   s.ios.deployment_target = '15.0'

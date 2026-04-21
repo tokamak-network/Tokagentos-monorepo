@@ -109,19 +109,19 @@ def build_character_plugins(env: dict[str, str | None] | None = None) -> list[st
             return value.strip() if isinstance(value, str) else value
         return None
 
-    plugins: list[str] = ["@elizaos/plugin-sql"]
+    plugins: list[str] = ["@tokagentos/plugin-sql"]
     if get_env("ANTHROPIC_API_KEY"):
-        plugins.append("@elizaos/plugin-anthropic")
+        plugins.append("@tokagentos/plugin-anthropic")
     if get_env("OPENROUTER_API_KEY"):
-        plugins.append("@elizaos/plugin-openrouter")
+        plugins.append("@tokagentos/plugin-openrouter")
 
     # Embedding-capable plugins
     if get_env("OPENAI_API_KEY"):
-        plugins.append("@elizaos/plugin-openai")
+        plugins.append("@tokagentos/plugin-openai")
     if get_env("GOOGLE_GENERATIVE_AI_API_KEY"):
-        plugins.append("@elizaos/plugin-google-genai")
+        plugins.append("@tokagentos/plugin-google-genai")
     if get_env("DISCORD_API_TOKEN"):
-        plugins.append("@elizaos/plugin-discord")
+        plugins.append("@tokagentos/plugin-discord")
     if all(
         get_env(key)
         for key in [
@@ -131,9 +131,9 @@ def build_character_plugins(env: dict[str, str | None] | None = None) -> list[st
             "X_ACCESS_TOKEN_SECRET",
         ]
     ):
-        plugins.append("@elizaos/plugin-x")
+        plugins.append("@tokagentos/plugin-x")
     if get_env("TELEGRAM_BOT_TOKEN"):
-        plugins.append("@elizaos/plugin-telegram")
+        plugins.append("@tokagentos/plugin-telegram")
     has_llm_provider = any(
         get_env(key)
         for key in [
@@ -144,6 +144,6 @@ def build_character_plugins(env: dict[str, str | None] | None = None) -> list[st
         ]
     )
     if not has_llm_provider:
-        plugins.append("@elizaos/plugin-ollama")
+        plugins.append("@tokagentos/plugin-ollama")
 
     return plugins

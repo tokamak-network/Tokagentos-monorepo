@@ -297,7 +297,7 @@ export interface CreateRuntimesOptions {
  * **Adapter discovery:** The first resolved plugin that defines an adapter factory
  * (Plugin.adapter) is used. If options.adapter is set, that overrides and is used for
  * all characters. WHY: One adapter per character is the common case; shared override
- * supports custom pooling. Plugins that only attach the DB in `init` (some `@elizaos/plugin-sql`
+ * supports custom pooling. Plugins that only attach the DB in `init` (some `@tokagentos/plugin-sql`
  * builds) expose no `adapter` factory — pass `options.adapter` from `createDatabaseAdapter`
  * (or equivalent) instead.
  *

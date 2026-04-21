@@ -54,7 +54,7 @@ pub fn merge_character_defaults(mut character: Character) -> Character {
 
 /// Build character plugins based on environment variables
 pub fn build_character_plugins(env: &HashMap<String, String>) -> Vec<String> {
-    let mut plugins: Vec<String> = vec!["@elizaos/plugin-sql".to_string()];
+    let mut plugins: Vec<String> = vec!["@tokagentos/plugin-sql".to_string()];
 
     // Text-only plugins (no embedding support)
     if env
@@ -62,14 +62,14 @@ pub fn build_character_plugins(env: &HashMap<String, String>) -> Vec<String> {
         .map(|s| !s.trim().is_empty())
         .unwrap_or(false)
     {
-        plugins.push("@elizaos/plugin-anthropic".to_string());
+        plugins.push("@tokagentos/plugin-anthropic".to_string());
     }
     if env
         .get("OPENROUTER_API_KEY")
         .map(|s| !s.trim().is_empty())
         .unwrap_or(false)
     {
-        plugins.push("@elizaos/plugin-openrouter".to_string());
+        plugins.push("@tokagentos/plugin-openrouter".to_string());
     }
 
     // Embedding-capable plugins (before platform plugins)
@@ -78,14 +78,14 @@ pub fn build_character_plugins(env: &HashMap<String, String>) -> Vec<String> {
         .map(|s| !s.trim().is_empty())
         .unwrap_or(false)
     {
-        plugins.push("@elizaos/plugin-openai".to_string());
+        plugins.push("@tokagentos/plugin-openai".to_string());
     }
     if env
         .get("GOOGLE_GENERATIVE_AI_API_KEY")
         .map(|s| !s.trim().is_empty())
         .unwrap_or(false)
     {
-        plugins.push("@elizaos/plugin-google-genai".to_string());
+        plugins.push("@tokagentos/plugin-google-genai".to_string());
     }
 
     // Platform plugins
@@ -94,17 +94,17 @@ pub fn build_character_plugins(env: &HashMap<String, String>) -> Vec<String> {
         .map(|s| !s.trim().is_empty())
         .unwrap_or(false)
     {
-        plugins.push("@elizaos/plugin-discord".to_string());
+        plugins.push("@tokagentos/plugin-discord".to_string());
     }
     if has_x_config(env) {
-        plugins.push("@elizaos/plugin-x".to_string());
+        plugins.push("@tokagentos/plugin-x".to_string());
     }
     if env
         .get("TELEGRAM_BOT_TOKEN")
         .map(|s| !s.trim().is_empty())
         .unwrap_or(false)
     {
-        plugins.push("@elizaos/plugin-telegram".to_string());
+        plugins.push("@tokagentos/plugin-telegram".to_string());
     }
 
     // BasicCapabilities plugin is now part of @tokagentos/core and loaded automatically
@@ -129,7 +129,7 @@ pub fn build_character_plugins(env: &HashMap<String, String>) -> Vec<String> {
             .unwrap_or(false);
 
     if !has_llm_provider {
-        plugins.push("@elizaos/plugin-ollama".to_string());
+        plugins.push("@tokagentos/plugin-ollama".to_string());
     }
 
     plugins
@@ -225,8 +225,8 @@ mod tests {
         let plugins = build_character_plugins(&env);
 
         // Should include sql and ollama fallback; basic_capabilities is now part of core
-        assert!(plugins.contains(&"@elizaos/plugin-sql".to_string()));
-        assert!(plugins.contains(&"@elizaos/plugin-ollama".to_string()));
+        assert!(plugins.contains(&"@tokagentos/plugin-sql".to_string()));
+        assert!(plugins.contains(&"@tokagentos/plugin-ollama".to_string()));
     }
 
     #[test]
@@ -236,7 +236,7 @@ mod tests {
 
         let plugins = build_character_plugins(&env);
 
-        assert!(plugins.contains(&"@elizaos/plugin-openai".to_string()));
-        assert!(!plugins.contains(&"@elizaos/plugin-ollama".to_string())); // No fallback
+        assert!(plugins.contains(&"@tokagentos/plugin-openai".to_string()));
+        assert!(!plugins.contains(&"@tokagentos/plugin-ollama".to_string())); // No fallback
     }
 }

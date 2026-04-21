@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-lp-manager",
+  "name": "@tokagentos/example-lp-manager",
   "version": "2.0.0-alpha",
   "type": "module",
   "private": true,
@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-lp-manager": "alpha",
-    "@elizaos/plugin-sql": "alpha"
+    "@tokagentos/plugin-lp-manager": "alpha",
+    "@tokagentos/plugin-sql": "alpha"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

@@ -2,7 +2,7 @@ import {
   defaultTelegramAccountDeviceModel,
   defaultTelegramAccountSystemVersion,
   loadTelegramAccountSessionString,
-} from "@elizaos/plugin-telegram/account-auth-service";
+} from "@tokagentos/plugin-telegram/account-auth-service";
 import type {
   LifeOpsTelegramDialogSummary,
   VerifyLifeOpsTelegramConnectorResponse,

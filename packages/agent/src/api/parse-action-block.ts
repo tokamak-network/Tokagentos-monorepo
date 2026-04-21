@@ -1,6 +1,6 @@
 /**
  * Local stub for CoordinationLLMResponse — removed from
- * @elizaos/plugin-agent-orchestrator 2.x.
+ * @tokagentos/plugin-agent-orchestrator 2.x.
  */
 export interface CoordinationLLMResponse {
   action: string;

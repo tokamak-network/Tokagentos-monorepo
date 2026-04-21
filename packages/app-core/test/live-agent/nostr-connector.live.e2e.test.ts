@@ -1,7 +1,7 @@
 /**
  * Nostr Connector Validation Tests
  *
- * Comprehensive E2E tests for validating the Nostr connector (@elizaos/plugin-nostr).
+ * Comprehensive E2E tests for validating the Nostr connector (@tokagentos/plugin-nostr).
  *
  * Test Categories:
  *   1. Setup & Authentication
@@ -63,7 +63,7 @@ const runLiveWriteTests = runLiveTests && hasValidNsec;
 const NOSTR_PLUGIN_IMPORT = resolveNostrPluginImportSpecifier();
 const hasPlugin = NOSTR_PLUGIN_IMPORT !== null;
 
-// Plugin-dependent tests (need @elizaos/plugin-nostr installed)
+// Plugin-dependent tests (need @tokagentos/plugin-nostr installed)
 const describeIfPluginAvailable = describeIf(hasPlugin);
 
 // API-level live tests (need creds + TOKAGENT_LIVE_TEST=1)
@@ -307,7 +307,7 @@ describe("Nostr Connector - Integration", () => {
       logger.warn("[nostr-connector] Workspace not built — skipping");
       return;
     }
-    expect(mod.CONNECTOR_PLUGINS.nostr).toBe("@elizaos/plugin-nostr");
+    expect(mod.CONNECTOR_PLUGINS.nostr).toBe("@tokagentos/plugin-nostr");
   });
 
   it("Nostr is mapped in CHANNEL_PLUGIN_MAP", async () => {
@@ -318,6 +318,6 @@ describe("Nostr Connector - Integration", () => {
       logger.warn("[nostr-connector] Workspace not built — skipping");
       return;
     }
-    expect(mod.CHANNEL_PLUGIN_MAP.nostr).toBe("@elizaos/plugin-nostr");
+    expect(mod.CHANNEL_PLUGIN_MAP.nostr).toBe("@tokagentos/plugin-nostr");
   });
 });

@@ -20,14 +20,14 @@ declare module "electrobun/view" {
   }
 }
 
-declare module "@elizaos/plugin-groq" {
+declare module "@tokagentos/plugin-groq" {
   const groqPlugin: unknown;
   export default groqPlugin;
 }
 
-declare module "@elizaos/plugin-edge-tts";
-declare module "@elizaos/plugin-edge-tts/node";
-declare module "@elizaos/signal-native";
+declare module "@tokagentos/plugin-edge-tts";
+declare module "@tokagentos/plugin-edge-tts/node";
+declare module "@tokagentos/signal-native";
 
 declare module "three/examples/jsm/libs/meshopt_decoder.module.js" {
   export const MeshoptDecoder: {

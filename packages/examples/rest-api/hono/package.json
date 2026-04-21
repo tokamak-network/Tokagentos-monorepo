@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-rest-api-hono",
+  "name": "@tokagentos/example-rest-api-hono",
   "version": "2.0.0-alpha",
   "private": true,
   "type": "module",
@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-openai": "alpha",
-    "@elizaos/plugin-sql": "alpha",
-    "@elizaos/plugin-eliza-classic": "alpha",
+    "@tokagentos/plugin-openai": "alpha",
+    "@tokagentos/plugin-sql": "alpha",
+    "@tokagentos/plugin-eliza-classic": "alpha",
     "hono": "^4.6.0",
     "uuid": "^13.0.0"
   },

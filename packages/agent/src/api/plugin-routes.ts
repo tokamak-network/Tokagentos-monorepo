@@ -30,12 +30,12 @@ import {
   validatePluginConfig,
 } from "./plugin-validation.js";
 
-/** Workspace packages use `@elizaos/plugin-*` or `@tokagentos/app-*` — normalize list/toggle ids. */
+/** Workspace packages use `@tokagentos/plugin-*` or `@tokagentos/app-*` — normalize list/toggle ids. */
 function optionalPluginListId(npmName: string): string {
   if (npmName.startsWith("@tokagentos/app-")) {
-    return npmName.slice("@elizaos/".length);
+    return npmName.slice("@tokagentos/".length);
   }
-  return npmName.replace("@elizaos/plugin-", "");
+  return npmName.replace("@tokagentos/plugin-", "");
 }
 
 // ---------------------------------------------------------------------------
@@ -383,7 +383,7 @@ export async function handlePluginRoutes(
       }
 
       const suffix = `plugin-${plugin.id}`;
-      const packageName = `@elizaos/plugin-${plugin.id}`;
+      const packageName = `@tokagentos/plugin-${plugin.id}`;
       const npmPkgName = plugin.npmName;
       const isLoaded =
         loadedNames.length > 0 &&
@@ -409,7 +409,7 @@ export async function handlePluginRoutes(
         const installs = freshConfig.plugins?.installs as
           | Record<string, unknown>
           | undefined;
-        const packageName = `@elizaos/plugin-${plugin.id}`;
+        const packageName = `@tokagentos/plugin-${plugin.id}`;
         const hasInstallRecord =
           installs?.[packageName] || installs?.[plugin.id];
         if (hasInstallRecord) {
@@ -703,7 +703,7 @@ export async function handlePluginRoutes(
 
     // Update config.plugins.entries so the runtime loads/skips this plugin
     if (body.enabled !== undefined) {
-      const packageName = `@elizaos/plugin-${pluginId}`;
+      const packageName = `@tokagentos/plugin-${pluginId}`;
 
       if (!state.config.plugins) {
         state.config.plugins = {};
@@ -814,7 +814,7 @@ export async function handlePluginRoutes(
       const loadedNames = state.runtime.plugins.map((p) => p.name);
       for (const plugin of allPlugins) {
         const suffix = `plugin-${plugin.id}`;
-        const packageName = `@elizaos/plugin-${plugin.id}`;
+        const packageName = `@tokagentos/plugin-${plugin.id}`;
         plugin.enabled = loadedNames.some(
           (name) =>
             name === plugin.id ||
@@ -1561,8 +1561,8 @@ export async function handlePluginRoutes(
 
     const isLoaded = (npmName: string): boolean => {
       if (loadedNames.has(npmName)) return true;
-      // @elizaos/plugin-foo -> plugin-foo
-      const withoutScope = npmName.replace("@elizaos/", "");
+      // @tokagentos/plugin-foo -> plugin-foo
+      const withoutScope = npmName.replace("@tokagentos/", "");
       if (loadedNames.has(withoutScope)) return true;
       // plugin-foo -> foo
       const shortId = withoutScope.replace("plugin-", "");

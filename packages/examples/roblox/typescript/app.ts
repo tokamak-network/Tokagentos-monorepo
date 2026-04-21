@@ -12,7 +12,7 @@ import {
   type UUID,
 } from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
-import type { RobloxService } from "@elizaos/plugin-roblox";
+import type { RobloxService } from "@tokagentos/plugin-roblox";
 
 const ROBLOX_SERVICE_NAME = "roblox";
 

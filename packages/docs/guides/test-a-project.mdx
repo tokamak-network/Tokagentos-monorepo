@@ -55,8 +55,8 @@ describe("multi-agent configuration", () => {
   });
 
   it("includes ElevenLabs plugin in both agents", () => {
-    expect(shakespeare.plugins).toContain("@elizaos/plugin-elevenlabs");
-    expect(hemingway.plugins).toContain("@elizaos/plugin-elevenlabs");
+    expect(shakespeare.plugins).toContain("@tokagentos/plugin-elevenlabs");
+    expect(hemingway.plugins).toContain("@tokagentos/plugin-elevenlabs");
   });
 
   it("voice is enabled for Discord", () => {

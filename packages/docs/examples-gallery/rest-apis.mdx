@@ -140,7 +140,7 @@ Send a message.
 ```typescript
 import express from "express";
 import { AgentRuntime, ModelType } from "@tokagentos/core";
-import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
+import { tokagentClassicPlugin } from "@tokagentos/plugin-eliza-classic";
 
 const app = express();
 app.use(express.json());
@@ -252,8 +252,8 @@ Replace the classic plugin with OpenAI for real LLM responses:
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import { openaiPlugin } from '@elizaos/plugin-openai';
-import { plugin as sqlPlugin } from '@elizaos/plugin-sql';
+import { openaiPlugin } from '@tokagentos/plugin-openai';
+import { plugin as sqlPlugin } from '@tokagentos/plugin-sql';
 
 const runtime = new AgentRuntime({
 character,

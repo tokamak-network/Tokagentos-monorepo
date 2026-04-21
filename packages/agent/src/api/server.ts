@@ -31,7 +31,7 @@ const MAX_BODY_BYTES = 1024 * 1024; // 1 MB
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
-// Discord local routes extracted to @elizaos/plugin-discord (setup-routes.ts)
+// Discord local routes extracted to @tokagentos/plugin-discord (setup-routes.ts)
 import { DropService, handleDropRoutes } from "@tokagentos/app-tokagentmaker";
 import { handleKnowledgeRoutes } from "@tokagentos/app-knowledge/routes";
 import { TxService } from "@tokagentos/app-steward/api/tx-service";
@@ -125,7 +125,7 @@ import {
   ensurePrivyWalletsForCustomUser,
   isPrivyWalletProvisioningEnabled,
 } from "../services/privy-wallets.js";
-// signal-pairing: SignalPairingSession, sanitizeAccountId, signalLogout extracted to @elizaos/plugin-signal
+// signal-pairing: SignalPairingSession, sanitizeAccountId, signalLogout extracted to @tokagentos/plugin-signal
 import { signalAuthExists } from "../services/signal-pairing.js";
 import { streamManager } from "../services/stream-manager.js";
 import {
@@ -135,8 +135,8 @@ import {
   telegramAccountAuthStateExists,
   telegramAccountSessionExists,
 } from "../services/telegram-account-auth.js";
-// Telegram account auth: moved to @elizaos/plugin-telegram (account-setup-routes + account-auth-service).
-// WhatsApp pairing: route handlers moved to @elizaos/plugin-whatsapp.
+// Telegram account auth: moved to @tokagentos/plugin-telegram (account-setup-routes + account-auth-service).
+// WhatsApp pairing: route handlers moved to @tokagentos/plugin-whatsapp.
 import {
   executeTriggerTask,
   getTriggerHealthSnapshot,
@@ -205,7 +205,7 @@ import {
   sendJson,
   sendJsonError,
 } from "./http-helpers.js";
-// iMessage routes extracted to @elizaos/plugin-imessage setup-routes.ts (Plugin.routes)
+// iMessage routes extracted to @tokagentos/plugin-imessage setup-routes.ts (Plugin.routes)
 // import { handleIMessageRoute } from "./imessage-routes.js";
 import { handleInboxRoute } from "./inbox-routes.js";
 import { handleMcpRoutes } from "./mcp-routes.js";
@@ -238,7 +238,7 @@ import {
   patchTouchesProviderSelection,
   resolveAppUserName,
 } from "./server-helpers.js";
-// signal-routes: handleSignalRoute dispatch extracted to @elizaos/plugin-signal (setup-routes.ts)
+// signal-routes: handleSignalRoute dispatch extracted to @tokagentos/plugin-signal (setup-routes.ts)
 import { applySignalQrOverride } from "./signal-routes.js";
 import { discoverSkills } from "./skill-discovery-helpers.js";
 import { handleSkillsRoutes } from "./skills-routes.js";
@@ -265,7 +265,7 @@ import {
 } from "./wallet-capability.js";
 import { handleWalletRoutes } from "./wallet-routes.js";
 import { resolveWalletRpcReadiness } from "./wallet-rpc.js";
-// handleWhatsAppRoute moved to @elizaos/plugin-whatsapp setup-routes.
+// handleWhatsAppRoute moved to @tokagentos/plugin-whatsapp setup-routes.
 // applyWhatsAppQrOverride is still used by plugin-status routes.
 import { applyWhatsAppQrOverride } from "./whatsapp-routes.js";
 import { handleWorkbenchRoutes } from "./workbench-routes.js";
@@ -359,7 +359,7 @@ const nodeRequire = createRequire(import.meta.url);
 // any consumer reads the binding.
 let agentOrchestratorCompat: unknown = null;
 try {
-  agentOrchestratorCompat = await import("@elizaos/plugin-agent-orchestrator");
+  agentOrchestratorCompat = await import("@tokagentos/plugin-agent-orchestrator");
 } catch {
   agentOrchestratorCompat = null;
 }
@@ -1129,7 +1129,7 @@ type TrainingServiceCtor = new (options: {
 async function resolveTrainingServiceCtor(): Promise<TrainingServiceCtor | null> {
   const candidates = [
     "../services/training-service",
-    "@elizaos/plugin-training",
+    "@tokagentos/plugin-training",
   ] as const;
 
   for (const specifier of candidates) {
@@ -3124,7 +3124,7 @@ async function handleRequest(
   }
 
   // ── NFA routes (/api/nfa/*) ─────────────────────────────────────────
-  // Extracted — will move to @elizaos/plugin-bnb-identity (Plugin.routes)
+  // Extracted — will move to @tokagentos/plugin-bnb-identity (Plugin.routes)
   // when the plugin directory is created. Until then, NFA routes are
   // served inline from nfa-routes.ts if needed, or disabled.
 
@@ -3460,7 +3460,7 @@ async function handleRequest(
   }
 
   // ── WhatsApp routes (/api/whatsapp/*) ────────────────────────────────────
-  // Moved to @elizaos/plugin-whatsapp setup-routes.ts (registered via Plugin.routes).
+  // Moved to @tokagentos/plugin-whatsapp setup-routes.ts (registered via Plugin.routes).
 
   // ── Unified inbox routes (/api/inbox/*) ───────────────────────────────
   // Cross-channel read-only feed that merges connector messages
@@ -3498,7 +3498,7 @@ async function handleRequest(
   }
 
   // ── iMessage routes (/api/imessage/*) ─────────────────────────────────
-  // Extracted to @elizaos/plugin-imessage setup-routes.ts (Plugin.routes).
+  // Extracted to @tokagentos/plugin-imessage setup-routes.ts (Plugin.routes).
   // The plugin registers rawPath routes that serve the same legacy paths.
 
   // ── Cloud relay status (/api/cloud/relay-status) ──────────────────────
@@ -3523,7 +3523,7 @@ async function handleRequest(
     if (handled) return;
   }
 
-  // Telegram setup routes: now handled by @elizaos/plugin-telegram via
+  // Telegram setup routes: now handled by @tokagentos/plugin-telegram via
   // runtime plugin routes (rawPath: true). See plugin-telegram/src/setup-routes.ts.
 
   // ── Telegram account routes (/api/telegram-account/*) ────────────────
@@ -3567,9 +3567,9 @@ async function handleRequest(
     if (handled) return;
   }
 
-  // ── Discord Local routes (/api/discord-local/*) — extracted to @elizaos/plugin-discord (setup-routes.ts) ──
+  // ── Discord Local routes (/api/discord-local/*) — extracted to @tokagentos/plugin-discord (setup-routes.ts) ──
 
-  // ── Signal routes (/api/signal/*) — extracted to @elizaos/plugin-signal (setup-routes.ts) ──
+  // ── Signal routes (/api/signal/*) — extracted to @tokagentos/plugin-signal (setup-routes.ts) ──
 
   // ── Restart ──────────────────────────────────────────────────────────
   if (method === "POST" && pathname === "/api/restart") {
@@ -3973,7 +3973,7 @@ async function handleRequest(
       );
     }
 
-    // Prefer @elizaos/plugin-agent-orchestrator route handler so the full coordinator
+    // Prefer @tokagentos/plugin-agent-orchestrator route handler so the full coordinator
     // contract is served from the embedded runtime (replaces the old plugin).
     if (!handled)
       try {
@@ -4914,7 +4914,7 @@ export async function startApiServer(opts?: {
         // Twitch
         if (isStreamingDestinationConfigured("twitch", streaming?.twitch)) {
           try {
-            const twitchMod = "@elizaos/plugin-twitch-streaming";
+            const twitchMod = "@tokagentos/plugin-twitch-streaming";
             const { createTwitchDestination } = await import(twitchMod);
             destinations.set(
               "twitch",
@@ -4932,7 +4932,7 @@ export async function startApiServer(opts?: {
         // YouTube
         if (isStreamingDestinationConfigured("youtube", streaming?.youtube)) {
           try {
-            const youtubeMod = "@elizaos/plugin-youtube-streaming";
+            const youtubeMod = "@tokagentos/plugin-youtube-streaming";
             const { createYoutubeDestination } = await import(youtubeMod);
             destinations.set(
               "youtube",
@@ -4950,7 +4950,7 @@ export async function startApiServer(opts?: {
         // pump.fun
         if (isStreamingDestinationConfigured("pumpfun", streaming?.pumpfun)) {
           try {
-            const pumpfunMod = "@elizaos/plugin-pumpfun-streaming";
+            const pumpfunMod = "@tokagentos/plugin-pumpfun-streaming";
             const { createPumpfunDestination } = await import(pumpfunMod);
             destinations.set(
               "pumpfun",
@@ -4968,7 +4968,7 @@ export async function startApiServer(opts?: {
         // X (Twitter)
         if (isStreamingDestinationConfigured("x", streaming?.x)) {
           try {
-            const xMod = "@elizaos/plugin-x-streaming";
+            const xMod = "@tokagentos/plugin-x-streaming";
             const { createXStreamDestination } = await import(xMod);
             destinations.set(
               "x",

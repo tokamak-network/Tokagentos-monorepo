@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/example-game-of-life",
+  "name": "@tokagentos/example-game-of-life",
   "version": "2.0.0-alpha",
   "description": "Agentic Game of Life - multi-agent evolution simulation with self-replicating agents",
   "type": "module",
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@elizaos/plugin-sql": "alpha",
+    "@tokagentos/plugin-sql": "alpha",
     "@clack/prompts": "^0.11.0"
   },
   "devDependencies": {

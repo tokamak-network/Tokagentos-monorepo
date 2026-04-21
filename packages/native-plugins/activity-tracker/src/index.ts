@@ -82,7 +82,7 @@ export function startActivityCollector(
   const binary = options.binaryPath ?? defaultBinaryPath();
   if (!existsSync(binary)) {
     throw new Error(
-      `[activity-tracker] Collector binary not found at ${binary}. Run 'bun run build:swift' in @elizaos/native-activity-tracker.`,
+      `[activity-tracker] Collector binary not found at ${binary}. Run 'bun run build:swift' in @tokagentos/native-activity-tracker.`,
     );
   }
 

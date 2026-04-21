@@ -41,7 +41,7 @@ for (const entry of readdirSync(bunCacheDir)) {
     bunCacheDir,
     entry,
     "node_modules",
-    "@elizaos",
+    "@tokagentos",
     "core",
   );
   if (!existsSync(nestedCore)) continue;

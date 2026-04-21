@@ -500,7 +500,7 @@ export function checkTokagentWorkspace(projectRoot?: string): CheckResult {
       category: "system",
       status: "warn",
       detail:
-        "Vendored source workspace not found at ./tokagent (needed only for repo-local @elizaos development)",
+        "Vendored source workspace not found at ./tokagent (needed only for repo-local @tokagentos development)",
       fix: "bun run setup:upstreams",
     };
   }
@@ -515,7 +515,7 @@ export function checkTokagentWorkspace(projectRoot?: string): CheckResult {
     };
   }
 
-  const coreLink = path.join(root, "node_modules", "@elizaos", "core");
+  const coreLink = path.join(root, "node_modules", "@tokagentos", "core");
   try {
     const realTarget = realpathSync(coreLink);
     if (realTarget.startsWith(tokagentRoot)) {

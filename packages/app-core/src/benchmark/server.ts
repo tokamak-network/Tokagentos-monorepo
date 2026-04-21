@@ -265,7 +265,7 @@ export async function startBenchmarkServer() {
   // Plugins to skip in benchmark context — these require external auth or
   // interfere with benchmark operation
   const skipPlugins = new Set([
-    "@elizaos/plugin-elizacloud", // Requires tokagentOS cloud auth, conflicts with local LLM
+    "@tokagentos/plugin-elizacloud", // Requires tokagentOS cloud auth, conflicts with local LLM
   ]);
 
   // Load all CORE_PLUGINS — these are what the production Tokagent runtime uses
@@ -339,9 +339,9 @@ export async function startBenchmarkServer() {
   if (groqApiKey) {
     process.env.GROQ_API_KEY = groqApiKey;
     try {
-      const { default: groqPlugin } = await import("@elizaos/plugin-groq");
-      plugins.push(toPlugin(groqPlugin, "@elizaos/plugin-groq"));
-      tokagentLogger.info("[bench] Loaded LLM plugin: @elizaos/plugin-groq");
+      const { default: groqPlugin } = await import("@tokagentos/plugin-groq");
+      plugins.push(toPlugin(groqPlugin, "@tokagentos/plugin-groq"));
+      tokagentLogger.info("[bench] Loaded LLM plugin: @tokagentos/plugin-groq");
     } catch (error: unknown) {
       tokagentLogger.warn(
         `[bench] Groq plugin not available: ${formatUnknownError(error)}`,
@@ -353,9 +353,9 @@ export async function startBenchmarkServer() {
   if (openAiApiKey && !openAiApiKey.startsWith("gsk_")) {
     process.env.OPENAI_API_KEY = openAiApiKey;
     try {
-      const { default: openaiPlugin } = await import("@elizaos/plugin-openai");
-      plugins.push(toPlugin(openaiPlugin, "@elizaos/plugin-openai"));
-      tokagentLogger.info("[bench] Loaded LLM plugin: @elizaos/plugin-openai");
+      const { default: openaiPlugin } = await import("@tokagentos/plugin-openai");
+      plugins.push(toPlugin(openaiPlugin, "@tokagentos/plugin-openai"));
+      tokagentLogger.info("[bench] Loaded LLM plugin: @tokagentos/plugin-openai");
     } catch (error: unknown) {
       tokagentLogger.debug(
         `[bench] OpenAI plugin not available: ${formatUnknownError(error)}`,
@@ -381,7 +381,7 @@ export async function startBenchmarkServer() {
       if (computerusePlugin) {
         plugins.push(toPlugin(computerusePlugin, localComputerusePath));
         tokagentLogger.info(
-          "[bench] Loaded local plugin: @elizaos/plugin-computeruse",
+          "[bench] Loaded local plugin: @tokagentos/plugin-computeruse",
         );
       }
     } catch (error: unknown) {

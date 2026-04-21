@@ -26,7 +26,7 @@ import { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS } from "./core-plugins.js";
 const OPTIONAL_CORE_PLUGIN_NAMES = new Set<string>(OPTIONAL_CORE_PLUGINS);
 
 /**
- * Agent orchestrator ships as the standalone @elizaos/plugin-agent-orchestrator package;
+ * Agent orchestrator ships as the standalone @tokagentos/plugin-agent-orchestrator package;
  * Tokagent loads it via STATIC_TOKAGENT_PLUGINS["agent-orchestrator"].
  */
 function orchestratorCompatPluginRequested(config: TokagentConfig): boolean {
@@ -55,7 +55,7 @@ function orchestratorCompatPluginRequested(config: TokagentConfig): boolean {
  * `plugins.installs` may still reference the old id.
  */
 export function resolvePluginPackageAlias(packageName: string): string {
-  if (packageName === "@elizaos/plugin-selfcontrol") {
+  if (packageName === "@tokagentos/plugin-selfcontrol") {
     return "@tokagentos/app-lifeops";
   }
   return packageName;
@@ -69,49 +69,49 @@ function isTruthyCloudEnvValue(raw: string | undefined): boolean {
 
 /** Maps Tokagent channel names to plugin package names. */
 export const CHANNEL_PLUGIN_MAP: Readonly<Record<string, string>> = {
-  bluebubbles: "@elizaos/plugin-bluebubbles",
-  discord: "@elizaos/plugin-discord",
-  discordLocal: "@elizaos/plugin-discord-local",
-  telegram: "@elizaos/plugin-telegram",
-  slack: "@elizaos/plugin-slack",
-  twitter: "@elizaos/plugin-twitter",
+  bluebubbles: "@tokagentos/plugin-bluebubbles",
+  discord: "@tokagentos/plugin-discord",
+  discordLocal: "@tokagentos/plugin-discord-local",
+  telegram: "@tokagentos/plugin-telegram",
+  slack: "@tokagentos/plugin-slack",
+  twitter: "@tokagentos/plugin-twitter",
   // Internal connector built from src/plugins/whatsapp (not an npm package).
-  whatsapp: "@elizaos/plugin-whatsapp",
+  whatsapp: "@tokagentos/plugin-whatsapp",
   // Internal connector built from src/plugins/signal (not an npm package).
-  signal: "@elizaos/plugin-signal",
-  imessage: "@elizaos/plugin-imessage",
-  farcaster: "@elizaos/plugin-farcaster",
-  lens: "@elizaos/plugin-lens",
-  msteams: "@elizaos/plugin-msteams",
-  feishu: "@elizaos/plugin-feishu",
-  matrix: "@elizaos/plugin-matrix",
-  nostr: "@elizaos/plugin-nostr",
-  blooio: "@elizaos/plugin-blooio",
-  twitch: "@elizaos/plugin-twitch",
-  mattermost: "@elizaos/plugin-mattermost",
-  googlechat: "@elizaos/plugin-google-chat",
+  signal: "@tokagentos/plugin-signal",
+  imessage: "@tokagentos/plugin-imessage",
+  farcaster: "@tokagentos/plugin-farcaster",
+  lens: "@tokagentos/plugin-lens",
+  msteams: "@tokagentos/plugin-msteams",
+  feishu: "@tokagentos/plugin-feishu",
+  matrix: "@tokagentos/plugin-matrix",
+  nostr: "@tokagentos/plugin-nostr",
+  blooio: "@tokagentos/plugin-blooio",
+  twitch: "@tokagentos/plugin-twitch",
+  mattermost: "@tokagentos/plugin-mattermost",
+  googlechat: "@tokagentos/plugin-google-chat",
 };
 
 /** Maps environment variable names to model-provider plugin packages. */
 export const PROVIDER_PLUGIN_MAP: Readonly<Record<string, string>> = {
-  ANTHROPIC_API_KEY: "@elizaos/plugin-anthropic",
-  OPENAI_API_KEY: "@elizaos/plugin-openai",
-  GEMINI_API_KEY: "@elizaos/plugin-google-genai",
-  GOOGLE_API_KEY: "@elizaos/plugin-google-genai",
-  GOOGLE_GENERATIVE_AI_API_KEY: "@elizaos/plugin-google-genai",
-  GROQ_API_KEY: "@elizaos/plugin-groq",
-  XAI_API_KEY: "@elizaos/plugin-xai",
-  OPENROUTER_API_KEY: "@elizaos/plugin-openrouter",
-  DEEPSEEK_API_KEY: "@elizaos/plugin-deepseek",
-  MISTRAL_API_KEY: "@elizaos/plugin-mistral",
-  TOGETHER_API_KEY: "@elizaos/plugin-together",
-  AI_GATEWAY_API_KEY: "@elizaos/plugin-vercel-ai-gateway",
-  AIGATEWAY_API_KEY: "@elizaos/plugin-vercel-ai-gateway",
-  OLLAMA_BASE_URL: "@elizaos/plugin-ollama",
+  ANTHROPIC_API_KEY: "@tokagentos/plugin-anthropic",
+  OPENAI_API_KEY: "@tokagentos/plugin-openai",
+  GEMINI_API_KEY: "@tokagentos/plugin-google-genai",
+  GOOGLE_API_KEY: "@tokagentos/plugin-google-genai",
+  GOOGLE_GENERATIVE_AI_API_KEY: "@tokagentos/plugin-google-genai",
+  GROQ_API_KEY: "@tokagentos/plugin-groq",
+  XAI_API_KEY: "@tokagentos/plugin-xai",
+  OPENROUTER_API_KEY: "@tokagentos/plugin-openrouter",
+  DEEPSEEK_API_KEY: "@tokagentos/plugin-deepseek",
+  MISTRAL_API_KEY: "@tokagentos/plugin-mistral",
+  TOGETHER_API_KEY: "@tokagentos/plugin-together",
+  AI_GATEWAY_API_KEY: "@tokagentos/plugin-vercel-ai-gateway",
+  AIGATEWAY_API_KEY: "@tokagentos/plugin-vercel-ai-gateway",
+  OLLAMA_BASE_URL: "@tokagentos/plugin-ollama",
   ZAI_API_KEY: "@homunculuslabs/plugin-zai",
   // TokagentCloud — loaded when API key is present OR cloud is explicitly enabled
-  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-elizacloud",
-  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-elizacloud",
+  TOKAGENTOS_CLOUD_API_KEY: "@tokagentos/plugin-elizacloud",
+  TOKAGENTOS_CLOUD_ENABLED: "@tokagentos/plugin-elizacloud",
 };
 
 /**
@@ -131,37 +131,37 @@ export const OPTIONAL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   // the keys are set and the wallet page shows addresses. This was a
   // multi-hour landmine. Keep these in sync with AUTH_PROVIDER_PLUGINS
   // in packages/agent/src/config/plugin-auto-enable.ts.
-  evm: "@elizaos/plugin-evm",
-  solana: "@elizaos/plugin-solana",
-  browser: "@elizaos/plugin-browser",
+  evm: "@tokagentos/plugin-evm",
+  solana: "@tokagentos/plugin-solana",
+  browser: "@tokagentos/plugin-browser",
   /** Tokagent desktop browser workspace + Steward; package is `@tokagentos/app-browser`. */
   "app-browser": "@tokagentos/app-browser",
   appBrowser: "@tokagentos/app-browser",
   "tokagent-browser": "@tokagentos/app-browser",
   tokagentBrowser: "@tokagentos/app-browser",
   /** Legacy LifeOps browser entry (separate package from `@tokagentos/app-lifeops`). */
-  "lifeops-browser": "@elizaos/plugin-lifeops-browser",
-  lifeopsBrowser: "@elizaos/plugin-lifeops-browser",
-  vision: "@elizaos/plugin-vision",
-  tokagentcloud: "@elizaos/plugin-elizacloud",
+  "lifeops-browser": "@tokagentos/plugin-lifeops-browser",
+  lifeopsBrowser: "@tokagentos/plugin-lifeops-browser",
+  vision: "@tokagentos/plugin-vision",
+  tokagentcloud: "@tokagentos/plugin-elizacloud",
   selfcontrol: "@tokagentos/app-lifeops",
-  cron: "@elizaos/plugin-cron",
-  cua: "@elizaos/plugin-cua",
-  computeruse: "@elizaos/plugin-computeruse",
-  obsidian: "@elizaos/plugin-obsidian",
-  repoprompt: "@elizaos/plugin-repoprompt",
-  repoPrompt: "@elizaos/plugin-repoprompt",
-  bluebubbles: "@elizaos/plugin-bluebubbles",
-  discordLocal: "@elizaos/plugin-discord-local",
-  x402: "@elizaos/plugin-x402",
+  cron: "@tokagentos/plugin-cron",
+  cua: "@tokagentos/plugin-cua",
+  computeruse: "@tokagentos/plugin-computeruse",
+  obsidian: "@tokagentos/plugin-obsidian",
+  repoprompt: "@tokagentos/plugin-repoprompt",
+  repoPrompt: "@tokagentos/plugin-repoprompt",
+  bluebubbles: "@tokagentos/plugin-bluebubbles",
+  discordLocal: "@tokagentos/plugin-discord-local",
+  x402: "@tokagentos/plugin-x402",
   // plugin-manager, secrets-manager, trust: now built-in core capabilities
   // Enable via ENABLE_PLUGIN_MANAGER, ENABLE_SECRETS_MANAGER, ENABLE_TRUST
-  "streaming-base": "@elizaos/plugin-streaming-base",
-  "twitch-streaming": "@elizaos/plugin-twitch-streaming",
-  "youtube-streaming": "@elizaos/plugin-youtube-streaming",
-  "custom-rtmp": "@elizaos/plugin-custom-rtmp",
-  "pumpfun-streaming": "@elizaos/plugin-pumpfun-streaming",
-  "x-streaming": "@elizaos/plugin-x-streaming",
+  "streaming-base": "@tokagentos/plugin-streaming-base",
+  "twitch-streaming": "@tokagentos/plugin-twitch-streaming",
+  "youtube-streaming": "@tokagentos/plugin-youtube-streaming",
+  "custom-rtmp": "@tokagentos/plugin-custom-rtmp",
+  "pumpfun-streaming": "@tokagentos/plugin-pumpfun-streaming",
+  "x-streaming": "@tokagentos/plugin-x-streaming",
   // Steward wallet plugin — short ID used by auto-enable
   "stwd-tokagent-plugin": "@stwd/tokagent-plugin",
 };
@@ -269,25 +269,25 @@ export function collectPluginNames(
     pluginsToLoad.add("agent-orchestrator");
     track(
       "agent-orchestrator",
-      "agent-orchestrator (@elizaos/plugin-agent-orchestrator)",
+      "agent-orchestrator (@tokagentos/plugin-agent-orchestrator)",
     );
   }
   if (localEmbeddingsExplicitlyDisabled) {
-    pluginsToLoad.delete("@elizaos/plugin-local-embedding");
+    pluginsToLoad.delete("@tokagentos/plugin-local-embedding");
   }
 
   // Allow list is additive — extra plugins on top of auto-detection,
   // not an exclusive whitelist that blocks everything else.
   if (allowList && allowList.length > 0) {
     for (const item of allowList) {
-      // Normalize short IDs (e.g. "openai" → "@elizaos/plugin-openai") the
+      // Normalize short IDs (e.g. "openai" → "@tokagentos/plugin-openai") the
       // same way plugins.entries does — addToAllowlist() pushes both the
       // short ID and the full package name, so bare short IDs must be
       // expanded to avoid importing the raw SDK package (e.g. "openai").
       const pluginName = resolvePluginPackageAlias(
         CHANNEL_PLUGIN_MAP[item] ??
           OPTIONAL_PLUGIN_MAP[item] ??
-          (item.includes("/") ? item : `@elizaos/plugin-${item}`),
+          (item.includes("/") ? item : `@tokagentos/plugin-${item}`),
       );
       pluginsToLoad.add(pluginName);
       track(pluginName, `plugins.allow[${JSON.stringify(item)}]`);
@@ -355,12 +355,12 @@ export function collectPluginNames(
     // RPC/services but direct AI provider plugins are preserved so the
     // user's own API keys (e.g. Anthropic) handle model inference.
     if (cloudEffectivelyEnabled) {
-      pluginsToLoad.add("@elizaos/plugin-elizacloud");
+      pluginsToLoad.add("@tokagentos/plugin-elizacloud");
 
       if (cloudHandlesInference) {
         // Cloud handles ALL model calls — remove direct AI provider plugins.
         const directProviders = new Set(Object.values(PROVIDER_PLUGIN_MAP));
-        directProviders.delete("@elizaos/plugin-elizacloud");
+        directProviders.delete("@tokagentos/plugin-elizacloud");
         for (const p of directProviders) {
           pluginsToLoad.delete(p);
         }
@@ -374,7 +374,7 @@ export function collectPluginNames(
     // Cloud is not part of the resolved topology — remove it even though
     // it is listed in CORE_PLUGINS so stale env/config does not hijack
     // provider selection after the user switches away.
-    pluginsToLoad.delete("@elizaos/plugin-elizacloud");
+    pluginsToLoad.delete("@tokagentos/plugin-elizacloud");
   };
 
   // Apply once before additive plugin-entry/feature paths.
@@ -392,7 +392,7 @@ export function collectPluginNames(
       const pluginName = resolvePluginPackageAlias(
         CHANNEL_PLUGIN_MAP[key] ??
           OPTIONAL_PLUGIN_MAP[key] ??
-          (key.includes("/") ? key : `@elizaos/plugin-${key}`),
+          (key.includes("/") ? key : `@tokagentos/plugin-${key}`),
       );
       const isOptionalCore = OPTIONAL_CORE_PLUGIN_NAMES.has(pluginName);
       const entryEnabled = (entry as Record<string, unknown>).enabled;
@@ -428,16 +428,16 @@ export function collectPluginNames(
 
   // x402 plugin — auto-load when config section enabled
   if (config.x402?.enabled) {
-    pluginsToLoad.add("@elizaos/plugin-x402");
-    track("@elizaos/plugin-x402", "config.x402.enabled");
+    pluginsToLoad.add("@tokagentos/plugin-x402");
+    track("@tokagentos/plugin-x402", "config.x402.enabled");
   }
 
   // Opinion plugin — auto-load when API key is present.
   // NOT in PROVIDER_PLUGIN_MAP because it is a feature plugin, not a model
   // provider, and would be incorrectly removed during provider precedence.
   if (process.env.OPINION_API_KEY?.trim()) {
-    pluginsToLoad.add("@elizaos/plugin-opinion");
-    track("@elizaos/plugin-opinion", "env: OPINION_API_KEY");
+    pluginsToLoad.add("@tokagentos/plugin-opinion");
+    track("@tokagentos/plugin-opinion", "env: OPINION_API_KEY");
   }
 
   // These are plugins that were installed via the plugin-manager at runtime
@@ -459,7 +459,7 @@ export function collectPluginNames(
 
   // Enforce feature gating last so allow-list entries cannot bypass it.
   if (shellPluginDisabled) {
-    pluginsToLoad.delete("@elizaos/plugin-shell");
+    pluginsToLoad.delete("@tokagentos/plugin-shell");
   }
 
   for (const optionalCore of OPTIONAL_CORE_PLUGINS) {

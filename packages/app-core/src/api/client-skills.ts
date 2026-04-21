@@ -1598,7 +1598,7 @@ TokagentClient.prototype.getBabylonTrades = async function (this: TokagentClient
 TokagentClient.prototype.discoverBabylonAgents = async function (
   this: TokagentClient,
 ) {
-  return this.fetch("/api/apps/babylon@elizaos/agents/discover");
+  return this.fetch("/api/apps/babylon@tokagentos/agents/discover");
 };
 
 TokagentClient.prototype.getBabylonTeamDashboard = async function (
@@ -1616,7 +1616,7 @@ TokagentClient.prototype.getBabylonTeamConversations = async function (
 TokagentClient.prototype.pauseAllBabylonAgents = async function (
   this: TokagentClient,
 ) {
-  return this.fetch("/api/apps/babylon/admin@elizaos/agents/pause-all", {
+  return this.fetch("/api/apps/babylon/admin@tokagentos/agents/pause-all", {
     method: "POST",
   });
 };
@@ -1624,7 +1624,7 @@ TokagentClient.prototype.pauseAllBabylonAgents = async function (
 TokagentClient.prototype.resumeAllBabylonAgents = async function (
   this: TokagentClient,
 ) {
-  return this.fetch("/api/apps/babylon/admin@elizaos/agents/resume-all", {
+  return this.fetch("/api/apps/babylon/admin@tokagentos/agents/resume-all", {
     method: "POST",
   });
 };

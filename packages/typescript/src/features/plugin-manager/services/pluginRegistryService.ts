@@ -228,7 +228,7 @@ function localPluginToRegistry(
 	pluginJson: LocalPluginJson,
 	dirName: string,
 ): RegistryPlugin {
-	const name = pluginJson.id || `@elizaos/${dirName}`;
+	const name = pluginJson.id || `@tokagentos/${dirName}`;
 	const displayName = pluginJson.app?.displayName || pluginJson.name || dirName;
 	const description = pluginJson.description || "";
 	const homepage = pluginJson.homepage || null;
@@ -400,7 +400,7 @@ export async function loadRegistry(): Promise<Map<string, RegistryPlugin>> {
 // Lookup helpers
 // ---------------------------------------------------------------------------
 
-/** Resolve a plugin by name with fuzzy matching (exact -> @elizaos/ prefix -> bare name). */
+/** Resolve a plugin by name with fuzzy matching (exact -> @tokagentos/ prefix -> bare name). */
 function resolvePlugin(
 	registry: Map<string, RegistryPlugin>,
 	name: string,
@@ -409,7 +409,7 @@ function resolvePlugin(
 	if (p) return p;
 
 	if (!name.startsWith("@")) {
-		p = registry.get(`@elizaos/${name}`);
+		p = registry.get(`@tokagentos/${name}`);
 		if (p) return p;
 	}
 
@@ -462,7 +462,7 @@ function computeSearchScore(plugin: RegistryPlugin, query: string): number {
 
 	let score = 0;
 
-	if (ln === lq || ln === `@elizaos/${lq}`) score += 100;
+	if (ln === lq || ln === `@tokagentos/${lq}`) score += 100;
 	else if (ln.includes(lq)) score += 50;
 
 	if (ld.includes(lq)) score += 30;

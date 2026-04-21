@@ -408,10 +408,10 @@ function shortPluginIdFromNpmName(npmName: string | null): string | null {
     return null;
   }
   if (npmName.startsWith("@tokagentos/app-")) {
-    return npmName.slice("@elizaos/".length);
+    return npmName.slice("@tokagentos/".length);
   }
-  if (npmName.startsWith("@elizaos/plugin-")) {
-    return npmName.slice("@elizaos/plugin-".length);
+  if (npmName.startsWith("@tokagentos/plugin-")) {
+    return npmName.slice("@tokagentos/plugin-".length);
   }
   return normalizePluginId(npmName);
 }
@@ -762,7 +762,7 @@ function buildPluginParamDefs(
 
   // Drop generic fallback model keys (SMALL_MODEL, LARGE_MODEL, IMAGE_MODEL,
   // EMBEDDING_MODEL) when a provider-prefixed equivalent (e.g.
-  // GOOGLE_SMALL_MODEL) is also declared. Plugins like @elizaos/plugin-google-genai
+  // GOOGLE_SMALL_MODEL) is also declared. Plugins like @tokagentos/plugin-google-genai
   // declare both — surfacing both creates confusing duplicate fields in the UI.
   const allKeys = Object.keys(parameters);
   const GENERIC_FALLBACK_SUFFIXES = [

@@ -1,16 +1,16 @@
 name: ComputerUse NPM Release
 
-# Build native binaries (napi-rs) for @elizaos/computeruse on all platforms
+# Build native binaries (napi-rs) for @tokagentos/computeruse on all platforms
 # and publish platform packages + main package to npm.
 #
 # Packages published:
-#   @elizaos/computeruse-win32-x64-msvc
-#   @elizaos/computeruse-win32-arm64-msvc
-#   @elizaos/computeruse-darwin-arm64
-#   @elizaos/computeruse-darwin-x64
-#   @elizaos/computeruse-linux-x64-gnu
-#   @elizaos/computeruse-linux-arm64-gnu
-#   @elizaos/computeruse              (main wrapper, references the above)
+#   @tokagentos/computeruse-win32-x64-msvc
+#   @tokagentos/computeruse-win32-arm64-msvc
+#   @tokagentos/computeruse-darwin-arm64
+#   @tokagentos/computeruse-darwin-x64
+#   @tokagentos/computeruse-linux-x64-gnu
+#   @tokagentos/computeruse-linux-arm64-gnu
+#   @tokagentos/computeruse              (main wrapper, references the above)
 
 on:
   release:
@@ -233,7 +233,7 @@ jobs:
         run: |
           cd packages/computeruse/packages/computeruse-ts
           # Generate index.js — the runtime loader that detects platform and
-          # requires the correct @elizaos/computeruse-{platform} package.
+          # requires the correct @tokagentos/computeruse-{platform} package.
           # Also generates index.d.ts with native type definitions.
           npx napi prepublish -t npm
           # Build wrapper.js from wrapper.ts (the high-level API surface)

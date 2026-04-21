@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/plugin-starter",
+  "name": "@tokagentos/plugin-starter",
   "description": "${PLUGINDESCRIPTION}",
   "version": "2.0.0-alpha",
   "type": "module",

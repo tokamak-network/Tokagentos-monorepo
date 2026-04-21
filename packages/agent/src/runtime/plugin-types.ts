@@ -24,7 +24,7 @@ import type { PluginInstallRecord } from "../config/types.tokagent.js";
 
 /** A successfully resolved plugin ready for AgentRuntime registration. */
 export interface ResolvedPlugin {
-  /** npm package name (e.g. "@elizaos/plugin-anthropic"). */
+  /** npm package name (e.g. "@tokagentos/plugin-anthropic"). */
   name: string;
   /** The Plugin instance extracted from the module. */
   plugin: Plugin;
@@ -227,11 +227,11 @@ export function resolveTokagentPluginImportSpecifier(
   pluginName: string,
   runtimeModuleUrl = import.meta.url,
 ): string {
-  if (!pluginName.startsWith("@elizaos/plugin-")) {
+  if (!pluginName.startsWith("@tokagentos/plugin-")) {
     return pluginName;
   }
 
-  const shortName = pluginName.replace("@elizaos/plugin-", "");
+  const shortName = pluginName.replace("@tokagentos/plugin-", "");
   const thisDir = path.dirname(fileURLToPath(runtimeModuleUrl));
   const distRoot = thisDir.endsWith("runtime")
     ? path.resolve(thisDir, "..")
@@ -242,7 +242,7 @@ export function resolveTokagentPluginImportSpecifier(
 }
 
 export function shouldIgnoreMissingPluginExport(pluginName: string): boolean {
-  return pluginName === "@elizaos/plugin-streaming-base";
+  return pluginName === "@tokagentos/plugin-streaming-base";
 }
 
 export function findPluginBrowserStagehandDir(startDir: string): string | null {
@@ -267,7 +267,7 @@ export function findPluginBrowserStagehandDir(startDir: string): string | null {
 }
 
 /**
- * `@elizaos/plugin-browser` expects `dist/server/` with the stagehand binary
+ * `@tokagentos/plugin-browser` expects `dist/server/` with the stagehand binary
  * tree inside the npm package, but the published tarball does not ship it.
  * When missing, symlink to a repo checkout at `plugins/plugin-browser/stagehand-server`
  * (discovered via {@link findPluginBrowserStagehandDir}) so the plugin's
@@ -282,7 +282,7 @@ export function ensureBrowserServerLink(): boolean {
   try {
     // Resolve the plugin-browser package root via its package.json.
     const req = createRequire(import.meta.url);
-    const pkgJsonPath = req.resolve("@elizaos/plugin-browser/package.json");
+    const pkgJsonPath = req.resolve("@tokagentos/plugin-browser/package.json");
     const pluginRoot = path.dirname(pkgJsonPath);
     const serverDir = path.join(pluginRoot, "dist", "server");
     const serverIndex = path.join(serverDir, "dist", "index.js");
