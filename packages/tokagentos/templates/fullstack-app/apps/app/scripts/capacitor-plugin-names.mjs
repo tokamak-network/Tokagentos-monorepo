@@ -25,4 +25,9 @@ export const CAPACITOR_PLUGIN_NAMES = [
   "talkmode",
   "agent",
   "websiteblocker",
+  // Imported as side-effects by
+  // tokagent/packages/app-core/src/platform/native-plugin-entrypoints.ts
+  // — must be built before vite's dep scan, or resolution fails.
+  "llama",
+  "appblocker",
 ];
