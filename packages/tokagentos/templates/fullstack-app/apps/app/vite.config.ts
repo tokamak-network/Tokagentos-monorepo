@@ -21,17 +21,17 @@ import { defineConfig, type Plugin, transformWithEsbuild } from "vite";
 const _require = createRequire(import.meta.url);
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-const tokagentRoot = path.resolve(here, "../../tokagent");
-const nativePluginsRoot = path.join(tokagentRoot, "packages", "native-plugins");
-const appCoreSrcRoot = path.join(tokagentRoot, "packages/app-core/src");
+const elizaRoot = path.resolve(here, "../../eliza");
+const nativePluginsRoot = path.join(elizaRoot, "packages", "native-plugins");
+const appCoreSrcRoot = path.join(elizaRoot, "packages/app-core/src");
 
 /**
  * Pinned @elizaos/core from the repo root (must match the agent/runtime lock).
  */
-function getTokagentPinnedTokagentCoreVersion(): string {
+function getElizaPinnedElizaCoreVersion(): string {
   try {
     const raw = JSON.parse(
-      fs.readFileSync(path.join(tokagentRoot, "package.json"), "utf8"),
+      fs.readFileSync(path.join(elizaRoot, "package.json"), "utf8"),
     ) as {
       dependencies?: Record<string, string>;
       overrides?: Record<string, string>;
@@ -53,23 +53,23 @@ function getTokagentPinnedTokagentCoreVersion(): string {
   return "2.0.0-alpha.109";
 }
 
-/** Bun cache dir names look like `@tokagentos+core@2.0.0-alpha.109+<hash>`. */
-function tokagentCoreAlphaPrerelease(dir: string): number {
-  const m = dir.match(/@tokagentos\+core@[\d.]+-alpha\.(\d+)/);
+/** Bun cache dir names look like `@elizaos+core@2.0.0-alpha.109+<hash>`. */
+function elizaCoreAlphaPrerelease(dir: string): number {
+  const m = dir.match(/@elizaos\+core@[\d.]+-alpha\.(\d+)/);
   return m?.[1] ? parseInt(m[1], 10) : -1;
 }
 
 /**
  * Bun stores a full npm tarball under node_modules/.bun even when the workspace
- * symlink for @elizaos/core points at an unbuilt local tokagent checkout.
+ * symlink for @elizaos/core points at an unbuilt local eliza checkout.
  *
  * **WHY sort:** `readdir` order is arbitrary; picking `alpha.12` over `alpha.109`
  * mismatches the API and tends to blank the Electrobun webview.
  */
-function findTokagentCoreBundleInBunStore(
+function findElizaCoreBundleInBunStore(
   kind: "browser" | "node",
 ): string | null {
-  const bunDir = path.join(tokagentRoot, "node_modules/.bun");
+  const bunDir = path.join(elizaRoot, "node_modules/.bun");
   const rel =
     kind === "browser"
       ? "node_modules/@elizaos/core/dist/browser/index.browser.js"
@@ -81,11 +81,11 @@ function findTokagentCoreBundleInBunStore(
   } catch {
     return null;
   }
-  const pinned = getTokagentPinnedTokagentCoreVersion();
-  const pinnedPrefix = `@tokagentos+core@${pinned}+`;
+  const pinned = getElizaPinnedElizaCoreVersion();
+  const pinnedPrefix = `@elizaos+core@${pinned}+`;
 
   const withDist = entries.filter((dir) => {
-    if (!dir.startsWith("@tokagentos+core@")) return false;
+    if (!dir.startsWith("@elizaos+core@")) return false;
     return fs.existsSync(path.join(bunDir, dir, rel));
   });
 
@@ -95,7 +95,7 @@ function findTokagentCoreBundleInBunStore(
   if (withDist.length === 0) return null;
 
   withDist.sort(
-    (a, b) => tokagentCoreAlphaPrerelease(b) - tokagentCoreAlphaPrerelease(a),
+    (a, b) => elizaCoreAlphaPrerelease(b) - elizaCoreAlphaPrerelease(a),
   );
   const best = withDist[0];
   return best ? path.join(bunDir, best, rel) : null;
@@ -103,11 +103,11 @@ function findTokagentCoreBundleInBunStore(
 
 /**
  * Resolved file path for bundling `@elizaos/core` in the renderer.
- * Linked tokagent checkouts sometimes omit `dist/` until `bun run build`;
+ * Linked eliza checkouts sometimes omit `dist/` until `bun run build`;
  * prefer the source browser entry when present, otherwise fall back to
  * built artifacts and then the bun install cache copy.
  */
-function resolveTokagentCoreBundlePath(): string {
+function resolveElizaCoreBundlePath(): string {
   const pkgDir = path.dirname(_require.resolve("@elizaos/core/package.json"));
   const sourceBrowserEntry = path.join(pkgDir, "src/index.browser.ts");
   const browserEntry = path.join(pkgDir, "dist/browser/index.browser.js");
@@ -122,47 +122,47 @@ function resolveTokagentCoreBundlePath(): string {
     return rootBrowserEntry;
   if (fs.existsSync(nodeEntry)) {
     console.warn(
-      "[tokagent][vite] @elizaos/core dist/browser is missing; using dist/node for the client bundle. " +
-        "For a linked tokagent workspace, run `bun run build` in that checkout (e.g. packages/typescript). " +
-        "Or reinstall with TOKAGENT_SKIP_LOCAL_TOKAGENT=1 to use the published npm package.",
+      "[eliza][vite] @elizaos/core dist/browser is missing; using dist/node for the client bundle. " +
+        "For a linked eliza workspace, run `bun run build` in that checkout (e.g. packages/typescript). " +
+        "Or reinstall with ELIZA_SKIP_LOCAL_ELIZA=1 to use the published npm package.",
     );
     return nodeEntry;
   }
   if (fs.existsSync(rootNodeEntry) && hasNodeShimTarget) {
     console.warn(
-      "[tokagent][vite] @elizaos/core dist/browser is missing; using dist/index.node.js for the client bundle. " +
+      "[eliza][vite] @elizaos/core dist/browser is missing; using dist/index.node.js for the client bundle. " +
         "This usually means the local core workspace only has a flat dist/ build artifact.",
     );
     return rootNodeEntry;
   }
-  const bunBrowser = findTokagentCoreBundleInBunStore("browser");
+  const bunBrowser = findElizaCoreBundleInBunStore("browser");
   if (bunBrowser) {
     console.warn(
-      `[tokagent][vite] Linked @elizaos/core at ${pkgDir} has no dist/; using bun cache build at ${bunBrowser}. ` +
-        "Run `bun run build` in your tokagent checkout or TOKAGENT_SKIP_LOCAL_TOKAGENT=1 bun install to align versions.",
+      `[eliza][vite] Linked @elizaos/core at ${pkgDir} has no dist/; using bun cache build at ${bunBrowser}. ` +
+        "Run `bun run build` in your eliza checkout or ELIZA_SKIP_LOCAL_ELIZA=1 bun install to align versions.",
     );
     return bunBrowser;
   }
-  const bunNode = findTokagentCoreBundleInBunStore("node");
+  const bunNode = findElizaCoreBundleInBunStore("node");
   if (bunNode) {
     console.warn(
-      `[tokagent][vite] Linked @elizaos/core at ${pkgDir} has no dist/; using bun cache node bundle at ${bunNode}.`,
+      `[eliza][vite] Linked @elizaos/core at ${pkgDir} has no dist/; using bun cache node bundle at ${bunNode}.`,
     );
     return bunNode;
   }
   throw new Error(
-    `[tokagent][vite] @elizaos/core has no built artifacts under ${pkgDir} and none in node_modules/.bun. ` +
+    `[eliza][vite] @elizaos/core has no built artifacts under ${pkgDir} and none in node_modules/.bun. ` +
       "Expected src/index.browser.ts, dist/browser/index.browser.js, dist/index.browser.js, dist/node/index.node.js, or dist/index.node.js. " +
-      "Build your local tokagent workspace or run `TOKAGENT_SKIP_LOCAL_TOKAGENT=1 bun install`.",
+      "Build your local eliza workspace or run `ELIZA_SKIP_LOCAL_ELIZA=1 bun install`.",
   );
 }
 
 // The dev script sets ELIZA_API_PORT; default to 31337 for standalone vite dev.
 const apiPort = resolveDesktopApiPort(process.env);
 const uiPort = resolveDesktopUiPort(process.env);
-const enableAppSourceMaps = process.env.TOKAGENT_APP_SOURCEMAP === "1";
-/** Set by tokagent/packages/app-core/scripts/dev-platform.mjs for `vite build --watch` (Electrobun desktop). */
-const desktopFastDist = process.env.TOKAGENT_DESKTOP_VITE_FAST_DIST === "1";
+const enableAppSourceMaps = process.env.ELIZA_APP_SOURCEMAP === "1";
+/** Set by eliza/packages/app-core/scripts/dev-platform.mjs for `vite build --watch` (Electrobun desktop). */
+const desktopFastDist = process.env.ELIZA_DESKTOP_VITE_FAST_DIST === "1";
 
 function pathIncludesAny(id: string, markers: string[]): boolean {
   return markers.some((marker) => id.includes(marker));
@@ -280,60 +280,60 @@ function buildViteDevSettingsRows(
   const uiPort = resolveDesktopUiPort(process.env);
   const assetBase =
     process.env.VITE_ASSET_BASE_URL?.trim() ||
-    process.env.TOKAGENT_ASSET_BASE_URL?.trim() ||
+    process.env.ELIZA_ASSET_BASE_URL?.trim() ||
     "—";
 
   return [
     {
-      setting: "TOKAGENT_APP_SOURCEMAP",
-      effective: envFlagEffective("TOKAGENT_APP_SOURCEMAP"),
-      source: envFlagSource("TOKAGENT_APP_SOURCEMAP"),
-      change: "export TOKAGENT_APP_SOURCEMAP=1 to enable; unset for off",
+      setting: "ELIZA_APP_SOURCEMAP",
+      effective: envFlagEffective("ELIZA_APP_SOURCEMAP"),
+      source: envFlagSource("ELIZA_APP_SOURCEMAP"),
+      change: "export ELIZA_APP_SOURCEMAP=1 to enable; unset for off",
     },
     {
-      setting: "TOKAGENT_DESKTOP_VITE_FAST_DIST",
-      effective: envFlagEffective("TOKAGENT_DESKTOP_VITE_FAST_DIST"),
-      source: envFlagSource("TOKAGENT_DESKTOP_VITE_FAST_DIST"),
+      setting: "ELIZA_DESKTOP_VITE_FAST_DIST",
+      effective: envFlagEffective("ELIZA_DESKTOP_VITE_FAST_DIST"),
+      source: envFlagSource("ELIZA_DESKTOP_VITE_FAST_DIST"),
       change:
         "set by dev orchestrator for Rollup watch; unset for normal dev server",
     },
     {
-      setting: "TOKAGENT_TTS_DEBUG",
-      effective: process.env.TOKAGENT_TTS_DEBUG?.trim() ? "set" : "—",
-      source: process.env.TOKAGENT_TTS_DEBUG?.trim()
-        ? "env set — TOKAGENT_TTS_DEBUG"
+      setting: "ELIZA_TTS_DEBUG",
+      effective: process.env.ELIZA_TTS_DEBUG?.trim() ? "set" : "—",
+      source: process.env.ELIZA_TTS_DEBUG?.trim()
+        ? "env set — ELIZA_TTS_DEBUG"
         : "default (unset)",
-      change: "export TOKAGENT_TTS_DEBUG=1 for TTS trace logs",
+      change: "export ELIZA_TTS_DEBUG=1 for TTS trace logs",
     },
     {
-      setting: "TOKAGENT_SETTINGS_DEBUG / VITE_TOKAGENT_SETTINGS_DEBUG",
+      setting: "ELIZA_SETTINGS_DEBUG / VITE_ELIZA_SETTINGS_DEBUG",
       effective:
-        process.env.TOKAGENT_SETTINGS_DEBUG?.trim() ||
-        process.env.VITE_TOKAGENT_SETTINGS_DEBUG?.trim()
+        process.env.ELIZA_SETTINGS_DEBUG?.trim() ||
+        process.env.VITE_ELIZA_SETTINGS_DEBUG?.trim()
           ? "set"
           : "—",
-      source: process.env.VITE_TOKAGENT_SETTINGS_DEBUG?.trim()
-        ? "env set — VITE_TOKAGENT_SETTINGS_DEBUG"
-        : process.env.TOKAGENT_SETTINGS_DEBUG?.trim()
-          ? "env set — TOKAGENT_SETTINGS_DEBUG"
+      source: process.env.VITE_ELIZA_SETTINGS_DEBUG?.trim()
+        ? "env set — VITE_ELIZA_SETTINGS_DEBUG"
+        : process.env.ELIZA_SETTINGS_DEBUG?.trim()
+          ? "env set — ELIZA_SETTINGS_DEBUG"
           : "default (unset)",
-      change: "export TOKAGENT_SETTINGS_DEBUG=1 or VITE_TOKAGENT_SETTINGS_DEBUG=1",
+      change: "export ELIZA_SETTINGS_DEBUG=1 or VITE_ELIZA_SETTINGS_DEBUG=1",
     },
     {
-      setting: "VITE_ASSET_BASE_URL / TOKAGENT_ASSET_BASE_URL",
+      setting: "VITE_ASSET_BASE_URL / ELIZA_ASSET_BASE_URL",
       effective: assetBase,
       source: process.env.VITE_ASSET_BASE_URL?.trim()
         ? "env set — VITE_ASSET_BASE_URL"
-        : process.env.TOKAGENT_ASSET_BASE_URL?.trim()
-          ? "env set — TOKAGENT_ASSET_BASE_URL"
+        : process.env.ELIZA_ASSET_BASE_URL?.trim()
+          ? "env set — ELIZA_ASSET_BASE_URL"
           : "default (unset — empty)",
-      change: "export VITE_ASSET_BASE_URL=… or TOKAGENT_ASSET_BASE_URL=…",
+      change: "export VITE_ASSET_BASE_URL=… or ELIZA_ASSET_BASE_URL=…",
     },
     {
-      setting: "TOKAGENT_DEV_POLLING",
-      effective: envFlagEffective("TOKAGENT_DEV_POLLING"),
-      source: envFlagSource("TOKAGENT_DEV_POLLING"),
-      change: "export TOKAGENT_DEV_POLLING=1 for watch polling (VM/file shares)",
+      setting: "ELIZA_DEV_POLLING",
+      effective: envFlagEffective("ELIZA_DEV_POLLING"),
+      source: envFlagSource("ELIZA_DEV_POLLING"),
+      change: "export ELIZA_DEV_POLLING=1 for watch polling (VM/file shares)",
     },
     {
       setting: "API port (resolved)",
@@ -354,17 +354,17 @@ function buildViteDevSettingsRows(
       source: "derived",
       change:
         mode === "dev-server"
-          ? "bun run dev (default); TOKAGENT_DESKTOP_VITE_BUILD_WATCH=1 for Rollup watch"
-          : "TOKAGENT_DESKTOP_VITE_WATCH=1 + TOKAGENT_DESKTOP_VITE_BUILD_WATCH=1",
+          ? "bun run dev (default); ELIZA_DESKTOP_VITE_BUILD_WATCH=1 for Rollup watch"
+          : "ELIZA_DESKTOP_VITE_WATCH=1 + ELIZA_DESKTOP_VITE_BUILD_WATCH=1",
     },
   ];
 }
 
 /** Print effective env once per Vite process (dev server or first Rollup watch tick). */
-function tokagentDevSettingsBannerPlugin(): Plugin {
+function elizaDevSettingsBannerPlugin(): Plugin {
   let printedWatch = false;
   return {
-    name: "tokagent-dev-settings-banner",
+    name: "eliza-dev-settings-banner",
     configureServer() {
       return () => {
         console.log(
@@ -381,7 +381,7 @@ function tokagentDevSettingsBannerPlugin(): Plugin {
       };
     },
     buildStart() {
-      if (process.env.TOKAGENT_DESKTOP_VITE_FAST_DIST === "1" && !printedWatch) {
+      if (process.env.ELIZA_DESKTOP_VITE_FAST_DIST === "1" && !printedWatch) {
         printedWatch = true;
         console.log(
           colorizeDevSettingsStartupBanner(
@@ -414,7 +414,7 @@ function desktopCorsPlugin(): Plugin {
         );
         res.setHeader(
           "Access-Control-Allow-Headers",
-          "Content-Type, Authorization, X-Tokagent-Token, X-Api-Key, X-Tokagent-Export-Token, X-Tokagent-Client-Id, X-Tokagent-Terminal-Token, X-Tokagent-UI-Language",
+          "Content-Type, Authorization, X-Eliza-Token, X-Api-Key, X-Eliza-Export-Token, X-Eliza-Client-Id, X-Eliza-Terminal-Token, X-Eliza-UI-Language",
         );
 
         if (req.method === "OPTIONS") {
@@ -711,7 +711,7 @@ function nativeModuleStubPlugin(): Plugin {
       }
 
       // async_hooks — AsyncLocalStorage must be a real constructor because
-      // langsmith and @tokagentos packages do `new AsyncLocalStorage()` at the
+      // langsmith and @elizaos packages do `new AsyncLocalStorage()` at the
       // top level. Uses function-constructor syntax (not class expressions)
       // for maximum WebView compatibility. The renderChunk plugin
       // (asyncLocalStoragePatchPlugin) also patches the final bundle output
@@ -783,7 +783,7 @@ function nativeModuleStubPlugin(): Plugin {
       });
       if (needed.length === 0 && patched === code) return null;
       // Use unique prefixed names to avoid collisions with minified vars
-      const prefix = "__tokagent_stub_";
+      const prefix = "__eliza_stub_";
       const stubs = needed
         .map((n) => `var ${prefix}${n} = ${missingExports[n]};`)
         .join("\n");
@@ -831,7 +831,7 @@ function watchWorkspacePackagesPlugin(): Plugin {
   return {
     name: "watch-workspace-packages",
     configureServer(server) {
-      server.watcher.add(path.resolve(tokagentRoot, "packages"));
+      server.watcher.add(path.resolve(elizaRoot, "packages"));
       server.watcher.add(nativePluginsRoot);
       server.watcher.on("change", (file) => {
         if (file.includes("/packages/")) {
@@ -853,7 +853,7 @@ function watchWorkspacePackagesPlugin(): Plugin {
  * middleware; in build the files are copied into the output.
  */
 function companionAssetsPlugin(): Plugin {
-  const companionPublic = path.resolve(tokagentRoot, "apps/app-companion/public");
+  const companionPublic = path.resolve(elizaRoot, "apps/app-companion/public");
   return {
     name: "companion-assets",
     configureServer(server) {
@@ -917,19 +917,19 @@ export default defineConfig({
   publicDir: path.resolve(here, "public"),
   define: {
     global: "globalThis",
-    // Mirror TOKAGENT_TTS_DEBUG into the client bundle so one env enables UI + server TTS logs in dev.
-    "import.meta.env.TOKAGENT_TTS_DEBUG": JSON.stringify(
-      process.env.TOKAGENT_TTS_DEBUG ?? "",
+    // Mirror ELIZA_TTS_DEBUG into the client bundle so one env enables UI + server TTS logs in dev.
+    "import.meta.env.ELIZA_TTS_DEBUG": JSON.stringify(
+      process.env.ELIZA_TTS_DEBUG ?? "",
     ),
-    // Settings load/save trace (TokagentClient + shared isTokagentSettingsDebugEnabled).
-    "import.meta.env.TOKAGENT_SETTINGS_DEBUG": JSON.stringify(
-      process.env.TOKAGENT_SETTINGS_DEBUG ?? "",
+    // Settings load/save trace (ElizaClient + shared isElizaSettingsDebugEnabled).
+    "import.meta.env.ELIZA_SETTINGS_DEBUG": JSON.stringify(
+      process.env.ELIZA_SETTINGS_DEBUG ?? "",
     ),
-    "import.meta.env.VITE_TOKAGENT_SETTINGS_DEBUG": JSON.stringify(
-      process.env.VITE_TOKAGENT_SETTINGS_DEBUG ?? "",
+    "import.meta.env.VITE_ELIZA_SETTINGS_DEBUG": JSON.stringify(
+      process.env.VITE_ELIZA_SETTINGS_DEBUG ?? "",
     ),
     "import.meta.env.VITE_ASSET_BASE_URL": JSON.stringify(
-      process.env.VITE_ASSET_BASE_URL ?? process.env.TOKAGENT_ASSET_BASE_URL ?? "",
+      process.env.VITE_ASSET_BASE_URL ?? process.env.ELIZA_ASSET_BASE_URL ?? "",
     ),
   },
   plugins: [
@@ -941,7 +941,7 @@ export default defineConfig({
     tailwindcss(),
     react(),
     desktopCorsPlugin(),
-    tokagentDevSettingsBannerPlugin(),
+    elizaDevSettingsBannerPlugin(),
   ],
   esbuild: {
     // Override tsconfig target — some extended configs use ES2024 which older
@@ -975,58 +975,58 @@ export default defineConfig({
       ]),
       // Capacitor plugins — resolve to local plugin sources
       {
-        find: /^@tokagentos\/capacitor-agent$/,
+        find: /^@elizaos\/capacitor-agent$/,
         replacement: path.join(nativePluginsRoot, "agent/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-camera$/,
+        find: /^@elizaos\/capacitor-camera$/,
         replacement: path.join(nativePluginsRoot, "camera/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-canvas$/,
+        find: /^@elizaos\/capacitor-canvas$/,
         replacement: path.join(nativePluginsRoot, "canvas/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-desktop$/,
+        find: /^@elizaos\/capacitor-desktop$/,
         replacement: path.join(nativePluginsRoot, "desktop/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-gateway$/,
+        find: /^@elizaos\/capacitor-gateway$/,
         replacement: path.join(nativePluginsRoot, "gateway/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-location$/,
+        find: /^@elizaos\/capacitor-location$/,
         replacement: path.join(nativePluginsRoot, "location/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-mobile-signals$/,
+        find: /^@elizaos\/capacitor-mobile-signals$/,
         replacement: path.join(
           nativePluginsRoot,
           "mobile-signals/src/index.ts",
         ),
       },
       {
-        find: /^@tokagentos\/capacitor-screencapture$/,
+        find: /^@elizaos\/capacitor-screencapture$/,
         replacement: path.join(nativePluginsRoot, "screencapture/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-swabble$/,
+        find: /^@elizaos\/capacitor-swabble$/,
         replacement: path.join(nativePluginsRoot, "swabble/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-talkmode$/,
+        find: /^@elizaos\/capacitor-talkmode$/,
         replacement: path.join(nativePluginsRoot, "talkmode/src/index.ts"),
       },
       {
-        find: /^@tokagentos\/capacitor-websiteblocker$/,
+        find: /^@elizaos\/capacitor-websiteblocker$/,
         replacement: path.join(
           nativePluginsRoot,
           "websiteblocker/src/index.ts",
         ),
       },
-      // Dynamic aliases for all tokagent/apps/* packages
+      // Dynamic aliases for all eliza/apps/* packages
       ...(() => {
-        const appsDir = path.resolve(tokagentRoot, "apps");
+        const appsDir = path.resolve(elizaRoot, "apps");
         const aliases = [];
         for (const entry of fs.readdirSync(appsDir, { withFileTypes: true })) {
           if (!entry.isDirectory()) continue;
@@ -1053,7 +1053,7 @@ export default defineConfig({
       })(),
       ...(() => {
         const sharedPkgPath = path.resolve(
-          tokagentRoot,
+          elizaRoot,
           "packages/shared/package.json",
         );
         const sharedPkgDir = path.dirname(sharedPkgPath);
@@ -1068,7 +1068,7 @@ export default defineConfig({
       // bun cache copies from overriding the symlinked local source).
       ...(() => {
         const appCorePkgPath = path.resolve(
-          tokagentRoot,
+          elizaRoot,
           "packages/app-core/package.json",
         );
         const appCorePkgDir = path.dirname(appCorePkgPath);
@@ -1080,11 +1080,11 @@ export default defineConfig({
           packageName: "@elizaos/app-core",
           preferJsAlias: true,
         });
-        const uiPkgPath = path.resolve(tokagentRoot, "packages/ui/package.json");
+        const uiPkgPath = path.resolve(elizaRoot, "packages/ui/package.json");
         const uiPkgDir = path.dirname(uiPkgPath);
         const uiPkg = JSON.parse(fs.readFileSync(uiPkgPath, "utf8"));
         const _autonomousSource = path.resolve(
-          tokagentRoot,
+          elizaRoot,
           "node_modules/@elizaos/agent/packages/agent/src",
         );
 
@@ -1095,13 +1095,13 @@ export default defineConfig({
             packageExports: uiPkg.exports,
             packageName: "@elizaos/ui",
           }),
-          // NOTE: @elizaos/agent barrel re-exports server-only code (tokagent.ts,
+          // NOTE: @elizaos/agent barrel re-exports server-only code (eliza.ts,
           // server.ts) that imports native modules (node-llama-cpp, node:module).
           // Nothing in the browser needs the barrel — only subpath imports like
           // @elizaos/agent/contracts/onboarding are used.  Map the bare import
           // to an empty module so Vite never traverses the server-side tree.
           {
-            find: /^@tokagentos\/agent$/,
+            find: /^@elizaos\/agent$/,
             replacement: path.join(
               appCoreSrcRoot,
               "platform/empty-node-module.ts",
@@ -1112,8 +1112,8 @@ export default defineConfig({
           // main workspace copy's browser entry.  The browser entry has all
           // needed exports and avoids pulling in createRequire/node:fs/etc.
           {
-            find: /^@tokagentos\/core$/,
-            replacement: resolveTokagentCoreBundlePath(),
+            find: /^@elizaos\/core$/,
+            replacement: resolveElizaCoreBundlePath(),
           },
         ];
       })(),
@@ -1266,10 +1266,10 @@ export default defineConfig({
     // Vite leaves dev asset URLs relative, worker source-map lookups can turn
     // into malformed blob://nullhttp//... requests. Pin the dev origin so
     // worker chunks, source maps, and HMR all resolve against loopback.
-    // Keep TOKAGENT_HMR_HOST as an override for remote HMR / VPS development.
+    // Keep ELIZA_HMR_HOST as an override for remote HMR / VPS development.
     origin: `http://127.0.0.1:${uiPort}`,
     hmr: {
-      host: process.env.TOKAGENT_HMR_HOST || "127.0.0.1",
+      host: process.env.ELIZA_HMR_HOST || "127.0.0.1",
       port: uiPort,
     },
     cors: {
@@ -1298,7 +1298,7 @@ export default defineConfig({
           proxy.on("error", () => {});
         },
       },
-      // tokagentOS plugin-music-player HTTP routes live outside /api (e.g. /music-player/stream).
+      // elizaOS plugin-music-player HTTP routes live outside /api (e.g. /music-player/stream).
       "/music-player": {
         target: `http://127.0.0.1:${apiPort}`,
         changeOrigin: true,
@@ -1313,12 +1313,12 @@ export default defineConfig({
       },
     },
     fs: {
-      // Allow serving files from the app directory and tokagentossrc
-      allow: [here, tokagentRoot],
+      // Allow serving files from the app directory and elizaossrc
+      allow: [here, elizaRoot],
     },
     watch: {
       // Polling is only needed in Docker/WSL where native fs events are unreliable
-      usePolling: process.env.TOKAGENT_DEV_POLLING === "1",
+      usePolling: process.env.ELIZA_DEV_POLLING === "1",
       // Electrobun postBuild copies renderer HTML/assets into electrobun/build/.
       // Watching those paths triggers full reloads while deps are still optimizing,
       // which breaks with "chunk-*.js does not exist" in node_modules/.vite/deps.
