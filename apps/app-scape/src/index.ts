@@ -6,7 +6,7 @@ import { scapeProviders } from "./providers/index.js";
 import { ScapeGameService } from "./services/game-service.js";
 
 /**
- * `@elizaos/app-scape` plugin entry point.
+ * `@tokagentos/app-scape` plugin entry point.
  *
  * PR 2 scope: plugin shell only. Declares the app metadata that the
  * tokagent launcher reads (display name, capabilities, viewer URL) and
@@ -20,7 +20,7 @@ import { ScapeGameService } from "./services/game-service.js";
  */
 export function createAppScapePlugin(): Plugin {
   return {
-    name: "@elizaos/app-scape",
+    name: "@tokagentos/app-scape",
     description:
       "'scape — first-class agent integration for xRSPS. Autonomous RuneScape-alike agent with TOON-encoded state, a Scape Journal, and directed-prompt operator control.",
     // PR 4: service + actions + providers all register on plugin load.
@@ -36,7 +36,7 @@ export function createAppScapePlugin(): Plugin {
       launchType: "connect",
       launchUrl: resolveLaunchUrl(),
       capabilities: ["autonomous", "game", "journal", "operator-steering"],
-      runtimePlugin: "@elizaos/app-scape",
+      runtimePlugin: "@tokagentos/app-scape",
       viewer: {
         url: "/api/apps/scape/viewer",
         sandbox: "allow-scripts allow-same-origin allow-popups allow-forms",
@@ -66,7 +66,7 @@ function resolveLaunchUrl(): string {
 
 export const appScapePlugin = gatePluginSessionForHostedApp(
   createAppScapePlugin(),
-  "@elizaos/app-scape",
+  "@tokagentos/app-scape",
 );
 
 export default appScapePlugin;

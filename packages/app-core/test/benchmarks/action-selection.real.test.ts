@@ -55,7 +55,7 @@ async function createBenchmarkRuntimeFactory(): Promise<{
     const environment = await prepareMockedTestEnvironment();
     const { appLifeOpsPlugin } = await import(
       // @ts-expect-error — workspace package resolved at runtime
-      "@elizaos/app-lifeops/plugin"
+      "@tokagentos/app-lifeops/plugin"
     );
     return {
       createCaseRuntime: async () =>
@@ -76,7 +76,7 @@ async function createBenchmarkRuntimeFactory(): Promise<{
   // production URLs during module evaluation.
   const { appLifeOpsPlugin } = await import(
     // @ts-expect-error — workspace package resolved at runtime
-    "@elizaos/app-lifeops/plugin"
+    "@tokagentos/app-lifeops/plugin"
   );
 
   return {

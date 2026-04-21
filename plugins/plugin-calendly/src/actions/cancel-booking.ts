@@ -17,8 +17,8 @@ import type {
 	IAgentRuntime,
 	Memory,
 	State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type { CalendlyService } from "../services/CalendlyService.js";
 import {
 	CALENDLY_SERVICE_TYPE,

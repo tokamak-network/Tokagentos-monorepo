@@ -1,4 +1,4 @@
-import type { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
+import type { IAgentRuntime, Memory, Provider, State } from "@tokagentos/core";
 import type { SignalService } from "../service";
 import { getSignalContactDisplayName, ServiceType } from "../types";
 

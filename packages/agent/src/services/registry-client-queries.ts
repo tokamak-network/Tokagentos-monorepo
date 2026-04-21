@@ -38,7 +38,7 @@ export function getPluginInfoFromRegistry(
     p = registry.get(`@elizaos/plugin-${name}`);
     if (p) return p;
 
-    p = registry.get(`@elizaos/app-${name}`);
+    p = registry.get(`@tokagentos/app-${name}`);
     if (p) return p;
   }
 

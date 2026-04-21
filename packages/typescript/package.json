@@ -83,7 +83,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@elizaos/plugin-tokagentcloud": "workspace:*",
+    "@elizaos/plugin-elizacloud": "workspace:*",
     "@elizaos/plugin-sql": "workspace:*",
     "@tokagentos/schemas": "workspace:*",
     "@playwright/test": "^1.52.0",

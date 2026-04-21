@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/app-tokagentmaker",
+  "name": "@tokagentos/app-tokagentmaker",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@tokagentos/agent": "workspace:*",
-    "@elizaos/app-steward": "workspace:*",
+    "@tokagentos/app-steward": "workspace:*",
     "@tokagentos/core": "workspace:*",
     "ethers": "^6.15.0"
   },

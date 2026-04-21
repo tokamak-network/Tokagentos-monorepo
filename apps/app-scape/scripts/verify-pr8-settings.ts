@@ -43,8 +43,8 @@ function main(): void {
         scape.category === "app",
     );
     assertTrue(
-        `scape.npmName = "@elizaos/app-scape" (got "${scape.npmName}")`,
-        scape.npmName === "@elizaos/app-scape",
+        `scape.npmName = "@tokagentos/app-scape" (got "${scape.npmName}")`,
+        scape.npmName === "@tokagentos/app-scape",
     );
     assertTrue(
         `scape has 9 parameters (got ${scape.parameters.length})`,

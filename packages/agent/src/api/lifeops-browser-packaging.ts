@@ -1,1 +1,1 @@
-export { getLifeOpsBrowserCompanionPackageStatus } from "@elizaos/app-lifeops/public";
+export { getLifeOpsBrowserCompanionPackageStatus } from "@tokagentos/app-lifeops/public";

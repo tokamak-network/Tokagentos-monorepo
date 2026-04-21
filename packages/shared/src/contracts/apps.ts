@@ -296,42 +296,42 @@ export const TOKAGENT_CURATED_APP_DEFINITIONS: readonly TokagentCuratedAppDefini
   [
     {
       slug: "companion",
-      canonicalName: "@elizaos/app-companion",
+      canonicalName: "@tokagentos/app-companion",
       aliases: [],
     },
     {
       slug: "hyperscape",
       canonicalName: "@hyperscape/plugin-hyperscape",
-      aliases: ["@elizaos/app-hyperscape"],
+      aliases: ["@tokagentos/app-hyperscape"],
     },
     {
       slug: "babylon",
-      canonicalName: "@elizaos/app-babylon",
+      canonicalName: "@tokagentos/app-babylon",
       aliases: [],
     },
     {
       slug: "2004scape",
-      canonicalName: "@elizaos/app-2004scape",
+      canonicalName: "@tokagentos/app-2004scape",
       aliases: [],
     },
     {
       slug: "scape",
-      canonicalName: "@elizaos/app-scape",
+      canonicalName: "@tokagentos/app-scape",
       aliases: [],
     },
     {
       slug: "defense-of-the-agents",
-      canonicalName: "@elizaos/app-defense-of-the-agents",
+      canonicalName: "@tokagentos/app-defense-of-the-agents",
       aliases: [],
     },
     {
       slug: "vincent",
-      canonicalName: "@elizaos/app-vincent",
+      canonicalName: "@tokagentos/app-vincent",
       aliases: [],
     },
     {
       slug: "shopify",
-      canonicalName: "@elizaos/app-shopify",
+      canonicalName: "@tokagentos/app-shopify",
       aliases: ["@elizaos/plugin-shopify"],
     },
     {

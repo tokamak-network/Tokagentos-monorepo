@@ -17,8 +17,8 @@ import type {
 	RouteBodyValue,
 	RouteRequest,
 	RouteResponse,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type { CalendlyWebhookEvent } from "../types.js";
 
 const VALID_EVENTS: ReadonlySet<CalendlyWebhookEvent["event"]> = new Set([

@@ -1,4 +1,4 @@
-import { StewardLogo } from "@elizaos/app-steward/StewardLogo";
+import { StewardLogo } from "@tokagentos/app-steward/StewardLogo";
 import type {
   BscTradeExecuteRequest,
   BscTradeExecuteResponse,

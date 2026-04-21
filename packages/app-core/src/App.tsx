@@ -3,7 +3,7 @@
  */
 
 import { Keyboard } from "@capacitor/keyboard";
-import { FineTuningView } from "@elizaos/app-training/ui/FineTuningView";
+import { FineTuningView } from "@tokagentos/app-training/ui/FineTuningView";
 import {
   Button,
   DrawerSheet,

@@ -1,5 +1,5 @@
 /**
- * Vincent App — @elizaos/app-vincent
+ * Vincent App — @tokagentos/app-vincent
  *
  * Full-screen overlay app for DeFi vault management and autotrading
  * via Vincent (https://heyvincent.ai). Follows the same OverlayApp
@@ -10,7 +10,7 @@ import type { OverlayApp } from "@tokagentos/app-core";
 import { registerOverlayApp } from "@tokagentos/app-core";
 import { VincentAppView } from "./VincentAppView";
 
-export const VINCENT_APP_NAME = "@elizaos/app-vincent";
+export const VINCENT_APP_NAME = "@tokagentos/app-vincent";
 
 export const vincentApp: OverlayApp = {
   name: VINCENT_APP_NAME,

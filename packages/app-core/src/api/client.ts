@@ -57,7 +57,7 @@ import type {
   StewardWebhookEvent,
   StewardWebhookEventsResponse,
   StewardWebhookEventType,
-} from "@elizaos/app-steward/types";
+} from "@tokagentos/app-steward/types";
 import type {
   BscTradeExecuteRequest,
   BscTradeExecuteResponse,
@@ -229,7 +229,7 @@ import "./client-cloud";
 import "./client-skills";
 import "./client-computeruse";
 import "./client-local-inference";
-import "@elizaos/app-vincent/client";
+import "@tokagentos/app-vincent/client";
 
 // ---------------------------------------------------------------------------
 // Singleton

@@ -1,7 +1,7 @@
 import { mkdtemp, readFile, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { browserAction } from "../actions/browser-action.js";
 import { fileAction } from "../actions/file-action.js";

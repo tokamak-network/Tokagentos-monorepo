@@ -53,8 +53,8 @@ export {
 
 // resolvePlugins is re-exported via index.ts from ./plugin-resolver
 
-import * as pluginAppCompanion from "@elizaos/app-companion/plugin";
-import * as pluginAppLifeops from "@elizaos/app-lifeops/plugin";
+import * as pluginAppCompanion from "@tokagentos/app-companion/plugin";
+import * as pluginAppLifeops from "@tokagentos/app-lifeops/plugin";
 import {
   AgentRuntime,
   AutonomyService,
@@ -194,7 +194,7 @@ try {
 // that ESM entry, which breaks CLI bootstrap in published-only CI.
 let pluginTokagentcloud: unknown = null;
 try {
-  pluginTokagentcloud = require("@elizaos/plugin-tokagentcloud");
+  pluginTokagentcloud = require("@elizaos/plugin-elizacloud");
 } catch {
   pluginTokagentcloud = null;
 }
@@ -316,11 +316,11 @@ Object.assign(STATIC_TOKAGENT_PLUGINS, {
   "@elizaos/plugin-anthropic": pluginAnthropic,
   ...(pluginOllama ? { "@elizaos/plugin-ollama": pluginOllama } : {}),
   ...(pluginTokagentcloud
-    ? { "@elizaos/plugin-tokagentcloud": pluginTokagentcloud }
+    ? { "@elizaos/plugin-elizacloud": pluginTokagentcloud }
     : {}),
   // trust: now built-in core capability (ENABLE_TRUST)
-  "@elizaos/app-lifeops": pluginAppLifeops,
-  "@elizaos/app-companion": pluginAppCompanion,
+  "@tokagentos/app-lifeops": pluginAppLifeops,
+  "@tokagentos/app-companion": pluginAppCompanion,
   "@elizaos/plugin-discord-local": discordLocalPlugin,
   // personality: now built-in advanced capability (advancedCapabilities: true)
 });
@@ -1369,7 +1369,7 @@ export function applyCloudConfigToEnv(config: TokagentConfig): void {
     // credential — never set the literal "[REDACTED]" placeholder (which can
     // leak into the config via UI round-trips through the redacted GET → PUT
     // cycle). WHY: when enabled is false (BYOK / disconnected), leaving the key
-    // in process.env still auto-loads @elizaos/plugin-tokagentcloud and steals
+    // in process.env still auto-loads @elizaos/plugin-elizacloud and steals
     // TEXT_LARGE even if the JSON says cloud is off.
     const isRealApiKey =
       cloud?.apiKey && cloud.apiKey.trim().toUpperCase() !== "[REDACTED]";
@@ -2994,7 +2994,7 @@ export async function startTokagent(
 
   // 2d-iii. OG tracking code initialization
   try {
-    const { initializeOGCode } = await import("@elizaos/app-tokagentmaker");
+    const { initializeOGCode } = await import("@tokagentos/app-tokagentmaker");
     initializeOGCode();
   } catch {
     // Silent — OG tracking is non-critical

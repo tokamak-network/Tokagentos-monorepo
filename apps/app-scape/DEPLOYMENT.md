@@ -1,4 +1,4 @@
-# `@elizaos/app-scape` — Deployment Guide
+# `@tokagentos/app-scape` — Deployment Guide
 
 This document covers running the 'scape plugin end-to-end. The
 **default configuration** already points at the live production

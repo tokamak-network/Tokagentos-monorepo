@@ -1,7 +1,7 @@
 import type {
   HandlerOptions,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 export function resolveActionParams<T>(
   message: Memory,

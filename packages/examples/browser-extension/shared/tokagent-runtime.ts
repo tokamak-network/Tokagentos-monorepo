@@ -22,7 +22,7 @@ import anthropicPlugin from "@elizaos/plugin-anthropic";
 import {
   tokagentClassicPlugin,
   getTokagentGreeting,
-} from "@elizaos/plugin-tokagent-classic";
+} from "@elizaos/plugin-eliza-classic";
 import googleGenAIPlugin from "@elizaos/plugin-google-genai";
 import groqPlugin from "@elizaos/plugin-groq";
 import localdbPlugin from "@elizaos/plugin-localdb";

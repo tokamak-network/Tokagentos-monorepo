@@ -29,7 +29,7 @@ import { AppsSection } from "./AppsSection";
 
 function buildUseAppState(overrides?: Record<string, unknown>) {
   return {
-    favoriteApps: ["@elizaos/app-lifeops"],
+    favoriteApps: ["@tokagentos/app-lifeops"],
     appRuns: [],
     setTab: vi.fn(),
     setState: vi.fn(),

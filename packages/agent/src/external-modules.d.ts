@@ -125,7 +125,7 @@ declare module "telegram/sessions" {
     [key: string]: unknown;
   }
 }
-declare module "@elizaos/plugin-tokagentcloud";
+declare module "@elizaos/plugin-elizacloud";
 declare module "@elizaos/plugin-commands";
 declare module "@elizaos/plugin-cron";
 declare module "@elizaos/plugin-edge-tts";
@@ -137,7 +137,7 @@ declare module "@elizaos/plugin-shell";
 declare module "@elizaos/signal-native";
 declare module "qrcode";
 
-declare module "@elizaos/app-knowledge/routes" {
+declare module "@tokagentos/app-knowledge/routes" {
   export type KnowledgeRouteContext = unknown;
   export type KnowledgeRouteHelpers = unknown;
   export const handleKnowledgeRoutes: (
@@ -145,7 +145,7 @@ declare module "@elizaos/app-knowledge/routes" {
   ) => Promise<boolean> | boolean;
 }
 
-declare module "@elizaos/app-knowledge/service-loader" {
+declare module "@tokagentos/app-knowledge/service-loader" {
   import type { AgentRuntime, Memory, UUID } from "@tokagentos/core";
 
   export type KnowledgeLoadFailReason =
@@ -203,27 +203,27 @@ declare module "@elizaos/app-knowledge/service-loader" {
   export const getKnowledgeTimeoutMs: () => number;
 }
 
-declare module "@elizaos/app-training/routes/trajectory" {
+declare module "@tokagentos/app-training/routes/trajectory" {
   export const handleTrajectoryRoute: (
     ...args: unknown[]
   ) => Promise<boolean> | boolean;
 }
 
 
-declare module "@elizaos/app-training/routes/training" {
+declare module "@tokagentos/app-training/routes/training" {
   export type TrainingRouteHelpers = unknown;
   export const handleTrainingRoutes: (
     ...args: unknown[]
   ) => Promise<boolean> | boolean;
 }
 
-declare module "@elizaos/app-training/core/context-types" {
+declare module "@tokagentos/app-training/core/context-types" {
   export type AgentContext = string;
   export const AGENT_CONTEXTS: AgentContext[];
 }
 
-declare module "@elizaos/app-training/core/context-catalog" {
-  import type { AgentContext } from "@elizaos/app-training/core/context-types";
+declare module "@tokagentos/app-training/core/context-catalog" {
+  import type { AgentContext } from "@tokagentos/app-training/core/context-types";
 
   export type ContextResolutionSource = string;
   export const ACTION_CONTEXT_MAP: Record<string, AgentContext[]>;
@@ -241,15 +241,15 @@ declare module "@elizaos/app-training/core/context-catalog" {
   };
 }
 
-declare module "@elizaos/app-training/core/cli" {}
-declare module "@elizaos/app-training/core/context-audit" {}
-declare module "@elizaos/app-training/core/dataset-generator" {}
-declare module "@elizaos/app-training/core/replay-validator" {}
-declare module "@elizaos/app-training/core/roleplay-executor" {}
-declare module "@elizaos/app-training/core/roleplay-trajectories" {}
-declare module "@elizaos/app-training/core/scenario-blueprints" {}
-declare module "@elizaos/app-training/core/trajectory-task-datasets" {}
-declare module "@elizaos/app-training/core/vertex-tuning" {}
+declare module "@tokagentos/app-training/core/cli" {}
+declare module "@tokagentos/app-training/core/context-audit" {}
+declare module "@tokagentos/app-training/core/dataset-generator" {}
+declare module "@tokagentos/app-training/core/replay-validator" {}
+declare module "@tokagentos/app-training/core/roleplay-executor" {}
+declare module "@tokagentos/app-training/core/roleplay-trajectories" {}
+declare module "@tokagentos/app-training/core/scenario-blueprints" {}
+declare module "@tokagentos/app-training/core/trajectory-task-datasets" {}
+declare module "@tokagentos/app-training/core/vertex-tuning" {}
 
 declare module "abitype" {
   export type TypedData = Record<

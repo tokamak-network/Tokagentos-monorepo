@@ -13,7 +13,7 @@ interface InternalToolAppDefinition {
 
 const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
   {
-    name: "@elizaos/app-lifeops",
+    name: "@tokagentos/app-lifeops",
     displayName: "LifeOps",
     description:
       "Run tasks, reminders, calendar, inbox, and connected operational workflows.",
@@ -23,7 +23,7 @@ const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
     order: 0,
   },
   {
-    name: "@elizaos/app-plugin-viewer",
+    name: "@tokagentos/app-plugin-viewer",
     displayName: "Plugin Viewer",
     description:
       "Inspect installed plugins, connectors, and runtime feature flags.",
@@ -33,7 +33,7 @@ const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
     order: 1,
   },
   {
-    name: "@elizaos/app-skills-viewer",
+    name: "@tokagentos/app-skills-viewer",
     displayName: "Skills Viewer",
     description: "Create, enable, review, and install custom agent skills.",
     heroImage: "/app-heroes/skills-viewer.png",
@@ -42,7 +42,7 @@ const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
     order: 2,
   },
   {
-    name: "@elizaos/app-trajectory-viewer",
+    name: "@tokagentos/app-trajectory-viewer",
     displayName: "Trajectory Viewer",
     description: "Inspect LLM call history, prompts, and execution traces.",
     heroImage: "/app-heroes/trajectory-viewer.png",
@@ -51,7 +51,7 @@ const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
     order: 3,
   },
   {
-    name: "@elizaos/app-relationship-viewer",
+    name: "@tokagentos/app-relationship-viewer",
     displayName: "Relationship Viewer",
     description:
       "Explore cross-channel people, identities, and relationship graphs.",
@@ -61,7 +61,7 @@ const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
     order: 4,
   },
   {
-    name: "@elizaos/app-memory-viewer",
+    name: "@tokagentos/app-memory-viewer",
     displayName: "Memory Viewer",
     description: "Browse memory, fact, and extraction activity.",
     heroImage: "/app-heroes/memory-viewer.png",
@@ -70,7 +70,7 @@ const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
     order: 5,
   },
   {
-    name: "@elizaos/app-runtime-debugger",
+    name: "@tokagentos/app-runtime-debugger",
     displayName: "Runtime Debugger",
     description:
       "Inspect runtime objects, plugin order, providers, and services.",
@@ -80,7 +80,7 @@ const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
     order: 6,
   },
   {
-    name: "@elizaos/app-database-viewer",
+    name: "@tokagentos/app-database-viewer",
     displayName: "Database Viewer",
     description: "Inspect tables, media, vectors, and ad-hoc SQL.",
     heroImage: "/app-heroes/database-viewer.png",
@@ -89,7 +89,7 @@ const INTERNAL_TOOL_APPS: readonly InternalToolAppDefinition[] = [
     order: 7,
   },
   {
-    name: "@elizaos/app-log-viewer",
+    name: "@tokagentos/app-log-viewer",
     displayName: "Log Viewer",
     description: "Search runtime and service logs.",
     heroImage: "/app-heroes/log-viewer.png",

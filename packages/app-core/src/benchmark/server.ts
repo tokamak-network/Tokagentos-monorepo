@@ -265,7 +265,7 @@ export async function startBenchmarkServer() {
   // Plugins to skip in benchmark context — these require external auth or
   // interfere with benchmark operation
   const skipPlugins = new Set([
-    "@elizaos/plugin-tokagentcloud", // Requires tokagentOS cloud auth, conflicts with local LLM
+    "@elizaos/plugin-elizacloud", // Requires tokagentOS cloud auth, conflicts with local LLM
   ]);
 
   // Load all CORE_PLUGINS — these are what the production Tokagent runtime uses

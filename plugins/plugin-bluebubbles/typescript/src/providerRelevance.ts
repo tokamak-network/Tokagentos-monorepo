@@ -1,4 +1,4 @@
-import type { Memory } from "@elizaos/core";
+import type { Memory } from "@tokagentos/core";
 
 function getMessageText(message: unknown): string {
 	if (!message || typeof message !== "object") return "";

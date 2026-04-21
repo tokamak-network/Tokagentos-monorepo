@@ -5,7 +5,7 @@
  * `./components/index.ts`. Both files must stay in sync.
  */
 
-export { FineTuningView } from "@elizaos/app-training/ui/FineTuningView";
+export { FineTuningView } from "@tokagentos/app-training/ui/FineTuningView";
 export { GameViewOverlay } from "./components/apps/GameViewOverlay";
 export { CharacterEditor } from "./components/character/CharacterEditor";
 export { SaveCommandModal } from "./components/chat/SaveCommandModal";

@@ -19,7 +19,7 @@ import {
 } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
-import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
+import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 import { v4 as uuidv4 } from "uuid";

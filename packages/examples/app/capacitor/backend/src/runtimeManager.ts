@@ -13,7 +13,7 @@ import {
 import {
   tokagentClassicPlugin,
   getTokagentGreeting,
-} from "@elizaos/plugin-tokagent-classic";
+} from "@elizaos/plugin-eliza-classic";
 import localdbPlugin from "@elizaos/plugin-localdb";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";

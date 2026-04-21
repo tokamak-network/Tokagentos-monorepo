@@ -203,7 +203,7 @@ function scheduleTaskEnsureAfterRuntimeInit(args: {
 }
 
 const rawAppLifeOpsPlugin: Plugin = {
-  name: "@elizaos/app-lifeops",
+  name: "@tokagentos/app-lifeops",
   description:
     "LifeOps: routines, goals, Google Workspace, Apple Reminders, Twilio, browser companions (Chrome/Safari), website blocking, app blocking, and related surfaces.",
   schema: lifeOpsSchema,

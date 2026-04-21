@@ -14,7 +14,7 @@
  * Run: FORCE_OSWORLD_BENCHMARK=1 bun run test:live
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import { ComputerUseService } from "../../services/computer-use-service.js";
 import { mkdtempSync, writeFileSync, readFileSync } from "node:fs";
 import { join } from "node:path";

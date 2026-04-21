@@ -311,10 +311,10 @@ async function ensureAutonomyBootstrapContext(
 
 async function registerAppRoutePlugins(runtime: AgentRuntime): Promise<void> {
   const pluginLoaders: Array<() => Promise<Plugin>> = [
-    async () => (await import("@elizaos/app-vincent/plugin")).vincentPlugin,
-    async () => (await import("@elizaos/app-shopify/plugin")).shopifyPlugin,
-    async () => (await import("@elizaos/app-steward/plugin")).stewardPlugin,
-    async () => (await import("@elizaos/app-lifeops/public")).lifeopsPlugin,
+    async () => (await import("@tokagentos/app-vincent/plugin")).vincentPlugin,
+    async () => (await import("@tokagentos/app-shopify/plugin")).shopifyPlugin,
+    async () => (await import("@tokagentos/app-steward/plugin")).stewardPlugin,
+    async () => (await import("@tokagentos/app-lifeops/public")).lifeopsPlugin,
   ];
 
   for (const loadPlugin of pluginLoaders) {
@@ -345,7 +345,7 @@ async function registerAppRoutePlugins(runtime: AgentRuntime): Promise<void> {
 
 /**
  * Register the nightly Track C training crons (trajectory export + skill
- * scoring) against the live runtime. The @elizaos/app-training package is
+ * scoring) against the live runtime. The @tokagentos/app-training package is
  * optional — if it is not installed, the dynamic import fails and we skip
  * silently. Each underlying registration also no-ops when the CRON service
  * is missing, so installs without plugin-cron are safe.
@@ -353,22 +353,22 @@ async function registerAppRoutePlugins(runtime: AgentRuntime): Promise<void> {
 async function registerTrackCTrainingCrons(
   runtime: AgentRuntime,
 ): Promise<void> {
-  // `@elizaos/app-training` is an optional dependency: the package may not be
+  // `@tokagentos/app-training` is an optional dependency: the package may not be
   // installed at all in minimal deployments. Scope the try/catch to the
   // dynamic imports so a missing package logs a skip, but real errors inside
   // the registration helpers propagate with full context.
-  let exportMod: typeof import("@elizaos/app-training/core/trajectory-export-cron");
-  let scoringMod: typeof import("@elizaos/app-training/core/skill-scoring-cron");
-  let triggerMod: typeof import("@elizaos/app-training/services/training-trigger");
+  let exportMod: typeof import("@tokagentos/app-training/core/trajectory-export-cron");
+  let scoringMod: typeof import("@tokagentos/app-training/core/skill-scoring-cron");
+  let triggerMod: typeof import("@tokagentos/app-training/services/training-trigger");
   try {
     [exportMod, scoringMod, triggerMod] = await Promise.all([
-      import("@elizaos/app-training/core/trajectory-export-cron"),
-      import("@elizaos/app-training/core/skill-scoring-cron"),
-      import("@elizaos/app-training/services/training-trigger"),
+      import("@tokagentos/app-training/core/trajectory-export-cron"),
+      import("@tokagentos/app-training/core/skill-scoring-cron"),
+      import("@tokagentos/app-training/services/training-trigger"),
     ]);
   } catch (err) {
     logger.warn(
-      `[tokagent] @elizaos/app-training not installed, skipping Track C training crons: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent] @tokagentos/app-training not installed, skipping Track C training crons: ${err instanceof Error ? err.message : String(err)}`,
     );
     return;
   }
@@ -415,7 +415,7 @@ async function repairRuntimeAfterBoot(
   await registerAppRoutePlugins(runtime);
 
   // ── Register Track C training crons (trajectory export + skill scoring) ─
-  // Optional: only runs when @elizaos/app-training is installed. Both cron
+  // Optional: only runs when @tokagentos/app-training is installed. Both cron
   // registrations internally no-op when the CRON service is unavailable, so
   // installs without plugin-cron are also safe.
   await registerTrackCTrainingCrons(runtime);

@@ -5,7 +5,7 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { WindowActionParams } from "../types.js";
 import type { ComputerUseService } from "../services/computer-use-service.js";
 import { resolveActionParams } from "./helpers.js";

@@ -60,8 +60,8 @@ type AppPluginModule = {
 };
 
 // Built-in app route modules for 2004scape and hyperscape have been
-// extracted to their own app packages (@elizaos/app-2004scape/routes
-// and @elizaos/app-hyperscape/routes). The workspace-local lookup in
+// extracted to their own app packages (@tokagentos/app-2004scape/routes
+// and @tokagentos/app-hyperscape/routes). The workspace-local lookup in
 // importLocalAppRouteModule resolves them automatically via
 // src/routes.ts in the respective app directories.
 const BUILT_IN_APP_ROUTE_MODULE_IMPORTERS = new Map<
@@ -283,7 +283,7 @@ async function resolveAppModuleTarget(
 
   const packageCandidates = trimmed.startsWith("@")
     ? [trimmed]
-    : [`@elizaos/app-${trimmed}`, `@elizaos/plugin-${trimmed}`];
+    : [`@tokagentos/app-${trimmed}`, `@elizaos/plugin-${trimmed}`];
 
   for (const packageName of packageCandidates) {
     const localPath = await resolveWorkspacePackageDir(packageName);

@@ -11,7 +11,7 @@ import {
   ModelType,
   parseJSONObjectFromText,
   type State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   getMessageText,
   getSignalService,

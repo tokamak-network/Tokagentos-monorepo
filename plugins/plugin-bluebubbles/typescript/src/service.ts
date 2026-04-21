@@ -15,7 +15,7 @@ import {
 	type Memory,
 	Service,
 	type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { BlueBubblesClient } from "./client";
 import { BLUEBUBBLES_SERVICE_NAME, DEFAULT_WEBHOOK_PATH } from "./constants";
 import {

@@ -1,0 +1,6 @@
+{
+  "name": "@elizaos/plugin-edge-tts",
+  "version": "0.0.0-stub",
+  "private": true,
+  "description": "Stub package.json for upstream submodule plugins/plugin-edge-tts. Run 'git submodule update --init plugins/plugin-edge-tts' to populate."
+}

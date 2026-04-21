@@ -8,7 +8,7 @@ await build({
   splitting: false,
   sourcemap: "external",
   minify: false,
-  external: ["@elizaos/core", "zod"],
+  external: ["@tokagentos/core", "zod"],
 });
 
 // Generate type declarations

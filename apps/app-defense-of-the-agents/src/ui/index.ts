@@ -3,7 +3,7 @@ import { registerDetailExtension } from "@tokagentos/app-core/components/apps/ex
 import { DefenseAgentsOperatorSurface } from "./DefenseAgentsOperatorSurface.js";
 import { DefenseAgentsDetailExtension } from "./DefenseAgentsDetailExtension.js";
 
-registerOperatorSurface("@elizaos/app-defense-of-the-agents", DefenseAgentsOperatorSurface);
+registerOperatorSurface("@tokagentos/app-defense-of-the-agents", DefenseAgentsOperatorSurface);
 registerDetailExtension("defense-agent-control", DefenseAgentsDetailExtension);
 
 export { DefenseAgentsOperatorSurface, DefenseAgentsDetailExtension };

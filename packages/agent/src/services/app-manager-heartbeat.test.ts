@@ -45,9 +45,9 @@ function makeRun(overrides: Partial<AppRunSummary>): AppRunSummary {
   const now = new Date().toISOString();
   return {
     runId: "run-1",
-    appName: "@elizaos/app-defense-of-the-agents",
+    appName: "@tokagentos/app-defense-of-the-agents",
     displayName: "Defense of the Agents",
-    pluginName: "@elizaos/app-defense-of-the-agents",
+    pluginName: "@tokagentos/app-defense-of-the-agents",
     launchType: "connect",
     launchUrl: null,
     viewer: null,
@@ -139,7 +139,7 @@ describe("AppManager.reapStaleRuns", () => {
     expect(stopRunMock).toHaveBeenCalledTimes(1);
     expect(stopRunMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        appName: "@elizaos/app-defense-of-the-agents",
+        appName: "@tokagentos/app-defense-of-the-agents",
         runId: "run-stale",
       }),
     );

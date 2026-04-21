@@ -1,4 +1,4 @@
-import { useCompanionSceneStatus } from "@elizaos/app-companion/components/companion/companion-scene-status-context";
+import { useCompanionSceneStatus } from "@tokagentos/app-companion/components/companion/companion-scene-status-context";
 import { useDocumentVisibility, useTimeout } from "@tokagentos/ui";
 import {
   useCallback,

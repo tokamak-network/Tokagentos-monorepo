@@ -1,5 +1,5 @@
 /**
- * PR 2 runtime smoke test for `@elizaos/app-scape`.
+ * PR 2 runtime smoke test for `@tokagentos/app-scape`.
  *
  * Things the tokagent host would do when loading the plugin, short of
  * actually starting the full runtime:
@@ -26,12 +26,12 @@ import {
 } from "@tokagentos/shared/contracts/apps";
 import appScapePlugin, {
     createAppScapePlugin,
-} from "@elizaos/app-scape";
+} from "@tokagentos/app-scape";
 import {
     handleAppRoutes,
     refreshRunSession,
     resolveLaunchSession,
-} from "@elizaos/app-scape/routes";
+} from "@tokagentos/app-scape/routes";
 
 interface MockResponse {
     statusCode: number;
@@ -83,8 +83,8 @@ async function main(): Promise<void> {
     console.log("\n[1] plugin export shape");
     assertTrue("default export is truthy", appScapePlugin != null);
     assertTrue(
-        "plugin name = @elizaos/app-scape",
-        appScapePlugin.name === "@elizaos/app-scape",
+        "plugin name = @tokagentos/app-scape",
+        appScapePlugin.name === "@tokagentos/app-scape",
     );
     assertTrue("plugin has app metadata", appScapePlugin.app != null);
     assertTrue(
@@ -200,15 +200,15 @@ async function main(): Promise<void> {
     // 6. Session resolvers
     console.log("\n[6] session resolvers");
     const launchSession = await resolveLaunchSession({
-        appName: "@elizaos/app-scape",
+        appName: "@tokagentos/app-scape",
         launchUrl: null,
         runtime: null,
         viewer: null,
     });
     assertTrue("resolveLaunchSession returns a session", launchSession != null);
     assertTrue(
-        "session.appName = @elizaos/app-scape",
-        launchSession?.appName === "@elizaos/app-scape",
+        "session.appName = @tokagentos/app-scape",
+        launchSession?.appName === "@tokagentos/app-scape",
     );
     assertTrue(
         "session.mode = spectate-and-steer",
@@ -216,7 +216,7 @@ async function main(): Promise<void> {
     );
 
     const refreshSession = await refreshRunSession({
-        appName: "@elizaos/app-scape",
+        appName: "@tokagentos/app-scape",
         launchUrl: null,
         runtime: null,
         viewer: null,
@@ -228,7 +228,7 @@ async function main(): Promise<void> {
     // 7. Curated registry integration
     console.log("\n[7] curated registry integration");
     const scapeEntry = TOKAGENT_CURATED_APP_DEFINITIONS.find(
-        (def) => def.canonicalName === "@elizaos/app-scape",
+        (def) => def.canonicalName === "@tokagentos/app-scape",
     );
     assertTrue("scape in TOKAGENT_CURATED_APP_DEFINITIONS", scapeEntry != null);
     assertTrue(
@@ -236,16 +236,16 @@ async function main(): Promise<void> {
         scapeEntry?.slug === "scape",
     );
     assertTrue(
-        "isTokagentCuratedAppName('@elizaos/app-scape')",
-        isTokagentCuratedAppName("@elizaos/app-scape"),
+        "isTokagentCuratedAppName('@tokagentos/app-scape')",
+        isTokagentCuratedAppName("@tokagentos/app-scape"),
     );
     assertTrue(
         "isTokagentCuratedAppName('scape') via slug",
         isTokagentCuratedAppName("scape"),
     );
     assertTrue(
-        "normalizeTokagentCuratedAppName('scape') → @elizaos/app-scape",
-        normalizeTokagentCuratedAppName("scape") === "@elizaos/app-scape",
+        "normalizeTokagentCuratedAppName('scape') → @tokagentos/app-scape",
+        normalizeTokagentCuratedAppName("scape") === "@tokagentos/app-scape",
     );
     const byDef = getTokagentCuratedAppDefinition("scape");
     assertTrue("getTokagentCuratedAppDefinition('scape')", byDef != null);

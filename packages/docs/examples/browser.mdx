@@ -82,7 +82,7 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
       {
         "imports": {
           "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
-          "@elizaos/plugin-tokagent-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js",
+          "@elizaos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js",
           "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/dist/browser/index.browser.js"
         }
       }
@@ -98,7 +98,7 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
 
     <script type="module">
       import { AgentRuntime, ModelType, stringToUuid } from "@tokagentos/core";
-      import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
+      import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
       import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
 
       // Create runtime
@@ -160,7 +160,7 @@ Full React application with PGLite for in-browser PostgreSQL-compatible storage.
 ```typescript
 // tokagent-runtime.ts
 import { AgentRuntime, stringToUuid } from "@tokagentos/core";
-import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
+import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
 import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
 let runtime: AgentRuntime | null = null;

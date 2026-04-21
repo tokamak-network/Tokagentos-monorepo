@@ -1,4 +1,4 @@
-import { appLifeOpsPlugin } from "@elizaos/app-lifeops/plugin";
+import { appLifeOpsPlugin } from "@tokagentos/app-lifeops/plugin";
 import { ModelType, stringToUuid } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { itIf } from "../../../../../test/helpers/conditional-tests.ts";

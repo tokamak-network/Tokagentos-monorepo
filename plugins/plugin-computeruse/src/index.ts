@@ -19,7 +19,7 @@
  * @module @elizaos/plugin-computeruse
  */
 
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import { useComputerAction } from "./actions/use-computer.js";
 import { browserAction } from "./actions/browser-action.js";
 import { manageWindowAction } from "./actions/manage-window.js";

@@ -17,7 +17,7 @@ import {
   resolveStewardAgentId,
   type StewardWebhookEventType,
   signViaSteward,
-} from "@elizaos/app-steward/routes/steward-bridge";
+} from "@tokagentos/app-steward/routes/steward-bridge";
 import { logger } from "@tokagentos/core";
 import { ensureCompatApiAuthorized } from "./auth";
 import {

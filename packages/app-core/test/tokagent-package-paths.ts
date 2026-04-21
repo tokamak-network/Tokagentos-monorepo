@@ -26,7 +26,7 @@ function getRepoLocalWorkspaceRoot(
       "../tokagent/packages/app-core",
     ],
     "@tokagentos/shared": ["tokagent/packages/shared", "../tokagent/packages/shared"],
-    "@elizaos/app-companion": [
+    "@tokagentos/app-companion": [
       "tokagent/apps/app-companion",
       "../tokagent/apps/app-companion",
     ],

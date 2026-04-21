@@ -348,7 +348,7 @@ const lifeOpsPluginRoutes: Route[] = [
 // ---------------------------------------------------------------------------
 
 export const lifeopsPlugin: Plugin = {
-  name: "@elizaos/app-lifeops-routes",
+  name: "@tokagentos/app-lifeops-routes",
   description:
     "LifeOps dashboard, Google Workspace, browser companion, website blocker, and scheduling routes",
   routes: lifeOpsPluginRoutes,

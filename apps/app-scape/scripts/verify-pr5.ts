@@ -20,8 +20,8 @@
  *   BOT_SDK_TOKEN=dev-secret bun tokagent/apps/app-scape/scripts/verify-pr5.ts
  */
 
-import { BotSdk } from "@elizaos/app-scape";
-import type { PerceptionSnapshot } from "@elizaos/app-scape";
+import { BotSdk } from "@tokagentos/app-scape";
+import type { PerceptionSnapshot } from "@tokagentos/app-scape";
 
 const TOKEN = process.env.BOT_SDK_TOKEN;
 if (!TOKEN) {

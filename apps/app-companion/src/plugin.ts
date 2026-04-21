@@ -6,7 +6,7 @@ import { gatePluginSessionForHostedApp } from "@tokagentos/agent/services/app-se
 import type { Plugin } from "@tokagentos/core";
 import { emoteAction } from "./actions/emote.js";
 
-const COMPANION_APP_NAME = "@elizaos/app-companion";
+const COMPANION_APP_NAME = "@tokagentos/app-companion";
 
 const rawCompanionPlugin: Plugin = {
   name: COMPANION_APP_NAME,

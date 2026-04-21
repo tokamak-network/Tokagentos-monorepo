@@ -14,7 +14,7 @@
 
 import { describe, expect, it, vi } from "vitest";
 import type { Octokit } from "@octokit/rest";
-import type { Action, IAgentRuntime } from "@elizaos/core";
+import type { Action, IAgentRuntime } from "@tokagentos/core";
 import { assignIssueAction } from "../actions/assign-issue.js";
 import { createIssueAction } from "../actions/create-issue.js";
 import { listPrsAction } from "../actions/list-prs.js";

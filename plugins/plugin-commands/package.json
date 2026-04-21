@@ -1,0 +1,6 @@
+{
+  "name": "@elizaos/plugin-commands",
+  "version": "0.0.0-stub",
+  "private": true,
+  "description": "Stub package.json for upstream submodule plugins/plugin-commands. Run 'git submodule update --init plugins/plugin-commands' to populate."
+}

@@ -1,5 +1,5 @@
-// Re-export from @elizaos/app-training — this file is a migration stub.
+// Re-export from @tokagentos/app-training — this file is a migration stub.
 export {
   handleTrainingRoutes,
   type TrainingRouteHelpers,
-} from "@elizaos/app-training/routes/training";
+} from "@tokagentos/app-training/routes/training";

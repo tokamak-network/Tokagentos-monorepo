@@ -43,16 +43,16 @@ import {
   shouldInstallMainWindowOnboardingPatches,
   syncDetachedShellLocation,
 } from "@tokagentos/app-core/platform";
-import { dispatchQueuedLifeOpsGithubCallbackFromUrl } from "@elizaos/app-lifeops/platform";
-import { LifeOpsActivitySignalsEffect } from "@elizaos/app-lifeops/components/LifeOpsActivitySignalsEffect";
+import { dispatchQueuedLifeOpsGithubCallbackFromUrl } from "@tokagentos/app-lifeops/platform";
+import { LifeOpsActivitySignalsEffect } from "@tokagentos/app-lifeops/components/LifeOpsActivitySignalsEffect";
 // Side-effect: register LifeOps sidebar widgets into the app-core widget registry.
-import "@elizaos/app-lifeops/widgets";
+import "@tokagentos/app-lifeops/widgets";
 // Side-effect: register game operator surfaces + detail extensions.
-import "@elizaos/app-babylon/ui";
-import "@elizaos/app-scape/ui";
-import "@elizaos/app-hyperscape/ui";
-import "@elizaos/app-2004scape/ui";
-import "@elizaos/app-defense-of-the-agents/ui";
+import "@tokagentos/app-babylon/ui";
+import "@tokagentos/app-scape/ui";
+import "@tokagentos/app-hyperscape/ui";
+import "@tokagentos/app-2004scape/ui";
+import "@tokagentos/app-defense-of-the-agents/ui";
 import {
   DESKTOP_TRAY_MENU_ITEMS,
   DesktopOnboardingRuntime,

@@ -1,6 +1,6 @@
 /**
  * Self-control (hosts-file website blocker) — public API for
- * `@elizaos/app-lifeops/selfcontrol` subpath imports.
+ * `@tokagentos/app-lifeops/selfcontrol` subpath imports.
  */
 
 export {

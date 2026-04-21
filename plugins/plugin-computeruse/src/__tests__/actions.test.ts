@@ -7,7 +7,7 @@ import { browserAction } from "../actions/browser-action.js";
 import { manageWindowAction } from "../actions/manage-window.js";
 import { fileAction } from "../actions/file-action.js";
 import { terminalAction } from "../actions/terminal-action.js";
-import type { IAgentRuntime, Memory } from "@elizaos/core";
+import type { IAgentRuntime, Memory } from "@tokagentos/core";
 
 function mockRuntime(hasService: boolean): IAgentRuntime {
   return {

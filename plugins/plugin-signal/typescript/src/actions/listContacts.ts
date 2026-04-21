@@ -8,7 +8,7 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { getSignalContactDisplayName } from "../types";
 import {
   getMessageText,

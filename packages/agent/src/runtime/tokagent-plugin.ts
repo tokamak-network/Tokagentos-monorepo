@@ -86,7 +86,7 @@ export function createTokagentPlugin(config?: TokagentPluginConfig): Plugin {
     createOngoingTasksProvider(),
   ];
 
-  // PLAY_EMOTE lives in @elizaos/app-companion (emote catalog + action).
+  // PLAY_EMOTE lives in @tokagentos/app-companion (emote catalog + action).
 
   const plugin: Plugin = {
     name: "tokagent",
@@ -100,7 +100,7 @@ export function createTokagentPlugin(config?: TokagentPluginConfig): Plugin {
     init: async (_pluginConfig, runtime: IAgentRuntime) => {
       registerTriggerTaskWorker(runtime);
       setCustomActionsRuntime(runtime);
-      // Proactive agent (activity-profile) is now initialized by @elizaos/app-lifeops plugin init.
+      // Proactive agent (activity-profile) is now initialized by @tokagentos/app-lifeops plugin init.
 
       // ── Auto-register skills as slash commands ───────────────────────
       // Runs after plugin-agent-skills init so getLoadedSkills() is populated.

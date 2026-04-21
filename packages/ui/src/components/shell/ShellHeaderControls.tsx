@@ -5,7 +5,7 @@ import {
   SHELL_SEGMENT_ACTIVE_CLASSNAME,
   SHELL_SEGMENT_INACTIVE_CLASSNAME,
   SHELL_SEGMENTED_CONTROL_CLASSNAME,
-} from "@elizaos/app-companion/components/companion/shell-control-styles";
+} from "@tokagentos/app-companion/components/companion/shell-control-styles";
 import {
   LANGUAGE_DROPDOWN_TRIGGER_CLASSNAME,
   LanguageDropdown,

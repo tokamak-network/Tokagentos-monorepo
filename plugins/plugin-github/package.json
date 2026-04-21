@@ -22,11 +22,11 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@elizaos/core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
     "@octokit/rest": "^22.0.0"
   },
   "peerDependencies": {
-    "@elizaos/core": "workspace:*"
+    "@tokagentos/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "24.12.2",

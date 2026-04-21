@@ -17,7 +17,7 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
+import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
 import inmemorydbPlugin from "@elizaos/plugin-inmemorydb";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";

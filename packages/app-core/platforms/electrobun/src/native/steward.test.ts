@@ -19,7 +19,7 @@ vi.mock("../../../../src/services/steward-sidecar", () => ({
   })),
 }));
 
-vi.mock("@elizaos/app-steward/services/steward-credentials", () => ({
+vi.mock("@tokagentos/app-steward/services/steward-credentials", () => ({
   saveStewardCredentials: saveStewardCredentialsMock,
 }));
 

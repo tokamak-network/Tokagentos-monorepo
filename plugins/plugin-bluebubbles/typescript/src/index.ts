@@ -5,8 +5,8 @@
  * supporting text messages, reactions, effects, and more.
  */
 
-import type { IAgentRuntime, Plugin } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime, Plugin } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { sendMessageAction, sendReactionAction } from "./actions/index.js";
 import { chatContextProvider } from "./providers/index.js";
 import { BlueBubblesService } from "./service.js";

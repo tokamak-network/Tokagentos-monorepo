@@ -3,7 +3,7 @@ import { registerDetailExtension } from "@tokagentos/app-core/components/apps/ex
 import { HyperscapeOperatorSurface } from "./HyperscapeOperatorSurface.js";
 import { HyperscapeDetailExtension } from "./HyperscapeDetailExtension.js";
 
-registerOperatorSurface("@elizaos/app-hyperscape", HyperscapeOperatorSurface);
+registerOperatorSurface("@tokagentos/app-hyperscape", HyperscapeOperatorSurface);
 registerOperatorSurface("@hyperscape/plugin-hyperscape", HyperscapeOperatorSurface);
 registerDetailExtension("hyperscape-embedded-agents", HyperscapeDetailExtension);
 

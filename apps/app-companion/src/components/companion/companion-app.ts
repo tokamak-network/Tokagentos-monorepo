@@ -1,7 +1,7 @@
 import { type OverlayApp, registerOverlayApp } from "@tokagentos/app-core";
 import { CompanionAppView } from "./CompanionAppView";
 
-export const COMPANION_APP_NAME = "@elizaos/app-companion";
+export const COMPANION_APP_NAME = "@tokagentos/app-companion";
 
 export const companionApp: OverlayApp = {
   name: COMPANION_APP_NAME,

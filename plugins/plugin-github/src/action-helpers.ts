@@ -4,7 +4,7 @@
  * resolution, parameter extraction, and confirmation gating.
  */
 
-import type { HandlerCallback, IAgentRuntime } from "@elizaos/core";
+import type { HandlerCallback, IAgentRuntime } from "@tokagentos/core";
 import type { Octokit } from "@octokit/rest";
 import type { GitHubService } from "./services/github-service.js";
 import {

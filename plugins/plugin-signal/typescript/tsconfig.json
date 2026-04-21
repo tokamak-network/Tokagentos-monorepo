@@ -17,8 +17,8 @@
     "types": ["node"],
     "baseUrl": "../../..",
     "paths": {
-      "@elizaos/core": ["packages/typescript/dist/node"],
-      "@elizaos/core/*": ["packages/typescript/dist/*"]
+      "@tokagentos/core": ["packages/typescript/dist/node"],
+      "@tokagentos/core/*": ["packages/typescript/dist/*"]
     }
   },
   "include": ["./**/*.ts"],

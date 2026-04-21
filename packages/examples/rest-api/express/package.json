@@ -12,7 +12,7 @@
     "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
-    "@elizaos/plugin-tokagent-classic": "alpha",
+    "@elizaos/plugin-eliza-classic": "alpha",
     "express": "^4.21.0",
     "uuid": "^13.0.0"
   },

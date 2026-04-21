@@ -10,7 +10,7 @@ import type { AwarenessContributor } from "@tokagentos/agent/contracts";
 import {
   canUseLocalTradeExecution,
   resolveTradePermissionMode,
-} from "@elizaos/app-steward/routes/server-wallet-trade";
+} from "@tokagentos/app-steward/routes/server-wallet-trade";
 import type { IAgentRuntime } from "@tokagentos/core";
 
 function shorten(address: string | null): string | null {

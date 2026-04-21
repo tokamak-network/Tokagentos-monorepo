@@ -1,7 +1,7 @@
 import {
   CodingAgentControlChip,
   PtyConsoleDrawer,
-} from "@elizaos/app-task-coordinator";
+} from "@tokagentos/app-task-coordinator";
 import {
   ChatAttachmentStrip,
   ChatComposer,

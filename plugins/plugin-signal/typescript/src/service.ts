@@ -18,7 +18,7 @@ import {
   Service,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { signalCheck } from "./rpc";
 
 type MessageService = {

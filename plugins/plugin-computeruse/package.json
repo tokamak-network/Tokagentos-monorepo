@@ -27,10 +27,10 @@
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
-    "@elizaos/core": "workspace:*"
+    "@tokagentos/core": "workspace:*"
   },
   "devDependencies": {
-    "@elizaos/core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
     "@types/node": "^25.2.3",
     "typescript": "^6.0.0",
     "vitest": "3.2.4"

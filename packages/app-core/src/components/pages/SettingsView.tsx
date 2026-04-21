@@ -1,4 +1,4 @@
-import { CodingAgentSettingsSection } from "@elizaos/app-task-coordinator";
+import { CodingAgentSettingsSection } from "@tokagentos/app-task-coordinator";
 import {
   Button,
   Checkbox,

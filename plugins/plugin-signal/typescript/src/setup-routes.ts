@@ -12,7 +12,7 @@
  * legacy paths without the plugin-name prefix.
  */
 
-import type { IAgentRuntime, Route, RouteRequest, RouteResponse } from "@elizaos/core";
+import type { IAgentRuntime, Route, RouteRequest, RouteResponse } from "@tokagentos/core";
 import path from "node:path";
 import {
   SignalPairingSession,

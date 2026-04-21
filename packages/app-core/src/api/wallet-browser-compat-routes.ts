@@ -3,7 +3,7 @@ import type http from "node:http";
 import { deriveSolanaAddress } from "@tokagentos/agent/api/wallet";
 import { resolveWalletRpcReadiness } from "@tokagentos/agent/api/wallet-rpc";
 import { loadTokagentConfig } from "@tokagentos/agent/config/config";
-import type { StewardSignRequest } from "@elizaos/app-steward/types";
+import type { StewardSignRequest } from "@tokagentos/app-steward/types";
 import { ethers } from "ethers";
 
 /** @internal Exported for testing. Parse a transaction value string to BigInt. */
@@ -20,7 +20,7 @@ export function safeParseBigInt(value: string): bigint {
 import {
   isStewardConfigured,
   signViaSteward,
-} from "@elizaos/app-steward/routes/steward-bridge";
+} from "@tokagentos/app-steward/routes/steward-bridge";
 import { ensureCompatApiAuthorized } from "./auth";
 import {
   type CompatRuntimeState,

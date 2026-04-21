@@ -41,9 +41,9 @@ function makeRun(overrides: Partial<AppRunSummary>): AppRunSummary {
   const now = new Date().toISOString();
   return {
     runId: "run-1",
-    appName: "@elizaos/app-defense-of-the-agents",
+    appName: "@tokagentos/app-defense-of-the-agents",
     displayName: "Defense of the Agents",
-    pluginName: "@elizaos/app-defense-of-the-agents",
+    pluginName: "@tokagentos/app-defense-of-the-agents",
     launchType: "connect",
     launchUrl: null,
     viewer: null,
@@ -118,7 +118,7 @@ describe("AppManager.stop (explicit Stop button)", () => {
       | undefined;
     expect(firstArg?.runId).toBe("run-to-stop");
     expect(firstArg?.appName).toBe(
-      "@elizaos/app-defense-of-the-agents",
+      "@tokagentos/app-defense-of-the-agents",
     );
   });
 
@@ -180,9 +180,9 @@ describe("AppManager.stop (explicit Stop button)", () => {
   it("invokes stopRun once per run when stopping all runs of an app by name", async () => {
     writeAppRunStore(
       [
-        makeRun({ runId: "run-a", appName: "@elizaos/app-scape" }),
-        makeRun({ runId: "run-b", appName: "@elizaos/app-scape" }),
-        makeRun({ runId: "run-c", appName: "@elizaos/app-hyperscape" }),
+        makeRun({ runId: "run-a", appName: "@tokagentos/app-scape" }),
+        makeRun({ runId: "run-b", appName: "@tokagentos/app-scape" }),
+        makeRun({ runId: "run-c", appName: "@tokagentos/app-hyperscape" }),
       ],
       stateDir,
     );
@@ -190,7 +190,7 @@ describe("AppManager.stop (explicit Stop button)", () => {
     const manager = new AppManager({ stateDir });
     const result = (await manager.stop(
       stubPluginManager,
-      "@elizaos/app-scape",
+      "@tokagentos/app-scape",
       undefined,
       null,
     )) as { success: boolean };

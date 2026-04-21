@@ -14,7 +14,7 @@
   "dependencies": {
     "@tokagentos/core": "alpha",
     "@elizaos/plugin-anthropic": "alpha",
-    "@elizaos/plugin-tokagent-classic": "alpha",
+    "@elizaos/plugin-eliza-classic": "alpha",
     "@elizaos/plugin-google-genai": "alpha",
     "@elizaos/plugin-groq": "alpha",
     "@elizaos/plugin-localdb": "alpha",

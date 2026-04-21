@@ -848,7 +848,7 @@ function watchWorkspacePackagesPlugin(): Plugin {
 }
 
 /**
- * Serve @elizaos/app-companion's public/ assets alongside the app's own
+ * Serve @tokagentos/app-companion's public/ assets alongside the app's own
  * public/ directory. In dev the companion dir is served as a fallback
  * middleware; in build the files are copied into the output.
  */

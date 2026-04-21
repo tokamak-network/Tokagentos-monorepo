@@ -4,7 +4,7 @@
  * This lets us drive every handler code path without touching the network.
  */
 
-import type { Action, IAgentRuntime, Memory } from "@elizaos/core";
+import type { Action, IAgentRuntime, Memory } from "@tokagentos/core";
 import { describe, expect, it, vi } from "vitest";
 import { bookSlotAction } from "../actions/book-slot.js";
 import { cancelBookingAction } from "../actions/cancel-booking.js";

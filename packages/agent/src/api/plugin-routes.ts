@@ -30,9 +30,9 @@ import {
   validatePluginConfig,
 } from "./plugin-validation.js";
 
-/** Workspace packages use `@elizaos/plugin-*` or `@elizaos/app-*` — normalize list/toggle ids. */
+/** Workspace packages use `@elizaos/plugin-*` or `@tokagentos/app-*` — normalize list/toggle ids. */
 function optionalPluginListId(npmName: string): string {
-  if (npmName.startsWith("@elizaos/app-")) {
+  if (npmName.startsWith("@tokagentos/app-")) {
     return npmName.slice("@elizaos/".length);
   }
   return npmName.replace("@elizaos/plugin-", "");

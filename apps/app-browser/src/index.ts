@@ -10,7 +10,7 @@ import {
 } from "./wallet-action";
 
 const rawAppBrowserPlugin: Plugin = {
-  name: "@elizaos/app-browser",
+  name: "@tokagentos/app-browser",
   description:
     "Controls Tokagent browser workspace tabs and Steward wallet signing requests across the desktop bridge and web iframe workspace.",
   actions: [
@@ -25,7 +25,7 @@ const rawAppBrowserPlugin: Plugin = {
 
 export const appBrowserPlugin: Plugin = gatePluginSessionForHostedApp(
   rawAppBrowserPlugin,
-  "@elizaos/app-browser",
+  "@tokagentos/app-browser",
 );
 
 export {

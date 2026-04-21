@@ -3,7 +3,7 @@ import type http from "node:http";
 import {
   EMOTE_BY_ID,
   EMOTE_CATALOG,
-} from "@elizaos/app-companion/emotes/catalog";
+} from "@tokagentos/app-companion/emotes/catalog";
 import { type AgentRuntime, logger, ModelType, type UUID } from "@tokagentos/core";
 import { asRecord } from "@tokagentos/shared/type-guards";
 import type { TokagentConfig } from "../config/config.js";

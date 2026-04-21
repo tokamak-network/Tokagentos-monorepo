@@ -7,8 +7,8 @@ import type {
   SwarmEvent,
   TaskCompletionSummary,
   TaskContext,
-} from "@elizaos/app-task-coordinator/api/coordinator-types";
-import { routeTaskAgentTextToConnector } from "@elizaos/app-task-coordinator/api/task-agent-message-routing";
+} from "@tokagentos/app-task-coordinator/api/coordinator-types";
+import { routeTaskAgentTextToConnector } from "@tokagentos/app-task-coordinator/api/task-agent-message-routing";
 import {
   type AgentRuntime,
   ChannelType,

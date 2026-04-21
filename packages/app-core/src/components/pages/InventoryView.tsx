@@ -1,6 +1,6 @@
-import { ApprovalQueue } from "@elizaos/app-steward/ApprovalQueue";
-import { TransactionHistory } from "@elizaos/app-steward/TransactionHistory";
-import type { StewardStatusResponse } from "@elizaos/app-steward/types/steward";
+import { ApprovalQueue } from "@tokagentos/app-steward/ApprovalQueue";
+import { TransactionHistory } from "@tokagentos/app-steward/TransactionHistory";
+import type { StewardStatusResponse } from "@tokagentos/app-steward/types/steward";
 import {
   Button,
   Dialog,

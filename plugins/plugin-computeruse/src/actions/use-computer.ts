@@ -5,7 +5,7 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   ComputerActionResult,
   DesktopActionParams,

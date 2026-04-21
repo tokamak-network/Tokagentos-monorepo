@@ -140,7 +140,7 @@ class CapacitorLlamaAdapter implements LlamaAdapter {
     const platform = detectPlatform();
     // `navigator` is undefined on Node/Bun; this adapter may be imported
     // (never instantiated) from server-side code that transitively pulls
-    // in @elizaos/app-core. Read through `globalThis` so the lookup is
+    // in @tokagentos/app-core. Read through `globalThis` so the lookup is
     // safe on every platform.
     const nav = (globalThis as { navigator?: { hardwareConcurrency?: number } })
       .navigator;

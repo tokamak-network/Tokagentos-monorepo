@@ -2,7 +2,7 @@ import {
   getSelfControlPermissionState,
   openSelfControlPermissionLocation,
   requestSelfControlPermission,
-} from "@elizaos/app-lifeops/public";
+} from "@tokagentos/app-lifeops/public";
 import type { AgentRuntime } from "@tokagentos/core";
 import type { PermissionState } from "@tokagentos/shared/contracts/permissions";
 import type { AutonomousConfigLike } from "../types/config-like.js";

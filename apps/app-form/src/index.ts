@@ -1,5 +1,5 @@
 /**
- * @module @elizaos/app-form
+ * @module @tokagentos/app-form
  * @description Guardrails for agent-guided user journeys
  *
  * @author Odilitime

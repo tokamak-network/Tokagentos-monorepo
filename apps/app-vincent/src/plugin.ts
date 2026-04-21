@@ -129,7 +129,7 @@ const vincentRoutes: Route[] = [
 // ---------------------------------------------------------------------------
 
 export const vincentPlugin: Plugin = {
-  name: "@elizaos/app-vincent",
+  name: "@tokagentos/app-vincent",
   description:
     "Vincent OAuth and DeFi vault dashboard routes (extracted from app-core server.ts)",
   routes: vincentRoutes,

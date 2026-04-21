@@ -5,7 +5,7 @@ import {
   usePtySessions,
   useRenderGuard,
 } from "@tokagentos/app-core";
-import { PtyConsoleSidePanel } from "@elizaos/app-task-coordinator";
+import { PtyConsoleSidePanel } from "@tokagentos/app-task-coordinator";
 import {
   lazy,
   memo,

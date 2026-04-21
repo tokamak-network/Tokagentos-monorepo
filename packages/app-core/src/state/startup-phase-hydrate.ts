@@ -5,7 +5,7 @@
  * "ready" phase (WebSocket bindings, nav listener).
  */
 
-import { prefetchVrmToCache } from "@elizaos/app-companion/components/avatar/VrmEngine";
+import { prefetchVrmToCache } from "@tokagentos/app-companion/components/avatar/VrmEngine";
 import type { AgentStatus, WalletAddresses } from "../api";
 import {
   type CodingAgentSession,

@@ -40,7 +40,7 @@ vi.mock("@tokagentos/agent/triggers/runtime", () => ({
     taskToTriggerSummaryMock(...args),
 }));
 
-vi.mock("@elizaos/app-lifeops/lifeops/service", () => ({
+vi.mock("@tokagentos/app-lifeops/lifeops/service", () => ({
   LifeOpsService: class {
     getGoogleConnectorStatus(
       ...args: Parameters<typeof getGoogleConnectorStatusMock>

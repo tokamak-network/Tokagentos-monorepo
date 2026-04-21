@@ -8,7 +8,7 @@ import {
 	type Provider,
 	type ProviderResult,
 	type State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { BLUEBUBBLES_SERVICE_NAME } from "../constants";
 import {
 	validateActionKeywords,

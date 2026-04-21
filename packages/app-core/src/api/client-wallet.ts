@@ -9,7 +9,7 @@ import type {
   BrowserWorkspaceSolanaMessageSignatureResult,
   BrowserWorkspaceWalletMessageSignatureResult,
   BrowserWorkspaceWalletTransactionResult,
-} from "@elizaos/app-steward/browser-workspace-wallet";
+} from "@tokagentos/app-steward/browser-workspace-wallet";
 import type {
   BscTradeExecuteRequest,
   BscTradeExecuteResponse,
@@ -30,7 +30,7 @@ import type {
   StewardWalletAddressesResponse,
   StewardWebhookEventsResponse,
   StewardWebhookEventType,
-} from "@elizaos/app-steward/types";
+} from "@tokagentos/app-steward/types";
 import type {
   WalletAddresses,
   WalletBalancesResponse,

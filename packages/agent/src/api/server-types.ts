@@ -5,7 +5,7 @@
  */
 
 import type http from "node:http";
-import type { DropService } from "@elizaos/app-tokagentmaker";
+import type { DropService } from "@tokagentos/app-tokagentmaker";
 import type { AgentRuntime, Media, UUID } from "@tokagentos/core";
 import type { TokagentConfig } from "../config/config.js";
 import type { AppManager } from "../services/app-manager.js";
@@ -17,13 +17,13 @@ import type { ConnectorHealthMonitor } from "./connector-health.js";
 import type { RegistryService } from "./registry-service.js";
 
 // Canonical TrainingServiceLike / TrainingServiceWithRuntime live in
-// @elizaos/app-training. Re-export here so existing callers that imported from
+// @tokagentos/app-training. Re-export here so existing callers that imported from
 // server-types keep working without duplicating the interface.
 export type {
   TrainingServiceLike,
   TrainingServiceWithRuntime,
-} from "@elizaos/app-training/services/training-service-like";
-import type { TrainingServiceWithRuntime } from "@elizaos/app-training/services/training-service-like";
+} from "@tokagentos/app-training/services/training-service-like";
+import type { TrainingServiceWithRuntime } from "@tokagentos/app-training/services/training-service-like";
 
 // ---------------------------------------------------------------------------
 // Conversation metadata

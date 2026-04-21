@@ -16,7 +16,7 @@
       {
         "imports": {
           "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
-          "@elizaos/plugin-tokagent-classic": "../../plugins/plugin-tokagent-classic/typescript/dist/browser/index.browser.js",
+          "@elizaos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/typescript/dist/browser/index.browser.js",
           "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/typescript/dist/browser/index.browser.js",
           "uuid": "https://esm.sh/uuid@11"
         }
@@ -446,7 +446,7 @@
        * Uses:
        * - @tokagentos/core (AgentRuntime)
        * - @elizaos/plugin-localdb (localStorage persistence)
-       * - @elizaos/plugin-tokagent-classic (pattern matching, no API keys)
+       * - @elizaos/plugin-eliza-classic (pattern matching, no API keys)
        */
 
       import {
@@ -455,7 +455,7 @@
         createMessageMemory,
         stringToUuid,
       } from "@tokagentos/core";
-      import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
+      import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
       import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
       import { v4 as uuidv4 } from "uuid";
 

@@ -565,7 +565,7 @@ async function executeApiTurn(
   }
 
   const { handleLifeOpsRoutes } = await import(
-    "@elizaos/app-lifeops/routes/lifeops-routes"
+    "@tokagentos/app-lifeops/routes/lifeops-routes"
   );
   const { res, getBodyText } = createResponseRecorder();
   let recordedBody: unknown = undefined;
@@ -674,7 +674,7 @@ async function executeTickTurn(
     case "scheduler":
     case "lifeops_scheduler_tick": {
       const { executeLifeOpsSchedulerTask } = await import(
-        "@elizaos/app-lifeops/lifeops/runtime"
+        "@tokagentos/app-lifeops/lifeops/runtime"
       );
       result = await executeLifeOpsSchedulerTask(runtime, resolvedOptions);
       break;
@@ -692,7 +692,7 @@ async function executeTickTurn(
     case "proactive":
     case "proactive_tick": {
       const { executeProactiveTask } = await import(
-        "@elizaos/app-lifeops/activity-profile/proactive-worker"
+        "@tokagentos/app-lifeops/activity-profile/proactive-worker"
       );
       result = await executeProactiveTask(runtime, resolvedOptions);
       break;

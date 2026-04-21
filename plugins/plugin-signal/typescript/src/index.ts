@@ -1,4 +1,4 @@
-import { type IAgentRuntime, logger, type Plugin } from "@elizaos/core";
+import { type IAgentRuntime, logger, type Plugin } from "@tokagentos/core";
 import listContacts from "./actions/listContacts";
 import listGroups from "./actions/listGroups";
 import readRecentMessages from "./actions/readRecentMessages";

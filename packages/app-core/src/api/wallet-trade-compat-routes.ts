@@ -21,7 +21,7 @@ import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import {
   isStewardConfigured,
   signTransactionWithOptionalSteward,
-} from "@elizaos/app-steward/routes/steward-bridge";
+} from "@tokagentos/app-steward/routes/steward-bridge";
 import { logger } from "@tokagentos/core";
 import { type PolicyResult, StewardApiError } from "@stwd/sdk";
 import { ethers } from "ethers";

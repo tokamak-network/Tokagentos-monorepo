@@ -1,5 +1,5 @@
 {
-  "name": "@elizaos/app-companion",
+  "name": "@tokagentos/app-companion",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -28,7 +28,7 @@
     "./emotes/*": "./src/emotes/*.ts"
   },
   "dependencies": {
-    "@elizaos/app-task-coordinator": "workspace:*",
+    "@tokagentos/app-task-coordinator": "workspace:*",
     "@tokagentos/ui": "workspace:*",
     "@tokagentos/core": "workspace:*",
     "lucide-react": "^1.0.0"

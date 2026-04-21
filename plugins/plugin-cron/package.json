@@ -1,0 +1,6 @@
+{
+  "name": "@elizaos/plugin-cron",
+  "version": "0.0.0-stub",
+  "private": true,
+  "description": "Stub package.json for upstream submodule plugins/plugin-cron. Run 'git submodule update --init plugins/plugin-cron' to populate."
+}

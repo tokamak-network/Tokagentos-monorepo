@@ -68,7 +68,7 @@ function readExactLifeOpsRouteKeys(): Set<string> {
 describe("lifeopsPlugin shape", () => {
   it("exports a valid Plugin with routes", async () => {
     const { lifeopsPlugin } = await import("./routes/plugin");
-    expect(lifeopsPlugin.name).toBe("@elizaos/app-lifeops-routes");
+    expect(lifeopsPlugin.name).toBe("@tokagentos/app-lifeops-routes");
     expect(lifeopsPlugin.routes).toBeDefined();
     expect(lifeopsPlugin.routes!.length).toBeGreaterThanOrEqual(80);
   });

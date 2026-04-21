@@ -7,7 +7,7 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   getMessageText,
   getSignalService,

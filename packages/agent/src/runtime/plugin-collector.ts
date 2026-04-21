@@ -56,7 +56,7 @@ function orchestratorCompatPluginRequested(config: TokagentConfig): boolean {
  */
 export function resolvePluginPackageAlias(packageName: string): string {
   if (packageName === "@elizaos/plugin-selfcontrol") {
-    return "@elizaos/app-lifeops";
+    return "@tokagentos/app-lifeops";
   }
   return packageName;
 }
@@ -110,8 +110,8 @@ export const PROVIDER_PLUGIN_MAP: Readonly<Record<string, string>> = {
   OLLAMA_BASE_URL: "@elizaos/plugin-ollama",
   ZAI_API_KEY: "@homunculuslabs/plugin-zai",
   // TokagentCloud — loaded when API key is present OR cloud is explicitly enabled
-  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-tokagentcloud",
-  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-tokagentcloud",
+  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-elizacloud",
+  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-elizacloud",
 };
 
 /**
@@ -134,17 +134,17 @@ export const OPTIONAL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   evm: "@elizaos/plugin-evm",
   solana: "@elizaos/plugin-solana",
   browser: "@elizaos/plugin-browser",
-  /** Tokagent desktop browser workspace + Steward; package is `@elizaos/app-browser`. */
-  "app-browser": "@elizaos/app-browser",
-  appBrowser: "@elizaos/app-browser",
-  "tokagent-browser": "@elizaos/app-browser",
-  tokagentBrowser: "@elizaos/app-browser",
-  /** Legacy LifeOps browser entry (separate package from `@elizaos/app-lifeops`). */
+  /** Tokagent desktop browser workspace + Steward; package is `@tokagentos/app-browser`. */
+  "app-browser": "@tokagentos/app-browser",
+  appBrowser: "@tokagentos/app-browser",
+  "tokagent-browser": "@tokagentos/app-browser",
+  tokagentBrowser: "@tokagentos/app-browser",
+  /** Legacy LifeOps browser entry (separate package from `@tokagentos/app-lifeops`). */
   "lifeops-browser": "@elizaos/plugin-lifeops-browser",
   lifeopsBrowser: "@elizaos/plugin-lifeops-browser",
   vision: "@elizaos/plugin-vision",
-  tokagentcloud: "@elizaos/plugin-tokagentcloud",
-  selfcontrol: "@elizaos/app-lifeops",
+  tokagentcloud: "@elizaos/plugin-elizacloud",
+  selfcontrol: "@tokagentos/app-lifeops",
   cron: "@elizaos/plugin-cron",
   cua: "@elizaos/plugin-cua",
   computeruse: "@elizaos/plugin-computeruse",
@@ -355,12 +355,12 @@ export function collectPluginNames(
     // RPC/services but direct AI provider plugins are preserved so the
     // user's own API keys (e.g. Anthropic) handle model inference.
     if (cloudEffectivelyEnabled) {
-      pluginsToLoad.add("@elizaos/plugin-tokagentcloud");
+      pluginsToLoad.add("@elizaos/plugin-elizacloud");
 
       if (cloudHandlesInference) {
         // Cloud handles ALL model calls — remove direct AI provider plugins.
         const directProviders = new Set(Object.values(PROVIDER_PLUGIN_MAP));
-        directProviders.delete("@elizaos/plugin-tokagentcloud");
+        directProviders.delete("@elizaos/plugin-elizacloud");
         for (const p of directProviders) {
           pluginsToLoad.delete(p);
         }
@@ -374,7 +374,7 @@ export function collectPluginNames(
     // Cloud is not part of the resolved topology — remove it even though
     // it is listed in CORE_PLUGINS so stale env/config does not hijack
     // provider selection after the user switches away.
-    pluginsToLoad.delete("@elizaos/plugin-tokagentcloud");
+    pluginsToLoad.delete("@elizaos/plugin-elizacloud");
   };
 
   // Apply once before additive plugin-entry/feature paths.

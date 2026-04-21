@@ -17,7 +17,7 @@ import type {
   StewardApprovalActionResponse,
   StewardPendingApproval,
   StewardTxRecord,
-} from "@elizaos/app-steward/types/steward";
+} from "@tokagentos/app-steward/types/steward";
 import type { ComponentType, ReactNode } from "react";
 import type { CodingAgentSession } from "../api/client-types-cloud";
 import type { Tab } from "../navigation";

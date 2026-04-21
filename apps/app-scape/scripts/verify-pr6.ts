@@ -25,7 +25,7 @@ import type { IAgentRuntime, Memory } from "@tokagentos/core";
 import {
     JournalStore,
     type PerceptionSnapshot,
-} from "@elizaos/app-scape";
+} from "@tokagentos/app-scape";
 import { scapeActions } from "../src/actions/index.js";
 import { journalProvider } from "../src/providers/journal.js";
 import { goalsProvider } from "../src/providers/goals.js";

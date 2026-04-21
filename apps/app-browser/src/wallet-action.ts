@@ -11,7 +11,7 @@ import {
   rejectStewardWalletRequest,
   signWithStewardWallet,
 } from "@tokagentos/agent/services/steward-wallet";
-import type { StewardSignResponse } from "@elizaos/app-steward/types/steward";
+import type { StewardSignResponse } from "@tokagentos/app-steward/types/steward";
 
 type StewardSignActionRequest = {
   to: string;

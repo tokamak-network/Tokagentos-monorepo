@@ -158,7 +158,7 @@ OPENAI_API_KEY=your-key cargo run --release
 
 ```typescript
 // ❌ WRONG - Never call plugin functions directly
-import { generateTokagentResponse } from "@elizaos/plugin-tokagent-classic";
+import { generateTokagentResponse } from "@elizaos/plugin-eliza-classic";
 const response = generateTokagentResponse(message);
 ```
 

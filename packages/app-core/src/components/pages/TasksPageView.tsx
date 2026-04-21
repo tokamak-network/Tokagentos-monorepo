@@ -1,4 +1,4 @@
-import { CodingAgentTasksPanel } from "@elizaos/app-task-coordinator";
+import { CodingAgentTasksPanel } from "@tokagentos/app-task-coordinator";
 import { PagePanel } from "@tokagentos/ui";
 import { useApp } from "../../state";
 

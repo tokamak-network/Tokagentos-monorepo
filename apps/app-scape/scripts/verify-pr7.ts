@@ -30,7 +30,7 @@ import type { IAgentRuntime } from "@tokagentos/core";
 
 import { handleAppRoutes } from "../src/routes.js";
 import { JournalService } from "../src/services/journal-service.js";
-import { BotSdk } from "@elizaos/app-scape";
+import { BotSdk } from "@tokagentos/app-scape";
 
 interface MockResponse {
     statusCode: number;

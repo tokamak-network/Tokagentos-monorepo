@@ -453,7 +453,7 @@ export const skillRefinementEvaluator: Evaluator = {
 				// body via the optimizer instead of by single-shot LLM diff.
 				//
 				// We dynamic-import the optimizer module so @tokagentos/core does
-				// not gain a hard dependency on @elizaos/app-training; the
+				// not gain a hard dependency on @tokagentos/app-training; the
 				// import resolves only when the training package is installed
 				// (which is the case in this monorepo). When the import fails,
 				// we fall back to the previous "stage for human review"
@@ -586,7 +586,7 @@ interface GradientRefinementResult {
  * when the optimization did not improve over the baseline.
  *
  * Uses dynamic import so @tokagentos/core does not gain a hard dependency on
- * @elizaos/app-training.
+ * @tokagentos/app-training.
  */
 async function tryGradientRefinement(
 	input: GradientRefinementInput,
@@ -662,7 +662,7 @@ async function loadOptimizerModule(): Promise<OptimizerModule | null> {
 		"name",
 		"return import(name);",
 	) as (name: string) => Promise<unknown>;
-	const mod = (await dynamicImport("@elizaos/app-training/optimizers").catch(
+	const mod = (await dynamicImport("@tokagentos/app-training/optimizers").catch(
 		() => null,
 	)) as OptimizerModule | null;
 	if (

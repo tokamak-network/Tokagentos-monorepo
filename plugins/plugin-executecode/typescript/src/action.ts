@@ -28,7 +28,7 @@ import {
   resolveTrajectoryLogger,
   type State,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 import {
   buildScriptContext,

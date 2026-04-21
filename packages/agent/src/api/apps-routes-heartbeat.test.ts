@@ -21,9 +21,9 @@ function makeRunSummary(overrides: Partial<AppRunSummary> = {}): AppRunSummary {
   const now = new Date().toISOString();
   return {
     runId: "run-1",
-    appName: "@elizaos/app-defense-of-the-agents",
+    appName: "@tokagentos/app-defense-of-the-agents",
     displayName: "Defense of the Agents",
-    pluginName: "@elizaos/app-defense-of-the-agents",
+    pluginName: "@tokagentos/app-defense-of-the-agents",
     launchType: "connect",
     launchUrl: null,
     viewer: null,
@@ -186,7 +186,7 @@ describe("POST /api/apps/runs/:runId/stop", () => {
     // on continues to call AppManager.stop with the runId (not name).
     const stopResult: AppStopResult = {
       success: true,
-      appName: "@elizaos/app-defense-of-the-agents",
+      appName: "@tokagentos/app-defense-of-the-agents",
       runId: "run-1",
       stoppedAt: new Date().toISOString(),
       pluginUninstalled: false,

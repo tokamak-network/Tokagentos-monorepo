@@ -51,7 +51,7 @@ import {
 } from "./compat-route-shared";
 import { sendJson as sendJsonResponse } from "./response";
 
-export { resolveWalletExportRejection } from "@elizaos/app-steward/routes/server-wallet-trade";
+export { resolveWalletExportRejection } from "@tokagentos/app-steward/routes/server-wallet-trade";
 export {
   type CompatRuntimeState,
   DATABASE_UNAVAILABLE_MESSAGE,
@@ -149,8 +149,8 @@ const lazyEnsureTTS = () =>
     (m) => m.ensureTextToSpeechHandler,
   );
 
-import { hydrateWalletKeysFromNodePlatformSecureStore } from "@elizaos/app-steward/security/hydrate-wallet-keys-from-platform-store";
-import { deleteWalletSecretsFromOsStore } from "@elizaos/app-steward/security/wallet-os-store-actions";
+import { hydrateWalletKeysFromNodePlatformSecureStore } from "@tokagentos/app-steward/security/hydrate-wallet-keys-from-platform-store";
+import { deleteWalletSecretsFromOsStore } from "@tokagentos/app-steward/security/wallet-os-store-actions";
 import { getStartupEmbeddingAugmentation } from "../runtime/startup-overlay.js";
 import { clearCloudSecrets, getCloudSecret } from "./cloud-secrets";
 

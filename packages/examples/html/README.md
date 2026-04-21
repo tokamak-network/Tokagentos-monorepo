@@ -4,7 +4,7 @@ A browser-based demo of the **full tokagentOS AgentRuntime** using:
 
 - **@tokagentos/core** - AgentRuntime, ModelType
 - **@elizaos/plugin-localdb** - localStorage persistence (no SQL needed)
-- **@elizaos/plugin-tokagent-classic** - Classic TOKAGENT pattern matching (no API keys needed)
+- **@elizaos/plugin-eliza-classic** - Classic TOKAGENT pattern matching (no API keys needed)
 
 This demo mirrors the structure of `examples/chat/typescript/chat.ts` exactly, but runs in the browser.
 
@@ -62,7 +62,7 @@ The demo uses native ES module import maps to resolve the tokagentOS packages to
   {
     "imports": {
       "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
-      "@elizaos/plugin-tokagent-classic": "../../plugins/plugin-tokagent-classic/typescript/dist/browser/index.browser.js",
+      "@elizaos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/typescript/dist/browser/index.browser.js",
       "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/dist/browser/index.browser.js",
       "uuid": "https://esm.sh/uuid@11"
     }
@@ -79,7 +79,7 @@ import {
   stringToUuid,
   ModelType,
 } from "@tokagentos/core";
-import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
+import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
 import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
 import { v4 as uuidv4 } from "uuid";
 

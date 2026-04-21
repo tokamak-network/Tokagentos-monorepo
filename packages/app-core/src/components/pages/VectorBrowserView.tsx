@@ -1,7 +1,7 @@
 import {
   createVectorBrowserRenderer,
   THREE,
-} from "@elizaos/app-companion/components/avatar/vector-browser-three";
+} from "@tokagentos/app-companion/components/avatar/vector-browser-three";
 import {
   Button,
   Input,

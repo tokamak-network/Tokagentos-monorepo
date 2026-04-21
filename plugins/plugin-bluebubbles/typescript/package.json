@@ -24,7 +24,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@elizaos/core": "workspace:*",
+		"@tokagentos/core": "workspace:*",
 		"zod": "^4.3.6"
 	},
 	"devDependencies": {

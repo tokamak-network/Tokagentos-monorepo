@@ -8,7 +8,7 @@
  * - Status queries
  */
 
-import type { TxService } from "@elizaos/app-steward/api/tx-service";
+import type { TxService } from "@tokagentos/app-steward/api/tx-service";
 import { logger } from "@tokagentos/core";
 import { ethers } from "ethers";
 

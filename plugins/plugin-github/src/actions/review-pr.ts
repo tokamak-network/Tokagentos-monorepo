@@ -15,8 +15,8 @@ import type {
 	IAgentRuntime,
 	Memory,
 	State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
 	buildResolvedClient,
 	isConfirmed,

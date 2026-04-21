@@ -1,4 +1,4 @@
-import { FineTuningView } from "@elizaos/app-training/ui/FineTuningView";
+import { FineTuningView } from "@tokagentos/app-training/ui/FineTuningView";
 import { Button, SegmentedControl } from "@tokagentos/ui";
 import type React from "react";
 import type { Tab } from "../../navigation";

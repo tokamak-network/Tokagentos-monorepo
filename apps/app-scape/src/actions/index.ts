@@ -1,5 +1,5 @@
 /**
- * Action registry for `@elizaos/app-scape`.
+ * Action registry for `@tokagentos/app-scape`.
  *
  * PR 5 ships a 5-action toolbelt — all of these are wired through the
  * xRSPS `BotSdkActionRouter` to real game services. No deferred stubs.

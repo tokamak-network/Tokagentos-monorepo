@@ -12,7 +12,7 @@ import {
 import {
   normalizeCompatRejection,
   runWithCompatAuthContext,
-} from "@elizaos/app-steward/routes/server-wallet-trade";
+} from "@tokagentos/app-steward/routes/server-wallet-trade";
 import { syncAppEnvToTokagent, syncTokagentEnvAliases } from "../utils/env.js";
 
 export function resolveMcpTerminalAuthorizationRejection(

@@ -1,7 +1,7 @@
 /**
- * Tests for the `dispose` hook on @elizaos/app-lifeops plugin.
+ * Tests for the `dispose` hook on @tokagentos/app-lifeops plugin.
  *
- * The hook runs when `runtime.unloadPlugin("@elizaos/app-lifeops")` is
+ * The hook runs when `runtime.unloadPlugin("@tokagentos/app-lifeops")` is
  * called. It should:
  *   1. Delete persisted Task rows for the three lifeops workers
  *      (PROACTIVE_AGENT, LIFEOPS_SCHEDULER, FOLLOWUP_TRACKER_RECONCILE)

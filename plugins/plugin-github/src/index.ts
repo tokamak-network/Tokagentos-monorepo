@@ -19,7 +19,7 @@
  * default to `"user"`; the other actions default to `"agent"`.
  */
 
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import { assignIssueAction } from "./actions/assign-issue.js";
 import { createIssueAction } from "./actions/create-issue.js";
 import { listPrsAction } from "./actions/list-prs.js";

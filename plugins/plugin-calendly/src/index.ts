@@ -16,7 +16,7 @@
  * `CALENDLY_WEBHOOK_SIGNING_KEY` is deferred.
  */
 
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import { bookSlotAction } from "./actions/book-slot.js";
 import { cancelBookingAction } from "./actions/cancel-booking.js";
 import { listEventTypesAction } from "./actions/list-event-types.js";

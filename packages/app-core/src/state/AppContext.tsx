@@ -4,7 +4,7 @@
  * Children access state and actions through the useApp() hook.
  */
 
-import { useVincentState } from "@elizaos/app-vincent/useVincentState";
+import { useVincentState } from "@tokagentos/app-vincent/useVincentState";
 import {
   ConfirmDialog,
   PromptDialog,
@@ -1463,7 +1463,7 @@ function AppProviderInner({
         activeGameRunId: setActiveGameRunId,
         gameOverlayEnabled: setGameOverlayEnabled,
         companionAppRunning: (v: boolean) =>
-          setActiveOverlayApp(v ? "@elizaos/app-companion" : null),
+          setActiveOverlayApp(v ? "@tokagentos/app-companion" : null),
         activeOverlayApp: setActiveOverlayApp,
         activeInboxChat: setActiveInboxChat,
         storePlugins: setStorePlugins,

@@ -3,7 +3,7 @@ import { registerDetailExtension } from "@tokagentos/app-core/components/apps/ex
 import { TwoThousandFourScapeOperatorSurface } from "./TwoThousandFourScapeOperatorSurface.js";
 import { TwoThousandFourScapeDetailExtension } from "./TwoThousandFourScapeDetailExtension.js";
 
-registerOperatorSurface("@elizaos/app-2004scape", TwoThousandFourScapeOperatorSurface);
+registerOperatorSurface("@tokagentos/app-2004scape", TwoThousandFourScapeOperatorSurface);
 registerDetailExtension("2004scape-operator-dashboard", TwoThousandFourScapeDetailExtension);
 
 export { TwoThousandFourScapeOperatorSurface, TwoThousandFourScapeDetailExtension };

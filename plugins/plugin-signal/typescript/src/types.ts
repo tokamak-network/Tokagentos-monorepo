@@ -1,4 +1,4 @@
-import type { Character, EventPayload, MessagePayload, WorldPayload } from "@elizaos/core";
+import type { Character, EventPayload, MessagePayload, WorldPayload } from "@tokagentos/core";
 
 /**
  * Signal-specific event types

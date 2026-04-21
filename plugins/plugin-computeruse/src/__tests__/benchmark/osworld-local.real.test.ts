@@ -14,7 +14,7 @@
  * Skipped on CI or headless environments.
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import { ComputerUseService } from "../../services/computer-use-service.js";
 import { OSWorldAdapter } from "../../osworld/adapter.js";
 import { fromOSWorldAction, fromPyAutoGUI } from "../../osworld/action-converter.js";

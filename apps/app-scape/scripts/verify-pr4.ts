@@ -25,7 +25,7 @@ import type { IAgentRuntime, Memory } from "@tokagentos/core";
 import appScapePlugin, {
     BotManager,
     type PerceptionSnapshot,
-} from "@elizaos/app-scape";
+} from "@tokagentos/app-scape";
 import { scapeActions } from "../src/actions/index.js";
 import { walkTo } from "../src/actions/walk-to.js";
 import {

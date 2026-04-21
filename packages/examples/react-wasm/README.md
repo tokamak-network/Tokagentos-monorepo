@@ -71,7 +71,7 @@ This example uses the Rust WASM tokagentOS runtime:
 
 ### Plugins Used
 
-1. **@elizaos/plugin-tokagent-classic**: Provides TEXT_LARGE/TEXT_SMALL model handlers using classic TOKAGENT pattern matching
+1. **@elizaos/plugin-eliza-classic**: Provides TEXT_LARGE/TEXT_SMALL model handlers using classic TOKAGENT pattern matching
 2. **@elizaos/plugin-localdb**: Simple JSON-based storage using browser localStorage
 
 ## How It Works

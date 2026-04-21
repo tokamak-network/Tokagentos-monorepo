@@ -407,7 +407,7 @@ function shortPluginIdFromNpmName(npmName: string | null): string | null {
   if (!npmName || typeof npmName !== "string") {
     return null;
   }
-  if (npmName.startsWith("@elizaos/app-")) {
+  if (npmName.startsWith("@tokagentos/app-")) {
     return npmName.slice("@elizaos/".length);
   }
   if (npmName.startsWith("@elizaos/plugin-")) {

@@ -55,9 +55,9 @@ const INDEX_REGISTRY_URL =
   "https://raw.githubusercontent.com/tokagentos-plugins/registry/next/index.json";
 const CACHE_TTL_MS = 3_600_000; // 1 hour
 const BLOCKED_REGISTRY_PLUGIN_NAMES = new Set([
-  "@elizaos/app-agent-town",
-  "@elizaos/app-dungeons",
-  "@elizaos/app-dungeons-and-daemons",
+  "@tokagentos/app-agent-town",
+  "@tokagentos/app-dungeons",
+  "@tokagentos/app-dungeons-and-daemons",
 ]);
 const BLOCKED_REGISTRY_PLUGIN_REPOS = new Set([
   "agent-town/agent-town",

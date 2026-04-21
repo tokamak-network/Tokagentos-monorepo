@@ -1,4 +1,4 @@
-import { CodingAgentSettingsSection } from "@elizaos/app-task-coordinator";
+import { CodingAgentSettingsSection } from "@tokagentos/app-task-coordinator";
 import type { JSX } from "react";
 import { ConversationsSidebar } from "../components/conversations/ConversationsSidebar";
 import { BrowserWorkspaceView } from "../components/pages/BrowserWorkspaceView";

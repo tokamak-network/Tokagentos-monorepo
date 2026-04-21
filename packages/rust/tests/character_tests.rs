@@ -181,7 +181,7 @@ fn test_build_plugins_with_cloud() {
     // Cloud settings are not part of the core TypeScript/Python plugin builder.
     // Rust should ignore these keys and follow the standard ordering.
     assert!(plugins.contains(&"@elizaos/plugin-sql".to_string()));
-    assert!(!plugins.contains(&"@elizaos/plugin-tokagentcloud".to_string()));
+    assert!(!plugins.contains(&"@elizaos/plugin-elizacloud".to_string()));
 }
 
 /// Test character bio_string method

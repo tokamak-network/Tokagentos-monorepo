@@ -219,7 +219,7 @@ export function startCloudAgent(userConfig: CloudAgentConfig = {}): void {
 
       const plugins = [];
 
-      const cloudPlugin = await import("@elizaos/plugin-tokagentcloud")
+      const cloudPlugin = await import("@elizaos/plugin-elizacloud")
         .then((m) => m.default ?? m.tokagentOSCloudPlugin)
         .catch(() => null);
       if (cloudPlugin) plugins.push(cloudPlugin);

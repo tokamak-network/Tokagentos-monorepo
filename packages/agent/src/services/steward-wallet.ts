@@ -7,7 +7,7 @@ import type {
   StewardSignRequest,
   StewardSignResponse,
   StewardStatusResponse,
-} from "@elizaos/app-steward/types/steward";
+} from "@tokagentos/app-steward/types/steward";
 import { getWalletAddresses } from "../api/wallet.js";
 
 const DEFAULT_TIMEOUT_MS = 12_000;

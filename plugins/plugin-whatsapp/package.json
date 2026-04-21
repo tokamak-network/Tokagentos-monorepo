@@ -1,0 +1,6 @@
+{
+  "name": "@elizaos/plugin-whatsapp",
+  "version": "0.0.0-stub",
+  "private": true,
+  "description": "Stub package.json for upstream submodule plugins/plugin-whatsapp. Run 'git submodule update --init plugins/plugin-whatsapp' to populate."
+}

@@ -1,5 +1,5 @@
 /**
- * PR 3 runtime smoke test for `@elizaos/app-scape`.
+ * PR 3 runtime smoke test for `@tokagentos/app-scape`.
  *
  * Exercises the SDK / BotManager / ScapeGameService layer WITHOUT
  * requiring the full tokagent runtime to be booted. Flow:
@@ -24,7 +24,7 @@ import appScapePlugin, {
     BotSdk,
     ScapeGameService,
     type PerceptionSnapshot,
-} from "@elizaos/app-scape";
+} from "@tokagentos/app-scape";
 import {
     decodeServerFrame,
     encodeClientFrame,

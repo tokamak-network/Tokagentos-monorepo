@@ -1,0 +1,6 @@
+{
+  "name": "@elizaos/plugin-executecode",
+  "version": "0.0.0-stub",
+  "private": true,
+  "description": "Stub package.json for upstream submodule plugins/plugin-executecode. Run 'git submodule update --init plugins/plugin-executecode' to populate."
+}

@@ -196,7 +196,7 @@ async function startLiveServer(args: {
   });
   const { startApiServer } = await import("../../src/api/server");
   const { _resetForTesting } = await import(
-    "@elizaos/app-steward/routes/wallet-export-guard"
+    "@tokagentos/app-steward/routes/wallet-export-guard"
   );
   _resetForTesting();
   const server = await startApiServer({

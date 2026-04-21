@@ -8,7 +8,7 @@
  * No SQL mocks (per repo rule: tests that touch persistence use pglite
  * directly). This test exercises the trajectory wiring at the service-
  * interface boundary which is real plugin behavior; the storage layer is
- * exercised separately by the @elizaos/agent test suite.
+ * exercised separately by the @tokagentos/agent test suite.
  */
 
 import { describe, expect, it } from "vitest";
@@ -20,7 +20,7 @@ import {
   type Memory,
   type Service,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 import { executeCodeAction } from "../src/action.js";
 

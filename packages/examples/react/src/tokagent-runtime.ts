@@ -22,7 +22,7 @@ import {
 import {
   tokagentClassicPlugin,
   getTokagentGreeting,
-} from "@elizaos/plugin-tokagent-classic";
+} from "@elizaos/plugin-eliza-classic";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
 import { createBrowserPGlite } from "./pglite-browser";

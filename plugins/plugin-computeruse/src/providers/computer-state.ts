@@ -10,7 +10,7 @@ import type {
   Memory,
   Provider,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { currentPlatform } from "../platform/helpers.js";
 import type { ComputerUseService } from "../services/computer-use-service.js";
 

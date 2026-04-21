@@ -1,7 +1,7 @@
 import {
   InferenceCloudAlertButton,
   resolveCompanionInferenceNotice,
-} from "@elizaos/app-companion/ui";
+} from "@tokagentos/app-companion/ui";
 import { CloudStatusBadge } from "@tokagentos/app-core/components/cloud/CloudStatusBadge";
 import { LanguageDropdown } from "@tokagentos/app-core/components/shared/LanguageDropdown";
 import { ThemeToggle } from "@tokagentos/app-core/components/shared/ThemeToggle";

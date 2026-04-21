@@ -13,7 +13,7 @@
  * them into `CalendlyActionResult` shapes near the boundary.
  */
 
-import { type IAgentRuntime, logger, Service } from "@elizaos/core";
+import { type IAgentRuntime, logger, Service } from "@tokagentos/core";
 import { CalendlyClient, type FetchLike } from "../calendly-client.js";
 import {
 	CALENDLY_SERVICE_TYPE,

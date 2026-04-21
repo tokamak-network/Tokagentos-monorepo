@@ -3,7 +3,7 @@ import { registerDetailExtension } from "@tokagentos/app-core/components/apps/ex
 import { BabylonOperatorSurface } from "./BabylonOperatorSurface.js";
 import { BabylonDetailExtension } from "./BabylonDetailExtension.js";
 
-registerOperatorSurface("@elizaos/app-babylon", BabylonOperatorSurface);
+registerOperatorSurface("@tokagentos/app-babylon", BabylonOperatorSurface);
 registerDetailExtension("babylon-operator-dashboard", BabylonDetailExtension);
 
 export { BabylonOperatorSurface, BabylonDetailExtension };

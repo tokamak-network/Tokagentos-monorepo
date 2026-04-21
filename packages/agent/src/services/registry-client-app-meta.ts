@@ -53,7 +53,7 @@ const LOCAL_APP_OVERRIDES: Readonly<Record<string, LocalAppOverride>> = {
       features: ["commands", "telemetry", "pause", "resume", "suggestions"],
     },
   },
-  "@elizaos/app-hyperscape": {
+  "@tokagentos/app-hyperscape": {
     runtimePlugin: "@hyperscape/plugin-hyperscape",
     uiExtension: {
       detailPanelId: "hyperscape-embedded-agents",
@@ -63,7 +63,7 @@ const LOCAL_APP_OVERRIDES: Readonly<Record<string, LocalAppOverride>> = {
       features: ["commands", "telemetry", "pause", "resume", "suggestions"],
     },
   },
-  "@elizaos/app-babylon": {
+  "@tokagentos/app-babylon": {
     displayName: "Babylon",
     category: "game",
     launchType: "url",
@@ -89,7 +89,7 @@ const LOCAL_APP_OVERRIDES: Readonly<Record<string, LocalAppOverride>> = {
       features: ["commands", "telemetry", "pause", "resume"],
     },
   },
-  "@elizaos/app-hyperfy": {
+  "@tokagentos/app-hyperfy": {
     launchType: "connect",
     launchUrl: "http://localhost:3003",
     viewer: {
@@ -97,7 +97,7 @@ const LOCAL_APP_OVERRIDES: Readonly<Record<string, LocalAppOverride>> = {
       sandbox: LOCAL_APP_DEFAULT_SANDBOX,
     },
   },
-  "@elizaos/app-2004scape": {
+  "@tokagentos/app-2004scape": {
     launchType: "connect",
     launchUrl: "/api/apps/2004scape/viewer",
     uiExtension: {
@@ -117,7 +117,7 @@ const LOCAL_APP_OVERRIDES: Readonly<Record<string, LocalAppOverride>> = {
       features: ["commands", "telemetry", "pause", "resume", "suggestions"],
     },
   },
-  "@elizaos/app-defense-of-the-agents": {
+  "@tokagentos/app-defense-of-the-agents": {
     uiExtension: {
       detailPanelId: "defense-agent-control",
     },

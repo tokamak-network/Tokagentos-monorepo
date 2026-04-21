@@ -29,7 +29,7 @@ vi.mock("./routes/wallet-trade-compat-routes", () => ({
 describe("stewardPlugin shape", () => {
   it("exports a valid Plugin with routes", async () => {
     const { stewardPlugin } = await import("./plugin");
-    expect(stewardPlugin.name).toBe("@elizaos/app-steward");
+    expect(stewardPlugin.name).toBe("@tokagentos/app-steward");
     expect(stewardPlugin.routes).toBeDefined();
     expect(stewardPlugin.routes!.length).toBe(34);
   });

@@ -5,7 +5,7 @@
  *   3. LifeOps sidebar widget declarations for the "chat-sidebar" slot
  *
  * Usage:
- *   import "@elizaos/app-lifeops/widgets";
+ *   import "@tokagentos/app-lifeops/widgets";
  */
 
 // Side-effect: augment TokagentClient with LifeOps methods.

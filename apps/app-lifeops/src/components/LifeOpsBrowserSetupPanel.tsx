@@ -24,7 +24,7 @@ import {
   type LifeOpsBrowserSettings,
   type LifeOpsBrowserSiteAccessMode,
   type LifeOpsBrowserTrackingMode,
-} from "@elizaos/app-lifeops/contracts";
+} from "@tokagentos/app-lifeops/contracts";
 import {
   Copy,
   Download,

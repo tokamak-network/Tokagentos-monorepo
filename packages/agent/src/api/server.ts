@@ -32,16 +32,16 @@ import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 // Discord local routes extracted to @elizaos/plugin-discord (setup-routes.ts)
-import { DropService, handleDropRoutes } from "@elizaos/app-tokagentmaker";
-import { handleKnowledgeRoutes } from "@elizaos/app-knowledge/routes";
-import { TxService } from "@elizaos/app-steward/api/tx-service";
+import { DropService, handleDropRoutes } from "@tokagentos/app-tokagentmaker";
+import { handleKnowledgeRoutes } from "@tokagentos/app-knowledge/routes";
+import { TxService } from "@tokagentos/app-steward/api/tx-service";
 import type {
   SwarmEvent,
   TaskCompletionSummary,
   TaskContext,
-} from "@elizaos/app-task-coordinator/api/coordinator-types";
-import { wireCoordinatorBridgesWhenReady } from "@elizaos/app-task-coordinator/api/coordinator-wiring";
-import { routeTaskAgentTextToConnector } from "@elizaos/app-task-coordinator/api/task-agent-message-routing";
+} from "@tokagentos/app-task-coordinator/api/coordinator-types";
+import { wireCoordinatorBridgesWhenReady } from "@tokagentos/app-task-coordinator/api/coordinator-wiring";
+import { routeTaskAgentTextToConnector } from "@tokagentos/app-task-coordinator/api/task-agent-message-routing";
 // Phase 2 extraction: LifeOps routes → app-lifeops/src/routes/plugin.ts (lifeopsPlugin)
 // import { handleWalletTradeExecuteRoute } from "./wallet-trade-routes.js";
 // import {
@@ -50,8 +50,8 @@ import { routeTaskAgentTextToConnector } from "@elizaos/app-task-coordinator/api
 //   updateWalletTradeLedgerEntryStatus,
 // } from "./wallet-trading-profile.js";
 // Phase 2 extraction: Website-blocker routes → app-lifeops/src/routes/plugin.ts (lifeopsPlugin)
-import { handleTrainingRoutes } from "@elizaos/app-training/routes/training";
-import { handleTrajectoryRoute } from "@elizaos/app-training/routes/trajectory";
+import { handleTrainingRoutes } from "@tokagentos/app-training/routes/training";
+import { handleTrajectoryRoute } from "@tokagentos/app-training/routes/trajectory";
 import {
   type AgentRuntime,
   ChannelType,
@@ -170,7 +170,7 @@ import {
   resolveBlueBubblesWebhookPath,
 } from "./bluebubbles-routes.js";
 import { handleBrowserWorkspaceRoutes } from "./browser-workspace-routes.js";
-// BSC trade helpers moved to @elizaos/app-steward. Kept for re-export only.
+// BSC trade helpers moved to @tokagentos/app-steward. Kept for re-export only.
 // import { buildBscApproveUnsignedTx, ... } from "./bsc-trade.js";
 import { handleBugReportRoutes } from "./bug-report-routes.js";
 import { handleCharacterRoutes } from "./character-routes.js";
@@ -248,7 +248,7 @@ import { handleTriggerRoutes } from "./trigger-routes.js";
 import { handleTtsRoutes } from "./tts-routes.js";
 import { handleUpdateRoutes } from "./update-routes.js";
 import {
-  // Balance/import/generate helpers moved to @elizaos/app-steward plugin routes.
+  // Balance/import/generate helpers moved to @tokagentos/app-steward plugin routes.
   // fetchEvmBalances, fetchSolanaBalances, fetchSolanaNativeBalanceViaRpc,
   // generateWalletForChain, importWallet, validatePrivateKey,
   generateWalletKeys,
@@ -256,7 +256,7 @@ import {
   initStewardWalletCache,
   setSolanaWalletEnv,
 } from "./wallet.js";
-// Wallet dispatch moved to @elizaos/app-steward plugin routes.
+// Wallet dispatch moved to @tokagentos/app-steward plugin routes.
 // import { handleWalletBscRoutes } from "./wallet-bsc-routes.js";
 import {
   EVM_PLUGIN_PACKAGE,
@@ -1903,7 +1903,7 @@ async function handleCodingAgentsFallback(
     installed?: boolean;
     installCommand?: string;
     docsUrl?: string;
-    auth?: import("@elizaos/app-task-coordinator/api/coding-agents-preflight-normalize").NormalizedPreflightAuth;
+    auth?: import("@tokagentos/app-task-coordinator/api/coding-agents-preflight-normalize").NormalizedPreflightAuth;
   };
   /** CLI login hook on adapter instances — union `.d.ts` omits it even when runtime provides it. */
   type CodingAgentAdapterAuthHook = {
@@ -2174,7 +2174,7 @@ async function handleCodingAgentsFallback(
         }
       }
       const { normalizePreflightAuth } = await import(
-        "@elizaos/app-task-coordinator/api/coding-agents-preflight-normalize"
+        "@tokagentos/app-task-coordinator/api/coding-agents-preflight-normalize"
       );
       const normalized = rows.flatMap((item): AgentPreflightRecord[] => {
         if (!item || typeof item !== "object") return [];
@@ -2501,7 +2501,7 @@ async function handleCodingAgentsFallback(
         // Whitelist + URL-scheme-validate before forwarding to the
         // browser. See `coding-agents-auth-sanitize.ts` for rationale.
         const { sanitizeAuthResult } = await import(
-          "@elizaos/app-task-coordinator/api/coding-agents-auth-sanitize"
+          "@tokagentos/app-task-coordinator/api/coding-agents-auth-sanitize"
         );
         json(res, sanitizeAuthResult(triggered));
       }
@@ -3292,7 +3292,7 @@ async function handleRequest(
 
   // ═══════════════════════════════════════════════════════════════════════
   // Wallet core routes (addresses, balances, generate, config, export)
-  // Canonical implementation lives in @elizaos/app-steward; wired here
+  // Canonical implementation lives in @tokagentos/app-steward; wired here
   // so the API server exposes them without requiring plugin registration.
   // ═══════════════════════════════════════════════════════════════════════
   if (pathname.startsWith("/api/wallet/")) {
@@ -3305,14 +3305,14 @@ async function handleRequest(
       | null = null;
     try {
       const { handleWalletCoreRoutes } = await import(
-        "@elizaos/app-steward/routes/wallet-core-routes"
+        "@tokagentos/app-steward/routes/wallet-core-routes"
       );
       stewardWalletCoreRoutes = handleWalletCoreRoutes;
     } catch (err) {
       if (isWalletBridgeImportFailure(err)) {
         logger.debug(
           { err },
-          "[tokagent-api] Wallet core routes unavailable from @elizaos/app-steward; falling back to local bridge",
+          "[tokagent-api] Wallet core routes unavailable from @tokagentos/app-steward; falling back to local bridge",
         );
       } else {
         logger.error({ err }, "[tokagent-api] Wallet core route bridge failed");
@@ -3738,7 +3738,7 @@ async function handleRequest(
 
   // ═══════════════════════════════════════════════════════════════════════
   // BSC trade routes and wallet trade execute — now handled by
-  // @elizaos/app-steward plugin routes. See apps/app-steward/src/plugin.ts.
+  // @tokagentos/app-steward plugin routes. See apps/app-steward/src/plugin.ts.
   // ═══════════════════════════════════════════════════════════════════════
 
   // ── Cloud routes (/api/cloud/*) ─────────────────────────────────────────

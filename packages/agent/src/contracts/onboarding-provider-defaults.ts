@@ -8,7 +8,7 @@ export const DEFAULT_ONBOARDING_PROVIDER_OPTIONS = [
     id: "tokagentcloud",
     name: "Tokagent Cloud",
     envKey: null,
-    pluginName: "@elizaos/plugin-tokagentcloud",
+    pluginName: "@elizaos/plugin-elizacloud",
     keyPrefix: null,
     description: "Managed hosting for Tokagent agents and bundled infrastructure.",
     family: "tokagentcloud",

@@ -2,7 +2,7 @@
  * Environment and configuration validation for BlueBubbles plugin
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import { z } from "zod";
 import type { BlueBubblesConfig, DmPolicy, GroupPolicy } from "./types";
 

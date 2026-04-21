@@ -13,7 +13,7 @@ import {
 import {
   tokagentClassicPlugin,
   getTokagentGreeting,
-} from "@elizaos/plugin-tokagent-classic";
+} from "@elizaos/plugin-eliza-classic";
 import localdbPlugin from "@elizaos/plugin-localdb";
 import { v4 as uuidv4 } from "uuid";
 import type { AppConfig, ChatMessage, ProviderMode } from "./types";

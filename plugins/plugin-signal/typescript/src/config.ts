@@ -12,7 +12,7 @@ import type {
   DmPolicy,
   GroupPolicy,
   MarkdownConfig,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 // ============================================================
 // Reaction Configuration

@@ -36,7 +36,7 @@ async function build() {
           minify: false,
           external: [
             "node:*",
-            "@elizaos/core",
+            "@tokagentos/core",
             "puppeteer-core",
           ],
           naming: {

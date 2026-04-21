@@ -28,8 +28,8 @@ import {
   isLifeOpsFeatureKey,
   type FeatureFlagState,
   type LifeOpsFeatureKey,
-} from "@elizaos/app-lifeops/lifeops/feature-flags.types";
-import { createFeatureFlagService } from "@elizaos/app-lifeops/lifeops/feature-flags";
+} from "@tokagentos/app-lifeops/lifeops/feature-flags.types";
+import { createFeatureFlagService } from "@tokagentos/app-lifeops/lifeops/feature-flags";
 import { normalizeCloudSiteUrl } from "../cloud/base-url.js";
 import { validateCloudBaseUrl } from "../cloud/validate-url.js";
 import type { CloudProxyConfigLike } from "../types/config-like.js";

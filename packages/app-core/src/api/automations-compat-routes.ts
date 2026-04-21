@@ -11,7 +11,7 @@ import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import { toWorkbenchTask } from "@tokagentos/agent/api/workbench-helpers";
 import { listTriggerTasks, taskToTriggerSummary } from "@tokagentos/agent/triggers/runtime";
 import type { TriggerSummary } from "@tokagentos/agent/triggers/types";
-import { LifeOpsService } from "@elizaos/app-lifeops/lifeops/service";
+import { LifeOpsService } from "@tokagentos/app-lifeops/lifeops/service";
 import type {
   LifeOpsDiscordConnectorStatus,
   LifeOpsGoogleConnectorStatus,

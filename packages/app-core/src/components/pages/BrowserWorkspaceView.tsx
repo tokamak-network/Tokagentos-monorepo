@@ -1,7 +1,7 @@
 import {
   type BrowserWorkspaceWalletState,
   buildBrowserWorkspaceWalletState,
-} from "@elizaos/app-steward/browser-workspace-wallet";
+} from "@tokagentos/app-steward/browser-workspace-wallet";
 import type {
   LifeOpsBrowserCompanionPackageStatus,
   LifeOpsBrowserCompanionStatus,

@@ -175,7 +175,7 @@ export function getAppCatalogSectionKey(
     "name" | "displayName" | "description" | "category"
   >,
 ): AppCatalogSectionKey {
-  if (app.name === "@elizaos/app-lifeops") {
+  if (app.name === "@tokagentos/app-lifeops") {
     return "lifeManagement";
   }
 
@@ -185,17 +185,17 @@ export function getAppCatalogSectionKey(
 
   const canonicalName = normalizeTokagentCuratedAppName(app.name) ?? app.name;
   switch (canonicalName) {
-    case "@elizaos/app-companion":
+    case "@tokagentos/app-companion":
       return "games";
-    case "@elizaos/app-vincent":
-    case "@elizaos/app-shopify":
+    case "@tokagentos/app-vincent":
+    case "@tokagentos/app-shopify":
       return "finance";
-    case "@elizaos/app-babylon":
+    case "@tokagentos/app-babylon":
       return "games";
     case "@hyperscape/plugin-hyperscape":
-    case "@elizaos/app-2004scape":
-    case "@elizaos/app-scape":
-    case "@elizaos/app-defense-of-the-agents":
+    case "@tokagentos/app-2004scape":
+    case "@tokagentos/app-scape":
+    case "@tokagentos/app-defense-of-the-agents":
     case "@clawville/app-clawville":
       return "games";
   }

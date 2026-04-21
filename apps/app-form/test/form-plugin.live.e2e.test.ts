@@ -31,13 +31,13 @@ describeIf(LIVE)("App-Form: Plugin e2e", () => {
   });
 
   it("form plugin can be dynamically imported", async () => {
-    const mod = await import("@elizaos/app-form");
+    const mod = await import("@tokagentos/app-form");
     expect(mod).toBeTruthy();
     expect(mod.formPlugin || mod.default).toBeTruthy();
   });
 
   it("FormBuilder creates valid form definitions", async () => {
-    const { FormBuilder, C } = await import("@elizaos/app-form");
+    const { FormBuilder, C } = await import("@tokagentos/app-form");
     if (!FormBuilder || !C) {
       // Exports may not exist yet
       return;
@@ -51,7 +51,7 @@ describeIf(LIVE)("App-Form: Plugin e2e", () => {
 
   it("field validation works for builtin types", async () => {
     const { validateField, registerBuiltinTypes, registerTypeHandler } = await import(
-      "@elizaos/app-form"
+      "@tokagentos/app-form"
     );
     if (!validateField) {
       return;
@@ -68,7 +68,7 @@ describeIf(LIVE)("App-Form: Plugin e2e", () => {
   });
 
   it("session storage functions are available", async () => {
-    const mod = await import("@elizaos/app-form");
+    const mod = await import("@tokagentos/app-form");
     // Verify the key session functions exist
     expect(typeof mod.saveSession).toBe("function");
     expect(typeof mod.getActiveSession).toBe("function");
@@ -76,7 +76,7 @@ describeIf(LIVE)("App-Form: Plugin e2e", () => {
   });
 
   it("intent detection functions work", async () => {
-    const mod = await import("@elizaos/app-form");
+    const mod = await import("@tokagentos/app-form");
     if (!mod.quickIntentDetect) {
       return;
     }

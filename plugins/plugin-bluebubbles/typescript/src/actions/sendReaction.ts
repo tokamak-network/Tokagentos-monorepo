@@ -9,13 +9,13 @@ import type {
 	IAgentRuntime,
 	Memory,
 	State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
 	composePromptFromState,
 	logger,
 	ModelType,
 	parseJSONObjectFromText,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { BLUEBUBBLES_SERVICE_NAME } from "../constants.js";
 import type { BlueBubblesService } from "../service.js";
 

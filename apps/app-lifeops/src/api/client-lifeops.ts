@@ -6,9 +6,9 @@
  *
  * Side-effect import — include once at startup to register the methods:
  *
- *   import "@elizaos/app-lifeops/api/client-lifeops";
+ *   import "@tokagentos/app-lifeops/api/client-lifeops";
  *
- * The `@elizaos/app-lifeops/widgets` entry point imports this transitively.
+ * The `@tokagentos/app-lifeops/widgets` entry point imports this transitively.
  */
 
 import type {

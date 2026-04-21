@@ -1,6 +1,6 @@
-# @elizaos/app-browser
+# @tokagentos/app-browser
 
-Milady **app-browser** slice: agent plugin for the desktop-owned browser workspace plus Steward wallet actions. Naming matches other app packages (for example `@elizaos/app-lifeops`).
+Milady **app-browser** slice: agent plugin for the desktop-owned browser workspace plus Steward wallet actions. Naming matches other app packages (for example `@tokagentos/app-lifeops`).
 
 ## What this slice does
 

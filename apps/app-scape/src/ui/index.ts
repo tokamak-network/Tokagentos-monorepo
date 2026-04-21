@@ -1,6 +1,6 @@
 import { registerOperatorSurface } from "@tokagentos/app-core/components/apps/surfaces/registry";
 import { ScapeOperatorSurface } from "./ScapeOperatorSurface.js";
 
-registerOperatorSurface("@elizaos/app-scape", ScapeOperatorSurface);
+registerOperatorSurface("@tokagentos/app-scape", ScapeOperatorSurface);
 
 export { ScapeOperatorSurface };

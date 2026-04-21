@@ -99,8 +99,8 @@ export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
   MISTRAL_API_KEY: "@elizaos/plugin-mistral",
   COHERE_API_KEY: "@elizaos/plugin-cohere",
   PERPLEXITY_API_KEY: "@elizaos/plugin-perplexity",
-  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-tokagentcloud",
-  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-tokagentcloud",
+  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-elizacloud",
+  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-elizacloud",
   CUA_API_KEY: "@elizaos/plugin-cua",
   CUA_HOST: "@elizaos/plugin-cua",
   OBSIDIAN_VAULT_PATH: "@elizaos/plugin-obsidian",
@@ -118,7 +118,7 @@ export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
   THEAUDIODB_API_KEY: "@elizaos/plugin-music-library",
   SPOTIFY_CLIENT_ID: "@elizaos/plugin-music-library",
   SPOTIFY_CLIENT_SECRET: "@elizaos/plugin-music-library",
-  RS_SDK_BOT_NAME: "@elizaos/app-2004scape",
+  RS_SDK_BOT_NAME: "@tokagentos/app-2004scape",
   SHOPIFY_ACCESS_TOKEN: "@elizaos/plugin-shopify",
 };
 
@@ -149,7 +149,7 @@ const FEATURE_PLUGINS: Record<string, string> = {
   computeruse: "@elizaos/plugin-computeruse",
   repoprompt: "@elizaos/plugin-repoprompt",
   claudeCodeWorkbench: "@elizaos/plugin-claude-code-workbench",
-  rs2004scape: "@elizaos/app-2004scape",
+  rs2004scape: "@tokagentos/app-2004scape",
 };
 
 const EVM_PLUGIN_PACKAGE = "@elizaos/plugin-evm";

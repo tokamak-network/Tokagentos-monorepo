@@ -1,5 +1,5 @@
 /**
- * Desktop Steward sidecar — implemented in `@elizaos/app-steward`.
+ * Desktop Steward sidecar — implemented in `@tokagentos/app-steward`.
  * Re-exported here so consumers can import from `@tokagentos/app-core` only.
  */
 export {
@@ -9,4 +9,4 @@ export {
   type StewardSidecarConfig,
   type StewardSidecarStatus,
   type StewardWalletInfo,
-} from "@elizaos/app-steward/services/steward-sidecar";
+} from "@tokagentos/app-steward/services/steward-sidecar";

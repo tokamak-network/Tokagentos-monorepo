@@ -227,7 +227,7 @@ interface TrainingTriggerEntry {
 /**
  * Fire-and-forget notification to the optional TrainingTriggerService.
  *
- * Registered by `@tokagentos/app-core` when `@elizaos/app-training` is installed
+ * Registered by `@tokagentos/app-core` when `@tokagentos/app-training` is installed
  * (see `runtime/tokagent.ts` → `registerTrackCTrainingCrons`). Slim installs
  * never register the service and this resolves to a no-op.
  *

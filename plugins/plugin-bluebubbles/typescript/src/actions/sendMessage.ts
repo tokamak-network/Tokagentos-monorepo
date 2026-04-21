@@ -13,7 +13,7 @@ import {
 	type Memory,
 	ModelType,
 	type State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { BLUEBUBBLES_SERVICE_NAME } from "../constants";
 import type { BlueBubblesService } from "../service";
 

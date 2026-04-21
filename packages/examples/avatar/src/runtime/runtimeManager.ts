@@ -10,7 +10,7 @@ import {
   type UUID,
 } from "@tokagentos/core";
 import anthropicPlugin from "@elizaos/plugin-anthropic";
-import { tokagentClassicPlugin, getTokagentGreeting } from "@elizaos/plugin-tokagent-classic";
+import { tokagentClassicPlugin, getTokagentGreeting } from "@elizaos/plugin-eliza-classic";
 import elevenLabsPlugin from "@elizaos/plugin-elevenlabs";
 import googleGenAIPlugin from "@elizaos/plugin-google-genai";
 import groqPlugin from "@elizaos/plugin-groq";

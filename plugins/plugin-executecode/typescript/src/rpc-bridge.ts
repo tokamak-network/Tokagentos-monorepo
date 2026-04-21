@@ -27,7 +27,7 @@ import {
   type State,
   type UUID,
   validateActionParams,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 const LOG_PREFIX = "[ExecuteCodePlugin]";
 

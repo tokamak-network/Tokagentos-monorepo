@@ -10,7 +10,7 @@ const apiCalls: Array<{
 
 const tickCalls: Array<Record<string, unknown>> = [];
 
-vi.mock("@elizaos/app-lifeops/routes/lifeops-routes", () => ({
+vi.mock("@tokagentos/app-lifeops/routes/lifeops-routes", () => ({
   handleLifeOpsRoutes: vi.fn(async (ctx: {
     method: string;
     pathname: string;
@@ -40,7 +40,7 @@ vi.mock("@elizaos/app-lifeops/routes/lifeops-routes", () => ({
   }),
 }));
 
-vi.mock("@elizaos/app-lifeops/lifeops/runtime", () => ({
+vi.mock("@tokagentos/app-lifeops/lifeops/runtime", () => ({
   executeLifeOpsSchedulerTask: vi.fn(
     async (_runtime: AgentRuntime, options: Record<string, unknown>) => {
       tickCalls.push(options);

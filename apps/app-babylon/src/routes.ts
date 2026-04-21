@@ -13,7 +13,7 @@ import {
   resolveSettingLike,
 } from "./babylon-auth";
 
-const APP_NAME = "@elizaos/app-babylon";
+const APP_NAME = "@tokagentos/app-babylon";
 const APP_DISPLAY_NAME = "Babylon";
 
 // ---------------------------------------------------------------------------

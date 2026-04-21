@@ -1,0 +1,6 @@
+{
+  "name": "@elizaos/plugin-solana",
+  "version": "0.0.0-stub",
+  "private": true,
+  "description": "Stub package.json for upstream submodule plugins/plugin-solana. Run 'git submodule update --init plugins/plugin-solana' to populate."
+}

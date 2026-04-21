@@ -399,7 +399,7 @@ async function seedBenchmarkCaseFixtures(
     const now = new Date().toISOString();
     const { LifeOpsRepository } = await import(
       // @ts-expect-error — workspace package resolved at runtime
-      "@elizaos/app-lifeops/lifeops/repository"
+      "@tokagentos/app-lifeops/lifeops/repository"
     );
     const repo = new LifeOpsRepository(runtime);
     if (

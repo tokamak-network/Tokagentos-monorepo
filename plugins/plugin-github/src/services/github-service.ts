@@ -9,7 +9,7 @@
  * error instead of crashing initialization).
  */
 
-import { type IAgentRuntime, logger, Service } from "@elizaos/core";
+import { type IAgentRuntime, logger, Service } from "@tokagentos/core";
 import { Octokit } from "@octokit/rest";
 import {
 	GITHUB_SERVICE_TYPE,

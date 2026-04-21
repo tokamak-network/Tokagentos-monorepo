@@ -32,7 +32,7 @@ import type { IAgentRuntime } from "@tokagentos/core";
 
 import { handleAppRoutes } from "../src/routes.js";
 import { ScapeGameService } from "../src/services/game-service.js";
-import type { PerceptionSnapshot } from "@elizaos/app-scape";
+import type { PerceptionSnapshot } from "@tokagentos/app-scape";
 
 const TOKEN = process.env.BOT_SDK_TOKEN;
 if (!TOKEN) {
