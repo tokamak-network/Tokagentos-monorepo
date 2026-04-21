@@ -1436,7 +1436,7 @@ export class AgentRuntime implements IAgentRuntime {
 					"Database adapter not initialized",
 				);
 				throw new Error(
-					"Database adapter not initialized. The SQL plugin (@tokagentos/plugin-sql) is required for agent initialization. Please ensure it is included in your character configuration.",
+					"Database adapter not initialized. The SQL plugin (@elizaos/plugin-sql) is required for agent initialization. Please ensure it is included in your character configuration.",
 				);
 			}
 		}

@@ -19,7 +19,7 @@ let nfaPlugin: NfaPlugin | null | undefined;
 async function getNfaPlugin(): Promise<NfaPlugin | null> {
   if (nfaPlugin !== undefined) return nfaPlugin;
   try {
-    const pkgName = "@tokagentos/plugin-bnb-identity";
+    const pkgName = "@elizaos/plugin-bnb-identity";
     const mod = await import(/* @vite-ignore */ pkgName);
     nfaPlugin =
       typeof mod?.buildMerkleRoot === "function" &&

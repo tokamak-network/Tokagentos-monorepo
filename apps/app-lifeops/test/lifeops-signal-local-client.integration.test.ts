@@ -3,7 +3,7 @@
  *
  * Tests the direct signal-cli HTTP API reader that activates when
  * `SIGNAL_HTTP_URL` + `SIGNAL_ACCOUNT_NUMBER` are set but the full
- * `@tokagentos/plugin-signal` service is not connected.
+ * `@elizaos/plugin-signal` service is not connected.
  *
  * Gating:
  * - Stub-based tests run without any live credentials.

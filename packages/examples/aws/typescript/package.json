@@ -16,8 +16,8 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha"
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.145",

@@ -2,7 +2,7 @@
  * DatabaseAdapter Abstract Class Tests
  *
  * NOTE: This file tests the abstract class contract only.
- * Actual database behavior is tested in @tokagentos/plugin-sql
+ * Actual database behavior is tested in @elizaos/plugin-sql
  * using real database connections (PGLite).
  */
 

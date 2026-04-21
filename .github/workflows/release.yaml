@@ -530,7 +530,7 @@ jobs:
 
           # Build plugin-sql WASM (if exists)
           if [ -d "plugins/plugin-sql/rust" ]; then
-            echo "Building @tokagentos/plugin-sql WASM..."
+            echo "Building @elizaos/plugin-sql WASM..."
             cd plugins/plugin-sql/rust
             wasm-pack build --target web --out-dir pkg/web --features wasm --no-default-features || echo "WASM web build skipped"
             wasm-pack build --target nodejs --out-dir pkg/node --features wasm --no-default-features || echo "WASM node build skipped"

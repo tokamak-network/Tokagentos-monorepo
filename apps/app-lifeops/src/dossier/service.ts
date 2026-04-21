@@ -86,7 +86,7 @@ export interface DossierResult {
 /**
  * Structural shape we depend on from the RelationshipsService. Kept local so
  * this service degrades cleanly when the service isn't registered and so we
- * don't create a circular dependency on `@tokagentos/plugin-agent-skills`.
+ * don't create a circular dependency on `@elizaos/plugin-agent-skills`.
  */
 export interface RelationshipsServiceLike {
   findByHandle(

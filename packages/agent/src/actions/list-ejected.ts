@@ -70,7 +70,7 @@ export const listEjectedAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Ejected plugins (2):\n- @tokagentos/plugin-discord@1.4.0\n- @tokagentos/plugin-telegram@1.2.1",
+          text: "Ejected plugins (2):\n- @elizaos/plugin-discord@1.4.0\n- @elizaos/plugin-telegram@1.2.1",
         },
       },
     ],

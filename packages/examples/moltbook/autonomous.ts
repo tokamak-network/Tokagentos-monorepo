@@ -9,12 +9,12 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import inmemorydbPlugin from "@tokagentos/plugin-inmemorydb";
+import inmemorydbPlugin from "@elizaos/plugin-inmemorydb";
 import moltbookPlugin, {
   MOLTBOOK_SERVICE_NAME,
   type MoltbookService,
-} from "@tokagentos/plugin-moltbook";
-import openAiPlugin from "@tokagentos/plugin-openai";
+} from "@elizaos/plugin-moltbook";
+import openAiPlugin from "@elizaos/plugin-openai";
 import { v4 as uuidv4 } from "uuid";
 
 // ============================================================================

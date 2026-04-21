@@ -89,7 +89,7 @@ async function ensureSignalPluginLoaded(
     return false;
   }
 
-  const mod = await import("@tokagentos/plugin-signal");
+  const mod = await import("@elizaos/plugin-signal");
   const plugin = (mod.default ??
     (mod as { plugin?: Plugin }).plugin) as Plugin | undefined;
   if (!plugin) {
@@ -377,7 +377,7 @@ export function withSignal<TBase extends Constructor<LifeOpsServiceBase>>(Base: 
     /**
      * Read recent inbound Signal messages.
      *
-     * Primary path: the Signal service (`@tokagentos/plugin-signal`) is connected
+     * Primary path: the Signal service (`@elizaos/plugin-signal`) is connected
      * and exposes a `getRecentMessages()` call on its in-memory store.
      *
      * Fallback path: when the service is absent or disconnected but

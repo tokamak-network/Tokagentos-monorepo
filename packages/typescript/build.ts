@@ -128,7 +128,7 @@ export async function createTokagentBuildConfig(
 		"@tokagentos/client",
 		"@tokagentos/api-client",
 		"@tokagentos/shared",
-		"@tokagentos/plugin-*",
+		"@elizaos/plugin-*",
 	].filter((pkg) => pkg !== selfPackageName);
 
 	// Filter out empty strings and clean up the external array
@@ -743,7 +743,7 @@ async function buildTesting() {
 			outdir: "dist/testing",
 			target: "node",
 			format: "esm",
-			external: [...nodeExternals, "@tokagentos/plugin-sql"],
+			external: [...nodeExternals, "@elizaos/plugin-sql"],
 			sourcemap: true,
 			minify: false,
 			generateDts: false,

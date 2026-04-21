@@ -1,4 +1,4 @@
-// Stub module for @tokagentos/plugin-* packages whose npm dist has broken
+// Stub module for @elizaos/plugin-* packages whose npm dist has broken
 // @tokagentos/core resolution. Exports a minimal valid Plugin shape so
 // AgentRuntime.registerPlugin() doesn't throw.
 const plugin = { name: "stub-plugin", description: "test stub" };

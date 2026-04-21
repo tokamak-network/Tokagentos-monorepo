@@ -17,7 +17,7 @@ export function normalizePluginLookupAlias(name: string): string {
   const lower = trimmed.toLowerCase();
   if (lower === "obsidan") return "obsidian";
   if (lower === "plugin-obsidan") return "plugin-obsidian";
-  if (lower === "@tokagentos/plugin-obsidan") return "@tokagentos/plugin-obsidian";
+  if (lower === "@elizaos/plugin-obsidan") return "@elizaos/plugin-obsidian";
 
   return trimmed;
 }
@@ -35,7 +35,7 @@ export function getPluginInfoFromRegistry(
     p = registry.get(`@tokagentos/${name}`);
     if (p) return p;
 
-    p = registry.get(`@tokagentos/plugin-${name}`);
+    p = registry.get(`@elizaos/plugin-${name}`);
     if (p) return p;
 
     p = registry.get(`@tokagentos/app-${name}`);

@@ -291,8 +291,8 @@ type RootPackageJson = {
 };
 const cloudAgentTemplateReleaseDependencies = [
   "@tokagentos/core",
-  "@tokagentos/plugin-elizacloud",
-  "@tokagentos/plugin-sql",
+  "@elizaos/plugin-elizacloud",
+  "@elizaos/plugin-sql",
 ] as const;
 
 /**
@@ -675,16 +675,16 @@ function assertBundledAgentOrchestratorInstallFix() {
   ) as RootPackageJson;
   const orchestratorPluginPackageJsonPath =
     resolveOrchestratorPluginPackageJsonPath();
-  if (!bundlesDependency(rootPackage, "@tokagentos/plugin-agent-orchestrator")) {
+  if (!bundlesDependency(rootPackage, "@elizaos/plugin-agent-orchestrator")) {
     console.error(
-      "release-check: package.json must bundle @tokagentos/plugin-agent-orchestrator so packaged Tokagent includes the standalone orchestrator implementation.",
+      "release-check: package.json must bundle @elizaos/plugin-agent-orchestrator so packaged Tokagent includes the standalone orchestrator implementation.",
     );
     process.exit(1);
   }
 
   if (!orchestratorPluginPackageJsonPath) {
     console.error(
-      "release-check: @tokagentos/plugin-agent-orchestrator/package.json is missing from all expected locations.",
+      "release-check: @elizaos/plugin-agent-orchestrator/package.json is missing from all expected locations.",
     );
     for (const candidate of orchestratorPluginPackageJsonPathCandidates) {
       console.error(`  - ${candidate}`);
@@ -697,7 +697,7 @@ function assertBundledAgentOrchestratorInstallFix() {
   ) as DependencyPackageJson;
   if (!orchestratorPackage.dependencies?.["coding-agent-adapters"]) {
     console.error(
-      "release-check: @tokagentos/plugin-agent-orchestrator must list coding-agent-adapters.",
+      "release-check: @elizaos/plugin-agent-orchestrator must list coding-agent-adapters.",
     );
     process.exit(1);
   }
@@ -710,7 +710,7 @@ function assertBundledAgentOrchestratorInstallFix() {
     )
   ) {
     console.error(
-      "release-check: @tokagentos/plugin-agent-orchestrator references scripts/ensure-node-pty.mjs in postinstall, but that file is missing under tokagent/plugins/plugin-agent-orchestrator/scripts/.",
+      "release-check: @elizaos/plugin-agent-orchestrator references scripts/ensure-node-pty.mjs in postinstall, but that file is missing under tokagent/plugins/plugin-agent-orchestrator/scripts/.",
     );
     process.exit(1);
   }
@@ -722,17 +722,17 @@ function assertOrchestratorVersionPinned() {
   const orchestratorPluginPackageJsonPath =
     resolveOrchestratorPluginPackageJsonPath();
   const version =
-    rootPackage.dependencies?.["@tokagentos/plugin-agent-orchestrator"];
+    rootPackage.dependencies?.["@elizaos/plugin-agent-orchestrator"];
   if (!version) {
     console.error(
-      "release-check: @tokagentos/plugin-agent-orchestrator is not in dependencies.",
+      "release-check: @elizaos/plugin-agent-orchestrator is not in dependencies.",
     );
     process.exit(1);
   }
   if (isWorkspaceSpecifier(version)) {
     if (!orchestratorPluginPackageJsonPath) {
       console.error(
-        "release-check: @tokagentos/plugin-agent-orchestrator is configured as workspace:*, but no local package.json was found.",
+        "release-check: @elizaos/plugin-agent-orchestrator is configured as workspace:*, but no local package.json was found.",
       );
       for (const candidate of orchestratorPluginPackageJsonPathCandidates) {
         console.error(`  - ${candidate}`);
@@ -743,7 +743,7 @@ function assertOrchestratorVersionPinned() {
   }
   if (!isExactVersion(version)) {
     console.error(
-      `release-check: @tokagentos/plugin-agent-orchestrator must either use workspace:* for the local checkout or be pinned to an exact version, but found "${version}".`,
+      `release-check: @elizaos/plugin-agent-orchestrator must either use workspace:* for the local checkout or be pinned to an exact version, but found "${version}".`,
     );
     process.exit(1);
   }

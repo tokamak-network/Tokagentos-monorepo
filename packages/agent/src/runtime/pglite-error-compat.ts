@@ -1,10 +1,10 @@
 /**
  * Pglite error utilities.
  *
- * These are defined locally because the published @tokagentos/plugin-sql npm
+ * These are defined locally because the published @elizaos/plugin-sql npm
  * package (alpha dist-tag) does not yet export them. Once the plugin-sql
  * submodule ships a release that includes pglite/errors.ts, we can remove
- * this file and import directly from "@tokagentos/plugin-sql".
+ * this file and import directly from "@elizaos/plugin-sql".
  */
 
 export const PGLITE_ERROR_CODES = {

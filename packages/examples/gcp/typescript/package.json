@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

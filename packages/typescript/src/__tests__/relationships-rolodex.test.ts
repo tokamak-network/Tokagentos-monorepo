@@ -43,7 +43,7 @@ async function setup(): Promise<Fixture> {
 		enableAutonomy: false,
 	});
 
-	const { default: pluginSql } = await import("@tokagentos/plugin-sql");
+	const { default: pluginSql } = await import("@elizaos/plugin-sql");
 	await runtime.registerPlugin(pluginSql);
 	await runtime.initialize();
 

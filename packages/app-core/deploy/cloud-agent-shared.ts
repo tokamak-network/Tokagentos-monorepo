@@ -219,12 +219,12 @@ export function startCloudAgent(userConfig: CloudAgentConfig = {}): void {
 
       const plugins = [];
 
-      const cloudPlugin = await import("@tokagentos/plugin-elizacloud")
+      const cloudPlugin = await import("@elizaos/plugin-elizacloud")
         .then((m) => m.default ?? m.elizaOSCloudPlugin)
         .catch(() => null);
       if (cloudPlugin) plugins.push(cloudPlugin);
 
-      const sqlPlugin = await import("@tokagentos/plugin-sql")
+      const sqlPlugin = await import("@elizaos/plugin-sql")
         .then((m) => m.default ?? m.sqlPlugin)
         .catch(() => null);
       if (sqlPlugin) plugins.push(sqlPlugin);

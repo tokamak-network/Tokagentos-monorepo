@@ -2,7 +2,7 @@
  * @fileoverview Integration Runtime Factory
  *
  * Creates real AgentRuntime instances for integration testing with:
- * - Real PGLite/Postgres database (via @tokagentos/plugin-sql)
+ * - Real PGLite/Postgres database (via @elizaos/plugin-sql)
  * - Real inference providers (Ollama, OpenAI, Anthropic, etc.)
  *
  * NO MOCKS. Tests require real infrastructure.
@@ -35,7 +35,7 @@ export interface IntegrationTestConfig {
 	plugins?: Plugin[];
 	/**
 	 * Database adapter - REQUIRED for integration tests.
-	 * Use @tokagentos/plugin-sql to create one.
+	 * Use @elizaos/plugin-sql to create one.
 	 */
 	databaseAdapter: IDatabaseAdapter;
 	/** Skip inference provider check (for database-only tests) */
@@ -116,8 +116,8 @@ export async function createIntegrationTestRuntime(
 	if (!databaseAdapter) {
 		throw new Error(
 			"Integration tests require a database adapter.\n\n" +
-				"Create one using @tokagentos/plugin-sql:\n\n" +
-				"  import { createDatabaseAdapter } from '@tokagentos/plugin-sql';\n" +
+				"Create one using @elizaos/plugin-sql:\n\n" +
+				"  import { createDatabaseAdapter } from '@elizaos/plugin-sql';\n" +
 				"  const adapter = createDatabaseAdapter({ dataDir: '/tmp/test' }, agentId);\n" +
 				"  await adapter.init();\n",
 		);

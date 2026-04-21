@@ -19,8 +19,8 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
-import sqlPlugin from "@tokagentos/plugin-sql";
+import { openaiPlugin } from "@elizaos/plugin-openai";
+import sqlPlugin from "@elizaos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
 
 // Types for request/response

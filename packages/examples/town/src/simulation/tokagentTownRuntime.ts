@@ -12,11 +12,11 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import anthropicPlugin from "@tokagentos/plugin-anthropic";
-import googleGenAIPlugin from "@tokagentos/plugin-google-genai";
-import groqPlugin from "@tokagentos/plugin-groq";
-import openaiPlugin from "@tokagentos/plugin-openai";
-import XAIPlugin from "@tokagentos/plugin-xai";
+import anthropicPlugin from "@elizaos/plugin-anthropic";
+import googleGenAIPlugin from "@elizaos/plugin-google-genai";
+import groqPlugin from "@elizaos/plugin-groq";
+import openaiPlugin from "@elizaos/plugin-openai";
+import XAIPlugin from "@elizaos/plugin-xai";
 import localAiPlugin from "../../../../plugins/plugin-local-ai/typescript/index.browser";
 import localdbPlugin from "../../../../plugins/plugin-localdb/typescript/index.browser";
 import { TOWN_AGENTS, type TownAgentDefinition } from "../../shared/agents";

@@ -11,9 +11,9 @@ import { collectPluginNames } from "./plugin-collector.js";
 
 /** A sample of optional plugins to verify gating behavior. */
 const SAMPLE_OPTIONAL = [
-  "@tokagentos/plugin-pdf",
-  "@tokagentos/plugin-cli",
-  "@tokagentos/plugin-discord",
+  "@elizaos/plugin-pdf",
+  "@elizaos/plugin-cli",
+  "@elizaos/plugin-discord",
 ] as const;
 
 describe("optional core plugins (require explicit opt-in)", () => {
@@ -81,23 +81,23 @@ describe("optional core plugins (require explicit opt-in)", () => {
       },
     } as TokagentConfig);
     // Empty entry object should not enable
-    expect(names.has("@tokagentos/plugin-pdf")).toBe(false);
+    expect(names.has("@elizaos/plugin-pdf")).toBe(false);
     // Explicitly disabled
-    expect(names.has("@tokagentos/plugin-cli")).toBe(false);
+    expect(names.has("@elizaos/plugin-cli")).toBe(false);
     // Explicitly enabled
-    expect(names.has("@tokagentos/plugin-discord")).toBe(true);
+    expect(names.has("@elizaos/plugin-discord")).toBe(true);
   });
 
   it("respects plugins.entries enabled: false even when in allow list", () => {
     const names = collectPluginNames({
       cloud: { enabled: false },
       plugins: {
-        allow: ["@tokagentos/plugin-discord"],
+        allow: ["@elizaos/plugin-discord"],
         entries: {
           discord: { enabled: false },
         },
       },
     } as TokagentConfig);
-    expect(names.has("@tokagentos/plugin-discord")).toBe(false);
+    expect(names.has("@elizaos/plugin-discord")).toBe(false);
   });
 });

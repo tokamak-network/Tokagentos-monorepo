@@ -61,7 +61,7 @@ export const ejectPluginAction: Action = {
     {
       name: "pluginId",
       description:
-        "Plugin ID or npm package to eject (e.g. 'discord' or '@tokagentos/plugin-discord')",
+        "Plugin ID or npm package to eject (e.g. 'discord' or '@elizaos/plugin-discord')",
       required: true,
       schema: { type: "string" as const },
     },
@@ -77,7 +77,7 @@ export const ejectPluginAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Ejected @tokagentos/plugin-discord to ./plugins/plugin-discord. Restarting to load local source.",
+          text: "Ejected @elizaos/plugin-discord to ./plugins/plugin-discord. Restarting to load local source.",
         },
       },
     ],
@@ -91,7 +91,7 @@ export const ejectPluginAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Ejected @tokagentos/plugin-telegram to ./plugins/plugin-telegram. Restarting to load local source.",
+          text: "Ejected @elizaos/plugin-telegram to ./plugins/plugin-telegram. Restarting to load local source.",
         },
       },
     ],

@@ -13,8 +13,8 @@ import {
 import {
   tokagentClassicPlugin,
   getTokagentGreeting,
-} from "@tokagentos/plugin-eliza-classic";
-import localdbPlugin from "@tokagentos/plugin-localdb";
+} from "@elizaos/plugin-eliza-classic";
+import localdbPlugin from "@elizaos/plugin-localdb";
 import { v4 as uuidv4 } from "uuid";
 import type { AppConfig, ChatMessage, ProviderMode } from "./types";
 import { getEffectiveMode } from "./types";
@@ -102,19 +102,19 @@ async function buildPlugins(mode: ProviderMode): Promise<Plugin[]> {
     case "tokagentClassic":
       return [...base, tokagentClassicPlugin];
     case "openai":
-      return [...base, (await import("@tokagentos/plugin-openai")).default];
+      return [...base, (await import("@elizaos/plugin-openai")).default];
     case "anthropic":
-      return [...base, (await import("@tokagentos/plugin-anthropic")).default];
+      return [...base, (await import("@elizaos/plugin-anthropic")).default];
     case "xai":
-      return [...base, (await import("@tokagentos/plugin-openai")).default];
+      return [...base, (await import("@elizaos/plugin-openai")).default];
     case "gemini":
-      return [...base, (await import("@tokagentos/plugin-google-genai")).default];
+      return [...base, (await import("@elizaos/plugin-google-genai")).default];
     case "groq":
-      return [...base, (await import("@tokagentos/plugin-groq")).default];
+      return [...base, (await import("@elizaos/plugin-groq")).default];
     case "openrouter":
-      return [...base, (await import("@tokagentos/plugin-openrouter")).default];
+      return [...base, (await import("@elizaos/plugin-openrouter")).default];
     case "ollama":
-      return [...base, (await import("@tokagentos/plugin-ollama")).default];
+      return [...base, (await import("@elizaos/plugin-ollama")).default];
     default:
       return [...base, tokagentClassicPlugin];
   }

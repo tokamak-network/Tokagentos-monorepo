@@ -283,7 +283,7 @@ async function resolveAppModuleTarget(
 
   const packageCandidates = trimmed.startsWith("@")
     ? [trimmed]
-    : [`@tokagentos/app-${trimmed}`, `@tokagentos/plugin-${trimmed}`];
+    : [`@tokagentos/app-${trimmed}`, `@elizaos/plugin-${trimmed}`];
 
   for (const packageName of packageCandidates) {
     const localPath = await resolveWorkspacePackageDir(packageName);

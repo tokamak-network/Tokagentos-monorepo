@@ -5,7 +5,7 @@
  * routing and immediately loads the skill's full instructions, then responds
  * with the skill context + user args so the agent can act on them directly.
  *
- * Works with @tokagentos/plugin-commands — skills are registered as commands
+ * Works with @elizaos/plugin-commands — skills are registered as commands
  * in the registry during tokagent-plugin init(), and this action handles the
  * dispatch when a skill command is detected.
  */

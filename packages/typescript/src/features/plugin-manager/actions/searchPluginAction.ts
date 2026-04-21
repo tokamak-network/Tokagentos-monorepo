@@ -211,13 +211,13 @@ export const getPluginDetailsAction: Action = {
 			{
 				name: "{{user1}}",
 				content: {
-					text: "Tell me more about @tokagentos/plugin-solana",
+					text: "Tell me more about @elizaos/plugin-solana",
 				},
 			},
 			{
 				name: "{{agentName}}",
 				content: {
-					text: "**@tokagentos/plugin-solana** Details:\n\nDescription: Comprehensive Solana blockchain integration\n\nTags: blockchain, solana, defi, transaction\n\nVersion: 2.0.0-alpha.3\nRepository: https://github.com/elizaos-plugins/plugin-solana",
+					text: "**@elizaos/plugin-solana** Details:\n\nDescription: Comprehensive Solana blockchain integration\n\nTags: blockchain, solana, defi, transaction\n\nVersion: 2.0.0-alpha.3\nRepository: https://github.com/elizaos-plugins/plugin-solana",
 				},
 			},
 		],
@@ -240,7 +240,7 @@ export const getPluginDetailsAction: Action = {
 		if (!pluginMatch) {
 			if (callback) {
 				await callback({
-					text: 'Please specify which plugin you\'d like to know more about.\n\nExample: "Tell me more about @tokagentos/plugin-solana"',
+					text: 'Please specify which plugin you\'d like to know more about.\n\nExample: "Tell me more about @elizaos/plugin-solana"',
 				});
 			}
 			return undefined;

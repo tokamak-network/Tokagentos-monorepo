@@ -24,7 +24,7 @@ import {
 
 /**
  * Concrete `ApprovalQueue` backed by the `approval_requests` table from
- * `@tokagentos/plugin-sql`.
+ * `@elizaos/plugin-sql`.
  *
  * Design notes:
  *  - The state-transition table below is the single source of truth for

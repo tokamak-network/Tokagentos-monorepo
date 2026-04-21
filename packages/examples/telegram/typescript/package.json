@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
-    "@tokagentos/plugin-telegram": "alpha"
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
+    "@elizaos/plugin-telegram": "alpha"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",

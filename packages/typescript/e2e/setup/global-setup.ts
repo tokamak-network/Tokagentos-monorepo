@@ -37,20 +37,20 @@ async function resolveProviderPlugin(
 ): Promise<Plugin | null> {
 	switch (providerName) {
 		case "openai": {
-			const mod = await import("@tokagentos/plugin-openai");
+			const mod = await import("@elizaos/plugin-openai");
 			return mod.openaiPlugin ?? mod.default ?? null;
 		}
 		case "anthropic": {
-			const mod = await import("@tokagentos/plugin-anthropic");
+			const mod = await import("@elizaos/plugin-anthropic");
 			return mod.anthropicPlugin ?? mod.default ?? null;
 		}
 		case "groq": {
-			const mod = await import("@tokagentos/plugin-groq");
+			const mod = await import("@elizaos/plugin-groq");
 			return mod.groqPlugin ?? mod.default ?? null;
 		}
 		case "google": {
 			try {
-				const mod = await import("@tokagentos/plugin-google-genai");
+				const mod = await import("@elizaos/plugin-google-genai");
 				return mod.default ?? null;
 			} catch {
 				return null;

@@ -13,9 +13,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-farcaster": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
+    "@elizaos/plugin-farcaster": "alpha",
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {

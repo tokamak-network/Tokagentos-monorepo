@@ -47,15 +47,15 @@ export interface VersionCompatReport {
  * the agent is completely non-functional — no responses can be generated.
  */
 export const AI_PROVIDER_PLUGINS: readonly string[] = [
-  "@tokagentos/plugin-anthropic",
-  "@tokagentos/plugin-openai",
-  "@tokagentos/plugin-openrouter",
-  "@tokagentos/plugin-ollama",
-  "@tokagentos/plugin-google-genai",
-  "@tokagentos/plugin-groq",
-  "@tokagentos/plugin-xai",
+  "@elizaos/plugin-anthropic",
+  "@elizaos/plugin-openai",
+  "@elizaos/plugin-openrouter",
+  "@elizaos/plugin-ollama",
+  "@elizaos/plugin-google-genai",
+  "@elizaos/plugin-groq",
+  "@elizaos/plugin-xai",
   "@homunculuslabs/plugin-zai",
-  "@tokagentos/plugin-elizacloud",
+  "@elizaos/plugin-elizacloud",
 ];
 
 /**

@@ -14,8 +14,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@tokagentos/plugin-eliza-classic": "alpha",
-    "@tokagentos/plugin-localdb": "alpha",
+    "@elizaos/plugin-eliza-classic": "alpha",
+    "@elizaos/plugin-localdb": "alpha",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "uuid": "^13.0.0"

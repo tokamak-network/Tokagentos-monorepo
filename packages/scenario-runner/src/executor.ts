@@ -956,7 +956,7 @@ export async function runScenario(
     // Requires gate runs AFTER seeds so scenarios that register fixture
     // plugins via a `custom` seed step (e.g. convo.echo-self-test) still
     // satisfy their own declared `requires.plugins`. For package-named
-    // plugins (e.g. "@tokagentos/plugin-agent-skills") we attempt a dynamic
+    // plugins (e.g. "@elizaos/plugin-agent-skills") we attempt a dynamic
     // import and register the default export so scenarios don't skip when
     // the plugin is on disk.
     const requiredPlugins = resolveRequiredPlugins(scenario);

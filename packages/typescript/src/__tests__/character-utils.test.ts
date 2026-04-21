@@ -295,30 +295,30 @@ describe("character-utils", () => {
 	describe("addCharacterPlugin / removeCharacterPlugin / hasCharacterPlugin", () => {
 		it("should add plugin immutably", () => {
 			const original: Character = { name: "Test" };
-			const updated = addCharacterPlugin(original, "@tokagentos/plugin-discord");
+			const updated = addCharacterPlugin(original, "@elizaos/plugin-discord");
 
 			expect(original.plugins).toBeUndefined();
-			expect(updated.plugins).toContain("@tokagentos/plugin-discord");
+			expect(updated.plugins).toContain("@elizaos/plugin-discord");
 		});
 
 		it("should not duplicate plugins", () => {
 			const character: Character = {
 				name: "Test",
-				plugins: ["@tokagentos/plugin-discord"],
+				plugins: ["@elizaos/plugin-discord"],
 			};
-			const updated = addCharacterPlugin(character, "@tokagentos/plugin-discord");
+			const updated = addCharacterPlugin(character, "@elizaos/plugin-discord");
 
 			expect(
-				updated.plugins?.filter((p) => p === "@tokagentos/plugin-discord"),
+				updated.plugins?.filter((p) => p === "@elizaos/plugin-discord"),
 			).toHaveLength(1);
 		});
 
 		it("should return same character if plugin already exists", () => {
 			const character: Character = {
 				name: "Test",
-				plugins: ["@tokagentos/plugin-discord"],
+				plugins: ["@elizaos/plugin-discord"],
 			};
-			const updated = addCharacterPlugin(character, "@tokagentos/plugin-discord");
+			const updated = addCharacterPlugin(character, "@elizaos/plugin-discord");
 
 			expect(updated).toBe(character);
 		});
@@ -326,35 +326,35 @@ describe("character-utils", () => {
 		it("should remove plugin immutably", () => {
 			const original: Character = {
 				name: "Test",
-				plugins: ["@tokagentos/plugin-discord", "@tokagentos/plugin-telegram"],
+				plugins: ["@elizaos/plugin-discord", "@elizaos/plugin-telegram"],
 			};
 			const updated = removeCharacterPlugin(
 				original,
-				"@tokagentos/plugin-discord",
+				"@elizaos/plugin-discord",
 			);
 
-			expect(original.plugins).toContain("@tokagentos/plugin-discord");
-			expect(updated.plugins).not.toContain("@tokagentos/plugin-discord");
-			expect(updated.plugins).toContain("@tokagentos/plugin-telegram");
+			expect(original.plugins).toContain("@elizaos/plugin-discord");
+			expect(updated.plugins).not.toContain("@elizaos/plugin-discord");
+			expect(updated.plugins).toContain("@elizaos/plugin-telegram");
 		});
 
 		it("should check if plugin exists", () => {
 			const character: Character = {
 				name: "Test",
-				plugins: ["@tokagentos/plugin-discord"],
+				plugins: ["@elizaos/plugin-discord"],
 			};
 
-			expect(hasCharacterPlugin(character, "@tokagentos/plugin-discord")).toBe(
+			expect(hasCharacterPlugin(character, "@elizaos/plugin-discord")).toBe(
 				true,
 			);
-			expect(hasCharacterPlugin(character, "@tokagentos/plugin-telegram")).toBe(
+			expect(hasCharacterPlugin(character, "@elizaos/plugin-telegram")).toBe(
 				false,
 			);
 		});
 
 		it("should return false for undefined plugins", () => {
 			const character: Character = { name: "Test" };
-			expect(hasCharacterPlugin(character, "@tokagentos/plugin-discord")).toBe(
+			expect(hasCharacterPlugin(character, "@elizaos/plugin-discord")).toBe(
 				false,
 			);
 		});

@@ -16,8 +16,8 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
-import sqlPlugin from "@tokagentos/plugin-sql";
+import { openaiPlugin } from "@elizaos/plugin-openai";
+import sqlPlugin from "@elizaos/plugin-sql";
 import type {
   APIGatewayProxyEventV2,
   APIGatewayProxyResultV2,

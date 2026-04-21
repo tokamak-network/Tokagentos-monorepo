@@ -1,6 +1,6 @@
 /**
  * Experience learning — bundled with advanced capabilities (extended basic-capabilities).
- * Replaces the standalone `@tokagentos/plugin-experience` package for TypeScript core.
+ * Replaces the standalone `@elizaos/plugin-experience` package for TypeScript core.
  */
 
 export { recordExperienceAction } from "./actions/record-experience.ts";

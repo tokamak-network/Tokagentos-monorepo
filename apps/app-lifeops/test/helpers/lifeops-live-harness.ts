@@ -45,27 +45,27 @@ try {
 const LIVE_PROVIDER_CANDIDATES = [
   {
     name: "openai",
-    plugin: "@tokagentos/plugin-openai",
+    plugin: "@elizaos/plugin-openai",
     keys: ["OPENAI_API_KEY"],
   },
   {
     name: "openrouter",
-    plugin: "@tokagentos/plugin-openrouter",
+    plugin: "@elizaos/plugin-openrouter",
     keys: ["OPENROUTER_API_KEY"],
   },
   {
     name: "google",
-    plugin: "@tokagentos/plugin-google-genai",
+    plugin: "@elizaos/plugin-google-genai",
     keys: ["GOOGLE_GENERATIVE_AI_API_KEY", "GOOGLE_API_KEY"],
   },
   {
     name: "anthropic",
-    plugin: "@tokagentos/plugin-anthropic",
+    plugin: "@elizaos/plugin-anthropic",
     keys: ["ANTHROPIC_API_KEY"],
   },
   {
     name: "groq",
-    plugin: "@tokagentos/plugin-groq",
+    plugin: "@elizaos/plugin-groq",
     keys: ["GROQ_API_KEY"],
   },
 ] as const;
@@ -237,7 +237,7 @@ export async function selectLifeOpsLiveProvider(): Promise<SelectedLiveProvider 
     (!LIVE_PROVIDER_OVERRIDE ||
       LIVE_PROVIDER_OVERRIDE === "openai" ||
       LIVE_PROVIDER_OVERRIDE === "groq") &&
-    (await canImportLiveProviderPlugin("@tokagentos/plugin-groq"))
+    (await canImportLiveProviderPlugin("@elizaos/plugin-groq"))
   ) {
     const groqApiKey =
       process.env.GROQ_API_KEY?.trim() ||
@@ -251,7 +251,7 @@ export async function selectLifeOpsLiveProvider(): Promise<SelectedLiveProvider 
           GROQ_API_KEY: groqApiKey,
           ...resolveLiveProviderModelEnv("groq"),
         },
-        plugin: "@tokagentos/plugin-groq",
+        plugin: "@elizaos/plugin-groq",
       };
     }
   }
@@ -298,7 +298,7 @@ export async function selectLifeOpsLiveProvider(): Promise<SelectedLiveProvider 
   if (
     configuredCloudApiKey &&
     (!LIVE_PROVIDER_OVERRIDE || LIVE_PROVIDER_OVERRIDE === "openai") &&
-    (await canImportLiveProviderPlugin("@tokagentos/plugin-openai"))
+    (await canImportLiveProviderPlugin("@elizaos/plugin-openai"))
   ) {
     return {
       name: "openai",
@@ -307,7 +307,7 @@ export async function selectLifeOpsLiveProvider(): Promise<SelectedLiveProvider 
         OPENAI_BASE_URL: TOKAGENT_CLOUD_OPENAI_BASE_URL,
         ...resolveLiveProviderModelEnv("openai"),
       },
-      plugin: "@tokagentos/plugin-openai",
+      plugin: "@elizaos/plugin-openai",
     };
   }
 

@@ -26,7 +26,7 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import sqlPlugin from "@tokagentos/plugin-sql";
+import sqlPlugin from "@elizaos/plugin-sql";
 
 // ============================================================================
 // TIC-TAC-TOE ENGINE

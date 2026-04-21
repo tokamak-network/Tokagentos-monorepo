@@ -1035,7 +1035,7 @@ export function patchAutonomousTokagentOnboardingPresets(
 }
 
 /**
- * @tokagentos/plugin-vision currently defaults to CAMERA mode and keeps retrying
+ * @elizaos/plugin-vision currently defaults to CAMERA mode and keeps retrying
  * imagesnap/fswebcam/ffmpeg when OS camera permission is denied. In the
  * desktop app this spams logs and can interfere with startup. Patch the
  * published bundle so camera capture defaults to OFF and a permission denial
@@ -1135,7 +1135,7 @@ export function applyPluginVisionPermissionPatch(filePath) {
 export function patchPluginVisionPermissionHandling(root, log = console.log) {
   const candidates = findPackageFilePaths(
     root,
-    "@tokagentos/plugin-vision",
+    "@elizaos/plugin-vision",
     "dist/index.js",
   );
 
@@ -1144,7 +1144,7 @@ export function patchPluginVisionPermissionHandling(root, log = console.log) {
     if (!applyPluginVisionPermissionPatch(filePath)) continue;
     patched = true;
     log(
-      `[patch-deps] Patched @tokagentos/plugin-vision camera permission handling: ${filePath}`,
+      `[patch-deps] Patched @elizaos/plugin-vision camera permission handling: ${filePath}`,
     );
   }
 

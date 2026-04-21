@@ -8,7 +8,7 @@ import type { LifeOpsSignalInboundMessage } from "@tokagentos/shared/contracts/l
  *
  * When `SIGNAL_HTTP_URL` is set and a Signal account is configured, this
  * client reads messages from the signal-cli daemon without requiring the full
- * `@tokagentos/plugin-signal` service to be connected.  This mirrors the pattern
+ * `@elizaos/plugin-signal` service to be connected.  This mirrors the pattern
  * used by `telegram-local-client.ts` for Telegram.
  *
  * The signal-cli JSON-RPC HTTP server is documented at:

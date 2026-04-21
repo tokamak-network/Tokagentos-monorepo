@@ -81,7 +81,7 @@ sam deploy --guided --parameter-overrides RuntimeLanguage=rust OpenAIApiKey=$OPE
 ```typescript
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { AgentRuntime } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
 
@@ -280,7 +280,7 @@ vercel      # Deploy
 ```typescript
 // api/chat.ts
 import { AgentRuntime, ModelType } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 export const config = {
   runtime: "edge",
@@ -334,7 +334,7 @@ wrangler deploy # Deploy
 ```typescript
 // src/worker.ts
 import { AgentRuntime, ModelType } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 export interface Env {
   OPENAI_API_KEY: string;
@@ -399,7 +399,7 @@ supabase functions deploy tokagent-chat # Deploy
 // functions/tokagent-chat/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { AgentRuntime, ModelType } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
 

@@ -55,7 +55,7 @@ export class TelegramService {
 }
 
 const telegramPlugin = {
-  name: "@tokagentos/plugin-telegram",
+  name: "@elizaos/plugin-telegram",
   description: "Vitest stub for the published Telegram plugin",
   services: [TelegramService],
 } as Partial<Plugin> as Plugin;

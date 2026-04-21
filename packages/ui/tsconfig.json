@@ -29,10 +29,10 @@
       "@tokagentos/app-training/*": ["./apps/app-training/src/*"],
       "@tokagentos/app-vincent": ["./apps/app-vincent/src/index.ts"],
       "@tokagentos/app-vincent/*": ["./apps/app-vincent/src/*"],
-      "@tokagentos/plugin-lifeops-browser": [
+      "@elizaos/plugin-lifeops-browser": [
         "./plugins/plugin-lifeops-browser/src/index.ts"
       ],
-      "@tokagentos/plugin-lifeops-browser/*": [
+      "@elizaos/plugin-lifeops-browser/*": [
         "./plugins/plugin-lifeops-browser/src/*"
       ],
       "@tokagentos/app-core": ["./packages/app-core/src/index.ts"],

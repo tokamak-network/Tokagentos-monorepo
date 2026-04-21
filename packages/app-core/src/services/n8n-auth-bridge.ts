@@ -9,7 +9,7 @@
  * is set and we are not running on a mobile shell (where no local
  * runtime exists).
  *
- * CLOUD_AUTH (from @tokagentos/plugin-elizacloud) does not expose a native
+ * CLOUD_AUTH (from @elizaos/plugin-elizacloud) does not expose a native
  * observable; `isAuthenticated()` is read synchronously. We therefore
  * poll that method on a short interval and emit transitions. A 2s
  * debounce window guards against flap during init or token refresh.

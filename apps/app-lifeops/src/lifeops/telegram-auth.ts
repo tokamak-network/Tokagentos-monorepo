@@ -15,7 +15,7 @@ import {
   type TelegramAccountAuthSessionLike,
   type TelegramAccountAuthSnapshot,
   type TelegramAccountConnectorConfig,
-} from "@tokagentos/plugin-telegram/account-auth-service";
+} from "@elizaos/plugin-telegram/account-auth-service";
 
 export type {
   TelegramAccountAuthSnapshot,

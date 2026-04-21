@@ -532,7 +532,7 @@ fn create_test_character() -> Character {
         system: Some("You are a helpful test agent.".to_string()),
         topics: Some(vec!["testing".to_string(), "development".to_string()]),
         adjectives: Some(vec!["helpful".to_string(), "thorough".to_string()]),
-        plugins: Some(vec!["@tokagentos/plugin-sql".to_string()]),
+        plugins: Some(vec!["@elizaos/plugin-sql".to_string()]),
         ..Default::default()
     }
 }

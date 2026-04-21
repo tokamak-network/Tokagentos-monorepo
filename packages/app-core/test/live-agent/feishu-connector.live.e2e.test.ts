@@ -1,7 +1,7 @@
 /**
  * Feishu Connector Validation Tests
  *
- * Comprehensive E2E tests for validating the Feishu/Lark connector (@tokagentos/plugin-feishu).
+ * Comprehensive E2E tests for validating the Feishu/Lark connector (@elizaos/plugin-feishu).
  *
  * Test Categories:
  *   1. Setup & Authentication
@@ -288,6 +288,6 @@ describeIfWorkspace("Feishu Connector - Integration", () => {
     const mod = (await tryWorkspaceImport<{
       CONNECTOR_PLUGINS: Record<string, string>;
     }>("@tokagentos/app-core"))!;
-    expect(mod.CONNECTOR_PLUGINS.feishu).toBe("@tokagentos/plugin-feishu");
+    expect(mod.CONNECTOR_PLUGINS.feishu).toBe("@elizaos/plugin-feishu");
   });
 });

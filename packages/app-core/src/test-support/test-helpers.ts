@@ -103,7 +103,7 @@ export function isWorkspaceDependency(version: string | undefined): boolean {
   );
 }
 
-const DISCORD_PLUGIN_PACKAGE_NAME = "@tokagentos/plugin-discord";
+const DISCORD_PLUGIN_PACKAGE_NAME = "@elizaos/plugin-discord";
 const DISCORD_PLUGIN_LOCAL_ENTRY_CANDIDATES = [
   "../plugins/plugin-discord/typescript/dist/index",
   "../plugins/plugin-discord/dist/index",
@@ -130,7 +130,7 @@ export function resolveDiscordPluginImportSpecifier(): string | null {
   return null;
 }
 
-const TELEGRAM_PLUGIN_PACKAGE_NAME = "@tokagentos/plugin-telegram";
+const TELEGRAM_PLUGIN_PACKAGE_NAME = "@elizaos/plugin-telegram";
 const TELEGRAM_PLUGIN_LOCAL_ENTRY_CANDIDATES = [
   "../plugins/plugin-telegram/typescript/dist/index",
   "../plugins/plugin-telegram/dist/index",
@@ -173,7 +173,7 @@ export function resolveTelegramPluginImportSpecifier(): string | null {
   return null;
 }
 
-const LENS_PLUGIN_PACKAGE_NAME = "@tokagentos/plugin-lens";
+const LENS_PLUGIN_PACKAGE_NAME = "@elizaos/plugin-lens";
 const LENS_PLUGIN_FALLBACK_PACKAGE = "@tokagentos-plugins/client-lens";
 const LENS_PLUGIN_LOCAL_ENTRY_CANDIDATES = [
   "../plugins/plugin-lens/typescript/dist/index",
@@ -231,7 +231,7 @@ export function resolveLensPluginImportSpecifier(): string | null {
   return null;
 }
 
-const FARCASTER_PLUGIN_PACKAGE_NAME = "@tokagentos/plugin-farcaster";
+const FARCASTER_PLUGIN_PACKAGE_NAME = "@elizaos/plugin-farcaster";
 const FARCASTER_PLUGIN_LOCAL_ENTRY_CANDIDATES = [
   "../plugins/plugin-farcaster/typescript/dist/index",
   "../plugins/plugin-farcaster/dist/index",
@@ -259,7 +259,7 @@ export function resolveFarcasterPluginImportSpecifier(): string | null {
   return null;
 }
 
-const NOSTR_PLUGIN_PACKAGE_NAME = "@tokagentos/plugin-nostr";
+const NOSTR_PLUGIN_PACKAGE_NAME = "@elizaos/plugin-nostr";
 const NOSTR_PLUGIN_LOCAL_ENTRY_CANDIDATES = [
   "../plugins/plugin-nostr/typescript/dist/index",
   "../plugins/plugin-nostr/dist/index",
@@ -287,7 +287,7 @@ export function resolveNostrPluginImportSpecifier(): string | null {
   return null;
 }
 
-const MATRIX_PLUGIN_PACKAGE_NAME = "@tokagentos/plugin-matrix";
+const MATRIX_PLUGIN_PACKAGE_NAME = "@elizaos/plugin-matrix";
 const MATRIX_PLUGIN_LOCAL_ENTRY_CANDIDATES = [
   "../plugins/plugin-matrix/typescript/dist/index",
   "../plugins/plugin-matrix/dist/index",
@@ -315,7 +315,7 @@ export function resolveMatrixPluginImportSpecifier(): string | null {
   return null;
 }
 
-const FEISHU_PLUGIN_PACKAGE_NAME = "@tokagentos/plugin-feishu";
+const FEISHU_PLUGIN_PACKAGE_NAME = "@elizaos/plugin-feishu";
 const FEISHU_PLUGIN_LOCAL_ENTRY_CANDIDATES = [
   "../plugins/plugin-feishu/typescript/dist/index",
   "../plugins/plugin-feishu/dist/index",
@@ -355,7 +355,7 @@ export function resolveFeishuPluginImportSpecifier(): string | null {
   return null;
 }
 
-const WECHAT_PLUGIN_PACKAGE_NAME = "@tokagentos/plugin-wechat";
+const WECHAT_PLUGIN_PACKAGE_NAME = "@elizaos/plugin-wechat";
 const WECHAT_PLUGIN_LOCAL_ENTRY_CANDIDATES = [
   "src/index.ts",
   "dist/index.js",

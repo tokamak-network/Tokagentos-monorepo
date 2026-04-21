@@ -140,8 +140,8 @@ export async function runPostRegisterHooks(
  * - Both can be specified: allow is applied first, then deny
  *
  * Plugin names are matched case-insensitively and support:
- * - Full plugin name: "@tokagentos/plugin-discord"
- * - Short name: "discord" (matches "@tokagentos/plugin-discord")
+ * - Full plugin name: "@elizaos/plugin-discord"
+ * - Short name: "discord" (matches "@elizaos/plugin-discord")
  *
  * @param plugins - The list of plugins to filter
  * @param config - The filter configuration

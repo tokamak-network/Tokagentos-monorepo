@@ -403,7 +403,7 @@ function parseSegments(text: string): Segment[] {
 
 // ── InlinePluginConfig ──────────────────────────────────────────────
 
-/** Normalize plugin ID: strip @scope/plugin- prefix so both "discord" and "@tokagentos/plugin-discord" resolve. */
+/** Normalize plugin ID: strip @scope/plugin- prefix so both "discord" and "@elizaos/plugin-discord" resolve. */
 export function normalizePluginId(id: string): string {
   return id.replace(/^@[^/]+\/plugin-/, "");
 }

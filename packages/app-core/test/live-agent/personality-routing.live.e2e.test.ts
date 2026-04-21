@@ -125,9 +125,9 @@ describeIf(hasModelProvider)("Personality Routing E2E", () => {
     });
 
     const plugins: Plugin[] = [];
-    const sqlPlugin = await loadPlugin("@tokagentos/plugin-sql");
+    const sqlPlugin = await loadPlugin("@elizaos/plugin-sql");
     const localEmbeddingPlugin = await loadPlugin(
-      "@tokagentos/plugin-local-embedding",
+      "@elizaos/plugin-local-embedding",
     );
     const modelPlugin = await loadPlugin(selectedLiveProvider.pluginPackage);
     if (modelPlugin) {

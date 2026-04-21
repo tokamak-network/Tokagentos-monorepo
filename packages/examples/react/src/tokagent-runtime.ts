@@ -22,8 +22,8 @@ import {
 import {
   tokagentClassicPlugin,
   getTokagentGreeting,
-} from "@tokagentos/plugin-eliza-classic";
-import sqlPlugin from "@tokagentos/plugin-sql";
+} from "@elizaos/plugin-eliza-classic";
+import sqlPlugin from "@elizaos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
 import { createBrowserPGlite } from "./pglite-browser";
 
@@ -64,7 +64,7 @@ const tokagentCharacter: Character = createCharacter({
 // ============================================================================
 
 // Hook into the global singletons that plugin-sql uses
-const GLOBAL_SINGLETONS = Symbol.for("@tokagentos/plugin-sql/global-singletons");
+const GLOBAL_SINGLETONS = Symbol.for("@elizaos/plugin-sql/global-singletons");
 
 interface PGliteClientManager {
   getConnection(): unknown;

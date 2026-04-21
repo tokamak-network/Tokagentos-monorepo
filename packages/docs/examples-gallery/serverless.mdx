@@ -34,7 +34,7 @@ sam deploy --guided
 ```typescript
 import { APIGatewayProxyHandler } from "aws-lambda";
 import { AgentRuntime } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
 
@@ -82,7 +82,7 @@ gcloud functions deploy tokagent-chat \
 ```typescript
 import { HttpFunction } from "@google-cloud/functions-framework";
 import { AgentRuntime } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
 
@@ -120,7 +120,7 @@ vercel
 ```typescript
 // api/chat.ts
 import { AgentRuntime, ModelType } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 export const config = { runtime: "edge" };
 
@@ -161,7 +161,7 @@ wrangler deploy
 
 ```typescript
 import { AgentRuntime, ModelType } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 interface Env {
   OPENAI_API_KEY: string;
@@ -211,7 +211,7 @@ supabase functions deploy tokagent-chat
 ```typescript
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { AgentRuntime, ModelType } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
 

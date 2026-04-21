@@ -1,7 +1,7 @@
 /**
  * Farcaster Connector Validation Tests
  *
- * Comprehensive E2E tests for validating the Farcaster connector (@tokagentos/plugin-farcaster).
+ * Comprehensive E2E tests for validating the Farcaster connector (@elizaos/plugin-farcaster).
  *
  * Test Categories:
  *   1. Setup & Authentication
@@ -852,7 +852,7 @@ describe("Farcaster Connector - Integration", () => {
       logger.warn("[farcaster-connector] Workspace not built — skipping");
       return;
     }
-    expect(mod.CONNECTOR_PLUGINS.farcaster).toBe("@tokagentos/plugin-farcaster");
+    expect(mod.CONNECTOR_PLUGINS.farcaster).toBe("@elizaos/plugin-farcaster");
   });
 
   it("Farcaster is mapped in CHANNEL_PLUGIN_MAP", async () => {
@@ -863,6 +863,6 @@ describe("Farcaster Connector - Integration", () => {
       logger.warn("[farcaster-connector] Workspace not built — skipping");
       return;
     }
-    expect(mod.CHANNEL_PLUGIN_MAP.farcaster).toBe("@tokagentos/plugin-farcaster");
+    expect(mod.CHANNEL_PLUGIN_MAP.farcaster).toBe("@elizaos/plugin-farcaster");
   });
 });

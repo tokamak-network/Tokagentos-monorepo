@@ -25,7 +25,7 @@ import { resolveStateDir } from "../config/paths.js";
 
 const execFileAsync = promisify(execFile);
 
-export const DISCORD_LOCAL_PLUGIN_NAME = "@tokagentos/plugin-discord-local";
+export const DISCORD_LOCAL_PLUGIN_NAME = "@elizaos/plugin-discord-local";
 export const DISCORD_LOCAL_SERVICE_NAME = "discord-local";
 const DISCORD_OAUTH_TOKEN_URL = "https://discord.com/api/v10/oauth2/token";
 const DISCORD_LOCAL_DEFAULT_SCOPES = [

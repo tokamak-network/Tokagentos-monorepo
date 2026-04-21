@@ -392,7 +392,7 @@ export class LifeOpsScreenContextSampler {
 
 export async function tryCreateVisionOcrAdapter(): Promise<LifeOpsScreenOcrAdapter | null> {
   const visionImportCandidates = [
-    "@tokagentos/plugin-vision",
+    "@elizaos/plugin-vision",
     new URL(
       "../../../../plugins/plugin-vision/typescript/src/ocr-service.ts",
       import.meta.url,

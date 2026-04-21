@@ -1,12 +1,12 @@
 /**
- * Test stub for `@tokagentos/plugin-plugin-manager`.
+ * Test stub for `@elizaos/plugin-plugin-manager`.
  *
  * `packages/app-core/src/services/app-manager.test.ts` does
  *   `new PluginManagerService(runtime, { pluginDirectory })`
  * and then `vi.spyOn(pluginManager, "listInstalledPlugins" | "installPlugin"
  * | "uninstallPlugin" | ...)`. It also calls
  * `pluginRegistry.resetRegistryCache()` in beforeEach. The published
- * `@tokagentos/plugin-plugin-manager` package ships a `dist/` that is not
+ * `@elizaos/plugin-plugin-manager` package ships a `dist/` that is not
  * built under `TOKAGENT_SKIP_LOCAL_UPSTREAMS=1`, and aliasing directly at
  * the submodule source path pulls in `fs-extra` and other dependencies
  * that are not installed at the repo root during unit tests. Stub
@@ -71,10 +71,10 @@ export const pluginRegistry = {
 export const types = {};
 
 // Match the real plugin's default export shape so anything that does
-// `import plugin from "@tokagentos/plugin-plugin-manager"` keeps working.
+// `import plugin from "@elizaos/plugin-plugin-manager"` keeps working.
 const plugin = {
   name: "plugin-plugin-manager-stub",
-  description: "Test stub for @tokagentos/plugin-plugin-manager (vitest alias).",
+  description: "Test stub for @elizaos/plugin-plugin-manager (vitest alias).",
   services: [PluginManagerService, CoreManagerService] as const,
 };
 

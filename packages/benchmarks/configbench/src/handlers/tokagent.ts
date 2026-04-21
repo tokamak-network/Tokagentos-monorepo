@@ -71,7 +71,7 @@ async function tryImportDeps(): Promise<boolean> {
   }
   AgentRuntimeCtor = core.AgentRuntime as unknown as typeof AgentRuntimeCtor;
 
-  const sqlModule = await import("@tokagentos/plugin-sql");
+  const sqlModule = await import("@elizaos/plugin-sql");
   sqlPlugin = (sqlModule.plugin ?? sqlModule.default ?? null) as Plugin | null;
   createSqlAdapter = typeof sqlModule.createDatabaseAdapter === "function"
     ? (sqlModule.createDatabaseAdapter as (config: { dataDir?: string; postgresUrl?: string }, agentId: string) => unknown)

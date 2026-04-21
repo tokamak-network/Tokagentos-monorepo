@@ -104,13 +104,13 @@ export class PluginManagerService extends Service implements PluginRegistry {
 	// Protected plugins that cannot be registered, loaded, or unloaded by external code
 	private readonly PROTECTED_PLUGINS = new Set<string>([
 		"plugin-manager",
-		"@tokagentos/plugin-sql",
+		"@elizaos/plugin-sql",
 		"bootstrap",
 		"game-api",
 		"inference",
 		"autonomy",
 		"knowledge",
-		"@tokagentos/plugin-personality",
+		"@elizaos/plugin-personality",
 		"experience",
 		"goals",
 		"todo",

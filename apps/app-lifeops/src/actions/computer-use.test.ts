@@ -10,7 +10,7 @@
  *   - `lifeOpsComputerUseAction.similes` advertises `FINDER` and `OPEN_FINDER`.
  *
  * How the mocking works (LARP caveat):
- *   - `@tokagentos/plugin-computeruse` is mocked with five fake Actions
+ *   - `@elizaos/plugin-computeruse` is mocked with five fake Actions
  *     (`USE_COMPUTER`, `BROWSER_ACTION`, `MANAGE_WINDOW`, `FILE_ACTION`,
  *     `TERMINAL_ACTION`). Every action's handler is a `vi.fn()` that returns
  *     `{ success: true, surface: ... }`.
@@ -77,7 +77,7 @@ vi.mock("@tokagentos/agent/security", () => ({
   hasOwnerAccess: vi.fn(async () => true),
 }));
 
-vi.mock("@tokagentos/plugin-computeruse", () => ({
+vi.mock("@elizaos/plugin-computeruse", () => ({
   default: { actions: pluginActions },
   computerUsePlugin: { actions: pluginActions },
 }));

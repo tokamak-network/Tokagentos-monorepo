@@ -15,9 +15,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-discord": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
+    "@elizaos/plugin-discord": "alpha",
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
     "dotenv": "^17.2.3",
     "uuid": "^13.0.0"
   },

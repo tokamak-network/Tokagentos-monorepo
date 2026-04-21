@@ -12,12 +12,12 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-anthropic": "alpha",
-    "@tokagentos/plugin-eliza-classic": "alpha",
-    "@tokagentos/plugin-google-genai": "alpha",
-    "@tokagentos/plugin-groq": "alpha",
-    "@tokagentos/plugin-localdb": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
+    "@elizaos/plugin-anthropic": "alpha",
+    "@elizaos/plugin-eliza-classic": "alpha",
+    "@elizaos/plugin-google-genai": "alpha",
+    "@elizaos/plugin-groq": "alpha",
+    "@elizaos/plugin-localdb": "alpha",
+    "@elizaos/plugin-openai": "alpha",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

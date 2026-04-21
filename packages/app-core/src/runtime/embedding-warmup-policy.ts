@@ -3,7 +3,7 @@
  *
  * Chat/inference provider (what you pick in onboarding) is separate from
  * **embeddings** (vector memory / RAG). By default The framework keeps
- * `@tokagentos/plugin-local-embedding` loaded because API-based model plugins do
+ * `@elizaos/plugin-local-embedding` loaded because API-based model plugins do
  * not implement TEXT_EMBEDDING — so a local model was historically always
  * warmed up. When Tokagent Cloud is connected with **cloud embeddings** enabled,
  * the cloud plugin handles embeddings instead; skipping warmup avoids a large

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import type { AgentRuntime } from '@tokagentos/core';
-import type { AutoTradingManager } from '@tokagentos/plugin-auto-trader';
+import type { AutoTradingManager } from '@elizaos/plugin-auto-trader';
 
 interface StatusPosition {
   id: string;

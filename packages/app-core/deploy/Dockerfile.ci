@@ -24,7 +24,7 @@ RUN node tokagent/packages/app-core/scripts/relink-workspace-packages-to-dist.mj
   @tokagentos/agent
 
 # Patch plugin-agent-skills getCatalogStats crash (alpha.11 vs alpha.66 interface mismatch)
-RUN sed -i 's/const stats = service.getCatalogStats();/const stats = typeof service.getCatalogStats === "function" ? service.getCatalogStats() : { loaded: 0, total: 0, storageType: "unknown" };/g' node_modules/@tokagentos/plugin-agent-skills/dist/index.js 2>/dev/null || true
+RUN sed -i 's/const stats = service.getCatalogStats();/const stats = typeof service.getCatalogStats === "function" ? service.getCatalogStats() : { loaded: 0, total: 0, storageType: "unknown" };/g' node_modules/@elizaos/plugin-agent-skills/dist/index.js 2>/dev/null || true
 ARG VERSION_CLEAN
 
 # Patch autonomous version
@@ -43,9 +43,9 @@ RUN if [ -n "${VERSION_CLEAN}" ]; then \
 
 # Remove unbuilt orchestrator (desktop-only, crashes tsx if dist/ missing)
 RUN rm -rf \
-  node_modules/@tokagentos/plugin-agent-orchestrator \
+  node_modules/@elizaos/plugin-agent-orchestrator \
   node_modules/.bun/@tokagentos+plugin-agent-orchestrator@* \
-  tokagent/packages/agent/node_modules/@tokagentos/plugin-agent-orchestrator \
+  tokagent/packages/agent/node_modules/@elizaos/plugin-agent-orchestrator \
   plugins/plugin-agent-orchestrator \
   2>/dev/null || true
 

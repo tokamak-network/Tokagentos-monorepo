@@ -15,8 +15,8 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
-import sqlPlugin from "@tokagentos/plugin-sql";
+import { openaiPlugin } from "@elizaos/plugin-openai";
+import sqlPlugin from "@elizaos/plugin-sql";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {

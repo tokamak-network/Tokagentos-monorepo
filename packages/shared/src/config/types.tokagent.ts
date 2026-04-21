@@ -579,7 +579,7 @@ export type CloudConfig = {
 /**
  * n8n workflow integration configuration.
  *
- * Two paths populate N8N_HOST + N8N_API_KEY for `@tokagentos/plugin-n8n-workflow`:
+ * Two paths populate N8N_HOST + N8N_API_KEY for `@elizaos/plugin-n8n-workflow`:
  *   1. Tokagent Cloud gateway — when `cloud.apiKey` is set and `cloud.enabled` is
  *      not false, the cloud gateway handles the n8n instance. The runtime
  *      pumps `${cloud.baseUrl}/api/v1/agents/${agentId}/n8n` into N8N_HOST and

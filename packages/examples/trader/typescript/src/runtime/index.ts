@@ -1,5 +1,5 @@
 import { AgentRuntime, type Plugin } from '@tokagentos/core';
-import autoTraderPlugin from '@tokagentos/plugin-auto-trader';
+import autoTraderPlugin from '@elizaos/plugin-auto-trader';
 import { traderCharacter } from './character';
 
 let runtimeInstance: AgentRuntime | null = null;

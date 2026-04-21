@@ -13,9 +13,9 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import inmemorydbPlugin from "@tokagentos/plugin-inmemorydb";
-import localAiPlugin from "@tokagentos/plugin-local-ai";
-import { type ShellService, shellPlugin } from "@tokagentos/plugin-shell";
+import inmemorydbPlugin from "@elizaos/plugin-inmemorydb";
+import localAiPlugin from "@elizaos/plugin-local-ai";
+import { type ShellService, shellPlugin } from "@elizaos/plugin-shell";
 import { v4 as uuidv4 } from "uuid";
 
 type AgentDecision =

@@ -16,7 +16,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { itIf } from "../../../../test/helpers/conditional-tests.ts";
 import { req } from "../../../../test/helpers/http.ts";
 import { createRealTestRuntime } from "../../../../test/helpers/real-runtime.ts";
-import { readRecentMessages } from "@tokagentos/plugin-signal";
+import { readRecentMessages } from "@elizaos/plugin-signal";
 import { crossChannelSendAction } from "../src/actions/cross-channel-send.js";
 import { createLifeOpsConnectorGrant } from "../src/lifeops/repository.js";
 import { LifeOpsService } from "../src/lifeops/service.js";

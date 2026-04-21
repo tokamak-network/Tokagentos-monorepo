@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-eliza-classic": "alpha",
-    "@tokagentos/plugin-inmemorydb": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
+    "@elizaos/plugin-eliza-classic": "alpha",
+    "@elizaos/plugin-inmemorydb": "alpha",
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
     "express": "^4.18.0",
     "uuid": "^13.0.0"
   },

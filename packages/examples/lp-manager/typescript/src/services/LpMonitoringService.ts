@@ -1,7 +1,7 @@
 import { type IAgentRuntime, logger, Service } from "@tokagentos/core";
 
 // =============================================================================
-// Type Definitions (mirrors @tokagentos/plugin-lp-manager)
+// Type Definitions (mirrors @elizaos/plugin-lp-manager)
 // =============================================================================
 
 interface TokenBalance {

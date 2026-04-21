@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
-    "@tokagentos/plugin-eliza-classic": "alpha",
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
+    "@elizaos/plugin-eliza-classic": "alpha",
     "@sinclair/typebox": "^0.34.0",
     "elysia": "^1.1.0",
     "@elysiajs/cors": "^1.1.0",

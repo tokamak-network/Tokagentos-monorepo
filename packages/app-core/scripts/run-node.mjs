@@ -41,7 +41,7 @@ const env = { ...process.env };
 if (!env.TOKAGENT_NAMESPACE) {
   env.TOKAGENT_NAMESPACE = "tokagent";
 }
-// WHY: The child runs dist/tokagent.js, which dynamic-imports @tokagentos/plugin-*. Node does not
+// WHY: The child runs dist/tokagent.js, which dynamic-imports @elizaos/plugin-*. Node does not
 // use cwd to resolve package names for import("pkg"); we must set NODE_PATH to repo root
 // node_modules so those imports succeed. See docs/plugin-resolution-and-node-path.md.
 const rootModules = path.join(cwd, "node_modules");

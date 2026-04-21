@@ -50,7 +50,7 @@ export const installPluginAction: Action = {
 
       const npmName = pluginId.startsWith("@")
         ? pluginId
-        : `@tokagentos/plugin-${pluginId}`;
+        : `@elizaos/plugin-${pluginId}`;
 
       const result = await mgr.installPlugin(npmName);
 
@@ -94,7 +94,7 @@ export const installPluginAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Plugin @tokagentos/plugin-telegram@1.4.0 installed successfully. The agent will restart to load it.",
+          text: "Plugin @elizaos/plugin-telegram@1.4.0 installed successfully. The agent will restart to load it.",
         },
       },
     ],
@@ -108,7 +108,7 @@ export const installPluginAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Plugin @tokagentos/plugin-polymarket@0.9.2 installed successfully.",
+          text: "Plugin @elizaos/plugin-polymarket@0.9.2 installed successfully.",
         },
       },
     ],

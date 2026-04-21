@@ -65,19 +65,19 @@ const AUTONOMY_WORLD_ID = stringToUuid("00000000-0000-0000-0000-000000000001");
 const AUTONOMY_ENTITY_ID = stringToUuid("00000000-0000-0000-0000-000000000002");
 const AUTONOMY_MESSAGE_SERVER_ID = stringToUuid("autonomy-message-server");
 const INTERNAL_CHANNEL_PLUGIN_OVERRIDES = {
-  signal: "@tokagentos/plugin-signal",
-  whatsapp: "@tokagentos/plugin-whatsapp",
+  signal: "@elizaos/plugin-signal",
+  whatsapp: "@elizaos/plugin-whatsapp",
   wechat: "tokagentoswechat",
 } as const;
 
 /** Swarm / PTY paths call TEXT_TO_SPEECH; Edge TTS supplies that model with no API key. */
 const AGENT_ORCHESTRATOR_PLUGIN = "agent-orchestrator";
-const EDGE_TTS_PLUGIN = "@tokagentos/plugin-edge-tts";
+const EDGE_TTS_PLUGIN = "@elizaos/plugin-edge-tts";
 const require = createRequire(import.meta.url);
 const DIRECT_HELP_FLAGS = new Set(["-h", "--help", "help"]);
 const DIRECT_VERSION_FLAGS = new Set(["-v", "-V", "--version", "version"]);
 const PLUGIN_SQL_GLOBAL_SINGLETONS = Symbol.for(
-  "@tokagentos/plugin-sql/global-singletons",
+  "@elizaos/plugin-sql/global-singletons",
 );
 const TOKAGENT_AUTO_RESET_PGLITE_ERROR_CODE = "TOKAGENT_PGLITE_MANUAL_RESET_REQUIRED";
 
@@ -961,7 +961,7 @@ function isManualResetPgliteError(err: unknown): boolean {
     }
 
     if (
-      normalized.includes("@tokagentos/plugin-sql") &&
+      normalized.includes("@elizaos/plugin-sql") &&
       normalized.includes("migrations._migrations")
     ) {
       return true;

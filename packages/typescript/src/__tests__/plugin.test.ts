@@ -252,7 +252,7 @@ describe("Plugin Functions", () => {
 		test("should handle scoped plugin names with short name dependencies", async () => {
 			// Plugin with scoped name
 			const pluginDiscord: Plugin = {
-				name: "@tokagentos/plugin-discord",
+				name: "@elizaos/plugin-discord",
 				description: "Discord plugin",
 				actions: [],
 				services: [],
@@ -275,13 +275,13 @@ describe("Plugin Functions", () => {
 
 			// Discord should come before setup due to dependency
 			const indexDiscord = resolved.findIndex(
-				(p) => p.name === "@tokagentos/plugin-discord",
+				(p) => p.name === "@elizaos/plugin-discord",
 			);
 			const indexSetup = resolved.findIndex((p) => p.name === "setup");
 			expect(indexDiscord).toBeLessThan(indexSetup);
 
 			// Verify both plugins are present
-			expect(resolved.some((p) => p.name === "@tokagentos/plugin-discord")).toBe(
+			expect(resolved.some((p) => p.name === "@elizaos/plugin-discord")).toBe(
 				true,
 			);
 			expect(resolved.some((p) => p.name === "setup")).toBe(true);
@@ -290,7 +290,7 @@ describe("Plugin Functions", () => {
 		test("should not queue dependency twice when plugin has scoped name", async () => {
 			// Plugin with scoped name
 			const pluginDiscord: Plugin = {
-				name: "@tokagentos/plugin-discord",
+				name: "@elizaos/plugin-discord",
 				description: "Discord plugin",
 				actions: [],
 				services: [],
@@ -322,7 +322,7 @@ describe("Plugin Functions", () => {
 
 			// Count occurrences of discord plugin
 			const discordCount = resolved.filter(
-				(p) => p.name === "@tokagentos/plugin-discord",
+				(p) => p.name === "@elizaos/plugin-discord",
 			).length;
 			expect(discordCount).toBe(1);
 		});
@@ -330,9 +330,9 @@ describe("Plugin Functions", () => {
 
 	describe("normalizePluginName", () => {
 		test("should extract short name from @tokagentos scoped packages", () => {
-			expect(normalizePluginName("@tokagentos/plugin-discord")).toBe("discord");
-			expect(normalizePluginName("@tokagentos/plugin-sql")).toBe("sql");
-			expect(normalizePluginName("@tokagentos/plugin-telegram")).toBe("telegram");
+			expect(normalizePluginName("@elizaos/plugin-discord")).toBe("discord");
+			expect(normalizePluginName("@elizaos/plugin-sql")).toBe("sql");
+			expect(normalizePluginName("@elizaos/plugin-telegram")).toBe("telegram");
 		});
 
 		test("should extract short name from other scoped packages", () => {
@@ -368,7 +368,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "music-player",
 				description: "Music player plugin",
-				dependencies: ["@tokagentos/plugin-discord"], // Scoped name
+				dependencies: ["@elizaos/plugin-discord"], // Scoped name
 				actions: [],
 				services: [],
 			};
@@ -425,7 +425,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "discord",
 				description: "Discord plugin",
-				dependencies: ["@tokagentos/plugin-sql"], // Scoped name
+				dependencies: ["@elizaos/plugin-sql"], // Scoped name
 				actions: [],
 				services: [],
 			};
@@ -458,7 +458,7 @@ describe("Plugin Functions", () => {
 			const pluginA: Plugin = {
 				name: "music-player",
 				description: "Music player plugin",
-				dependencies: ["@tokagentos/plugin-nonexistent"],
+				dependencies: ["@elizaos/plugin-nonexistent"],
 				actions: [],
 				services: [],
 			};
@@ -474,9 +474,9 @@ describe("Plugin Functions", () => {
 		});
 
 		test("should not create double-scoped names in lookup map", () => {
-			// Plugin with scoped name - this should not create '@tokagentos/plugin-@tokagentos/plugin-discord'
+			// Plugin with scoped name - this should not create '@elizaos/plugin-@elizaos/plugin-discord'
 			const pluginDiscord: Plugin = {
-				name: "@tokagentos/plugin-discord",
+				name: "@elizaos/plugin-discord",
 				description: "Discord plugin",
 				actions: [],
 				services: [],
@@ -491,7 +491,7 @@ describe("Plugin Functions", () => {
 			};
 
 			const pluginMap = new Map<string, Plugin>();
-			pluginMap.set("@tokagentos/plugin-discord", pluginDiscord);
+			pluginMap.set("@elizaos/plugin-discord", pluginDiscord);
 			pluginMap.set("setup", pluginSetup);
 
 			const resolved = resolvePluginDependencies(pluginMap);
@@ -499,14 +499,14 @@ describe("Plugin Functions", () => {
 			// Should resolve correctly without creating double-scoped names
 			expect(resolved).toHaveLength(2);
 			const indexDiscord = resolved.findIndex(
-				(p) => p.name === "@tokagentos/plugin-discord",
+				(p) => p.name === "@elizaos/plugin-discord",
 			);
 			const indexSetup = resolved.findIndex((p) => p.name === "setup");
 			// Discord should come before setup due to dependency
 			expect(indexDiscord).toBeLessThan(indexSetup);
 
 			// Verify the plugin is found correctly
-			expect(resolved.some((p) => p.name === "@tokagentos/plugin-discord")).toBe(
+			expect(resolved.some((p) => p.name === "@elizaos/plugin-discord")).toBe(
 				true,
 			);
 		});
@@ -522,7 +522,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "setup",
 				description: "Setup plugin",
-				dependencies: ["@tokagentos/plugin-sql"],
+				dependencies: ["@elizaos/plugin-sql"],
 				actions: [],
 				services: [],
 			};
@@ -538,7 +538,7 @@ describe("Plugin Functions", () => {
 			const pluginD: Plugin = {
 				name: "music-player",
 				description: "Music player plugin",
-				dependencies: ["@tokagentos/plugin-discord", "setup"],
+				dependencies: ["@elizaos/plugin-discord", "setup"],
 				actions: [],
 				services: [],
 			};
@@ -578,7 +578,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "test-plugin",
 				description: "Test plugin",
-				dependencies: ["@tokagentos/plugin-sql"],
+				dependencies: ["@elizaos/plugin-sql"],
 				actions: [],
 				services: [],
 			};
@@ -602,7 +602,7 @@ describe("Plugin Functions", () => {
 			const pluginB: Plugin = {
 				name: "test-plugin",
 				description: "Test plugin",
-				testDependencies: ["@tokagentos/plugin-sql"],
+				testDependencies: ["@elizaos/plugin-sql"],
 				actions: [],
 				services: [],
 			};
@@ -784,7 +784,7 @@ describe("Plugin Functions", () => {
 				};
 			};
 
-			const result = await tryInstallPlugin("@tokagentos/plugin-unique-test");
+			const result = await tryInstallPlugin("@elizaos/plugin-unique-test");
 			expect(result).toBe(true);
 			expect(versionResolved).toBe(true);
 			expect(addResolved).toBe(true);

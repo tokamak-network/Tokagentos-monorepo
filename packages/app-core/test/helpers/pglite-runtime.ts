@@ -94,7 +94,7 @@ export async function createTestRuntime(
     enableAutonomy: false,
   });
 
-  const { default: pluginSql } = await import("@tokagentos/plugin-sql");
+  const { default: pluginSql } = await import("@elizaos/plugin-sql");
   await runtime.registerPlugin(pluginSql);
   for (const plugin of options?.plugins ?? []) {
     await runtime.registerPlugin(plugin);

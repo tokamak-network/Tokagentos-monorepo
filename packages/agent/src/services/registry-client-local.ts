@@ -626,7 +626,7 @@ async function discoverPackagesFolderPlugins(): Promise<
         packageJson.agentConfig !== undefined;
       if (!isPlugin) continue;
       if (packageJson.tokagentos?.kind === "app") continue;
-      if (!packageJson.name.startsWith("@tokagentos/plugin-")) continue;
+      if (!packageJson.name.startsWith("@elizaos/plugin-")) continue;
 
       const repo = parseRepositoryMetadata(packageJson.repository);
       const version = packageJson.version ?? null;

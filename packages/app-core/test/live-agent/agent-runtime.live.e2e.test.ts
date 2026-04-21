@@ -388,8 +388,8 @@ describe("Agent Runtime E2E", () => {
   );
 
   const corePluginNames = [
-    "@tokagentos/plugin-agent-skills",
-    // NOTE: @tokagentos/plugin-commands is excluded — commented out as "not yet ready" in core-plugins.ts
+    "@elizaos/plugin-agent-skills",
+    // NOTE: @elizaos/plugin-commands is excluded — commented out as "not yet ready" in core-plugins.ts
   ];
 
   // ─── Setup ──────────────────────────────────────────────────────────────
@@ -418,9 +418,9 @@ describe("Agent Runtime E2E", () => {
       secrets,
     });
 
-    const sqlPlugin = await loadPlugin("@tokagentos/plugin-sql");
+    const sqlPlugin = await loadPlugin("@elizaos/plugin-sql");
     const localEmbeddingPlugin = await loadPlugin(
-      "@tokagentos/plugin-local-embedding",
+      "@elizaos/plugin-local-embedding",
     );
 
     const plugins: Plugin[] = [];
@@ -456,7 +456,7 @@ describe("Agent Runtime E2E", () => {
         await instance.registerPlugin(localEmbeddingPlugin);
       } else {
         logger.warn(
-          "[e2e] @tokagentos/plugin-local-embedding failed to load; runtime may use remote embeddings",
+          "[e2e] @elizaos/plugin-local-embedding failed to load; runtime may use remote embeddings",
         );
       }
 

@@ -17,9 +17,9 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
-import sqlPlugin from "@tokagentos/plugin-sql";
-import { tokagentClassicPlugin } from "@tokagentos/plugin-eliza-classic";
+import { openaiPlugin } from "@elizaos/plugin-openai";
+import sqlPlugin from "@elizaos/plugin-sql";
+import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
 import { cors } from "@elysiajs/cors";
 import { Elysia } from "elysia";
 import { v4 as uuidv4 } from "uuid";

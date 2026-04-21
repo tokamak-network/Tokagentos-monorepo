@@ -238,7 +238,7 @@ export async function detectPackageManager(): Promise<"bun" | "npm"> {
  * 5. Returns metadata about the installation for the caller to
  *    decide whether to trigger a restart.
  *
- * @param pluginName - The plugin name (e.g., "@tokagentos/plugin-twitter")
+ * @param pluginName - The plugin name (e.g., "@elizaos/plugin-twitter")
  * @param onProgress - Optional progress callback
  * @param requestedVersion - Optional specific version to install (e.g., "1.2.23-alpha.0")
  */

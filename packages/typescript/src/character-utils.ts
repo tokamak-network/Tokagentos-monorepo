@@ -252,7 +252,7 @@ export function mergeCharacterSecrets(
  * If the plugin is already present, the original character is returned.
  *
  * @param character - The character to modify
- * @param pluginName - The plugin name to add (e.g., "@tokagentos/plugin-discord")
+ * @param pluginName - The plugin name to add (e.g., "@elizaos/plugin-discord")
  * @returns A new character with the plugin added, or the original if already present
  */
 export function addCharacterPlugin(

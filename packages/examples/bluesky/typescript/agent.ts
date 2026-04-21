@@ -66,9 +66,9 @@ async function main(): Promise<void> {
 
   // Dynamically import plugins to handle workspace build order
   // These are workspace dependencies that need to be built first
-  const sqlPlugin = (await import("@tokagentos/plugin-sql")).default;
-  const { openaiPlugin } = await import("@tokagentos/plugin-openai");
-  const blueskyModuleId: string = "@tokagentos/plugin-bluesky";
+  const sqlPlugin = (await import("@elizaos/plugin-sql")).default;
+  const { openaiPlugin } = await import("@elizaos/plugin-openai");
+  const blueskyModuleId: string = "@elizaos/plugin-bluesky";
   const { blueSkyPlugin } = (await import(blueskyModuleId)) as {
     blueSkyPlugin: Plugin;
   };

@@ -6,9 +6,9 @@
  */
 
 import { AgentRuntime, createCharacter } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
-import sqlPlugin from "@tokagentos/plugin-sql";
-import telegramPlugin from "@tokagentos/plugin-telegram";
+import { openaiPlugin } from "@elizaos/plugin-openai";
+import sqlPlugin from "@elizaos/plugin-sql";
+import telegramPlugin from "@elizaos/plugin-telegram";
 
 async function main() {
   const telegramBotToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -27,7 +27,7 @@ Be friendly, concise, and genuinely helpful.
 Keep responses short - suitable for mobile chat.`,
     settings: {
       // Match how the chat example configures model selection via runtime settings
-      // (read by @tokagentos/plugin-openai).
+      // (read by @elizaos/plugin-openai).
       OPENAI_SMALL_MODEL: "gpt-5-mini",
       OPENAI_LARGE_MODEL: "gpt-5-mini",
     },

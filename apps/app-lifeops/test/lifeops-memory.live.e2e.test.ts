@@ -326,9 +326,9 @@ describeIf(LIVE_SUITE_ENABLED)(
         ...selectedProviderEnv,
       };
 
-      const sqlPlugin = await loadPlugin("@tokagentos/plugin-sql");
+      const sqlPlugin = await loadPlugin("@elizaos/plugin-sql");
       const localEmbeddingPlugin = await loadPlugin(
-        "@tokagentos/plugin-local-embedding",
+        "@elizaos/plugin-local-embedding",
       );
       const providerPlugin = selectedLiveProvider
         ? await loadPlugin(selectedLiveProvider.plugin)

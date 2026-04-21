@@ -31,7 +31,7 @@ gcloud functions deploy tokagent-chat \
 ```typescript
 import { HttpFunction } from "@google-cloud/functions-framework";
 import { AgentRuntime } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
 

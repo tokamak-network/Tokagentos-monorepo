@@ -41,14 +41,14 @@ const ROLE_GATE_RANK: Record<RoleGate, number> = {
 
 const ROLE_GATED_PLUGINS: Readonly<Record<string, RoleGate>> = {
   // Blockchain — financial actions
-  "@tokagentos/plugin-evm": "admin",
-  "@tokagentos/plugin-solana": "admin",
+  "@elizaos/plugin-evm": "admin",
+  "@elizaos/plugin-solana": "admin",
 
   // Orchestration — spawns agents, PTY sessions, workspaces
   "agent-orchestrator": "admin",
 
   // Secrets — sets env vars, manages encrypted secrets
-  "@tokagentos/plugin-secrets-manager": "owner",
+  "@elizaos/plugin-secrets-manager": "owner",
 
   // Plugin installs / registry — matches plugin `name` from plugin-plugin-manager
   "plugin-manager": "owner",

@@ -9,14 +9,14 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import anthropicPlugin from "@tokagentos/plugin-anthropic";
-import { tokagentClassicPlugin, getTokagentGreeting } from "@tokagentos/plugin-eliza-classic";
-import elevenLabsPlugin from "@tokagentos/plugin-elevenlabs";
-import googleGenAIPlugin from "@tokagentos/plugin-google-genai";
-import groqPlugin from "@tokagentos/plugin-groq";
-import localdbPlugin from "@tokagentos/plugin-localdb";
-import openaiPlugin from "@tokagentos/plugin-openai";
-import { simpleVoicePlugin } from "@tokagentos/plugin-simple-voice";
+import anthropicPlugin from "@elizaos/plugin-anthropic";
+import { tokagentClassicPlugin, getTokagentGreeting } from "@elizaos/plugin-eliza-classic";
+import elevenLabsPlugin from "@elizaos/plugin-elevenlabs";
+import googleGenAIPlugin from "@elizaos/plugin-google-genai";
+import groqPlugin from "@elizaos/plugin-groq";
+import localdbPlugin from "@elizaos/plugin-localdb";
+import openaiPlugin from "@elizaos/plugin-openai";
+import { simpleVoicePlugin } from "@elizaos/plugin-simple-voice";
 import { v4 as uuidv4 } from "uuid";
 import type { DemoConfig, DemoMode } from "./types";
 

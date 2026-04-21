@@ -203,7 +203,7 @@ export function getPluginReplacementEntries(
     [`\${REPO_URL}`, values.repoUrl],
     ["__TOKAGENTOS_VERSION__", values.tokagentVersion],
     ["@tokagentos/rust-plugin-starter", `@tokagentos/${rustPluginName}`],
-    ["@tokagentos/plugin-starter", `@tokagentos/${values.pluginBaseName}`],
+    ["@elizaos/plugin-starter", `@tokagentos/${values.pluginBaseName}`],
     ["tokagentos_plugin_starter", `tokagentos_${values.pluginSnake}`],
     ["tokagentos-plugin-starter", `tokagentos-${values.pluginBaseName}`],
     ["rust_plugin_starter", `rust_${values.pluginSnake}`],

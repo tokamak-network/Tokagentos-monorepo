@@ -700,7 +700,7 @@ export function discoverInstalledPlugins(
   const entries: PluginEntry[] = [];
 
   for (const [packageName, record] of Object.entries(installs)) {
-    // Derive a short id from the package name (e.g. "@tokagentos/plugin-foo" -> "foo")
+    // Derive a short id from the package name (e.g. "@elizaos/plugin-foo" -> "foo")
     const id = packageName
       .replace(/^@[^/]+\/plugin-/, "")
       .replace(/^@[^/]+\//, "")

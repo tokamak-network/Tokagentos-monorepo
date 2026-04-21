@@ -1,7 +1,7 @@
 /**
  * Matrix Connector Validation Tests
  *
- * Comprehensive E2E tests for validating the Matrix connector (@tokagentos/plugin-matrix).
+ * Comprehensive E2E tests for validating the Matrix connector (@elizaos/plugin-matrix).
  *
  * Test Categories:
  *   1. Setup & Authentication
@@ -65,7 +65,7 @@ const runLiveWriteTests = runLiveTests && hasRoomTargets;
 const MATRIX_PLUGIN_IMPORT = resolveMatrixPluginImportSpecifier();
 const hasPlugin = MATRIX_PLUGIN_IMPORT !== null;
 
-// Plugin-dependent tests (need @tokagentos/plugin-matrix installed)
+// Plugin-dependent tests (need @elizaos/plugin-matrix installed)
 const describeIfPluginAvailable = describeIf(hasPlugin);
 
 // API-level live tests (need creds + TOKAGENT_LIVE_TEST=1)
@@ -442,7 +442,7 @@ describe("Matrix Connector - Integration", () => {
       logger.warn("[matrix-connector] Workspace not built — skipping");
       return;
     }
-    expect(mod.CONNECTOR_PLUGINS.matrix).toBe("@tokagentos/plugin-matrix");
+    expect(mod.CONNECTOR_PLUGINS.matrix).toBe("@elizaos/plugin-matrix");
   });
 
   it("Matrix is mapped in CHANNEL_PLUGIN_MAP", async () => {
@@ -458,6 +458,6 @@ describe("Matrix Connector - Integration", () => {
       logger.warn("[matrix-connector] Workspace not built — skipping");
       return;
     }
-    expect(mod.CHANNEL_PLUGIN_MAP.matrix).toBe("@tokagentos/plugin-matrix");
+    expect(mod.CHANNEL_PLUGIN_MAP.matrix).toBe("@elizaos/plugin-matrix");
   });
 });

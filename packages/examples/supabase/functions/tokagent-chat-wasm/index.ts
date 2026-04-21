@@ -31,7 +31,7 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
+import { openaiPlugin } from "@elizaos/plugin-openai";
 
 // ============================================================================
 // Types

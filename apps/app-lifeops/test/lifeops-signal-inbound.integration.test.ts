@@ -6,7 +6,7 @@
  *
  * Uses a minimal HTTP stub in place of signal-cli so the suite can run without
  * a real Signal account. The stub exposes the subset of the signal-cli JSON-RPC
- * HTTP API that `@tokagentos/plugin-signal` calls during startup and message reads.
+ * HTTP API that `@elizaos/plugin-signal` calls during startup and message reads.
  */
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";

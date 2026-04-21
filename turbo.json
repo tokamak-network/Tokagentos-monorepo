@@ -43,46 +43,46 @@
       "env": ["LOG_LEVEL"],
       "outputs": ["dist/**"]
     },
-    "@tokagentos/plugin-cli-root#build": {
+    "@elizaos/plugin-cli-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-commands-root#build": {
+    "@elizaos/plugin-commands-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-cron-root#build": {
+    "@elizaos/plugin-cron-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-discord-root#build": {
+    "@elizaos/plugin-discord-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-elizacloud-root#build": {
+    "@elizaos/plugin-elizacloud-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-groq-root#build": {
+    "@elizaos/plugin-groq-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-imessage-root#build": {
+    "@elizaos/plugin-imessage-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-local-ai-root#build": {
+    "@elizaos/plugin-local-ai-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-ollama-root#build": {
+    "@elizaos/plugin-ollama-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-openai-root#build": {
+    "@elizaos/plugin-openai-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-openrouter-root#build": {
+    "@elizaos/plugin-openrouter-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-shell-root#build": {
+    "@elizaos/plugin-shell-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-solana-root#build": {
+    "@elizaos/plugin-solana-root#build": {
       "outputs": []
     },
-    "@tokagentos/plugin-sql-root#build": {
+    "@elizaos/plugin-sql-root#build": {
       "outputs": []
     },
     "@tokagentos/schemas#build": {

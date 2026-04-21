@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
-    "@tokagentos/plugin-xai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
+    "@elizaos/plugin-xai": "alpha",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {

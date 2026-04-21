@@ -1,5 +1,5 @@
 import type { AgentRuntime } from "@tokagentos/core";
-import { SamTTSService } from "@tokagentos/plugin-simple-voice";
+import { SamTTSService } from "@elizaos/plugin-simple-voice";
 
 export type SamOptions = {
   speed: number;

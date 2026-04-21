@@ -16,8 +16,8 @@
       {
         "imports": {
           "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
-          "@tokagentos/plugin-eliza-classic": "../../plugins/plugin-eliza-classic/typescript/dist/browser/index.browser.js",
-          "@tokagentos/plugin-localdb": "../../plugins/plugin-localdb/typescript/dist/browser/index.browser.js",
+          "@elizaos/plugin-eliza-classic": "../../plugins/plugin-eliza-classic/typescript/dist/browser/index.browser.js",
+          "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/typescript/dist/browser/index.browser.js",
           "uuid": "https://esm.sh/uuid@11"
         }
       }
@@ -445,8 +445,8 @@
        * This is the browser equivalent of examples/chat/typescript/chat.ts
        * Uses:
        * - @tokagentos/core (AgentRuntime)
-       * - @tokagentos/plugin-localdb (localStorage persistence)
-       * - @tokagentos/plugin-eliza-classic (pattern matching, no API keys)
+       * - @elizaos/plugin-localdb (localStorage persistence)
+       * - @elizaos/plugin-eliza-classic (pattern matching, no API keys)
        */
 
       import {
@@ -455,8 +455,8 @@
         createMessageMemory,
         stringToUuid,
       } from "@tokagentos/core";
-      import { tokagentClassicPlugin } from "@tokagentos/plugin-eliza-classic";
-      import { plugin as localdbPlugin } from "@tokagentos/plugin-localdb";
+      import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
+      import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
       import { v4 as uuidv4 } from "uuid";
 
       // ============================================================================

@@ -59,11 +59,11 @@ const DEP_SKIP = new Set(["typescript", "@types/node", "lucide-react"]);
 const ALWAYS_HOISTED_PACKAGES = new Set(["@tokagentos/core"]);
 const PACKAGED_DEPENDENCY_SKIPS = new Map<string, Set<string>>([
   [
-    "@tokagentos/plugin-cron",
+    "@elizaos/plugin-cron",
     new Set([
       // The desktop/runtime bundle does not expose the Tokagent CLI surface.
       // Cron only imports plugin-cli to register commands at module load.
-      "@tokagentos/plugin-cli",
+      "@elizaos/plugin-cli",
     ]),
   ],
 ]);
@@ -363,7 +363,7 @@ export function shouldSkipPackagedDependency(
 
 export function stripPackagedCronCliRegistration(source: string): string {
   return source.replace(
-    'import { defineCliCommand, registerCliCommand } from "@tokagentos/plugin-cli";',
+    'import { defineCliCommand, registerCliCommand } from "@elizaos/plugin-cli";',
     [
       "// Packaged desktop/runtime bundles do not expose the Tokagent CLI registry.",
       "const defineCliCommand = () => null;",
@@ -376,7 +376,7 @@ function patchCopiedPackageRuntimeSurface(
   name: string,
   packageDir: string,
 ): void {
-  if (name !== "@tokagentos/plugin-cron") {
+  if (name !== "@elizaos/plugin-cron") {
     return;
   }
 

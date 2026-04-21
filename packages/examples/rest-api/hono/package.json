@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
-    "@tokagentos/plugin-eliza-classic": "alpha",
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
+    "@elizaos/plugin-eliza-classic": "alpha",
     "hono": "^4.6.0",
     "uuid": "^13.0.0"
   },

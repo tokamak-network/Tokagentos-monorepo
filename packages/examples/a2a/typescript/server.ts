@@ -17,10 +17,10 @@ import {
   stringToUuid,
   type UUID,
 } from "@tokagentos/core";
-import { tokagentClassicPlugin } from "@tokagentos/plugin-eliza-classic";
-import inmemorydbPlugin from "@tokagentos/plugin-inmemorydb";
-import { openaiPlugin } from "@tokagentos/plugin-openai";
-import sqlPlugin from "@tokagentos/plugin-sql";
+import { tokagentClassicPlugin } from "@elizaos/plugin-eliza-classic";
+import inmemorydbPlugin from "@elizaos/plugin-inmemorydb";
+import { openaiPlugin } from "@elizaos/plugin-openai";
+import sqlPlugin from "@elizaos/plugin-sql";
 import express, {
   type NextFunction,
   type Request,

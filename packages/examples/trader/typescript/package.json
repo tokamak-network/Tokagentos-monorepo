@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-auto-trader": "alpha",
-    "@tokagentos/plugin-solana": "alpha",
-    "@tokagentos/plugin-anthropic": "alpha",
-    "@tokagentos/plugin-openai": "alpha",
-    "@tokagentos/plugin-sql": "alpha",
+    "@elizaos/plugin-auto-trader": "alpha",
+    "@elizaos/plugin-solana": "alpha",
+    "@elizaos/plugin-anthropic": "alpha",
+    "@elizaos/plugin-openai": "alpha",
+    "@elizaos/plugin-sql": "alpha",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

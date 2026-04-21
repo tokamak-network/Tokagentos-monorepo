@@ -287,7 +287,7 @@ export function resolvePluginDependencies(
 			lookupMap.set(plugin.name, plugin);
 		}
 		if (!plugin.name.startsWith("@")) {
-			lookupMap.set(`@tokagentos/plugin-${plugin.name}`, plugin);
+			lookupMap.set(`@elizaos/plugin-${plugin.name}`, plugin);
 		}
 		const normalizedKey = normalizePluginName(key);
 		if (normalizedKey !== key) {

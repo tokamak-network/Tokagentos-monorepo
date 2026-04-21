@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-inmemorydb": "alpha",
-    "@tokagentos/plugin-local-ai": "alpha",
-    "@tokagentos/plugin-shell": "alpha",
+    "@elizaos/plugin-inmemorydb": "alpha",
+    "@elizaos/plugin-local-ai": "alpha",
+    "@elizaos/plugin-shell": "alpha",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

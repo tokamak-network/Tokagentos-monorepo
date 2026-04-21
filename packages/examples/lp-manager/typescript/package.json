@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@tokagentos/core": "alpha",
-    "@tokagentos/plugin-lp-manager": "alpha",
-    "@tokagentos/plugin-sql": "alpha"
+    "@elizaos/plugin-lp-manager": "alpha",
+    "@elizaos/plugin-sql": "alpha"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

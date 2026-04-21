@@ -111,7 +111,7 @@ class TestCharacter:
             system="You are a test agent.",
             topics=["testing", "automation"],
             adjectives=["helpful", "precise"],
-            plugins=["@tokagentos/plugin-sql"],
+            plugins=["@elizaos/plugin-sql"],
             settings=None,
             secrets={"API_KEY": "secret"},
         )

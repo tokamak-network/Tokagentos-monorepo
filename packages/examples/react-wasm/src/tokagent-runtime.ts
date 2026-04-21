@@ -13,8 +13,8 @@ import type { IDatabaseAdapter } from "@tokagentos/core";
 import {
   generateTokagentResponse,
   getTokagentGreeting,
-} from "@tokagentos/plugin-eliza-classic";
-import { createDatabaseAdapter } from "@tokagentos/plugin-localdb";
+} from "@elizaos/plugin-eliza-classic";
+import { createDatabaseAdapter } from "@elizaos/plugin-localdb";
 import { v4 as uuidv4 } from "uuid";
 
 // ============================================================================

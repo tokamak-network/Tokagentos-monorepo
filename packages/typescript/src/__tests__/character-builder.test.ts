@@ -4,15 +4,15 @@ import { buildCharacterPlugins } from "../character";
 describe("buildCharacterPlugins", () => {
 	// Plugin name constants for better maintainability
 	const PLUGINS = {
-		SQL: "@tokagentos/plugin-sql",
-		OLLAMA: "@tokagentos/plugin-ollama",
-		ANTHROPIC: "@tokagentos/plugin-anthropic",
-		OPENAI: "@tokagentos/plugin-openai",
-		OPENROUTER: "@tokagentos/plugin-openrouter",
-		GOOGLE_GENAI: "@tokagentos/plugin-google-genai",
-		DISCORD: "@tokagentos/plugin-discord",
-		X: "@tokagentos/plugin-x",
-		TELEGRAM: "@tokagentos/plugin-telegram",
+		SQL: "@elizaos/plugin-sql",
+		OLLAMA: "@elizaos/plugin-ollama",
+		ANTHROPIC: "@elizaos/plugin-anthropic",
+		OPENAI: "@elizaos/plugin-openai",
+		OPENROUTER: "@elizaos/plugin-openrouter",
+		GOOGLE_GENAI: "@elizaos/plugin-google-genai",
+		DISCORD: "@elizaos/plugin-discord",
+		X: "@elizaos/plugin-x",
+		TELEGRAM: "@elizaos/plugin-telegram",
 	};
 
 	let testEnv: Record<string, string | undefined>;
