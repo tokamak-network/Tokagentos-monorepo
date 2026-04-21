@@ -1,4 +1,4 @@
-export function buildTokagentCharacterCatalog(): {
+export function buildElizaCharacterCatalog(): {
   assets: unknown[];
   injectedCharacters: unknown[];
 };

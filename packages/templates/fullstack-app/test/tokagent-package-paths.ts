@@ -1,10 +1,10 @@
 const upstream = await import(
-  "../tokagent/packages/app-core/test/tokagent-package-paths.ts"
+  "../tokagent/packages/app-core/test/eliza-package-paths.ts"
 );
 
 export const getAppCoreSourceRoot = upstream.getAppCoreSourceRoot;
 export const getAutonomousSourceRoot = upstream.getAutonomousSourceRoot;
-export const getTokagentCoreEntry = upstream.getTokagentCoreEntry;
+export const getElizaCoreEntry = upstream.getElizaCoreEntry;
 export const getInstalledPackageEntry = upstream.getInstalledPackageEntry;
 export const getInstalledPackageNamedExport =
   upstream.getInstalledPackageNamedExport;
