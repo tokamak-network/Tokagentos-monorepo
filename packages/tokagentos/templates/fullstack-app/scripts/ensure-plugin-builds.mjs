@@ -65,11 +65,28 @@ function pointExportsAtDist(dir) {
   try {
     const pkg = JSON.parse(readFileSync(p, "utf8"));
     let changed = false;
+    // Only rewrite paths that literally start with "./src/". The mapping
+    // is:  ./src/<name>.d.ts  -> ./dist/<name>.d.ts
+    //      ./src/<name>.ts    -> ./dist/<name>.js
+    // Idempotent — anything already under ./dist/ is left alone, which
+    // matters because this runs on every `bun run dev` pre-step.
     const rewriteStr = (s) => {
       if (typeof s !== "string") return s;
-      const m = s.replace(/^\.\/src\//, "./dist/").replace(/\.ts$/, ".js");
-      if (m !== s) changed = true;
-      return m;
+      // Accept both "./src/..." and "src/..." — upstream is inconsistent.
+      let tail;
+      if (s.startsWith("./src/")) tail = s.slice("./src/".length);
+      else if (s.startsWith("src/")) tail = s.slice("src/".length);
+      else return s;
+      let out;
+      if (tail.endsWith(".d.ts")) {
+        out = `./dist/${tail}`;
+      } else if (tail.endsWith(".ts")) {
+        out = `./dist/${tail.slice(0, -3)}.js`;
+      } else {
+        out = `./dist/${tail}`;
+      }
+      if (out !== s) changed = true;
+      return out;
     };
     const rewriteValue = (v) => {
       if (typeof v === "string") return rewriteStr(v);
@@ -83,7 +100,8 @@ function pointExportsAtDist(dir) {
     };
     if (pkg.main) pkg.main = rewriteStr(pkg.main);
     if (pkg.module) pkg.module = rewriteStr(pkg.module);
-    if (pkg.types) pkg.types = rewriteStr(pkg.types).replace(/\.js$/, ".d.ts");
+    if (pkg.browser) pkg.browser = rewriteStr(pkg.browser);
+    if (pkg.types) pkg.types = rewriteStr(pkg.types);
     if (pkg.exports) pkg.exports = rewriteValue(pkg.exports);
     if (changed) {
       writeFileSync(p, `${JSON.stringify(pkg, null, 2)}\n`);
