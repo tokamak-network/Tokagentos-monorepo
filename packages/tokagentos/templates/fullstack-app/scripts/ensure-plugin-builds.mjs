@@ -9,7 +9,7 @@
  * Idempotent — each plugin is skipped if its `dist/` already exists.
  * Runs plugins sequentially (they're small; parallelism adds flakiness).
  */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 import process from "node:process";
@@ -23,10 +23,19 @@ import process from "node:process";
  * Rewrite the problematic value to "5.0" in-place so both build.
  */
 function patchTsconfigIgnoreDeprecations(dir) {
-  const candidates = ["tsconfig.json", "tsconfig.build.json"];
-  for (const name of candidates) {
+  if (!existsSync(dir)) return;
+  let entries;
+  try {
+    entries = readdirSync(dir);
+  } catch {
+    return;
+  }
+  // Any tsconfig*.json at the package root can carry the 6.0 value —
+  // upstream scatters it across tsconfig.json, tsconfig.build.json,
+  // tsconfig.declarations.json, tsconfig.lib.json etc.
+  for (const name of entries) {
+    if (!name.startsWith("tsconfig") || !name.endsWith(".json")) continue;
     const p = join(dir, name);
-    if (!existsSync(p)) continue;
     try {
       const text = readFileSync(p, "utf8");
       if (!text.includes('"ignoreDeprecations": "6.0"')) continue;
@@ -37,7 +46,7 @@ function patchTsconfigIgnoreDeprecations(dir) {
       if (fixed !== text) {
         writeFileSync(p, fixed);
         console.log(
-          `[ensure-plugin-builds] patched ${join(dir, name)}: ignoreDeprecations 6.0 -> 5.0`,
+          `[ensure-plugin-builds] patched ${p}: ignoreDeprecations 6.0 -> 5.0`,
         );
       }
     } catch {}
@@ -122,18 +131,24 @@ const PLUGIN_PATHS = [
 /**
  * Check whether a package appears to have a usable built output.
  * Different plugins emit to different dist/ layouts — tsup bundles to
- * `dist/index.js`, others emit `dist/node/index.js` etc. Accept any
- * reasonable signal that a JS bundle landed.
+ * `dist/index.js`, others emit `dist/node/index.js`, `dist/plugin.js`,
+ * `dist/esm/index.js`, etc. Treat "dist/ exists and contains any .js"
+ * as a good-enough signal.
  */
 function hasBuildOutput(dir) {
-  const candidates = [
-    "dist/index.js",
-    "dist/index.cjs",
-    "dist/index.mjs",
-    "dist/node/index.js",
-    "dist/esm/index.js",
-  ];
-  return candidates.some((rel) => existsSync(join(dir, rel)));
+  const distDir = join(dir, "dist");
+  if (!existsSync(distDir)) return false;
+  let entries;
+  try {
+    entries = readdirSync(distDir, { recursive: true });
+  } catch {
+    return false;
+  }
+  return entries.some(
+    (e) =>
+      typeof e === "string" &&
+      (e.endsWith(".js") || e.endsWith(".cjs") || e.endsWith(".mjs")),
+  );
 }
 
 /**
