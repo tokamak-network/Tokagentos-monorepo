@@ -6,7 +6,7 @@ use axum::{
     Json, Router,
 };
 use tokagentos_plugin_roblox::{RobloxClient, RobloxConfig};
-use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
+use elizaos_plugin_eliza_classic::TokagentClassicPlugin;
 use serde::{Deserialize, Serialize};
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::cors::{Any, CorsLayer};

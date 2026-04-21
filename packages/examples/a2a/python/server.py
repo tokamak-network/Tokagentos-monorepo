@@ -22,7 +22,7 @@ from uuid6 import uuid7
 from tokagentos import Character, ChannelType, Content, Memory
 from tokagentos.runtime import AgentRuntime
 from tokagentos.types.primitives import string_to_uuid
-from tokagentos_plugin_tokagent_classic.plugin import get_tokagent_classic_plugin
+from elizaos_plugin_eliza_classic.plugin import get_tokagent_classic_plugin
 from tokagentos_plugin_inmemorydb import InMemoryDatabaseAdapter, MemoryStorage
 from tokagentos_plugin_openai import get_openai_plugin
 from tokagentos_plugin_inmemorydb import plugin as inmemorydb_plugin

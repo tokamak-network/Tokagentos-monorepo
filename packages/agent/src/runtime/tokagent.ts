@@ -189,7 +189,7 @@ try {
 } catch {
   pluginCron = null;
 }
-// Keep plugin-tokagentcloud behind a guarded runtime require as well. Some
+// Keep plugin-elizacloud behind a guarded runtime require as well. Some
 // published alpha builds advertise dist/node/index.node.js but do not ship
 // that ESM entry, which breaks CLI bootstrap in published-only CI.
 let pluginTokagentcloud: unknown = null;
@@ -3890,7 +3890,7 @@ export async function startTokagent(
           const freshConfig = loadTokagentConfig();
 
           // Propagate secrets & cloud config into process.env so plugins
-          // (especially plugin-tokagentcloud) can discover them.  The initial
+          // (especially plugin-elizacloud) can discover them.  The initial
           // startup does this in startTokagent(); the hot-reload must repeat it
           // because the config may have changed (e.g. cloud enabled during
           // onboarding).

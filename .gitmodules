@@ -108,9 +108,9 @@
 	path = steward-fi
 	url = https://github.com/steward-fi/steward.git
 	branch = cleanup/silent-catches-20260417
-[submodule "plugins/plugin-tokagentcloud"]
-	path = plugins/plugin-tokagentcloud
-	url = https://github.com/elizaos-plugins/plugin-tokagentcloud.git
+[submodule "plugins/plugin-elizacloud"]
+	path = plugins/plugin-elizacloud
+	url = https://github.com/elizaos-plugins/plugin-elizacloud.git
 	branch = alpha
 [submodule "plugins/plugin-twitter"]
 	path = plugins/plugin-twitter

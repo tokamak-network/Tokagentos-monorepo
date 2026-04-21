@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-21T12:59:54.118Z",
+  "generatedAt": "2026-04-21T13:06:42.388Z",
   "repoUrl": "https://github.com/elizaos/eliza",
   "templates": [
     {
@@ -21,13 +21,13 @@
           "plugins/plugin-local-ai",
           "plugins/plugin-ollama",
           "plugins/plugin-sql",
-          "plugins/plugin-tokagentcloud"
+          "plugins/plugin-elizacloud"
         ],
         "requiredWorkspaces": [
           "plugins/plugin-local-ai/typescript",
           "plugins/plugin-ollama/typescript",
           "plugins/plugin-sql/typescript",
-          "plugins/plugin-tokagentcloud/typescript"
+          "plugins/plugin-elizacloud/typescript"
         ]
       }
     },

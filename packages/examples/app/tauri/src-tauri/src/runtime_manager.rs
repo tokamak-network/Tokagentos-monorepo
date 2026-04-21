@@ -4,7 +4,7 @@ use tokagentos::types::model::LLMMode;
 use tokagentos::types::primitives::{string_to_uuid, UUID};
 use tokagentos::types::settings::SettingValue;
 use tokagentos::{runtime::RuntimeOptions, AgentRuntime};
-use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
+use elizaos_plugin_eliza_classic::TokagentClassicPlugin;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 

@@ -25,7 +25,7 @@ from tokagentos_plugin_openai import get_openai_plugin  # noqa: E402
 from tokagentos_plugin_roblox import get_roblox_plugin  # noqa: E402
 
 try:
-    from tokagentos_plugin_tokagent_classic import get_tokagent_classic_plugin
+    from elizaos_plugin_eliza_classic import get_tokagent_classic_plugin
 except ModuleNotFoundError:  # pragma: no cover
     get_tokagent_classic_plugin = None  # type: ignore[assignment]
 

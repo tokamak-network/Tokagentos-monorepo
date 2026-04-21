@@ -273,21 +273,21 @@ runtime.register_plugin(plugin);
 
 Two reference plugins demonstrate all interop paths:
 
-### plugin-tokagent-classic
+### plugin-eliza-classic
 
 Classic TOKAGENT pattern matching chatbot, implemented in all three languages:
 
 ```bash
 # Rust (with WASM + FFI + IPC support)
-cd plugins/plugin-tokagent-classic/rust
+cd plugins/plugin-eliza-classic/rust
 cargo build --features wasm,ffi,ipc
 
 # Python
-cd plugins/plugin-tokagent-classic/python
+cd plugins/plugin-eliza-classic/python
 pip install -e .
 
 # TypeScript
-cd plugins/plugin-tokagent-classic/typescript
+cd plugins/plugin-eliza-classic/typescript
 pnpm build
 ```
 
@@ -432,5 +432,5 @@ Interop subprocess/WASM output is routed through the core logger (when used from
 
 - [Examples README](./examples/README.md) - Complete working examples
 - [Protocol Buffers Schemas](../@schemas/README.md) - Type definitions
-- [plugin-tokagent-classic](../../plugins/plugin-tokagent-classic/) - Reference implementation
+- [plugin-eliza-classic](../../plugins/plugin-eliza-classic/) - Reference implementation
 - [plugin-inmemorydb](../../plugins/plugin-inmemorydb/) - Database adapter example

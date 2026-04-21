@@ -61,7 +61,7 @@ async fn chat_reset(config: Option<AppConfig>, state: State<'_, AppState>) -> Re
 async fn chat_get_greeting(config: Option<AppConfig>) -> String {
     let cfg = config.unwrap_or_default();
     match effective_mode(&cfg) {
-        ProviderMode::TokagentClassic => tokagentos_plugin_tokagent_classic::get_greeting(),
+        ProviderMode::TokagentClassic => elizaos_plugin_eliza_classic::get_greeting(),
         _ => "Hello! What would you like to chat about?".to_string(),
     }
 }

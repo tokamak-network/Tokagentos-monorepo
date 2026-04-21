@@ -6,7 +6,7 @@
  * - LocalDB storage via localStorage
  *
  * The Rust runtime handles all message processing in WebAssembly while
- * delegating model inference to JavaScript (where we use plugin-tokagent-classic).
+ * delegating model inference to JavaScript (where we use plugin-eliza-classic).
  */
 
 import type { IDatabaseAdapter } from "@tokagentos/core";

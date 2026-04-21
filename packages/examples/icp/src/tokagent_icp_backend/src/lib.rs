@@ -39,7 +39,7 @@ mod types;
 mod vetkeys;
 
 // Import TOKAGENT Classic plugin for pattern-based responses (no API keys needed)
-use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
+use elizaos_plugin_eliza_classic::TokagentClassicPlugin;
 
 use candid::Principal;
 use ic_cdk::{init, post_upgrade, pre_upgrade, query, update};

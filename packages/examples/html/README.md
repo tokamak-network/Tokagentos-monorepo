@@ -62,7 +62,7 @@ The demo uses native ES module import maps to resolve the tokagentOS packages to
   {
     "imports": {
       "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
-      "@elizaos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/typescript/dist/browser/index.browser.js",
+      "@elizaos/plugin-eliza-classic": "../../plugins/plugin-eliza-classic/typescript/dist/browser/index.browser.js",
       "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/dist/browser/index.browser.js",
       "uuid": "https://esm.sh/uuid@11"
     }
@@ -122,7 +122,7 @@ await runtime.messageService.handleMessage(runtime, message, callback);
 | -------- | ------------------- | ----------------------------- |
 | Runtime  | AgentRuntime        | AgentRuntime                  |
 | Database | plugin-sql (PGLite) | plugin-localdb (localStorage) |
-| Model    | plugin-openai       | plugin-tokagent-classic          |
+| Model    | plugin-openai       | plugin-eliza-classic          |
 | UI       | readline (CLI)      | HTML/CSS Terminal             |
 | API Keys | Required (OpenAI)   | Not required                  |
 

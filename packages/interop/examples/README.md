@@ -57,7 +57,7 @@ const result = await plugin.actions[0].handler(runtime, memory, state, {});
 from tokagentos.interop import load_rust_plugin
 
 # Load the shared library
-plugin = load_rust_plugin('./libtokagentos_plugin_tokagent_classic.so')
+plugin = load_rust_plugin('./libelizaos_plugin_eliza_classic.so')
 
 print(f'Plugin: {plugin.name}')
 print(f'Actions: {[a.name for a in plugin.actions]}')
@@ -113,15 +113,15 @@ let result = plugin.invoke_action("generate-response", &memory, &state, &options
 ### Rust Plugin (WASM + FFI)
 
 ```bash
-cd plugins/plugin-tokagent-classic/rust
+cd plugins/plugin-eliza-classic/rust
 
 # Build for WASM (TypeScript interop)
 cargo build --release --target wasm32-unknown-unknown --features wasm
-wasm-bindgen target/wasm32-unknown-unknown/release/tokagentos_plugin_tokagent_classic.wasm --out-dir ./pkg
+wasm-bindgen target/wasm32-unknown-unknown/release/elizaos_plugin_eliza_classic.wasm --out-dir ./pkg
 
 # Build for FFI (Python interop)
 cargo build --release --features ffi
-# Result: target/release/libtokagentos_plugin_tokagent_classic.so
+# Result: target/release/libelizaos_plugin_eliza_classic.so
 
 # Build IPC server (any language)
 cargo build --release --features ipc --bin tokagent-classic-ipc

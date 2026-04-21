@@ -58,7 +58,7 @@ This example uses the Rust WASM tokagentOS runtime:
 │    WasmAgentRuntime      │    │  Plugin Integration      │
 │    (Rust → WebAssembly)  │    │                          │
 │                          │    │  ┌────────────────────┐  │
-│  • Message processing    │◄───┤  │ plugin-tokagent-classic│  │
+│  • Message processing    │◄───┤  │ plugin-eliza-classic│  │
 │  • State management      │    │  │ (Pattern matching) │  │
 │  • Model handler calls   │    │  └────────────────────┘  │
 │                          │    │                          │
@@ -84,7 +84,7 @@ The core agent runtime is compiled from Rust to WebAssembly:
 - **Model handlers**: Registered from JavaScript and called by the Rust runtime
 - **Cross-language bridge**: JSON serialization for passing data between Rust and JavaScript
 
-### Pattern Matching (plugin-tokagent-classic)
+### Pattern Matching (plugin-eliza-classic)
 
 This implementation uses the original TOKAGENT pattern matching algorithm from Joseph Weizenbaum's 1966 program:
 

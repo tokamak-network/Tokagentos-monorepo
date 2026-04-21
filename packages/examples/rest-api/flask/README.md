@@ -4,7 +4,7 @@ A simple REST API server for chatting with an tokagentOS agent using Flask.
 
 **No API keys or external services required!** Uses:
 
-- `plugin-tokagent-classic` for pattern-matching responses (no LLM needed)
+- `plugin-eliza-classic` for pattern-matching responses (no LLM needed)
 
 ## Quick Start
 

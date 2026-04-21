@@ -9,7 +9,7 @@ This example runs an **Axum** server that Roblox can call to send chat to an age
 - `ROBLOX_ECHO_TO_GAME=true` (optional; publish agent replies back into Roblox via MessagingService)
 - `ROBLOX_API_KEY` and `ROBLOX_UNIVERSE_ID` (required only if `ROBLOX_ECHO_TO_GAME=true`)
 
-This example uses `tokagentos-plugin-tokagent-classic` for responses by default, and can optionally publish replies into Roblox via Open Cloud.
+This example uses `tokagentos-plugin-eliza-classic` for responses by default, and can optionally publish replies into Roblox via Open Cloud.
 
 ### Run
 

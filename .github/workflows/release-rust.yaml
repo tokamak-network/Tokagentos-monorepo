@@ -38,7 +38,7 @@ on:
           - tokagentos-plugin-code
           - tokagentos-plugin-computeruse
           - tokagentos-plugin-elevenlabs
-          - tokagentos-plugin-tokagent-classic
+          - tokagentos-plugin-eliza-classic
           - tokagentos-plugin-evm
           - tokagentos-plugin-experience
           - tokagentos-plugin-farcaster
@@ -537,8 +537,8 @@ jobs:
             path: plugins/plugin-computeruse/rust
           - name: tokagentos-plugin-elevenlabs
             path: plugins/plugin-elevenlabs/rust
-          - name: tokagentos-plugin-tokagent-classic
-            path: plugins/plugin-tokagent-classic/rust
+          - name: tokagentos-plugin-eliza-classic
+            path: plugins/plugin-eliza-classic/rust
           - name: tokagentos-plugin-evm
             path: plugins/plugin-evm/rust
           - name: tokagentos-plugin-experience

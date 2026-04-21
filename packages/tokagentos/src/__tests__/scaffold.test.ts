@@ -130,7 +130,7 @@ describe("managed file upgrades", () => {
     expect(
       ensurePackageJsonWorkspaces(packageJsonPath, [
         "plugins/plugin-sql/typescript",
-        "plugins/plugin-tokagentcloud/typescript",
+        "plugins/plugin-elizacloud/typescript",
       ]),
     ).toBe(true);
 
@@ -140,7 +140,7 @@ describe("managed file upgrades", () => {
     expect(next.workspaces).toEqual([
       "packages/*",
       "plugins/plugin-sql/typescript",
-      "plugins/plugin-tokagentcloud/typescript",
+      "plugins/plugin-elizacloud/typescript",
     ]);
   });
 

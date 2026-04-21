@@ -22,7 +22,7 @@ tokagentos_plugin_openai = { package = "tokagentos-plugin-openai", version = "2.
 tokagentos_plugin_xai = { package = "tokagentos-plugin-xai", version = "2.0.0" }
 
 # TOKAGENT classic always available
-tokagentos_plugin_tokagent_classic = { package = "tokagentos-plugin-tokagent-classic", version = "2.0.0" }
+elizaos_plugin_eliza_classic = { package = "tokagentos-plugin-eliza-classic", version = "2.0.0" }
 
 [features]
 default = ["custom-protocol"]

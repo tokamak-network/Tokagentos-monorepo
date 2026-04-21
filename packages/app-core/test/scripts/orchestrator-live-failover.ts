@@ -5,7 +5,7 @@ import path from "node:path";
 import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import type { SwarmCoordinator } from "@tokagentos/plugin-agent-orchestrator";
 import { PTYService } from "@tokagentos/plugin-agent-orchestrator";
-import { tokagentOSCloudPlugin } from "../../packages/plugin-tokagentcloud/typescript/index.ts";
+import { elizaOSCloudPlugin } from "../../packages/plugin-elizacloud/typescript/index.ts";
 import { createTestRuntime } from "../helpers/pglite-runtime";
 
 async function waitFor(
@@ -97,7 +97,7 @@ async function cleanup(): Promise<void> {
 async function main(): Promise<void> {
   process.env.TOKAGENTOS_CLOUD_API_KEY = loadCloudApiKey();
   ({ runtime, cleanup: cleanupRuntime } = await createTestRuntime({
-    plugins: [tokagentOSCloudPlugin],
+    plugins: [elizaOSCloudPlugin],
   }));
   service = await PTYService.start(runtime as unknown as IAgentRuntime);
   (runtime.services as Map<string, unknown[]>).set("PTY_SERVICE", [

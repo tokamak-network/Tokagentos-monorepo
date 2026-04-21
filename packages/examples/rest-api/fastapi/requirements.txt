@@ -2,7 +2,7 @@ fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 pydantic>=2.10.0
 tokagentos>=2.0.0a4
-tokagentos-plugin-tokagent-classic>=2.0.0a4
+tokagentos-plugin-eliza-classic>=2.0.0a4
 tokagentos-plugin-localdb>=2.0.0a4
 
 

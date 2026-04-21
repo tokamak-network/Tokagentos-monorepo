@@ -36,7 +36,7 @@ sys.path.insert(0, str(benchmark_root / "packages" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-openai" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-vercel-ai-gateway" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-xai" / "python"))
-sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-tokagent-classic" / "python"))
+sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-eliza-classic" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-sql" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-trajectory-logger" / "python"))
 
@@ -278,7 +278,7 @@ async def _create_tokagent_runtime(
 
         plugins.append(get_xai_tokagentos_plugin())
     elif provider == "tokagent-classic":
-        from tokagentos_plugin_tokagent_classic.plugin import get_tokagent_classic_plugin
+        from elizaos_plugin_eliza_classic.plugin import get_tokagent_classic_plugin
 
         plugins.append(get_tokagent_classic_plugin())
     else:

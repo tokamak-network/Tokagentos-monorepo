@@ -22,7 +22,7 @@ use tokagentos::{
     Room, SearchMemoriesParams, Task, World,
 };
 use tokagentos::services::IMessageService;
-use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
+use elizaos_plugin_eliza_classic::TokagentClassicPlugin;
 use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use serde::{Deserialize, Serialize};
 use std::{

@@ -7,7 +7,7 @@
  *
  *   GET /api/cloud/relay-status
  *
- * The relay service lives in plugin-tokagentcloud and registers itself
+ * The relay service lives in plugin-elizacloud and registers itself
  * as a runtime service named "cloud-managed-gateway-relay". We query
  * it via the runtime.getService interface to avoid a build-time dep.
  */

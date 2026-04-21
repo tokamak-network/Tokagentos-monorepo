@@ -19,7 +19,7 @@ Create REST APIs for your tokagentOS agents using your favorite web framework. T
 | Rocket    | Rust       | `examples/rest-api/rocket/`  | 3000 |
 
 <Note>
-  **No API keys required!** These examples use `plugin-tokagent-classic` for
+  **No API keys required!** These examples use `plugin-eliza-classic` for
   pattern-matching responses and `plugin-localdb` for local storage.
 </Note>
 
@@ -280,7 +280,7 @@ if __name__ == "__main__":
 ```rust
 use actix_web::{web, App, HttpServer, HttpResponse, Result};
 use tokagentos::{AgentRuntime, RuntimeOptions, parse_character};
-use tokagentos_plugin_tokagent_classic::create_tokagent_classic_plugin;
+use elizaos_plugin_eliza_classic::create_tokagent_classic_plugin;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::Instant;

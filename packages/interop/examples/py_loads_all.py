@@ -41,13 +41,13 @@ async def load_rust_via_ffi() -> None:
 
         # Path to compiled shared library
         lib_path = Path(__file__).parent.parent.parent.parent / (
-            "plugins/plugin-tokagent-classic/rust/target/release/libtokagentos_plugin_tokagent_classic.so"
+            "plugins/plugin-eliza-classic/rust/target/release/libelizaos_plugin_eliza_classic.so"
         )
 
         if not lib_path.exists():
             # Try debug build
             lib_path = Path(__file__).parent.parent.parent.parent / (
-                "plugins/plugin-tokagent-classic/rust/target/debug/libtokagentos_plugin_tokagent_classic.so"
+                "plugins/plugin-eliza-classic/rust/target/debug/libelizaos_plugin_eliza_classic.so"
             )
 
         plugin = load_rust_plugin(str(lib_path))
@@ -96,8 +96,8 @@ async def load_rust_via_wasm() -> None:
 
         # Path to compiled WASM module
         wasm_path = Path(__file__).parent.parent.parent.parent / (
-            "plugins/plugin-tokagent-classic/rust/target/wasm32-unknown-unknown/release/"
-            "tokagentos_plugin_tokagent_classic.wasm"
+            "plugins/plugin-eliza-classic/rust/target/wasm32-unknown-unknown/release/"
+            "elizaos_plugin_eliza_classic.wasm"
         )
 
         plugin = load_wasm_plugin(str(wasm_path))
@@ -142,7 +142,7 @@ async def load_typescript_via_ipc() -> None:
 
         # Path to TypeScript plugin
         ts_plugin_path = Path(__file__).parent.parent.parent.parent / (
-            "plugins/plugin-tokagent-classic/typescript"
+            "plugins/plugin-eliza-classic/typescript"
         )
 
         plugin = load_ts_plugin(str(ts_plugin_path))
@@ -184,10 +184,10 @@ async def load_native_python() -> None:
 
     try:
         # Add plugin to path
-        plugin_path = Path(__file__).parent.parent.parent.parent / "plugins/plugin-tokagent-classic/python"
+        plugin_path = Path(__file__).parent.parent.parent.parent / "plugins/plugin-eliza-classic/python"
         sys.path.insert(0, str(plugin_path))
 
-        from tokagentos_plugin_tokagent_classic import TokagentClassicPlugin
+        from elizaos_plugin_eliza_classic import TokagentClassicPlugin
 
         plugin_instance = TokagentClassicPlugin()
 

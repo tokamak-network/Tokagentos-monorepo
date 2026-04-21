@@ -181,7 +181,7 @@ fn load_native_rust() {
     println!("\n=== Loading Native Rust Plugin ===\n");
 
     // Direct usage of Rust plugin - no interop needed!
-    use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
+    use elizaos_plugin_eliza_classic::TokagentClassicPlugin;
 
     let plugin = TokagentClassicPlugin::new();
 
@@ -210,7 +210,7 @@ fn load_native_rust() {
 fn load_typescript_via_ipc() {
     println!("\n=== Loading TypeScript Plugin via IPC ===\n");
 
-    match IpcPluginBridge::spawn_typescript("./plugins/plugin-tokagent-classic/typescript") {
+    match IpcPluginBridge::spawn_typescript("./plugins/plugin-eliza-classic/typescript") {
         Ok(mut bridge) => {
             match bridge.get_manifest() {
                 Ok(manifest) => {
@@ -253,7 +253,7 @@ fn load_typescript_via_ipc() {
 fn load_python_via_ipc() {
     println!("\n=== Loading Python Plugin via IPC ===\n");
 
-    match IpcPluginBridge::spawn_python("./plugins/plugin-tokagent-classic/python") {
+    match IpcPluginBridge::spawn_python("./plugins/plugin-eliza-classic/python") {
         Ok(mut bridge) => {
             match bridge.get_manifest() {
                 Ok(manifest) => {

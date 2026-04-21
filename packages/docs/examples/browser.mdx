@@ -82,7 +82,7 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
       {
         "imports": {
           "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
-          "@tokagentos/plugin-eliza-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js",
+          "@tokagentos/plugin-eliza-classic": "../../plugins/plugin-eliza-classic/dist/browser/index.browser.js",
           "@tokagentos/plugin-localdb": "../../plugins/plugin-localdb/dist/browser/index.browser.js"
         }
       }
@@ -374,7 +374,7 @@ export async function POST(request: Request) {
 
 | Plugin                 | Requires API | Offline | Response Time |
 | ---------------------- | ------------ | ------- | ------------- |
-| `plugin-tokagent-classic` | ❌           | ✅      | ~1ms          |
+| `plugin-eliza-classic` | ❌           | ✅      | ~1ms          |
 | `plugin-openai`        | ✅           | ❌      | ~500-2000ms   |
 | `plugin-anthropic`     | ✅           | ❌      | ~500-2000ms   |
 

@@ -35,7 +35,7 @@ getrandom = { version = "0.2", features = ["custom"] }
 # tokagentos = { version = "2.0", default-features = false, features = ["sync", "icp"] }
 
 # TOKAGENT Classic plugin - no API keys needed, pure pattern matching
-tokagentos-plugin-tokagent-classic = { path = "../../../../plugins/plugin-tokagent-classic/rust" }
+tokagentos-plugin-eliza-classic = { path = "../../../../plugins/plugin-eliza-classic/rust" }
 
 # DFINITY LLM canister client - Llama 3.1 8B, Qwen3 32B on ICP
 ic-llm = "1.1"

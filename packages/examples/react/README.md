@@ -52,7 +52,7 @@ This example uses the full tokagentOS agent framework:
               ┌───────────────┴───────────────┐
               ▼                               ▼
 ┌──────────────────────────┐    ┌──────────────────────────┐
-│     plugin-sql           │    │  plugin-tokagent-classic    │
+│     plugin-sql           │    │  plugin-eliza-classic    │
 │    (PGLite adapter)      │    │  (Pattern matching)      │
 │                          │    │                          │
 │  In-browser PostgreSQL   │    │  TEXT_LARGE handler      │
@@ -63,11 +63,11 @@ This example uses the full tokagentOS agent framework:
 ### Plugins Used
 
 1. **@elizaos/plugin-sql**: Provides PGLite database adapter for in-browser persistence
-2. **plugin-tokagent-classic**: Custom plugin that provides TEXT_LARGE/TEXT_SMALL model handlers using classic TOKAGENT pattern matching
+2. **plugin-eliza-classic**: Custom plugin that provides TEXT_LARGE/TEXT_SMALL model handlers using classic TOKAGENT pattern matching
 
 ## How It Works
 
-### Pattern Matching (plugin-tokagent-classic.ts)
+### Pattern Matching (plugin-eliza-classic.ts)
 
 This implementation uses the original TOKAGENT pattern matching algorithm from Joseph Weizenbaum's 1966 program:
 
@@ -93,7 +93,7 @@ export const tokagentClassicPlugin: Plugin = {
 };
 ```
 
-When the runtime processes a user message via `runtime.messageService.handleMessage(...)`, it will ultimately route to the classic TOKAGENT model handlers (TEXT_LARGE/TEXT_SMALL) provided by `plugin-tokagent-classic` instead of an LLM API.
+When the runtime processes a user message via `runtime.messageService.handleMessage(...)`, it will ultimately route to the classic TOKAGENT model handlers (TEXT_LARGE/TEXT_SMALL) provided by `plugin-eliza-classic` instead of an LLM API.
 
 ### No LLM Required
 
@@ -113,7 +113,7 @@ examples/react/
 │   ├── App.css                # Terminal styling
 │   ├── index.css              # Global styles
 │   ├── tokagent-runtime.ts       # AgentRuntime singleton manager
-│   └── plugin-tokagent-classic.ts # TOKAGENT pattern matching plugin
+│   └── plugin-eliza-classic.ts # TOKAGENT pattern matching plugin
 ├── index.html
 ├── package.json
 ├── tsconfig.json
