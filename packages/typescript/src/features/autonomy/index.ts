@@ -1,5 +1,5 @@
 /**
- * Autonomy module for elizaOS
+ * Autonomy module for tokagentOS
  *
  * Provides autonomous operation capabilities for agents.
  */

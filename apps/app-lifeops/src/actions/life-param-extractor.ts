@@ -11,8 +11,8 @@
  * language so life.ts can stay on an LLM-driven extraction path.
  */
 
-import type { IAgentRuntime, Memory, State } from "@elizaos/core";
-import { ModelType, parseJSONObjectFromText } from "@elizaos/core";
+import type { IAgentRuntime, Memory, State } from "@tokagentos/core";
+import { ModelType, parseJSONObjectFromText } from "@tokagentos/core";
 import { recentConversationTexts } from "./life-recent-context.js";
 import { resolveContextWindow } from "./lifeops-extraction-config.js";
 import { normalizeExplicitTimeZoneToken } from "./timezone-normalization.js";

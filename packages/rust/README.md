@@ -1,6 +1,6 @@
-# elizaOS Core - Rust Implementation
+# tokagentOS Core - Rust Implementation
 
-This is the Rust implementation of the elizaOS core runtime. It provides a fully compatible implementation that can be compiled to both native binaries and WebAssembly.
+This is the Rust implementation of the tokagentOS core runtime. It provides a fully compatible implementation that can be compiled to both native binaries and WebAssembly.
 
 ## Features
 
@@ -9,7 +9,7 @@ This is the Rust implementation of the elizaOS core runtime. It provides a fully
 - **WASM Support**: Compile to WebAssembly for browser and Node.js environments
 - **Character Loading**: Parse and validate character files matching TypeScript behavior
 - **Plugin System**: Load, validate, and resolve plugin dependencies
-- **Agent Runtime**: Core runtime for elizaOS agents
+- **Agent Runtime**: Core runtime for tokagentOS agents
 
 ## Runtime Settings (cross-language parity)
 
@@ -72,7 +72,7 @@ cargo test
 ### Rust (Native)
 
 ```rust
-use elizaos::{AgentRuntime, Character, parse_character};
+use tokagentos::{AgentRuntime, Character, parse_character};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -97,7 +97,7 @@ import init, {
   WasmAgentRuntime,
   parse_character,
   validate_character,
-} from "@elizaos/core/rust";
+} from "@tokagentos/core/rust";
 
 // Initialize WASM module
 await init();

@@ -9,7 +9,7 @@ import {
   SaveFooter,
   Switch,
   useTimeout,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   client,
@@ -391,7 +391,7 @@ function WakeWordSection({
   serverConfig?: Partial<SwabbleConfig> | null;
 }) {
   const { t } = useApp();
-  const [triggers, setTriggers] = useState<string[]>(["eliza"]);
+  const [triggers, setTriggers] = useState<string[]>(["tokagent"]);
   const [triggerInput, setTriggerInput] = useState("");
   const [sensitivity, setSensitivity] = useState(0.45);
   const [modelSize, setModelSize] =
@@ -656,7 +656,7 @@ function WakeWordSection({
 export function VoiceConfigView() {
   const { setTimeout } = useTimeout();
 
-  const { t, elizaCloudConnected, elizaCloudVoiceProxyAvailable } = useApp();
+  const { t, tokagentCloudConnected, tokagentCloudVoiceProxyAvailable } = useApp();
   const [voiceConfig, setVoiceConfig] = useState<VoiceConfig>({});
   const [swabbleServerConfig, setSwabbleServerConfig] =
     useState<Partial<SwabbleConfig> | null>(null);
@@ -703,7 +703,7 @@ export function VoiceConfigView() {
   }, []);
 
   const currentProvider = voiceConfig.provider ?? "elevenlabs";
-  const cloudVoiceAvailable = elizaCloudVoiceProxyAvailable;
+  const cloudVoiceAvailable = tokagentCloudVoiceProxyAvailable;
   const hasElevenLabsApiKey = hasConfiguredApiKey(
     voiceConfig.elevenlabs?.apiKey,
   );
@@ -715,7 +715,7 @@ export function VoiceConfigView() {
   const currentMode: VoiceMode = voiceConfig.mode ?? defaultVoiceMode;
   const providerInfo = VOICE_PROVIDERS.find((p) => p.id === currentProvider);
   // Cloud vs own-key only applies to providers that need credentials. Edge TTS
-  // has no API key — do not gate "Configured" on Eliza Cloud when Edge is selected.
+  // has no API key — do not gate "Configured" on Tokagent Cloud when Edge is selected.
   const isConfigured = (() => {
     if (!providerInfo?.needsKey) return true;
     if (currentMode === "cloud") return cloudVoiceAvailable;
@@ -867,7 +867,7 @@ export function VoiceConfigView() {
       <div className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-card/92 px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
         <span className="text-xs leading-5 text-txt">
           {currentProvider === "elevenlabs"
-            ? `ElevenLabs — ${currentMode === "cloud" ? t("voiceconfigview.ServedViaElizaCloud") : t("voiceconfigview.RequiresApiKey")}`
+            ? `ElevenLabs — ${currentMode === "cloud" ? t("voiceconfigview.ServedViaTokagentCloud") : t("voiceconfigview.RequiresApiKey")}`
             : `${providerInfo ? t(providerInfo.labelKey, { defaultValue: providerInfo.label }) : ""} — ${t("voiceconfigview.NoApiKeyNeeded")}`}
         </span>
         <span
@@ -895,8 +895,8 @@ export function VoiceConfigView() {
           </div>
           {currentMode === "cloud" && (
             <CloudConnectionStatus
-              connected={elizaCloudConnected}
-              disconnectedText={t("elizaclouddashboard.ElizaCloudNotConnected")}
+              connected={tokagentCloudConnected}
+              disconnectedText={t("tokagentclouddashboard.TokagentCloudNotConnected")}
             />
           )}
           {currentMode === "own-key" && (

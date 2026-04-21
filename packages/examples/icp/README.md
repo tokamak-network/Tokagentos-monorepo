@@ -1,6 +1,6 @@
-# elizaOS ICP Canister Example
+# tokagentOS ICP Canister Example
 
-Deploy an elizaOS AI agent as a canister on the Internet Computer (ICP). This example demonstrates how to run a fully decentralized AI agent with persistent memory, OpenAI integration via HTTP outcalls, and secure key management using vetKeys.
+Deploy an tokagentOS AI agent as a canister on the Internet Computer (ICP). This example demonstrates how to run a fully decentralized AI agent with persistent memory, OpenAI integration via HTTP outcalls, and secure key management using vetKeys.
 
 ## Architecture
 
@@ -8,7 +8,7 @@ Deploy an elizaOS AI agent as a canister on the Internet Computer (ICP). This ex
 ┌──────────────────┐     ┌─────────────────────────────────────────────┐
 │                  │     │           Internet Computer                 │
 │   Web Client     │────▶│  ┌─────────────────────────────────────┐   │
-│   (Browser/CLI)  │◀────│  │         elizaOS Canister            │   │
+│   (Browser/CLI)  │◀────│  │         tokagentOS Canister            │   │
 │                  │     │  │  ┌─────────────┐  ┌──────────────┐  │   │
 └──────────────────┘     │  │  │   Agent     │  │   Storage    │  │   │
                          │  │  │   Runtime   │  │  (Stable)    │  │   │
@@ -39,24 +39,24 @@ Deploy an elizaOS AI agent as a canister on the Internet Computer (ICP). This ex
 - **OpenAI Integration**: HTTP outcalls to OpenAI via a secure gateway (API keys never stored on-chain)
 - **DFINITY LLM Integration**: Free Llama 3.1 8B / Qwen3 32B via the DFINITY LLM canister
 - **VetKeys Support**: Secure cryptographic key derivation for encryption and signing
-- **elizaOS Compatible**: Types and patterns match the main elizaOS Rust implementation
-- **elizaOS Sync Runtime**: Uses the new `sync` feature for environments without tokio
+- **tokagentOS Compatible**: Types and patterns match the main tokagentOS Rust implementation
+- **tokagentOS Sync Runtime**: Uses the new `sync` feature for environments without tokio
 - **Multi-Room Support**: Separate conversation contexts with UUID-based identification
 
-## elizaOS Sync Runtime
+## tokagentOS Sync Runtime
 
-This example demonstrates elizaOS's new **sync runtime** feature, designed for environments that don't support tokio or async runtimes:
+This example demonstrates tokagentOS's new **sync runtime** feature, designed for environments that don't support tokio or async runtimes:
 
 - **ICP Canisters** - Single-threaded WASM execution
 - **Embedded Systems** - Resource-constrained environments
 - **WASI Applications** - WebAssembly System Interface
 - **Custom Runtimes** - Any environment needing synchronous execution
 
-### Usage with elizaOS Sync Runtime
+### Usage with tokagentOS Sync Runtime
 
 ```rust
-use elizaos::{SyncAgentRuntime, Character, DatabaseAdapterSync};
-use crate::eliza_bridge::IcpElizaAdapter;
+use tokagentos::{SyncAgentRuntime, Character, DatabaseAdapterSync};
+use crate::tokagent_bridge::IcpTokagentAdapter;
 
 // Create a character
 let character = Character {
@@ -67,7 +67,7 @@ let character = Character {
 };
 
 // Create ICP-backed database adapter
-let adapter = IcpElizaAdapter::new("agent-id".to_string());
+let adapter = IcpTokagentAdapter::new("agent-id".to_string());
 
 // Create the sync runtime
 let runtime = SyncAgentRuntime::new(character, Some(Box::new(adapter)))?;
@@ -81,7 +81,7 @@ runtime.register_model("TEXT_LARGE", Box::new(|params| {
     Ok(response)
 }));
 
-// Handle messages using the canonical elizaOS pattern
+// Handle messages using the canonical tokagentOS pattern
 let mut message = Memory::message(entity_id, room_id, "Hello!");
 let result = runtime.message_service().handle_message(&runtime, &mut message, None)?;
 ```
@@ -100,10 +100,10 @@ let result = runtime.message_service().handle_message(&runtime, &mut message, No
 
 ```toml
 [dependencies]
-elizaos = { version = "2.0", default-features = false, features = ["sync"] }
+tokagentos = { version = "2.0", default-features = false, features = ["sync"] }
 
 # Or for ICP-specific builds:
-elizaos = { version = "2.0", default-features = false, features = ["icp"] }
+tokagentos = { version = "2.0", default-features = false, features = ["icp"] }
 ```
 
 ## Prerequisites
@@ -164,17 +164,17 @@ dfx deploy
 
 # The canister ID will be displayed, e.g.:
 # Deployed canisters:
-#   eliza_icp_backend: rrkah-fqaaa-aaaaa-aaaaq-cai
+#   tokagent_icp_backend: rrkah-fqaaa-aaaaa-aaaaq-cai
 ```
 
 ### 4. Initialize the Agent
 
 ```bash
 # Initialize with default character
-dfx canister call eliza_icp_backend init_agent '(null)'
+dfx canister call tokagent_icp_backend init_agent '(null)'
 
-# Or initialize with custom character (matching elizaOS Character type)
-dfx canister call eliza_icp_backend init_agent '(opt record {
+# Or initialize with custom character (matching tokagentOS Character type)
+dfx canister call tokagent_icp_backend init_agent '(opt record {
   name = "Alice";
   bio = "A helpful AI assistant specializing in Web3 and ICP development.";
   system = opt "You are Alice, an expert in Internet Computer development. Give direct, substantive answers.";
@@ -187,8 +187,8 @@ dfx canister call eliza_icp_backend init_agent '(opt record {
 ### 5. Chat with the Agent
 
 ```bash
-# Send a message (follows elizaOS Content -> Memory::new pattern)
-dfx canister call eliza_icp_backend chat '(record {
+# Send a message (follows tokagentOS Content -> Memory::new pattern)
+dfx canister call tokagent_icp_backend chat '(record {
   message = "Hello! Tell me about yourself.";
   user_id = null;
   room_id = null;
@@ -206,7 +206,7 @@ dfx canister call eliza_icp_backend chat '(record {
 ### 6. Check Health Status
 
 ```bash
-dfx canister call eliza_icp_backend health
+dfx canister call tokagent_icp_backend health
 ```
 
 ## OpenAI Integration
@@ -223,7 +223,7 @@ dfx canister call eliza_icp_backend health
 2. Configure the canister to use your gateway:
 
 ```bash
-dfx canister call eliza_icp_backend configure_openai '(record {
+dfx canister call tokagent_icp_backend configure_openai '(record {
   gateway_url = "https://your-gateway.example.com/v1/chat/completions";
   model = "gpt-5-mini";
   temperature = 0.7;
@@ -262,7 +262,7 @@ Example gateway options:
 
 ```bash
 # Verify OpenAI is configured
-dfx canister call eliza_icp_backend is_openai_enabled
+dfx canister call tokagent_icp_backend is_openai_enabled
 
 # If false, configure with your gateway URL
 ```
@@ -274,10 +274,10 @@ VetKeys allow secure cryptographic key derivation on ICP:
 ```bash
 # Get a user-specific encryption key
 # The key is encrypted with your transport public key
-dfx canister call eliza_icp_backend get_user_encryption_key '(blob "YOUR_TRANSPORT_PUBLIC_KEY")'
+dfx canister call tokagent_icp_backend get_user_encryption_key '(blob "YOUR_TRANSPORT_PUBLIC_KEY")'
 
 # Get the canister's vetKD public key
-dfx canister call eliza_icp_backend get_vetkd_public_key
+dfx canister call tokagent_icp_backend get_vetkd_public_key
 ```
 
 Use cases:
@@ -298,7 +298,7 @@ Use cases:
 | `update_character(config)` | Update | Update agent character |
 | `get_agent_state()` | Query | Get current agent state |
 
-### Chat Interface (elizaOS Pattern)
+### Chat Interface (tokagentOS Pattern)
 
 | Method | Type | Description |
 |--------|------|-------------|
@@ -338,9 +338,9 @@ examples/icp/
 ├── scripts/
 │   └── setup.sh                       # Setup helper script
 └── src/
-    └── eliza_icp_backend/
+    └── tokagent_icp_backend/
         ├── Cargo.toml                 # Canister dependencies
-        ├── eliza_icp_backend.did      # Candid interface
+        ├── tokagent_icp_backend.did      # Candid interface
         └── src/
             ├── lib.rs                 # Main canister (chat, agent mgmt)
             ├── types.rs               # Types (Content, Memory, UUID)
@@ -351,16 +351,16 @@ examples/icp/
 
 ## How It Works
 
-The canister follows the elizaOS chat example pattern:
+The canister follows the tokagentOS chat example pattern:
 
 ```rust
 // 1. User sends message
 let request = ChatRequest { message: "Hello!", .. };
 
-// 2. Create Content (like elizaOS Content { text: Some(...) })
+// 2. Create Content (like tokagentOS Content { text: Some(...) })
 let content = Content::text(&request.message);
 
-// 3. Create Memory (like elizaOS Memory::new(user_id, room_id, content))
+// 3. Create Memory (like tokagentOS Memory::new(user_id, room_id, content))
 let memory = Memory::new(user_id, room_id, content);
 
 // 4. Store user message
@@ -395,7 +395,7 @@ dfx deploy --network ic
 ### 3. Initialize
 
 ```bash
-dfx canister --network ic call eliza_icp_backend init_agent '(null)'
+dfx canister --network ic call tokagent_icp_backend init_agent '(null)'
 ```
 
 ## Troubleshooting
@@ -469,14 +469,14 @@ dfx canister call llama_cpp set_max_tokens '(record {
 dfx canister call llama_cpp set_access '(record { level = 1 : nat16 })'
 ```
 
-### Configure elizaOS to Use On-Chain LLM
+### Configure tokagentOS to Use On-Chain LLM
 
 ```bash
 # Get the llama_cpp canister ID
 LLM_CANISTER=$(dfx canister id llama_cpp)
 
-# Configure elizaOS backend
-dfx canister call eliza_icp_backend configure_onchain_llm "(record {
+# Configure tokagentOS backend
+dfx canister call tokagent_icp_backend configure_onchain_llm "(record {
   canister_id = principal \"$LLM_CANISTER\";
   model_name = \"SmolLM2-135M\";
   max_tokens = 256 : nat32;
@@ -486,14 +486,14 @@ dfx canister call eliza_icp_backend configure_onchain_llm "(record {
 })"
 
 # Switch to on-chain mode
-dfx canister call eliza_icp_backend set_inference_mode '(variant { OnChainLLM })'
+dfx canister call tokagent_icp_backend set_inference_mode '(variant { OnChainLLM })'
 ```
 
 ### Four Inference Modes
 
 | Mode | Command | Speed | Quality |
 |------|---------|-------|---------|
-| Classic | `set_inference_mode '(variant { ElizaClassic })'` | ~2s | Pattern matching |
+| Classic | `set_inference_mode '(variant { TokagentClassic })'` | ~2s | Pattern matching |
 | OpenAI | `set_inference_mode '(variant { OpenAI })'` | ~5s | Best (GPT-4o) |
 | On-Chain | `set_inference_mode '(variant { OnChainLLM })'` | ~50s | Good (fully decentralized) |
 | DFINITY LLM | `set_inference_mode '(variant { DfinityLLM })'` | ~3-8s | Llama 3.1 8B / Qwen3 32B (FREE, managed by DFINITY) |
@@ -504,12 +504,12 @@ See `ON_CHAIN_LLM_PLAN.md` for detailed architecture and configuration options.
 
 DFINITY provides a managed LLM canister (Llama 3.1 8B / Qwen3 32B). It is **fast and free**.
 
-**Note**: This is currently available on **mainnet** only. Local replicas will fall back to ELIZA Classic if the call fails.
+**Note**: This is currently available on **mainnet** only. Local replicas will fall back to TOKAGENT Classic if the call fails.
 
 ### Switch to DFINITY LLM
 
 ```bash
-dfx canister call eliza_icp_backend set_inference_mode '(variant { DfinityLLM })'
+dfx canister call tokagent_icp_backend set_inference_mode '(variant { DfinityLLM })'
 ```
 
 ## Resources
@@ -518,9 +518,9 @@ dfx canister call eliza_icp_backend set_inference_mode '(variant { DfinityLLM })
 - [VetKeys Overview](https://docs.internetcomputer.org/references/vetkeys-overview)
 - [HTTP Outcalls](https://internetcomputer.org/docs/building-apps/network-features/using-http/https-outcalls/overview)
 - [llama_cpp_canister](https://github.com/onicai/llama_cpp_canister) - On-chain LLM inference
-- [elizaOS Documentation](https://elizaos.ai/docs)
-- [elizaOS Rust Chat Example](../chat/rust/)
+- [tokagentOS Documentation](https://tokagentos.ai/docs)
+- [tokagentOS Rust Chat Example](../chat/rust/)
 
 ## License
 
-MIT License - see the main elizaOS repository for details.
+MIT License - see the main tokagentOS repository for details.

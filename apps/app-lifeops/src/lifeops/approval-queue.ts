@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { type IAgentRuntime, logger } from "@elizaos/core";
+import { type IAgentRuntime, logger } from "@tokagentos/core";
 import {
   ApprovalNotFoundError,
   type ApprovalEnqueueInput,

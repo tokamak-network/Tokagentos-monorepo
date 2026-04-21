@@ -93,7 +93,7 @@ def load_root_env() -> None:
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="REALM-Bench: Real-World Planning Benchmark for ElizaOS",
+        description="REALM-Bench: Real-World Planning Benchmark for TokagentOS",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -223,7 +223,7 @@ def print_banner() -> None:
     print("""
 ╔═══════════════════════════════════════════════════════════════════╗
 ║            REALM-Bench: Real-World Planning Benchmark             ║
-║                        for ElizaOS                                ║
+║                        for TokagentOS                                ║
 ╠═══════════════════════════════════════════════════════════════════╣
 ║  Paper: https://arxiv.org/abs/2412.13102                         ║
 ║  GitHub: https://github.com/genglongling/REALM-Bench             ║
@@ -258,7 +258,7 @@ def print_leaderboard() -> None:
 
 
 def check_environment() -> dict[str, bool]:
-    """Check environment for API keys and ElizaOS availability."""
+    """Check environment for API keys and TokagentOS availability."""
     results: dict[str, bool] = {}
     
     # Check API keys
@@ -276,24 +276,24 @@ def check_environment() -> dict[str, bool]:
         status = "✅ Found" if has_key else "❌ Not set"
         print(f"   {name}: {status}")
     
-    # Check ElizaOS availability
-    print("\n📦 ElizaOS Status:")
+    # Check TokagentOS availability
+    print("\n📦 TokagentOS Status:")
     import importlib.util
 
-    if importlib.util.find_spec("elizaos.runtime") is not None:
-        results["elizaos"] = True
+    if importlib.util.find_spec("tokagentos.runtime") is not None:
+        results["tokagentos"] = True
         print("   Core runtime: ✅ Available")
     else:
-        results["elizaos"] = False
+        results["tokagentos"] = False
         print("   Core runtime: ❌ Not installed")
     
     # Check model plugins
     plugins = [
-        ("elizaos_plugin_openai", "OpenAI Plugin"),
-        ("elizaos_plugin_anthropic", "Anthropic Plugin"),
-        ("elizaos_plugin_google_genai", "Google Plugin"),
-        ("elizaos_plugin_ollama", "Ollama Plugin"),
-        ("elizaos_plugin_groq", "Groq Plugin"),
+        ("tokagentos_plugin_openai", "OpenAI Plugin"),
+        ("tokagentos_plugin_anthropic", "Anthropic Plugin"),
+        ("tokagentos_plugin_google_genai", "Google Plugin"),
+        ("tokagentos_plugin_ollama", "Ollama Plugin"),
+        ("tokagentos_plugin_groq", "Groq Plugin"),
     ]
     
     print("\n🔌 Model Plugins:")
@@ -309,36 +309,36 @@ def check_environment() -> dict[str, bool]:
     # Check trajectory logger plugin
     print("\n📊 Training Export:")
     try:
-        __import__("elizaos_plugin_trajectory_logger")
+        __import__("tokagentos_plugin_trajectory_logger")
         results["trajectory_logger"] = True
         print("   Trajectory Logger: ✅ Installed (ART/GRPO export available)")
     except ImportError:
         results["trajectory_logger"] = False
-        print("   Trajectory Logger: ❌ Not installed (install elizaos-plugin-trajectory-logger for training export)")
+        print("   Trajectory Logger: ❌ Not installed (install tokagentos-plugin-trajectory-logger for training export)")
     
     # Summary
     print("\n📋 Summary:")
-    has_runtime = results.get("elizaos", False)
+    has_runtime = results.get("tokagentos", False)
 
     # Compatibility notes:
-    # - OpenAI has a Python ElizaOS runtime plugin wrapper in this repo
+    # - OpenAI has a Python TokagentOS runtime plugin wrapper in this repo
     # - Anthropic/Groq Python packages currently provide clients/types but not runtime plugin wrappers
     openai_ready = bool(results.get("OPENAI_API_KEY")) and bool(
-        results.get("elizaos_plugin_openai")
+        results.get("tokagentos_plugin_openai")
     )
-    ollama_ready = bool(results.get("elizaos_plugin_ollama"))
+    ollama_ready = bool(results.get("tokagentos_plugin_ollama"))
 
     if has_runtime and openai_ready:
         print("   ✅ Ready for LLM-based benchmarking (OpenAI)!")
     elif has_runtime and ollama_ready:
         print("   ✅ Ready for LLM-based benchmarking (Ollama)!")
     elif has_runtime:
-        print("   ⚠️  ElizaOS available but no compatible model plugin detected.")
+        print("   ⚠️  TokagentOS available but no compatible model plugin detected.")
         if results.get("ANTHROPIC_API_KEY") or results.get("GROQ_API_KEY"):
             print("   ℹ️  Note: Anthropic/Groq keys detected, but Python runtime plugin wrappers are not available yet.")
         print("   → Benchmark will run in heuristic/mock mode unless OpenAI/Ollama is configured.")
     else:
-        print("   ⚠️  ElizaOS not available - will use heuristic/mock mode")
+        print("   ⚠️  TokagentOS not available - will use heuristic/mock mode")
     
     print()
     return results
@@ -515,7 +515,7 @@ def main() -> int:
                 print(f"\n📁 Full results saved to: {config.output_dir}/")
                 if not args.no_trajectory_logging:
                     try:
-                        __import__("elizaos_plugin_trajectory_logger")
+                        __import__("tokagentos_plugin_trajectory_logger")
                         print(f"   📊 Training trajectories exported (ART/GRPO formats)")
                     except ImportError:
                         pass

@@ -3,10 +3,10 @@
  * expandable rows showing line item counts, financial status, and dates.
  */
 
-import { SegmentedControl, Skeleton } from "@elizaos/app-core";
+import { SegmentedControl, Skeleton } from "@tokagentos/app-core";
 import { ChevronDown, ChevronUp, ShoppingCart } from "lucide-react";
 import { useState } from "react";
-import { formatShortDate } from "@elizaos/app-core";
+import { formatShortDate } from "@tokagentos/app-core";
 import type { ShopifyOrder } from "./useShopifyDashboard";
 
 // ── Status badges ─────────────────────────────────────────────────────────

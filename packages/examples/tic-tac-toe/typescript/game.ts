@@ -1,9 +1,9 @@
 /**
- * elizaOS Tic-Tac-Toe Demo
+ * tokagentOS Tic-Tac-Toe Demo
  *
  * A tic-tac-toe game where an AI agent plays perfectly WITHOUT using an LLM.
  * Demonstrates:
- * - elizaOS runtime with NO character (uses anonymous character)
+ * - tokagentOS runtime with NO character (uses anonymous character)
  * - Custom model handlers that implement perfect play via minimax
  * - No LLM calls - pure algorithmic decision making
  * - plugin-sql for persistence (PGLite in-memory)
@@ -25,7 +25,7 @@ import {
   createMessageMemory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import sqlPlugin from "@elizaos/plugin-sql";
 
 // ============================================================================
@@ -263,7 +263,7 @@ async function ticTacToeModelHandler(
   // Get the optimal move
   const move = getOptimalMove(board, aiPlayer);
 
-  // Return canonical Eliza XML so the message service can parse it
+  // Return canonical Tokagent XML so the message service can parse it
   return [
     "<response>",
     "  <thought>Compute perfect move via minimax (no LLM).</thought>",
@@ -435,7 +435,7 @@ async function getAIMove(session: GameSession): Promise<number> {
   const { runtime, game, roomId, gameMasterId } = session;
   const state = game.getState();
 
-  // Environment input -> Eliza message (full pipeline via messageService.handleMessage)
+  // Environment input -> Tokagent message (full pipeline via messageService.handleMessage)
   const boardCells = state.board.map((c) => c || "_").join(",");
   const available = getAvailableMoves(state.board).join(",");
   const prompt = [
@@ -493,7 +493,7 @@ async function getAIMove(session: GameSession): Promise<number> {
 // ============================================================================
 
 function showIntro(): void {
-  clack.intro("🎮 elizaOS Tic-Tac-Toe Demo");
+  clack.intro("🎮 tokagentOS Tic-Tac-Toe Demo");
   console.log(`
 ╔════════════════════════════════════════════════════════════════════╗
 ║                   PERFECT TIC-TAC-TOE AI                            ║

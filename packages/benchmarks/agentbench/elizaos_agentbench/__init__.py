@@ -1,5 +1,5 @@
 """
-ElizaOS AgentBench - Comprehensive benchmark for evaluating LLMs as agents.
+TokagentOS AgentBench - Comprehensive benchmark for evaluating LLMs as agents.
 
 AgentBench evaluates agents across 8 diverse environments:
 - Operating System (OS): Linux terminal interaction
@@ -12,15 +12,15 @@ AgentBench evaluates agents across 8 diverse environments:
 - Web Browsing: General web navigation
 
 The benchmark supports two execution modes:
-1. Full ElizaOS Pipeline: Uses message_service.handle_message() with the complete
+1. Full TokagentOS Pipeline: Uses message_service.handle_message() with the complete
    agent flow including providers, memory, and conversation history.
 2. Direct Mode: Uses runtime.generate_text() directly for testing.
 
 Usage:
-    from elizaos_agentbench import AgentBenchRunner, AgentBenchConfig
-    from elizaos_agentbench.eliza_harness import create_benchmark_runtime
+    from tokagentos_agentbench import AgentBenchRunner, AgentBenchConfig
+    from tokagentos_agentbench.tokagent_harness import create_benchmark_runtime
 
-    # Create full ElizaOS runtime
+    # Create full TokagentOS runtime
     runtime = await create_benchmark_runtime()
 
     # Run benchmarks with full pipeline
@@ -29,7 +29,7 @@ Usage:
     report = await runner.run_benchmarks()
 """
 
-from elizaos_agentbench.types import (
+from tokagentos_agentbench.types import (
     AgentBenchEnvironment,
     AgentBenchTask,
     AgentBenchResult,
@@ -37,15 +37,15 @@ from elizaos_agentbench.types import (
     AgentBenchConfig,
     EnvironmentConfig,
 )
-from elizaos_agentbench.runner import AgentBenchRunner
-from elizaos_agentbench.adapters.base import EnvironmentAdapter
-from elizaos_agentbench.eliza_harness import (
-    ElizaAgentHarness,
+from tokagentos_agentbench.runner import AgentBenchRunner
+from tokagentos_agentbench.adapters.base import EnvironmentAdapter
+from tokagentos_agentbench.tokagent_harness import (
+    TokagentAgentHarness,
     create_benchmark_runtime,
     create_benchmark_character,
     BenchmarkDatabaseAdapter,
 )
-from elizaos_agentbench.benchmark_actions import (
+from tokagentos_agentbench.benchmark_actions import (
     create_benchmark_actions,
     create_benchmark_plugin,
 )
@@ -61,8 +61,8 @@ __all__ = [
     # Runner
     "AgentBenchRunner",
     "EnvironmentAdapter",
-    # ElizaOS Integration
-    "ElizaAgentHarness",
+    # TokagentOS Integration
+    "TokagentAgentHarness",
     "create_benchmark_runtime",
     "create_benchmark_character",
     "BenchmarkDatabaseAdapter",

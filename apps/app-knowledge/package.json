@@ -11,10 +11,10 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@elizaos/core": "workspace:*"
+    "@tokagentos/core": "workspace:*"
   },
   "agentConfig": {
-    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginType": "tokagentos:plugin:1.0.0",
     "pluginParameters": {}
   }
 }

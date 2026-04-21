@@ -3,7 +3,7 @@
  * and aggregate product / order / customer counts.
  */
 
-import { Badge } from "@elizaos/app-core";
+import { Badge } from "@tokagentos/app-core";
 import { Package, ShoppingCart, Store, Users } from "lucide-react";
 import type { ShopifyAggregateCounts } from "./useShopifyDashboard";
 

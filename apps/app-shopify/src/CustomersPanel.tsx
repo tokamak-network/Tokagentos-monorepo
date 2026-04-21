@@ -3,9 +3,9 @@
  * total spent, and join date.
  */
 
-import { Input, Skeleton } from "@elizaos/app-core";
+import { Input, Skeleton } from "@tokagentos/app-core";
 import { Search, Users } from "lucide-react";
-import { formatShortDate } from "@elizaos/app-core";
+import { formatShortDate } from "@tokagentos/app-core";
 import type { ShopifyCustomer } from "./useShopifyDashboard";
 
 // ── Customer row ──────────────────────────────────────────────────────────

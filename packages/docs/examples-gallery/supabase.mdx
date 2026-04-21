@@ -1,6 +1,6 @@
 ---
 title: "Supabase Examples"
-description: "Deploy elizaOS to Supabase Edge Functions"
+description: "Deploy tokagentOS to Supabase Edge Functions"
 ---
 
 Deploy AI agents to Supabase's Deno-based edge functions.
@@ -10,22 +10,22 @@ Deploy AI agents to Supabase's Deno-based edge functions.
 ```bash
 cd examples/supabase
 supabase start
-supabase functions deploy eliza-chat
+supabase functions deploy tokagent-chat
 ```
 
 ## Available Implementations
 
 | Language          | Directory                                      | Features     |
 | ----------------- | ---------------------------------------------- | ------------ |
-| TypeScript (Deno) | `examples/supabase/functions/eliza-chat/`      | Native Deno  |
-| Rust WASM         | `examples/supabase/functions/eliza-chat-wasm/` | WASM runtime |
+| TypeScript (Deno) | `examples/supabase/functions/tokagent-chat/`      | Native Deno  |
+| Rust WASM         | `examples/supabase/functions/tokagent-chat-wasm/` | WASM runtime |
 
 ## Edge Function
 
 ```typescript
-// functions/eliza-chat/index.ts
+// functions/tokagent-chat/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { AgentRuntime, ModelType } from "@elizaos/core";
+import { AgentRuntime, ModelType } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
@@ -34,7 +34,7 @@ async function getRuntime() {
   if (runtime) return runtime;
 
   runtime = new AgentRuntime({
-    character: { name: "Eliza", bio: "A helpful AI assistant." },
+    character: { name: "Tokagent", bio: "A helpful AI assistant." },
     plugins: [openaiPlugin],
   });
 
@@ -73,8 +73,8 @@ serve(async (req) => {
 ## Testing Locally
 
 ```bash
-supabase functions serve eliza-chat --env-file .env.local
-curl -X POST http://localhost:54321/functions/v1/eliza-chat \
+supabase functions serve tokagent-chat --env-file .env.local
+curl -X POST http://localhost:54321/functions/v1/tokagent-chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_ANON_KEY" \
   -d '{"message": "Hello!"}'
@@ -99,15 +99,15 @@ supabase secrets set OPENAI_API_KEY=your-key
 For better performance, use the Rust WASM version:
 
 ```typescript
-// functions/eliza-chat-wasm/index.ts
+// functions/tokagent-chat-wasm/index.ts
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import init, { WasmAgentRuntime } from "./lib/elizaos_bg.wasm";
+import init, { WasmAgentRuntime } from "./lib/tokagentos_bg.wasm";
 
 await init();
 
 const runtime = await new WasmAgentRuntime(
   JSON.stringify({
-    name: "Eliza",
+    name: "Tokagent",
     bio: "A helpful AI assistant.",
   }),
 );

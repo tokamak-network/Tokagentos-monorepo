@@ -1,4 +1,4 @@
-import { Button, Card, CardContent } from "@elizaos/ui";
+import { Button, Card, CardContent } from "@tokagentos/ui";
 import type { GatewayDiscoveryEndpoint } from "../../bridge/gateway-discovery";
 
 const MONO_FONT = "'Courier New', 'Courier', 'Monaco', monospace";
@@ -108,8 +108,8 @@ export function SplashServerChooser({
             style={{ fontFamily: MONO_FONT }}
             className="text-3xs uppercase text-black/60"
           >
-            {t("startupshell.ElizaCloudAgent", {
-              defaultValue: "Eliza Cloud",
+            {t("startupshell.TokagentCloudAgent", {
+              defaultValue: "Tokagent Cloud",
             })}
           </span>
           <span className="text-sm font-bold">

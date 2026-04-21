@@ -666,7 +666,7 @@ export const coordinatorScenarios: CoordinatorScenario[] = [
     profile: "smoke",
     title: "respond appropriately from a Discord-origin message",
     summary:
-      "The same conversational request should run through Discord semantics and still create durable Eliza state.",
+      "The same conversational request should run through Discord semantics and still create durable Tokagent state.",
     channels: ["discord"],
     requiredCapabilities: ["connector_ingress", "task_execution"],
     turns: [
@@ -678,7 +678,7 @@ export const coordinatorScenarios: CoordinatorScenario[] = [
     ],
     doneWhen: [
       "The run is recorded as connector-originated.",
-      "A task thread and trajectories exist in Eliza.",
+      "A task thread and trajectories exist in Tokagent.",
     ],
     evidence: ["connector trajectory", "task thread", "artifacts"],
   }),

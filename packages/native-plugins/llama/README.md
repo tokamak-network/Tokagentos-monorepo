@@ -3,7 +3,7 @@
 Mobile llama.cpp adapter for Milady. A **thin wrapper** over
 [`llama-cpp-capacitor`](https://github.com/arusatech/annadata-llama-cpp) that
 maps its contextId-based API onto Milady's `LocalInferenceLoader` contract,
-so the standard `ActiveModelCoordinator` in `@elizaos/app-core` can switch
+so the standard `ActiveModelCoordinator` in `@tokagentos/app-core` can switch
 between the desktop (node-llama-cpp) engine and mobile native inference
 transparently.
 
@@ -22,7 +22,7 @@ transparently.
   handles iOS (arm64 + x86_64 with Metal) and Android (arm64-v8a,
   armeabi-v7a, x86, x86_64) itself.
 - It does not run on web. On Electrobun / Vite we fall back to the
-  standalone `node-llama-cpp` engine in `@elizaos/app-core`.
+  standalone `node-llama-cpp` engine in `@tokagentos/app-core`.
 
 ## Setup in apps/app
 
@@ -52,7 +52,7 @@ transparently.
 - Only **one model is loaded at a time**. `load()` disposes the previous
   context first so we never double-allocate VRAM on device.
 - GGUF files are downloaded to the app sandbox by the
-  `@elizaos/app-core` downloader (shared with desktop). The mobile UI
+  `@tokagentos/app-core` downloader (shared with desktop). The mobile UI
   filters the catalog to small/tiny bucket models only, since anything
   larger won't realistically run on a phone.
 - Streaming tokens flow over Capacitor's native event bus

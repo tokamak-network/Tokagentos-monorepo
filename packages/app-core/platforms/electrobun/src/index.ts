@@ -5,7 +5,7 @@ import path from "node:path";
 import {
   resolveApiToken,
   resolveDesktopApiPort,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import Electrobun, {
   ApplicationMenu,
   BrowserView,
@@ -203,7 +203,7 @@ function resolveHeartbeatMenuApiBase(): string | null {
  * Picks a loopback API base the main process can actually reach.
  *
  * **WHY:** `resolveHeartbeatMenuApiBase()` falls back to `resolveInitialApiBase`,
- * which in **external** mode is `ELIZA_DESKTOP_API_BASE` (often :31337). If that
+ * which in **external** mode is `TOKAGENT_DESKTOP_API_BASE` (often :31337). If that
  * dev server is down but the **embedded** agent is still running on a dynamic
  * port, menu Reset must not blindly POST to the dead env URL.
  */
@@ -288,7 +288,7 @@ async function resetTheAppFromApplicationMenu(): Promise<void> {
   if (!apiBase) {
     Utils.showNotification({
       title: "Reset Failed",
-      body: `Could not reach the ${BRAND.appName} API (tried embedded port and ELIZA_DESKTOP_API_BASE / defaults). Start the agent or dev server, or fix your API base env.`,
+      body: `Could not reach the ${BRAND.appName} API (tried embedded port and TOKAGENT_DESKTOP_API_BASE / defaults). Start the agent or dev server, or fix your API base env.`,
     });
     return;
   }
@@ -719,7 +719,7 @@ async function startRendererServer(): Promise<string> {
   // HTML before the renderer JS runs. This prevents a 404 fatal-error loop
   // where the renderer fetches /api/auth/status relative to the static server.
   // If the agent falls back to a dynamic port, apiBaseUpdate messages will
-  // update window.__ELIZA_API_BASE__ and the client will pick it up lazily.
+  // update window.__TOKAGENT_API_BASE__ and the client will pick it up lazily.
   const initialApiBase = resolveInitialApiBase(
     process.env as Record<string, string | undefined>,
   );
@@ -734,7 +734,7 @@ async function startRendererServer(): Promise<string> {
     if (!initialApiBase) {
       return html;
     }
-    const script = `<script>window.__ELIZA_API_BASE__=${JSON.stringify(initialApiBase)};${initialApiToken ? `Object.defineProperty(window,"__ELIZA_API_TOKEN__",{value:${JSON.stringify(initialApiToken)},configurable:true,writable:true,enumerable:false});` : ""}</script>`;
+    const script = `<script>window.__TOKAGENT_API_BASE__=${JSON.stringify(initialApiBase)};${initialApiToken ? `Object.defineProperty(window,"__TOKAGENT_API_TOKEN__",{value:${JSON.stringify(initialApiToken)},configurable:true,writable:true,enumerable:false});` : ""}</script>`;
     // Inject before </head> if present, otherwise before <body>
     if (html.includes("</head>")) {
       return html.replace("</head>", `${script}</head>`);
@@ -829,11 +829,11 @@ async function startRendererServer(): Promise<string> {
 }
 
 async function resolveRendererUrl(): Promise<string> {
-  // Prefer ELIZA_RENDERER_URL / VITE_DEV_SERVER_URL when set (e.g. dev-platform.mjs watch mode).
+  // Prefer TOKAGENT_RENDERER_URL / VITE_DEV_SERVER_URL when set (e.g. dev-platform.mjs watch mode).
   // Why: Vite HMR only works against the dev server; serving pre-built dist from this static
   // server would force a full rebuild for every UI change.
   let rendererUrl =
-    process.env.ELIZA_RENDERER_URL ?? process.env.VITE_DEV_SERVER_URL ?? "";
+    process.env.TOKAGENT_RENDERER_URL ?? process.env.VITE_DEV_SERVER_URL ?? "";
 
   if (!rendererUrl) {
     rendererUrlPromise ??= startRendererServer();
@@ -889,7 +889,7 @@ async function createMainWindow(): Promise<BrowserWindow> {
 
   if (forceMainWindowCef && !canUseCefView) {
     console.warn(
-      "[Main] ELIZA_DESKTOP_FORCE_CEF=1 requested, but this Electrobun build does not bundle the CEF renderer. Falling back to the native renderer.",
+      "[Main] TOKAGENT_DESKTOP_FORCE_CEF=1 requested, but this Electrobun build does not bundle the CEF renderer. Falling back to the native renderer.",
     );
   }
 
@@ -1657,14 +1657,14 @@ function setupShutdown(): void {
 }
 
 /**
- * Load repo-root and ~/.eliza/.env into `process.env` (non-destructive) so the
- * main process can send the same `ELIZA_API_TOKEN` as `dev-server.ts` when
+ * Load repo-root and ~/.tokagent/.env into `process.env` (non-destructive) so the
+ * main process can send the same `TOKAGENT_API_TOKEN` as `dev-server.ts` when
  * calling loopback APIs (app menu reset, export, etc.). The dev API child
  * already loads dotenv; Electrobun did not until this ran.
  *
  * Packaged desktop builds must not load these files. On machines that also
- * have a the app/Eliza dev checkout, ~/.eliza/.env can contain
- * ELIZA_DESKTOP_API_BASE and related overrides that switch the packaged app
+ * have a the app/Tokagent dev checkout, ~/.tokagent/.env can contain
+ * TOKAGENT_DESKTOP_API_BASE and related overrides that switch the packaged app
  * into external mode and make launcher startup appear dead.
  */
 async function loadTheAppEnvFilesForMain(): Promise<void> {
@@ -1685,7 +1685,7 @@ async function loadTheAppEnvFilesForMain(): Promise<void> {
     );
     for (const envPath of [
       path.join(repoRootGuess, ".env"),
-      path.join(os.homedir(), ".eliza", ".env"),
+      path.join(os.homedir(), ".tokagent", ".env"),
     ]) {
       if (fs.existsSync(envPath)) {
         config({ path: envPath, override: false });
@@ -1753,7 +1753,7 @@ async function main(): Promise<void> {
   const runtimeResolution = resolveDesktopRuntimeMode(
     process.env as Record<string, string | undefined>,
   );
-  // Structured startup environment block — visible in CI logs and eliza-startup.log
+  // Structured startup environment block — visible in CI logs and tokagent-startup.log
   console.log(
     `[Env] platform=${process.platform} arch=${process.arch} bun=${Bun.version} ` +
       `execPath=${process.execPath} cwd=${process.cwd()} moduleDir=${import.meta.dir} ` +
@@ -1831,7 +1831,7 @@ async function main(): Promise<void> {
 
   // WHY push API base on every status tick with a port: embedded startup can
   // settle on a different loopback port than env/static HTML (allocation + stdout).
-  // Detached surfaces must not keep a stale __ELIZA_API_BASE__ while the main
+  // Detached surfaces must not keep a stale __TOKAGENT_API_BASE__ while the main
   // window was already updated—menu reset, chat, and settings each own a webview.
   cleanupFns.push(
     getAgentManager().onStatusChange((status) => {
@@ -2024,7 +2024,7 @@ async function main(): Promise<void> {
   // Agent startup: in external mode, push the API base via injectApiBase
   // (the agent is already running externally). In local mode, start the
   // embedded agent first — injectApiBaseIntoHtml already set the initial
-  // window.__ELIZA_API_BASE__ but _startAgent will push the actual port
+  // window.__TOKAGENT_API_BASE__ but _startAgent will push the actual port
   // once the agent reports it.
   if (currentWindow) {
     const rt = resolveDesktopRuntimeMode(

@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
-import type { AgentRuntime, Content, State, Task, UUID } from "@elizaos/core";
-import { DatabaseSync } from "@elizaos/agent/test-utils/sqlite-compat";
+import type { AgentRuntime, Content, State, Task, UUID } from "@tokagentos/core";
+import { DatabaseSync } from "@tokagentos/agent/test-utils/sqlite-compat";
 
 type SqlQuery = {
   queryChunks?: Array<{ value?: unknown }>;

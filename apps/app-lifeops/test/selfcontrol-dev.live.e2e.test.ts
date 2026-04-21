@@ -9,7 +9,7 @@ import { describeIf } from "../../../../test/helpers/conditional-tests.ts";
 import { req } from "../../../../test/helpers/http";
 
 const LIVE_TESTS_ENABLED =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..", "..");
 
 type StartedDevStack = {
@@ -153,9 +153,9 @@ async function waitForHostsBlock(
 }
 
 async function startDevStack(): Promise<StartedDevStack> {
-  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "eliza-dev-stack-"));
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "tokagent-dev-stack-"));
   const stateDir = path.join(tempRoot, "state");
-  const configPath = path.join(tempRoot, "eliza.json");
+  const configPath = path.join(tempRoot, "tokagent.json");
   const hostsFilePath = path.join(tempRoot, "hosts");
   const apiPort = await getFreePort();
   const uiPort = await getFreePort();
@@ -183,13 +183,13 @@ async function startDevStack(): Promise<StartedDevStack> {
     env: {
       ...process.env,
       CI: "1",
-      ELIZA_CONFIG_PATH: configPath,
-      ELIZA_DEV_ONCHAIN: "0",
-      ELIZA_DISABLE_LOCAL_EMBEDDINGS: "1",
-      ELIZA_API_PORT: String(apiPort),
-      ELIZA_UI_PORT: String(uiPort),
-      ELIZA_PORT: String(uiPort),
-      ELIZA_STATE_DIR: stateDir,
+      TOKAGENT_CONFIG_PATH: configPath,
+      TOKAGENT_DEV_ONCHAIN: "0",
+      TOKAGENT_DISABLE_LOCAL_EMBEDDINGS: "1",
+      TOKAGENT_API_PORT: String(apiPort),
+      TOKAGENT_UI_PORT: String(uiPort),
+      TOKAGENT_PORT: String(uiPort),
+      TOKAGENT_STATE_DIR: stateDir,
       ALLOW_NO_DATABASE: "",
       SELFCONTROL_HOSTS_FILE_PATH: hostsFilePath,
       WEBSITE_BLOCKER_HOSTS_FILE_PATH: hostsFilePath,

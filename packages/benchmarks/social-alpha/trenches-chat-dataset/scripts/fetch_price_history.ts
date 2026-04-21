@@ -1,13 +1,13 @@
 #!/usr/bin/env bun
 
 import { config } from "dotenv";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import pLimit from 'p-limit';
 import { HistoricalPriceService, type HistoricalPriceData } from "../../src/services/historicalPriceService";
 import { SupportedChain } from "../../src/types";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 // check if .env in this folder or in one lower or in CWD
 let envPath = path.join(process.cwd(), '.env');

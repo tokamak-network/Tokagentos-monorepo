@@ -1,5 +1,5 @@
 """
-Test client for elizaOS MCP Server
+Test client for tokagentOS MCP Server
 
 Connects to the MCP server and tests the chat and get_agent_info tools.
 """
@@ -17,7 +17,7 @@ from mcp.client.stdio import stdio_client, StdioServerParameters
 
 
 async def main() -> None:
-    print("🧪 Testing elizaOS MCP Server\n")
+    print("🧪 Testing tokagentOS MCP Server\n")
 
     server_params = StdioServerParameters(
         command=sys.executable,

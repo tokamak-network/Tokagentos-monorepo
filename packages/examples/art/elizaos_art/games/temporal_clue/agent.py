@@ -4,8 +4,8 @@ Temporal Clue Agents for ART Training
 
 import re
 
-from elizaos_art.base import BaseAgent
-from elizaos_art.games.temporal_clue.types import (
+from tokagentos_art.base import BaseAgent
+from tokagentos_art.games.temporal_clue.types import (
     TemporalClueAction,
     TemporalClueState,
 )

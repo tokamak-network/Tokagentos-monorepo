@@ -2,7 +2,7 @@ import path from "node:path";
 import type { StorybookConfig } from "@storybook/react-vite";
 
 const companionRoot = path.resolve(__dirname, "..");
-const elizaRoot = path.resolve(companionRoot, "../..");
+const tokagentRoot = path.resolve(companionRoot, "../..");
 
 const config: StorybookConfig = {
   stories: [
@@ -30,13 +30,13 @@ const config: StorybookConfig = {
     config.resolve ??= {};
     config.resolve.alias = {
       ...(config.resolve.alias ?? {}),
-      "@elizaos/app-core/styles/styles.css": path.resolve(
-        elizaRoot,
+      "@tokagentos/app-core/styles/styles.css": path.resolve(
+        tokagentRoot,
         "packages/app-core/src/styles/styles.css",
       ),
-      "@elizaos/app-core": path.resolve(elizaRoot, "packages/app-core/src"),
-      "@elizaos/core": path.resolve(elizaRoot, "packages/typescript/src"),
-      "@elizaos/ui": path.resolve(elizaRoot, "packages/ui/src"),
+      "@tokagentos/app-core": path.resolve(tokagentRoot, "packages/app-core/src"),
+      "@tokagentos/core": path.resolve(tokagentRoot, "packages/typescript/src"),
+      "@tokagentos/ui": path.resolve(tokagentRoot, "packages/ui/src"),
     };
     return config;
   },

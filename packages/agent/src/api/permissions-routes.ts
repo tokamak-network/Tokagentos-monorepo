@@ -3,8 +3,8 @@ import {
   openSelfControlPermissionLocation,
   requestSelfControlPermission,
 } from "@elizaos/app-lifeops/public";
-import type { AgentRuntime } from "@elizaos/core";
-import type { PermissionState } from "@elizaos/shared/contracts/permissions";
+import type { AgentRuntime } from "@tokagentos/core";
+import type { PermissionState } from "@tokagentos/shared/contracts/permissions";
 import type { AutonomousConfigLike } from "../types/config-like.js";
 import type { RouteRequestContext } from "./route-helpers.js";
 

@@ -1,24 +1,24 @@
 """
-CLI entry point for the HyperliquidBench Eliza agent.
+CLI entry point for the HyperliquidBench Tokagent agent.
 
 Usage:
-    python -m benchmarks.HyperliquidBench.eliza_agent [OPTIONS]
+    python -m benchmarks.HyperliquidBench.tokagent_agent [OPTIONS]
 
 Examples:
     # Run with demo mode (default) – no real trades
-    python -m benchmarks.HyperliquidBench.eliza_agent --demo
+    python -m benchmarks.HyperliquidBench.tokagent_agent --demo
 
     # Run free-form coverage scenario with specific coins
-    python -m benchmarks.HyperliquidBench.eliza_agent --coins ETH,BTC,SOL --max-steps 7
+    python -m benchmarks.HyperliquidBench.tokagent_agent --coins ETH,BTC,SOL --max-steps 7
 
     # Run scenarios from task files
-    python -m benchmarks.HyperliquidBench.eliza_agent --tasks hl_perp_basic_01.jsonl
+    python -m benchmarks.HyperliquidBench.tokagent_agent --tasks hl_perp_basic_01.jsonl
 
     # Verbose output with custom model
-    python -m benchmarks.HyperliquidBench.eliza_agent --model gpt-4o --verbose
+    python -m benchmarks.HyperliquidBench.tokagent_agent --model gpt-4o --verbose
 
     # Live network (requires HL_PRIVATE_KEY)
-    python -m benchmarks.HyperliquidBench.eliza_agent --network testnet --no-demo
+    python -m benchmarks.HyperliquidBench.tokagent_agent --network testnet --no-demo
 """
 
 from __future__ import annotations
@@ -33,8 +33,8 @@ from pathlib import Path
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        prog="benchmarks.HyperliquidBench.eliza_agent",
-        description="Run HyperliquidBench scenarios through an ElizaOS agent",
+        prog="benchmarks.HyperliquidBench.tokagent_agent",
+        description="Run HyperliquidBench scenarios through an TokagentOS agent",
     )
 
     # Scenario selection
@@ -136,8 +136,8 @@ async def _main() -> int:
     )
 
     # Lazy imports so --help is fast
-    from .eliza_agent import (
-        ElizaHyperliquidAgent,
+    from .tokagent_agent import (
+        TokagentHyperliquidAgent,
         load_scenarios_from_tasks,
         make_coverage_scenario,
     )
@@ -187,7 +187,7 @@ async def _main() -> int:
         return 1
 
     # Run the agent
-    agent = ElizaHyperliquidAgent(config=config, verbose=args.verbose)
+    agent = TokagentHyperliquidAgent(config=config, verbose=args.verbose)
 
     try:
         results = await agent.run_benchmark(scenarios=scenarios)
@@ -196,7 +196,7 @@ async def _main() -> int:
 
     # Print summary
     print("\n" + "=" * 60)
-    print("HyperliquidBench – Eliza Agent Results")
+    print("HyperliquidBench – Tokagent Agent Results")
     print("=" * 60)
 
     total_score = 0.0

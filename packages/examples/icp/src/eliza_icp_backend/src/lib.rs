@@ -1,6 +1,6 @@
-//! elizaOS ICP Canister
+//! tokagentOS ICP Canister
 //!
-//! This canister runs an elizaOS agent on the Internet Computer using the same
+//! This canister runs an tokagentOS agent on the Internet Computer using the same
 //! database adapter pattern as plugin-inmemorydb, but with ICP stable memory.
 //!
 //! ## Key Features
@@ -11,35 +11,35 @@
 //! - OpenAI integration via HTTP outcalls
 //! - VetKeys for secure key derivation
 //!
-//! ## elizaOS Sync Runtime
+//! ## tokagentOS Sync Runtime
 //!
-//! This canister demonstrates using elizaOS's sync runtime pattern, which allows
-//! running elizaOS agents in environments without tokio or async runtimes.
+//! This canister demonstrates using tokagentOS's sync runtime pattern, which allows
+//! running tokagentOS agents in environments without tokio or async runtimes.
 //!
-//! When the `elizaos` crate is available, the `eliza_bridge` module provides a
+//! When the `tokagentos` crate is available, the `tokagent_bridge` module provides a
 //! full `DatabaseAdapterSync` implementation that can be used with `SyncAgentRuntime`.
 //!
 //! ```rust,ignore
-//! use elizaos::{SyncAgentRuntime, Character};
-//! use crate::eliza_bridge::IcpElizaAdapter;
+//! use tokagentos::{SyncAgentRuntime, Character};
+//! use crate::tokagent_bridge::IcpTokagentAdapter;
 //!
 //! let character = Character { name: "MyAgent".to_string(), ..Default::default() };
-//! let adapter = IcpElizaAdapter::new("agent-id");
+//! let adapter = IcpTokagentAdapter::new("agent-id");
 //! let runtime = SyncAgentRuntime::new(character, Some(Box::new(adapter)))?;
 //!
-//! // Handle messages using canonical elizaOS pattern
+//! // Handle messages using canonical tokagentOS pattern
 //! let result = runtime.message_service().handle_message(&runtime, &mut msg, None)?;
 //! ```
 
-mod eliza_bridge;
+mod tokagent_bridge;
 mod http_outcalls;
 mod onchain_llm;
 mod storage;
 mod types;
 mod vetkeys;
 
-// Import ELIZA Classic plugin for pattern-based responses (no API keys needed)
-use elizaos_plugin_eliza_classic::ElizaClassicPlugin;
+// Import TOKAGENT Classic plugin for pattern-based responses (no API keys needed)
+use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
 
 use candid::Principal;
 use ic_cdk::{init, post_upgrade, pre_upgrade, query, update};
@@ -49,7 +49,7 @@ use ic_cdk::api::management_canister::http_request::{
 use serde_json::{json, Value};
 use std::cell::RefCell;
 
-pub use eliza_bridge::IcpElizaAdapterStandalone;
+pub use tokagent_bridge::IcpTokagentAdapterStandalone;
 pub use http_outcalls::{is_openai_configured, OpenAIClient};
 pub use onchain_llm::{check_llm_canister_health, check_llm_ready, OnChainLLMClient};
 pub use storage::{create_database_adapter, IcpDatabaseAdapter};
@@ -62,10 +62,10 @@ thread_local! {
     static CREATED_AT: RefCell<u64> = const { RefCell::new(0) };
     static AGENT_STATE: RefCell<Option<AgentState>> = const { RefCell::new(None) };
     static OPENAI_CONFIG: RefCell<Option<OpenAIConfig>> = const { RefCell::new(None) };
-    // ELIZA Classic plugin for pattern-based responses
-    static ELIZA_CLASSIC: RefCell<Option<ElizaClassicPlugin>> = const { RefCell::new(None) };
+    // TOKAGENT Classic plugin for pattern-based responses
+    static TOKAGENT_CLASSIC: RefCell<Option<TokagentClassicPlugin>> = const { RefCell::new(None) };
     // Inference mode selection
-    static INFERENCE_MODE: RefCell<InferenceMode> = const { RefCell::new(InferenceMode::ElizaClassic) };
+    static INFERENCE_MODE: RefCell<InferenceMode> = const { RefCell::new(InferenceMode::TokagentClassic) };
     // On-chain LLM configuration (for llama_cpp_canister)
     static ONCHAIN_LLM_CONFIG: RefCell<Option<OnChainLLMConfig>> = const { RefCell::new(None) };
     // DFINITY LLM configuration (managed by DFINITY, free, Llama 3.1 8B / Qwen3 32B)
@@ -77,9 +77,9 @@ thread_local! {
 #[init]
 fn init() {
     CREATED_AT.with(|c| *c.borrow_mut() = ic_cdk::api::time());
-    // Initialize ELIZA Classic plugin for pattern-based responses
-    ELIZA_CLASSIC.with(|e| *e.borrow_mut() = Some(ElizaClassicPlugin::new()));
-    ic_cdk::println!("elizaOS ICP canister initialized with ELIZA Classic");
+    // Initialize TOKAGENT Classic plugin for pattern-based responses
+    TOKAGENT_CLASSIC.with(|e| *e.borrow_mut() = Some(TokagentClassicPlugin::new()));
+    ic_cdk::println!("tokagentOS ICP canister initialized with TOKAGENT Classic");
 }
 
 #[pre_upgrade]
@@ -90,9 +90,9 @@ fn pre_upgrade() {
 #[post_upgrade]
 fn post_upgrade() {
     CREATED_AT.with(|c| *c.borrow_mut() = ic_cdk::api::time());
-    // Re-initialize ELIZA Classic plugin after upgrade
-    ELIZA_CLASSIC.with(|e| *e.borrow_mut() = Some(ElizaClassicPlugin::new()));
-    ic_cdk::println!("elizaOS ICP canister upgraded with ELIZA Classic");
+    // Re-initialize TOKAGENT Classic plugin after upgrade
+    TOKAGENT_CLASSIC.with(|e| *e.borrow_mut() = Some(TokagentClassicPlugin::new()));
+    ic_cdk::println!("tokagentOS ICP canister upgraded with TOKAGENT Classic");
 }
 
 // ========== Agent Management ==========
@@ -170,7 +170,7 @@ fn is_openai_ready() -> bool {
 
 // ========== Inference Mode Configuration ==========
 
-/// Set the inference mode (ElizaClassic, OpenAI, OnChainLLM, or DfinityLLM)
+/// Set the inference mode (TokagentClassic, OpenAI, OnChainLLM, or DfinityLLM)
 #[update]
 fn set_inference_mode(mode: InferenceMode) -> Result<(), CanisterError> {
     ensure_initialized()?;
@@ -203,7 +203,7 @@ fn set_inference_mode(mode: InferenceMode) -> Result<(), CanisterError> {
                 }
             });
         }
-        InferenceMode::ElizaClassic => {
+        InferenceMode::TokagentClassic => {
             // Always available
         }
     }
@@ -282,7 +282,7 @@ fn get_inference_status() -> InferenceStatus {
     
     InferenceStatus {
         current_mode,
-        eliza_classic_ready: true, // Always ready
+        tokagent_classic_ready: true, // Always ready
         openai_configured,
         onchain_llm_configured: onchain_config.as_ref().map(|c| c.is_configured()).unwrap_or(false),
         onchain_llm_canister_id: onchain_config.as_ref().map(|c| c.canister_id.to_text()),
@@ -682,7 +682,7 @@ fn ensure_initialized() -> Result<AgentState, CanisterError> {
 }
 
 /// Generate response based on current inference mode
-/// Supports: ELIZA Classic, OpenAI, or On-Chain LLM
+/// Supports: TOKAGENT Classic, OpenAI, or On-Chain LLM
 async fn generate_response_with_context(
     character: &CharacterConfig,
     user_message: &str,
@@ -726,8 +726,8 @@ async fn generate_response_with_context(
             if let Some(response) = try_dfinity_llm_response(&system_prompt, user_message, &history).await {
                 return response;
             }
-            // Fall back to ELIZA Classic
-            ic_cdk::println!("DFINITY LLM failed, falling back to ELIZA Classic");
+            // Fall back to TOKAGENT Classic
+            ic_cdk::println!("DFINITY LLM failed, falling back to TOKAGENT Classic");
             generate_pattern_response(character, user_message)
         }
         InferenceMode::OpenAI => {
@@ -735,8 +735,8 @@ async fn generate_response_with_context(
             if let Some(response) = try_openai_response(&system_prompt, user_message, &history, character).await {
                 return response;
             }
-            // Fall back to ELIZA Classic
-            ic_cdk::println!("OpenAI failed, falling back to ELIZA Classic");
+            // Fall back to TOKAGENT Classic
+            ic_cdk::println!("OpenAI failed, falling back to TOKAGENT Classic");
             generate_pattern_response(character, user_message)
         }
         InferenceMode::OnChainLLM => {
@@ -744,11 +744,11 @@ async fn generate_response_with_context(
             if let Some(response) = try_onchain_llm_response(&system_prompt, user_message, &history).await {
                 return response;
             }
-            // Fall back to ELIZA Classic
-            ic_cdk::println!("On-chain LLM failed, falling back to ELIZA Classic");
+            // Fall back to TOKAGENT Classic
+            ic_cdk::println!("On-chain LLM failed, falling back to TOKAGENT Classic");
             generate_pattern_response(character, user_message)
         }
-        InferenceMode::ElizaClassic => {
+        InferenceMode::TokagentClassic => {
             generate_pattern_response(character, user_message)
         }
     }
@@ -884,51 +884,51 @@ async fn try_dfinity_llm_response(
 }
 
 fn generate_pattern_response(_character: &CharacterConfig, user_message: &str) -> String {
-    // Use ELIZA Classic for pattern-based Rogerian psychotherapist responses
-    // This provides authentic ELIZA behavior without needing any API keys
-    ELIZA_CLASSIC.with(|e| {
-        if let Some(eliza) = e.borrow().as_ref() {
-            eliza.generate_response(user_message)
+    // Use TOKAGENT Classic for pattern-based Rogerian psychotherapist responses
+    // This provides authentic TOKAGENT behavior without needing any API keys
+    TOKAGENT_CLASSIC.with(|e| {
+        if let Some(tokagent) = e.borrow().as_ref() {
+            tokagent.generate_response(user_message)
         } else {
-            // Fallback if ELIZA Classic not initialized (shouldn't happen)
+            // Fallback if TOKAGENT Classic not initialized (shouldn't happen)
             "I'm listening. Please tell me more.".to_string()
         }
     })
 }
 
-// ========== ELIZA Classic ==========
+// ========== TOKAGENT Classic ==========
 
-/// Get ELIZA Classic greeting message
+/// Get TOKAGENT Classic greeting message
 #[query]
-fn get_eliza_greeting() -> String {
-    ELIZA_CLASSIC.with(|e| {
-        if let Some(eliza) = e.borrow().as_ref() {
-            eliza.get_greeting()
+fn get_tokagent_greeting() -> String {
+    TOKAGENT_CLASSIC.with(|e| {
+        if let Some(tokagent) = e.borrow().as_ref() {
+            tokagent.get_greeting()
         } else {
             "How do you do? Please tell me your problem.".to_string()
         }
     })
 }
 
-/// Chat directly with ELIZA Classic (no memory, no state - just pattern matching)
+/// Chat directly with TOKAGENT Classic (no memory, no state - just pattern matching)
 /// Useful for testing the pattern-matching engine
 #[query]
-fn eliza_classic_chat(message: String) -> String {
-    ELIZA_CLASSIC.with(|e| {
-        if let Some(eliza) = e.borrow().as_ref() {
-            eliza.generate_response(&message)
+fn tokagent_classic_chat(message: String) -> String {
+    TOKAGENT_CLASSIC.with(|e| {
+        if let Some(tokagent) = e.borrow().as_ref() {
+            tokagent.generate_response(&message)
         } else {
             "I'm listening. Please tell me more.".to_string()
         }
     })
 }
 
-/// Reset ELIZA Classic conversation history
+/// Reset TOKAGENT Classic conversation history
 #[update]
-fn reset_eliza_session() {
-    ELIZA_CLASSIC.with(|e| {
-        if let Some(eliza) = e.borrow().as_ref() {
-            eliza.reset_history();
+fn reset_tokagent_session() {
+    TOKAGENT_CLASSIC.with(|e| {
+        if let Some(tokagent) = e.borrow().as_ref() {
+            tokagent.reset_history();
         }
     });
 }

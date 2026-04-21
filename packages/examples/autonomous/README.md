@@ -24,7 +24,7 @@ Download a small GGUF model file (e.g. Qwen3-4B quantized) and place it in your 
 Then set:
 
 ```bash
-export MODELS_DIR="$HOME/.eliza/models"
+export MODELS_DIR="$HOME/.tokagent/models"
 export LOCAL_SMALL_MODEL="YOUR_MODEL_FILE.gguf"
 ```
 
@@ -73,7 +73,7 @@ python autonomous.py
 
 ### Rust
 
-> **Note**: The Rust example requires `elizaos-plugin-local-ai` with the `llm` feature enabled for actual inference. This feature depends on a vendored `llama_cpp_rs` crate that is not yet included in the repository. The example will compile but exit early with an error message until the vendor is added. See the plugin's `Cargo.toml` for details.
+> **Note**: The Rust example requires `tokagentos-plugin-local-ai` with the `llm` feature enabled for actual inference. This feature depends on a vendored `llama_cpp_rs` crate that is not yet included in the repository. The example will compile but exit early with an error message until the vendor is added. See the plugin's `Cargo.toml` for details.
 
 ```bash
 cd examples/autonomous/rust/autonomous

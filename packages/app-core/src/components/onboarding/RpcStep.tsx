@@ -1,4 +1,4 @@
-import { Button, Input } from "@elizaos/ui";
+import { Button, Input } from "@tokagentos/ui";
 
 import { useState } from "react";
 import { useApp } from "../../state/useApp";
@@ -154,9 +154,9 @@ function CloudLoginErrorMessage({ error }: { error: string }) {
 
 export function RpcStep() {
   const {
-    elizaCloudConnected,
-    elizaCloudLoginBusy,
-    elizaCloudLoginError,
+    tokagentCloudConnected,
+    tokagentCloudLoginBusy,
+    tokagentCloudLoginError,
     onboardingCloudApiKey,
     handleCloudLogin,
     handleOnboardingNext,
@@ -166,9 +166,9 @@ export function RpcStep() {
     t,
   } = useApp();
 
-  const elizaCloudReady =
-    elizaCloudConnected || onboardingCloudApiKey.trim().length > 0;
-  const [mode, setMode] = useState<RpcMode>(elizaCloudReady ? "cloud" : "");
+  const tokagentCloudReady =
+    tokagentCloudConnected || onboardingCloudApiKey.trim().length > 0;
+  const [mode, setMode] = useState<RpcMode>(tokagentCloudReady ? "cloud" : "");
 
   const rpcKeys = onboardingRpcKeys as Record<string, string>;
 
@@ -178,9 +178,9 @@ export function RpcStep() {
 
   const applyCloudSelections = () => {
     setState("onboardingRpcSelections", {
-      evm: "eliza-cloud",
-      bsc: "eliza-cloud",
-      solana: "eliza-cloud",
+      evm: "tokagent-cloud",
+      bsc: "tokagent-cloud",
+      solana: "tokagent-cloud",
     });
   };
 
@@ -196,11 +196,11 @@ export function RpcStep() {
 
         <div className="mx-auto flex w-full max-w-[25rem] flex-col gap-3">
           <RpcModeCard
-            title={t("onboarding.rpcElizaCloud")}
-            description={t("onboarding.rpcElizaCloudDesc")}
+            title={t("onboarding.rpcTokagentCloud")}
+            description={t("onboarding.rpcTokagentCloudDesc")}
             tone="recommended"
             onClick={() => {
-              if (elizaCloudConnected) {
+              if (tokagentCloudConnected) {
                 applyCloudSelections();
               }
               setMode("cloud");
@@ -236,13 +236,13 @@ export function RpcStep() {
       <>
         <OnboardingStepHeader
           eyebrow={t("onboarding.rpcTitle")}
-          title={t("onboarding.rpcElizaCloud")}
-          description={t("onboarding.rpcElizaCloudDesc")}
+          title={t("onboarding.rpcTokagentCloud")}
+          description={t("onboarding.rpcTokagentCloudDesc")}
           descriptionClassName="mx-auto mt-1 max-w-[34ch] text-balance"
         />
 
         <div className="mx-auto w-full max-w-[25rem] text-center">
-          {elizaCloudConnected ? (
+          {tokagentCloudConnected ? (
             <div
               className={`${rpcCalloutClass} border-[var(--ok-muted)] bg-[var(--ok-subtle)] text-ok`}
               role="status"
@@ -276,16 +276,16 @@ export function RpcStep() {
                   });
                   void handleCloudLogin();
                 }}
-                disabled={elizaCloudLoginBusy || elizaCloudReady}
+                disabled={tokagentCloudLoginBusy || tokagentCloudReady}
               >
-                {elizaCloudLoginBusy
+                {tokagentCloudLoginBusy
                   ? t("onboarding.connecting")
-                  : elizaCloudReady
+                  : tokagentCloudReady
                     ? t("onboarding.connected")
                     : t("onboarding.connectAccount")}
               </Button>
-              {elizaCloudLoginError ? (
-                <CloudLoginErrorMessage error={elizaCloudLoginError} />
+              {tokagentCloudLoginError ? (
+                <CloudLoginErrorMessage error={tokagentCloudLoginError} />
               ) : null}
               <p
                 className={`mt-3 ${onboardingHelperTextClassName}`}
@@ -311,7 +311,7 @@ export function RpcStep() {
               applyCloudSelections();
               void handleOnboardingNext();
             }}
-            disabled={!elizaCloudReady}
+            disabled={!tokagentCloudReady}
             type="button"
           >
             {t("onboarding.next")}

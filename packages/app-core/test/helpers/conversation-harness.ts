@@ -5,8 +5,8 @@ import type {
   Memory,
   MessageMetadata,
   UUID,
-} from "@elizaos/core";
-import { ChannelType, createMessageMemory } from "@elizaos/core";
+} from "@tokagentos/core";
+import { ChannelType, createMessageMemory } from "@tokagentos/core";
 import {
   type ActionSpy,
   type ActionSpyCall,

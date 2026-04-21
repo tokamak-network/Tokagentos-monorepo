@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-WebShop Benchmark CLI for ElizaOS.
+WebShop Benchmark CLI for TokagentOS.
 
 Examples:
-  python -m elizaos_webshop --sample
-  python -m elizaos_webshop --sample --max-tasks 3
-  python -m elizaos_webshop --sample --mock
-  python -m elizaos_webshop --sample --trajectories --trajectory-format grpo
+  python -m tokagentos_webshop --sample
+  python -m tokagentos_webshop --sample --max-tasks 3
+  python -m tokagentos_webshop --sample --mock
+  python -m tokagentos_webshop --sample --trajectories --trajectory-format grpo
 """
 
 from __future__ import annotations
@@ -20,8 +20,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from elizaos_webshop.runner import WebShopRunner
-from elizaos_webshop.types import WebShopConfig
+from tokagentos_webshop.runner import WebShopRunner
+from tokagentos_webshop.types import WebShopConfig
 
 logging.basicConfig(
     level=logging.INFO,
@@ -57,7 +57,7 @@ def _maybe_load_dotenv() -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="ElizaOS WebShop Benchmark CLI")
+    p = argparse.ArgumentParser(description="TokagentOS WebShop Benchmark CLI")
     p.add_argument("--sample", action="store_true", help="Use built-in sample tasks/products")
     p.add_argument("--hf", action="store_true", help="Load tasks from HuggingFace (tasks only)")
     p.add_argument("--split", type=str, default="test", help="HF split (default: test)")
@@ -70,9 +70,9 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--no-details", action="store_true", help="Disable detailed json output")
     p.add_argument("--json", action="store_true", help="Print results json to stdout")
 
-    # Eliza integration
+    # Tokagent integration
     p.add_argument("--mock", action="store_true", help="Use mock agent instead of real LLM (for testing)")
-    p.add_argument("--real-llm", action="store_true", help="(deprecated, now the default) Use real LLM via ElizaOS runtime")
+    p.add_argument("--real-llm", action="store_true", help="(deprecated, now the default) Use real LLM via TokagentOS runtime")
     p.add_argument("--temperature", type=float, default=0.0, help="LLM temperature")
     p.add_argument("--model", type=str, default=None, help="Model name (e.g. qwen3-32b)")
     p.add_argument(
@@ -87,7 +87,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument(
         "--trajectories",
         action="store_true",
-        help="Enable trajectory logging + export (requires elizaos-plugin-trajectory-logger)",
+        help="Enable trajectory logging + export (requires tokagentos-plugin-trajectory-logger)",
     )
     p.add_argument("--no-trajectories", action="store_true", help="Disable trajectory logging")
     p.add_argument(

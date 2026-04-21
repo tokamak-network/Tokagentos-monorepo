@@ -1,7 +1,7 @@
 /**
  * Agent Native Module for Electrobun
  *
- * Embeds the elizaOS agent runtime as an isolated child process
+ * Embeds the tokagentOS agent runtime as an isolated child process
  * using Bun.spawn() and exposes it to the webview via RPC messages.
  *
  * Instead of dynamically importing the runtime into the main process
@@ -17,10 +17,10 @@
  * remote -- it simply connects to `http://localhost:{port}`.
  *
  * **Port policy (WHY):** we resolve a **free** loopback desktop API port from
- * `ELIZA_API_PORT`, `ELIZA_API_PORT`, or `ELIZA_PORT` (see
+ * `TOKAGENT_API_PORT`, `TOKAGENT_API_PORT`, or `TOKAGENT_PORT` (see
  * `findFirstAvailableLoopbackPort`) instead of SIGKILL-ing listeners by
  * default, so two desktop apps can run side by side. Optional
- * `ELIZA_AGENT_RECLAIM_STALE_PORT=1` (legacy: `ELIZA_AGENT_RECLAIM_STALE_PORT`)
+ * `TOKAGENT_AGENT_RECLAIM_STALE_PORT=1` (legacy: `TOKAGENT_AGENT_RECLAIM_STALE_PORT`)
  * restores lsof-based reclaim for single-instance dev.
  */
 
@@ -33,7 +33,7 @@ import {
   resolveDesktopApiPort,
   resolveDisableAutoApiToken,
   setApiToken,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 
 import { resolveDesktopRuntimeMode } from "../api-base";
 import { getBrandConfig } from "../brand-config";
@@ -77,8 +77,8 @@ export interface BugReportBundleResult {
   startupStatusPath: string | null;
 }
 
-import type { ExistingElizaInstallInfo } from "../rpc-schema";
-export type { ExistingElizaInstallInfo };
+import type { ExistingTokagentInstallInfo } from "../rpc-schema";
+export type { ExistingTokagentInstallInfo };
 
 // Subprocess type from Bun.spawn
 type BunSubprocess = ReturnType<typeof Bun.spawn>;
@@ -91,13 +91,13 @@ const HEALTH_POLL_INTERVAL_MS = process.platform === "win32" ? 2_000 : 500;
 const SIGTERM_GRACE_MS = 5_000;
 const AGENT_NAME_FETCH_TIMEOUT_MS = 5_000;
 const WINDOWS_ABS_PATH_RE = /^[A-Za-z]:[\\/]/;
-const ELIZA_CONFIG_FILENAME = "eliza.json";
+const TOKAGENT_CONFIG_FILENAME = "tokagent.json";
 
 export function getHealthPollTimeoutMs(
   env: NodeJS.ProcessEnv = process.env,
   platform: string = process.platform,
 ): number {
-  const raw = (env.ELIZA_AGENT_HEALTH_TIMEOUT_MS ?? env.ELIZA_AGENT_HEALTH_TIMEOUT_MS)?.trim();
+  const raw = (env.TOKAGENT_AGENT_HEALTH_TIMEOUT_MS ?? env.TOKAGENT_AGENT_HEALTH_TIMEOUT_MS)?.trim();
   if (raw) {
     const parsed = Number.parseInt(raw, 10);
     if (Number.isFinite(parsed) && parsed > 0) {
@@ -160,23 +160,23 @@ function listStateEntries(stateDir: string): string[] {
   }
 }
 
-function buildExistingElizaInstallCandidates(opts?: {
+function buildExistingTokagentInstallCandidates(opts?: {
   env?: NodeJS.ProcessEnv;
   homedir?: string;
 }): Array<{
-  source: ExistingElizaInstallSource;
+  source: ExistingTokagentInstallSource;
   stateDir: string;
   configPath: string;
 }> {
   const env = opts?.env ?? process.env;
   const homedir = opts?.homedir ?? os.homedir();
   const configPathFromEnv =
-    normalizeEnvPath(env.ELIZA_CONFIG_PATH) ??
-    normalizeEnvPath(env.ELIZA_CONFIG_PATH);
+    normalizeEnvPath(env.TOKAGENT_CONFIG_PATH) ??
+    normalizeEnvPath(env.TOKAGENT_CONFIG_PATH);
   const stateDirFromEnv =
-    normalizeEnvPath(env.ELIZA_STATE_DIR) ??
-    normalizeEnvPath(env.ELIZA_STATE_DIR);
-  const defaultStateDir = joinPortable(homedir, ".eliza");
+    normalizeEnvPath(env.TOKAGENT_STATE_DIR) ??
+    normalizeEnvPath(env.TOKAGENT_STATE_DIR);
+  const defaultStateDir = joinPortable(homedir, ".tokagent");
 
   const candidates = [
     configPathFromEnv
@@ -190,13 +190,13 @@ function buildExistingElizaInstallCandidates(opts?: {
       ? {
           source: "state-dir-env" as const,
           stateDir: stateDirFromEnv,
-          configPath: joinPortable(stateDirFromEnv, ELIZA_CONFIG_FILENAME),
+          configPath: joinPortable(stateDirFromEnv, TOKAGENT_CONFIG_FILENAME),
         }
       : null,
     {
       source: "default-state-dir" as const,
       stateDir: defaultStateDir,
-      configPath: joinPortable(defaultStateDir, ELIZA_CONFIG_FILENAME),
+      configPath: joinPortable(defaultStateDir, TOKAGENT_CONFIG_FILENAME),
     },
   ].filter((candidate): candidate is NonNullable<typeof candidate> =>
     Boolean(candidate),
@@ -212,11 +212,11 @@ function buildExistingElizaInstallCandidates(opts?: {
   );
 }
 
-export function inspectExistingElizaInstall(opts?: {
+export function inspectExistingTokagentInstall(opts?: {
   env?: NodeJS.ProcessEnv;
   homedir?: string;
-}): ExistingElizaInstallInfo {
-  const candidates = buildExistingElizaInstallCandidates(opts);
+}): ExistingTokagentInstallInfo {
+  const candidates = buildExistingTokagentInstallCandidates(opts);
 
   for (const candidate of candidates) {
     const configExists = fs.existsSync(candidate.configPath);
@@ -239,10 +239,10 @@ export function inspectExistingElizaInstall(opts?: {
 
   const fallback = candidates[0] ?? {
     source: "default-state-dir" as const,
-    stateDir: joinPortable(opts?.homedir ?? os.homedir(), ".eliza"),
+    stateDir: joinPortable(opts?.homedir ?? os.homedir(), ".tokagent"),
     configPath: joinPortable(
-      joinPortable(opts?.homedir ?? os.homedir(), ".eliza"),
-      ELIZA_CONFIG_FILENAME,
+      joinPortable(opts?.homedir ?? os.homedir(), ".tokagent"),
+      TOKAGENT_CONFIG_FILENAME,
     ),
   };
 
@@ -263,7 +263,7 @@ export function inspectExistingElizaInstall(opts?: {
 
 /**
  * Resolve the platform-appropriate config directory for the desktop app.
- *   Windows: %APPDATA%\{configDirName}  (e.g. C:\Users\X\AppData\Roaming\elizaOS)
+ *   Windows: %APPDATA%\{configDirName}  (e.g. C:\Users\X\AppData\Roaming\tokagentOS)
  *   macOS/Linux: ~/.config/{configDirName}
  *
  * Exported for testability — accepts explicit overrides so tests don't need
@@ -309,8 +309,8 @@ export function configureDesktopLocalApiAuth(
   env: NodeJS.ProcessEnv = process.env,
 ): string {
   const token = ensureDesktopApiToken(env);
-  env.ELIZA_PAIRING_DISABLED = "1";
-  env.ELIZA_PAIRING_DISABLED = "1";
+  env.TOKAGENT_PAIRING_DISABLED = "1";
+  env.TOKAGENT_PAIRING_DISABLED = "1";
   return token;
 }
 
@@ -534,7 +534,7 @@ export function createBugReportBundle(options: {
  * Resolve the runtime dist directory.
  *
  * Priority:
- *   1. ELIZA_DIST_PATH / ELIZA_DIST_PATH env var (explicit override)
+ *   1. TOKAGENT_DIST_PATH / TOKAGENT_DIST_PATH env var (explicit override)
  *   2. Walk up from import.meta.dir to find the runtime dist dir as a sibling
  */
 export function getRuntimeDistFallbackCandidates(
@@ -554,11 +554,11 @@ export function getRuntimeDistFallbackCandidates(
     resolveRelativePortable(moduleDir, `../${distDir}`),
     resolveRelativePortable(moduleDir, `../app/${distDir}`),
     resolveRelativePortable(moduleDir, `../../../${distDir}`),
-    // Legacy eliza-dist fallback for existing packaged builds
-    resolveRelativePortable(execDir, "../Resources/app/eliza-dist"),
-    resolveRelativePortable(execDir, "resources/app/eliza-dist"),
-    resolveRelativePortable(moduleDir, "../eliza-dist"),
-    resolveRelativePortable(moduleDir, "../../../eliza-dist"),
+    // Legacy tokagent-dist fallback for existing packaged builds
+    resolveRelativePortable(execDir, "../Resources/app/tokagent-dist"),
+    resolveRelativePortable(execDir, "resources/app/tokagent-dist"),
+    resolveRelativePortable(moduleDir, "../tokagent-dist"),
+    resolveRelativePortable(moduleDir, "../../../tokagent-dist"),
   ].filter((candidate, index, all) => all.indexOf(candidate) === index);
 }
 
@@ -573,7 +573,7 @@ export function isPackagedDesktopRuntime(
     normalizedExecPath.includes("/self-extraction/") ||
     normalizedExecPath.endsWith("/launcher") ||
     normalizedExecPath.endsWith("/launcher.exe");
-  if ((process.env.ELIZA_DIST_PATH ?? process.env.ELIZA_DIST_PATH)?.trim() && !looksLikePackagedExec) {
+  if ((process.env.TOKAGENT_DIST_PATH ?? process.env.TOKAGENT_DIST_PATH)?.trim() && !looksLikePackagedExec) {
     return false;
   }
   if (!normalizedModuleDir.includes("/src/")) {
@@ -698,14 +698,14 @@ export function resolveRuntimeDistPath(opts?: {
   }
 
   // 1. Env override
-  const envPath = env.ELIZA_DIST_PATH ?? env.ELIZA_DIST_PATH;
+  const envPath = env.TOKAGENT_DIST_PATH ?? env.TOKAGENT_DIST_PATH;
   if (envPath) {
     const resolved = resolvePortablePath(envPath);
     if (fs.existsSync(resolved)) {
       return resolved;
     }
     diagnosticLog(
-      `[Agent] ELIZA_DIST_PATH set but does not exist: ${resolved}`,
+      `[Agent] TOKAGENT_DIST_PATH set but does not exist: ${resolved}`,
     );
   }
 
@@ -718,8 +718,8 @@ export function resolveRuntimeDistPath(opts?: {
     if (fs.existsSync(runtimeDist)) {
       return runtimeDist;
     }
-    // Legacy eliza-dist sibling (existing packaged builds)
-    const legacyDist = joinPortable(dir, "eliza-dist");
+    // Legacy tokagent-dist sibling (existing packaged builds)
+    const legacyDist = joinPortable(dir, "tokagent-dist");
     if (fs.existsSync(legacyDist)) {
       return legacyDist;
     }
@@ -942,11 +942,11 @@ function shouldAutoRecoverPgliteFailure(line: string): boolean {
 /**
  * Opt-in: kill processes listening on `port` (lsof + SIGKILL). Default off so a
  * second desktop instance can coexist on the same machine when ports differ.
- * Set ELIZA_AGENT_RECLAIM_STALE_PORT=1 (legacy: ELIZA_AGENT_RECLAIM_STALE_PORT)
+ * Set TOKAGENT_AGENT_RECLAIM_STALE_PORT=1 (legacy: TOKAGENT_AGENT_RECLAIM_STALE_PORT)
  * to restore the old “take over default port” behavior.
  */
 async function maybeReclaimPortWithSigkill(port: number): Promise<void> {
-  const raw = (process.env.ELIZA_AGENT_RECLAIM_STALE_PORT ?? process.env.ELIZA_AGENT_RECLAIM_STALE_PORT)?.trim().toLowerCase();
+  const raw = (process.env.TOKAGENT_AGENT_RECLAIM_STALE_PORT ?? process.env.TOKAGENT_AGENT_RECLAIM_STALE_PORT)?.trim().toLowerCase();
   if (raw !== "1" && raw !== "true" && raw !== "yes") {
     return;
   }
@@ -961,7 +961,7 @@ async function maybeReclaimPortWithSigkill(port: number): Promise<void> {
       const numPid = parseInt(pid, 10);
       if (!Number.isNaN(numPid) && numPid !== process.pid) {
         diagnosticLog(
-          `[Agent] Reclaim: killing process ${numPid} on port ${port} (ELIZA_AGENT_RECLAIM_STALE_PORT)`,
+          `[Agent] Reclaim: killing process ${numPid} on port ${port} (TOKAGENT_AGENT_RECLAIM_STALE_PORT)`,
         );
         try {
           process.kill(numPid, "SIGKILL");
@@ -983,20 +983,20 @@ function resolvePgliteDataDir(): string {
     os.homedir(),
     `.${getBrandConfig().namespace}`,
     "workspace",
-    ".eliza",
-    ".elizadb",
+    ".tokagent",
+    ".tokagentdb",
   );
 }
 
 /**
  * Removes only the PGLite database folder (agent memory / conversations).
- * GGUF embedding weights live under `MODELS_DIR` / `~/.eliza/models` by default — never deleted here.
+ * GGUF embedding weights live under `MODELS_DIR` / `~/.tokagent/models` by default — never deleted here.
  */
 function deletePgliteDataDir(): void {
   const dir = resolvePgliteDataDir();
-  if (path.basename(dir) !== ".elizadb") {
+  if (path.basename(dir) !== ".tokagentdb") {
     diagnosticLog(
-      `[Agent] deletePgliteDataDir: refused — basename must be .elizadb, got: ${dir}`,
+      `[Agent] deletePgliteDataDir: refused — basename must be .tokagentdb, got: ${dir}`,
     );
     return;
   }
@@ -1082,7 +1082,7 @@ export class AgentManager {
       const reason =
         runtimeMode.mode === "external"
           ? `Embedded desktop runtime is disabled because ${runtimeMode.externalApi.source} points at ${runtimeMode.externalApi.base}.`
-          : "Embedded desktop runtime is disabled by ELIZA_DESKTOP_SKIP_EMBEDDED_AGENT=1.";
+          : "Embedded desktop runtime is disabled by TOKAGENT_DESKTOP_SKIP_EMBEDDED_AGENT=1.";
       diagnosticLog(`[Agent] ${reason}`);
       this.setStartupPhase("startup_disabled", reason);
       throw new Error(reason);
@@ -1132,7 +1132,7 @@ export class AgentManager {
     }
     if (apiPort !== preferredPort) {
       diagnosticLog(
-        `[Agent] Port ${preferredPort} busy — using ${apiPort} for embedded API (set ELIZA_AGENT_RECLAIM_STALE_PORT=1 to try reclaiming the preferred port first)`,
+        `[Agent] Port ${preferredPort} busy — using ${apiPort} for embedded API (set TOKAGENT_AGENT_RECLAIM_STALE_PORT=1 to try reclaiming the preferred port first)`,
       );
     }
     recordStartupPhase("port_selected", {
@@ -1224,22 +1224,22 @@ export class AgentManager {
 
       const childEnv: Record<string, string> = {
         ...(process.env as Record<string, string>),
-        ELIZA_API_PORT: String(apiPort),
-        ELIZA_PORT: String(apiPort),
+        TOKAGENT_API_PORT: String(apiPort),
+        TOKAGENT_PORT: String(apiPort),
       };
-      childEnv.ELIZA_NAMESPACE =
-        childEnv.ELIZA_NAMESPACE?.trim() ||
-        childEnv.ELIZA_NAMESPACE?.trim() ||
+      childEnv.TOKAGENT_NAMESPACE =
+        childEnv.TOKAGENT_NAMESPACE?.trim() ||
+        childEnv.TOKAGENT_NAMESPACE?.trim() ||
         getBrandConfig().namespace;
-      childEnv.ELIZA_NAMESPACE =
-        childEnv.ELIZA_NAMESPACE?.trim() || childEnv.ELIZA_NAMESPACE;
-      delete childEnv.ELIZA_PORT;
+      childEnv.TOKAGENT_NAMESPACE =
+        childEnv.TOKAGENT_NAMESPACE?.trim() || childEnv.TOKAGENT_NAMESPACE;
+      delete childEnv.TOKAGENT_PORT;
       delete childEnv.NODE_PATH;
 
       // node-llama-cpp crashes Bun on Windows during packaged startup.
       // Disable local embeddings until upstream fix lands.
       if (process.platform === "win32") {
-        childEnv.ELIZA_DISABLE_LOCAL_EMBEDDINGS = "1";
+        childEnv.TOKAGENT_DISABLE_LOCAL_EMBEDDINGS = "1";
       }
 
       // Propagate PGlite data dir from parent env so CI/smoke test overrides
@@ -1310,7 +1310,7 @@ export class AgentManager {
           (line: string) => {
             diagnosticLog(`[Agent][stdout] ${line}`);
             const lower = line.toLowerCase();
-            // Parse dynamic port from "[eliza-api] Listening on http://host:PORT"
+            // Parse dynamic port from "[tokagent-api] Listening on http://host:PORT"
             const portMatch = line.match(
               /Listening on https?:\/\/[^:]+:(\d+)/i,
             );
@@ -1522,12 +1522,12 @@ export class AgentManager {
 
   /**
    * Used after `POST /api/agent/reset`: stop the child, delete local PGLite
-   * (conversations / agent memory under `~/.${getBrandConfig().namespace}/workspace/.eliza/.elizadb`),
+   * (conversations / agent memory under `~/.${getBrandConfig().namespace}/workspace/.tokagent/.tokagentdb`),
    * then start fresh. Does not remove downloaded **GGUF** models (`MODELS_DIR`,
-   * default ~/.eliza/models), env-backed wallet keys, or eliza.json (the API
+   * default ~/.tokagent/models), env-backed wallet keys, or tokagent.json (the API
    * reset already rewrote config on disk).
    *
-   * When `ELIZA_DESKTOP_API_BASE` points at an external dev API (e.g. :31337),
+   * When `TOKAGENT_DESKTOP_API_BASE` points at an external dev API (e.g. :31337),
    * the embedded child is never used — this is a no-op so the renderer can
    * bounce the real API via `POST /api/agent/restart` instead.
    */
@@ -1560,8 +1560,8 @@ export class AgentManager {
     return { ...this.status };
   }
 
-  inspectExistingInstall(): ExistingElizaInstallInfo {
-    return inspectExistingElizaInstall();
+  inspectExistingInstall(): ExistingTokagentInstallInfo {
+    return inspectExistingTokagentInstall();
   }
 
   getPort(): number | null {

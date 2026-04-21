@@ -1,7 +1,7 @@
 /**
  * Hooks Type Definitions
  *
- * Core types for Eliza's event-driven hooks system.
+ * Core types for Tokagent's event-driven hooks system.
  *
  * @module hooks/types
  */
@@ -32,8 +32,8 @@ export type HookHandler = (event: HookEvent) => Promise<void> | void;
 
 // ---------- Hook Metadata ----------
 
-/** Eliza-specific hook metadata from HOOK.md frontmatter. */
-export interface ElizaHookMetadata {
+/** Tokagent-specific hook metadata from HOOK.md frontmatter. */
+export interface TokagentHookMetadata {
   /** Bypass eligibility checks. */
   always?: boolean;
   /** Config key override (defaults to hook name). */
@@ -79,16 +79,16 @@ export interface ParsedHookFrontmatter {
   description: string;
   homepage?: string;
   metadata?: {
-    eliza?: ElizaHookMetadata;
+    tokagent?: TokagentHookMetadata;
   };
 }
 
 /** Hook source type. */
 export type HookSource =
-  | "eliza-bundled"
-  | "eliza-managed"
-  | "eliza-workspace"
-  | "eliza-plugin";
+  | "tokagent-bundled"
+  | "tokagent-managed"
+  | "tokagent-workspace"
+  | "tokagent-plugin";
 
 /** A discovered hook. */
 export interface Hook {
@@ -105,7 +105,7 @@ export interface Hook {
 export interface HookEntry {
   hook: Hook;
   frontmatter: ParsedHookFrontmatter;
-  metadata?: ElizaHookMetadata;
+  metadata?: TokagentHookMetadata;
 }
 
 /** Hook status for listing/display. */

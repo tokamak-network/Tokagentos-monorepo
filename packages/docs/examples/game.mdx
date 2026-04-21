@@ -1,6 +1,6 @@
 ---
 title: "Game Examples"
-description: "Build AI-powered games with elizaOS in TypeScript, Python, and Rust"
+description: "Build AI-powered games with tokagentOS in TypeScript, Python, and Rust"
 ---
 
 Create AI-powered games where agents make strategic decisions. The adventure game example demonstrates game state management, AI decision-making, and interactive gameplay.
@@ -11,7 +11,7 @@ The adventure game is a text-based dungeon crawler where an AI agent explores ro
 
 - **AI Decision Making**: The agent analyzes the situation and chooses actions
 - **State Management**: Track inventory, health, and room positions
-- **Game Loop Integration**: Real-time interaction with the elizaOS runtime
+- **Game Loop Integration**: Real-time interaction with the tokagentOS runtime
 
 | Language   | File                                    | Features                 |
 | ---------- | --------------------------------------- | ------------------------ |
@@ -106,7 +106,7 @@ cargo run --release
 │        └───────────────────────────────┘                    │
 │                                                              │
 ├─────────────────────────────────────────────────────────────┤
-│                   elizaOS Runtime                            │
+│                   tokagentOS Runtime                            │
 │   runtime.useModel(ModelType.TEXT_SMALL, { prompt })        │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -118,7 +118,7 @@ cargo run --release
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import { AgentRuntime, ModelType } from "@elizaos/core";
+import { AgentRuntime, ModelType } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
@@ -226,8 +226,8 @@ await runtime.stop();
 ```python
 import asyncio
 from dataclasses import dataclass, field
-from elizaos import AgentRuntime, Character
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import AgentRuntime, Character
+from tokagentos_plugin_openai import get_openai_plugin
 
 @dataclass
 class GameState:
@@ -281,7 +281,7 @@ Respond with ONLY the action command, nothing else.""",
         prompt = build_prompt(state, room)
 
         # Get AI decision via full message pipeline
-        from elizaos import ChannelType, Content, Memory, string_to_uuid
+        from tokagentos import ChannelType, Content, Memory, string_to_uuid
 
         msg = Memory(
             entity_id=string_to_uuid("adventurer-user"),
@@ -330,8 +330,8 @@ if __name__ == "__main__":
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos::{AgentRuntime, RuntimeOptions, parse_character};
-use elizaos_plugin_openai::create_openai_plugin;
+use tokagentos::{AgentRuntime, RuntimeOptions, parse_character};
+use tokagentos_plugin_openai::create_openai_plugin;
 use std::collections::{HashMap, HashSet};
 
 #[derive(Clone)]
@@ -391,15 +391,15 @@ let \_ = dotenvy::dotenv();
         let prompt = build_prompt(&state, room);
 
         // Get AI decision via full message pipeline
-        let content = elizaos::types::Content {
+        let content = tokagentos::types::Content {
             text: Some(prompt.clone()),
             source: Some("game".to_string()),
-            channel_type: Some(elizaos::types::ChannelType::Dm),
+            channel_type: Some(tokagentos::types::ChannelType::Dm),
             ..Default::default()
         };
 
         let mut message =
-            elizaos::types::Memory::new(elizaos::types::UUID::new_v4(), elizaos::types::UUID::new_v4(), content);
+            tokagentos::types::Memory::new(tokagentos::types::UUID::new_v4(), tokagentos::types::UUID::new_v4(), content);
 
         let result = runtime
             .message_service()

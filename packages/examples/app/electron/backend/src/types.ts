@@ -1,5 +1,5 @@
 export type ProviderMode =
-  | "elizaClassic"
+  | "tokagentClassic"
   | "openai"
   | "anthropic"
   | "xai"
@@ -48,7 +48,7 @@ export type AppConfig = {
 };
 
 export const DEFAULT_CONFIG: AppConfig = {
-  mode: "elizaClassic",
+  mode: "tokagentClassic",
   provider: {
     openaiApiKey: "",
     openaiBaseUrl: "https://api.openai.com/v1",
@@ -93,7 +93,7 @@ export type ChatMessage = {
 
 export function hasValidCredentials(config: AppConfig): boolean {
   switch (config.mode) {
-    case "elizaClassic":
+    case "tokagentClassic":
       return true;
     case "openai":
       return config.provider.openaiApiKey.trim().length > 0;
@@ -115,7 +115,7 @@ export function hasValidCredentials(config: AppConfig): boolean {
 }
 
 export function getEffectiveMode(config: AppConfig): ProviderMode {
-  if (config.mode === "elizaClassic") return "elizaClassic";
-  return hasValidCredentials(config) ? config.mode : "elizaClassic";
+  if (config.mode === "tokagentClassic") return "tokagentClassic";
+  return hasValidCredentials(config) ? config.mode : "tokagentClassic";
 }
 

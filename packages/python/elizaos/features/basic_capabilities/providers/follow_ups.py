@@ -3,11 +3,11 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from elizaos.generated.spec_helpers import require_provider_spec
-from elizaos.types import Provider, ProviderResult
+from tokagentos.generated.spec_helpers import require_provider_spec
+from tokagentos.types import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 # Get text content from centralized specs
 _spec = require_provider_spec("FOLLOW_UPS")
@@ -18,7 +18,7 @@ async def get_follow_ups_context(
     message: Memory,
     state: State | None = None,
 ) -> ProviderResult:
-    from elizaos.features.advanced_capabilities.services.follow_up import FollowUpService
+    from tokagentos.features.advanced_capabilities.services.follow_up import FollowUpService
 
     follow_up_service = runtime.get_service("follow_up")
     if not follow_up_service or not isinstance(follow_up_service, FollowUpService):

@@ -1,9 +1,9 @@
 ---
 title: "REST API Examples"
-description: "Build HTTP endpoints for elizaOS agents using 8 different web frameworks"
+description: "Build HTTP endpoints for tokagentOS agents using 8 different web frameworks"
 ---
 
-Create REST APIs for your elizaOS agents using your favorite web framework. These examples work **without API keys** using the classic ELIZA pattern-matching algorithm.
+Create REST APIs for your tokagentOS agents using your favorite web framework. These examples work **without API keys** using the classic TOKAGENT pattern-matching algorithm.
 
 ## Overview
 
@@ -19,7 +19,7 @@ Create REST APIs for your elizaOS agents using your favorite web framework. Thes
 | Rocket    | Rust       | `examples/rest-api/rocket/`  | 3000 |
 
 <Note>
-  **No API keys required!** These examples use `plugin-eliza-classic` for
+  **No API keys required!** These examples use `plugin-tokagent-classic` for
   pattern-matching responses and `plugin-localdb` for local storage.
 </Note>
 
@@ -61,7 +61,7 @@ curl http://localhost:3000/
 
 ```json
 {
-  "name": "Eliza",
+  "name": "Tokagent",
   "bio": "A Rogerian psychotherapist simulation",
   "status": "ready"
 }
@@ -80,7 +80,7 @@ curl http://localhost:3000/health
 ```json
 {
   "status": "healthy",
-  "runtime": "elizaos",
+  "runtime": "tokagentos",
   "uptime": 12345
 }
 ```
@@ -100,7 +100,7 @@ curl -X POST http://localhost:3000/chat \
 ```json
 {
   "response": "How do you do. Please state your problem.",
-  "character": "Eliza",
+  "character": "Tokagent",
   "userId": "550e8400-e29b-41d4-a716-446655440000"
 }
 ```
@@ -113,8 +113,8 @@ curl -X POST http://localhost:3000/chat \
   <Tab title="Express (TypeScript)">
 ```typescript
 import express from 'express';
-import { AgentRuntime, ModelType } from '@elizaos/core';
-import { elizaClassicPlugin } from '@elizaos/plugin-eliza-classic';
+import { AgentRuntime, ModelType } from '@tokagentos/core';
+import { tokagentClassicPlugin } from '@elizaos/plugin-tokagent-classic';
 import { plugin as localdbPlugin } from '@elizaos/plugin-localdb';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -123,14 +123,14 @@ app.use(express.json());
 
 // Character definition
 const character = {
-name: 'Eliza',
+name: 'Tokagent',
 bio: 'A Rogerian psychotherapist simulation created at MIT in 1966.',
 };
 
 // Initialize runtime
 const runtime = new AgentRuntime({
 character,
-plugins: [localdbPlugin, elizaClassicPlugin],
+plugins: [localdbPlugin, tokagentClassicPlugin],
 });
 
 await runtime.initialize();
@@ -147,7 +147,7 @@ status: 'ready',
 app.get('/health', (req, res) => {
 res.json({
 status: 'healthy',
-runtime: 'elizaos-typescript',
+runtime: 'tokagentos-typescript',
 uptime: process.uptime(),
 });
 });
@@ -177,7 +177,7 @@ res.status(500).json({ error: 'Failed to process message' });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-console.log(`Eliza API running on http://localhost:${PORT}`);
+console.log(`Tokagent API running on http://localhost:${PORT}`);
 });
 
 ````
@@ -186,8 +186,8 @@ console.log(`Eliza API running on http://localhost:${PORT}`);
 ```python
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from elizaos import AgentRuntime, Character
-from elizaos.plugin_eliza_classic import eliza_classic_plugin
+from tokagentos import AgentRuntime, Character
+from tokagentos.plugin_tokagent_classic import tokagent_classic_plugin
 import uuid
 import time
 
@@ -195,14 +195,14 @@ app = FastAPI()
 
 # Character definition
 character = Character(
-    name="Eliza",
+    name="Tokagent",
     bio="A Rogerian psychotherapist simulation created at MIT in 1966.",
 )
 
 # Initialize runtime
 runtime = AgentRuntime(
     character=character,
-    plugins=[eliza_classic_plugin],
+    plugins=[tokagent_classic_plugin],
 )
 
 start_time = time.time()
@@ -232,7 +232,7 @@ async def root():
 async def health():
     return {
         "status": "healthy",
-        "runtime": "elizaos-python",
+        "runtime": "tokagentos-python",
         "uptime": time.time() - start_time,
     }
 
@@ -244,7 +244,7 @@ async def chat(request: ChatRequest):
     user_id = request.userId or str(uuid.uuid4())
 
     try:
-        from elizaos import ChannelType, Content, Memory, string_to_uuid
+        from tokagentos import ChannelType, Content, Memory, string_to_uuid
 
         message = Memory(
             entity_id=string_to_uuid(user_id),
@@ -279,8 +279,8 @@ if __name__ == "__main__":
   <Tab title="Actix Web (Rust)">
 ```rust
 use actix_web::{web, App, HttpServer, HttpResponse, Result};
-use elizaos::{AgentRuntime, RuntimeOptions, parse_character};
-use elizaos_plugin_eliza_classic::create_eliza_classic_plugin;
+use tokagentos::{AgentRuntime, RuntimeOptions, parse_character};
+use tokagentos_plugin_tokagent_classic::create_tokagent_classic_plugin;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::Instant;
@@ -331,7 +331,7 @@ status: "ready".to_string(),
 async fn health(data: web::Data<AppState>) -> Result<HttpResponse> {
 Ok(HttpResponse::Ok().json(HealthResponse {
 status: "healthy".to_string(),
-runtime: "elizaos-rust".to_string(),
+runtime: "tokagentos-rust".to_string(),
 uptime: data.start_time.elapsed().as_secs_f64(),
 }))
 }
@@ -343,15 +343,15 @@ req: web::Json<ChatRequest>,
 let user_id = req.user_id.clone()
 .unwrap_or_else(|| Uuid::new_v4().to_string());
 
-    let content = elizaos::types::Content {
+    let content = tokagentos::types::Content {
         text: Some(req.message.clone()),
         source: Some("rest-api".to_string()),
-        channel_type: Some(elizaos::types::ChannelType::Dm),
+        channel_type: Some(tokagentos::types::ChannelType::Dm),
         ..Default::default()
     };
 
     let mut msg =
-        elizaos::types::Memory::new(elizaos::types::UUID::new_v4(), elizaos::types::UUID::new_v4(), content);
+        tokagentos::types::Memory::new(tokagentos::types::UUID::new_v4(), tokagentos::types::UUID::new_v4(), content);
 
     let result = data.runtime
         .message_service()
@@ -375,13 +375,13 @@ let user_id = req.user_id.clone()
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
 let character = parse_character(r#"{
-"name": "Eliza",
+"name": "Tokagent",
 "bio": "A Rogerian psychotherapist simulation created at MIT in 1966."
 }"#).unwrap();
 
     let runtime = AgentRuntime::new(RuntimeOptions {
         character: Some(character.clone()),
-        plugins: vec![create_eliza_classic_plugin()],
+        plugins: vec![create_tokagent_classic_plugin()],
         ..Default::default()
     }).await.unwrap();
 
@@ -394,7 +394,7 @@ let character = parse_character(r#"{
         start_time: Instant::now(),
     });
 
-    println!("Eliza API running on http://localhost:3000");
+    println!("Tokagent API running on http://localhost:3000");
 
     HttpServer::new(move || {
         App::new()
@@ -470,14 +470,14 @@ import { plugin as sqlPlugin } from '@elizaos/plugin-sql';
 
 const runtime = new AgentRuntime({
 character,
-plugins: [sqlPlugin, openaiPlugin], // Replace elizaClassicPlugin
+plugins: [sqlPlugin, openaiPlugin], // Replace tokagentClassicPlugin
 });
 
 ````
   </Tab>
   <Tab title="Python">
 ```python
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos_plugin_openai import get_openai_plugin
 
 runtime = AgentRuntime(
     character=character,
@@ -488,7 +488,7 @@ runtime = AgentRuntime(
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos_plugin_openai::create_openai_plugin;
+use tokagentos_plugin_openai::create_openai_plugin;
 
 let runtime = AgentRuntime::new(RuntimeOptions {
 character: Some(character),

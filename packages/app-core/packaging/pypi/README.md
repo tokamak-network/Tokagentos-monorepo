@@ -1,59 +1,59 @@
-# elizaos-app
+# tokagentos-app
 
-**Dynamic Python loader for [elizaOS App](https://github.com/elizaos/elizaos-app)** — a personal AI assistant built on [elizaOS](https://github.com/elizaos).
+**Dynamic Python loader for [tokagentOS App](https://github.com/tokagentos/tokagentos-app)** — a personal AI assistant built on [tokagentOS](https://github.com/tokagentos).
 
-This package provides an `elizaos-app` command that automatically manages the Node.js-based elizaOS App runtime. Install via pip, run like any CLI tool.
+This package provides an `tokagentos-app` command that automatically manages the Node.js-based tokagentOS App runtime. Install via pip, run like any CLI tool.
 
 ## Install
 
 ```bash
-pip install elizaos-app
+pip install tokagentos-app
 ```
 
 Or with [pipx](https://pipx.pypa.io/) for isolated CLI install:
 
 ```bash
-pipx install elizaos-app
+pipx install tokagentos-app
 ```
 
 ## Quick Start
 
 ```bash
 # Start your personal AI agent (installs runtime automatically on first run)
-elizaos-app start
+tokagentos-app start
 
 # Or just run it — interactive onboarding guides you through setup
-elizaos-app
+tokagentos-app
 
 # Show all commands
-elizaos-app --help
+tokagentos-app --help
 ```
 
 ## How It Works
 
-`elizaos-app` is a **dynamic loader** — a thin Python wrapper that:
+`tokagentos-app` is a **dynamic loader** — a thin Python wrapper that:
 
 1. Checks for Node.js >= 22.12.0 on your system
-2. Ensures the `elizaos-app` npm package is installed globally
+2. Ensures the `tokagentos-app` npm package is installed globally
 3. Forwards all CLI commands to the Node.js runtime
 4. Installs the runtime automatically if not present
 
-This means you get the full elizaOS App experience through pip/pipx, without needing to interact with npm directly.
+This means you get the full tokagentOS App experience through pip/pipx, without needing to interact with npm directly.
 
 ## Python API
 
 ```python
-from elizaos_app import run, ensure_runtime, get_version
+from tokagentos_app import run, ensure_runtime, get_version
 
 # Ensure the runtime is installed and ready
 ensure_runtime()
 
-# Run an elizaos-app command programmatically
+# Run an tokagentos-app command programmatically
 exit_code = run(["start"])
 
 # Check the installed version
 version = get_version()
-print(f"elizaOS App {version}")
+print(f"tokagentOS App {version}")
 ```
 
 ## Requirements
@@ -61,9 +61,9 @@ print(f"elizaOS App {version}")
 - **Python** >= 3.9
 - **Node.js** >= 22.12.0 (the loader will tell you how to install it if missing)
 
-## What is elizaOS App?
+## What is tokagentOS App?
 
-elizaOS App is a personal AI assistant you run on your own devices. It provides:
+tokagentOS App is a personal AI assistant you run on your own devices. It provides:
 
 - Zero-config onboarding with interactive setup
 - Support for multiple AI providers (Anthropic, OpenAI, Google, Ollama, etc.)
@@ -74,9 +74,9 @@ elizaOS App is a personal AI assistant you run on your own devices. It provides:
 
 ## Links
 
-- [Documentation](https://docs.app.elizaos.ai)
-- [GitHub](https://github.com/elizaos/elizaos-app)
-- [elizaOS](https://github.com/elizaos)
+- [Documentation](https://docs.app.tokagentos.ai)
+- [GitHub](https://github.com/tokagentos/tokagentos-app)
+- [tokagentOS](https://github.com/tokagentos)
 
 ## License
 

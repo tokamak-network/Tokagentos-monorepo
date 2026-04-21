@@ -1,5 +1,5 @@
 """
-Canonical ElizaOS integration for Atropos Reasoning Gym.
+Canonical TokagentOS integration for Atropos Reasoning Gym.
 
 Provides:
 - ATROPOS_REASONING provider with current problem + feedback
@@ -12,15 +12,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from elizaos.types import ActionParameterSchema, Character, Plugin, ProviderResult
+from tokagentos.types import ActionParameterSchema, Character, Plugin, ProviderResult
 
-from elizaos_atropos_reasoning.types import StepResult
+from tokagentos_atropos_reasoning.types import StepResult
 
 if TYPE_CHECKING:
-    from elizaos.types import Action, Provider
+    from tokagentos.types import Action, Provider
 
 
-from elizaos_atropos_shared.canonical_eliza import (
+from tokagentos_atropos_shared.canonical_tokagent import (
     ContextStore,
     CaptureActionResponse,
     create_action_only_template,
@@ -108,7 +108,7 @@ def create_reasoning_character(name: str = "ReasoningAgent") -> Character:
     template = create_action_only_template(
         task="Solve the problem for {{agentName}}.",
         instructions=(
-            "Solve the problem. Output ONLY one ElizaOS action: ATROPOS_REASONING_ACTION.\n"
+            "Solve the problem. Output ONLY one TokagentOS action: ATROPOS_REASONING_ACTION.\n"
             "Put the final answer in params.answer (no extra text)."
         ),
         action_name="ATROPOS_REASONING_ACTION",
@@ -127,7 +127,7 @@ def create_reasoning_character(name: str = "ReasoningAgent") -> Character:
     )
 
 
-def get_reasoning_eliza_plugin() -> Plugin:
+def get_reasoning_tokagent_plugin() -> Plugin:
     return create_simple_plugin(
         name="atropos-reasoning",
         description="Atropos Reasoning canonical provider/action integration.",

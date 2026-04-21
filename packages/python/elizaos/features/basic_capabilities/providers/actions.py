@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING
 
 from google.protobuf.json_format import MessageToDict
 
-from elizaos.generated.spec_helpers import require_provider_spec
-from elizaos.prompt_compression import (
+from tokagentos.generated.spec_helpers import require_provider_spec
+from tokagentos.prompt_compression import (
     get_prompt_action_description,
     get_prompt_parameter_description,
 )
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         Action,
         ActionParameter,
         ActionParameterSchema,

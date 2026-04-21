@@ -5,9 +5,9 @@
  */
 
 import type http from "node:http";
-import type { DropService } from "@elizaos/app-elizamaker";
-import type { AgentRuntime, Media, UUID } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import type { DropService } from "@elizaos/app-tokagentmaker";
+import type { AgentRuntime, Media, UUID } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import type { AppManager } from "../services/app-manager.js";
 import type { SandboxManager } from "../services/sandbox-manager.js";
 import type { CloudRouteState } from "./cloud-routes.js";
@@ -168,7 +168,7 @@ export interface PluginEntry {
     | "database"
     | "app"
     | "feature";
-  /** Where the plugin comes from: "bundled" (ships with Eliza) or "store" (user-installed from registry). */
+  /** Where the plugin comes from: "bundled" (ships with Tokagent) or "store" (user-installed from registry). */
   source: "bundled" | "store";
   configKeys: string[];
   parameters: PluginParamDef[];
@@ -210,7 +210,7 @@ export interface PluginEntry {
 
 export interface ServerState {
   runtime: AgentRuntime | null;
-  config: ElizaConfig;
+  config: TokagentConfig;
   agentState:
     | "not_started"
     | "starting"
@@ -239,10 +239,10 @@ export interface ServerState {
   conversationRestorePromise: Promise<void> | null;
   /** Tombstones for conversation IDs explicitly deleted by the user. */
   deletedConversationIds: Set<string>;
-  /** Cloud manager for Eliza Cloud integration (null when cloud is disabled). */
+  /** Cloud manager for Tokagent Cloud integration (null when cloud is disabled). */
   cloudManager: CloudRouteState["cloudManager"];
   sandboxManager: SandboxManager | null;
-  /** App manager for launching and managing elizaOS apps. */
+  /** App manager for launching and managing tokagentOS apps. */
   appManager: AppManager;
   /** Fine-tuning/training orchestration service. */
   trainingService: TrainingServiceWithRuntime | null;
@@ -267,7 +267,7 @@ export interface ServerState {
   /** System permission states (cached from the desktop bridge). */
   permissionStates?: Record<
     string,
-    import("@elizaos/shared/contracts/permissions").PermissionState
+    import("@tokagentos/shared/contracts/permissions").PermissionState
   >;
   /** Whether shell access is enabled (can be toggled in UI). */
   shellEnabled?: boolean;

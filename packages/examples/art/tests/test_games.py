@@ -17,7 +17,7 @@ class TestGame2048:
     @pytest.mark.asyncio
     async def test_state_creation(self):
         """Test 2048 state creation."""
-        from elizaos_art.games.game_2048.types import Game2048State
+        from tokagentos_art.games.game_2048.types import Game2048State
 
         board = tuple([0] * 16)
         state = Game2048State(
@@ -35,7 +35,7 @@ class TestGame2048:
     @pytest.mark.asyncio
     async def test_state_to_prompt(self):
         """Test state conversion to prompt."""
-        from elizaos_art.games.game_2048.types import Game2048State
+        from tokagentos_art.games.game_2048.types import Game2048State
 
         board = tuple([2, 0, 0, 0] + [0] * 12)
         state = Game2048State(
@@ -52,7 +52,7 @@ class TestGame2048:
     @pytest.mark.asyncio
     async def test_action_parsing(self):
         """Test action parsing from strings."""
-        from elizaos_art.games.game_2048.types import Game2048Action
+        from tokagentos_art.games.game_2048.types import Game2048Action
 
         assert Game2048Action.from_string("UP") == Game2048Action.UP
         assert Game2048Action.from_string("down") == Game2048Action.DOWN
@@ -62,8 +62,8 @@ class TestGame2048:
     @pytest.mark.asyncio
     async def test_environment_step(self):
         """Test environment step function."""
-        from elizaos_art.games.game_2048 import Game2048Environment
-        from elizaos_art.games.game_2048.types import Game2048Action
+        from tokagentos_art.games.game_2048 import Game2048Environment
+        from tokagentos_art.games.game_2048.types import Game2048Action
 
         env = Game2048Environment()
         await env.initialize()
@@ -79,8 +79,8 @@ class TestGame2048:
     @pytest.mark.asyncio
     async def test_available_actions(self):
         """Test getting available actions."""
-        from elizaos_art.games.game_2048 import Game2048Environment
-        from elizaos_art.games.game_2048.types import Game2048Action
+        from tokagentos_art.games.game_2048 import Game2048Environment
+        from tokagentos_art.games.game_2048.types import Game2048Action
 
         env = Game2048Environment()
         await env.initialize()
@@ -99,7 +99,7 @@ class TestTicTacToe:
     @pytest.mark.asyncio
     async def test_state_creation(self):
         """Test Tic-Tac-Toe state creation."""
-        from elizaos_art.games.tic_tac_toe.types import TicTacToeState, Player
+        from tokagentos_art.games.tic_tac_toe.types import TicTacToeState, Player
 
         board = tuple([0] * 9)
         state = TicTacToeState(
@@ -116,19 +116,19 @@ class TestTicTacToe:
     @pytest.mark.asyncio
     async def test_win_detection(self):
         """Test win detection logic."""
-        from elizaos_art.games.tic_tac_toe import TicTacToeEnvironment
+        from tokagentos_art.games.tic_tac_toe import TicTacToeEnvironment
 
         env = TicTacToeEnvironment()
 
         # Check horizontal win for Player X (value = 1)
-        from elizaos_art.games.tic_tac_toe.types import Player
+        from tokagentos_art.games.tic_tac_toe.types import Player
         board = [1, 1, 1, 0, 0, 0, 0, 0, 0]
         assert env._is_winner(board, Player.X)
 
     @pytest.mark.asyncio
     async def test_full_game(self):
         """Test playing a full game."""
-        from elizaos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
+        from tokagentos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
 
         env = TicTacToeEnvironment()
         agent = TicTacToeHeuristicAgent()
@@ -156,8 +156,8 @@ class TestCodenames:
     @pytest.mark.asyncio
     async def test_board_generation(self):
         """Test board generation."""
-        from elizaos_art.games.codenames import CodenamesEnvironment
-        from elizaos_art.games.codenames.types import CodenamesConfig, Role, CardColor
+        from tokagentos_art.games.codenames import CodenamesEnvironment
+        from tokagentos_art.games.codenames.types import CodenamesConfig, Role, CardColor
 
         config = CodenamesConfig(ai_role=Role.GUESSER, ai_team=CardColor.RED)
         env = CodenamesEnvironment(config)
@@ -173,8 +173,8 @@ class TestCodenames:
     @pytest.mark.asyncio
     async def test_card_reveal(self):
         """Test card revealing logic."""
-        from elizaos_art.games.codenames import CodenamesEnvironment
-        from elizaos_art.games.codenames.types import CodenamesAction, CodenamesConfig, Role, CardColor
+        from tokagentos_art.games.codenames import CodenamesEnvironment
+        from tokagentos_art.games.codenames.types import CodenamesAction, CodenamesConfig, Role, CardColor
 
         config = CodenamesConfig(ai_role=Role.GUESSER, ai_team=CardColor.RED)
         env = CodenamesEnvironment(config)
@@ -202,7 +202,7 @@ class TestTemporalClue:
     @pytest.mark.asyncio
     async def test_puzzle_generation(self):
         """Test puzzle generation."""
-        from elizaos_art.games.temporal_clue import TemporalClueEnvironment
+        from tokagentos_art.games.temporal_clue import TemporalClueEnvironment
 
         env = TemporalClueEnvironment()
         await env.initialize()
@@ -217,8 +217,8 @@ class TestTemporalClue:
     @pytest.mark.asyncio
     async def test_event_placement(self):
         """Test placing events."""
-        from elizaos_art.games.temporal_clue import TemporalClueEnvironment
-        from elizaos_art.games.temporal_clue.types import TemporalClueAction
+        from tokagentos_art.games.temporal_clue import TemporalClueEnvironment
+        from tokagentos_art.games.temporal_clue.types import TemporalClueAction
 
         env = TemporalClueEnvironment()
         await env.initialize()
@@ -242,8 +242,8 @@ class TestTemporalClue:
     @pytest.mark.asyncio
     async def test_submit_answer(self):
         """Test submitting answer."""
-        from elizaos_art.games.temporal_clue import TemporalClueEnvironment, TemporalClueHeuristicAgent
-        from elizaos_art.games.temporal_clue.types import TemporalClueAction
+        from tokagentos_art.games.temporal_clue import TemporalClueEnvironment, TemporalClueHeuristicAgent
+        from tokagentos_art.games.temporal_clue.types import TemporalClueAction
 
         env = TemporalClueEnvironment()
         agent = TemporalClueHeuristicAgent()
@@ -269,7 +269,7 @@ class TestAgentPrompts:
     @pytest.mark.asyncio
     async def test_2048_system_prompt(self):
         """Test 2048 agent system prompt."""
-        from elizaos_art.games.game_2048 import Game2048Agent
+        from tokagentos_art.games.game_2048 import Game2048Agent
 
         agent = Game2048Agent()
         prompt = agent.get_system_prompt()
@@ -280,7 +280,7 @@ class TestAgentPrompts:
     @pytest.mark.asyncio
     async def test_tictactoe_system_prompt(self):
         """Test Tic-Tac-Toe agent system prompt."""
-        from elizaos_art.games.tic_tac_toe import TicTacToeAgent
+        from tokagentos_art.games.tic_tac_toe import TicTacToeAgent
 
         agent = TicTacToeAgent()
         prompt = agent.get_system_prompt()
@@ -291,7 +291,7 @@ class TestAgentPrompts:
     @pytest.mark.asyncio
     async def test_codenames_system_prompt(self):
         """Test Codenames agent system prompt."""
-        from elizaos_art.games.codenames import CodenamesAgent
+        from tokagentos_art.games.codenames import CodenamesAgent
 
         agent = CodenamesAgent()
         prompt = agent.get_system_prompt()

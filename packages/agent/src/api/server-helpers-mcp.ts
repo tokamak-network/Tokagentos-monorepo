@@ -211,7 +211,7 @@ function isBlockedObjectKey(key: string): boolean {
     key === "constructor" ||
     key === "prototype" ||
     // Block config include directives -- if an API caller embeds "$include"
-    // inside a config patch, the next loadElizaConfig() -> resolveConfigIncludes
+    // inside a config patch, the next loadTokagentConfig() -> resolveConfigIncludes
     // pass would read arbitrary local files and merge them into the config.
     key === "$include"
   );

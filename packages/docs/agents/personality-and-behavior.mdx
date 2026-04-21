@@ -1,6 +1,6 @@
 ---
 title: "Personality and Behavior"
-description: "Crafting unique agent personalities and behavioral patterns in elizaOS"
+description: "Crafting unique agent personalities and behavioral patterns in tokagentOS"
 ---
 
 ## Personality Design Principles
@@ -654,7 +654,7 @@ export const shakespeareScholar: Character = {
   // Optional: Small knowledge snippets directly in character
   knowledge: [
     "I am an expert in William Shakespeare's complete works",
-    "I specialize in Elizabethan theater and Renaissance literature",
+    "I specialize in Tokagentbethan theater and Renaissance literature",
     "My expertise covers all 39 plays, 154 sonnets, and narrative poems",
   ],
 };
@@ -678,7 +678,7 @@ your-project/
 │   │   ├── bloom-analysis.pdf      # Literary criticism
 │   │   └── bradley-tragic-hero.docx
 │   └── history/
-│       ├── elizabethan-context.md
+│       ├── tokagentbethan-context.md
 │       └── globe-theatre.json
 ├── .env
 ├── src/
@@ -696,7 +696,7 @@ LOAD_DOCS_ON_STARTUP=true           # Auto-load all docs on startup
 **4. Start Your Agent**
 
 ```bash
-elizaos start
+tokagentos start
 ```
 
 The agent will automatically process all documents in the `docs` folder, creating embeddings and making the knowledge searchable.
@@ -784,7 +784,7 @@ docs/
 │   ├── literary-criticism/
 │   └── scholarly-papers/
 └── context/                  # Background information
-    ├── elizabethan-era.md
+    ├── tokagentbethan-era.md
     └── theater-history.txt
 ```
 
@@ -800,7 +800,7 @@ export const character: Character = {
   // Only for small, essential facts
   knowledge: [
     "I am the foremost expert on William Shakespeare's works",
-    "I have studied Elizabethan theater for over 20 years",
+    "I have studied Tokagentbethan theater for over 20 years",
     "I can quote any sonnet or play passage from memory",
   ],
 };
@@ -837,7 +837,7 @@ Verify your knowledge is working:
 
 ```bash
 # Start your agent
-elizaos start
+tokagentos start
 
 # Check logs for confirmation
 # You should see: "[INFO] Loaded 15 documents from docs folder on startup"

@@ -17,8 +17,8 @@ import {
   type Memory,
   type State,
   type UUID,
-} from "@elizaos/core";
-import { asNonEmptyString, asRecord } from "@elizaos/shared/type-guards";
+} from "@tokagentos/core";
+import { asNonEmptyString, asRecord } from "@tokagentos/shared/type-guards";
 import {
   extractRoleIntentWithLlm,
   looksLikeRoleIntent,

@@ -44,7 +44,7 @@ type LogFn = (
 ) => void;
 
 /**
- * Logger interface - elizaOS standard logger API
+ * Logger interface - tokagentOS standard logger API
  */
 export interface Logger {
 	level: string;
@@ -257,7 +257,7 @@ function formatPrettyLog(
 const DEFAULT_LOG_LEVEL = "info";
 const effectiveLogLevel = getEnvironmentVar("LOG_LEVEL") || DEFAULT_LOG_LEVEL;
 
-// Custom log levels mapping (elizaOS to Adze)
+// Custom log levels mapping (tokagentOS to Adze)
 // These are for our internal shouldLog function, not Adze's levels
 export const customLevels: Record<string, number> = {
 	fatal: 60,
@@ -716,7 +716,7 @@ const globalInMemoryDestination = createInMemoryDestination();
 // ============================================================================
 
 // Configure Adze globally
-// Map elizaOS log levels to Adze log levels
+// Map tokagentOS log levels to Adze log levels
 const getAdzeActiveLevel = () => {
 	const level = effectiveLogLevel.toLowerCase();
 	if (level === "trace") return "verbose";
@@ -871,7 +871,7 @@ function sealAdze(base: Record<string, unknown>): ReturnType<typeof adze.seal> {
 	// Add server context metadata (always, for observability)
 	// Only add defaults if user hasn't provided them
 	if (!metaBase.name) {
-		metaBase.name = "elizaos";
+		metaBase.name = "tokagentos";
 	}
 
 	// Add pid for process identification
@@ -950,7 +950,7 @@ function extractBindingsConfig(bindings: LoggerBindings | boolean): {
 /**
  * Creates a logger instance using Adze
  * @param bindings - Logger configuration or boolean flag
- * @returns Logger instance with elizaOS API
+ * @returns Logger instance with tokagentOS API
  */
 function createLogger(bindings: LoggerBindings | boolean = false): Logger {
 	const { level, base, maxMemoryLogs } = extractBindingsConfig(bindings);
@@ -1126,7 +1126,7 @@ function createLogger(bindings: LoggerBindings | boolean = false): Logger {
 		globalInMemoryDestination.write(entry);
 		writeLogEntryToFile(entry);
 
-		// Map Eliza methods to correct Adze invocations
+		// Map Tokagent methods to correct Adze invocations
 		let adzeMethod = method;
 		let adzeArgs = args;
 
@@ -1182,7 +1182,7 @@ function createLogger(bindings: LoggerBindings | boolean = false): Logger {
 	};
 
 	/**
-	 * Adapt elizaOS logger API arguments to Adze format
+	 * Adapt tokagentOS logger API arguments to Adze format
 	 * Also applies redaction to sensitive data in objects
 	 *
 	 * In pretty mode: formats as compact single line [src] agent — message (extras)
@@ -1288,7 +1288,7 @@ function createLogger(bindings: LoggerBindings | boolean = false): Logger {
 const logger = createLogger();
 
 // Backward compatibility alias
-export const elizaLogger = logger;
+export const tokagentLogger = logger;
 
 // Export recent logs function
 export const recentLogs = (): string => globalInMemoryDestination.recentLogs();

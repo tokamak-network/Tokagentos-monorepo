@@ -9,11 +9,11 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
-  elizaClassicPlugin,
-  getElizaGreeting,
-} from "@elizaos/plugin-eliza-classic";
+  tokagentClassicPlugin,
+  getTokagentGreeting,
+} from "@elizaos/plugin-tokagent-classic";
 import localdbPlugin from "@elizaos/plugin-localdb";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
@@ -29,7 +29,7 @@ type RuntimeBundle = {
 };
 
 const CHAT_CHARACTER = createCharacter({
-  name: "Eliza",
+  name: "Tokagent",
   bio: "A helpful assistant for simple back-and-forth chat.",
 });
 
@@ -43,7 +43,7 @@ let initializing: Promise<RuntimeBundle> | null = null;
 function getDataDir(): string {
   const dir = process.env.LOCALDB_DATA_DIR?.trim()
     ? process.env.LOCALDB_DATA_DIR.trim()
-    : join(process.cwd(), ".eliza-localdb");
+    : join(process.cwd(), ".tokagent-localdb");
   mkdirSync(dir, { recursive: true });
   return dir;
 }
@@ -104,8 +104,8 @@ async function buildPlugins(mode: ProviderMode): Promise<Plugin[]> {
   const base: Plugin[] = [localdbPlugin];
 
   switch (mode) {
-    case "elizaClassic":
-      return [...base, elizaClassicPlugin];
+    case "tokagentClassic":
+      return [...base, tokagentClassicPlugin];
     case "openai":
       return [...base, (await import("@elizaos/plugin-openai")).default];
     case "anthropic":
@@ -121,7 +121,7 @@ async function buildPlugins(mode: ProviderMode): Promise<Plugin[]> {
     case "ollama":
       return [...base, (await import("@elizaos/plugin-ollama")).default];
     default:
-      return [...base, elizaClassicPlugin];
+      return [...base, tokagentClassicPlugin];
   }
 }
 
@@ -177,8 +177,8 @@ export async function getOrCreateRuntime(config: AppConfig): Promise<RuntimeBund
 
 export function getGreetingText(config: AppConfig): string {
   const effectiveMode = getEffectiveMode(config);
-  return effectiveMode === "elizaClassic"
-    ? getElizaGreeting()
+  return effectiveMode === "tokagentClassic"
+    ? getTokagentGreeting()
     : "Hello! What would you like to chat about?";
 }
 

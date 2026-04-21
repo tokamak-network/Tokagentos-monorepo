@@ -11,11 +11,11 @@ import {
   type State,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   findKeywordTermMatch,
   getValidationKeywordTerms,
-} from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/shared/validation-keywords";
 import { hasOwnerAccess } from "../security/access.js";
 import { parsePositiveInteger } from "../utils/number-parsing.js";
 import {

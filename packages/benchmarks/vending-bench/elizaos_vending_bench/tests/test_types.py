@@ -3,7 +3,7 @@
 from datetime import date
 from decimal import Decimal
 
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.types import (
     LEADERBOARD_SCORES,
     ActionType,
     CoherenceError,

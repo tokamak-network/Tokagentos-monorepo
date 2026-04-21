@@ -17,15 +17,15 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
-from elizaos_webshop.types import WebShopResult, WebShopTask
+from tokagentos_webshop.types import WebShopResult, WebShopTask
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.model import ModelType
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.model import ModelType
 
 
 try:
-    from elizaos_plugin_trajectory_logger import (
+    from tokagentos_plugin_trajectory_logger import (
         ActionAttempt,
         EnvironmentState,
         ExportOptions,

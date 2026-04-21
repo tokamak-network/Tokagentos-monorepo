@@ -8,7 +8,7 @@ export {
   type BackupInfo,
   type CloudAgent,
   type CloudAgentCreateParams,
-  ElizaCloudClient,
+  TokagentCloudClient,
   type ProvisionInfo,
 } from "./bridge-client.js";
 export {

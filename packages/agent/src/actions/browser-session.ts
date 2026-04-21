@@ -1,5 +1,5 @@
-import type { Action, ActionExample, HandlerOptions, IAgentRuntime, Memory, State } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { Action, ActionExample, HandlerOptions, IAgentRuntime, Memory, State } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { hasRoleAccess } from "../security/access.js";
 import {
   executeBrowserWorkspaceCommand,
@@ -123,7 +123,7 @@ export const browserSessionAction: Action = {
     "USE_BROWSER",
   ],
   description:
-    "Control the Eliza browser workspace through one session surface. Uses the real desktop browser bridge or hosted Eliza Cloud browser when available, and falls back to the limited embedded web mode only when no real browser session backend is configured.",
+    "Control the Tokagent browser workspace through one session surface. Uses the real desktop browser bridge or hosted Tokagent Cloud browser when available, and falls back to the limited embedded web mode only when no real browser session backend is configured.",
   validate: async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -278,13 +278,13 @@ export const browserSessionAction: Action = {
       {
         name: "{{name1}}",
         content: {
-          text: "Open elizaos.ai in a new browser tab.",
+          text: "Open tokagentos.ai in a new browser tab.",
         },
       },
       {
         name: "{{agentName}}",
         content: {
-          text: "open completed in desktop mode.\nelizaOS\nhttps://elizaos.ai",
+          text: "open completed in desktop mode.\ntokagentOS\nhttps://tokagentos.ai",
         },
       },
     ],

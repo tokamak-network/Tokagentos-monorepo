@@ -4,7 +4,7 @@
  * Fetches USD token prices from on-chain DEX aggregators.
  * Used by the wallet balance modules to annotate token rows with USD values.
  */
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 // ── Chain ID → DEX API slug mappings ──────────────────────────────────
 

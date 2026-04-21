@@ -1,4 +1,4 @@
-import { logger, type IAgentRuntime, type Memory } from "@elizaos/core";
+import { logger, type IAgentRuntime, type Memory } from "@tokagentos/core";
 import { checkSenderRole } from "../website-blocker/roles.ts";
 
 export const APP_BLOCKER_ACCESS_ERROR =

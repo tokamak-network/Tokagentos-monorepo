@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import type { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
 import { PTYService } from "@elizaos/plugin-agent-orchestrator";
 import { createTestRuntime } from "../helpers/pglite-runtime.ts";
@@ -79,7 +79,7 @@ async function main(): Promise<void> {
 	);
 
 	workdir = fs.mkdtempSync(
-		path.join(os.tmpdir(), "eliza-task-thread-integration-"),
+		path.join(os.tmpdir(), "tokagent-task-thread-integration-"),
 	);
 	const outputFile = path.join(workdir, "integration-output.txt");
 	const sentinel = `REAL_PTY_DB_TEST_${Date.now()}`;
@@ -89,7 +89,7 @@ async function main(): Promise<void> {
 		originalRequest:
 			"Create a local artifact that proves PTY output and task state are persisted.",
 		metadata: {
-			repo: "https://github.com/example/eliza",
+			repo: "https://github.com/example/tokagent",
 			source: "task-thread-integration-script",
 		},
 	});

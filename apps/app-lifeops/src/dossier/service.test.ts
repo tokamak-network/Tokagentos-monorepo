@@ -1,9 +1,9 @@
-import type { IAgentRuntime, Memory, UUID } from "@elizaos/core";
+import type { IAgentRuntime, Memory, UUID } from "@tokagentos/core";
 import type {
   LifeOpsCalendarEvent,
   LifeOpsCalendarEventAttendee,
   LifeOpsCalendarFeed,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { describe, expect, it } from "vitest";
 import {
   DOSSIER_MEMORY_TABLE,

@@ -4,7 +4,7 @@ from abc import ABC
 from dataclasses import dataclass, field
 from typing import Any
 
-from elizaos.types.generated.eliza.v1 import service_interfaces_pb2
+from tokagentos.types.generated.tokagent.v1 import service_interfaces_pb2
 
 TokenBalance = service_interfaces_pb2.TokenBalance
 TokenData = service_interfaces_pb2.TokenData

@@ -1,11 +1,11 @@
-import type { IAgentRuntime, Memory } from "@elizaos/core";
+import type { IAgentRuntime, Memory } from "@tokagentos/core";
 import {
   checkSenderPrivateAccess,
   checkSenderRole,
   resolveCanonicalOwnerIdForMessage,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
-/** Role names matching the elizaOS role hierarchy. */
+/** Role names matching the tokagentOS role hierarchy. */
 export type RequiredRole = "OWNER" | "ADMIN" | "USER" | "GUEST";
 
 const ROLE_RANK: Record<RequiredRole, number> = {
@@ -142,7 +142,7 @@ export async function hasPrivateAccess(
 }
 
 /**
- * Check whether the sender has at least the given role in the elizaOS
+ * Check whether the sender has at least the given role in the tokagentOS
  * role hierarchy (OWNER > ADMIN > USER > GUEST).
  *
  * Follows the same lenient pattern as plugin-role-gating: when there is

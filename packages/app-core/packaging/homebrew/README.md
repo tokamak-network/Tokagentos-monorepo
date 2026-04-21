@@ -1,25 +1,25 @@
 # Homebrew Distribution
 
-This directory contains Homebrew formula and cask definitions for elizaOS App.
+This directory contains Homebrew formula and cask definitions for tokagentOS App.
 
 ## Files
 
-- `elizaos-app.rb` — Formula for the CLI tool (installed via npm)
-- `elizaos-app.cask.rb` — Cask for the desktop app (DMG installer)
+- `tokagentos-app.rb` — Formula for the CLI tool (installed via npm)
+- `tokagentos-app.cask.rb` — Cask for the desktop app (DMG installer)
 
 ## Setup
 
 ### 1. Create Homebrew Tap Repository
 
-Create a new repo: `elizaos/homebrew-elizaos-app`
+Create a new repo: `tokagentos/homebrew-tokagentos-app`
 
 Structure:
 ```
-homebrew-elizaos-app/
+homebrew-tokagentos-app/
 ├── Formula/
-│   └── elizaos-app.rb
+│   └── tokagentos-app.rb
 ├── Casks/
-│   └── elizaos-app.cask.rb
+│   └── tokagentos-app.cask.rb
 └── README.md
 ```
 
@@ -30,28 +30,28 @@ Before publishing, replace placeholder hashes:
 **For the cask (DMG files):**
 ```bash
 # Download and hash ARM64 DMG
-curl -sL https://github.com/elizaos/elizaos-app/releases/download/v2.0.0-alpha.21/ElizaOSApp-2.0.0-alpha.21-arm64.dmg | shasum -a 256
+curl -sL https://github.com/tokagentos/tokagentos-app/releases/download/v2.0.0-alpha.21/TokagentOSApp-2.0.0-alpha.21-arm64.dmg | shasum -a 256
 
 # Download and hash Intel DMG
-curl -sL https://github.com/elizaos/elizaos-app/releases/download/v2.0.0-alpha.21/ElizaOSApp-2.0.0-alpha.21.dmg | shasum -a 256
+curl -sL https://github.com/tokagentos/tokagentos-app/releases/download/v2.0.0-alpha.21/TokagentOSApp-2.0.0-alpha.21.dmg | shasum -a 256
 ```
 
 **For the formula (npm tarball):**
 ```bash
-curl -sL https://registry.npmjs.org/elizaos/-/elizaos-2.0.0-alpha.21.tgz | shasum -a 256
+curl -sL https://registry.npmjs.org/tokagentos/-/tokagentos-2.0.0-alpha.21.tgz | shasum -a 256
 ```
 
 ### 3. Users Can Install
 
 ```bash
 # Add tap
-brew tap elizaos/elizaos-app
+brew tap tokagentos/tokagentos-app
 
 # Install desktop app
-brew install --cask elizaos-app
+brew install --cask tokagentos-app
 
 # Or install CLI only
-brew install elizaos-app
+brew install tokagentos-app
 ```
 
 ## Auto-Update Workflow
@@ -62,14 +62,14 @@ See the publishing guide at `../PUBLISHING_GUIDE.md` for full instructions.
 
 ```bash
 # Test formula syntax
-brew audit --strict elizaos-app.rb
+brew audit --strict tokagentos-app.rb
 
 # Test cask syntax
-brew audit --cask --strict elizaos-app.cask.rb
+brew audit --cask --strict tokagentos-app.cask.rb
 
 # Test installation (from local file)
-brew install --formula ./elizaos-app.rb
-brew install --cask ./elizaos-app.cask.rb
+brew install --formula ./tokagentos-app.rb
+brew install --cask ./tokagentos-app.cask.rb
 ```
 
 ## Notes

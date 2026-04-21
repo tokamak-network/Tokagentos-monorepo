@@ -6,14 +6,14 @@ import re
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING
 
-from elizaos.features.advanced_capabilities.experience.service import EXPERIENCE_SERVICE_TYPE
-from elizaos.features.advanced_capabilities.experience.types import ExperienceType, OutcomeType
-from elizaos.types import ActionResult, Evaluator, HandlerOptions, ModelType
+from tokagentos.features.advanced_capabilities.experience.service import EXPERIENCE_SERVICE_TYPE
+from tokagentos.features.advanced_capabilities.experience.types import ExperienceType, OutcomeType
+from tokagentos.types import ActionResult, Evaluator, HandlerOptions, ModelType
 
 if TYPE_CHECKING:
-    from elizaos.types import Content, IAgentRuntime, Memory, State
+    from tokagentos.types import Content, IAgentRuntime, Memory, State
 
-logger = logging.getLogger("elizaos.experience")
+logger = logging.getLogger("tokagentos.experience")
 
 # Domain detection keywords (matches TypeScript implementation)
 _DOMAIN_KEYWORDS: dict[str, list[str]] = {
@@ -189,7 +189,7 @@ async def _handle_experience_evaluator(
     """Extract novel learning experiences from recent conversation."""
     _ = options, callback, responses, state  # Unused parameters
 
-    from elizaos.features.advanced_capabilities.experience.service import ExperienceService
+    from tokagentos.features.advanced_capabilities.experience.service import ExperienceService
 
     experience_service = runtime.get_service(EXPERIENCE_SERVICE_TYPE)
     if not isinstance(experience_service, ExperienceService):

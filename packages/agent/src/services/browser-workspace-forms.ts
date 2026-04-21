@@ -48,7 +48,7 @@ export function ensureBrowserWorkspaceFormControlElement(
   }
 
   throw new Error(
-    `Eliza browser workspace ${subaction} requires an input, textarea, or select target.`,
+    `Tokagent browser workspace ${subaction} requires an input, textarea, or select target.`,
   );
 }
 
@@ -65,7 +65,7 @@ export function ensureBrowserWorkspaceCheckboxElement(
   }
 
   throw new Error(
-    `Eliza browser workspace ${subaction} requires a checkbox or radio input target.`,
+    `Tokagent browser workspace ${subaction} requires a checkbox or radio input target.`,
   );
 }
 
@@ -194,7 +194,7 @@ export function scrollWebBrowserWorkspaceTarget(
     };
   }
 
-  const key = axis === "y" ? "__elizaScrollY" : "__elizaScrollX";
+  const key = axis === "y" ? "__tokagentScrollY" : "__tokagentScrollX";
   const current = Number(
     (dom.window as unknown as Record<string, unknown>)[key] ?? 0,
   );

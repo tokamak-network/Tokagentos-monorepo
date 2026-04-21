@@ -5,21 +5,21 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import process from "node:process";
 import { pathToFileURL } from "node:url";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
-import { resolveUserPath } from "@elizaos/agent/config/paths";
-import { resolveDefaultAgentWorkspaceDir } from "@elizaos/agent/providers/workspace";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
+import { resolveUserPath } from "@tokagentos/agent/config/paths";
+import { resolveDefaultAgentWorkspaceDir } from "@tokagentos/agent/providers/workspace";
 import {
-  type BootElizaRuntimeOptions,
-  type StartElizaOptions,
+  type BootTokagentRuntimeOptions,
+  type StartTokagentOptions,
   applyCloudConfigToEnv as upstreamApplyCloudConfigToEnv,
   applyN8nConfigToEnv as upstreamApplyN8nConfigToEnv,
-  bootElizaRuntime as upstreamBootElizaRuntime,
+  bootTokagentRuntime as upstreamBootTokagentRuntime,
   CHANNEL_PLUGIN_MAP as upstreamChannelPluginMap,
   collectPluginNames as upstreamCollectPluginNames,
   configureLocalEmbeddingPlugin as upstreamConfigureLocalEmbeddingPlugin,
   shutdownRuntime as upstreamShutdownRuntime,
-  startEliza as upstreamStartEliza,
-} from "@elizaos/agent/runtime/eliza";
+  startTokagent as upstreamStartTokagent,
+} from "@tokagentos/agent/runtime/tokagent";
 import {
   type AgentRuntime,
   AutonomyService,
@@ -28,21 +28,21 @@ import {
   ModelType,
   type Plugin,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 export {
   CUSTOM_PLUGINS_DIRNAME,
   resolvePackageEntry,
   scanDropInPlugins,
-} from "@elizaos/agent/runtime/plugin-types";
+} from "@tokagentos/agent/runtime/plugin-types";
 
-import { getLastFailedPluginNames } from "@elizaos/agent/runtime/plugin-resolver";
+import { getLastFailedPluginNames } from "@tokagentos/agent/runtime/plugin-resolver";
 import {
   resolveServerOnlyPort,
   syncResolvedApiPort,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import { isNativeServerPlatform } from "../platform/is-native-server.js";
-import { syncAppEnvToEliza, syncElizaEnvAliases } from "../utils/env.js";
+import { syncAppEnvToTokagent, syncTokagentEnvAliases } from "../utils/env.js";
 import { ensureRuntimeSqlCompatibility } from "../utils/sql-compat.js";
 import type { EmbeddingProgressCallback } from "./embedding-manager-support.js";
 import {
@@ -67,7 +67,7 @@ const AUTONOMY_MESSAGE_SERVER_ID = stringToUuid("autonomy-message-server");
 const INTERNAL_CHANNEL_PLUGIN_OVERRIDES = {
   signal: "@elizaos/plugin-signal",
   whatsapp: "@elizaos/plugin-whatsapp",
-  wechat: "elizaoswechat",
+  wechat: "tokagentoswechat",
 } as const;
 
 /** Swarm / PTY paths call TEXT_TO_SPEECH; Edge TTS supplies that model with no API key. */
@@ -79,7 +79,7 @@ const DIRECT_VERSION_FLAGS = new Set(["-v", "-V", "--version", "version"]);
 const PLUGIN_SQL_GLOBAL_SINGLETONS = Symbol.for(
   "@elizaos/plugin-sql/global-singletons",
 );
-const ELIZA_AUTO_RESET_PGLITE_ERROR_CODE = "ELIZA_PGLITE_MANUAL_RESET_REQUIRED";
+const TOKAGENT_AUTO_RESET_PGLITE_ERROR_CODE = "TOKAGENT_PGLITE_MANUAL_RESET_REQUIRED";
 
 export const shutdownRuntime = upstreamShutdownRuntime;
 
@@ -160,8 +160,8 @@ interface RuntimeModelCompat {
 }
 
 function syncBrandEnvAliases(): void {
-  syncElizaEnvAliases();
-  syncAppEnvToEliza();
+  syncTokagentEnvAliases();
+  syncAppEnvToTokagent();
 }
 
 export function collectPluginNames(
@@ -197,7 +197,7 @@ export function applyN8nConfigToEnv(
   // On mobile (iOS / Android) the local n8n sidecar cannot run — spawning a
   // child process via node:child_process is unavailable. Treat
   // `config.n8n.localEnabled` as false regardless of the stored user setting
-  // so the env pump only considers the Eliza Cloud gateway path. The stored
+  // so the env pump only considers the Tokagent Cloud gateway path. The stored
   // config is not mutated.
   if (isNativeServerPlatform()) {
     const [config, agentId] = args;
@@ -333,11 +333,11 @@ async function registerAppRoutePlugins(runtime: AgentRuntime): Promise<void> {
         }
       }
       logger.info(
-        `[eliza] Registered app route plugin: ${plugin.name} (${plugin.routes?.length ?? 0} routes)`,
+        `[tokagent] Registered app route plugin: ${plugin.name} (${plugin.routes?.length ?? 0} routes)`,
       );
     } catch (err) {
       logger.warn(
-        `[eliza] Failed to register app route plugin: ${err instanceof Error ? err.message : String(err)}`,
+        `[tokagent] Failed to register app route plugin: ${err instanceof Error ? err.message : String(err)}`,
       );
     }
   }
@@ -368,7 +368,7 @@ async function registerTrackCTrainingCrons(
     ]);
   } catch (err) {
     logger.warn(
-      `[eliza] @elizaos/app-training not installed, skipping Track C training crons: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent] @elizaos/app-training not installed, skipping Track C training crons: ${err instanceof Error ? err.message : String(err)}`,
     );
     return;
   }
@@ -377,7 +377,7 @@ async function registerTrackCTrainingCrons(
   await scoringMod.registerSkillScoringCron(runtime);
   const triggerService = triggerMod.registerTrainingTriggerService(runtime);
   logger.info(
-    "[eliza] Registered Track C training crons + auto-train trigger service",
+    "[tokagent] Registered Track C training crons + auto-train trigger service",
   );
   // Phase 5.5 — Hermes-parity default-on bootstrap. Fire-and-forget so
   // runtime boot stays fast; the bootstrap helper short-circuits when
@@ -389,13 +389,13 @@ async function registerTrackCTrainingCrons(
     .then((fired) => {
       if (fired.length > 0) {
         logger.info(
-          `[eliza] Bootstrapped prompt optimization for ${fired.join(", ")}`,
+          `[tokagent] Bootstrapped prompt optimization for ${fired.join(", ")}`,
         );
       }
     })
     .catch((err) => {
       logger.error(
-        `[eliza] bootstrapOptimizationFromAccumulatedTrajectories failed: ${err instanceof Error ? err.stack ?? err.message : String(err)}`,
+        `[tokagent] bootstrapOptimizationFromAccumulatedTrajectories failed: ${err instanceof Error ? err.stack ?? err.message : String(err)}`,
       );
     });
 }
@@ -424,11 +424,11 @@ async function repairRuntimeAfterBoot(
     try {
       await AutonomyService.start(runtime);
       logger.info(
-        "[eliza] AutonomyService started after SQL compatibility repair",
+        "[tokagent] AutonomyService started after SQL compatibility repair",
       );
     } catch (error) {
       throw new Error(
-        `[eliza] AutonomyService restart after SQL compatibility repair failed: ${error instanceof Error ? error.message : String(error)}`,
+        `[tokagent] AutonomyService restart after SQL compatibility repair failed: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -444,11 +444,11 @@ async function repairRuntimeAfterBoot(
       try {
         await autonomySvc.enableAutonomy();
         logger.info(
-          "[eliza] AutonomyService enabled — trigger instructions will be processed",
+          "[tokagent] AutonomyService enabled — trigger instructions will be processed",
         );
       } catch (err) {
         throw new Error(
-          `[eliza] Failed to enable autonomy loop: ${err instanceof Error ? err.message : String(err)}`,
+          `[tokagent] Failed to enable autonomy loop: ${err instanceof Error ? err.message : String(err)}`,
         );
       }
     }
@@ -459,7 +459,7 @@ async function repairRuntimeAfterBoot(
   // Telegraf instance with proper lifecycle management.
   await ensureTelegramBotPolling(runtime);
 
-  // Bridge Eliza Cloud auth transitions → n8n sidecar lifecycle so signing
+  // Bridge Tokagent Cloud auth transitions → n8n sidecar lifecycle so signing
   // in releases the local sidecar (saves port 5678 + ~200MB) and signing
   // out proactively re-spawns it (when localEnabled and not mobile).
   await ensureN8nAuthBridge(runtime);
@@ -508,15 +508,15 @@ async function ensureN8nAuthBridge(runtime: AgentRuntime): Promise<void> {
   try {
     const [{ startN8nAuthBridge }, config] = await Promise.all([
       import("../services/n8n-auth-bridge.js"),
-      Promise.resolve(loadElizaConfig()),
+      Promise.resolve(loadTokagentConfig()),
     ]);
     _n8nAuthBridge = startN8nAuthBridge(runtime, config, {
-      getConfig: () => loadElizaConfig(),
+      getConfig: () => loadTokagentConfig(),
     });
-    logger.info("[eliza] n8n auth bridge armed");
+    logger.info("[tokagent] n8n auth bridge armed");
   } catch (err) {
     logger.warn(
-      `[eliza] Failed to start n8n auth bridge: ${
+      `[tokagent] Failed to start n8n auth bridge: ${
         err instanceof Error ? err.message : String(err)
       }`,
     );
@@ -535,15 +535,15 @@ async function ensureN8nAutoStart(runtime: AgentRuntime): Promise<void> {
   try {
     const [{ startN8nAutoStart }, config] = await Promise.all([
       import("../services/n8n-autostart.js"),
-      Promise.resolve(loadElizaConfig()),
+      Promise.resolve(loadTokagentConfig()),
     ]);
     _n8nAutoStart = startN8nAutoStart(runtime, config, {
-      getConfig: () => loadElizaConfig(),
+      getConfig: () => loadTokagentConfig(),
     });
-    logger.info("[eliza] n8n autostart armed");
+    logger.info("[tokagent] n8n autostart armed");
   } catch (err) {
     logger.warn(
-      `[eliza] Failed to start n8n autostart: ${
+      `[tokagent] Failed to start n8n autostart: ${
         err instanceof Error ? err.message : String(err)
       }`,
     );
@@ -567,7 +567,7 @@ async function ensureN8nDispatchService(runtime: AgentRuntime): Promise<void> {
     );
     const dispatchInstance = createN8nDispatchService({
       runtime,
-      getConfig: () => loadElizaConfig(),
+      getConfig: () => loadTokagentConfig(),
     });
     _n8nDispatch = dispatchInstance;
     // Register directly into the runtime services map. `registerService`
@@ -583,10 +583,10 @@ async function ensureN8nDispatchService(runtime: AgentRuntime): Promise<void> {
       capabilityDescription: "Executes n8n workflows by id.",
     };
     runtime.services.set("N8N_DISPATCH" as never, [serviceEntry as never]);
-    logger.info("[eliza] n8n dispatch service registered");
+    logger.info("[tokagent] n8n dispatch service registered");
   } catch (err) {
     logger.warn(
-      `[eliza] Failed to register n8n dispatch service: ${
+      `[tokagent] Failed to register n8n dispatch service: ${
         err instanceof Error ? err.message : String(err)
       }`,
     );
@@ -687,7 +687,7 @@ async function ensureTelegramBotPolling(runtime: AgentRuntime): Promise<void> {
             ctx.message.from?.first_name ??
             "Unknown";
           logger.info(
-            `[eliza] Telegram message from @${username}: ${text.substring(0, 80)}`,
+            `[tokagent] Telegram message from @${username}: ${text.substring(0, 80)}`,
           );
 
           let history = chatHistories.get(chatId);
@@ -715,7 +715,7 @@ async function ensureTelegramBotPolling(runtime: AgentRuntime): Promise<void> {
               .join("\n");
             const modelRuntime = runtime as AgentRuntime & RuntimeModelCompat;
             if (typeof modelRuntime.useModel !== "function") {
-              logger.warn("[eliza] Telegram runtime missing useModel");
+              logger.warn("[tokagent] Telegram runtime missing useModel");
               return;
             }
             // biome-ignore lint/correctness/useHookAtTopLevel: false positive, hook is at module level
@@ -729,11 +729,11 @@ async function ensureTelegramBotPolling(runtime: AgentRuntime): Promise<void> {
             if (responseText) {
               history.push({ role: "assistant", content: responseText });
               await ctx.reply(responseText);
-              logger.info(`[eliza] Telegram replied to @${username}`);
+              logger.info(`[tokagent] Telegram replied to @${username}`);
             }
           } catch (err) {
             logger.warn(
-              `[eliza] Telegram response error: ${err instanceof Error ? err.message : String(err)}`,
+              `[tokagent] Telegram response error: ${err instanceof Error ? err.message : String(err)}`,
             );
             await ctx
               .reply("Sorry, I encountered an error processing your message.")
@@ -741,7 +741,7 @@ async function ensureTelegramBotPolling(runtime: AgentRuntime): Promise<void> {
           }
         } catch (outerErr) {
           logger.warn(
-            `[eliza] Telegram handler error: ${outerErr instanceof Error ? outerErr.message : String(outerErr)}`,
+            `[tokagent] Telegram handler error: ${outerErr instanceof Error ? outerErr.message : String(outerErr)}`,
           );
         }
       },
@@ -749,7 +749,7 @@ async function ensureTelegramBotPolling(runtime: AgentRuntime): Promise<void> {
 
     bot.catch((err: unknown) =>
       logger.warn(
-        `[eliza] Telegram bot error: ${err instanceof Error ? err.message : String(err)}`,
+        `[tokagent] Telegram bot error: ${err instanceof Error ? err.message : String(err)}`,
       ),
     );
 
@@ -761,19 +761,19 @@ async function ensureTelegramBotPolling(runtime: AgentRuntime): Promise<void> {
       })
       .catch((err: unknown) =>
         logger.warn(
-          `[eliza] Telegram bot launch error: ${err instanceof Error ? err.message : String(err)}`,
+          `[tokagent] Telegram bot launch error: ${err instanceof Error ? err.message : String(err)}`,
         ),
       );
 
     _telegramBot = bot;
     // Telegram bot cleanup is handled by the unified signal handler in
-    // startEliza() via _telegramBot — no separate registration needed.
+    // startTokagent() via _telegramBot — no separate registration needed.
 
     await new Promise((r) => setTimeout(r, 500));
-    logger.info("[eliza] Telegram bot polling started");
+    logger.info("[tokagent] Telegram bot polling started");
   } catch (err) {
     logger.warn(
-      `[eliza] Telegram bot setup failed: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent] Telegram bot setup failed: ${err instanceof Error ? err.message : String(err)}`,
     );
   }
 }
@@ -783,29 +783,29 @@ async function ensureTelegramBotPolling(runtime: AgentRuntime): Promise<void> {
  * This ensures the GGUF is on disk before the runtime's first
  * generateEmbedding() call, avoiding a silent stall on first use.
  *
- * Uses the same env resolution as `configureLocalEmbeddingPlugin` (eliza.json
+ * Uses the same env resolution as `configureLocalEmbeddingPlugin` (tokagent.json
  * `embedding` + hardware tier). Warmup previously always used tier-only presets,
  * so a custom `embedding.model` caused a first download here and a *second*
  * download when the plugin looked for a different filename — nothing deleted
  * the first file; it was simply the wrong path/name.
  *
  * If the configured GGUF is **not** on disk but another known embedding file
- * already exists in `MODELS_DIR` (e.g. legacy bge-small after `eliza.json`
+ * already exists in `MODELS_DIR` (e.g. legacy bge-small after `tokagent.json`
  * switched to the 7B E5 preset), we align `LOCAL_EMBEDDING_*` with that file
  * so we do not re-download multi‑GB models. Opt out:
- * `ELIZA_EMBEDDING_WARMUP_NO_REUSE=1`.
+ * `TOKAGENT_EMBEDDING_WARMUP_NO_REUSE=1`.
  */
 async function warmupEmbeddingModel(
   onProgress?: EmbeddingProgressCallback,
 ): Promise<void> {
   if (!shouldWarmupLocalEmbeddingModel()) {
     logger.info(
-      "[eliza] Skipping local embedding (GGUF) warmup — not needed for this configuration (e.g. Eliza Cloud embeddings, or local embeddings disabled).",
+      "[tokagent] Skipping local embedding (GGUF) warmup — not needed for this configuration (e.g. Tokagent Cloud embeddings, or local embeddings disabled).",
     );
     return;
   }
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   upstreamConfigureLocalEmbeddingPlugin({} as Plugin, config);
 
   const preset = detectEmbeddingPreset();
@@ -821,8 +821,8 @@ async function warmupEmbeddingModel(
     const reuse = findExistingEmbeddingModelForWarmupReuse(modelsDir);
     if (reuse) {
       logger.info(
-        `[eliza] Embedding warmup: configured file "${model}" not found in MODELS_DIR — reusing existing ${reuse.model} to avoid a large re-download. ` +
-          "Set LOCAL_EMBEDDING_MODEL or ELIZA_EMBEDDING_WARMUP_NO_REUSE=1 to force the configured model.",
+        `[tokagent] Embedding warmup: configured file "${model}" not found in MODELS_DIR — reusing existing ${reuse.model} to avoid a large re-download. ` +
+          "Set LOCAL_EMBEDDING_MODEL or TOKAGENT_EMBEDDING_WARMUP_NO_REUSE=1 to force the configured model.",
       );
       process.env.LOCAL_EMBEDDING_MODEL = reuse.model;
       process.env.LOCAL_EMBEDDING_MODEL_REPO = reuse.modelRepo;
@@ -837,7 +837,7 @@ async function warmupEmbeddingModel(
   }
 
   logger.info(
-    `[eliza] Local embedding warmup: ${model} (hardware tier preset: ${preset.label}). ` +
+    `[tokagent] Local embedding warmup: ${model} (hardware tier preset: ${preset.label}). ` +
       "This file is for TEXT_EMBEDDING / memory only (not your conversation model).",
   );
 
@@ -845,11 +845,11 @@ async function warmupEmbeddingModel(
     updateStartupEmbeddingProgress(phase, detail);
     // Always log to stdout for server/container monitoring
     if (phase === "downloading") {
-      logger.info(`[eliza] Embedding model: ${detail ?? "downloading..."}`);
+      logger.info(`[tokagent] Embedding model: ${detail ?? "downloading..."}`);
     } else if (phase === "loading") {
-      logger.info(`[eliza] Embedding model: loading ${detail ?? ""}`);
+      logger.info(`[tokagent] Embedding model: loading ${detail ?? ""}`);
     } else if (phase === "ready") {
-      logger.info(`[eliza] Embedding model: ready (${detail ?? ""})`);
+      logger.info(`[tokagent] Embedding model: ready (${detail ?? ""})`);
     }
     // Forward to caller's callback (e.g. for TUI loading screen)
     onProgress?.(phase, detail);
@@ -860,20 +860,20 @@ async function warmupEmbeddingModel(
   } catch (err) {
     // Non-fatal: the plugin will attempt its own download on first use
     logger.warn(
-      `[eliza] Embedding model warmup failed (will retry on first use): ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent] Embedding model warmup failed (will retry on first use): ${err instanceof Error ? err.message : String(err)}`,
     );
   }
 }
 
-export interface BootElizaRuntimeOptionsExt extends BootElizaRuntimeOptions {
+export interface BootTokagentRuntimeOptionsExt extends BootTokagentRuntimeOptions {
   /** Optional callback for embedding model download/init progress. */
   onEmbeddingProgress?: EmbeddingProgressCallback;
 }
 
-export async function bootElizaRuntime(
-  opts: BootElizaRuntimeOptionsExt = {},
-): Promise<Awaited<ReturnType<typeof upstreamBootElizaRuntime>>> {
-  syncAppEnvToEliza();
+export async function bootTokagentRuntime(
+  opts: BootTokagentRuntimeOptionsExt = {},
+): Promise<Awaited<ReturnType<typeof upstreamBootTokagentRuntime>>> {
+  syncAppEnvToTokagent();
 
   try {
     // Eagerly download the embedding model before the full runtime boot.
@@ -888,14 +888,14 @@ export async function bootElizaRuntime(
       process.env.EMBEDDING_DIMENSION = "384";
     }
 
-    const runtime = await upstreamBootElizaRuntime(opts);
+    const runtime = await upstreamBootTokagentRuntime(opts);
     return runtime ? await repairRuntimeAfterBoot(runtime) : runtime;
   } finally {
-    syncElizaEnvAliases();
+    syncTokagentEnvAliases();
   }
 }
 
-export interface StartElizaOptionsExt extends StartElizaOptions {
+export interface StartTokagentOptionsExt extends StartTokagentOptions {
   /** Optional callback for embedding model download/init progress. */
   onEmbeddingProgress?: EmbeddingProgressCallback;
 }
@@ -946,7 +946,7 @@ function collectErrorMessages(err: unknown): string[] {
 }
 
 function isManualResetPgliteError(err: unknown): boolean {
-  if (getPgliteErrorCode(err) === ELIZA_AUTO_RESET_PGLITE_ERROR_CODE) {
+  if (getPgliteErrorCode(err) === TOKAGENT_AUTO_RESET_PGLITE_ERROR_CODE) {
     return true;
   }
 
@@ -1003,7 +1003,7 @@ function resolveManagedPgliteDataDir(): string | null {
     return resolveUserPath(envDataDir);
   }
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   if ((config.database?.provider ?? "pglite") === "postgres") {
     return null;
   }
@@ -1015,11 +1015,11 @@ function resolveManagedPgliteDataDir(): string | null {
 
   const workspaceDir =
     config.agents?.defaults?.workspace ?? resolveDefaultAgentWorkspaceDir();
-  return path.join(resolveUserPath(workspaceDir), ".eliza", ".elizadb");
+  return path.join(resolveUserPath(workspaceDir), ".tokagent", ".tokagentdb");
 }
 
 function isAutoResettablePgliteDir(dataDir: string | null): dataDir is string {
-  return typeof dataDir === "string" && path.basename(dataDir) === ".elizadb";
+  return typeof dataDir === "string" && path.basename(dataDir) === ".tokagentdb";
 }
 
 async function resetPluginSqlPgliteSingleton(context: string): Promise<void> {
@@ -1044,7 +1044,7 @@ async function resetPluginSqlPgliteSingleton(context: string): Promise<void> {
       ]);
     } catch (err) {
       logger.warn(
-        `[eliza] ${context}: failed to close plugin-sql PGlite singleton: ${err instanceof Error ? err.message : String(err)}`,
+        `[tokagent] ${context}: failed to close plugin-sql PGlite singleton: ${err instanceof Error ? err.message : String(err)}`,
       );
     } finally {
       if (timeoutHandle) {
@@ -1054,7 +1054,7 @@ async function resetPluginSqlPgliteSingleton(context: string): Promise<void> {
 
     if (closeTimedOut) {
       logger.warn(
-        `[eliza] ${context}: plugin-sql PGlite singleton close timed out; continuing with a forced reset`,
+        `[tokagent] ${context}: plugin-sql PGlite singleton close timed out; continuing with a forced reset`,
       );
     }
   }
@@ -1096,7 +1096,7 @@ function normalizePgliteStartupError(err: unknown): unknown {
 
   if (
     err instanceof Error &&
-    getPgliteErrorCode(err) === ELIZA_AUTO_RESET_PGLITE_ERROR_CODE
+    getPgliteErrorCode(err) === TOKAGENT_AUTO_RESET_PGLITE_ERROR_CODE
   ) {
     return err;
   }
@@ -1112,18 +1112,18 @@ function normalizePgliteStartupError(err: unknown): unknown {
       : `PGlite initialization failed: ${detail}. Stop the app, then rename or delete only the managed PGlite data directory before retrying.`,
     { cause: err },
   ) as ErrorWithCause;
-  wrapped.code = ELIZA_AUTO_RESET_PGLITE_ERROR_CODE;
+  wrapped.code = TOKAGENT_AUTO_RESET_PGLITE_ERROR_CODE;
   if (dataDir) {
     wrapped.dataDir = dataDir;
   }
   return wrapped;
 }
 
-async function upstreamStartElizaWithPgliteCompat(
-  options?: StartElizaOptions,
-): Promise<Awaited<ReturnType<typeof upstreamStartEliza>>> {
+async function upstreamStartTokagentWithPgliteCompat(
+  options?: StartTokagentOptions,
+): Promise<Awaited<ReturnType<typeof upstreamStartTokagent>>> {
   try {
-    return await upstreamStartEliza(options);
+    return await upstreamStartTokagent(options);
   } catch (err) {
     throw normalizePgliteStartupError(err);
   }
@@ -1143,14 +1143,14 @@ export async function attemptPgliteAutoReset(
   }
 
   logger.warn(
-    `[eliza] PGlite startup failed for ${dataDir}. Quarantining the local database before retrying.`,
+    `[tokagent] PGlite startup failed for ${dataDir}. Quarantining the local database before retrying.`,
   );
 
   await resetPluginSqlPgliteSingleton("PGlite auto-reset");
   const backupDir = await quarantinePgliteDataDir(dataDir);
 
   if (backupDir) {
-    logger.warn(`[eliza] Moved the previous PGlite data dir to ${backupDir}`);
+    logger.warn(`[tokagent] Moved the previous PGlite data dir to ${backupDir}`);
   }
 
   await resetPluginSqlPgliteSingleton("PGlite auto-reset retry");
@@ -1161,28 +1161,28 @@ export function getPgliteRecoveryRetrySkipPlugins(): string[] {
   return getLastFailedPluginNames();
 }
 
-export async function startEliza(
-  options?: StartElizaOptionsExt,
-): Promise<Awaited<ReturnType<typeof upstreamStartEliza>>> {
-  syncAppEnvToEliza();
-  // Eliza app: load PTY / coding-swarm orchestration unless explicitly opted out.
-  const orchRaw = process.env.ELIZA_AGENT_ORCHESTRATOR?.trim().toLowerCase();
+export async function startTokagent(
+  options?: StartTokagentOptionsExt,
+): Promise<Awaited<ReturnType<typeof upstreamStartTokagent>>> {
+  syncAppEnvToTokagent();
+  // Tokagent app: load PTY / coding-swarm orchestration unless explicitly opted out.
+  const orchRaw = process.env.TOKAGENT_AGENT_ORCHESTRATOR?.trim().toLowerCase();
   if (orchRaw !== "0" && orchRaw !== "false" && orchRaw !== "no") {
-    process.env.ELIZA_AGENT_ORCHESTRATOR = "1";
+    process.env.TOKAGENT_AGENT_ORCHESTRATOR = "1";
   }
 
   try {
     // Eagerly download the embedding model with progress reporting
     await warmupEmbeddingModel(options?.onEmbeddingProgress);
 
-    // Cap embedding dimension to 384 — see comment in bootElizaRuntime.
+    // Cap embedding dimension to 384 — see comment in bootTokagentRuntime.
     if (!process.env.EMBEDDING_DIMENSION) {
       process.env.EMBEDDING_DIMENSION = "384";
     }
 
     if (options?.serverOnly) {
       let currentRuntime =
-        (await upstreamStartElizaWithPgliteCompat({
+        (await upstreamStartTokagentWithPgliteCompat({
           ...options,
           headless: true,
           serverOnly: false,
@@ -1209,7 +1209,7 @@ export async function startEliza(
           await upstreamShutdownRuntime(currentRuntime, "server-only restart");
 
           const restarted =
-            (await upstreamStartElizaWithPgliteCompat({
+            (await upstreamStartTokagentWithPgliteCompat({
               ...options,
               headless: true,
               serverOnly: false,
@@ -1239,10 +1239,10 @@ export async function startEliza(
       } catch {}
 
       logger.info(
-        `[eliza] API server listening on http://localhost:${actualApiPort}`,
+        `[tokagent] API server listening on http://localhost:${actualApiPort}`,
       );
-      console.log(`[eliza] Control UI: http://localhost:${actualApiPort}`);
-      console.log("[eliza] Server running. Press Ctrl+C to stop.");
+      console.log(`[tokagent] Control UI: http://localhost:${actualApiPort}`);
+      console.log("[tokagent] Server running. Press Ctrl+C to stop.");
 
       const keepAlive = setInterval(() => {}, 1 << 30);
       let isCleaningUp = false;
@@ -1254,7 +1254,7 @@ export async function startEliza(
         clearInterval(keepAlive);
         // Force exit if graceful shutdown hangs for more than 10 seconds.
         const forceExitTimer = setTimeout(() => {
-          logger.warn("[eliza] Shutdown timed out after 10s — forcing exit");
+          logger.warn("[tokagent] Shutdown timed out after 10s — forcing exit");
           process.exit(1);
         }, 10_000);
         forceExitTimer.unref?.();
@@ -1317,10 +1317,10 @@ export async function startEliza(
       return currentRuntime;
     }
 
-    const runtime = await upstreamStartElizaWithPgliteCompat(options);
+    const runtime = await upstreamStartTokagentWithPgliteCompat(options);
     return runtime ? await repairRuntimeAfterBoot(runtime) : runtime;
   } finally {
-    syncElizaEnvAliases();
+    syncTokagentEnvAliases();
   }
 }
 
@@ -1333,18 +1333,18 @@ function isDirectRuntimeRun(): boolean {
 }
 
 function printDirectRuntimeHelp(): void {
-  console.log(`eliza runtime
+  console.log(`tokagent runtime
 
 Usage:
-  bun packages/app-core/src/runtime/eliza.ts
-  bun run start:eliza
+  bun packages/app-core/src/runtime/tokagent.ts
+  bun run start:tokagent
 
 Flags:
   --help, -h       Show this help
   --version, -v    Show the app-core package version
 
 For full CLI help, run:
-  bun run eliza --help`);
+  bun run tokagent --help`);
 }
 
 function printDirectRuntimeVersion(): void {
@@ -1359,9 +1359,9 @@ if (isDirectRuntimeRun()) {
   } else if (DIRECT_VERSION_FLAGS.has(command ?? "")) {
     printDirectRuntimeVersion();
   } else {
-    startEliza().catch((err) => {
+    startTokagent().catch((err) => {
       console.error(
-        "[eliza] Fatal error:",
+        "[tokagent] Fatal error:",
         err instanceof Error ? (err.stack ?? err.message) : err,
       );
       process.exit(1);

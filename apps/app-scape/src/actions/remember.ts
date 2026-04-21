@@ -21,7 +21,7 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { ScapeGameService } from "../services/game-service.js";
 import { hasActionTag, resolveActionText } from "../shared-state.js";
 import { extractParam, extractParamInt } from "./param-parser.js";

@@ -2,7 +2,7 @@
 //!
 //! Verifies that UUID generation and handling is compatible with TypeScript
 
-use elizaos::types::{string_to_uuid, UUID};
+use tokagentos::types::{string_to_uuid, UUID};
 use uuid::Uuid;
 
 /// Test that stringToUuid produces the same results as TypeScript

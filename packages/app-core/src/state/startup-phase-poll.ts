@@ -6,7 +6,7 @@
  * or an appropriate error/auth event.
  */
 
-import { getStylePresets } from "@elizaos/shared/onboarding-presets";
+import { getStylePresets } from "@tokagentos/shared/onboarding-presets";
 import type { OnboardingOptions } from "../api";
 import { client } from "../api";
 import {
@@ -39,7 +39,7 @@ export interface PollingBackendDeps {
   setOnboardingOptions: (v: OnboardingOptions) => void;
   setOnboardingStep: (v: OnboardingStep) => void;
   setOnboardingServerTarget: (
-    v: "" | "local" | "remote" | "elizacloud",
+    v: "" | "local" | "remote" | "tokagentcloud",
   ) => void;
   setOnboardingCloudApiKey: (v: string) => void;
   setOnboardingProvider: (v: string) => void;
@@ -196,7 +196,7 @@ export async function runPollingBackend(
       const onboardingStatusRes = await client.getOnboardingStatus();
       const { complete, cloudProvisioned } = onboardingStatusRes;
       console.log(
-        "[eliza][startup] onboarding status response:",
+        "[tokagent][startup] onboarding status response:",
         JSON.stringify(onboardingStatusRes),
       );
       if (cancelled.current) return;
@@ -231,10 +231,10 @@ export async function runPollingBackend(
       }
       if (!complete && ctx?.shouldPreserveCompletedOnboarding)
         console.warn(
-          "[eliza][startup:init] Preserving completed onboarding despite incomplete backend onboarding status.",
+          "[tokagent][startup:init] Preserving completed onboarding despite incomplete backend onboarding status.",
         );
       console.log(
-        "[eliza][startup] sessionComplete:",
+        "[tokagent][startup] sessionComplete:",
         sessionComplete,
         "complete:",
         complete,
@@ -330,7 +330,7 @@ export async function runPollingBackend(
         return;
       }
       console.log(
-        "[eliza][startup] dispatching BACKEND_REACHED onboardingComplete=true",
+        "[tokagent][startup] dispatching BACKEND_REACHED onboardingComplete=true",
       );
       dispatch({ type: "BACKEND_REACHED", onboardingComplete: true });
       return;

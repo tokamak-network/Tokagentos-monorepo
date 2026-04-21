@@ -66,7 +66,7 @@ struct IpcPluginBridge {
 impl IpcPluginBridge {
     fn spawn_python(plugin_path: &str) -> Result<Self, Box<dyn std::error::Error>> {
         let process = Command::new("python3")
-            .args(["-m", "elizaos.interop.bridge_server", plugin_path])
+            .args(["-m", "tokagentos.interop.bridge_server", plugin_path])
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::inherit())
@@ -82,7 +82,7 @@ impl IpcPluginBridge {
         let process = Command::new("npx")
             .args(["ts-node", "-e", &format!(
                 r#"
-                const {{ runBridgeServer }} = require('@elizaos/interop/typescript/ts-bridge-server');
+                const {{ runBridgeServer }} = require('@tokagentos/interop/typescript/ts-bridge-server');
                 runBridgeServer('{}');
                 "#,
                 plugin_path
@@ -181,11 +181,11 @@ fn load_native_rust() {
     println!("\n=== Loading Native Rust Plugin ===\n");
 
     // Direct usage of Rust plugin - no interop needed!
-    use elizaos_plugin_eliza_classic::ElizaClassicPlugin;
+    use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
 
-    let plugin = ElizaClassicPlugin::new();
+    let plugin = TokagentClassicPlugin::new();
 
-    println!("Plugin: eliza-classic (native Rust)");
+    println!("Plugin: tokagent-classic (native Rust)");
     println!("Greeting: {}", plugin.get_greeting());
 
     let test_inputs = [
@@ -199,7 +199,7 @@ fn load_native_rust() {
     for input in &test_inputs {
         let response = plugin.generate_response(input);
         println!("  User: {}", input);
-        println!("  ELIZA: {}\n", response);
+        println!("  TOKAGENT: {}\n", response);
     }
 }
 
@@ -210,7 +210,7 @@ fn load_native_rust() {
 fn load_typescript_via_ipc() {
     println!("\n=== Loading TypeScript Plugin via IPC ===\n");
 
-    match IpcPluginBridge::spawn_typescript("./plugins/plugin-eliza-classic/typescript") {
+    match IpcPluginBridge::spawn_typescript("./plugins/plugin-tokagent-classic/typescript") {
         Ok(mut bridge) => {
             match bridge.get_manifest() {
                 Ok(manifest) => {
@@ -253,7 +253,7 @@ fn load_typescript_via_ipc() {
 fn load_python_via_ipc() {
     println!("\n=== Loading Python Plugin via IPC ===\n");
 
-    match IpcPluginBridge::spawn_python("./plugins/plugin-eliza-classic/python") {
+    match IpcPluginBridge::spawn_python("./plugins/plugin-tokagent-classic/python") {
         Ok(mut bridge) => {
             match bridge.get_manifest() {
                 Ok(manifest) => {
@@ -296,7 +296,7 @@ fn load_python_via_ipc() {
 fn load_rust_via_ipc() {
     println!("\n=== Loading Rust Plugin via IPC ===\n");
 
-    let binary_path = "./target/release/eliza-classic-ipc";
+    let binary_path = "./target/release/tokagent-classic-ipc";
 
     match IpcPluginBridge::spawn_rust_ipc(binary_path) {
         Ok(mut bridge) => {
@@ -329,7 +329,7 @@ fn load_rust_via_ipc() {
         }
         Err(e) => {
             println!("Rust IPC loading skipped: {}", e);
-            println!("(Build IPC server first with: cargo build --release --features ipc --bin eliza-classic-ipc)");
+            println!("(Build IPC server first with: cargo build --release --features ipc --bin tokagent-classic-ipc)");
         }
     }
 }
@@ -340,7 +340,7 @@ fn load_rust_via_ipc() {
 
 fn print_interop_matrix() {
     println!("\n{}", "=".repeat(60));
-    println!("elizaOS Cross-Language Interop Matrix (from Rust)");
+    println!("tokagentOS Cross-Language Interop Matrix (from Rust)");
     println!("{}", "=".repeat(60));
 
     let matrix = r#"

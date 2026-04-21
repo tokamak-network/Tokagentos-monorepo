@@ -1,6 +1,6 @@
-//! AgentRuntime implementation for elizaOS
+//! AgentRuntime implementation for tokagentOS
 //!
-//! This module provides the core runtime for elizaOS agents.
+//! This module provides the core runtime for tokagentOS agents.
 
 use crate::advanced_memory;
 use crate::advanced_planning;
@@ -412,7 +412,7 @@ pub struct TrajectoryLogs {
     pub llm_calls: Vec<TrajectoryLlmCall>,
 }
 
-/// The core runtime for an elizaOS agent
+/// The core runtime for an tokagentOS agent
 pub struct AgentRuntime {
     /// Agent ID
     pub agent_id: UUID,

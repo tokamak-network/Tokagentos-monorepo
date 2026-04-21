@@ -104,12 +104,12 @@ Constants in `claimer.ts`:
 ║              💰 BAGS FEE CLAIMER - Auto Harvest 💰             ║
 ╚════════════════════════════════════════════════════════════════╝
 
-Agent:    ElizaOK
+Agent:    TokagentOK
 Wallets:  EYMJDjpXLNwZv9F6C73uhdQdhgq2ZLGGMG49Hjjz3kAy
 Mode:     Continuous (every 60 min)
 Min:      0.0010 SOL
 
-[2026-02-05T16:27:05.988Z] === Claim cycle for ElizaOK ===
+[2026-02-05T16:27:05.988Z] === Claim cycle for TokagentOK ===
 [2026-02-05T16:27:06.535Z] Found 51.7714 SOL for token CDbW2djf...
 [2026-02-05T16:27:09.086Z]   ✅ Claimed! https://solscan.io/tx/...
 

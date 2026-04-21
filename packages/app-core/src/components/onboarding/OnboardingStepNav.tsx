@@ -1,4 +1,4 @@
-import { useApp } from "@elizaos/app-core/state";
+import { useApp } from "@tokagentos/app-core/state";
 import { useBranding } from "../../config/branding";
 import { getOnboardingNavMetas } from "../../onboarding/flow";
 import type { OnboardingStep, OnboardingStepMeta } from "../../state/types";

@@ -11,14 +11,14 @@
  * Service identifier: `TRAINING_TRIGGER_SERVICE`.
  *
  * Trajectory storage calls `notifyTrajectoryCompleted(trajectoryId)` from
- * `eliza/packages/agent/src/runtime/trajectory-storage.ts` whenever a
+ * `tokagent/packages/agent/src/runtime/trajectory-storage.ts` whenever a
  * trajectory transitions to `completed`. The service looks up the trajectory
  * detail, infers the tasks it touches, and increments those counters.
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import type { IAgentRuntime, Service, ServiceTypeName } from "@elizaos/core";
+import type { IAgentRuntime, Service, ServiceTypeName } from "@tokagentos/core";
 import type {
   AnonymizerLookup,
   FilterableTrajectory,
@@ -40,7 +40,7 @@ import type { TrajectoryTrainingTask } from "../core/trajectory-task-datasets.js
 // Extend the core ServiceTypeRegistry so TRAINING_TRIGGER_SERVICE is a known
 // service name. This avoids `as never` casts at the registration site and lets
 // `runtime.getService` return a typed value via ServiceInstance mapping.
-declare module "@elizaos/core" {
+declare module "@tokagentos/core" {
   interface ServiceTypeRegistry {
     TRAINING_TRIGGER_SERVICE: "training_trigger_service";
   }
@@ -257,7 +257,7 @@ export interface TrainingTriggerServiceOptions {
 
 /**
  * Lightweight, function-based service. We follow the n8n-dispatch pattern
- * already used in `runtime/eliza.ts` (services map insertion) rather than
+ * already used in `runtime/tokagent.ts` (services map insertion) rather than
  * subclassing `Service`, because the trigger has no `start()` lifecycle —
  * it is created once at runtime boot and lives for the runtime's lifetime.
  */
@@ -471,7 +471,7 @@ export interface RegisteredTrainingTriggerEntry {
 
 /**
  * Register the service against a runtime's services map. Mirrors the
- * n8n-dispatch pattern in `packages/app-core/src/runtime/eliza.ts`: we
+ * n8n-dispatch pattern in `packages/app-core/src/runtime/tokagent.ts`: we
  * insert a function-shaped service entry directly rather than going through
  * the `Service.start()` lifecycle, which expects a class.
  *

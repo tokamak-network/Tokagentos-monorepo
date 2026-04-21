@@ -44,7 +44,7 @@ def run_mock_benchmark():
     # os.environ["MILADY_BENCH_MOCK"] = "true" # Disable mock for real test  
     # Calculate repo root from this script's location
     # run_osworld_mock.py is in benchmarks/milady-adapter/
-    # repo root (eliza-workspace) is ../../
+    # repo root (tokagent-workspace) is ../../
     from pathlib import Path
     repo_root = Path(__file__).resolve().parent.parent.parent
     

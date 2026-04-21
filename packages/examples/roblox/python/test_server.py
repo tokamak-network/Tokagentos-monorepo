@@ -15,12 +15,12 @@ def test_health() -> None:
 
 
 def test_chat_rejects_without_secret_when_configured(monkeypatch) -> None:
-    monkeypatch.setenv("ELIZA_ROBLOX_SHARED_SECRET", "s3cr3t")
+    monkeypatch.setenv("TOKAGENT_ROBLOX_SHARED_SECRET", "s3cr3t")
     client = TestClient(app)
     resp = client.post(
         "/roblox/chat",
         json={"playerId": 1, "playerName": "A", "text": "hi"},
-        headers={"x-eliza-secret": "wrong"},
+        headers={"x-tokagent-secret": "wrong"},
     )
     assert resp.status_code == 401
 
@@ -38,7 +38,7 @@ def test_chat_echo_is_best_effort(monkeypatch) -> None:
     resp = client.post(
         "/roblox/chat",
         json={"playerId": 1, "playerName": "A", "text": "hi"},
-        headers={"x-eliza-secret": ""},
+        headers={"x-tokagent-secret": ""},
     )
     assert resp.status_code == 200
     assert "reply" in resp.json()

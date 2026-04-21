@@ -1,9 +1,9 @@
 /**
- * elizaOS runtime plugin for the companion app (VRM emotes, etc.).
+ * tokagentOS runtime plugin for the companion app (VRM emotes, etc.).
  */
 
-import { gatePluginSessionForHostedApp } from "@elizaos/agent/services/app-session-gate";
-import type { Plugin } from "@elizaos/core";
+import { gatePluginSessionForHostedApp } from "@tokagentos/agent/services/app-session-gate";
+import type { Plugin } from "@tokagentos/core";
 import { emoteAction } from "./actions/emote.js";
 
 const COMPANION_APP_NAME = "@elizaos/app-companion";

@@ -1,5 +1,5 @@
-import type { IAgentRuntime } from "@elizaos/core";
-import { ModelType, parseJSONObjectFromText } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { ModelType, parseJSONObjectFromText } from "@tokagentos/core";
 
 const VALID_CADENCE_KINDS = new Set([
   "once",

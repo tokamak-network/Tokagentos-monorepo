@@ -38,7 +38,7 @@ function DiscordIcon({ className }: SourceIconProps) {
 }
 
 const SOURCE_META: Record<string, ChatSourceMeta> = {
-  eliza: {
+  tokagent: {
     badgeClassName: "border-accent/30 bg-accent/10 text-accent",
     borderClassName: "border-accent/60",
     iconClassName: "text-accent",

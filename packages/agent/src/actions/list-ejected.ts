@@ -1,4 +1,4 @@
-import type { Action, ActionExample, IAgentRuntime } from "@elizaos/core";
+import type { Action, ActionExample, IAgentRuntime } from "@tokagentos/core";
 import {
   isPluginManagerLike,
   type PluginManagerLike,

@@ -1,8 +1,8 @@
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import {
   normalizeCloudSiteUrl,
   resolveCloudApiBaseUrl,
-} from "@elizaos/agent/cloud/base-url";
+} from "@tokagentos/agent/cloud/base-url";
 import type {
   GetLifeOpsScheduleMergedStateResponse,
   SyncLifeOpsScheduleObservationsRequest,
@@ -56,7 +56,7 @@ function readCloudConfig(): {
   agentId: string | null;
 } {
   try {
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const cloud =
       config.cloud && typeof config.cloud === "object"
         ? (config.cloud as Record<string, unknown>)
@@ -103,15 +103,15 @@ function resolveScheduleSyncConfig(): ResolvedScheduleSyncConfig {
       baseUrl: config.remoteApiBase.replace(/\/+$/, ""),
       accessToken:
         config.remoteAccessToken ??
-        normalizeSecret(process.env.ELIZA_REMOTE_ACCESS_TOKEN),
+        normalizeSecret(process.env.TOKAGENT_REMOTE_ACCESS_TOKEN),
     };
   }
 
   const apiKey =
-    config.apiKey ?? normalizeSecret(process.env.ELIZAOS_CLOUD_API_KEY);
+    config.apiKey ?? normalizeSecret(process.env.TOKAGENTOS_CLOUD_API_KEY);
   const agentId =
     config.agentId ??
-    normalizeSecret(process.env.ELIZAOS_CLOUD_AGENT_ID) ??
+    normalizeSecret(process.env.TOKAGENTOS_CLOUD_AGENT_ID) ??
     null;
   if (!apiKey || !agentId) {
     return {
@@ -120,7 +120,7 @@ function resolveScheduleSyncConfig(): ResolvedScheduleSyncConfig {
     };
   }
 
-  const baseUrl = config.baseUrl ?? process.env.ELIZAOS_CLOUD_BASE_URL;
+  const baseUrl = config.baseUrl ?? process.env.TOKAGENTOS_CLOUD_BASE_URL;
   return {
     configured: true,
     mode: "cloud",

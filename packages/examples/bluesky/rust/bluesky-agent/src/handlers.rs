@@ -1,15 +1,15 @@
 //! Bluesky Event Handlers
 //!
-//! These handlers process Bluesky events through the elizaOS pipeline.
+//! These handlers process Bluesky events through the tokagentOS pipeline.
 
 use anyhow::Result;
-use elizaos::{
+use tokagentos::{
     runtime::AgentRuntime,
     services::IMessageService,
     types::primitives::string_to_uuid,
     types::{Content, Memory, ChannelType, UUID, HandlerCallback},
 };
-use elizaos_plugin_bluesky::{
+use tokagentos_plugin_bluesky::{
     BlueSkyClient,
     types::{BlueSkyNotification, CreatePostRequest},
 };
@@ -26,13 +26,13 @@ pub fn create_unique_uuid(agent_id: &UUID, base_id: &str) -> UUID {
     string_to_uuid(&combined)
 }
 
-/// Handle incoming Bluesky mentions through the elizaOS pipeline.
+/// Handle incoming Bluesky mentions through the tokagentOS pipeline.
 pub async fn handle_mention_received(
     runtime: &AgentRuntime,
     notification: &BlueSkyNotification,
     client: Arc<Mutex<BlueSkyClient>>,
 ) -> Result<()> {
-    use elizaos_plugin_bluesky::types::NotificationReason;
+    use tokagentos_plugin_bluesky::types::NotificationReason;
     
     // Skip non-mentions
     let dominated = matches!(notification.reason, NotificationReason::Mention | NotificationReason::Reply);
@@ -58,7 +58,7 @@ pub async fn handle_mention_received(
         handle = %notification.author.handle,
         reason = ?notification.reason,
         text = %&mention_text[..mention_text.len().min(50)],
-        "Processing Bluesky mention through elizaOS pipeline"
+        "Processing Bluesky mention through tokagentOS pipeline"
     );
 
     // Create unique IDs for this conversation
@@ -165,14 +165,14 @@ pub async fn handle_mention_received(
         })
     });
 
-    // Process through the elizaOS pipeline
+    // Process through the tokagentOS pipeline
     let result = runtime.message_service()
         .handle_message(runtime, &mut message, Some(callback), None)
         .await?;
 
     debug!(
         did_respond = %result.did_respond,
-        "elizaOS pipeline completed"
+        "tokagentOS pipeline completed"
     );
 
     Ok(())

@@ -13,7 +13,7 @@
  * initialization, before plugins are loaded.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import {
   initStewardEvmAccount,
   isStewardCloudProvisioned,
@@ -56,8 +56,8 @@ export async function stewardEvmPreBoot(runtime: IAgentRuntime): Promise<void> {
       // even before initStewardWalletCache() runs.
       const addr = _stewardAccount.address;
       if (addr && addr !== "0x0000000000000000000000000000000000000000") {
-        process.env.ELIZA_MANAGED_EVM_ADDRESS = addr;
-        console.log(`[StewardEvmBridge] Set ELIZA_MANAGED_EVM_ADDRESS=${addr}`);
+        process.env.TOKAGENT_MANAGED_EVM_ADDRESS = addr;
+        console.log(`[StewardEvmBridge] Set TOKAGENT_MANAGED_EVM_ADDRESS=${addr}`);
       }
       _initialized = true;
     }

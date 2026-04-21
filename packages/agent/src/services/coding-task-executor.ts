@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import type { Content, IAgentRuntime, Memory, UUID } from "@elizaos/core";
+import type { Content, IAgentRuntime, Memory, UUID } from "@tokagentos/core";
 import type { TaskExecutor, TaskResult, TaskSpec } from "./task-executor.js";
 
 const CODING_PATTERNS =

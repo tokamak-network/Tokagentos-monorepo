@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Telegram bot using elizaOS with full message pipeline.
+Telegram bot using tokagentOS with full message pipeline.
 
 Required env vars: TELEGRAM_BOT_TOKEN, OPENAI_API_KEY
 Optional: POSTGRES_URL (defaults to PGLite)
@@ -17,12 +17,12 @@ logger = logging.getLogger(__name__)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 logging.getLogger("telegram").setLevel(logging.WARNING)
 
-from elizaos import Character, ChannelType, Content, Memory
-from elizaos.types.primitives import string_to_uuid
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_plugin_sql import sql_plugin
-from elizaos_plugin_telegram import (
+from tokagentos import Character, ChannelType, Content, Memory
+from tokagentos.types.primitives import string_to_uuid
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_plugin_sql import sql_plugin
+from tokagentos_plugin_telegram import (
     TelegramConfig,
     TelegramService,
     TelegramEventType,
@@ -33,10 +33,10 @@ from elizaos_plugin_telegram import (
 
 
 character = Character(
-    name="TelegramEliza",
-    username="telegram_eliza",
+    name="TelegramTokagent",
+    username="telegram_tokagent",
     bio="A helpful AI assistant on Telegram.",
-    system="""You are TelegramEliza, a helpful AI assistant on Telegram.
+    system="""You are TelegramTokagent, a helpful AI assistant on Telegram.
 Be friendly, concise, and genuinely helpful.
 Keep responses short - suitable for mobile chat.""",
 )
@@ -63,7 +63,7 @@ async def main() -> None:
         logger.error("Missing TELEGRAM_BOT_TOKEN or OPENAI_API_KEY")
         sys.exit(1)
 
-    logger.info("Starting TelegramEliza...")
+    logger.info("Starting TelegramTokagent...")
 
     runtime = AgentRuntime(
         character=character,

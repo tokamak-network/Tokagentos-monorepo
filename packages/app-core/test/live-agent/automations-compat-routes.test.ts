@@ -23,18 +23,18 @@ const {
   getDiscordConnectorStatusMock: vi.fn(),
 }));
 
-vi.mock("@elizaos/agent/config/config", () => ({
-  loadElizaConfig: () => ({
+vi.mock("@tokagentos/agent/config/config", () => ({
+  loadTokagentConfig: () => ({
     ui: { assistant: { name: "Milady" } },
     agents: { defaults: { adminEntityId: "admin-entity-id" } },
   }),
 }));
 
-vi.mock("@elizaos/agent/api/workbench-helpers", () => ({
+vi.mock("@tokagentos/agent/api/workbench-helpers", () => ({
   toWorkbenchTask: (...args: unknown[]) => toWorkbenchTaskMock(...args),
 }));
 
-vi.mock("@elizaos/agent/triggers/runtime", () => ({
+vi.mock("@tokagentos/agent/triggers/runtime", () => ({
   listTriggerTasks: (...args: unknown[]) => listTriggerTasksMock(...args),
   taskToTriggerSummary: (...args: unknown[]) =>
     taskToTriggerSummaryMock(...args),
@@ -233,7 +233,7 @@ describe("automations compat routes", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    delete process.env.ELIZA_API_TOKEN;
+    delete process.env.TOKAGENT_API_TOKEN;
 
     toWorkbenchTaskMock.mockImplementation((task) => task);
     listTriggerTasksMock.mockResolvedValue([

@@ -8,7 +8,7 @@ import {
   SidebarContent,
   SidebarPanel,
   SidebarScrollRegion,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { client, type QueryResult } from "../../api";
@@ -101,7 +101,7 @@ function extractMediaFromRows(
     for (const val of Object.values(row)) {
       if (typeof val !== "string") continue;
 
-      // Try parsing as JSON content field (elizaOS memories store JSON in content)
+      // Try parsing as JSON content field (tokagentOS memories store JSON in content)
       const urls = extractUrlsFromValue(val);
       for (const url of urls) {
         const mediaType = classifyUrl(url);

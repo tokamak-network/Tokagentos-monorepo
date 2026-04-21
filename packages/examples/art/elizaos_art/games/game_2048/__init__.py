@@ -4,13 +4,13 @@
 Train an LLM to achieve high scores in the 2048 tile-merging game.
 """
 
-from elizaos_art.games.game_2048.agent import (
+from tokagentos_art.games.game_2048.agent import (
     Game2048Agent,
     Game2048HeuristicAgent,
     Game2048RandomAgent,
 )
-from elizaos_art.games.game_2048.environment import Game2048Environment
-from elizaos_art.games.game_2048.types import Game2048Action, Game2048State
+from tokagentos_art.games.game_2048.environment import Game2048Environment
+from tokagentos_art.games.game_2048.types import Game2048Action, Game2048State
 
 __all__ = [
     "Game2048Environment",

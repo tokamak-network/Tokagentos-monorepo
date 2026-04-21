@@ -9,7 +9,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { resolveStateDir } from "@elizaos/core";
+import { resolveStateDir } from "@tokagentos/core";
 import type { TrajectoryTrainingTask } from "./trajectory-task-datasets.js";
 
 export type TrainingBackend = "vertex" | "atropos" | "tinker" | "native";

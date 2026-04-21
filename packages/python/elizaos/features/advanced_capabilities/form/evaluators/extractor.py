@@ -12,14 +12,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.types import ActionResult, Evaluator, ModelType
-from elizaos.utils.xml import parse_key_value_xml
+from tokagentos.types import ActionResult, Evaluator, ModelType
+from tokagentos.utils.xml import parse_key_value_xml
 
 from ..intent import has_data_to_extract, is_lifecycle_intent, is_ux_intent, quick_intent_detect
 from ..types import ExtractionResult, FormIntent, IntentResult
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 
 async def _validate(

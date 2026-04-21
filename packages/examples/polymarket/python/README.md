@@ -2,8 +2,8 @@
 
 Autonomous Polymarket demo CLI using:
 
-- `elizaos-plugin-evm` (wallet / chain utilities)
-- `elizaos-plugin-polymarket` (CLOB client provider)
+- `tokagentos-plugin-evm` (wallet / chain utilities)
+- `tokagentos-plugin-polymarket` (CLOB client provider)
 
 ## Install
 

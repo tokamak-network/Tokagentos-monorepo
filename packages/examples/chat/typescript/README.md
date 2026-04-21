@@ -1,6 +1,6 @@
-# Eliza Chat Example
+# Tokagent Chat Example
 
-Interactive CLI chat with an AI agent using ElizaOS. Supports multiple LLM providers.
+Interactive CLI chat with an AI agent using TokagentOS. Supports multiple LLM providers.
 
 ## Supported Providers
 
@@ -35,14 +35,14 @@ The chat will automatically use the first provider with a valid API key:
 ## Usage
 
 ```
-🚀 Starting Eliza Chat...
+🚀 Starting Tokagent Chat...
 
 ✅ Using OpenAI for language model
 
-💬 Chat with Eliza (type 'exit' to quit)
+💬 Chat with Tokagent (type 'exit' to quit)
 
 You: Hello!
-Eliza: Hello! How can I help you today?
+Tokagent: Hello! How can I help you today?
 
 You: exit
 👋 Goodbye!

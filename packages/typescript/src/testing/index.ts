@@ -1,5 +1,5 @@
 /**
- * @fileoverview elizaOS Integration Testing Infrastructure
+ * @fileoverview tokagentOS Integration Testing Infrastructure
  *
  * This module provides REAL integration testing utilities that use:
  * - Real database (PGLite by default, Postgres if configured)
@@ -13,7 +13,7 @@
  *   createIntegrationTestRuntime,
  *   withTestRuntime,
  *   requireInferenceProvider,
- * } from '@elizaos/core/testing';
+ * } from '@tokagentos/core/testing';
  *
  * describe('My Integration Tests', () => {
  *   it('should process a message with real inference', async () => {

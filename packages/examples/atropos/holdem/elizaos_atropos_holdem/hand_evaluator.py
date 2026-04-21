@@ -8,7 +8,7 @@ from collections import Counter
 from itertools import combinations
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_holdem.types import Card, Rank, HandRank
+from tokagentos_atropos_holdem.types import Card, Rank, HandRank
 
 if TYPE_CHECKING:
     pass

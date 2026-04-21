@@ -2,7 +2,7 @@ import {
   type IAgentRuntime,
   resolveCanonicalOwnerId,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 type WorldMetadataShape = {
   ownership?: { ownerId?: string };

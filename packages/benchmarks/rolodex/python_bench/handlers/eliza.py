@@ -1,6 +1,6 @@
-"""Eliza Handler — LLM-based extraction via a real AgentRuntime.
+"""Tokagent Handler — LLM-based extraction via a real AgentRuntime.
 
-This handler creates a real Eliza AgentRuntime with:
+This handler creates a real Tokagent AgentRuntime with:
   - The plugin-rolodex (evaluator, services)
   - The plugin-openai (model handlers for LLM calls)
 
@@ -166,7 +166,7 @@ class _BenchmarkRuntime:
             self._model_provider = "openai"
         except ImportError:
             logger.warning(
-                "openai package not available; Eliza handler will not "
+                "openai package not available; Tokagent handler will not "
                 "work without a model provider"
             )
 
@@ -238,21 +238,21 @@ class _BenchmarkRuntime:
             return None
 
         except Exception:
-            logger.exception("[ElizaHandler] Model call failed")
+            logger.exception("[TokagentHandler] Model call failed")
             return None
 
 
 # ── Handler ───────────────────────────────────────
 
 
-class ElizaHandler:
+class TokagentHandler:
     """LLM-based handler that uses a real model provider.
 
     Creates an in-memory runtime, sends messages through the
     relationship extraction evaluator, and collects results.
     """
 
-    name: str = "Eliza (LLM)"
+    name: str = "Tokagent (LLM)"
 
     def __init__(self) -> None:
         self._runtime: _BenchmarkRuntime | None = None
@@ -268,7 +268,7 @@ class ElizaHandler:
         self, conv: Conversation, world: GroundTruthWorld
     ) -> Extraction:
         if not self._runtime:
-            raise RuntimeError("Eliza handler not initialized — call setup() first")
+            raise RuntimeError("Tokagent handler not initialized — call setup() first")
 
         start = time.perf_counter()
         traces: list[str] = []
@@ -315,7 +315,7 @@ class ElizaHandler:
         )
 
         # 5. Call the evaluator directly
-        from elizaos_plugin_rolodex.evaluator import (
+        from tokagentos_plugin_rolodex.evaluator import (
             EXTRACTION_PROMPT,
             LLMExtractionOutput,
         )
@@ -558,4 +558,4 @@ class ElizaHandler:
         return Resolution(links=links, traces=traces, wall_time_ms=elapsed)
 
 
-eliza_handler = ElizaHandler()
+tokagent_handler = TokagentHandler()

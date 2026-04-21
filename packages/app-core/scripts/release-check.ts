@@ -17,16 +17,16 @@ const requiredPaths = [
   "dist/index.js",
   "dist/entry.js",
   "dist/build-info.json",
-  "eliza/packages/app-core/scripts",
+  "tokagent/packages/app-core/scripts",
   "scripts/setup-upstreams.mjs",
   "scripts/init-submodules.mjs",
 ];
-const forbiddenPrefixes = ["dist/Eliza.app/"];
+const forbiddenPrefixes = ["dist/Tokagent.app/"];
 const orchestratorBrokenLifecycleTarget = "./scripts/ensure-node-pty.mjs";
 const orchestratorPluginPackageJsonPathCandidates = [
-  resolve("eliza", "plugins", "plugin-agent-orchestrator", "package.json"),
+  resolve("tokagent", "plugins", "plugin-agent-orchestrator", "package.json"),
   resolve(
-    ".eliza.ci-disabled",
+    ".tokagent.ci-disabled",
     "plugins",
     "plugin-agent-orchestrator",
     "package.json",
@@ -39,12 +39,12 @@ const orchestratorPluginPackageJsonPathCandidates = [
   ),
 ] as const;
 const autonomousServerPathCandidates = [
-  "node_modules/@elizaos/agent/src/api/server.js",
-  "eliza/packages/agent/src/api/server.ts",
+  "node_modules/@tokagentos/agent/src/api/server.js",
+  "tokagent/packages/agent/src/api/server.ts",
 ] as const;
-const autonomousElizaPathCandidates = [
-  "node_modules/@elizaos/agent/src/runtime/eliza.js",
-  "eliza/packages/agent/src/runtime/eliza.ts",
+const autonomousTokagentPathCandidates = [
+  "node_modules/@tokagentos/agent/src/runtime/tokagent.js",
+  "tokagent/packages/agent/src/runtime/tokagent.ts",
 ] as const;
 const homepageReleaseDataPathCandidates = [
   "apps/homepage/src/generated/release-data.ts",
@@ -72,8 +72,8 @@ const requiredWorkflowSnippets = [
   "name: Restore build metadata after test rebuilds",
   "name: Release readiness checks",
   // biome-ignore lint/suspicious/noTemplateCurlyInString: GitHub Actions expression
-  "ELIZA_RELEASE_TAG: ${{ needs.prepare.outputs.tag }}",
-  'ELIZA_VALIDATE_CDN: "1"',
+  "TOKAGENT_RELEASE_TAG: ${{ needs.prepare.outputs.tag }}",
+  'TOKAGENT_VALIDATE_CDN: "1"',
   "run: bun run release:check",
   "build-browser-companions:",
   "name: Build LifeOps Browser companions",
@@ -91,7 +91,7 @@ const requiredWorkflowSnippets = [
   "for attempt in 1 2 3; do",
   `bun install failed on attempt \${attempt}; retrying in 15 seconds`,
   "name: Ensure avatar assets",
-  "node eliza/packages/app-core/scripts/ensure-avatars.mjs",
+  "node tokagent/packages/app-core/scripts/ensure-avatars.mjs",
   "name: Prepare Whisper model artifact",
   "bash apps/app/electrobun/scripts/ensure-whisper-model.sh base.en",
   "name: Upload Whisper model artifact",
@@ -106,7 +106,7 @@ const requiredWorkflowSnippets = [
   "name: Download Whisper model artifact",
   "name: Seed Whisper model cache",
   "Stage desktop bundle inputs",
-  "node eliza/packages/app-core/scripts/desktop-build.mjs stage --variant=base --build-whisper",
+  "node tokagent/packages/app-core/scripts/desktop-build.mjs stage --variant=base --build-whisper",
   "Inject version.json into bundle (Windows)",
   "Inject version.json into bundle (macOS / Linux)",
   '"identifier":"com.miladyai.milady"',
@@ -125,29 +125,29 @@ const requiredWorkflowSnippets = [
   "Start-Process -FilePath $installer",
   "Extract Windows app bundle for Inno Setup",
   '$extractDir = "C:\\m"',
-  "eliza-dist/entry.js found",
+  "tokagent-dist/entry.js found",
   "Build Inno Setup installer",
   "packaging/inno/build-inno.ps1",
   '-BuildDir "C:\\m"',
   "Verify Windows public installer looks complete",
-  'Get-ChildItem -Path "apps/app/electrobun/artifacts" -File -Filter "ElizaOSApp-Setup-*.exe"',
+  'Get-ChildItem -Path "apps/app/electrobun/artifacts" -File -Filter "TokagentOSApp-Setup-*.exe"',
   "$minimumBytes = 50MB",
   "apps/app/electrobun/artifacts/*.exe",
   "name: Prepare public canary Windows installer artifact",
   "needs.prepare.outputs.env == 'canary'",
   '$publicCanaryDir = Join-Path $artifactsDir "public-canary-installer"',
-  '$canonicalInstallers = Get-ChildItem -Path $artifactsDir -File -Filter "ElizaOSApp-Setup-*.exe"',
+  '$canonicalInstallers = Get-ChildItem -Path $artifactsDir -File -Filter "TokagentOSApp-Setup-*.exe"',
   "Copy-Item $canonicalInstaller.FullName -Destination $publicCanaryDir -Force",
-  '$canonicalInstallerZips = Get-ChildItem -Path $artifactsDir -File -Filter "ElizaOSApp-Setup-*.exe.zip"',
+  '$canonicalInstallerZips = Get-ChildItem -Path $artifactsDir -File -Filter "TokagentOSApp-Setup-*.exe.zip"',
   "No canonical Windows installer (or zip fallback) found for canary artifact publishing.",
   "Expand-Archive -Path $canonicalInstallerZip.FullName -DestinationPath $publicCanaryDir -Force",
   "Prepared public canary installer artifact:",
   "name: Upload public canary installer artifact",
   "name: electrobun-$" + "{{ matrix.platform.artifact-name }}-public-installer",
-  "path: apps/app/electrobun/artifacts/public-canary-installer/ElizaOSApp-Setup-*.exe",
+  "path: apps/app/electrobun/artifacts/public-canary-installer/TokagentOSApp-Setup-*.exe",
   "name: Collect public release files",
-  '-name "ElizaOSApp-Setup-*.exe" -o \\',
-  '-name "ElizaOSApp-Setup-*.exe.zip" -o \\',
+  '-name "TokagentOSApp-Setup-*.exe" -o \\',
+  '-name "TokagentOSApp-Setup-*.exe.zip" -o \\',
   '-name "*Setup*.tar.gz" -o \\',
   "name: Collect update channel files",
   "pattern: lifeops-browser-*",
@@ -164,23 +164,23 @@ const requiredWorkflowSnippets = [
   'echo "cache-dir=$package_dir/.cache" >> "$GITHUB_OUTPUT"',
   "path: $" + "{{ steps.resolve-electrobun.outputs.cache-dir }}",
   "name: Build patched Electrobun CLI for Windows",
-  'node eliza/packages/app-core/scripts/build-patched-electrobun-cli.mjs "$' +
+  'node tokagent/packages/app-core/scripts/build-patched-electrobun-cli.mjs "$' +
     '{{ steps.resolve-electrobun.outputs.package-dir }}"',
-  "node eliza/packages/app-core/scripts/desktop-build.mjs package --env=$" +
+  "node tokagent/packages/app-core/scripts/desktop-build.mjs package --env=$" +
     "{{ needs.prepare.outputs.env }}",
-  "ELIZA_ELECTROBUN_NOTARIZE: 0",
-  'ELIZA_DISABLE_LOCAL_EMBEDDINGS: "1"',
-  'ELIZA_WINDOWS_SMOKE_REQUIRE_INSTALLER: "1"',
-  "ELIZA_TEST_WINDOWS_INSTALL_DIR: $" + "{{ runner.temp }}\\mi",
+  "TOKAGENT_ELECTROBUN_NOTARIZE: 0",
+  'TOKAGENT_DISABLE_LOCAL_EMBEDDINGS: "1"',
+  'TOKAGENT_WINDOWS_SMOKE_REQUIRE_INSTALLER: "1"',
+  "TOKAGENT_TEST_WINDOWS_INSTALL_DIR: $" + "{{ runner.temp }}\\mi",
   "name: Run Windows clean installer proof",
   "verify-windows-installer-proof.ps1",
-  "ELIZA_TEST_WINDOWS_PROOF_INSTALL_DIR: $" + "{{ runner.temp }}\\mi-proof",
+  "TOKAGENT_TEST_WINDOWS_PROOF_INSTALL_DIR: $" + "{{ runner.temp }}\\mi-proof",
   "name: Upload Windows installer proof artifact",
   "path: apps/app/electrobun/artifacts/windows-installer-proof/**",
   "if: always() && matrix.platform.os == 'windows'",
   "ANTHROPIC_API_KEY: $" + "{{ secrets.ANTHROPIC_API_KEY }}",
-  "ELIZAOS_CLOUD_API_KEY: $" + "{{ secrets.ELIZAOS_CLOUD_API_KEY }}",
-  "ELIZAOS_CLOUD_BASE_URL: $" + "{{ secrets.ELIZAOS_CLOUD_BASE_URL }}",
+  "TOKAGENTOS_CLOUD_API_KEY: $" + "{{ secrets.TOKAGENTOS_CLOUD_API_KEY }}",
+  "TOKAGENTOS_CLOUD_BASE_URL: $" + "{{ secrets.TOKAGENTOS_CLOUD_BASE_URL }}",
   "bun run test:desktop:packaged:windows",
   'Write-Error "Packaged Windows smoke test exited with code $LASTEXITCODE."',
   "bun run test:desktop:playwright",
@@ -257,12 +257,12 @@ const forbiddenElectrobunPrWorkflowSnippets = [
 const requiredElectrobunConfigSnippets = [
   'postBuild: "scripts/postwrap-sign-runtime-macos.ts"',
   'postWrap: "scripts/postwrap-diagnostics.ts"',
-  "process.env.ELIZA_ELECTROBUN_NOTARIZE ??",
+  "process.env.TOKAGENT_ELECTROBUN_NOTARIZE ??",
   "[repoPluginsJsonPath]: `${runtimeDistDir}/plugins.json`",
   "[repoPackageJsonPath]: `${runtimeDistDir}/package.json`",
 ];
 const electrobunDirCandidates = [
-  resolve("eliza", "packages", "app-core", "platforms", "electrobun"),
+  resolve("tokagent", "packages", "app-core", "platforms", "electrobun"),
   resolve("apps", "app", "electrobun"),
 ];
 
@@ -290,8 +290,8 @@ type RootPackageJson = {
   scripts?: Record<string, string>;
 };
 const cloudAgentTemplateReleaseDependencies = [
-  "@elizaos/core",
-  "@elizaos/plugin-elizacloud",
+  "@tokagentos/core",
+  "@elizaos/plugin-tokagentcloud",
   "@elizaos/plugin-sql",
 ] as const;
 
@@ -389,7 +389,7 @@ export function sanitizeNpmOverridesForPack(pkg: RootPackageJson): {
  * result.
  *
  * Why: `npm pack --dry-run` validates `overrides` using npm's resolution rules.
- * That trips on two Eliza patterns:
+ * That trips on two Tokagent patterns:
  * - override entries that still use Bun's `workspace:*` protocol
  * - override entries for direct dependencies that themselves remain
  *   `workspace:*` in the root package
@@ -627,7 +627,7 @@ function runFastLocalPackCheck(hotspots: string[]) {
     console.warn(`  - ${hotspot}`);
   }
   console.warn(
-    "release-check: package.json files includes 'dist' and 'apps/app/dist', so a local pack dry-run has to walk those trees. Set ELIZA_FORCE_PACK_DRY_RUN=1 to run the exact pack check anyway.",
+    "release-check: package.json files includes 'dist' and 'apps/app/dist', so a local pack dry-run has to walk those trees. Set TOKAGENT_FORCE_PACK_DRY_RUN=1 to run the exact pack check anyway.",
   );
 
   const rootPackage = JSON.parse(
@@ -677,7 +677,7 @@ function assertBundledAgentOrchestratorInstallFix() {
     resolveOrchestratorPluginPackageJsonPath();
   if (!bundlesDependency(rootPackage, "@elizaos/plugin-agent-orchestrator")) {
     console.error(
-      "release-check: package.json must bundle @elizaos/plugin-agent-orchestrator so packaged Eliza includes the standalone orchestrator implementation.",
+      "release-check: package.json must bundle @elizaos/plugin-agent-orchestrator so packaged Tokagent includes the standalone orchestrator implementation.",
     );
     process.exit(1);
   }
@@ -710,7 +710,7 @@ function assertBundledAgentOrchestratorInstallFix() {
     )
   ) {
     console.error(
-      "release-check: @elizaos/plugin-agent-orchestrator references scripts/ensure-node-pty.mjs in postinstall, but that file is missing under eliza/plugins/plugin-agent-orchestrator/scripts/.",
+      "release-check: @elizaos/plugin-agent-orchestrator references scripts/ensure-node-pty.mjs in postinstall, but that file is missing under tokagent/plugins/plugin-agent-orchestrator/scripts/.",
     );
     process.exit(1);
   }
@@ -752,7 +752,7 @@ function assertOrchestratorVersionPinned() {
 function assertCloudAgentTemplateDependenciesPinned() {
   const cloudAgentPackage = JSON.parse(
     readFileSync(
-      "eliza/packages/app-core/deploy/cloud-agent-template/package.json",
+      "tokagent/packages/app-core/deploy/cloud-agent-template/package.json",
       "utf8",
     ),
   ) as RootPackageJson;
@@ -763,7 +763,7 @@ function assertCloudAgentTemplateDependenciesPinned() {
 
   if (floating.length > 0) {
     console.error(
-      "release-check: eliza/packages/app-core/deploy/cloud-agent-template/package.json must pin release dependencies to exact versions.",
+      "release-check: tokagent/packages/app-core/deploy/cloud-agent-template/package.json must pin release dependencies to exact versions.",
     );
     for (const dependency of floating) {
       console.error(`  - ${dependency.name}: ${dependency.specifier}`);
@@ -777,7 +777,7 @@ function assertAgentDependenciesAlignedWithRootPins() {
     readFileSync("package.json", "utf8"),
   ) as RootPackageJson;
   const agentPackage = JSON.parse(
-    readFileSync("eliza/packages/agent/package.json", "utf8"),
+    readFileSync("tokagent/packages/agent/package.json", "utf8"),
   ) as RootPackageJson;
   const mismatches = findMismatchedSharedAgentDependencySpecs(
     rootPackage,
@@ -818,7 +818,7 @@ function assertReleaseWorkflowHasNotaryWrapper() {
   }
 
   const patchedCliHelper = readFileSync(
-    "eliza/packages/app-core/scripts/build-patched-electrobun-cli.mjs",
+    "tokagent/packages/app-core/scripts/build-patched-electrobun-cli.mjs",
     "utf8",
   );
   const missingPatchedCli =
@@ -968,18 +968,18 @@ function assertWindowsSmokeScriptHasLeadingParamBlock() {
   const requiredSnippets = [
     "Find-Launcher $resolvedBuildDir",
     'Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "*.tar.zst"',
-    'Join-Path $env:APPDATA "Eliza\\\\eliza-startup.log"',
-    '$requireInstaller = $env:ELIZA_WINDOWS_SMOKE_REQUIRE_INSTALLER -eq "1"',
+    'Join-Path $env:APPDATA "Tokagent\\\\tokagent-startup.log"',
+    '$requireInstaller = $env:TOKAGENT_WINDOWS_SMOKE_REQUIRE_INSTALLER -eq "1"',
     "Installing via Inno Setup:",
     "/VERYSILENT",
     "installed Inno package",
-    "$persistLauncherPathFile = $env:ELIZA_TEST_WINDOWS_LAUNCHER_PATH_FILE",
+    "$persistLauncherPathFile = $env:TOKAGENT_TEST_WINDOWS_LAUNCHER_PATH_FILE",
     "Installer-required runs skip build/tarball reuse and validate the installed package directly.",
     "Using $launcherSource launcher:",
     "Using packaged tarball:",
     "Find-Launcher $selfExtractionRoot",
     "Started extracted launcher:",
-    '$startupSessionId = "eliza-windows-smoke-"',
+    '$startupSessionId = "tokagent-windows-smoke-"',
     "$tempRoot = if ($env:RUNNER_TEMP)",
     "$startupStateFile = Join-Path $tempRoot",
     '$startupBootstrapFile = Join-Path $startupBundleRoot "startup-session.json"',
@@ -1024,9 +1024,9 @@ function assertWindowsInstallerProofScript() {
   );
 
   const requiredSnippets = [
-    "Eliza-Setup-*.exe",
+    "Tokagent-Setup-*.exe",
     "smoke-test-windows.ps1",
-    "ELIZA_WINDOWS_SMOKE_REQUIRE_INSTALLER",
+    "TOKAGENT_WINDOWS_SMOKE_REQUIRE_INSTALLER",
     "Start Menu",
     "unins*.exe",
     "proof-summary.json",
@@ -1048,7 +1048,7 @@ function assertWindowsInstallerProofScript() {
 
 function assertInnoBuildScriptHasTimeoutAndHeartbeat() {
   const script = readFileSync(
-    "eliza/packages/app-core/packaging/inno/build-inno.ps1",
+    "tokagent/packages/app-core/packaging/inno/build-inno.ps1",
     "utf8",
   );
   const requiredSnippets = [
@@ -1077,12 +1077,12 @@ function assertInnoBuildScriptHasTimeoutAndHeartbeat() {
 
 function assertInnoTemplateTargetsBundledLauncher() {
   const template = readFileSync(
-    "eliza/packages/app-core/packaging/inno/ElizaOSApp.iss",
+    "tokagent/packages/app-core/packaging/inno/TokagentOSApp.iss",
     "utf8",
   );
   const requiredSnippets = [
     '#define MyAppExeName "bin\\launcher.exe"',
-    '#define MyAppIconFile "ElizaOSApp.ico"',
+    '#define MyAppIconFile "TokagentOSApp.ico"',
     'Source: "{#MySetupIconFile}"; DestDir: "{app}"; DestName: "{#MyAppIconFile}"; Flags: ignoreversion',
     "UninstallDisplayIcon={app}\\{#MyAppIconFile}",
     'Name: "{autoprograms}\\{#MyDefaultGroupName}\\{#MyAppName}"; Filename: "{app}\\{#MyAppExeName}"; IconFilename: "{app}\\{#MyAppIconFile}"',
@@ -1094,7 +1094,7 @@ function assertInnoTemplateTargetsBundledLauncher() {
 
   if (missingSnippets.length > 0) {
     console.error(
-      "release-check: Eliza.iss must point Windows shortcuts at bin\\launcher.exe and use Eliza.ico for uninstall and shortcut icons.",
+      "release-check: Tokagent.iss must point Windows shortcuts at bin\\launcher.exe and use Tokagent.ico for uninstall and shortcut icons.",
     );
     for (const snippet of missingSnippets) {
       console.error(`  - ${snippet}`);
@@ -1104,7 +1104,7 @@ function assertInnoTemplateTargetsBundledLauncher() {
 
   if (template.includes('#define MyAppExeName "launcher.exe"')) {
     console.error(
-      "release-check: Eliza.iss must not point Windows shortcuts at {app}\\launcher.exe; the bundled launcher lives under bin\\.",
+      "release-check: Tokagent.iss must not point Windows shortcuts at {app}\\launcher.exe; the bundled launcher lives under bin\\.",
     );
     process.exit(1);
   }
@@ -1199,45 +1199,45 @@ function assertServerDynamicHyperscapeImport() {
 }
 
 function assertStartApiServerCatchBlockSafety() {
-  const elizaSource = readExistingReleaseCheckFile(
+  const tokagentSource = readExistingReleaseCheckFile(
     "autonomous runtime source",
-    autonomousElizaPathCandidates,
+    autonomousTokagentPathCandidates,
   );
 
   // The catch block around startApiServer must use console.error so errors
   // are visible in packaged builds (Electrobun agent.ts reads stderr).
-  if (!elizaSource.includes("console.error(apiErrMsg)")) {
+  if (!tokagentSource.includes("console.error(apiErrMsg)")) {
     console.error(
-      "release-check: eliza.ts startApiServer catch block must use console.error(apiErrMsg) so errors are visible in packaged builds.",
+      "release-check: tokagent.ts startApiServer catch block must use console.error(apiErrMsg) so errors are visible in packaged builds.",
     );
     process.exit(1);
   }
 
   // In server-only mode, a failed API server must be fatal.
-  const catchIndex = elizaSource.indexOf("catch (apiErr)");
+  const catchIndex = tokagentSource.indexOf("catch (apiErr)");
   if (catchIndex === -1) {
     console.error(
-      "release-check: eliza.ts must have a catch (apiErr) block around startApiServer.",
+      "release-check: tokagent.ts must have a catch (apiErr) block around startApiServer.",
     );
     process.exit(1);
   }
-  const catchBlock = elizaSource.slice(
+  const catchBlock = tokagentSource.slice(
     catchIndex,
-    elizaSource.indexOf("// ── Server-only mode", catchIndex),
+    tokagentSource.indexOf("// ── Server-only mode", catchIndex),
   );
   if (
     !catchBlock.includes("opts?.serverOnly") ||
     !catchBlock.includes("process.exit(1)")
   ) {
     console.error(
-      "release-check: eliza.ts startApiServer catch block must call process.exit(1) when opts?.serverOnly is true.",
+      "release-check: tokagent.ts startApiServer catch block must call process.exit(1) when opts?.serverOnly is true.",
     );
     process.exit(1);
   }
 }
 
 function maybeValidateCdnAssets() {
-  if (process.env.ELIZA_VALIDATE_CDN !== "1") {
+  if (process.env.TOKAGENT_VALIDATE_CDN !== "1") {
     return;
   }
 

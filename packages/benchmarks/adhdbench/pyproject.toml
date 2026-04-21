@@ -1,18 +1,18 @@
 [project]
-name = "elizaos-adhdbench"
+name = "tokagentos-adhdbench"
 version = "0.1.0"
-description = "Attention & context scaling benchmark for ElizaOS agents"
+description = "Attention & context scaling benchmark for TokagentOS agents"
 requires-python = ">=3.11"
 dependencies = [
-    "elizaos",
+    "tokagentos",
     "rich>=15,<16",
     "pyyaml>=6.0,<7",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0,<9", "pytest-asyncio>=1.3,<2"]
-openai = ["elizaos-plugin-openai"]
-anthropic = ["elizaos-plugin-anthropic"]
+openai = ["tokagentos-plugin-openai"]
+anthropic = ["tokagentos-plugin-anthropic"]
 
 [project.scripts]
 adhdbench = "scripts.run_benchmark:main"
@@ -22,7 +22,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_adhdbench"]
+packages = ["tokagentos_adhdbench"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

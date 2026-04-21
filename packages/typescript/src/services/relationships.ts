@@ -2098,7 +2098,7 @@ export class RelationshipsService extends Service {
 	 *
 	 * The returned array always includes `primaryEntityId` itself.
 	 * Semantics match the runtime-level clusterer in
-	 * `@elizaos/agent/src/services/relationships-graph.ts` (buildClusters),
+	 * `@tokagentos/agent/src/services/relationships-graph.ts` (buildClusters),
 	 * including contact-platform suppression (email/phone/website handles
 	 * are *not* treated as cluster-forming — they're enrichment, not
 	 * identity evidence).

@@ -20,18 +20,18 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from elizaos_art.base import TrainingConfig
-from elizaos_art.games.game_2048.agent import (
+from tokagentos_art.base import TrainingConfig
+from tokagentos_art.games.game_2048.agent import (
     Game2048Agent,
     Game2048HeuristicAgent,
     Game2048RandomAgent,
 )
-from elizaos_art.games.game_2048.environment import Game2048Environment
-from elizaos_art.games.game_2048.types import Game2048Action, Game2048Config
-from elizaos_art.trainer import GRPOTrainer
+from tokagentos_art.games.game_2048.environment import Game2048Environment
+from tokagentos_art.games.game_2048.types import Game2048Action, Game2048Config
+from tokagentos_art.trainer import GRPOTrainer
 
 app = typer.Typer(
-    name="elizaos-art-2048",
+    name="tokagentos-art-2048",
     help="2048 game training with ART/GRPO",
 )
 console = Console()

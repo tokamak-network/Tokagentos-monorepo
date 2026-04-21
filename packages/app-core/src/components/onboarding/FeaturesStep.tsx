@@ -1,4 +1,4 @@
-import { Button, cn } from "@elizaos/app-core";
+import { Button, cn } from "@tokagentos/app-core";
 import { useCallback, useMemo } from "react";
 import { useApp } from "../../state";
 import { FeatureCard, type FeatureStatus } from "./features/FeatureCard";
@@ -61,7 +61,7 @@ const FEATURES: FeatureDef[] = [
     nameDefault: "Telegram",
     descKey: "onboarding.features.telegram.desc",
     descDefault:
-      "Message your agent on Telegram. Fully managed via Eliza Cloud.",
+      "Message your agent on Telegram. Fully managed via Tokagent Cloud.",
     managed: true,
     cloudOnly: true,
   },
@@ -72,7 +72,7 @@ const FEATURES: FeatureDef[] = [
     nameDefault: "Discord",
     descKey: "onboarding.features.discord.desc",
     descDefault:
-      "Connect your agent to Discord. Fully managed via Eliza Cloud.",
+      "Connect your agent to Discord. Fully managed via Tokagent Cloud.",
     managed: true,
     cloudOnly: true,
   },
@@ -119,7 +119,7 @@ const FEATURE_STATE_KEYS: Record<string, string> = {
 
 export function FeaturesStep() {
   const {
-    elizaCloudConnected,
+    tokagentCloudConnected,
     onboardingServerTarget,
     onboardingFeatureTelegram,
     onboardingFeatureDiscord,
@@ -134,7 +134,7 @@ export function FeaturesStep() {
   } = useApp();
 
   const hasCloud =
-    elizaCloudConnected || onboardingServerTarget === "elizacloud";
+    tokagentCloudConnected || onboardingServerTarget === "tokagentcloud";
 
   const enabledMap: Record<string, boolean> = useMemo(
     () => ({

@@ -1,5 +1,5 @@
 /**
- * Elizagotchi elizaOS Plugin
+ * Tokagentgotchi tokagentOS Plugin
  *
  * Goal: make the AgentRuntime the source of truth.
  * - Pet state is stored inside the agent runtime (settings via localdb/sql adapter)
@@ -9,8 +9,8 @@
 
 import {
   type AgentRuntime,
-  type Action as ElizaAction,
-  type ActionResult as ElizaActionResult,
+  type Action as TokagentAction,
+  type ActionResult as TokagentActionResult,
   type EventPayload,
   type HandlerCallback,
   type HandlerOptions,
@@ -19,7 +19,7 @@ import {
   ModelType,
   type Plugin,
   Service,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   checkHatch,
   createNewPet,
@@ -41,16 +41,16 @@ import type {
 // Storage keys (agent-internal)
 // ============================================================================
 
-const PET_STATE_SETTING_KEY = "ELIZAGOTCHI_PET_STATE_JSON";
+const PET_STATE_SETTING_KEY = "TOKAGENTGOTCHI_PET_STATE_JSON";
 const SAVE_VERSION = 1 as const;
 
 // ============================================================================
 // Custom runtime events (in-process)
 // ============================================================================
 
-export const ELIZAGOTCHI_STATE_UPDATED_EVENT = "ELIZAGOTCHI_STATE_UPDATED";
+export const TOKAGENTGOTCHI_STATE_UPDATED_EVENT = "TOKAGENTGOTCHI_STATE_UPDATED";
 
-export type ElizagotchiStateUpdatedPayload = EventPayload & {
+export type TokagentgotchiStateUpdatedPayload = EventPayload & {
   petState: PetState;
   message?: string;
   animation?: AnimationType;
@@ -63,13 +63,13 @@ export type ElizagotchiStateUpdatedPayload = EventPayload & {
 function loadPetState(runtime: IAgentRuntime): PetState {
   const raw = runtime.getSetting(PET_STATE_SETTING_KEY);
   if (typeof raw !== "string" || raw.trim() === "") {
-    return createNewPet("Elizagotchi");
+    return createNewPet("Tokagentgotchi");
   }
 
   try {
     const parsed = JSON.parse(raw) as Partial<PetState>;
     if (!parsed || typeof parsed !== "object") {
-      return createNewPet("Elizagotchi");
+      return createNewPet("Tokagentgotchi");
     }
 
     // Minimal shape checks to avoid crashing on corrupted storage
@@ -81,12 +81,12 @@ function loadPetState(runtime: IAgentRuntime): PetState {
       typeof parsed.birthTime !== "number" ||
       typeof parsed.lastUpdate !== "number"
     ) {
-      return createNewPet("Elizagotchi");
+      return createNewPet("Tokagentgotchi");
     }
 
     return parsed as PetState;
   } catch {
-    return createNewPet("Elizagotchi");
+    return createNewPet("Tokagentgotchi");
   }
 }
 
@@ -139,7 +139,7 @@ async function publishState(
   callback: HandlerCallback | undefined,
   payload: { message?: string; animation?: AnimationType; kind?: string },
 ): Promise<void> {
-  const kind = payload.kind ?? "elizagotchi_state";
+  const kind = payload.kind ?? "tokagentgotchi_state";
 
   emitStateEvent(runtime, petState, {
     message: payload.message,
@@ -161,13 +161,13 @@ function emitStateEvent(
   petState: PetState,
   payload: { message?: string; animation?: AnimationType },
 ): void {
-  (runtime as AgentRuntime).emit(ELIZAGOTCHI_STATE_UPDATED_EVENT, {
+  (runtime as AgentRuntime).emit(TOKAGENTGOTCHI_STATE_UPDATED_EVENT, {
     runtime,
-    source: "elizagotchi",
+    source: "tokagentgotchi",
     petState,
     message: payload.message,
     animation: payload.animation,
-  } as ElizagotchiStateUpdatedPayload);
+  } as TokagentgotchiStateUpdatedPayload);
 }
 
 function makeGameAction(params: {
@@ -183,13 +183,13 @@ function makeGameAction(params: {
     message?: string;
     success: boolean;
   };
-}): ElizaAction {
+}): TokagentAction {
   return {
     name: params.name,
     description: params.description,
     similes: params.similes,
     validate: async (_runtime: IAgentRuntime, message) => {
-      // Validate that this is an elizagotchi-related action by checking message content
+      // Validate that this is an tokagentgotchi-related action by checking message content
       const text = (message?.content?.text ?? "").toLowerCase();
       const actionKeywords = params.similes.map((s) => s.toLowerCase());
 
@@ -199,7 +199,7 @@ function makeGameAction(params: {
       // Also check for pet/game context words
       const hasPetContext =
         text.includes("pet") ||
-        text.includes("elizagotchi") ||
+        text.includes("tokagentgotchi") ||
         text.includes("tamagotchi") ||
         text.includes("game");
 
@@ -211,7 +211,7 @@ function makeGameAction(params: {
       _state,
       options,
       callback,
-    ): Promise<ElizaActionResult> => {
+    ): Promise<TokagentActionResult> => {
       const result = params.run(runtime, options);
       await publishState(runtime, result.petState, callback, {
         message: result.message,
@@ -227,11 +227,11 @@ function makeGameAction(params: {
 }
 
 // ============================================================================
-// elizaOS actions
+// tokagentOS actions
 // ============================================================================
 
-const tickAction: ElizaAction = {
-  name: "ELIZAGOTCHI_TICK",
+const tickAction: TokagentAction = {
+  name: "TOKAGENTGOTCHI_TICK",
   description: "Advance the pet simulation based on elapsed time.",
   similes: ["tick", "update", "step", "__tick__"],
   validate: async (_runtime: IAgentRuntime, message) => {
@@ -245,14 +245,14 @@ const tickAction: ElizaAction = {
     const updated = applyTimeUpdate(current);
     savePetState(runtime, updated);
     await publishState(runtime, updated, callback, {
-      kind: "elizagotchi_tick",
+      kind: "tokagentgotchi_tick",
     });
-    return { success: true, data: { actionName: "ELIZAGOTCHI_TICK" } };
+    return { success: true, data: { actionName: "TOKAGENTGOTCHI_TICK" } };
   },
 };
 
-const statusAction: ElizaAction = {
-  name: "ELIZAGOTCHI_STATUS",
+const statusAction: TokagentAction = {
+  name: "TOKAGENTGOTCHI_STATUS",
   description: "Get a full status readout of the pet (with stats).",
   similes: ["status", "stats", "info", "health"],
   validate: async (_runtime: IAgentRuntime, message) => {
@@ -269,21 +269,21 @@ const statusAction: ElizaAction = {
     const updated = applyTimeUpdate(current);
     savePetState(runtime, updated);
     await publishState(runtime, updated, callback, {
-      kind: "elizagotchi_status",
+      kind: "tokagentgotchi_status",
       message: formatStatus(updated),
       animation: "idle",
     });
     return {
       success: true,
       text: formatStatus(updated),
-      data: { actionName: "ELIZAGOTCHI_STATUS", petState: updated },
+      data: { actionName: "TOKAGENTGOTCHI_STATUS", petState: updated },
     };
   },
 };
 
-const helpAction: ElizaAction = {
-  name: "ELIZAGOTCHI_HELP",
-  description: "Show available Elizagotchi commands.",
+const helpAction: TokagentAction = {
+  name: "TOKAGENTGOTCHI_HELP",
+  description: "Show available Tokagentgotchi commands.",
   similes: ["help", "commands", "options"],
   validate: async (_runtime: IAgentRuntime, message) => {
     const text = (message?.content?.text ?? "").toLowerCase();
@@ -295,18 +295,18 @@ const helpAction: ElizaAction = {
   },
   handler: async (_runtime, _message, _state, _options, callback) => {
     if (callback) {
-      await callback({ type: "elizagotchi_help", text: getHelp() });
+      await callback({ type: "tokagentgotchi_help", text: getHelp() });
     }
     return {
       success: true,
       text: getHelp(),
-      data: { actionName: "ELIZAGOTCHI_HELP" },
+      data: { actionName: "TOKAGENTGOTCHI_HELP" },
     };
   },
 };
 
-const resetAction: ElizaAction = {
-  name: "ELIZAGOTCHI_RESET",
+const resetAction: TokagentAction = {
+  name: "TOKAGENTGOTCHI_RESET",
   description: "Reset the game with a new pet (optionally named).",
   similes: ["reset", "restart", "new", "again", "new pet"],
   validate: async (_runtime: IAgentRuntime, message) => {
@@ -327,24 +327,24 @@ const resetAction: ElizaAction = {
     },
   ],
   handler: async (runtime, _message, _state, options, callback) => {
-    const name = getStringParam(options, "name") || "Elizagotchi";
+    const name = getStringParam(options, "name") || "Tokagentgotchi";
     const fresh = createNewPet(name);
     savePetState(runtime, fresh);
     await publishState(runtime, fresh, callback, {
-      kind: "elizagotchi_reset",
+      kind: "tokagentgotchi_reset",
       message: `🥚 ${name} appeared!`,
       animation: "hatching",
     });
     return {
       success: true,
       text: `🥚 ${name} appeared!`,
-      data: { actionName: "ELIZAGOTCHI_RESET", petState: fresh },
+      data: { actionName: "TOKAGENTGOTCHI_RESET", petState: fresh },
     };
   },
 };
 
-const exportAction: ElizaAction = {
-  name: "ELIZAGOTCHI_EXPORT",
+const exportAction: TokagentAction = {
+  name: "TOKAGENTGOTCHI_EXPORT",
   description: "Export the current pet save data as JSON.",
   similes: ["export", "backup", "save file"],
   validate: async (_runtime: IAgentRuntime, message) => {
@@ -361,19 +361,19 @@ const exportAction: ElizaAction = {
     const saveData = buildSaveData(petState);
     if (callback) {
       await callback({
-        type: "elizagotchi_export",
+        type: "tokagentgotchi_export",
         saveDataJson: JSON.stringify(saveData),
       });
     }
     return {
       success: true,
-      data: { actionName: "ELIZAGOTCHI_EXPORT", saveData },
+      data: { actionName: "TOKAGENTGOTCHI_EXPORT", saveData },
     };
   },
 };
 
-const importAction: ElizaAction = {
-  name: "ELIZAGOTCHI_IMPORT",
+const importAction: TokagentAction = {
+  name: "TOKAGENTGOTCHI_IMPORT",
   description: "Import a pet save JSON and replace the current pet state.",
   similes: ["import", "load save"],
   validate: async (_runtime: IAgentRuntime, message) => {
@@ -424,14 +424,14 @@ const importAction: ElizaAction = {
 
       savePetState(runtime, restored);
       await publishState(runtime, restored, callback, {
-        kind: "elizagotchi_import",
+        kind: "tokagentgotchi_import",
         message: `📥 Loaded ${restored.name}!`,
         animation: "happy",
       });
       return {
         success: true,
         text: `📥 Loaded ${restored.name}!`,
-        data: { actionName: "ELIZAGOTCHI_IMPORT", petState: restored },
+        data: { actionName: "TOKAGENTGOTCHI_IMPORT", petState: restored },
       };
     } catch {
       return { success: false, error: "Invalid save JSON" };
@@ -439,8 +439,8 @@ const importAction: ElizaAction = {
   },
 };
 
-const renameAction: ElizaAction = {
-  name: "ELIZAGOTCHI_NAME",
+const renameAction: TokagentAction = {
+  name: "TOKAGENTGOTCHI_NAME",
   description: "Rename your pet.",
   similes: ["name", "call", "rename"],
   validate: async (_runtime: IAgentRuntime, message) => {
@@ -467,7 +467,7 @@ const renameAction: ElizaAction = {
     const updated = newName ? { ...updatedBase, name: newName } : updatedBase;
     savePetState(runtime, updated);
     await publishState(runtime, updated, callback, {
-      kind: "elizagotchi_name",
+      kind: "tokagentgotchi_name",
       message: newName
         ? `Your pet is now named "${newName}"!`
         : "What would you like to name your pet?",
@@ -478,13 +478,13 @@ const renameAction: ElizaAction = {
       text: newName
         ? `Your pet is now named "${newName}"!`
         : "What would you like to name your pet?",
-      data: { actionName: "ELIZAGOTCHI_NAME", petState: updated },
+      data: { actionName: "TOKAGENTGOTCHI_NAME", petState: updated },
     };
   },
 };
 
 const feedAction = makeGameAction({
-  name: "ELIZAGOTCHI_FEED",
+  name: "TOKAGENTGOTCHI_FEED",
   description: "Feed the pet to reduce hunger.",
   similes: ["feed", "eat", "food", "meal", "snack"],
   animation: "eating",
@@ -502,7 +502,7 @@ const feedAction = makeGameAction({
 });
 
 const playAction = makeGameAction({
-  name: "ELIZAGOTCHI_PLAY",
+  name: "TOKAGENTGOTCHI_PLAY",
   description: "Play with the pet to increase happiness.",
   similes: ["play", "game", "fun", "toy"],
   animation: "playing",
@@ -520,7 +520,7 @@ const playAction = makeGameAction({
 });
 
 const cleanAction = makeGameAction({
-  name: "ELIZAGOTCHI_CLEAN",
+  name: "TOKAGENTGOTCHI_CLEAN",
   description: "Clean up messes and improve cleanliness.",
   similes: ["clean", "wash", "bath", "poop", "dirty"],
   animation: "cleaning",
@@ -538,7 +538,7 @@ const cleanAction = makeGameAction({
 });
 
 const sleepAction = makeGameAction({
-  name: "ELIZAGOTCHI_SLEEP",
+  name: "TOKAGENTGOTCHI_SLEEP",
   description: "Put the pet to sleep (requires lights off).",
   similes: ["sleep", "rest", "nap", "bed"],
   animation: "sleeping",
@@ -556,7 +556,7 @@ const sleepAction = makeGameAction({
 });
 
 const medicineAction = makeGameAction({
-  name: "ELIZAGOTCHI_MEDICINE",
+  name: "TOKAGENTGOTCHI_MEDICINE",
   description: "Give medicine when the pet is sick.",
   similes: ["medicine", "heal", "cure", "doctor", "pill"],
   animation: "happy",
@@ -574,7 +574,7 @@ const medicineAction = makeGameAction({
 });
 
 const disciplineAction = makeGameAction({
-  name: "ELIZAGOTCHI_DISCIPLINE",
+  name: "TOKAGENTGOTCHI_DISCIPLINE",
   description: "Discipline the pet to improve behavior.",
   similes: ["discipline", "scold", "punish", "train", "no", "bad"],
   animation: "sad",
@@ -592,7 +592,7 @@ const disciplineAction = makeGameAction({
 });
 
 const lightToggleAction = makeGameAction({
-  name: "ELIZAGOTCHI_LIGHT_TOGGLE",
+  name: "TOKAGENTGOTCHI_LIGHT_TOGGLE",
   description: "Toggle the lights on/off (affects sleeping).",
   similes: ["light", "lamp", "dark", "bright", "lights"],
   animation: "idle",
@@ -609,7 +609,7 @@ const lightToggleAction = makeGameAction({
   },
 });
 
-const allActions: ElizaAction[] = [
+const allActions: TokagentAction[] = [
   tickAction,
   statusAction,
   helpAction,
@@ -630,14 +630,14 @@ const allActions: ElizaAction[] = [
 // Background tick service (keeps state inside agent, UI subscribes)
 // ============================================================================
 
-class ElizagotchiTickService extends Service {
-  static serviceType = "elizagotchi_tick";
-  capabilityDescription = "Elizagotchi background simulation tick";
+class TokagentgotchiTickService extends Service {
+  static serviceType = "tokagentgotchi_tick";
+  capabilityDescription = "Tokagentgotchi background simulation tick";
 
   #intervalId: ReturnType<typeof setInterval> | null = null;
 
   static async start(runtime: IAgentRuntime): Promise<Service> {
-    const service = new ElizagotchiTickService(runtime);
+    const service = new TokagentgotchiTickService(runtime);
     service.#start(runtime);
     return service;
   }
@@ -681,29 +681,29 @@ function actionNameFromCommand(cmd: GameCommand | null): {
   actionName: string;
   params?: Record<string, string>;
 } {
-  if (!cmd) return { actionName: "ELIZAGOTCHI_HELP" };
+  if (!cmd) return { actionName: "TOKAGENTGOTCHI_HELP" };
 
   switch (cmd.action) {
     case "status":
-      return { actionName: "ELIZAGOTCHI_STATUS" };
+      return { actionName: "TOKAGENTGOTCHI_STATUS" };
     case "help":
-      return { actionName: "ELIZAGOTCHI_HELP" };
+      return { actionName: "TOKAGENTGOTCHI_HELP" };
     case "reset":
-      return { actionName: "ELIZAGOTCHI_RESET" };
+      return { actionName: "TOKAGENTGOTCHI_RESET" };
     case "name":
       return cmd.parameter
-        ? { actionName: "ELIZAGOTCHI_NAME", params: { name: cmd.parameter } }
-        : { actionName: "ELIZAGOTCHI_NAME" };
+        ? { actionName: "TOKAGENTGOTCHI_NAME", params: { name: cmd.parameter } }
+        : { actionName: "TOKAGENTGOTCHI_NAME" };
     default: {
       const action = cmd.action as GameAction;
       const mapping: Record<GameAction, string> = {
-        feed: "ELIZAGOTCHI_FEED",
-        play: "ELIZAGOTCHI_PLAY",
-        clean: "ELIZAGOTCHI_CLEAN",
-        sleep: "ELIZAGOTCHI_SLEEP",
-        medicine: "ELIZAGOTCHI_MEDICINE",
-        discipline: "ELIZAGOTCHI_DISCIPLINE",
-        light_toggle: "ELIZAGOTCHI_LIGHT_TOGGLE",
+        feed: "TOKAGENTGOTCHI_FEED",
+        play: "TOKAGENTGOTCHI_PLAY",
+        clean: "TOKAGENTGOTCHI_CLEAN",
+        sleep: "TOKAGENTGOTCHI_SLEEP",
+        medicine: "TOKAGENTGOTCHI_MEDICINE",
+        discipline: "TOKAGENTGOTCHI_DISCIPLINE",
+        light_toggle: "TOKAGENTGOTCHI_LIGHT_TOGGLE",
       };
       return { actionName: mapping[action] };
     }
@@ -746,7 +746,7 @@ function escapeXml(text: string): string {
     .replace(/'/g, "&apos;");
 }
 
-async function elizagotchiModelHandler(
+async function tokagentgotchiModelHandler(
   _runtime: IAgentRuntime,
   params: ModelParamsMap[typeof ModelType.TEXT_LARGE],
 ): Promise<string> {
@@ -757,14 +757,14 @@ async function elizagotchiModelHandler(
   if (userText === "__tick__") {
     return toXmlResponse({
       thought: "Advance simulation tick",
-      actionName: "ELIZAGOTCHI_TICK",
+      actionName: "TOKAGENTGOTCHI_TICK",
     });
   }
 
   if (userText === "__export__") {
     return toXmlResponse({
       thought: "Export save data",
-      actionName: "ELIZAGOTCHI_EXPORT",
+      actionName: "TOKAGENTGOTCHI_EXPORT",
     });
   }
 
@@ -773,7 +773,7 @@ async function elizagotchiModelHandler(
     const saveJson = decodeURIComponent(encoded);
     return toXmlResponse({
       thought: "Import save data",
-      actionName: "ELIZAGOTCHI_IMPORT",
+      actionName: "TOKAGENTGOTCHI_IMPORT",
       actionParams: { saveJson },
     });
   }
@@ -783,7 +783,7 @@ async function elizagotchiModelHandler(
     const name = decodeURIComponent(encoded);
     return toXmlResponse({
       thought: "Reset with chosen name",
-      actionName: "ELIZAGOTCHI_RESET",
+      actionName: "TOKAGENTGOTCHI_RESET",
       actionParams: { name },
     });
   }
@@ -802,15 +802,15 @@ async function elizagotchiModelHandler(
 // Plugin export
 // ============================================================================
 
-export const elizagotchiPlugin: Plugin = {
-  name: "elizagotchi",
+export const tokagentgotchiPlugin: Plugin = {
+  name: "tokagentgotchi",
   description:
     "Virtual pet game that stores internal state inside the agent runtime and mutates via actions.",
   priority: 100,
   actions: allActions,
-  services: [ElizagotchiTickService],
+  services: [TokagentgotchiTickService],
   models: {
-    [ModelType.TEXT_LARGE]: elizagotchiModelHandler,
-    [ModelType.TEXT_SMALL]: elizagotchiModelHandler,
+    [ModelType.TEXT_LARGE]: tokagentgotchiModelHandler,
+    [ModelType.TEXT_SMALL]: tokagentgotchiModelHandler,
   },
 };

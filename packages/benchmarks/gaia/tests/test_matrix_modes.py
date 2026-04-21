@@ -11,10 +11,10 @@ _ORCH_PKG = _ROOT / "plugins" / "plugin-agent-orchestrator" / "python"
 if _ORCH_PKG.exists():
     sys.path.insert(0, str(_ORCH_PKG))
 
-from elizaos_plugin_agent_orchestrator import TaskResult
-from elizaos_gaia.orchestrator.providers import BaseGAIAProvider
-from elizaos_gaia.orchestrator.runner import OrchestratedGAIARunner
-from elizaos_gaia.types import GAIAConfig
+from tokagentos_plugin_agent_orchestrator import TaskResult
+from tokagentos_gaia.orchestrator.providers import BaseGAIAProvider
+from tokagentos_gaia.orchestrator.runner import OrchestratedGAIARunner
+from tokagentos_gaia.types import GAIAConfig
 
 
 @pytest.mark.asyncio

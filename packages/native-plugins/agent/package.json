@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/capacitor-agent",
   "version": "1.0.0",
-  "description": "Starts, stops, and monitors the embedded Eliza agent runtime.",
+  "description": "Starts, stops, and monitors the embedded Tokagent agent runtime.",
   "keywords": [
     "agent-runtime",
     "lifecycle",
@@ -23,11 +23,11 @@
   "files": [
     "dist/"
   ],
-  "author": "elizaOS",
+  "author": "tokagentOS",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaOS/eliza.git",
+    "url": "https://github.com/tokagentOS/tokagent.git",
     "directory": "apps/app/plugins/agent"
   },
   "scripts": {
@@ -50,7 +50,7 @@
   "capacitor": {
     "ios": {
       "src": "ios",
-      "podName": "ElizaCapacitorAgent"
+      "podName": "TokagentCapacitorAgent"
     },
     "android": {
       "src": "android"

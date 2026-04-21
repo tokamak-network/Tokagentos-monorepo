@@ -15,7 +15,7 @@ import {
   type Memory,
   type State,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect } from "vitest";
 import {
   createLifeOpsTestRuntime,
@@ -39,12 +39,12 @@ try {
 
 const LIVE_ENABLED =
   process.env.MILADY_LIVE_TEST === "1" ||
-  process.env.ELIZA_LIVE_TEST === "1";
+  process.env.TOKAGENT_LIVE_TEST === "1";
 const provider = LIVE_ENABLED ? selectLiveProvider() : null;
 
 if (!LIVE_ENABLED || !provider) {
   const reasons = [
-    !LIVE_ENABLED ? "set ELIZA_LIVE_TEST=1" : null,
+    !LIVE_ENABLED ? "set TOKAGENT_LIVE_TEST=1" : null,
     !provider ? "provide a provider API key" : null,
   ]
     .filter(Boolean)

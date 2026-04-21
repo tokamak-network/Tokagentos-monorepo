@@ -10,7 +10,7 @@
 
 /**
  * Special exit code that tells the CLI runner to restart the process.
- * Must stay in sync with `RESTART_EXIT_CODE` in `eliza/packages/app-core/scripts/run-node.mjs`.
+ * Must stay in sync with `RESTART_EXIT_CODE` in `tokagent/packages/app-core/scripts/run-node.mjs`.
  */
 export const RESTART_EXIT_CODE = 75;
 

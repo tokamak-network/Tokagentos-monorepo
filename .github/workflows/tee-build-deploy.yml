@@ -27,7 +27,7 @@ env:
   # Docker configuration
   DOCKER_REGISTRY: ${{ vars.DOCKER_REGISTRY || 'docker.io' }}
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  DOCKER_IMAGE: ${{ vars.DOCKER_IMAGE || 'elizaos' }}
+  DOCKER_IMAGE: ${{ vars.DOCKER_IMAGE || 'tokagentos' }}
   DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
   DOCKER_REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
 

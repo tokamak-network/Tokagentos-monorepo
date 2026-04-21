@@ -1,9 +1,9 @@
 name: milady
 version: "2.0.0-alpha.92"
-summary: Personal AI assistant built on elizaOS
+summary: Personal AI assistant built on tokagentOS
 description: |
-  elizaOS App is a personal AI assistant you run on your own devices, built on
-  elizaOS. It provides zero-config onboarding, multi-provider AI support,
+  tokagentOS App is a personal AI assistant you run on your own devices, built on
+  tokagentOS. It provides zero-config onboarding, multi-provider AI support,
   a web dashboard, and a plugin system for extensibility.
 
   Features:
@@ -21,7 +21,7 @@ grade: devel
 confinement: strict
 base: core22
 license: MIT
-website: https://app.elizaos.ai
+website: https://app.tokagentos.ai
 source-code: https://github.com/milady-ai/milady
 issues: https://github.com/milady-ai/milady/issues
 
@@ -49,7 +49,7 @@ apps:
       PATH: $SNAP/node/bin:$SNAP/usr/bin:$SNAP/bin:$PATH
       NODE_PATH: $SNAP/lib/milady/node_modules
       HOME: $SNAP_USER_DATA
-      ELIZAOS_APP_DATA_DIR: $SNAP_USER_COMMON/.milady
+      TOKAGENTOS_APP_DATA_DIR: $SNAP_USER_COMMON/.milady
       # Ensure Node.js can resolve DNS and make HTTPS requests
       NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
       # Snap-specific: tell Milady where config lives
@@ -110,7 +110,7 @@ parts:
       export PATH="$CRAFT_STAGE/bun/bin:$CRAFT_STAGE/node/bin:$PATH"
 
       # Skip building local upstreams and native Capacitor plugins in the snap build.
-      export ELIZAOS_APP_SKIP_LOCAL_UPSTREAMS=1
+      export TOKAGENTOS_APP_SKIP_LOCAL_UPSTREAMS=1
       export SKIP_NATIVE_PLUGINS=1
 
       # Remove plugin source directories so tsc/build does not attempt
@@ -272,11 +272,11 @@ parts:
       # still need after the destructive workspace rewrite above.
       bash scripts/install-published-workspace-fallback-deps.sh
 
-      # Inject tailwindcss into eliza/packages/app-core/node_modules so the
+      # Inject tailwindcss into tokagent/packages/app-core/node_modules so the
       # Vite CSS pipeline can resolve @import "tailwindcss" from the app-core
       # source tree during the snap production build.
-      mkdir -p eliza/packages/app-core/node_modules
-      if [ ! -d "eliza/packages/app-core/node_modules/tailwindcss" ]; then
+      mkdir -p tokagent/packages/app-core/node_modules
+      if [ ! -d "tokagent/packages/app-core/node_modules/tailwindcss" ]; then
         TAILWIND_URL=$(npm view tailwindcss dist.tarball 2>/dev/null || true)
         if [ -z "$TAILWIND_URL" ]; then
           echo "Failed to resolve tailwindcss tarball URL" >&2
@@ -285,14 +285,14 @@ parts:
         rm -rf /tmp/tw_extract
         mkdir -p /tmp/tw_extract
         curl -fsSL "$TAILWIND_URL" | tar xz -C /tmp/tw_extract
-        rm -rf eliza/packages/app-core/node_modules/tailwindcss
-        mv /tmp/tw_extract/package eliza/packages/app-core/node_modules/tailwindcss
+        rm -rf tokagent/packages/app-core/node_modules/tailwindcss
+        mv /tmp/tw_extract/package tokagent/packages/app-core/node_modules/tailwindcss
       fi
 
       # Fresh CI checkouts do not track generated protobuf JS output.
-      if [ -d eliza/packages/schemas ] && [ -f eliza/packages/schemas/buf.gen.yaml ] && [ ! -f eliza/packages/typescript/src/types/generated/eliza/v1/agent_pb.js ]; then
+      if [ -d tokagent/packages/schemas ] && [ -f tokagent/packages/schemas/buf.gen.yaml ] && [ ! -f tokagent/packages/typescript/src/types/generated/tokagent/v1/agent_pb.js ]; then
         (
-          cd eliza/packages/schemas
+          cd tokagent/packages/schemas
           node node_modules/@bufbuild/buf/install.js 2>/dev/null || true
           bunx @bufbuild/buf@1.67.0 generate
         )
@@ -300,11 +300,11 @@ parts:
 
       # Fresh snap builds also need generated i18n keyword data; the
       # production build imports the generated TypeScript module directly.
-      node eliza/packages/app-core/scripts/ensure-shared-i18n-data.mjs
+      node tokagent/packages/app-core/scripts/ensure-shared-i18n-data.mjs
 
       # Run only the safe postinstall steps (patch deps, link browser server)
-      node eliza/packages/app-core/scripts/patch-deps.mjs || true
-      node eliza/packages/app-core/scripts/link-browser-server.mjs || true
+      node tokagent/packages/app-core/scripts/patch-deps.mjs || true
+      node tokagent/packages/app-core/scripts/link-browser-server.mjs || true
 
       # Build the project
       bun run build
@@ -335,8 +335,8 @@ parts:
       set -e
 
       # Ensure Milady data directory exists
-      ELIZAOS_APP_HOME="${ELIZAOS_APP_DATA_DIR:-$SNAP_USER_COMMON/.milady}"
-      mkdir -p "$ELIZAOS_APP_HOME"
+      TOKAGENTOS_APP_HOME="${TOKAGENTOS_APP_DATA_DIR:-$SNAP_USER_COMMON/.milady}"
+      mkdir -p "$TOKAGENTOS_APP_HOME"
 
       exec "$SNAP/node/bin/node" "$SNAP/lib/milady/milady.mjs" "$@"
       WRAPPER

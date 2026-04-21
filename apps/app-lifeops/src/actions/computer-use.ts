@@ -3,7 +3,7 @@
  *
  * Thin wrapper over @elizaos/plugin-computeruse's useComputerAction with
  * LifeOps-specific access control (owner-only) and an opt-out feature flag
- * (ELIZA_LIFEOPS_COMPUTER_USE_ENABLED=0). If the plugin package is not
+ * (TOKAGENT_LIFEOPS_COMPUTER_USE_ENABLED=0). If the plugin package is not
  * installed in the workspace, exports a stub action that returns a clear
  * "not installed" result instead of crashing the plugin load.
  */
@@ -15,8 +15,8 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 
 const ACTION_NAME = "LIFEOPS_COMPUTER_USE";
 const ACTION_NAMES = {
@@ -49,7 +49,7 @@ const DESKTOP_COMMAND_ALIASES = new Set([
 ]);
 
 function isComputerUseEnabled(): boolean {
-  return process.env.ELIZA_LIFEOPS_COMPUTER_USE_ENABLED !== "0";
+  return process.env.TOKAGENT_LIFEOPS_COMPUTER_USE_ENABLED !== "0";
 }
 
 function resolveWrapperParams(
@@ -293,7 +293,7 @@ export const lifeOpsComputerUseAction: Action & {
     "'when I send the file, upload it to the portal for me.' Select this action " +
     "even before the file arrives when the user is delegating that future upload " +
     "workflow; the action can hold the task and ask for portal/file details later. Owner-only. " +
-    "Disabled when ELIZA_LIFEOPS_COMPUTER_USE_ENABLED=0.",
+    "Disabled when TOKAGENT_LIFEOPS_COMPUTER_USE_ENABLED=0.",
   suppressPostActionContinuation: true,
 
   validate: async (runtime: IAgentRuntime, message: Memory): Promise<boolean> => {
@@ -410,7 +410,7 @@ export const lifeOpsComputerUseAction: Action & {
   handler: async (runtime, message, state, options, callback): Promise<ActionResult> => {
     if (!isComputerUseEnabled()) {
       return {
-        text: "Computer use is disabled (ELIZA_LIFEOPS_COMPUTER_USE_ENABLED=0).",
+        text: "Computer use is disabled (TOKAGENT_LIFEOPS_COMPUTER_USE_ENABLED=0).",
         success: false,
         values: { success: false, error: "COMPUTER_USE_DISABLED" },
         data: { actionName: ACTION_NAME },

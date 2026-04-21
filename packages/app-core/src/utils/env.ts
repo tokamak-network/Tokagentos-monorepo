@@ -35,27 +35,27 @@ export function isEnvDisabled(value: string | undefined): boolean {
 }
 
 /**
- * Sync app brand env vars → elizaOS equivalents.
- * Extracted from identical copies in runtime/eliza.ts, api/server.ts,
+ * Sync app brand env vars → tokagentOS equivalents.
+ * Extracted from identical copies in runtime/tokagent.ts, api/server.ts,
  * api/server-wallet-trade.ts, api/server-startup.ts, and api/server-security.ts.
  */
 export {
-  syncBrandEnvToEliza,
-  syncElizaEnvToBrand,
+  syncBrandEnvToTokagent,
+  syncTokagentEnvToBrand,
 } from "../config/boot-config.js";
 
 import {
   getBootConfig,
-  syncBrandEnvToEliza,
-  syncElizaEnvToBrand,
+  syncBrandEnvToTokagent,
+  syncTokagentEnvToBrand,
 } from "../config/boot-config.js";
 
-export function syncAppEnvToEliza(): void {
+export function syncAppEnvToTokagent(): void {
   const aliases = getBootConfig().envAliases;
-  if (aliases) syncBrandEnvToEliza(aliases);
+  if (aliases) syncBrandEnvToTokagent(aliases);
 }
 
-export function syncElizaEnvAliases(): void {
+export function syncTokagentEnvAliases(): void {
   const aliases = getBootConfig().envAliases;
-  if (aliases) syncElizaEnvToBrand(aliases);
+  if (aliases) syncTokagentEnvToBrand(aliases);
 }

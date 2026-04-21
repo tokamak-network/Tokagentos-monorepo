@@ -16,12 +16,12 @@
  * reason about partial data — no silent fallbacks that fake completeness.
  */
 
-import type { IAgentRuntime, Memory, UUID } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime, Memory, UUID } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type {
   LifeOpsCalendarEvent,
   LifeOpsCalendarFeed,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 
 export interface DossierAttendeeSummary {
   email: string | null;

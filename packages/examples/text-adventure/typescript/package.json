@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/example-text-adventure",
   "version": "2.0.0-alpha",
-  "description": "Text adventure game with AI-powered decision making using elizaOS",
+  "description": "Text adventure game with AI-powered decision making using tokagentOS",
   "type": "module",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "dev": "bun --watch run game.ts"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
     "@clack/prompts": "^0.11.0",

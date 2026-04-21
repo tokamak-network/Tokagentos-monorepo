@@ -1,5 +1,5 @@
 """
-ElizaOS Benchmarks
+TokagentOS Benchmarks
 
-This package contains benchmark implementations for evaluating ElizaOS agents.
+This package contains benchmark implementations for evaluating TokagentOS agents.
 """

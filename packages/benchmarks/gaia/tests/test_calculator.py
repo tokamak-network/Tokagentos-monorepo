@@ -2,7 +2,7 @@
 
 import pytest
 import math
-from elizaos_gaia.tools.calculator import Calculator
+from tokagentos_gaia.tools.calculator import Calculator
 
 
 class TestCalculator:

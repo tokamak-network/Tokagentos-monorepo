@@ -1,6 +1,6 @@
-import type { IAgentRuntime, UUID } from "@elizaos/core";
-import { logger } from "@elizaos/core";
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
+import type { IAgentRuntime, UUID } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
 import {
   loadOwnerContactRoutingHints,
   loadOwnerContactsConfig,
@@ -83,7 +83,7 @@ async function loadActiveFromCache(
 
 function loadEscalationConfig(): EscalationConfig {
   try {
-    const cfg = loadElizaConfig();
+    const cfg = loadTokagentConfig();
     return cfg.agents?.defaults?.escalation ?? {};
   } catch {
     return {};
@@ -98,7 +98,7 @@ function loadEscalationConfig(): EscalationConfig {
  * configuration. `client_chat` always stays first; new channels are
  * appended in order of pairing.
  *
- * Persists the updated config to `eliza.json` via {@link saveElizaConfig}.
+ * Persists the updated config to `tokagent.json` via {@link saveTokagentConfig}.
  * Returns `true` if the channel was newly added, `false` if already present.
  */
 export function registerEscalationChannel(channelName: string): boolean {
@@ -112,7 +112,7 @@ export function registerEscalationChannel(channelName: string): boolean {
   }
 
   try {
-    const cfg = loadElizaConfig();
+    const cfg = loadTokagentConfig();
 
     if (!cfg.agents) {
       (cfg as Record<string, unknown>).agents = {};
@@ -143,7 +143,7 @@ export function registerEscalationChannel(channelName: string): boolean {
     existing.push(trimmed);
     escalation.channels = existing;
 
-    saveElizaConfig(cfg);
+    saveTokagentConfig(cfg);
     logger.info(
       `[escalation] Registered channel "${trimmed}" -- escalation order: [${existing.join(", ")}]`,
     );

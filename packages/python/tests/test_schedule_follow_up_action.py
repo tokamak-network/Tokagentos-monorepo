@@ -6,15 +6,15 @@ from typing import Protocol
 
 import pytest
 
-from elizaos.features.advanced_capabilities.actions.schedule_follow_up import (
+from tokagentos.features.advanced_capabilities.actions.schedule_follow_up import (
     schedule_follow_up_action as advanced_schedule_follow_up_action,
 )
-from elizaos.features.advanced_capabilities.actions.schedule_follow_up import (
+from tokagentos.features.advanced_capabilities.actions.schedule_follow_up import (
     schedule_follow_up_action as basic_capabilities_schedule_follow_up_action,
 )
-from elizaos.features.advanced_capabilities.services.follow_up import FollowUpService
-from elizaos.features.advanced_capabilities.services.relationships import RelationshipsService
-from elizaos.types import Content, Memory, as_uuid
+from tokagentos.features.advanced_capabilities.services.follow_up import FollowUpService
+from tokagentos.features.advanced_capabilities.services.relationships import RelationshipsService
+from tokagentos.types import Content, Memory, as_uuid
 
 
 class RelationshipsLike(Protocol):

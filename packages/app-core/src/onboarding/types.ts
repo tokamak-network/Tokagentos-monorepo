@@ -9,7 +9,7 @@ import type { AppState } from "../state/types";
 export type ConnectionScreen =
   | "hosting"
   | "remoteBackend"
-  | "elizaCloud_preProvider"
+  | "tokagentCloud_preProvider"
   | "providerGrid"
   | "providerDetail";
 
@@ -22,7 +22,7 @@ export type ConnectionFlowSnapshot = Pick<
   | "onboardingServerTarget"
   | "onboardingProvider"
   | "onboardingRemoteConnected"
-  | "onboardingElizaCloudTab"
+  | "onboardingTokagentCloudTab"
   | "onboardingSubscriptionTab"
 > & {
   /** `branding.cloudOnly` — **why:** cloud-only distributions skip the hosting chooser entirely. */
@@ -45,21 +45,21 @@ export type ConnectionStatePatch = Partial<{
   onboardingRemoteConnecting: boolean;
   onboardingRemoteConnected: boolean;
   onboardingSubscriptionTab: AppState["onboardingSubscriptionTab"];
-  onboardingElizaCloudTab: AppState["onboardingElizaCloudTab"];
+  onboardingTokagentCloudTab: AppState["onboardingTokagentCloudTab"];
 }>;
 
 export type ConnectionEvent =
   | { type: "forceCloudBootstrap" }
   | { type: "selectLocalHosting" }
   | { type: "selectRemoteHosting" }
-  | { type: "selectElizaCloudHosting" }
+  | { type: "selectTokagentCloudHosting" }
   /** Remote form or provider grid footer: use local backend if already connected, else reset hosting */
   | { type: "backRemoteOrGrid" }
-  /** Eliza Cloud (pre-provider) panel footer back */
-  | { type: "backElizaCloudPreProvider" }
+  /** Tokagent Cloud (pre-provider) panel footer back */
+  | { type: "backTokagentCloudPreProvider" }
   | { type: "selectProvider"; providerId: string }
   | { type: "clearProvider" }
-  | { type: "setElizaCloudTab"; tab: "login" | "apikey" }
+  | { type: "setTokagentCloudTab"; tab: "login" | "apikey" }
   | { type: "setSubscriptionTab"; tab: "token" | "oauth" };
 
 /** Shell maps this to `handleOnboardingUseLocalBackend`. **Why a token:** keeps pure module free of `client` / `retryStartup`. */
@@ -83,7 +83,7 @@ export type ConnectionUiSpec = {
   forceCloud: boolean;
   /** Set when screen is providerDetail */
   providerId: string;
-  elizaCloudTab: AppState["onboardingElizaCloudTab"];
+  tokagentCloudTab: AppState["onboardingTokagentCloudTab"];
   subscriptionTab: AppState["onboardingSubscriptionTab"];
 };
 

@@ -1,14 +1,14 @@
 [project]
-name = "elizaos-rlm-bench"
+name = "tokagentos-rlm-bench"
 version = "0.1.0"
-description = "RLM (Recursive Language Model) benchmark suite for elizaOS"
+description = "RLM (Recursive Language Model) benchmark suite for tokagentOS"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 authors = [
-    { name = "elizaOS Team" }
+    { name = "tokagentOS Team" }
 ]
-keywords = ["rlm", "benchmark", "llm", "long-context", "elizaos"]
+keywords = ["rlm", "benchmark", "llm", "long-context", "tokagentos"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -26,24 +26,24 @@ dev = [
     "pytest-asyncio>=0.23.0",
 ]
 rlm = [
-    "elizaos-plugin-rlm>=0.1.0",
+    "tokagentos-plugin-rlm>=0.1.0",
 ]
-eliza = [
-    "elizaos-plugin-rlm>=0.1.0",
-    "elizaos>=0.1.0",
+tokagent = [
+    "tokagentos-plugin-rlm>=0.1.0",
+    "tokagentos>=0.1.0",
 ]
 
 [project.scripts]
-rlm-bench = "elizaos_rlm_bench.__main__:main"
+rlm-bench = "tokagentos_rlm_bench.__main__:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_rlm_bench"]
+packages = ["tokagentos_rlm_bench"]
 
 [tool.pytest.ini_options]
-testpaths = ["elizaos_rlm_bench/tests"]
+testpaths = ["tokagentos_rlm_bench/tests"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"

@@ -1,4 +1,4 @@
-import { hasAdminAccess } from "@elizaos/agent/security";
+import { hasAdminAccess } from "@tokagentos/agent/security";
 import type {
   Action,
   ActionResult,
@@ -6,7 +6,7 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   CompleteLifeOpsBrowserSessionRequest,
   ConfirmLifeOpsBrowserSessionRequest,
@@ -14,7 +14,7 @@ import type {
   LifeOpsBrowserActionKind,
   LifeOpsBrowserKind,
   UpdateLifeOpsBrowserSettingsRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { LifeOpsService, LifeOpsServiceError } from "./lifeops/service.js";
 
 type BrowserCommand =

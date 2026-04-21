@@ -1,8 +1,8 @@
-import { runCoordinatorPreflight } from "@elizaos/agent/evals/coordinator-preflight";
+import { runCoordinatorPreflight } from "@tokagentos/agent/evals/coordinator-preflight";
 
 try {
 	const result = await runCoordinatorPreflight({
-		baseUrl: process.env.ELIZA_BASE_URL,
+		baseUrl: process.env.TOKAGENT_BASE_URL,
 	});
 	console.log(
 		JSON.stringify(

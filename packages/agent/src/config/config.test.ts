@@ -4,9 +4,9 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { loadElizaConfig } from "./config.js";
+import { loadTokagentConfig } from "./config.js";
 
-describe("loadElizaConfig", () => {
+describe("loadTokagentConfig", () => {
   const originalEnv = { ...process.env };
   let stateDir: string;
   let configPath: string;
@@ -48,7 +48,7 @@ describe("loadElizaConfig", () => {
       "utf8",
     );
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
 
     // config.env values from file should be in process.env
     expect(process.env.WALLET_SOURCE_EVM).toBe("cloud");

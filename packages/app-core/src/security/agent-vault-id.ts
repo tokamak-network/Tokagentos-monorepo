@@ -6,15 +6,15 @@ import path from "node:path";
 import type { SecureStoreSecretKind } from "./platform-secure-store";
 
 /** Fixed Keychain / Secret Service “service” identifier (see docs/guides/platform-secure-store.md). */
-export const ELIZA_AGENT_VAULT_SERVICE = "ai.elizaos.agent.vault";
+export const TOKAGENT_AGENT_VAULT_SERVICE = "ai.tokagentos.agent.vault";
 
 /**
- * Canonical state directory for this process (same semantics as `ELIZA_STATE_DIR` default).
+ * Canonical state directory for this process (same semantics as `TOKAGENT_STATE_DIR` default).
  * Uses `realpathSync` when the path exists so symlinks normalize consistently.
  */
 export function resolveCanonicalStateDir(): string {
-  const raw = process.env.ELIZA_STATE_DIR?.trim();
-  const base = raw && raw.length > 0 ? raw : path.join(os.homedir(), ".eliza");
+  const raw = process.env.TOKAGENT_STATE_DIR?.trim();
+  const base = raw && raw.length > 0 ? raw : path.join(os.homedir(), ".tokagent");
   const resolved = path.resolve(base);
   try {
     return fs.realpathSync(resolved);

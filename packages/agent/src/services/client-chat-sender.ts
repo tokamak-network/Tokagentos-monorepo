@@ -1,6 +1,6 @@
 /**
  * Registers a send handler for the "client_chat" source so the agent can
- * proactively push messages to connected Eliza app clients.
+ * proactively push messages to connected Tokagent app clients.
  *
  * The handler persists the message to the DB and broadcasts it over
  * WebSocket so the UI updates in real time. If no WS clients are
@@ -14,7 +14,7 @@ import {
   createMessageMemory,
   type IAgentRuntime,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { ConversationMeta, ServerState } from "../api/server-types.js";
 
 /**

@@ -454,7 +454,7 @@ export async function readChromiumCookies(
   return [];
 }
 
-// ── Eliza Cloud (browser cookie auto-import) ─────────────────────────
+// ── Tokagent Cloud (browser cookie auto-import) ─────────────────────────
 
 interface PrivyTokenPayload {
   sub?: string;
@@ -475,22 +475,22 @@ function decodeJwtPayload(jwt: string): PrivyTokenPayload | null {
   }
 }
 
-async function scanElizaCloudBrowserSession(): Promise<DetectedProvider | null> {
-  // Check if user has an active elizacloud.ai session in their browser.
+async function scanTokagentCloudBrowserSession(): Promise<DetectedProvider | null> {
+  // Check if user has an active tokagentcloud.ai session in their browser.
   // The privy-token JWT is in-memory only (not persisted to SQLite),
   // but privy-session indicates an active browser session exists.
-  const cookies = await readChromiumCookies("www.elizacloud.ai", [
+  const cookies = await readChromiumCookies("www.tokagentcloud.ai", [
     "privy-session",
   ]);
 
   const hasSession = cookies.some((c) => c.name === "privy-session");
   if (!hasSession) return null;
 
-  // The user is logged into elizacloud.ai in their browser.
+  // The user is logged into tokagentcloud.ai in their browser.
   // The "Deploy to Cloud" flow will open the browser and complete
   // auth instantly since they already have a session (no re-login).
   return {
-    id: "elizacloud",
+    id: "tokagentcloud",
     source: "browser-session",
     authMode: "oauth",
     cliInstalled: false,
@@ -500,7 +500,7 @@ async function scanElizaCloudBrowserSession(): Promise<DetectedProvider | null> 
 }
 
 /**
- * Environment variable → provider ID mapping for all Eliza AI providers.
+ * Environment variable → provider ID mapping for all Tokagent AI providers.
  * Each entry maps an env var name to its provider plugin ID.
  */
 const ENV_PROVIDER_MAP: Array<{
@@ -551,8 +551,8 @@ const ENV_PROVIDER_MAP: Array<{
     includeValue: true,
   },
   {
-    envVar: "ELIZAOS_CLOUD_API_KEY",
-    providerId: "elizacloud",
+    envVar: "TOKAGENTOS_CLOUD_API_KEY",
+    providerId: "tokagentcloud",
     authMode: "cloud",
   },
   {
@@ -642,9 +642,9 @@ async function scanProviderCredentialsRaw(): Promise<DetectedProvider[]> {
     if (cursorResult) detected.set(cursorResult.id, cursorResult);
   }
 
-  // Browser cookies (Eliza Cloud session import)
-  if (!detected.has("elizacloud")) {
-    const cloudSession = await scanElizaCloudBrowserSession();
+  // Browser cookies (Tokagent Cloud session import)
+  if (!detected.has("tokagentcloud")) {
+    const cloudSession = await scanTokagentCloudBrowserSession();
     if (cloudSession) detected.set(cloudSession.id, cloudSession);
   }
 

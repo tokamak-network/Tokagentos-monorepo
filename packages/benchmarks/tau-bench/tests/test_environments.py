@@ -3,9 +3,9 @@ Tests for domain environments.
 """
 
 import pytest
-from elizaos_tau_bench.types import TauBenchTask, TauDomain, ToolCall
-from elizaos_tau_bench.environments.retail import RetailEnvironment
-from elizaos_tau_bench.environments.airline import AirlineEnvironment
+from tokagentos_tau_bench.types import TauBenchTask, TauDomain, ToolCall
+from tokagentos_tau_bench.environments.retail import RetailEnvironment
+from tokagentos_tau_bench.environments.airline import AirlineEnvironment
 
 
 @pytest.fixture

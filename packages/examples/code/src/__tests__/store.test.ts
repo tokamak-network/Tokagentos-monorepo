@@ -21,7 +21,7 @@ function resetStore() {
         messages: [],
         createdAt: new Date(),
         taskIds: [],
-        elizaRoomId: "main-room-uuid" as UUID,
+        tokagentRoomId: "main-room-uuid" as UUID,
       },
     ],
     currentRoomId: "default-main-room",
@@ -490,7 +490,7 @@ describe("Session State", () => {
       messages: [],
       createdAt: new Date(),
       taskIds: [],
-      elizaRoomId: "eliza-123" as UUID,
+      tokagentRoomId: "tokagent-123" as UUID,
     };
 
     restoreSession({

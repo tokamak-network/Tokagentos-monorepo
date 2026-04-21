@@ -1,6 +1,6 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
-const LIFEOPS_APP_STATE_CACHE_KEY = "eliza:lifeops-app-state";
+const LIFEOPS_APP_STATE_CACHE_KEY = "tokagent:lifeops-app-state";
 
 export interface LifeOpsAppState {
   enabled: boolean;

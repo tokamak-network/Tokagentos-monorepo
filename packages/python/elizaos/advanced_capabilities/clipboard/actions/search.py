@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.types import Action, ActionResult, Content, ModelType
-from elizaos.utils.xml import parse_key_value_xml
+from tokagentos.types import Action, ActionResult, Content, ModelType
+from tokagentos.utils.xml import parse_key_value_xml
 
 from ..services.clipboard_service import create_clipboard_service
 from ..types import ClipboardSearchResult
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
 EXTRACT_TEMPLATE = """Extract the search query from the user's message.
 

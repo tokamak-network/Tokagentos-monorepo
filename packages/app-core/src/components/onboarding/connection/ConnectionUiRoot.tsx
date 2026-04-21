@@ -12,7 +12,7 @@ import type {
   ConnectionEvent,
   ConnectionUiSpec,
 } from "../../../onboarding/connection-flow";
-import { ConnectionElizaCloudPreProviderScreen } from "./ConnectionElizaCloudPreProviderScreen";
+import { ConnectionTokagentCloudPreProviderScreen } from "./ConnectionTokagentCloudPreProviderScreen";
 import { ConnectionHostingScreen } from "./ConnectionHostingScreen";
 import { ConnectionProviderGridScreen } from "./ConnectionProviderGridScreen";
 import { ConnectionRemoteBackendScreen } from "./ConnectionRemoteBackendScreen";
@@ -58,9 +58,9 @@ export function ConnectionUiRoot({
           onTransitionEffect={shared.onTransitionEffect}
         />
       );
-    case "elizaCloud_preProvider":
+    case "tokagentCloud_preProvider":
       return (
-        <ConnectionElizaCloudPreProviderScreen dispatch={shared.dispatch} />
+        <ConnectionTokagentCloudPreProviderScreen dispatch={shared.dispatch} />
       );
     case "providerGrid":
       return (

@@ -12,9 +12,9 @@ const testRenderer = requireFromHere(
   "react-test-renderer",
 ) as typeof import("react-test-renderer");
 
-const REACT_RESOLVE_PATCH_MARK = Symbol.for("elizaos.test.reactResolvePatched");
-const ANCHOR_CLICK_PATCH_MARK = Symbol.for("elizaos.test.anchorClickPatched");
-const JSDOM_EMIT_PATCH_MARK = Symbol.for("elizaos.test.jsdomEmitPatched");
+const REACT_RESOLVE_PATCH_MARK = Symbol.for("tokagentos.test.reactResolvePatched");
+const ANCHOR_CLICK_PATCH_MARK = Symbol.for("tokagentos.test.anchorClickPatched");
+const JSDOM_EMIT_PATCH_MARK = Symbol.for("tokagentos.test.jsdomEmitPatched");
 
 type ResolveFilename = (
   request: string,

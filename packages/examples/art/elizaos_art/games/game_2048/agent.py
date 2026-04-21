@@ -6,8 +6,8 @@ LLM-based agent that learns to play 2048.
 
 import re
 
-from elizaos_art.base import BaseAgent
-from elizaos_art.games.game_2048.types import Game2048Action, Game2048State
+from tokagentos_art.base import BaseAgent
+from tokagentos_art.games.game_2048.types import Game2048Action, Game2048State
 
 
 class Game2048Agent(BaseAgent[Game2048State, Game2048Action]):

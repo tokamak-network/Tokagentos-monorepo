@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { DeviceBridgeStatus as DeviceStatus } from "../../api/client-local-inference";
 import { resolveApiUrl } from "../../utils/asset-url";
-import { getElizaApiToken } from "../../utils/eliza-globals";
+import { getTokagentApiToken } from "../../utils/tokagent-globals";
 
 /**
  * Thin status strip showing whether a paired mobile device is currently
@@ -16,7 +16,7 @@ export function DeviceBridgeStatusBar() {
 
   useEffect(() => {
     const raw = resolveApiUrl("/api/local-inference/device/stream");
-    const token = getElizaApiToken()?.trim();
+    const token = getTokagentApiToken()?.trim();
     const url = token
       ? `${raw}${raw.includes("?") ? "&" : "?"}token=${encodeURIComponent(token)}`
       : raw;

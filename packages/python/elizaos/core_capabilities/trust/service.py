@@ -11,7 +11,7 @@ import math
 import time
 from typing import TYPE_CHECKING, ClassVar
 
-from elizaos.types import Service
+from tokagentos.types import Service
 
 from .types import (
     EntityId,
@@ -36,7 +36,7 @@ from .types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 
 # ---------------------------------------------------------------------------

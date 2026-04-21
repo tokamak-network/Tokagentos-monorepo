@@ -2,7 +2,7 @@
 name = "xai-x-agent"
 version = "0.1.0"
 edition = "2021"
-description = "elizaOS X agent example using Grok (xAI) + X API"
+description = "tokagentOS X agent example using Grok (xAI) + X API"
 publish = false
 
 [[bin]]
@@ -10,12 +10,12 @@ name = "xai-x-agent"
 path = "src/main.rs"
 
 [dependencies]
-# elizaOS core
-elizaos = "2.0.0"
+# tokagentOS core
+tokagentos = "2.0.0"
 
 # Plugins
-elizaos-plugin-sql = "2.0.0"
-elizaos-plugin-xai = "2.0.0"
+tokagentos-plugin-sql = "2.0.0"
+tokagentos-plugin-xai = "2.0.0"
 
 # Async runtime
 tokio = { version = "1.42", features = ["rt-multi-thread", "macros", "signal", "time"] }

@@ -10,12 +10,12 @@ If the RandomAgent gets high scores, the benchmark is too easy / not discriminat
 If the RealAgent scores poorly, the implementation has bugs.
 """
 
-from elizaos_experience_bench.baselines import PerfectExperienceService, RandomExperienceService
-from elizaos_experience_bench.evaluators.retrieval import RetrievalEvaluator
-from elizaos_experience_bench.evaluators.reranking import RerankingEvaluator
-from elizaos_experience_bench.evaluators.learning import LearningCycleEvaluator
-from elizaos_experience_bench.generator import ExperienceGenerator
-from elizaos_plugin_experience.service import ExperienceService
+from tokagentos_experience_bench.baselines import PerfectExperienceService, RandomExperienceService
+from tokagentos_experience_bench.evaluators.retrieval import RetrievalEvaluator
+from tokagentos_experience_bench.evaluators.reranking import RerankingEvaluator
+from tokagentos_experience_bench.evaluators.learning import LearningCycleEvaluator
+from tokagentos_experience_bench.generator import ExperienceGenerator
+from tokagentos_plugin_experience.service import ExperienceService
 
 
 # ---------------------------------------------------------------------------

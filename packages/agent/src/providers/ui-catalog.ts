@@ -4,8 +4,8 @@ import {
   type Memory,
   type Provider,
   type State,
-} from "@elizaos/core";
-import { getValidationKeywordTerms } from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/core";
+import { getValidationKeywordTerms } from "@tokagentos/shared/validation-keywords";
 import { hasAdminAccess } from "../security/access.js";
 import { COMPONENT_CATALOG } from "../shared/ui-catalog-prompt.js";
 

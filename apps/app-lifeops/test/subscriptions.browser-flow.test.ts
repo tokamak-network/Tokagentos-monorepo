@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { LifeOpsRepository } from "../src/lifeops/repository.js";
 import { LifeOpsService } from "../src/lifeops/service.js";
 import { createLifeOpsChatTestRuntime } from "./helpers/lifeops-chat-runtime.js";

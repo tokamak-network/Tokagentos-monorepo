@@ -613,7 +613,7 @@ export const formatTimestamp = (messageDate: number) => {
  * Parses structured LLM output from TOON first, then falls back to the legacy
  * XML response format.
  *
- * TOON is the preferred format in elizaOS because it is materially more token
+ * TOON is the preferred format in tokagentOS because it is materially more token
  * efficient than XML while preserving JSON-compatible structure. XML fallback
  * remains here for backwards compatibility with older prompts and models.
  *
@@ -1137,7 +1137,7 @@ export function stringToUuid(target: string | number): UUID {
 
 	// Set RFC4122 variant bits: 10xxxxxx
 	bytes[8] = (bytes[8] & 0x3f) | 0x80;
-	// Set custom version nibble to 0x0 (custom elizaOS UUID format)
+	// Set custom version nibble to 0x0 (custom tokagentOS UUID format)
 	bytes[6] = (bytes[6] & 0x0f) | 0x00;
 
 	return bytesToUuid(bytes) as UUID;
@@ -1392,7 +1392,7 @@ export const getContentTypeFromMimeType = (
 
 // `export * from "./utils"` (in index.node.ts etc.) resolves to this file, not
 // to a `./utils/index.ts`. Any helper in the `utils/` directory that needs to be
-// reachable from `@elizaos/core` must be re-exported here.
+// reachable from `@tokagentos/core` must be re-exported here.
 export { getLocalServerUrl } from "./utils/node";
 export { extractFirstSentence, hasFirstSentence } from "./utils/text-splitting";
 export { extractAndParseJSONObjectFromText } from "./utils/json-llm";

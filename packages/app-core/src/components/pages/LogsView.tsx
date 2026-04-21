@@ -7,7 +7,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useEffect, useMemo, useState } from "react";
 import type { LogEntry } from "../../api";
 import { useApp } from "../../state";

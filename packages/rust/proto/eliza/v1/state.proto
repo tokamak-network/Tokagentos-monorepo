@@ -1,10 +1,10 @@
-// state.proto - State and context types for elizaOS
+// state.proto - State and context types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
-import "eliza/v1/components.proto";
-import "eliza/v1/environment.proto";
+import "tokagent/v1/components.proto";
+import "tokagent/v1/environment.proto";
 import "google/protobuf/struct.proto";
 
 // Single step in an action plan

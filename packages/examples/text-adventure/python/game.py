@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-elizaOS Adventure Game Demo
+tokagentOS Adventure Game Demo
 
-A text adventure game where an AI agent (powered by elizaOS) explores a dungeon,
+A text adventure game where an AI agent (powered by tokagentOS) explores a dungeon,
 making decisions about which actions to take. Demonstrates:
-- elizaOS runtime with plugins
+- tokagentOS runtime with plugins
 - OpenAI integration for AI decision making
 - Custom game actions
 - State management
@@ -34,11 +34,11 @@ if os.environ.get("LOG_LEVEL", "").lower() == "fatal":
 from uuid6 import uuid7
 import uuid
 
-from elizaos import Character, ModelType
-from elizaos.runtime import AgentRuntime
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import Character, ModelType
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid
+from tokagentos_plugin_openai import get_openai_plugin
 
 
 # ============================================================================
@@ -497,8 +497,8 @@ async def create_session() -> GameSession:
         raise RuntimeError("OPENAI_API_KEY environment variable is required")
 
     character = Character(
-        name="Eliza the Adventurer",
-        username="eliza_adventurer",
+        name="Tokagent the Adventurer",
+        username="tokagent_adventurer",
         bio=[
             "A brave AI adventurer exploring dangerous dungeons.",
             "Known for clever problem-solving and careful exploration.",
@@ -648,13 +648,13 @@ Respond with ONLY the exact action text you want to take (e.g., "go north" or "a
 
 def show_intro() -> None:
     """Show game introduction."""
-    print("\n🏰 elizaOS Adventure Game Demo")
+    print("\n🏰 tokagentOS Adventure Game Demo")
     print(
         """
 ╔════════════════════════════════════════════════════════════════════╗
 ║                   THE DUNGEON OF DOOM                              ║
 ╠════════════════════════════════════════════════════════════════════╣
-║  Watch as Eliza the AI Adventurer explores a dangerous dungeon!    ║
+║  Watch as Tokagent the AI Adventurer explores a dangerous dungeon!    ║
 ║                                                                    ║
 ║  The AI will:                                                      ║
 ║  • Explore rooms and collect items                                 ║
@@ -662,7 +662,7 @@ def show_intro() -> None:
 ║  • Manage health and inventory                                     ║
 ║  • Seek the dragon's treasure!                                     ║
 ║                                                                    ║
-║  AI: OpenAI via elizaos-plugin-openai                              ║
+║  AI: OpenAI via tokagentos-plugin-openai                              ║
 ╚════════════════════════════════════════════════════════════════════╝
 """
     )
@@ -673,7 +673,7 @@ def show_turn(turn_number: int, action: str) -> None:
     print(f"\n{'═' * 60}")
     print(f"🎮 TURN {turn_number}")
     print(f"{'─' * 60}")
-    print(f'🤖 Eliza decides: "{action}"')
+    print(f'🤖 Tokagent decides: "{action}"')
     print(f"{'─' * 60}")
 
 
@@ -687,9 +687,9 @@ def show_game_over(victory: bool, score: int, turns: int) -> None:
     """Show game over screen."""
     print(f"\n{'═' * 60}")
     if victory:
-        print("🏆 VICTORY! Eliza has conquered the dungeon!")
+        print("🏆 VICTORY! Tokagent has conquered the dungeon!")
     else:
-        print("💀 GAME OVER! Eliza has fallen...")
+        print("💀 GAME OVER! Tokagent has fallen...")
     print(f"Final Score: {score} points in {turns} turns")
     print(f"{'═' * 60}\n")
 
@@ -751,8 +751,8 @@ async def run_interactive_mode() -> None:
     session = await create_session()
     game = session.game
 
-    print("\n📜 INTERACTIVE MODE: Guide Eliza through the dungeon!\n")
-    print("You can type actions yourself, or type 'ai' to let Eliza decide.\n")
+    print("\n📜 INTERACTIVE MODE: Guide Tokagent through the dungeon!\n")
+    print("You can type actions yourself, or type 'ai' to let Tokagent decide.\n")
     initial_description = game.describe_room()
     print(initial_description)
 
@@ -775,9 +775,9 @@ async def run_interactive_mode() -> None:
             break
 
         if user_input.lower() == "ai":
-            print("Eliza is thinking...")
+            print("Tokagent is thinking...")
             action = await decide_action(session)
-            print(f'Eliza chooses: "{action}"')
+            print(f'Tokagent chooses: "{action}"')
         else:
             action = user_input
 
@@ -803,8 +803,8 @@ async def run_interactive_mode() -> None:
 async def main() -> None:
     """Main entry point."""
     print("\nChoose game mode:")
-    print("1. Watch AI Play - Eliza plays automatically")
-    print("2. Interactive - Guide Eliza or play yourself")
+    print("1. Watch AI Play - Tokagent plays automatically")
+    print("2. Interactive - Guide Tokagent or play yourself")
 
     try:
         choice = await asyncio.to_thread(input, "Enter choice (1 or 2): ")

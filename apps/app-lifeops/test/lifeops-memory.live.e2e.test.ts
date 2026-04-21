@@ -11,7 +11,7 @@ import {
   type Memory,
   type Plugin,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { describeIf } from "../../../../test/helpers/conditional-tests.ts";
@@ -30,12 +30,12 @@ import {
 import {
   buildCharacterFromConfig,
   configureLocalEmbeddingPlugin,
-} from "@elizaos/agent/runtime/eliza";
-import { createElizaPlugin } from "@elizaos/agent/runtime/eliza-plugin";
+} from "@tokagentos/agent/runtime/tokagent";
+import { createTokagentPlugin } from "@tokagentos/agent/runtime/tokagent-plugin";
 import {
   extractPlugin,
   type PluginModuleShape,
-} from "@elizaos/agent/test-support/test-helpers";
+} from "@tokagentos/agent/test-support/test-helpers";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(testDir, "..");
@@ -262,36 +262,36 @@ describeIf(LIVE_SUITE_ENABLED)(
 
     const ownerId = crypto.randomUUID() as UUID;
     const workspaceDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-lifeops-live-workspace-"),
+      path.join(os.tmpdir(), "tokagent-lifeops-live-workspace-"),
     );
     const stateDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-lifeops-live-state-"),
+      path.join(os.tmpdir(), "tokagent-lifeops-live-state-"),
     );
-    const configPath = path.join(stateDir, "eliza.json");
+    const configPath = path.join(stateDir, "tokagent.json");
     const pgliteDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-lifeops-live-pglite-"),
+      path.join(os.tmpdir(), "tokagent-lifeops-live-pglite-"),
     );
     const envKeys = [
       ...LIVE_PROVIDER_ENV_KEYS,
       "PGLITE_DATA_DIR",
       "LOCAL_EMBEDDING_DIMENSIONS",
       "EMBEDDING_DIMENSION",
-      "ELIZA_DISABLE_LOCAL_EMBEDDINGS",
-      "ELIZA_STATE_DIR",
-      "ELIZA_CONFIG_PATH",
-      "ELIZA_PERSIST_CONFIG_PATH",
+      "TOKAGENT_DISABLE_LOCAL_EMBEDDINGS",
+      "TOKAGENT_STATE_DIR",
+      "TOKAGENT_CONFIG_PATH",
+      "TOKAGENT_PERSIST_CONFIG_PATH",
     ];
 
     beforeAll(async () => {
       envBackup = saveEnv(...envKeys);
       process.env.PGLITE_DATA_DIR = pgliteDir;
-      process.env.ELIZA_STATE_DIR = stateDir;
-      process.env.ELIZA_CONFIG_PATH = configPath;
-      process.env.ELIZA_PERSIST_CONFIG_PATH = configPath;
-      delete process.env.ELIZA_STATE_DIR;
-      delete process.env.ELIZA_CONFIG_PATH;
-      delete process.env.ELIZA_PERSIST_CONFIG_PATH;
-      process.env.LOG_LEVEL = process.env.ELIZA_E2E_LOG_LEVEL ?? "error";
+      process.env.TOKAGENT_STATE_DIR = stateDir;
+      process.env.TOKAGENT_CONFIG_PATH = configPath;
+      process.env.TOKAGENT_PERSIST_CONFIG_PATH = configPath;
+      delete process.env.TOKAGENT_STATE_DIR;
+      delete process.env.TOKAGENT_CONFIG_PATH;
+      delete process.env.TOKAGENT_PERSIST_CONFIG_PATH;
+      process.env.LOG_LEVEL = process.env.TOKAGENT_E2E_LOG_LEVEL ?? "error";
       applyLocalEmbeddingDefaults(process.env);
       cloudEnvBackup = Object.fromEntries(
         Object.entries(process.env).filter(
@@ -314,7 +314,7 @@ describeIf(LIVE_SUITE_ENABLED)(
       const character = buildCharacterFromConfig({});
       character.settings = {
         ...(character.settings ?? {}),
-        ELIZA_ADMIN_ENTITY_ID: ownerId,
+        TOKAGENT_ADMIN_ENTITY_ID: ownerId,
         MEMORY_SUMMARIZATION_THRESHOLD: 4,
         MEMORY_SUMMARIZATION_INTERVAL: 1,
         MEMORY_RETAIN_RECENT: 2,
@@ -342,14 +342,14 @@ describeIf(LIVE_SUITE_ENABLED)(
         character,
         plugins: [
           providerPlugin,
-          createElizaPlugin({
+          createTokagentPlugin({
             agentId: "main",
             workspaceDir,
           }),
         ],
         conversationLength: 12,
         enableAutonomy: false,
-        logLevel: process.env.ELIZA_E2E_LOG_LEVEL ?? "error",
+        logLevel: process.env.TOKAGENT_E2E_LOG_LEVEL ?? "error",
       });
 
       await runtime.registerPlugin(sqlPlugin);
@@ -396,7 +396,7 @@ describeIf(LIVE_SUITE_ENABLED)(
       fs.rmSync(pgliteDir, { recursive: true, force: true });
     }, 120_000);
 
-    it("keeps advanced memory enabled by default in the live Eliza runtime", async () => {
+    it("keeps advanced memory enabled by default in the live Tokagent runtime", async () => {
       expect(runtime.character.advancedMemory).toBe(true);
       expect(memoryService).toBeTruthy();
       expect(

@@ -2,7 +2,7 @@
 name = "virus"
 version = "0.1.0"
 edition = "2021"
-description = "An autonomous Eliza agent that lives on your machine"
+description = "An autonomous Tokagent agent that lives on your machine"
 
 [[bin]]
 name = "virus"

@@ -7,8 +7,8 @@ Implements the classic 2048 tile-merging game.
 import random
 from typing import ClassVar
 
-from elizaos_art.base import BaseEnvironment
-from elizaos_art.games.game_2048.types import (
+from tokagentos_art.base import BaseEnvironment
+from tokagentos_art.games.game_2048.types import (
     Game2048Action,
     Game2048Config,
     Game2048State,

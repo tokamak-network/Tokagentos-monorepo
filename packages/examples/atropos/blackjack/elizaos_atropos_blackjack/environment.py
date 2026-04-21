@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 import gymnasium as gym
 
-from elizaos_atropos_blackjack.types import (
+from tokagentos_atropos_blackjack.types import (
     BlackjackAction,
     BlackjackState,
     BlackjackResult,
@@ -21,10 +21,10 @@ if TYPE_CHECKING:
 
 class BlackjackEnvironment:
     """
-    Blackjack environment for ElizaOS agents.
+    Blackjack environment for TokagentOS agents.
     
     Wraps OpenAI Gymnasium's Blackjack-v1 environment with a cleaner interface
-    for use with ElizaOS agents and Atropos training.
+    for use with TokagentOS agents and Atropos training.
     
     Example:
         >>> env = BlackjackEnvironment()

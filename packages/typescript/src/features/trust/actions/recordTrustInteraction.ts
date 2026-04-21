@@ -1,6 +1,6 @@
 import { logger } from "../../../logger.ts";
 import type {
-	Action as ElizaAction,
+	Action as TokagentAction,
 	IAgentRuntime,
 	Memory,
 	UUID,
@@ -9,7 +9,7 @@ import { parseJSONObjectFromText } from "../../../utils.ts";
 import { TrustEvidenceType, type TrustInteraction } from "../types/trust.ts";
 import { hasTrustEngine } from "./hasTrustEngine.ts";
 
-export const recordTrustInteractionAction: ElizaAction = {
+export const recordTrustInteractionAction: TokagentAction = {
 	name: "RECORD_TRUST_INTERACTION",
 	description: "Records a trust-affecting interaction between entities",
 

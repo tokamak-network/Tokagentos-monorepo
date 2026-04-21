@@ -1,8 +1,8 @@
 /**
- * Supabase Edge Function handler for elizaOS chat worker
+ * Supabase Edge Function handler for tokagentOS chat worker
  *
  * This Edge Function processes chat messages and returns AI responses
- * using the elizaOS runtime with OpenAI as the LLM provider.
+ * using the tokagentOS runtime with OpenAI as the LLM provider.
  *
  * This is identical to the AWS Lambda handler pattern but adapted for
  * Supabase Edge Functions (Deno runtime).
@@ -19,7 +19,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
   const method = req.method;
   const path = url.pathname;
 
-  console.log(`[elizaOS] ${method} ${path}`);
+  console.log(`[tokagentOS] ${method} ${path}`);
 
   // Handle CORS preflight
   if (method === "OPTIONS") {
@@ -36,13 +36,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
   }
 
   // Health check endpoint
-  // Matches: /eliza-chat/health, /functions/v1/eliza-chat/health, or just /health
+  // Matches: /tokagent-chat/health, /functions/v1/tokagent-chat/health, or just /health
   if (path.endsWith("/health") && method === "GET") {
     return handleHealth();
   }
 
   // Root health check (GET /)
-  if ((path === "/" || path.endsWith("/eliza-chat")) && method === "GET") {
+  if ((path === "/" || path.endsWith("/tokagent-chat")) && method === "GET") {
     return handleHealth();
   }
 

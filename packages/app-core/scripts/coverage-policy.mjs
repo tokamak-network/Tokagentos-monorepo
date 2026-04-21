@@ -21,10 +21,10 @@ export const coverageDocReferences = Object.freeze([
 ]);
 
 export const coverageSurfaceGlobs = Object.freeze({
-  "eliza/packages/agent": ["eliza/packages/agent/src/**/*.ts"],
-  "eliza/packages/app-core": ["eliza/packages/app-core/src/**/*.ts"],
+  "tokagent/packages/agent": ["tokagent/packages/agent/src/**/*.ts"],
+  "tokagent/packages/app-core": ["tokagent/packages/app-core/src/**/*.ts"],
   "apps/app/electrobun": ["apps/app/electrobun/src/**/*.ts"],
-  "eliza/packages/shared": ["eliza/packages/shared/src/**/*.ts"],
+  "tokagent/packages/shared": ["tokagent/packages/shared/src/**/*.ts"],
 });
 
 export function formatCompactCoverageThresholds() {

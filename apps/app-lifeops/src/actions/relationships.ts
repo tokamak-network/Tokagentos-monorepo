@@ -13,17 +13,17 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   LifeOpsFollowUpStatus,
   LifeOpsMessageChannel,
-} from "@elizaos/shared/contracts/lifeops";
-import { LIFEOPS_MESSAGE_CHANNELS } from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
+import { LIFEOPS_MESSAGE_CHANNELS } from "@tokagentos/shared/contracts/lifeops";
 import { LifeOpsService } from "../lifeops/service.js";
 import { hasLifeOpsAccess } from "./lifeops-google-helpers.js";
 import { recentConversationTexts as collectRecentConversationTexts } from "./life-recent-context.js";

@@ -10,10 +10,10 @@
  * and applyDetectedProviders.
  */
 
-import { getDefaultStylePreset } from "@elizaos/shared/onboarding-presets";
+import { getDefaultStylePreset } from "@tokagentos/shared/onboarding-presets";
 import { type RefObject, useCallback } from "react";
 import type { StylePreset } from "../api";
-import { ElizaClient, type VoiceConfig } from "../api";
+import { TokagentClient, type VoiceConfig } from "../api";
 import {
   getDesktopRuntimeMode,
   invokeDesktopBridgeRequest,
@@ -152,7 +152,7 @@ async function persistOnboardingStyleVoice(args: {
   voiceProvider: string;
   voiceApiKey: string;
   cloudTtsSelected: boolean;
-  clientRef: ElizaClient;
+  clientRef: TokagentClient;
 }): Promise<void> {
   const voiceConfig = buildOnboardingStyleVoiceConfig(args);
   if (!voiceConfig) {
@@ -167,7 +167,7 @@ async function persistOnboardingStyleVoice(args: {
 }
 
 async function ensureOnboardedAgentRunning(
-  clientRef: ElizaClient,
+  clientRef: TokagentClient,
 ): Promise<void> {
   const status = await clientRef.startAndWait(120_000);
   if (status.state !== "running") {
@@ -229,7 +229,7 @@ export interface OnboardingCallbacksDeps {
     v: AppState["onboardingDetectedProviders"],
   ) => void;
   setOnboardingServerTarget: (
-    v: "" | "local" | "remote" | "elizacloud",
+    v: "" | "local" | "remote" | "tokagentcloud",
   ) => void;
   setOnboardingCloudApiKey: (v: string) => void;
   setOnboardingProvider: (v: string) => void;
@@ -255,7 +255,7 @@ export interface OnboardingCallbacksDeps {
   uiLanguage: UiLanguage;
   selectedVrmIndex: number;
   walletConfig: AppState["walletConfig"];
-  elizaCloudConnected: boolean;
+  tokagentCloudConnected: boolean;
   setActionNotice: (
     text: string,
     tone?: "info" | "success" | "error",
@@ -263,7 +263,7 @@ export interface OnboardingCallbacksDeps {
   ) => void;
   retryStartup: () => void;
   forceLocalBootstrapRef: RefObject<boolean>;
-  client: ElizaClient;
+  client: TokagentClient;
 }
 
 // ── Hook ──────────────────────────────────────────────────────────────────
@@ -297,7 +297,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
     uiLanguage,
     selectedVrmIndex,
     walletConfig,
-    elizaCloudConnected,
+    tokagentCloudConnected,
     setActionNotice,
     retryStartup,
     setWalletEnabled,
@@ -388,14 +388,14 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
 
       try {
         const onboardingRunMode =
-          onboardingMode === "elizacloudonly"
+          onboardingMode === "tokagentcloudonly"
             ? "cloud"
             : onboardingMode === "basic" || onboardingMode === "advanced"
               ? "local"
               : "";
         const useCloudFastTrack = shouldUseCloudOnboardingFastTrack({
           cloudProvisionedContainer,
-          elizaCloudConnected,
+          tokagentCloudConnected,
           onboardingRunMode,
           onboardingProvider,
         });
@@ -431,7 +431,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
                 /\{\{name\}\}/g,
                 onboardingName || defaultName,
               ) ??
-              `You are ${onboardingName || defaultName}, an autonomous AI agent powered by elizaOS.`,
+              `You are ${onboardingName || defaultName}, an autonomous AI agent powered by tokagentOS.`,
             style: style?.style,
             adjectives: style?.adjectives,
             postExamples: style?.postExamples,
@@ -441,7 +441,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
             language: uiLanguage,
             presetId: style?.id ?? getDefaultStylePreset(uiLanguage).id,
             runMode: "cloud",
-            cloudProvider: "elizacloud",
+            cloudProvider: "tokagentcloud",
             smallModel: onboardingSmallModel,
             largeModel: onboardingLargeModel,
             ...onboardingFeaturePayload,
@@ -476,7 +476,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
 
         const systemPrompt = style?.system
           ? style.system.replace(/\{\{name\}\}/g, onboardingName)
-          : `You are ${onboardingName}, an autonomous AI agent powered by elizaOS. ${onboardingOptions.sharedStyleRules}`;
+          : `You are ${onboardingName}, an autonomous AI agent powered by tokagentOS. ${onboardingOptions.sharedStyleRules}`;
 
         const runtimeConfig = buildOnboardingRuntimeConfig({
           onboardingServerTarget,
@@ -512,22 +512,22 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
           },
         });
 
-        const isSandboxMode = onboardingServerTarget === "elizacloud";
+        const isSandboxMode = onboardingServerTarget === "tokagentcloud";
         const isLocalMode =
           onboardingServerTarget === "local" || !onboardingServerTarget;
         const isRemoteMode = onboardingServerTarget === "remote";
 
         if (isSandboxMode) {
           const cloudApiBase =
-            getBootConfig().cloudApiBase ?? "https://www.elizacloud.ai";
+            getBootConfig().cloudApiBase ?? "https://www.tokagentcloud.ai";
           const authToken = String(
             (globalThis as Record<string, unknown>)
-              .__ELIZA_CLOUD_AUTH_TOKEN__ ?? "",
+              .__TOKAGENT_CLOUD_AUTH_TOKEN__ ?? "",
           );
 
           if (!authToken) {
             throw new Error(
-              "Eliza Cloud authentication required. Please log in first.",
+              "Tokagent Cloud authentication required. Please log in first.",
             );
           }
 
@@ -637,7 +637,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
             voiceApiKey: onboardingVoiceApiKey,
             cloudTtsSelected:
               runtimeConfig.serviceRouting?.tts?.transport === "cloud-proxy" &&
-              runtimeConfig.serviceRouting?.tts?.backend === "elizacloud",
+              runtimeConfig.serviceRouting?.tts?.backend === "tokagentcloud",
             clientRef: client,
           });
         } catch (err) {
@@ -701,7 +701,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
       setComputerUseEnabled,
       walletConfig,
       onboardingMode,
-      elizaCloudConnected,
+      tokagentCloudConnected,
       cloudProvisionedContainer,
       completeOnboarding,
       client,
@@ -919,7 +919,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
     setOnboardingRemoteToken("");
     setOnboardingServerTarget("");
     setActionNotice(
-      "Checking this device for an existing Eliza setup...",
+      "Checking this device for an existing Tokagent setup...",
       "info",
       3200,
     );
@@ -952,7 +952,7 @@ export function useOnboardingCallbacks(deps: OnboardingCallbacksDeps) {
     }
 
     const accessKey = onboardingRemoteToken.trim();
-    const probe = new ElizaClient(normalizedBase, accessKey || undefined);
+    const probe = new TokagentClient(normalizedBase, accessKey || undefined);
     setOnboardingRemoteConnecting(true);
     setOnboardingRemoteError(null);
     try {

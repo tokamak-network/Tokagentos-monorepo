@@ -1,7 +1,7 @@
 {
   "model": "claude-opus-4-20250514",
   "run_index": 0,
-  "run_id": "eliza_26-02-07_150511_ef0293ac",
+  "run_id": "tokagent_26-02-07_150511_ef0293ac",
   "start_time": "2026-02-07T15:05:11.104681",
   "environment_config": "voyager/environments/basic_env.json",
   "messages": [
@@ -481,7 +481,7 @@
     {
       "step": 18,
       "template": "llm_exploration",
-      "error": "compile_failed: provided secretKey is invalid\nError: provided secretKey is invalid\n    at fromSecretKey (/Users/shawwalters/eliza-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/node_modules/@solana/web3.js/lib/index.cjs.js:8994:21)\n    at executeSkill (/Users/shawwalters/eliza-workspace/benchmarks/"
+      "error": "compile_failed: provided secretKey is invalid\nError: provided secretKey is invalid\n    at fromSecretKey (/Users/shawwalters/tokagent-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/node_modules/@solana/web3.js/lib/index.cjs.js:8994:21)\n    at executeSkill (/Users/shawwalters/tokagent-workspace/benchmarks/"
     }
   ],
   "end_time": "2026-02-07T15:18:24.065238",

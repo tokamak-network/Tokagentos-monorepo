@@ -15,7 +15,7 @@ def _load_dotenv() -> None:
     """Best-effort load of repo/root .env (no external dependency)."""
     candidates = [
         Path.cwd() / ".env",
-        # repo_root/examples/atropos/diplomacy/elizaos_atropos_diplomacy/cli.py -> repo_root is parents[4]
+        # repo_root/examples/atropos/diplomacy/tokagentos_atropos_diplomacy/cli.py -> repo_root is parents[4]
         Path(__file__).resolve().parents[4] / ".env",
     ]
 
@@ -50,9 +50,9 @@ async def run_auto_mode(
     """Run automatic play mode with AI agents."""
     _load_dotenv()
 
-    from elizaos_atropos_diplomacy import DiplomacyEnvironment, DiplomacyAgent, Power
+    from tokagentos_atropos_diplomacy import DiplomacyEnvironment, DiplomacyAgent, Power
 
-    print("\n🌍 ElizaOS Atropos - Diplomacy")
+    print("\n🌍 TokagentOS Atropos - Diplomacy")
     print("=" * 50)
     print(f"Mode: {'Press (with negotiation)' if press_mode else 'No-Press'}")
     print(f"Max years: {max_years}")
@@ -70,20 +70,20 @@ async def run_auto_mode(
     use_llm = False
     if os.environ.get("OPENAI_API_KEY"):
         try:
-            from elizaos.runtime import AgentRuntime
-            from elizaos.bootstrap import bootstrap_plugin
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos.runtime import AgentRuntime
+            from tokagentos.bootstrap import bootstrap_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
-            from elizaos_atropos_diplomacy.eliza_plugin import (
+            from tokagentos_atropos_diplomacy.tokagent_plugin import (
                 create_diplomacy_character,
-                get_diplomacy_eliza_plugin,
+                get_diplomacy_tokagent_plugin,
             )
 
-            plugins = [bootstrap_plugin, get_openai_plugin(), get_diplomacy_eliza_plugin()]
+            plugins = [bootstrap_plugin, get_openai_plugin(), get_diplomacy_tokagent_plugin()]
 
             if log_trajectories:
                 try:
-                    from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+                    from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
                     plugins.append(get_trajectory_logger_plugin())
                 except ImportError:
@@ -208,7 +208,7 @@ async def run_auto_mode(
     if runtime:
         if log_trajectories and traj_svc is not None:
             try:
-                from elizaos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
+                from tokagentos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
 
                 export_cfg = TrajectoryExportConfig(
                     dataset_name="atropos_diplomacy_trajectories",
@@ -227,7 +227,7 @@ async def run_auto_mode(
 
 async def run_interactive_mode(nation: str = "france") -> None:
     """Run interactive mode - play as one nation."""
-    from elizaos_atropos_diplomacy import DiplomacyEnvironment, DiplomacyAgent, Power
+    from tokagentos_atropos_diplomacy import DiplomacyEnvironment, DiplomacyAgent, Power
 
     # Find the player's power
     player_power = None
@@ -241,7 +241,7 @@ async def run_interactive_mode(nation: str = "france") -> None:
         print("Available: austria, england, france, germany, italy, russia, turkey")
         return
 
-    print("\n🌍 ElizaOS Atropos - Diplomacy (Interactive)")
+    print("\n🌍 TokagentOS Atropos - Diplomacy (Interactive)")
     print("=" * 50)
     print(f"You are playing as: {player_power.full_name}")
     print("=" * 50)
@@ -302,7 +302,7 @@ async def run_interactive_mode(nation: str = "france") -> None:
                 player_orders = []
 
         # Fill in missing orders with holds
-        from elizaos_atropos_diplomacy.types import Order, OrderType
+        from tokagentos_atropos_diplomacy.types import Order, OrderType
         units_ordered = {o.unit.location for o in player_orders}
         for unit in player_state.units:
             if unit.location not in units_ordered:
@@ -335,7 +335,7 @@ async def run_interactive_mode(nation: str = "france") -> None:
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="ElizaOS Atropos Diplomacy Environment",
+        description="TokagentOS Atropos Diplomacy Environment",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 

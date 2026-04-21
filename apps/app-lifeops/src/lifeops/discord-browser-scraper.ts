@@ -6,11 +6,11 @@ import {
   navigateBrowserWorkspaceTab,
   openBrowserWorkspaceTab,
   showBrowserWorkspaceTab,
-} from "@elizaos/agent/services/browser-workspace";
+} from "@tokagentos/agent/services/browser-workspace";
 import type {
   LifeOpsBrowserPageContext,
   LifeOpsConnectorSide,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 
 export const DISCORD_APP_URL = "https://discord.com/channels/@me";
 const DISCORD_APP_TITLE = "Discord";

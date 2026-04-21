@@ -1,8 +1,8 @@
 import type http from "node:http";
-import { logger, stringToUuid, type UUID } from "@elizaos/core";
-import { asRecord } from "@elizaos/shared/type-guards";
-import type { ElizaConfig } from "../config/config.js";
-import { configFileExists, loadElizaConfig } from "../config/config.js";
+import { logger, stringToUuid, type UUID } from "@tokagentos/core";
+import { asRecord } from "@tokagentos/shared/type-guards";
+import type { TokagentConfig } from "../config/config.js";
+import { configFileExists, loadTokagentConfig } from "../config/config.js";
 import {
   isCloudInferenceSelectedInConfig,
   migrateLegacyRuntimeConfig,
@@ -79,9 +79,9 @@ function ensureCloudContainerCharacterDefaults(
 ): void {
   if (_cloudDefaultsApplied) return;
 
-  let config: ElizaConfig;
+  let config: TokagentConfig;
   try {
-    config = loadElizaConfig();
+    config = loadTokagentConfig();
   } catch {
     return; // No config file yet — nothing to patch
   }
@@ -143,13 +143,13 @@ function ensureCloudContainerCharacterDefaults(
 
   // Ensure serviceRouting is set for cloud inference so the cloud topology
   // resolver recognises this as a cloud-inference container and keeps the
-  // ELIZAOS_CLOUD_* env vars alive (applyCloudConfigToEnv deletes them when
+  // TOKAGENTOS_CLOUD_* env vars alive (applyCloudConfigToEnv deletes them when
   // shouldLoadPlugin is false).
   const configRecord = config as Record<string, unknown>;
   if (!configRecord.serviceRouting) {
     configRecord.serviceRouting = {
-      llmText: { backend: "elizacloud", transport: "cloud-proxy" },
-      tts: { backend: "elizacloud", transport: "cloud-proxy" },
+      llmText: { backend: "tokagentcloud", transport: "cloud-proxy" },
+      tts: { backend: "tokagentcloud", transport: "cloud-proxy" },
     };
   }
 
@@ -173,7 +173,7 @@ function ensureCloudContainerCharacterDefaults(
   }
 
   try {
-    ctx.saveElizaConfig(config);
+    ctx.saveTokagentConfig(config);
     logger.info(
       `[onboarding] Applied default character preset "${defaultPreset.id}" for cloud container`,
     );
@@ -205,8 +205,8 @@ export interface OnboardingRouteContext {
   ) => Promise<T | null>;
   // Server.ts helpers
   isCloudProvisionedContainer: () => boolean;
-  hasPersistedOnboardingState: (config: ElizaConfig) => boolean;
-  ensureWalletKeysInEnvAndConfig: (config: ElizaConfig) => boolean;
+  hasPersistedOnboardingState: (config: TokagentConfig) => boolean;
+  ensureWalletKeysInEnvAndConfig: (config: TokagentConfig) => boolean;
   getWalletAddresses: () => {
     evmAddress?: string;
     solanaAddress?: string;
@@ -218,21 +218,21 @@ export interface OnboardingRouteContext {
   getModelOptions: () => unknown;
   getInventoryProviderOptions: () => unknown[];
   resolveConfiguredCharacterLanguage: (
-    config: ElizaConfig,
+    config: TokagentConfig,
     req: http.IncomingMessage,
   ) => string;
   normalizeCharacterLanguage: (lang: string | undefined) => string;
   readUiLanguageHeader: (req: http.IncomingMessage) => string | null;
   applyOnboardingVoicePreset: (
-    config: ElizaConfig,
+    config: TokagentConfig,
     body: Record<string, unknown>,
     language: string,
   ) => void;
-  saveElizaConfig: (config: ElizaConfig) => void;
+  saveTokagentConfig: (config: TokagentConfig) => void;
 }
 
 export interface OnboardingServerState {
-  config: ElizaConfig;
+  config: TokagentConfig;
   runtime: {
     agentId: string;
     character: Record<string, unknown> & { name: string };
@@ -271,14 +271,14 @@ export async function handleOnboardingRoutes(
 
     if (!complete && configFileExists()) {
       try {
-        config = loadElizaConfig();
+        config = loadTokagentConfig();
         complete = ctx.hasPersistedOnboardingState(config);
         if (complete) {
           state.config = config;
         }
       } catch (err) {
         logger.warn(
-          `[eliza-api] Failed to refresh config for onboarding status: ${err instanceof Error ? err.message : err}`,
+          `[tokagent-api] Failed to refresh config for onboarding status: ${err instanceof Error ? err.message : err}`,
         );
       }
     }
@@ -298,12 +298,12 @@ export async function handleOnboardingRoutes(
     }
 
     logger.warn(
-      `[eliza-api] Wallet keys requested during onboarding (ip=${req.socket?.remoteAddress ?? "unknown"})`,
+      `[tokagent-api] Wallet keys requested during onboarding (ip=${req.socket?.remoteAddress ?? "unknown"})`,
     );
 
     ctx.ensureWalletKeysInEnvAndConfig(state.config);
     try {
-      ctx.saveElizaConfig(state.config);
+      ctx.saveTokagentConfig(state.config);
     } catch {
       // Non-fatal
     }
@@ -381,10 +381,10 @@ export async function handleOnboardingRoutes(
 
     let config = state.config;
     try {
-      config = loadElizaConfig();
+      config = loadTokagentConfig();
     } catch (err) {
       logger.warn(
-        `[eliza-api] Failed to reload config before onboarding: ${err instanceof Error ? err.message : String(err)}`,
+        `[tokagent-api] Failed to reload config before onboarding: ${err instanceof Error ? err.message : String(err)}`,
       );
     }
     const configuredLanguage = ctx.normalizeCharacterLanguage(
@@ -480,7 +480,7 @@ export async function handleOnboardingRoutes(
     if (body.theme) {
       if (!config.ui) config.ui = {};
       config.ui.theme = body.theme as
-        | "eliza"
+        | "tokagent"
         | "qt314"
         | "web2000"
         | "programmer"
@@ -554,7 +554,7 @@ export async function handleOnboardingRoutes(
           unknown
         >
       ).mode = sandboxMode;
-      logger.info(`[eliza-api] Sandbox mode set to: ${sandboxMode}`);
+      logger.info(`[tokagent-api] Sandbox mode set to: ${sandboxMode}`);
     }
 
     if (hasCanonicalRuntimeConfig) {
@@ -578,16 +578,16 @@ export async function handleOnboardingRoutes(
           normalizeServiceRoutingConfig(config.serviceRouting),
       });
 
-      delete process.env.ELIZAOS_CLOUD_ENABLED;
-      delete process.env.ELIZAOS_CLOUD_NANO_MODEL;
-      delete process.env.ELIZAOS_CLOUD_MEDIUM_MODEL;
-      delete process.env.ELIZAOS_CLOUD_SMALL_MODEL;
-      delete process.env.ELIZAOS_CLOUD_LARGE_MODEL;
-      delete process.env.ELIZAOS_CLOUD_MEGA_MODEL;
-      delete process.env.ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL;
-      delete process.env.ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL;
-      delete process.env.ELIZAOS_CLOUD_ACTION_PLANNER_MODEL;
-      delete process.env.ELIZAOS_CLOUD_PLANNER_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_ENABLED;
+      delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
 
       if (config.models && typeof config.models === "object") {
         const legacyModels = config.models as Record<string, unknown>;
@@ -601,7 +601,7 @@ export async function handleOnboardingRoutes(
       if (
         !isCloudInferenceSelectedInConfig(config as Record<string, unknown>)
       ) {
-        delete process.env.ELIZAOS_CLOUD_API_KEY;
+        delete process.env.TOKAGENTOS_CLOUD_API_KEY;
       }
     }
     if (hasCanonicalRuntimeConfig && config.agents?.defaults?.model) {
@@ -635,7 +635,7 @@ export async function handleOnboardingRoutes(
         config.connectors[connectorName] = {
           ...(currentConnector ?? {}),
           ...nextConnector,
-        } as import("../config/types.eliza.js").ConnectorConfig;
+        } as import("../config/types.tokagent.js").ConnectorConfig;
       }
     }
     if (
@@ -723,7 +723,7 @@ export async function handleOnboardingRoutes(
       config.features = {
         ...(asRecord(config.features) ?? {}),
         ...explicitFeatures,
-      } as NonNullable<ElizaConfig["features"]>;
+      } as NonNullable<TokagentConfig["features"]>;
     }
 
     // ── Inventory / RPC providers ─────────────────────────────────────────
@@ -814,10 +814,10 @@ export async function handleOnboardingRoutes(
     state.agentName = (body.name as string) ?? state.agentName;
     migrateLegacyRuntimeConfig(config as Record<string, unknown>);
     try {
-      ctx.saveElizaConfig(config);
+      ctx.saveTokagentConfig(config);
     } catch (err) {
       logger.error(
-        `[eliza-api] Failed to save config after onboarding: ${err}`,
+        `[tokagent-api] Failed to save config after onboarding: ${err}`,
       );
       error(res, "Failed to save configuration", 500);
       return true;
@@ -825,7 +825,7 @@ export async function handleOnboardingRoutes(
 
     if (!configFileExists()) {
       logger.error(
-        `[eliza-api] Config file does not exist after save — onboarding data will be lost on restart`,
+        `[tokagent-api] Config file does not exist after save — onboarding data will be lost on restart`,
       );
       error(res, "Configuration file was not persisted to disk", 500);
       return true;
@@ -835,7 +835,7 @@ export async function handleOnboardingRoutes(
       normalizeDeploymentTargetConfig(config.deploymentTarget)?.runtime ??
       "local";
     logger.info(
-      `[eliza-api] Onboarding complete for agent "${body.name}" (runtime: ${resolvedRuntime})`,
+      `[tokagent-api] Onboarding complete for agent "${body.name}" (runtime: ${resolvedRuntime})`,
     );
     json(res, { ok: true });
     return true;

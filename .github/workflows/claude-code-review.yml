@@ -58,7 +58,7 @@ jobs:
             **✅ REQUIRED:**
             - TypeScript types (no 'any')
             - Tests with vitest (via bun run test)
-            - Use @elizaos/core imports (not packages/typescript)
+            - Use @tokagentos/core imports (not packages/typescript)
             - Functional code (no classes)
             - Error handling
 

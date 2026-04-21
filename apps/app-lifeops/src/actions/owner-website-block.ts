@@ -14,12 +14,12 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   getSelfControlAccess,
   SELFCONTROL_ACCESS_ERROR,
@@ -412,7 +412,7 @@ export const ownerWebsiteBlockAction: Action & {
       {
         name: "{{agentName}}",
         content: {
-          text: "The approval prompt completed successfully. Eliza can now ask the OS for administrator approval whenever it needs to edit the hosts file.",
+          text: "The approval prompt completed successfully. Tokagent can now ask the OS for administrator approval whenever it needs to edit the hosts file.",
           action: "OWNER_WEBSITE_BLOCK",
         },
       },

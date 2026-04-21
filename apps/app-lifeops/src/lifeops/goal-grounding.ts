@@ -1,5 +1,5 @@
-import type { LifeOpsGoalReviewState } from "@elizaos/shared/contracts/lifeops";
-import { asRecord } from "@elizaos/shared/type-guards";
+import type { LifeOpsGoalReviewState } from "@tokagentos/shared/contracts/lifeops";
+import { asRecord } from "@tokagentos/shared/type-guards";
 
 export const GOAL_GROUNDING_STATES = [
   "grounded",

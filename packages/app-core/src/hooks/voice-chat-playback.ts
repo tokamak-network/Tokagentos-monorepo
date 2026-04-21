@@ -3,7 +3,7 @@
  * speech text extraction, and mouth animation helpers.
  */
 
-import { sanitizeSpeechText } from "@elizaos/shared/spoken-text";
+import { sanitizeSpeechText } from "@tokagentos/shared/spoken-text";
 import { MAX_SPOKEN_CHARS, MOUTH_OPEN_STEP } from "./voice-chat-types";
 
 // ── Text processing helpers ───────────────────────────────────────────

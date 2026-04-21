@@ -7,7 +7,7 @@ import {
   CardTitle,
   ContentLayout,
   Textarea,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { Monitor, RefreshCw } from "lucide-react";
 import {
   type ReactNode,
@@ -631,7 +631,7 @@ export function DesktopWorkspaceSection({
         <CardHeader>
           <CardTitle className="text-sm">Desktop Console Log</CardTitle>
           <CardDescription>
-            Live tail of `.eliza/desktop-dev-console.log`, including renderer
+            Live tail of `.tokagent/desktop-dev-console.log`, including renderer
             console, network failures, RPC failures, and Electrobun/main logs.
           </CardDescription>
         </CardHeader>

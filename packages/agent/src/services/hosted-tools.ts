@@ -60,11 +60,11 @@ function normalizeApiKey(value: string | undefined): string | null {
 export function isHostedCloudToolingConfigured(
   env: NodeJS.ProcessEnv = process.env,
 ): boolean {
-  return Boolean(normalizeApiKey(env.ELIZAOS_CLOUD_API_KEY));
+  return Boolean(normalizeApiKey(env.TOKAGENTOS_CLOUD_API_KEY));
 }
 
 function resolveHostedCloudBaseUrl(env: NodeJS.ProcessEnv): string {
-  return resolveCloudApiBaseUrl(env.ELIZAOS_CLOUD_BASE_URL);
+  return resolveCloudApiBaseUrl(env.TOKAGENTOS_CLOUD_BASE_URL);
 }
 
 async function requestHostedCloudTool<T>(
@@ -72,9 +72,9 @@ async function requestHostedCloudTool<T>(
   init: RequestInit | undefined,
   env: NodeJS.ProcessEnv,
 ): Promise<T> {
-  const apiKey = normalizeApiKey(env.ELIZAOS_CLOUD_API_KEY);
+  const apiKey = normalizeApiKey(env.TOKAGENTOS_CLOUD_API_KEY);
   if (!apiKey) {
-    throw new Error("Eliza Cloud hosted tools are not configured.");
+    throw new Error("Tokagent Cloud hosted tools are not configured.");
   }
 
   const response = await fetch(`${resolveHostedCloudBaseUrl(env)}${pathname}`, {

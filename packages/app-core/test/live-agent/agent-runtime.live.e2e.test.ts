@@ -1,5 +1,5 @@
 /**
- * Comprehensive E2E tests for the elizaOS agent runtime.
+ * Comprehensive E2E tests for the tokagentOS agent runtime.
  *
  * NO MOCKS. Single test file (PGlite constraint). All suites share one
  * fully-initialized runtime with PRODUCTION defaults:
@@ -8,7 +8,7 @@
  *   - All core plugins loaded
  *
  * Slow tests are fine — we test autonomy thinking for real, multi-turn
- * memory for real, and startEliza() via a real subprocess.
+ * memory for real, and startTokagent() via a real subprocess.
  */
 import crypto from "node:crypto";
 import fs from "node:fs";
@@ -26,23 +26,23 @@ import {
   type Service,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, describe, expect } from "vitest";
 import { itIf } from "../../../../../test/helpers/conditional-tests.ts";
 import { selectLiveProvider } from "../../../../../test/helpers/live-provider";
 import { sleep, withTimeout } from "../../../../../test/helpers/test-utils";
 
-/** Matches the table name used by @elizaos/core personality module. */
+/** Matches the table name used by @tokagentos/core personality module. */
 const USER_PREFS_TABLE = "user_personality_preferences";
 
-import { startApiServer } from "@elizaos/agent/api/server";
-import { ensureAgentWorkspace } from "@elizaos/agent/providers/workspace";
-import { configureLocalEmbeddingPlugin } from "@elizaos/agent/runtime/eliza";
+import { startApiServer } from "@tokagentos/agent/api/server";
+import { ensureAgentWorkspace } from "@tokagentos/agent/providers/workspace";
+import { configureLocalEmbeddingPlugin } from "@tokagentos/agent/runtime/tokagent";
 import {
   extractPlugin,
   type PluginModuleShape,
-} from "@elizaos/agent/test-support/test-helpers";
+} from "@tokagentos/agent/test-support/test-helpers";
 
 // ---------------------------------------------------------------------------
 // Environment
@@ -54,7 +54,7 @@ dotenv.config({ path: path.resolve(packageRoot, ".env") });
 dotenv.config({ path: path.resolve(packageRoot, "..", "..", ".env") });
 
 const liveModelTestsEnabled =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const selectedLiveProvider = liveModelTestsEnabled
   ? selectLiveProvider()
   : null;
@@ -382,9 +382,9 @@ describe("Agent Runtime E2E", () => {
   const userId = crypto.randomUUID() as UUID;
   const worldId = stringToUuid("test-e2e-world");
 
-  const pgliteDir = fs.mkdtempSync(path.join(os.tmpdir(), "eliza-e2e-pglite-"));
+  const pgliteDir = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-e2e-pglite-"));
   const workspaceDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), "eliza-e2e-workspace-"),
+    path.join(os.tmpdir(), "tokagent-e2e-workspace-"),
   );
 
   const corePluginNames = [
@@ -396,10 +396,10 @@ describe("Agent Runtime E2E", () => {
 
   beforeAll(async () => {
     if (!hasModelProvider) return;
-    process.env.LOG_LEVEL = process.env.ELIZA_E2E_LOG_LEVEL ?? "error";
+    process.env.LOG_LEVEL = process.env.TOKAGENT_E2E_LOG_LEVEL ?? "error";
     process.env.ENABLE_TRAJECTORIES = "false";
-    process.env.ELIZA_TRAJECTORY_LOGGING = "false";
-    process.env.ELIZA_TRAJECTORY_LOGGING = "false";
+    process.env.TOKAGENT_TRAJECTORY_LOGGING = "false";
+    process.env.TOKAGENT_TRAJECTORY_LOGGING = "false";
 
     const provider = selectedLiveProvider;
     if (!provider) {
@@ -1368,9 +1368,9 @@ describe("Agent Runtime E2E", () => {
     itIf(hasModelProvider)(
       "creates trigger, executes it, LLM processes instruction, run history records success",
       async () => {
-        // Register the trigger worker on the real runtime (same as eliza-plugin.ts does).
+        // Register the trigger worker on the real runtime (same as tokagent-plugin.ts does).
         const { registerTriggerTaskWorker } = await import(
-          "@elizaos/agent/triggers/runtime"
+          "@tokagentos/agent/triggers/runtime"
         );
         registerTriggerTaskWorker(runtime);
 
@@ -1621,6 +1621,6 @@ describe("Agent Runtime E2E", () => {
   });
 
   // ===================================================================
-  //  11. startEliza() — real subprocess test
+  //  11. startTokagent() — real subprocess test
   // ===================================================================
 });

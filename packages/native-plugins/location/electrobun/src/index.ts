@@ -13,7 +13,7 @@ import type { PluginListenerHandle } from "@capacitor/core";
 import {
   invokeDesktopBridgeRequest,
   subscribeDesktopBridgeEvent,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import type { EventCallback, ListenerEntry as BaseListenerEntry } from "../../../shared-types.js";
 import type {
   LocationErrorEvent,

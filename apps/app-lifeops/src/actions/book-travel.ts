@@ -7,9 +7,9 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
-import { ModelType, parseJSONObjectFromText } from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { ModelType, parseJSONObjectFromText } from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import { createApprovalQueue } from "../lifeops/approval-queue.js";
 import type {
   ApprovalQueue,
@@ -506,7 +506,7 @@ export const bookTravelAction: Action = {
         reason: `Top up ${paymentRequired.amount} ${paymentRequired.asset} on ${paymentRequired.network} to book travel`,
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       });
-      const text = `Eliza Cloud needs a top-up before I can quote this trip: ${paymentRequired.amount} ${paymentRequired.asset} on ${paymentRequired.network}. Queued approval ${request.id} so you can review and pay together.`;
+      const text = `Tokagent Cloud needs a top-up before I can quote this trip: ${paymentRequired.amount} ${paymentRequired.asset} on ${paymentRequired.network}. Queued approval ${request.id} so you can review and pay together.`;
       if (callback) {
         await callback({ text });
       }

@@ -1,8 +1,8 @@
 /**
- * elizaOS Cloudflare Worker
+ * tokagentOS Cloudflare Worker
  *
  * A serverless AI agent running on Cloudflare Workers.
- * Uses the canonical elizaOS runtime with messageService.handleMessage pattern.
+ * Uses the canonical tokagentOS runtime with messageService.handleMessage pattern.
  *
  * NOTE: Due to Cloudflare Workers constraints (no persistent storage for PGLite),
  * this example initializes the runtime per-request. For production use,
@@ -19,7 +19,7 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import { v4 as uuidv4 } from "uuid";
 
@@ -49,13 +49,13 @@ const worldId = stringToUuid("cloudflare-world");
 
 function getCharacter(env: Env): Character {
   return createCharacter({
-    name: env.CHARACTER_NAME || "Eliza",
+    name: env.CHARACTER_NAME || "Tokagent",
     bio:
       env.CHARACTER_BIO ||
-      "A helpful AI assistant powered by elizaOS on Cloudflare Workers.",
+      "A helpful AI assistant powered by tokagentOS on Cloudflare Workers.",
     system:
       env.CHARACTER_SYSTEM ||
-      `You are ${env.CHARACTER_NAME || "Eliza"}, a helpful AI assistant. ${env.CHARACTER_BIO || "You are friendly, knowledgeable, and always eager to help."}`,
+      `You are ${env.CHARACTER_NAME || "Tokagent"}, a helpful AI assistant. ${env.CHARACTER_BIO || "You are friendly, knowledgeable, and always eager to help."}`,
     secrets: {
       OPENAI_API_KEY: env.OPENAI_API_KEY,
       OPENAI_BASE_URL: env.OPENAI_BASE_URL || "https://api.openai.com/v1",
@@ -243,7 +243,7 @@ function handleHealth(env: Env): Response {
   return Response.json({
     status: "healthy",
     character: character.name,
-    mode: "elizaos",
+    mode: "tokagentos",
     timestamp: new Date().toISOString(),
   });
 }
@@ -254,7 +254,7 @@ function handleInfo(env: Env): Response {
     name: character.name,
     bio: character.bio,
     version: "2.0.0",
-    powered_by: "elizaOS",
+    powered_by: "tokagentOS",
     runtime: "Cloudflare Workers",
     endpoints: {
       "POST /chat": "Send a message and receive a response",

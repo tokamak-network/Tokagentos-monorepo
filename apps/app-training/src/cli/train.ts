@@ -184,7 +184,7 @@ export async function runTrainCli(argv: string[]): Promise<number> {
 				gcsBucket: parsed.bucket,
 				baseModel: normalizeVertexBaseModel(undefined, slot),
 				trainingDataPath: parsed.dataset,
-				displayName: parsed.displayName ?? `eliza-${slot}`,
+				displayName: parsed.displayName ?? `tokagent-${slot}`,
 				epochs: parsed.epochs,
 			});
 			console.log(`[train] vertex tuning job created: ${job.name}`);

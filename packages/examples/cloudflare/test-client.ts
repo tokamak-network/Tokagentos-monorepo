@@ -1,5 +1,5 @@
 /**
- * elizaOS Cloudflare Worker Test Client
+ * tokagentOS Cloudflare Worker Test Client
  *
  * Interactive CLI client for testing the Cloudflare Worker.
  * Supports both regular and streaming chat modes.
@@ -45,7 +45,7 @@ function parseArgs(): { url: string; stream: boolean } {
       i++;
     } else if (args[i] === "--help" || args[i] === "-h") {
       console.log(`
-elizaOS Cloudflare Worker Test Client
+tokagentOS Cloudflare Worker Test Client
 
 Usage:
   bun run test-client.ts [options]
@@ -163,7 +163,7 @@ async function sendStreamMessage(
 async function main(): Promise<void> {
   const { url, stream } = parseArgs();
 
-  console.log("\n🚀 elizaOS Cloudflare Worker Test Client\n");
+  console.log("\n🚀 tokagentOS Cloudflare Worker Test Client\n");
   console.log(`📡 Connecting to: ${url}`);
   console.log(`📨 Mode: ${stream ? "Streaming" : "Regular"}\n`);
 

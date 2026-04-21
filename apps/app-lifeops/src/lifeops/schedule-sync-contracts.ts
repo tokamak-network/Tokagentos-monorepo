@@ -3,7 +3,7 @@ import type {
   LifeOpsScheduleMealLabel,
   LifeOpsSchedulePhase,
   LifeOpsScheduleSleepStatus,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 
 export const LIFEOPS_SCHEDULE_DEVICE_KINDS = [
   "iphone",

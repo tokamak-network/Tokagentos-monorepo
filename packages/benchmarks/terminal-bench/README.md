@@ -1,6 +1,6 @@
-# Terminal-Bench for ElizaOS
+# Terminal-Bench for TokagentOS
 
-A benchmark evaluating AI agents' proficiency in performing complex tasks within terminal environments. This implementation integrates Terminal-Bench with the ElizaOS Python framework.
+A benchmark evaluating AI agents' proficiency in performing complex tasks within terminal environments. This implementation integrates Terminal-Bench with the TokagentOS Python framework.
 
 ## Overview
 
@@ -20,7 +20,7 @@ Terminal-Bench tests AI agents across diverse terminal tasks including:
 pip install -e ".[dev]"
 
 # Or install dependencies manually
-pip install elizaos docker aiofiles pexpect httpx pydantic
+pip install tokagentos docker aiofiles pexpect httpx pydantic
 ```
 
 ## Quick Start
@@ -55,7 +55,7 @@ terminal-bench --max-tasks 20
 
 ```python
 import asyncio
-from elizaos_terminal_bench import (
+from tokagentos_terminal_bench import (
     TerminalBenchRunner,
     TerminalBenchConfig,
     TaskCategory,
@@ -91,14 +91,14 @@ async def main():
 asyncio.run(main())
 ```
 
-### Using with ElizaOS Runtime
+### Using with TokagentOS Runtime
 
 ```python
-from elizaos.runtime import AgentRuntime
-from elizaos_terminal_bench import TerminalBenchRunner
+from tokagentos.runtime import AgentRuntime
+from tokagentos_terminal_bench import TerminalBenchRunner
 
 async def run_with_runtime():
-    # Initialize ElizaOS runtime
+    # Initialize TokagentOS runtime
     runtime = AgentRuntime()
     await runtime.initialize()
     
@@ -163,7 +163,7 @@ benchmark_results/terminal-bench/
 pytest
 
 # Run with coverage
-pytest --cov=elizaos_terminal_bench
+pytest --cov=tokagentos_terminal_bench
 
 # Run specific test file
 pytest tests/test_types.py
@@ -228,7 +228,7 @@ Set your API key: `export OPENAI_API_KEY=sk-...`
 - [Terminal-Bench Official Site](https://tbench.ai)
 - [Terminal-Bench GitHub](https://github.com/laude-institute/terminal-bench)
 - [Terminal-Bench Leaderboard](https://tbench.ai/leaderboard/terminal-bench/2.0)
-- [ElizaOS Documentation](https://elizaos.dev)
+- [TokagentOS Documentation](https://tokagentos.dev)
 
 ## License
 

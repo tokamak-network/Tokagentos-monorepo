@@ -1,1 +1,1 @@
-export * from "../../eliza/packages/app-core/test/stubs/app-core-bridge";
+export * from "../../tokagent/packages/app-core/test/stubs/app-core-bridge";

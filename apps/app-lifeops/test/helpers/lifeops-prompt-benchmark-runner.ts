@@ -1,5 +1,5 @@
 import { setTimeout as sleep } from "node:timers/promises";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import type { Trajectory, TrajectoryLlmCall } from "../../../../packages/agent/src/types/trajectory.ts";
 import { flushTrajectoryWrites } from "../../../../packages/agent/src/runtime/trajectory-storage.ts";
 import { ConversationHarness } from "../../../../packages/app-core/test/helpers/conversation-harness.ts";
@@ -342,7 +342,7 @@ async function runSinglePromptBenchmarkCase(args: {
   });
 
   try {
-    args.runtime.setSetting("ELIZA_ADMIN_ENTITY_ID", harness.userId, false);
+    args.runtime.setSetting("TOKAGENT_ADMIN_ENTITY_ID", harness.userId, false);
     await harness.setup();
     const turn = await harness.send(args.testCase.prompt, {
       timeoutMs: args.timeoutMs,

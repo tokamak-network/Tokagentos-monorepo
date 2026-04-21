@@ -1,11 +1,11 @@
 """
-elizaOS Cross-Language Interop - Python
+tokagentOS Cross-Language Interop - Python
 
 This module provides utilities for loading plugins written in other languages
 (Rust, TypeScript) into the Python runtime.
 
 This is a standalone package that can be installed separately or used from
-within the main elizaos package.
+within the main tokagentos package.
 """
 
 # Rust FFI loader

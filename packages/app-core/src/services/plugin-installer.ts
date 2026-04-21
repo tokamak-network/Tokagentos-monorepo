@@ -1,12 +1,12 @@
 /**
- * Plugin Installer for Eliza.
+ * Plugin Installer for Tokagent.
  *
  * Cross-platform plugin installation and lifecycle management.
  *
  * Install targets:
- *   ~/.eliza/plugins/installed/<sanitised-name>/
+ *   ~/.tokagent/plugins/installed/<sanitised-name>/
  *
- * Works identically whether eliza is:
+ * Works identically whether tokagent is:
  *   - Running from source (dev)
  *   - Running as a CLI install (npm global)
  *   - Running inside a packaged desktop app bundle
@@ -15,7 +15,7 @@
  * Strategy:
  *   1. npm/bun install to an isolated prefix directory
  *   2. Fallback: git clone from the plugin's GitHub repo
- *   3. Track the installation in eliza.json config
+ *   3. Track the installation in tokagent.json config
  *   4. Trigger agent restart to load the new plugin
  *
  * @module services/plugin-installer
@@ -28,20 +28,20 @@ import { createRequire } from "node:module";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { loadElizaConfig, saveElizaConfig } from "@elizaos/agent/config/config";
-import { requestRestart } from "@elizaos/agent/runtime";
+import { loadTokagentConfig, saveTokagentConfig } from "@tokagentos/agent/config/config";
+import { requestRestart } from "@tokagentos/agent/runtime";
 import {
   getPluginInfo,
   type RegistryPluginInfo,
-} from "@elizaos/agent/services/registry-client";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/agent/services/registry-client";
+import { logger } from "@tokagentos/core";
 import { createSerialise } from "../utils/serialise";
 
 const execFileAsync = promisify(execFile);
 const require = createRequire(import.meta.url);
 const RELEASE_CHANNEL_ENV_KEYS = [
-  "ELIZA_PLUGIN_RELEASE_CHANNEL",
-  "ELIZA_PLUGIN_RELEASE_CHANNEL",
+  "TOKAGENT_PLUGIN_RELEASE_CHANNEL",
+  "TOKAGENT_PLUGIN_RELEASE_CHANNEL",
 ] as const;
 
 // ---------------------------------------------------------------------------
@@ -128,8 +128,8 @@ export interface UninstallResult {
 // ---------------------------------------------------------------------------
 
 function pluginsBaseDir(): string {
-  const stateDir = process.env.ELIZA_STATE_DIR?.trim();
-  const base = stateDir || path.join(os.homedir(), ".eliza");
+  const stateDir = process.env.TOKAGENT_STATE_DIR?.trim();
+  const base = stateDir || path.join(os.homedir(), ".tokagent");
   return path.join(base, "plugins", "installed");
 }
 
@@ -158,7 +158,7 @@ function normaliseReleaseChannel(
   return null;
 }
 
-function resolveCurrentElizaReleaseChannel(): "alpha" | "next" | null {
+function resolveCurrentTokagentReleaseChannel(): "alpha" | "next" | null {
   for (const envKey of RELEASE_CHANNEL_ENV_KEYS) {
     const configuredChannel = normaliseReleaseChannel(process.env[envKey]);
     if (configuredChannel) {
@@ -167,7 +167,7 @@ function resolveCurrentElizaReleaseChannel(): "alpha" | "next" | null {
   }
 
   try {
-    const pkgPath = require.resolve("@elizaos/agent/package.json");
+    const pkgPath = require.resolve("@tokagentos/agent/package.json");
     const pkg = JSON.parse(fsSync.readFileSync(pkgPath, "utf8")) as {
       version?: unknown;
     };
@@ -182,7 +182,7 @@ function resolveCurrentElizaReleaseChannel(): "alpha" | "next" | null {
     }
   } catch (err) {
     logger.warn(
-      `[plugin-installer] Failed to detect release channel from @elizaos/agent: ${err instanceof Error ? err.message : String(err)}`,
+      `[plugin-installer] Failed to detect release channel from @tokagentos/agent: ${err instanceof Error ? err.message : String(err)}`,
     );
   }
 
@@ -198,7 +198,7 @@ function resolveInstallVersion(
     return requestedVersion;
   }
 
-  const currentReleaseChannel = resolveCurrentElizaReleaseChannel();
+  const currentReleaseChannel = resolveCurrentTokagentReleaseChannel();
   if (canonicalName.startsWith("@elizaos/") && currentReleaseChannel) {
     return currentReleaseChannel;
   }
@@ -232,9 +232,9 @@ export async function detectPackageManager(): Promise<"bun" | "npm"> {
  * Install a plugin from the registry.
  *
  * 1. Resolves the plugin name in the registry.
- * 2. Installs via npm/bun to ~/.eliza/plugins/installed/<name>/.
+ * 2. Installs via npm/bun to ~/.tokagent/plugins/installed/<name>/.
  * 3. Falls back to git clone if npm is not available for this package.
- * 4. Writes an install record to eliza.json.
+ * 4. Writes an install record to tokagent.json.
  * 5. Returns metadata about the installation for the caller to
  *    decide whether to trigger a restart.
  *
@@ -390,7 +390,7 @@ async function _installPlugin(
 
   emit("configuring", "Recording installation in config...");
 
-  // Write install record to eliza.json
+  // Write install record to tokagent.json
   recordInstallation(canonicalName, {
     source: installSource,
     spec: `${canonicalName}@${installedVersion}`,
@@ -451,7 +451,7 @@ export function uninstallPlugin(pluginName: string): Promise<UninstallResult> {
 }
 
 async function _uninstallPlugin(pluginName: string): Promise<UninstallResult> {
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const installs = config.plugins?.installs;
 
   if (!installs?.[pluginName]) {
@@ -500,7 +500,7 @@ async function _uninstallPlugin(pluginName: string): Promise<UninstallResult> {
 
   // Remove from config
   delete installs[pluginName];
-  saveElizaConfig(config);
+  saveTokagentConfig(config);
 
   return {
     success: true,
@@ -819,7 +819,7 @@ function recordInstallation(
     installedAt: string;
   },
 ): void {
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
 
   // Ensure the plugins.installs path exists in the config object
   if (!config.plugins) {
@@ -830,7 +830,7 @@ function recordInstallation(
   }
 
   config.plugins.installs[pluginName] = record;
-  saveElizaConfig(config);
+  saveTokagentConfig(config);
 }
 
 // ---------------------------------------------------------------------------
@@ -844,7 +844,7 @@ export function listInstalledPlugins(): Array<{
   installPath: string;
   installedAt: string;
 }> {
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const installs = config.plugins?.installs ?? {};
 
   return Object.entries(installs).map(([name, record]) => ({

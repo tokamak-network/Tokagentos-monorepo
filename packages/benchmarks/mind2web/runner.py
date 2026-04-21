@@ -15,8 +15,8 @@ from datetime import datetime
 from pathlib import Path
 
 from benchmarks.mind2web.dataset import Mind2WebDataset
-from benchmarks.mind2web.eliza_agent import (
-    ELIZAOS_AVAILABLE,
+from benchmarks.mind2web.tokagent_agent import (
+    TOKAGENTOS_AVAILABLE,
     create_mind2web_agent,
 )
 from benchmarks.mind2web.evaluator import Mind2WebEvaluator
@@ -48,7 +48,7 @@ class Mind2WebRunner:
         self.dataset = Mind2WebDataset(split=config.split)
         self.evaluator = Mind2WebEvaluator()
         self._start_time = 0.0
-        self._elizaos_mode = not config.use_mock and ELIZAOS_AVAILABLE
+        self._tokagentos_mode = not config.use_mock and TOKAGENTOS_AVAILABLE
 
     async def run_benchmark(self) -> Mind2WebReport:
         """Run the Mind2Web benchmark.
@@ -111,7 +111,7 @@ class Mind2WebRunner:
         """
         start_time = time.time()
 
-        if self.config.model_provider == "eliza":
+        if self.config.model_provider == "tokagent":
             from milady_adapter.mind2web import MiladyMind2WebAgent
 
             agent = MiladyMind2WebAgent(self.config)
@@ -218,7 +218,7 @@ class Mind2WebRunner:
         summary: dict[str, str | int | float | bool] = {
             "status": status,
             "timestamp": datetime.now().isoformat(),
-            "mode": "real-llm" if self._elizaos_mode else "mock",
+            "mode": "real-llm" if self._tokagentos_mode else "mock",
             "split": self.config.split.value,
             "model_provider": self.config.model_provider or "auto",
         }

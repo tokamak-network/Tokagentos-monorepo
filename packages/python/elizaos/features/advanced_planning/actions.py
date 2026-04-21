@@ -4,7 +4,7 @@ import re
 import time
 from uuid import uuid4
 
-from elizaos.types import Action, ActionResult
+from tokagentos.types import Action, ActionResult
 
 
 async def _always_validate(_runtime, _message, _state=None) -> bool:

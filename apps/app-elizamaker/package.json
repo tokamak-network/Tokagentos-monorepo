@@ -1,9 +1,9 @@
 {
-  "name": "@elizaos/app-elizamaker",
+  "name": "@elizaos/app-tokagentmaker",
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "ElizaMaker: ERC-8041 NFT drop/mint/whitelist routes, Twitter-verified Merkle proofs, and OG code tracking.",
+  "description": "TokagentMaker: ERC-8041 NFT drop/mint/whitelist routes, Twitter-verified Merkle proofs, and OG code tracking.",
   "main": "./src/index.ts",
   "exports": {
     "./package.json": "./package.json",
@@ -16,13 +16,13 @@
     "./og-tracker": "./src/og-tracker.ts"
   },
   "dependencies": {
-    "@elizaos/agent": "workspace:*",
+    "@tokagentos/agent": "workspace:*",
     "@elizaos/app-steward": "workspace:*",
-    "@elizaos/core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
     "ethers": "^6.15.0"
   },
   "agentConfig": {
-    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginType": "tokagentos:plugin:1.0.0",
     "pluginParameters": {}
   }
 }

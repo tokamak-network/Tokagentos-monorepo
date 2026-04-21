@@ -2,7 +2,7 @@
 
 ## 1. Goal
 
-Build a cross-language performance benchmark that measures and compares the **core agent framework** overhead across the three Eliza runtimes (TypeScript, Python, Rust). By replacing the real LLM with a deterministic mock plugin that returns fixed responses in constant time, we isolate and measure the **framework itself**: state composition, provider execution, message pipeline orchestration, action dispatch, memory operations, and serialization overhead.
+Build a cross-language performance benchmark that measures and compares the **core agent framework** overhead across the three Tokagent runtimes (TypeScript, Python, Rust). By replacing the real LLM with a deterministic mock plugin that returns fixed responses in constant time, we isolate and measure the **framework itself**: state composition, provider execution, message pipeline orchestration, action dispatch, memory operations, and serialization overhead.
 
 The benchmark answers: "If the LLM is infinitely fast, which runtime processes agent messages fastest, scales best, and uses the least resources?"
 
@@ -381,7 +381,7 @@ Reads result JSON files from all three runtimes and generates:
 Example console output:
 ```
 ╔══════════════════════════════════════════════════════════════════╗
-║              Eliza Framework Benchmark Results                  ║
+║              Tokagent Framework Benchmark Results                  ║
 ║              2026-02-06 | macOS arm64 | 10 cores | 32GB       ║
 ╠══════════════════════════════════════════════════════════════════╣
 ║ Scenario: single-message (10 iterations, 3 warmup)             ║
@@ -417,17 +417,17 @@ Example console output:
 ### 9.2 Dependencies Per Runtime
 
 **TypeScript:**
-- `@elizaos/core` (from `packages/typescript`) — the agent framework
+- `@tokagentos/core` (from `packages/typescript`) — the agent framework
 - No additional deps (Bun built-in perf APIs)
 
 **Python:**
-- `elizaos` (from `packages/python`) — the agent framework
-- `elizaos-plugin-inmemorydb` (from `plugins/plugin-inmemorydb/python`) — in-memory DB
+- `tokagentos` (from `packages/python`) — the agent framework
+- `tokagentos-plugin-inmemorydb` (from `plugins/plugin-inmemorydb/python`) — in-memory DB
 - `psutil` — cross-platform process stats (RSS monitoring)
 
 **Rust:**
-- `elizaos` (from `packages/rust`) — the agent framework
-- `elizaos-plugin-inmemorydb` (from `plugins/plugin-inmemorydb/rust`) — in-memory DB
+- `tokagentos` (from `packages/rust`) — the agent framework
+- `tokagentos-plugin-inmemorydb` (from `plugins/plugin-inmemorydb/rust`) — in-memory DB
 - `sysinfo` — RSS monitoring
 - `criterion` or `divan` — statistical benchmarking (optional, for micro-benchmarks)
 - `serde_json` — result serialization
@@ -465,7 +465,7 @@ Example console output:
 
 3. **Rust `compose_state` provider execution**: Need to confirm whether Rust actually supports parallel provider execution via tokio or if it's strictly sequential. The current code shows sequential, but there may be a parallel path.
 
-4. **Python import time**: Python's import overhead for the `elizaos` package may dominate startup benchmarks. Need to separate import time from agent initialization time.
+4. **Python import time**: Python's import overhead for the `tokagentos` package may dominate startup benchmarks. Need to separate import time from agent initialization time.
 
 5. **Streaming behavior**: If `handleMessage` activates streaming by default, the mock must handle that code path. Need to verify whether streaming is mandatory or opt-in.
 
@@ -511,7 +511,7 @@ Estimated effort: This is a substantial project. Each runtime benchmark is ~500-
 
 3. **Rust criterion**: Yes, Cargo.toml includes criterion as an optional dependency (`micro` feature) for pipeline micro-benchmarks.
 
-4. **Binary/bundle size**: Yes, measured and included in the output. TypeScript reports the `@elizaos/core` bundle size, Rust reports the compiled binary size.
+4. **Binary/bundle size**: Yes, measured and included in the output. TypeScript reports the `@tokagentos/core` bundle size, Rust reports the compiled binary size.
 
 5. **Python concurrency**: Uses `asyncio.gather` to match the runtime's actual cooperative concurrency model.
 

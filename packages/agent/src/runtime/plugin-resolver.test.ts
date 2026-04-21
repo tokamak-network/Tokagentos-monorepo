@@ -13,12 +13,12 @@ describe("importPluginModuleFromPath", () => {
 
   beforeEach(async () => {
     stateDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), "eliza-plugin-resolver-"),
+      path.join(os.tmpdir(), "tokagent-plugin-resolver-"),
     );
-    originalStateDir = process.env.ELIZA_STATE_DIR;
-    originalWorkspaceRoot = process.env.ELIZA_WORKSPACE_ROOT;
-    process.env.ELIZA_STATE_DIR = stateDir;
-    process.env.ELIZA_WORKSPACE_ROOT = path.resolve(
+    originalStateDir = process.env.TOKAGENT_STATE_DIR;
+    originalWorkspaceRoot = process.env.TOKAGENT_WORKSPACE_ROOT;
+    process.env.TOKAGENT_STATE_DIR = stateDir;
+    process.env.TOKAGENT_WORKSPACE_ROOT = path.resolve(
       import.meta.dirname,
       "..",
       "..",
@@ -30,15 +30,15 @@ describe("importPluginModuleFromPath", () => {
 
   afterEach(async () => {
     if (originalStateDir === undefined) {
-      delete process.env.ELIZA_STATE_DIR;
+      delete process.env.TOKAGENT_STATE_DIR;
     } else {
-      process.env.ELIZA_STATE_DIR = originalStateDir;
+      process.env.TOKAGENT_STATE_DIR = originalStateDir;
     }
 
     if (originalWorkspaceRoot === undefined) {
-      delete process.env.ELIZA_WORKSPACE_ROOT;
+      delete process.env.TOKAGENT_WORKSPACE_ROOT;
     } else {
-      process.env.ELIZA_WORKSPACE_ROOT = originalWorkspaceRoot;
+      process.env.TOKAGENT_WORKSPACE_ROOT = originalWorkspaceRoot;
     }
 
     await fs.rm(stateDir, { recursive: true, force: true }).catch(() => {});
@@ -66,7 +66,7 @@ describe("importPluginModuleFromPath", () => {
       stateDir,
       "plugins",
       ".runtime-imports",
-      "_elizaos_plugin-cron",
+      "_tokagentos_plugin-cron",
     );
     const stagedDirs = await fs.readdir(stagingBaseDir);
     expect(stagedDirs.length).toBeGreaterThan(0);

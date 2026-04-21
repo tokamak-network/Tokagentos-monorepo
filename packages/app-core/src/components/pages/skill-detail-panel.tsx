@@ -14,7 +14,7 @@ import {
   DialogDescription,
   DialogTitle,
   Input,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { SkillInfo } from "../../api";
 import { client } from "../../api";

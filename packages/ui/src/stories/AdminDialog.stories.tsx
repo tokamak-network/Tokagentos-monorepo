@@ -113,7 +113,7 @@ export const ReviewMode: Story = {
                 <AdminDialog.Input
                   id="origin-demo"
                   readOnly
-                  value="https://eliza.cloud/apps/demo"
+                  value="https://tokagent.cloud/apps/demo"
                   aria-label="App origin"
                 />
               </div>

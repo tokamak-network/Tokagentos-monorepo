@@ -3,7 +3,7 @@ import { spawn } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
 import { createTestRuntime } from "../helpers/pglite-runtime.ts";
 
@@ -46,7 +46,7 @@ type CommandResult = {
 const RESEARCH_PROMPT =
 	"Use web search only. Find the official Playwright browser support page and the official Puppeteer supported browsers page. " +
 	"Return a concise Markdown report with sections Summary, Tradeoffs, and Sources. Include at least two source URLs and no code blocks.";
-const KEEP_ARTIFACTS = process.env.ELIZA_KEEP_LIVE_ARTIFACTS === "1";
+const KEEP_ARTIFACTS = process.env.TOKAGENT_KEEP_LIVE_ARTIFACTS === "1";
 
 let runtime: AgentRuntime | undefined;
 let cleanupRuntime: (() => Promise<void>) | undefined;
@@ -159,7 +159,7 @@ async function main(): Promise<void> {
 		},
 	});
 
-	reportDir = fs.mkdtempSync(path.join(os.tmpdir(), "eliza-research-thread-"));
+	reportDir = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-research-thread-"));
 	const transcriptPath = path.join(
 		reportDir,
 		"codex-research-transcript.jsonl",

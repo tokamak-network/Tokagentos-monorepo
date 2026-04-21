@@ -4,12 +4,12 @@
  * Handles multi-chain EVM balance + NFT retrieval with provider-key resolution
  * and automatic fallback to public RPC endpoints when premium APIs are unavailable.
  */
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type {
   EvmChainBalance,
   EvmNft,
   EvmTokenBalance,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import {
   computeValueUsd,
   type DexTokenMeta,
@@ -51,13 +51,13 @@ export interface EvmProviderKeys {
   avaxRpcUrls?: string[] | null;
   nodeRealBscRpcUrl?: string | null;
   quickNodeBscRpcUrl?: string | null;
-  /** Standard elizaOS EVM plugin env key for BSC. */
+  /** Standard tokagentOS EVM plugin env key for BSC. */
   bscRpcUrl?: string | null;
-  /** Standard elizaOS EVM plugin env key for Ethereum mainnet. */
+  /** Standard tokagentOS EVM plugin env key for Ethereum mainnet. */
   ethereumRpcUrl?: string | null;
-  /** Standard elizaOS EVM plugin env key for Base. */
+  /** Standard tokagentOS EVM plugin env key for Base. */
   baseRpcUrl?: string | null;
-  /** Standard elizaOS EVM plugin env key for Avalanche C-Chain. */
+  /** Standard tokagentOS EVM plugin env key for Avalanche C-Chain. */
   avaxRpcUrl?: string | null;
 }
 

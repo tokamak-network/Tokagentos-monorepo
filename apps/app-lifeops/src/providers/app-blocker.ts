@@ -4,7 +4,7 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { getAppBlockerAccess } from "../app-blocker/access.ts";
 import { getCachedAppBlockerStatus } from "../app-blocker/engine.ts";
 
@@ -73,7 +73,7 @@ export const appBlockerProvider: Provider = {
 
     const permissionLine =
       status.permissionStatus === "granted"
-        ? "Eliza has permission to block apps on this device."
+        ? "Tokagent has permission to block apps on this device."
         : status.reason ??
           "App blocking permissions have not been granted yet.";
 

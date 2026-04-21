@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import 'dotenv/config';
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import pLimit from 'p-limit';

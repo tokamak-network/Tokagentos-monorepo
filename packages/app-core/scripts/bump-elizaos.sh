@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# bump-elizaos.sh — Bump @elizaos/* packages to a target version
+# bump-tokagentos.sh — Bump @elizaos/* packages to a target version
 #
 # Usage:
-#   ./scripts/bump-elizaos.sh <version> [OPTIONS]
+#   ./scripts/bump-tokagentos.sh <version> [OPTIONS]
 #
 # Version formats accepted:
 #   alpha.54          → normalised to 2.0.0-alpha.54
@@ -12,29 +12,29 @@
 #
 # Options:
 #   --no-fix-imports   Skip fixing renamed imports (resolveMiladyVersion etc.)
-#   --no-core-check    Skip the @elizaos/core tarball health check
+#   --no-core-check    Skip the @tokagentos/core tarball health check
 #   --dry-run          Show what would change without writing files
 #   -h, --help         Show this help
 #
 # What this does:
 #   1. Normalises the version to 2.0.0-alpha.{N}
-#   2. Updates package.json: pins @elizaos/agent, @elizaos/core,
-#      @elizaos/app-core, @elizaos/app-core, @elizaos/prompts,
+#   2. Updates package.json: pins @tokagentos/agent, @tokagentos/core,
+#      @tokagentos/app-core, @tokagentos/app-core, @tokagentos/prompts,
 #      @elizaos/sweagent-root to the target version
-#   3. Checks if @elizaos/core at that version ships dist/node/index.node.js
+#   3. Checks if @tokagentos/core at that version ships dist/node/index.node.js
 #      (the native node binding needed for production)
 #   4. If core is broken at that version, finds the latest working version
 #      and sets an override in package.json
 #   5. Scans src/ for renamed APIs introduced in alpha.54:
-#        resolveMiladyVersion  → resolveElizaVersion
-#        dispatchMiladyEvent   → dispatchElizaEvent
-#        MILADY_*              → ELIZA_* (env var references in code)
+#        resolveMiladyVersion  → resolveTokagentVersion
+#        dispatchMiladyEvent   → dispatchTokagentEvent
+#        MILADY_*              → TOKAGENT_* (env var references in code)
 #      and reports or auto-fixes them
 #
 # Examples:
-#   ./scripts/bump-elizaos.sh alpha.54
-#   ./scripts/bump-elizaos.sh 2.0.0-alpha.89
-#   ./scripts/bump-elizaos.sh 89 --dry-run
+#   ./scripts/bump-tokagentos.sh alpha.54
+#   ./scripts/bump-tokagentos.sh 2.0.0-alpha.89
+#   ./scripts/bump-tokagentos.sh 89 --dry-run
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
@@ -104,13 +104,13 @@ log "Target version: ${YELLOW}${VERSION}${NC}"
 $DRY_RUN && warn "DRY RUN — no files will be modified"
 
 # ── Packages to pin ───────────────────────────────────────────────────────────
-# These are the elizaOS packages that move together in the same release
-ELIZAOS_PACKAGES=(
-  "@elizaos/agent"
-  "@elizaos/core"
-  "@elizaos/app-core"
-  "@elizaos/app-core"
-  "@elizaos/prompts"
+# These are the tokagentOS packages that move together in the same release
+TOKAGENTOS_PACKAGES=(
+  "@tokagentos/agent"
+  "@tokagentos/core"
+  "@tokagentos/app-core"
+  "@tokagentos/app-core"
+  "@tokagentos/prompts"
   "@elizaos/sweagent-root"
 )
 
@@ -124,7 +124,7 @@ run_pkg_update() {
   local new_ver="$1"
   local core_override="${2:-}"
   local pkgs_json
-  pkgs_json="$(printf '"%s",' "${ELIZAOS_PACKAGES[@]}" | sed 's/,$//')"
+  pkgs_json="$(printf '"%s",' "${TOKAGENTOS_PACKAGES[@]}" | sed 's/,$//')"
 
   node << NODEEOF
 const fs = require('fs');
@@ -147,17 +147,17 @@ for (const name of packages) {
 
 if (coreOverride) {
   pkg.overrides = pkg.overrides || {};
-  const oldOverride = pkg.overrides['@elizaos/core'] || '(none)';
+  const oldOverride = pkg.overrides['@tokagentos/core'] || '(none)';
   if (oldOverride !== coreOverride) {
-    pkg.overrides['@elizaos/core'] = coreOverride;
-    changed.push('  @elizaos/core override: ' + oldOverride + ' → ' + coreOverride);
+    pkg.overrides['@tokagentos/core'] = coreOverride;
+    changed.push('  @tokagentos/core override: ' + oldOverride + ' → ' + coreOverride);
   }
 } else {
   // Remove stale override if it looks like one we set automatically
-  const existing = (pkg.overrides || {})['@elizaos/core'] || '';
+  const existing = (pkg.overrides || {})['@tokagentos/core'] || '';
   if (/^2\\.0\\.0-alpha\\./.test(existing)) {
-    delete pkg.overrides['@elizaos/core'];
-    changed.push('  @elizaos/core override: ' + existing + ' → (removed)');
+    delete pkg.overrides['@tokagentos/core'];
+    changed.push('  @tokagentos/core override: ' + existing + ' → (removed)');
   }
 }
 
@@ -173,8 +173,8 @@ NODEEOF
 }
 
 # Show current state
-log "Current elizaOS versions:"
-for pkg in "${ELIZAOS_PACKAGES[@]}"; do
+log "Current tokagentOS versions:"
+for pkg in "${TOKAGENTOS_PACKAGES[@]}"; do
   current=$(node -e "const p=require('./package.json'); process.stdout.write((p.dependencies||{})['${pkg}'] || 'not in deps')" 2>/dev/null || echo "?")
   echo "  ${pkg}: ${current}"
 done
@@ -189,13 +189,13 @@ else
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Step 2: Check @elizaos/core tarball health
+# Step 2: Check @tokagentos/core tarball health
 #
-# Some alpha versions of @elizaos/core don't ship dist/node/index.node.js
+# Some alpha versions of @tokagentos/core don't ship dist/node/index.node.js
 # (the native Node.js binding). If it's missing, the runtime crashes on start.
 # We check the npm tarball directly and find a fallback if needed.
 # ─────────────────────────────────────────────────────────────────────────────
-hdr "Step 2: Check @elizaos/core health"
+hdr "Step 2: Check @tokagentos/core health"
 
 CORE_OVERRIDE=""
 
@@ -204,7 +204,7 @@ check_core_tarball() {
   local ver="$1"
   local tarball_url
 
-  tarball_url=$(npm view "@elizaos/core@${ver}" dist.tarball 2>/dev/null || echo "")
+  tarball_url=$(npm view "@tokagentos/core@${ver}" dist.tarball 2>/dev/null || echo "")
   if [[ -z "$tarball_url" ]]; then
     echo "not-published"
     return
@@ -220,20 +220,20 @@ check_core_tarball() {
 }
 
 if $CHECK_CORE; then
-  log "Checking @elizaos/core@${VERSION} tarball for dist/node/index.node.js..."
+  log "Checking @tokagentos/core@${VERSION} tarball for dist/node/index.node.js..."
   CORE_STATUS=$(check_core_tarball "$VERSION")
 
   case "$CORE_STATUS" in
     ok)
-      ok "@elizaos/core@${VERSION} ✓ (has dist/node/index.node.js)"
+      ok "@tokagentos/core@${VERSION} ✓ (has dist/node/index.node.js)"
       ;;
 
     broken)
-      warn "@elizaos/core@${VERSION} is MISSING dist/node/index.node.js"
-      warn "Finding the latest working @elizaos/core version..."
+      warn "@tokagentos/core@${VERSION} is MISSING dist/node/index.node.js"
+      warn "Finding the latest working @tokagentos/core version..."
 
       # Get all published 2.0.0-alpha.* versions sorted by alpha number, newest first
-      ALL_ALPHA_VERSIONS=$(npm view "@elizaos/core" versions --json 2>/dev/null \
+      ALL_ALPHA_VERSIONS=$(npm view "@tokagentos/core" versions --json 2>/dev/null \
         | node -e "
           const data = require('fs').readFileSync('/dev/stdin', 'utf8');
           const versions = JSON.parse(data);
@@ -270,16 +270,16 @@ if $CHECK_CORE; then
       done <<< "$ALL_ALPHA_VERSIONS"
 
       if [[ -n "$WORKING_CORE" ]]; then
-        ok "Latest working @elizaos/core: ${WORKING_CORE}"
+        ok "Latest working @tokagentos/core: ${WORKING_CORE}"
         CORE_OVERRIDE="$WORKING_CORE"
       else
-        warn "Could not find a working @elizaos/core (checked ${CHECKED} versions)"
-        warn "You may need to manually pin @elizaos/core in package.json"
+        warn "Could not find a working @tokagentos/core (checked ${CHECKED} versions)"
+        warn "You may need to manually pin @tokagentos/core in package.json"
       fi
       ;;
 
     not-published)
-      warn "@elizaos/core@${VERSION} not found on npm (may not be published yet)"
+      warn "@tokagentos/core@${VERSION} not found on npm (may not be published yet)"
       warn "Skipping core health check"
       ;;
   esac
@@ -289,13 +289,13 @@ fi
 
 # Apply core override if needed
 if [[ -n "$CORE_OVERRIDE" ]]; then
-  warn "@elizaos/core override needed: ${CORE_OVERRIDE}"
+  warn "@tokagentos/core override needed: ${CORE_OVERRIDE}"
   if ! $DRY_RUN; then
     log "Applying core override to package.json..."
     run_pkg_update "$VERSION" "$CORE_OVERRIDE"
-    ok "Override applied: @elizaos/core → ${CORE_OVERRIDE}"
+    ok "Override applied: @tokagentos/core → ${CORE_OVERRIDE}"
   else
-    warn "[dry-run] Would set override: @elizaos/core → ${CORE_OVERRIDE}"
+    warn "[dry-run] Would set override: @tokagentos/core → ${CORE_OVERRIDE}"
   fi
 fi
 
@@ -305,15 +305,15 @@ fi
 # alpha.54 renamed several APIs. We scan source files and fix them.
 #
 # Function renames:
-#   resolveMiladyVersion → resolveElizaVersion
-#   dispatchMiladyEvent  → dispatchElizaEvent
-#   resolveMiladyAgent   → resolveElizaAgent
-#   getMiladyVersion     → getElizaVersion
+#   resolveMiladyVersion → resolveTokagentVersion
+#   dispatchMiladyEvent  → dispatchTokagentEvent
+#   resolveMiladyAgent   → resolveTokagentAgent
+#   getMiladyVersion     → getTokagentVersion
 #
 # Env var references in source code (not actual .env files):
-#   MILADY_API_TOKEN       → ELIZA_API_TOKEN
-#   MILADY_API_BIND        → ELIZA_API_BIND
-#   MILADY_BUNDLED_VERSION → ELIZA_BUNDLED_VERSION
+#   MILADY_API_TOKEN       → TOKAGENT_API_TOKEN
+#   MILADY_API_BIND        → TOKAGENT_API_BIND
+#   MILADY_BUNDLED_VERSION → TOKAGENT_BUNDLED_VERSION
 # ─────────────────────────────────────────────────────────────────────────────
 hdr "Step 3: Fix renamed imports and API calls"
 
@@ -340,10 +340,10 @@ if $FIX_IMPORTS; then
 
   # Function/method renames
   declare -A FUNC_RENAMES=(
-    ["resolveMiladyVersion"]="resolveElizaVersion"
-    ["dispatchMiladyEvent"]="dispatchElizaEvent"
-    ["resolveMiladyAgent"]="resolveElizaAgent"
-    ["getMiladyVersion"]="getElizaVersion"
+    ["resolveMiladyVersion"]="resolveTokagentVersion"
+    ["dispatchMiladyEvent"]="dispatchTokagentEvent"
+    ["resolveMiladyAgent"]="resolveTokagentAgent"
+    ["getMiladyVersion"]="getTokagentVersion"
   )
 
   for old_name in "${!FUNC_RENAMES[@]}"; do
@@ -373,10 +373,10 @@ if $FIX_IMPORTS; then
   # Env var references in source code
   # (Only in code strings — not actual .env files or docker-compose.yml)
   declare -A ENV_RENAMES=(
-    ["MILADY_API_TOKEN"]="ELIZA_API_TOKEN"
-    ["MILADY_API_BIND"]="ELIZA_API_BIND"
-    ["MILADY_BUNDLED_VERSION"]="ELIZA_BUNDLED_VERSION"
-    ["MILADY_ALLOWED_ORIGINS"]="ELIZA_ALLOWED_ORIGINS"
+    ["MILADY_API_TOKEN"]="TOKAGENT_API_TOKEN"
+    ["MILADY_API_BIND"]="TOKAGENT_API_BIND"
+    ["MILADY_BUNDLED_VERSION"]="TOKAGENT_BUNDLED_VERSION"
+    ["MILADY_ALLOWED_ORIGINS"]="TOKAGENT_ALLOWED_ORIGINS"
   )
 
   for old_env in "${!ENV_RENAMES[@]}"; do
@@ -419,9 +419,9 @@ hdr "Summary"
 echo -e "  Bumped to:   ${GREEN}${VERSION}${NC}"
 
 if [[ -n "$CORE_OVERRIDE" ]]; then
-  echo -e "  Core pinned: ${YELLOW}@elizaos/core → ${CORE_OVERRIDE}${NC} (override in package.json)"
+  echo -e "  Core pinned: ${YELLOW}@tokagentos/core → ${CORE_OVERRIDE}${NC} (override in package.json)"
   echo ""
-  echo -e "  ${YELLOW}NOTE:${NC} @elizaos/core@${VERSION} was missing native bindings."
+  echo -e "  ${YELLOW}NOTE:${NC} @tokagentos/core@${VERSION} was missing native bindings."
   echo    "  Using ${CORE_OVERRIDE} as the core until it's fixed upstream."
 fi
 

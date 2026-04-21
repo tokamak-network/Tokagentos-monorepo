@@ -1,4 +1,4 @@
-//! Unified sync/async runtime for elizaOS
+//! Unified sync/async runtime for tokagentOS
 //!
 //! This module provides a unified runtime that compiles to either synchronous
 //! or asynchronous code based on the `sync` feature flag, using `maybe-async`.
@@ -18,16 +18,16 @@
 //!
 //! ```toml
 //! # For async (default):
-//! elizaos = "2.0"
+//! tokagentos = "2.0"
 //!
 //! # For sync:
-//! elizaos = { version = "2.0", default-features = false, features = ["sync"] }
+//! tokagentos = { version = "2.0", default-features = false, features = ["sync"] }
 //! ```
 //!
 //! # Example
 //!
 //! ```rust,ignore
-//! use elizaos::sync_runtime::{UnifiedDatabaseAdapter, UnifiedRuntime};
+//! use tokagentos::sync_runtime::{UnifiedDatabaseAdapter, UnifiedRuntime};
 //!
 //! struct MyAdapter;
 //!

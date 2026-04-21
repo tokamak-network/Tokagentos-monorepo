@@ -5,7 +5,7 @@
 //! 2. XML parsing and validation code handling
 //! 3. Cross-language parity with TypeScript and Python
 
-use elizaos::types::state::{RetryBackoffConfig, SchemaRow, StreamEvent, StreamEventType};
+use tokagentos::types::state::{RetryBackoffConfig, SchemaRow, StreamEvent, StreamEventType};
 
 // ============================================================================
 // SchemaRow Tests
@@ -377,8 +377,8 @@ mod integration {
 
 #[cfg(test)]
 mod streaming_tests {
-    use elizaos::types::state::{SchemaRow, StreamEvent};
-    use elizaos::types::streaming::{
+    use tokagentos::types::state::{SchemaRow, StreamEvent};
+    use tokagentos::types::streaming::{
         validate_chunk_size, ExtractorState, FieldState, IStreamExtractor, MarkableExtractor,
         ValidationStreamExtractor, ValidationStreamExtractorConfig, MAX_CHUNK_SIZE,
     };

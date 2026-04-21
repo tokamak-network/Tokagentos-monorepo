@@ -1,14 +1,14 @@
 /**
- * Discover hooks from workspace, managed (~/.eliza/hooks/), and bundled dirs.
+ * Discover hooks from workspace, managed (~/.tokagent/hooks/), and bundled dirs.
  * Later sources win on name conflicts.
  */
 
 import { readdir, readFile, stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type {
-  ElizaHookMetadata,
+  TokagentHookMetadata,
   Hook,
   HookEntry,
   HookSource,
@@ -76,8 +76,8 @@ function parseFrontmatter(content: string): ParsedHookFrontmatter | null {
 
 function extractMetadata(
   frontmatter: ParsedHookFrontmatter,
-): ElizaHookMetadata | undefined {
-  const meta = frontmatter.metadata?.eliza;
+): TokagentHookMetadata | undefined {
+  const meta = frontmatter.metadata?.tokagent;
   if (!meta) return undefined;
 
   return {
@@ -202,7 +202,7 @@ export async function discoverHooks(
   if (options.extraDirs) {
     for (const dir of options.extraDirs) {
       const resolved = resolve(dir.replace(/^~/, homedir()));
-      for (const entry of await scanHooksDir(resolved, "eliza-managed")) {
+      for (const entry of await scanHooksDir(resolved, "tokagent-managed")) {
         seen.set(entry.hook.name, entry);
       }
     }
@@ -211,14 +211,14 @@ export async function discoverHooks(
   if (options.bundledDir) {
     for (const entry of await scanHooksDir(
       options.bundledDir,
-      "eliza-bundled",
+      "tokagent-bundled",
     )) {
       seen.set(entry.hook.name, entry);
     }
   }
 
-  const managedDir = join(homedir(), ".eliza", "hooks");
-  for (const entry of await scanHooksDir(managedDir, "eliza-managed")) {
+  const managedDir = join(homedir(), ".tokagent", "hooks");
+  for (const entry of await scanHooksDir(managedDir, "tokagent-managed")) {
     seen.set(entry.hook.name, entry);
   }
 
@@ -227,7 +227,7 @@ export async function discoverHooks(
       options.workspacePath.replace(/^~/, homedir()),
       "hooks",
     );
-    for (const entry of await scanHooksDir(wsHooksDir, "eliza-workspace")) {
+    for (const entry of await scanHooksDir(wsHooksDir, "tokagent-workspace")) {
       seen.set(entry.hook.name, entry);
     }
   }

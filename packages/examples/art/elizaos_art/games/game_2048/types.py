@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import IntEnum
 from typing import ClassVar
 
-from elizaos_art.base import Action, State
+from tokagentos_art.base import Action, State
 
 
 class Game2048Action(IntEnum):

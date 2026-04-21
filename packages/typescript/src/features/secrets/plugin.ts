@@ -1,7 +1,7 @@
 /**
  * Secrets Manager Plugin
  *
- * Comprehensive secret management for ElizaOS with:
+ * Comprehensive secret management for TokagentOS with:
  * - Multi-level storage (global, world, user)
  * - Encryption at rest
  * - Dynamic plugin activation when secrets become available

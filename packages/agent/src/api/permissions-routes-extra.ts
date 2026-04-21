@@ -1,6 +1,6 @@
 import type http from "node:http";
-import { logger } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import { logger } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import type { ReadJsonBodyOptions } from "./http-helpers.js";
 
 // ---------------------------------------------------------------------------
@@ -15,7 +15,7 @@ export interface PermissionsExtraRouteContext {
   method: string;
   pathname: string;
   state: {
-    config: ElizaConfig;
+    config: TokagentConfig;
     agentAutomationMode?: AgentAutomationMode;
   };
   json: (res: http.ServerResponse, data: unknown, status?: number) => void;
@@ -25,8 +25,8 @@ export interface PermissionsExtraRouteContext {
     res: http.ServerResponse,
     options?: ReadJsonBodyOptions,
   ) => Promise<T | null>;
-  saveElizaConfig: (config: ElizaConfig) => void;
-  resolveTradePermissionMode: (config: ElizaConfig) => string;
+  saveTokagentConfig: (config: TokagentConfig) => void;
+  resolveTradePermissionMode: (config: TokagentConfig) => string;
   canUseLocalTradeExecution: (
     mode: string,
     isAgent: boolean,
@@ -35,7 +35,7 @@ export interface PermissionsExtraRouteContext {
   ) => boolean;
   parseAgentAutomationMode: (value: unknown) => AgentAutomationMode | null;
   persistAgentAutomationMode: (
-    state: { config: ElizaConfig; agentAutomationMode?: AgentAutomationMode },
+    state: { config: TokagentConfig; agentAutomationMode?: AgentAutomationMode },
     mode: AgentAutomationMode,
   ) => void;
 }
@@ -70,7 +70,7 @@ export async function handlePermissionsExtraRoutes(
     }
 
     ctx.persistAgentAutomationMode(state, parsed);
-    ctx.saveElizaConfig(state.config);
+    ctx.saveTokagentConfig(state.config);
 
     json(res, {
       mode: parsed,
@@ -118,7 +118,7 @@ export async function handlePermissionsExtraRoutes(
       newMode;
 
     try {
-      ctx.saveElizaConfig(state.config);
+      ctx.saveTokagentConfig(state.config);
     } catch (err) {
       logger.warn(
         `[api] Trade-mode config save failed: ${err instanceof Error ? err.message : err}`,

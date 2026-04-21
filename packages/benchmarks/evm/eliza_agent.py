@@ -1,12 +1,12 @@
 """
-Canonical ElizaOS Agent for the EVM Benchmark.
+Canonical TokagentOS Agent for the EVM Benchmark.
 
-This agent uses the full ElizaOS runtime with message_service.handle_message(),
+This agent uses the full TokagentOS runtime with message_service.handle_message(),
 actions, providers, and evaluators — NO LangChain bypass.
 
 Two-phase exploration:
   Phase 1 (Deterministic): pre-built TypeScript templates, no LLM needed.
-  Phase 2 (LLM-Assisted):  routed through the Eliza agent pipeline with
+  Phase 2 (LLM-Assisted):  routed through the Tokagent agent pipeline with
                             EXECUTE_CODE action and EVM_CONTEXT provider.
 
 Usage:
@@ -14,10 +14,10 @@ Usage:
     anvil --port 8545 --chain-id 31337
 
     # Run benchmark:
-    USE_EXTERNAL_NODE=true python -m benchmarks.evm.eliza_agent
+    USE_EXTERNAL_NODE=true python -m benchmarks.evm.tokagent_agent
 
     # For Groq model:
-    MODEL_NAME=groq/qwen3-32b USE_EXTERNAL_NODE=true python -m benchmarks.evm.eliza_agent
+    MODEL_NAME=groq/qwen3-32b USE_EXTERNAL_NODE=true python -m benchmarks.evm.tokagent_agent
 """
 
 from __future__ import annotations
@@ -34,14 +34,14 @@ from typing import TYPE_CHECKING
 
 from dotenv import load_dotenv
 
-from elizaos import AgentRuntime
-from elizaos.types import Plugin
-from elizaos.types.agent import Character
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid, string_to_uuid
+from tokagentos import AgentRuntime
+from tokagentos.types import Plugin
+from tokagentos.types.agent import Character
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid, string_to_uuid
 
 from benchmarks.evm.anvil_env import AnvilEnv, anvil_node
-from benchmarks.evm.eliza_explorer import run_typescript_skill
+from benchmarks.evm.tokagent_explorer import run_typescript_skill
 from benchmarks.evm.exploration_strategy import ExplorationStrategy
 from benchmarks.evm.plugin import evm_bench_plugin
 
@@ -49,9 +49,9 @@ if TYPE_CHECKING:
     from benchmarks.evm.anvil_env import StepResult
 
 load_dotenv()
-_eliza_env = Path(__file__).parent.parent.parent / "eliza" / ".env"
-if _eliza_env.exists():
-    load_dotenv(_eliza_env, override=False)
+_tokagent_env = Path(__file__).parent.parent.parent / "tokagent" / ".env"
+if _tokagent_env.exists():
+    load_dotenv(_tokagent_env, override=False)
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ SKILL_RUNNER_DIR = BENCH_DIR / "skill_runner"
 DEFAULT_CODE_FILE = str(SKILL_RUNNER_DIR / "evm_skill.ts")
 
 # ---------------------------------------------------------------------------
-# Provider → env-var mapping (reused from eliza_explorer for provider detect)
+# Provider → env-var mapping (reused from tokagent_explorer for provider detect)
 # ---------------------------------------------------------------------------
 
 from benchmarks.evm.providers import PROVIDER_URLS as _PROVIDER_URLS
@@ -126,13 +126,13 @@ def _get_model_plugin(model_name: str) -> Plugin:
     """
     Get the model provider plugin for the given model name.
 
-    For OpenAI: uses the elizaos_plugin_openai directly.
+    For OpenAI: uses the tokagentos_plugin_openai directly.
     For Groq/OpenRouter: creates a lightweight plugin that calls the
     OpenAI-compatible API with the correct base URL and API key, bypassing
     the OpenAI plugin's sk- key validation.
     """
     import aiohttp
-    from elizaos.types import ModelType
+    from tokagentos.types import ModelType
 
     provider = _detect_provider(model_name)
 
@@ -149,10 +149,10 @@ def _get_model_plugin(model_name: str) -> Plugin:
         os.environ["OPENAI_LARGE_MODEL"] = clean_model
         logger.info("Model plugin: provider=openai  model=%s", clean_model)
         try:
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
             return get_openai_plugin()
         except ImportError:
-            raise RuntimeError("elizaos_plugin_openai not found. pip install elizaos-plugin-openai")
+            raise RuntimeError("tokagentos_plugin_openai not found. pip install tokagentos-plugin-openai")
 
     # For Groq/OpenRouter: create a custom model handler
     base_url = _PROVIDER_URLS.get(provider, "https://api.openai.com/v1")
@@ -201,7 +201,7 @@ def _get_model_plugin(model_name: str) -> Plugin:
                     raise RuntimeError(f"API error: {data['error']}")
                 text = data.get("choices", [{}])[0].get("message", {}).get("content", "")
 
-                # Convert Qwen3 <think> to Eliza <thought> for XML parser compat
+                # Convert Qwen3 <think> to Tokagent <thought> for XML parser compat
                 import re
                 think_match = re.search(r"<think>([\s\S]*?)</think>", text)
                 if think_match:
@@ -232,20 +232,20 @@ def _get_model_plugin(model_name: str) -> Plugin:
 
 
 # ---------------------------------------------------------------------------
-# EVMExplorerAgent — canonical Eliza agent for the EVM benchmark
+# EVMExplorerAgent — canonical Tokagent agent for the EVM benchmark
 # ---------------------------------------------------------------------------
 
 
 class EVMExplorerAgent:
     """
-    Canonical ElizaOS agent for the EVM benchmark.
+    Canonical TokagentOS agent for the EVM benchmark.
 
     Phase 1 (Deterministic):
         Runs pre-built TypeScript templates directly — no LLM needed.
-        Identical to the standalone ElizaExplorer for this phase.
+        Identical to the standalone TokagentExplorer for this phase.
 
     Phase 2 (LLM-Assisted):
-        Routes every step through the full Eliza runtime:
+        Routes every step through the full Tokagent runtime:
         - EVM_CONTEXT provider injects discovery state and catalog.
         - message_service.handle_message() invokes the LLM.
         - The LLM responds with EXECUTE_CODE action + TypeScript code.
@@ -282,13 +282,13 @@ class EVMExplorerAgent:
         self._strategy = ExplorationStrategy(max_messages=max_messages, chain=chain)
         self._runtime: AgentRuntime | None = None
 
-        # Metrics — same schema as ElizaExplorer for compatibility
+        # Metrics — same schema as TokagentExplorer for compatibility
         self._metrics: dict[str, object] = {
             "model": model_name,
             "run_index": run_index,
             "run_id": self._run_id,
             "chain": chain,
-            "agent_type": "eliza",
+            "agent_type": "tokagent",
             "start_time": datetime.now().isoformat(),
             "environment_config": environment_config,
             "messages": [],
@@ -309,7 +309,7 @@ class EVMExplorerAgent:
     # ---- Runtime initialisation ----
 
     async def _initialize_runtime(self) -> AgentRuntime:
-        """Initialize the full ElizaOS runtime with character, plugins, etc."""
+        """Initialize the full TokagentOS runtime with character, plugins, etc."""
         character = Character(
             name="EVMExplorer",
             username="evm_explorer",
@@ -355,7 +355,7 @@ class EVMExplorerAgent:
         await runtime.initialize()
 
         logger.info(
-            "ElizaOS runtime initialised — %d actions, %d providers",
+            "TokagentOS runtime initialised — %d actions, %d providers",
             len(runtime.actions),
             len(runtime.providers),
         )
@@ -370,7 +370,7 @@ class EVMExplorerAgent:
         code: str,
         template_name: str,
     ) -> tuple[int, bool, dict[str, dict[str, list[str]] | dict[str, str]]]:
-        """Execute a deterministic template — identical to ElizaExplorer."""
+        """Execute a deterministic template — identical to TokagentExplorer."""
         result = run_typescript_skill(
             code, env.rpc_url, env.agent_private_key, env.chain_id,
             self._code_file, self._timeout_ms,
@@ -397,7 +397,7 @@ class EVMExplorerAgent:
             "deployed_contracts": labeled_deploys,
         }
 
-    # ---- Phase 2: LLM-assisted via Eliza pipeline ----
+    # ---- Phase 2: LLM-assisted via Tokagent pipeline ----
 
     async def _execute_llm_step(
         self,
@@ -409,7 +409,7 @@ class EVMExplorerAgent:
         is_first_llm_step: bool,
     ) -> tuple[int, bool, dict[str, dict[str, list[str]] | dict[str, str]], str]:
         """
-        Execute a single LLM-assisted exploration step through the Eliza runtime.
+        Execute a single LLM-assisted exploration step through the Tokagent runtime.
 
         Returns (reward, success, info, feedback_text).
         """
@@ -455,7 +455,7 @@ class EVMExplorerAgent:
             callback_results.append(content)
             return []
 
-        # Route through the canonical Eliza pipeline
+        # Route through the canonical Tokagent pipeline
         handle_result = await self._runtime.message_service.handle_message(
             self._runtime,
             message,
@@ -493,10 +493,10 @@ class EVMExplorerAgent:
         Main exploration loop.
 
         Phase 1: deterministic templates (direct execution, no LLM).
-        Phase 2: LLM-assisted via the Eliza runtime pipeline.
+        Phase 2: LLM-assisted via the Tokagent runtime pipeline.
         """
         logger.info(
-            "EVMExplorerAgent  model=%s  chain=%s  max=%d  id=%s  agent_type=eliza",
+            "EVMExplorerAgent  model=%s  chain=%s  max=%d  id=%s  agent_type=tokagent",
             self._model_name, self._chain, self._max_messages, self._run_id,
         )
 
@@ -527,7 +527,7 @@ class EVMExplorerAgent:
                 )
 
             elif action["type"] == "llm_assisted":
-                # Phase 2: full Eliza agent pipeline
+                # Phase 2: full Tokagent agent pipeline
                 reward, success, info, feedback = await self._execute_llm_step(
                     env,
                     action.get("prompt_context", ""),
@@ -544,7 +544,7 @@ class EVMExplorerAgent:
                 action.get("template_name", "llm_exploration"), reward, success, info,
             )
 
-            # ---- Metrics tracking (same as ElizaExplorer for compat) ----
+            # ---- Metrics tracking (same as TokagentExplorer for compat) ----
             elapsed = (datetime.now() - t0).total_seconds()
             messages_list = self._metrics.get("messages")
             if isinstance(messages_list, list):
@@ -640,7 +640,7 @@ class EVMExplorerAgent:
 
 
 async def main() -> None:
-    """CLI entry point — same env-var interface as eliza_explorer.py."""
+    """CLI entry point — same env-var interface as tokagent_explorer.py."""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s  %(levelname)-7s  %(message)s",
@@ -661,7 +661,7 @@ async def main() -> None:
     verbose = os.getenv("VERBOSE", "false").lower() == "true"
 
     logger.info(
-        "Model: %s  Messages: %d  Chain: %s  External: %s  Agent: eliza",
+        "Model: %s  Messages: %d  Chain: %s  External: %s  Agent: tokagent",
         model_name, max_messages, chain, use_external,
     )
 
@@ -681,7 +681,7 @@ async def main() -> None:
         try:
             m = await agent.run(env)
             logger.info(
-                "=== FINAL ===  reward=%d  contracts=%d  agent_type=eliza",
+                "=== FINAL ===  reward=%d  contracts=%d  agent_type=tokagent",
                 m.get("final_reward", 0),
                 m.get("final_contracts", 0),
             )

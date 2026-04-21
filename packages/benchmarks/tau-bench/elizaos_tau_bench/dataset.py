@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import Any, Optional
 
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauBenchTask,
     TauDomain,
     TaskDifficulty,
@@ -248,8 +248,8 @@ class TauBenchDataset:
 
     def create_sample_tasks(self) -> list[TauBenchTask]:
         """Create sample tasks for testing without external data."""
-        from elizaos_tau_bench.environments.retail import RetailEnvironment
-        from elizaos_tau_bench.environments.airline import AirlineEnvironment
+        from tokagentos_tau_bench.environments.retail import RetailEnvironment
+        from tokagentos_tau_bench.environments.airline import AirlineEnvironment
 
         tasks = []
 

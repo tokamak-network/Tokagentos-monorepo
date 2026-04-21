@@ -8,7 +8,7 @@ import json
 import logging
 from pathlib import Path
 
-from elizaos_gaia.types import (
+from tokagentos_gaia.types import (
     AnnotatorMetadata,
     GAIALevel,
     GAIAQuestion,

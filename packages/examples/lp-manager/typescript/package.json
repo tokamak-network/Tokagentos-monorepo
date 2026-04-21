@@ -11,7 +11,7 @@
     "test:watch": "bun test --watch"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-lp-manager": "alpha",
     "@elizaos/plugin-sql": "alpha"
   },

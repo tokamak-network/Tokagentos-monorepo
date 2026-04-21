@@ -3,7 +3,7 @@ import type {
   BlockStreamingCoalesceConfig,
   HumanDelayConfig,
   TypingMode,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { MemorySearchConfig } from "./types.tools.js";
 
 // --- Sandbox types (merged from types.sandbox.ts) ---

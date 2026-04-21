@@ -18,7 +18,7 @@ describe("capacitor backend HTTP API", () => {
   let dataDir = "";
 
   beforeEach(async () => {
-    dataDir = await makeTempDir("eliza-capacitor-http-");
+    dataDir = await makeTempDir("tokagent-capacitor-http-");
     process.env.LOCALDB_DATA_DIR = dataDir;
     await __shutdownForTests();
 
@@ -47,7 +47,7 @@ describe("capacitor backend HTTP API", () => {
     expect(res.status).toBe(200);
     const body = (await res.json()) as { ok: boolean; name: string };
     expect(body.ok).toBe(true);
-    expect(body.name).toContain("eliza");
+    expect(body.name).toContain("tokagent");
   });
 
   it("chat produces a response and history includes it", async () => {

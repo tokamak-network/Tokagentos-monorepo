@@ -1,8 +1,8 @@
 import os from "node:os";
 import type { RouteRequestContext } from "./route-helpers.js";
 
-export const DEFAULT_BUG_REPORT_REPO = "eliza-ai/eliza";
-export const BUG_REPORT_REPO_ENV_KEY = "ELIZA_BUG_REPORT_REPO";
+export const DEFAULT_BUG_REPORT_REPO = "tokagent-ai/tokagent";
+export const BUG_REPORT_REPO_ENV_KEY = "TOKAGENT_BUG_REPORT_REPO";
 const BUG_REPORT_REPO_FALLBACK_ENV_KEY = "BUG_REPORT_REPO";
 
 function sanitizeRepoName(value: string | undefined): string | null {
@@ -162,15 +162,15 @@ function getBugReportMode(): "remote" | "github" | "fallback" {
 
 function getRemoteBugReportUrl(): string | undefined {
   return (
-    process.env.ELIZA_BUG_REPORT_API_URL ??
-    process.env.ELIZA_CLOUD_BUG_REPORT_URL
+    process.env.TOKAGENT_BUG_REPORT_API_URL ??
+    process.env.TOKAGENT_CLOUD_BUG_REPORT_URL
   );
 }
 
 function getRemoteBugReportToken(): string | undefined {
   return (
-    process.env.ELIZA_BUG_REPORT_API_TOKEN ??
-    process.env.ELIZA_CLOUD_BUG_REPORT_TOKEN
+    process.env.TOKAGENT_BUG_REPORT_API_TOKEN ??
+    process.env.TOKAGENT_CLOUD_BUG_REPORT_TOKEN
   );
 }
 
@@ -178,7 +178,7 @@ async function submitToRemoteBugIntake(body: BugReportBody) {
   const remoteBugReportUrl = getRemoteBugReportUrl();
   if (!remoteBugReportUrl) return null;
   const payload = {
-    source: "eliza-desktop",
+    source: "tokagent-desktop",
     submittedAt: new Date().toISOString(),
     category: body.category ?? "general",
     description: sanitize(body.description, 500),

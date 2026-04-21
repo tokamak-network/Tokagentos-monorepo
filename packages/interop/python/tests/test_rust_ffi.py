@@ -116,8 +116,8 @@ class TestFFIProtocol:
 class TestFFIFunctionSignatures:
     """Test expected FFI function signatures."""
 
-    def test_elizaos_get_manifest_signature(self):
-        """Test elizaos_get_manifest expected return format."""
+    def test_tokagentos_get_manifest_signature(self):
+        """Test tokagentos_get_manifest expected return format."""
         # Simulate what the Rust function would return
         manifest_json = json.dumps(
             {"name": "test", "description": "Test", "version": "2.0.0-alpha", "language": "rust"}
@@ -128,8 +128,8 @@ class TestFFIFunctionSignatures:
         assert "name" in parsed
         assert "description" in parsed
 
-    def test_elizaos_init_signature(self):
-        """Test elizaos_init expected config format."""
+    def test_tokagentos_init_signature(self):
+        """Test tokagentos_init expected config format."""
         config = {"API_KEY": "test-key", "DEBUG": "true"}
 
         config_json = json.dumps(config)
@@ -137,8 +137,8 @@ class TestFFIFunctionSignatures:
 
         assert parsed["API_KEY"] == "test-key"
 
-    def test_elizaos_validate_action_signature(self):
-        """Test elizaos_validate_action parameter format."""
+    def test_tokagentos_validate_action_signature(self):
+        """Test tokagentos_validate_action parameter format."""
         action_name = "TEST_ACTION"
         memory_json = json.dumps({"content": {"text": "Hello"}})
         state_json = json.dumps({"values": {}})
@@ -148,8 +148,8 @@ class TestFFIFunctionSignatures:
         assert isinstance(memory_json, str)
         assert isinstance(state_json, str)
 
-    def test_elizaos_invoke_action_signature(self):
-        """Test elizaos_invoke_action parameter and return format."""
+    def test_tokagentos_invoke_action_signature(self):
+        """Test tokagentos_invoke_action parameter and return format."""
         # Test parameter types used in FFI calls
         _action_name = "TEST_ACTION"
         _memory_json = json.dumps({"content": {"text": "Hello"}})
@@ -162,8 +162,8 @@ class TestFFIFunctionSignatures:
         parsed = json.loads(result_json)
         assert parsed["success"] is True
 
-    def test_elizaos_get_provider_signature(self):
-        """Test elizaos_get_provider parameter and return format."""
+    def test_tokagentos_get_provider_signature(self):
+        """Test tokagentos_get_provider parameter and return format."""
         # Test parameter types used in FFI calls
         _provider_name = "TEST_PROVIDER"
         _memory_json = json.dumps({"content": {}})

@@ -13,7 +13,7 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { screenTimeAction } from "./screen-time.js";
 import {
   getActivityReportAction,

@@ -1,14 +1,14 @@
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import { SUBSCRIPTION_PROVIDER_MAP } from "../auth/types.js";
-import type { ElizaConfig } from "./types.js";
+import type { TokagentConfig } from "./types.js";
 
 export interface ApplyPluginAutoEnableResult {
-  config: ElizaConfig;
+  config: TokagentConfig;
   changes: string[];
 }
 
 export interface ApplyPluginAutoEnableParams {
-  config: Partial<ElizaConfig>;
+  config: Partial<TokagentConfig>;
   env: NodeJS.ProcessEnv;
   /**
    * Already-loaded plugin instances. When provided, the function checks each
@@ -21,7 +21,7 @@ export interface ApplyPluginAutoEnableParams {
    * True when the runtime is hosted inside a Capacitor native shell
    * (iOS / Android). Mobile cannot spawn a local n8n sidecar via
    * `node:child_process`, so the n8n plugin is only auto-enabled when the
-   * Eliza Cloud gateway is authenticated. Desktop / server / web leave this
+   * Tokagent Cloud gateway is authenticated. Desktop / server / web leave this
    * undefined.
    */
   isNativePlatform?: boolean;
@@ -99,8 +99,8 @@ export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
   MISTRAL_API_KEY: "@elizaos/plugin-mistral",
   COHERE_API_KEY: "@elizaos/plugin-cohere",
   PERPLEXITY_API_KEY: "@elizaos/plugin-perplexity",
-  ELIZAOS_CLOUD_API_KEY: "@elizaos/plugin-elizacloud",
-  ELIZAOS_CLOUD_ENABLED: "@elizaos/plugin-elizacloud",
+  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-tokagentcloud",
+  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-tokagentcloud",
   CUA_API_KEY: "@elizaos/plugin-cua",
   CUA_HOST: "@elizaos/plugin-cua",
   OBSIDIAN_VAULT_PATH: "@elizaos/plugin-obsidian",
@@ -155,15 +155,15 @@ const FEATURE_PLUGINS: Record<string, string> = {
 const EVM_PLUGIN_PACKAGE = "@elizaos/plugin-evm";
 const EVM_PLUGIN_SHORT_ID = "evm";
 
-const STEWARD_ELIZA_PLUGIN_PACKAGE = "@stwd/eliza-plugin";
-const STEWARD_ELIZA_PLUGIN_SHORT_ID = "stwd-eliza-plugin";
+const STEWARD_TOKAGENT_PLUGIN_PACKAGE = "@stwd/tokagent-plugin";
+const STEWARD_TOKAGENT_PLUGIN_SHORT_ID = "stwd-tokagent-plugin";
 
 function resolveEvmAutoEnableReason(env: NodeJS.ProcessEnv): string | null {
   if (env.EVM_PRIVATE_KEY?.trim()) {
     return "env: EVM_PRIVATE_KEY";
   }
 
-  const cloudProvisioned = env.ELIZA_CLOUD_PROVISIONED === "1";
+  const cloudProvisioned = env.TOKAGENT_CLOUD_PROVISIONED === "1";
 
   if (cloudProvisioned && env.STEWARD_AGENT_TOKEN?.trim()) {
     return "cloud-provisioned Steward wallet";
@@ -318,7 +318,7 @@ export function applyPluginAutoEnable(
 ): ApplyPluginAutoEnableResult {
   const { config, env } = params;
   const changes: string[] = [];
-  const updatedConfig = structuredClone(config) as ElizaConfig;
+  const updatedConfig = structuredClone(config) as TokagentConfig;
 
   if (updatedConfig.plugins?.enabled === false) {
     return { config: updatedConfig, changes };
@@ -464,23 +464,23 @@ export function applyPluginAutoEnable(
     );
   }
 
-  // Auto-enable @stwd/eliza-plugin when Steward API is configured.
+  // Auto-enable @stwd/tokagent-plugin when Steward API is configured.
   // This mirrors the desktop (app-core) path and ensures cloud containers get
   // StewardService + STEWARD_TRANSFER action registered with the runtime.
   if (
     env.STEWARD_API_URL?.trim() &&
-    pluginsConfig.entries[STEWARD_ELIZA_PLUGIN_SHORT_ID]?.enabled !== false
+    pluginsConfig.entries[STEWARD_TOKAGENT_PLUGIN_SHORT_ID]?.enabled !== false
   ) {
     addToAllowlist(
       pluginsConfig.allow,
-      STEWARD_ELIZA_PLUGIN_PACKAGE,
-      STEWARD_ELIZA_PLUGIN_SHORT_ID,
+      STEWARD_TOKAGENT_PLUGIN_PACKAGE,
+      STEWARD_TOKAGENT_PLUGIN_SHORT_ID,
       changes,
       "env: STEWARD_API_URL",
     );
   }
 
-  const cloudProvisioned = env.ELIZA_CLOUD_PROVISIONED === "1";
+  const cloudProvisioned = env.TOKAGENT_CLOUD_PROVISIONED === "1";
   if (
     cloudProvisioned &&
     pluginsConfig.entries["edge-tts"]?.enabled !== false
@@ -644,11 +644,11 @@ export function applyPluginAutoEnable(
     }
   }
 
-  // n8n workflow plugin — auto-enable when EITHER Eliza Cloud is authenticated
+  // n8n workflow plugin — auto-enable when EITHER Tokagent Cloud is authenticated
   // (cloud supplies N8N_HOST + N8N_API_KEY via its gateway) OR the local n8n
   // sidecar is permitted (config.n8n.localEnabled !== false, default true).
   // The authoritative boot-config shape is `config.n8n` (N8nConfig in
-  // types.eliza.ts); the sidecar lifecycle writes `config.n8n.host` and
+  // types.tokagent.ts); the sidecar lifecycle writes `config.n8n.host` and
   // `config.n8n.apiKey` once ready. The plugin's init() refuses to activate
   // when neither is resolved, so this is safe to auto-enable eagerly.
   //
@@ -713,7 +713,7 @@ export function applyPluginAutoEnable(
  */
 export function applyPluginSelfDeclaredAutoEnable(
   loadedPlugins: Plugin[],
-  config: ElizaConfig,
+  config: TokagentConfig,
   env: NodeJS.ProcessEnv,
   changes: string[],
 ): void {

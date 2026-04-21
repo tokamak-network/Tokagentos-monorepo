@@ -7,7 +7,7 @@ Evaluates agent behavior for coherence errors and calculates metrics.
 from collections import Counter
 from decimal import Decimal
 
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.types import (
     ActionType,
     AgentAction,
     CoherenceError,

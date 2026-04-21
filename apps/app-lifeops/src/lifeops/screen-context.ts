@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import sharp from "sharp";
-import { FRAME_FILE } from "@elizaos/agent/services/browser-capture";
+import { FRAME_FILE } from "@tokagentos/agent/services/browser-capture";
 
 export type LifeOpsScreenFocus =
   | "work"

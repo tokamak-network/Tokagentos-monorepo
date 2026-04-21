@@ -2778,7 +2778,7 @@ pub const ALL_ACTION_DOCS_JSON: &str = r#"{
     },
     {
       "name": "CHECK_CLOUD_CREDITS",
-      "description": "Check ElizaCloud credit balance, container costs, and estimated remaining runtime.",
+      "description": "Check TokagentCloud credit balance, container costs, and estimated remaining runtime.",
       "parameters": [],
       "similes": [
         "check credits",
@@ -3194,7 +3194,7 @@ pub const ALL_ACTION_DOCS_JSON: &str = r#"{
     },
     {
       "name": "PROVISION_CLOUD_AGENT",
-      "description": "Deploy an ElizaOS agent to ElizaCloud. Provisions a container, waits for deployment, connects the bridge, and starts auto-backup.",
+      "description": "Deploy an TokagentOS agent to TokagentCloud. Provisions a container, waits for deployment, connects the bridge, and starts auto-backup.",
       "parameters": [],
       "similes": [
         "deploy agent to cloud",

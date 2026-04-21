@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.prompt_compression import get_prompt_provider_description
-from elizaos.types import Provider, ProviderResult
+from tokagentos.prompt_compression import get_prompt_provider_description
+from tokagentos.types import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 
 async def get_providers_list(

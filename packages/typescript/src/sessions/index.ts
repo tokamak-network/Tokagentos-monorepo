@@ -1,5 +1,5 @@
 /**
- * Session management utilities for elizaOS.
+ * Session management utilities for tokagentOS.
  *
  * Provides:
  * - Session key building and parsing

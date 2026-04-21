@@ -1,4 +1,4 @@
-import { type IAgentRuntime, logger } from "@elizaos/core";
+import { type IAgentRuntime, logger } from "@tokagentos/core";
 
 type RuntimeWithSendHandlers = IAgentRuntime & {
   sendHandlers?: Map<string, unknown>;

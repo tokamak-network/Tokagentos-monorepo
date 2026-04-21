@@ -1,6 +1,6 @@
 """Tests for ADHDBench types."""
 
-from elizaos_adhdbench.types import (
+from tokagentos_adhdbench.types import (
     DEFAULT_SCALE_POINTS,
     ExpectedOutcome,
     OutcomeType,

@@ -13,7 +13,7 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { hasOwnerAccess } from "../security/access.js";
 import { fetchConfiguredOwnerName } from "../services/owner-name.js";
 

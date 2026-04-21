@@ -1,5 +1,5 @@
 """
-Coding task evaluator for elizaOS app benchmarks.
+Coding task evaluator for tokagentOS app benchmarks.
 
 Scores coding task results based on code presence, keyword coverage,
 TypeScript patterns, and structural quality. Deterministic — no LLM calls.

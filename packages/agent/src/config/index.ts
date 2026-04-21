@@ -1,4 +1,4 @@
-export * from "@elizaos/shared/runtime-env";
+export * from "@tokagentos/shared/runtime-env";
 export * from "./character-schema.js";
 export * from "./config.js";
 export * from "./env-vars.js";
@@ -11,7 +11,7 @@ export * from "./schema.js";
 export * from "./telegram-custom-commands.js";
 export * from "./types.agent-defaults.js";
 export * from "./types.agents.js";
-export * from "./types.eliza.js";
+export * from "./types.tokagent.js";
 export * from "./types.gateway.js";
 export * from "./types.hooks.js";
 export * from "./types.js";

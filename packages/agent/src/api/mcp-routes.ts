@@ -1,6 +1,6 @@
 import type http from "node:http";
-import { logger } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import { logger } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import {
   getMcpServerDetails,
   searchMcpMarketplace,
@@ -19,7 +19,7 @@ export interface McpRouteContext {
   pathname: string;
   url: URL;
   state: {
-    config: ElizaConfig;
+    config: TokagentConfig;
     runtime: { getService: (name: string) => unknown } | null;
   };
   json: (res: http.ServerResponse, data: unknown, status?: number) => void;
@@ -29,7 +29,7 @@ export interface McpRouteContext {
     res: http.ServerResponse,
     options?: ReadJsonBodyOptions,
   ) => Promise<T | null>;
-  saveElizaConfig: (config: ElizaConfig) => void;
+  saveTokagentConfig: (config: TokagentConfig) => void;
   redactDeep: (val: unknown) => unknown;
   isBlockedObjectKey: (key: string) => boolean;
   cloneWithoutBlockedObjectKeys: <T>(value: T) => T;
@@ -178,7 +178,7 @@ export async function handleMcpRoutes(ctx: McpRouteContext): Promise<boolean> {
     >[string];
 
     try {
-      ctx.saveElizaConfig(state.config);
+      ctx.saveTokagentConfig(state.config);
     } catch (err) {
       logger.warn(
         `[api] Config save failed: ${err instanceof Error ? err.message : err}`,
@@ -208,7 +208,7 @@ export async function handleMcpRoutes(ctx: McpRouteContext): Promise<boolean> {
     if (state.config.mcp?.servers?.[serverName]) {
       delete state.config.mcp.servers[serverName];
       try {
-        ctx.saveElizaConfig(state.config);
+        ctx.saveTokagentConfig(state.config);
       } catch (err) {
         logger.warn(
           `[api] Config save failed: ${err instanceof Error ? err.message : err}`,
@@ -264,7 +264,7 @@ export async function handleMcpRoutes(ctx: McpRouteContext): Promise<boolean> {
     }
 
     try {
-      ctx.saveElizaConfig(state.config);
+      ctx.saveTokagentConfig(state.config);
     } catch (err) {
       logger.warn(
         `[api] Config save failed: ${err instanceof Error ? err.message : err}`,

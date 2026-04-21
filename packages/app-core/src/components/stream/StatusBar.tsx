@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { ExternalLink } from "lucide-react";
 import { type CSSProperties, useEffect, useRef } from "react";
 import { isElectrobunRuntime } from "../../bridge/electrobun-runtime";
@@ -124,7 +124,7 @@ export function StatusBar({
                 : "popout";
               const popoutWin = window.open(
                 `${base}${sep}/?${qs}`,
-                "elizaos-stream",
+                "tokagentos-stream",
                 "width=1280,height=720,menubar=no,toolbar=no,location=no,status=no",
               );
               if (popoutWin) {

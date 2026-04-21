@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from .. import rust_ffi
-from elizaos.types.components import ActionResult, ProviderResult
+from tokagentos.types.components import ActionResult, ProviderResult
 
 
 class _FakeRustPluginFFI:

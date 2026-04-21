@@ -16,7 +16,7 @@ Traditional request/response patterns make your agent feel sluggish, even when t
 
 ## Quick Start
 
-ElizaOS supports three response modes out of the box:
+TokagentOS supports three response modes out of the box:
 
 | Mode          | Latency                    | Use Case                              |
 | ------------- | -------------------------- | ------------------------------------- |
@@ -133,7 +133,7 @@ The streaming API emits these event types:
 All streaming callbacks use the canonical `StreamChunkCallback` type:
 
 ```typescript
-import type { StreamChunkCallback } from "@elizaos/core";
+import type { StreamChunkCallback } from "@tokagentos/core";
 
 // Simple consumer — just the delta
 const simple: StreamChunkCallback = (chunk) => {
@@ -166,14 +166,14 @@ const full: StreamChunkCallback = (chunk, messageId, accumulated) => {
 
 ## Custom Stream Extractors
 
-ElizaOS uses **stream extractors** to filter LLM output for streaming. The framework provides several built-in extractors:
+TokagentOS uses **stream extractors** to filter LLM output for streaming. The framework provides several built-in extractors:
 
 ### PassthroughExtractor
 
 Streams everything as-is. Use for plain text responses.
 
 ```typescript
-import { PassthroughExtractor } from "@elizaos/core";
+import { PassthroughExtractor } from "@tokagentos/core";
 
 const extractor = new PassthroughExtractor();
 extractor.push("Hello "); // Returns: 'Hello '
@@ -185,7 +185,7 @@ extractor.push("world!"); // Returns: 'world!'
 Extracts content from a specific XML tag. Use when LLM outputs structured XML.
 
 ```typescript
-import { XmlTagExtractor } from "@elizaos/core";
+import { XmlTagExtractor } from "@tokagentos/core";
 
 const extractor = new XmlTagExtractor("text");
 
@@ -199,7 +199,7 @@ extractor.push("world!</text></response>"); // Returns: 'lo world!'
 Action-aware extraction used by DefaultMessageService. Understands `<actions>` to decide what to stream.
 
 ```typescript
-import { ResponseStreamExtractor } from "@elizaos/core";
+import { ResponseStreamExtractor } from "@tokagentos/core";
 
 const extractor = new ResponseStreamExtractor();
 
@@ -216,7 +216,7 @@ extractor.push("<actions>SEARCH</actions><text>Ignored</text>"); // Returns: ''
 Implement `IStreamExtractor` for custom filtering logic:
 
 ```typescript
-import type { IStreamExtractor } from "@elizaos/core";
+import type { IStreamExtractor } from "@tokagentos/core";
 
 class JsonValueExtractor implements IStreamExtractor {
   private buffer = "";
@@ -246,7 +246,7 @@ class JsonValueExtractor implements IStreamExtractor {
 The streaming system provides typed errors for robust handling:
 
 ```typescript
-import { StreamError } from "@elizaos/core";
+import { StreamError } from "@tokagentos/core";
 
 try {
   const result = extractor.push(hugeChunk);

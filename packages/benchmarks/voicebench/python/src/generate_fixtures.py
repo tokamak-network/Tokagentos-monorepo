@@ -16,11 +16,11 @@ WORKSPACE_ROOT = VOICEBENCH_DIR.parent.parent
 SHARED_DIR = VOICEBENCH_DIR / "shared"
 
 # Make local workspace packages importable without separate installation.
-sys.path.insert(0, str(WORKSPACE_ROOT / "eliza/packages/python"))
+sys.path.insert(0, str(WORKSPACE_ROOT / "tokagent/packages/python"))
 sys.path.insert(0, str(WORKSPACE_ROOT / "plugins/plugin-groq/python"))
 sys.path.insert(0, str(WORKSPACE_ROOT / "plugins/plugin-elevenlabs/python/src"))
 
-from elizaos.types.model import ModelType
+from tokagentos.types.model import ModelType
 
 from .bench import (
     coerce_audio_bytes,

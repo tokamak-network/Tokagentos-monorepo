@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types.agent import Character
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.agent import Character
 
 
 @pytest.mark.skip(reason="MemoryService requires runtime settings.get() which isn't implemented")

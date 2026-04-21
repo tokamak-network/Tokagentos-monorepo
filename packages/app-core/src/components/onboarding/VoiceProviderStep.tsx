@@ -1,4 +1,4 @@
-import { Button, Input } from "@elizaos/ui";
+import { Button, Input } from "@tokagentos/ui";
 import { useApp } from "../../state/useApp";
 import {
   OnboardingField,
@@ -38,7 +38,7 @@ function ConnectedIcon({ title }: { title: string }) {
 
 export function VoiceProviderStep() {
   const {
-    elizaCloudConnected,
+    tokagentCloudConnected,
     onboardingCloudApiKey,
     onboardingVoiceApiKey,
     setState,
@@ -47,7 +47,7 @@ export function VoiceProviderStep() {
     t,
   } = useApp();
   const cloudVoiceReady =
-    elizaCloudConnected || onboardingCloudApiKey.trim().length > 0;
+    tokagentCloudConnected || onboardingCloudApiKey.trim().length > 0;
 
   return (
     <>

@@ -6,9 +6,9 @@
  * This script tests that each of the 4 primary agent types can successfully
  * create working games:
  *
- * 1. TypeScript Guessing Game (tested with eliza or codex)
+ * 1. TypeScript Guessing Game (tested with tokagent or codex)
  * 2. Rust Blackjack Game (tested with claude-code or sweagent)
- * 3. Python Adventure Game (tested with eliza or sweagent)
+ * 3. Python Adventure Game (tested with tokagent or sweagent)
  *
  * Requirements:
  * - ANTHROPIC_API_KEY or OPENAI_API_KEY must be set
@@ -128,7 +128,7 @@ async function createDetachedWorktree(repoRoot: string): Promise<string> {
   const rand = crypto.randomBytes(6).toString("hex");
   const dir = path.join(
     repoRoot,
-    ".eliza",
+    ".tokagent",
     "game-e2e",
     `${Date.now()}-${rand}`,
   );
@@ -172,7 +172,7 @@ Requirements:
 - Keep it simple, no external dependencies
 - Use TypeScript syntax (type annotations)`,
   language: "typescript",
-  preferredAgents: ["eliza"],
+  preferredAgents: ["tokagent"],
   expectedFiles: ["guessing-game.ts"],
   verifyFn: async (workdir: string) => {
     const filepath = path.join(workdir, "guessing-game.ts");
@@ -226,7 +226,7 @@ Requirements:
 - Keep it simple, no external dependencies
 - Use proper Rust idioms`,
   language: "rust",
-  preferredAgents: ["eliza"],
+  preferredAgents: ["tokagent"],
   expectedFiles: ["blackjack.rs"],
   verifyFn: async (workdir: string) => {
     const filepath = path.join(workdir, "blackjack.rs");
@@ -279,7 +279,7 @@ Requirements:
 - Keep it simple, no external dependencies
 - Use type hints`,
   language: "python",
-  preferredAgents: ["eliza"],
+  preferredAgents: ["tokagent"],
   expectedFiles: ["adventure.py"],
   verifyFn: async (workdir: string) => {
     const filepath = path.join(workdir, "adventure.py");
@@ -329,15 +329,15 @@ const GAME_TESTS: GameTest[] = [
 function getAvailableAgents(): SubAgentType[] {
   const openai = process.env.OPENAI_API_KEY?.trim();
   const anthropic = process.env.ANTHROPIC_API_KEY?.trim();
-  const _provider = (process.env.ELIZA_CODE_PROVIDER ?? "")
+  const _provider = (process.env.TOKAGENT_CODE_PROVIDER ?? "")
     .trim()
     .toLowerCase();
 
   const agents: SubAgentType[] = [];
 
-  // Eliza works with any provider
+  // Tokagent works with any provider
   if (openai || anthropic) {
-    agents.push("eliza");
+    agents.push("tokagent");
   }
 
   // Codex requires OpenAI
@@ -483,7 +483,7 @@ async function main(): Promise<void> {
       log(`SKIP: ${test.name} - no suitable agent available`);
       results.push({
         name: test.name,
-        agent: "eliza",
+        agent: "tokagent",
         language: test.language,
         passed: false,
         error: "No suitable agent available",

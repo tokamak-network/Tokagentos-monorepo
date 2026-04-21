@@ -2,7 +2,7 @@
 name = "tic-tac-toe"
 version = "0.1.0"
 edition = "2021"
-description = "elizaOS Tic-Tac-Toe Demo - perfect play via minimax (no LLM)"
+description = "tokagentOS Tic-Tac-Toe Demo - perfect play via minimax (no LLM)"
 publish = false
 
 [[bin]]
@@ -10,8 +10,8 @@ name = "tic-tac-toe"
 path = "src/main.rs"
 
 [dependencies]
-# elizaOS Core
-elizaos = "2.0.0"
+# tokagentOS Core
+tokagentos = "2.0.0"
 
 # Async runtime
 tokio = { version = "1.42", features = ["rt-multi-thread", "macros", "time"] }

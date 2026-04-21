@@ -2,10 +2,10 @@ import Foundation
 import Capacitor
 import UIKit
 
-@objc(ElizaWebsiteBlockerPlugin)
-public class ElizaWebsiteBlockerPlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "ElizaWebsiteBlockerPlugin"
-    public let jsName = "ElizaWebsiteBlocker"
+@objc(TokagentWebsiteBlockerPlugin)
+public class TokagentWebsiteBlockerPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "TokagentWebsiteBlockerPlugin"
+    public let jsName = "TokagentWebsiteBlocker"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "getStatus", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "startBlock", returnType: CAPPluginReturnPromise),
@@ -198,10 +198,10 @@ public class ElizaWebsiteBlockerPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private func disabledReason(configuredWebsites: [String]) -> String {
         if configuredWebsites.isEmpty {
-            return "Enable the Eliza Website Blocker extension in iPhone Settings > Safari > Extensions before starting a block."
+            return "Enable the Tokagent Website Blocker extension in iPhone Settings > Safari > Extensions before starting a block."
         }
 
-        return "Eliza saved the iPhone website block for \(configuredWebsites.joined(separator: ", ")), but Safari will not enforce it until the Eliza Website Blocker extension is enabled in Settings > Safari > Extensions."
+        return "Tokagent saved the iPhone website block for \(configuredWebsites.joined(separator: ", ")), but Safari will not enforce it until the Tokagent Website Blocker extension is enabled in Settings > Safari > Extensions."
     }
 
     private func nullable(_ value: Any?) -> Any {

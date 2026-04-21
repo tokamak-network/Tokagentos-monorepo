@@ -1,8 +1,8 @@
 /**
- * AWS Lambda handler for elizaOS chat worker
+ * AWS Lambda handler for tokagentOS chat worker
  *
  * This Lambda function processes chat messages and returns AI responses
- * using the full elizaOS runtime with OpenAI as the LLM provider.
+ * using the full tokagentOS runtime with OpenAI as the LLM provider.
  *
  * This is identical to the chat demo pattern but exposed as an HTTP API.
  */
@@ -15,7 +15,7 @@ import {
   createMessageMemory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
 import type {
@@ -52,7 +52,7 @@ interface ErrorResponse {
 // Character configuration from environment
 function getCharacter(): Character {
   return createCharacter({
-    name: process.env.CHARACTER_NAME ?? "Eliza",
+    name: process.env.CHARACTER_NAME ?? "Tokagent",
     bio: process.env.CHARACTER_BIO ?? "A helpful AI assistant.",
     system:
       process.env.CHARACTER_SYSTEM ??
@@ -65,7 +65,7 @@ let runtime: AgentRuntime | null = null;
 let initializationPromise: Promise<void> | null = null;
 
 /**
- * Initialize the elizaOS runtime (lazy, singleton pattern)
+ * Initialize the tokagentOS runtime (lazy, singleton pattern)
  */
 async function initializeRuntime(): Promise<AgentRuntime> {
   if (runtime) {
@@ -81,7 +81,7 @@ async function initializeRuntime(): Promise<AgentRuntime> {
   }
 
   initializationPromise = (async () => {
-    console.log("Initializing elizaOS runtime...");
+    console.log("Initializing tokagentOS runtime...");
 
     const character = getCharacter();
     runtime = new AgentRuntime({
@@ -90,7 +90,7 @@ async function initializeRuntime(): Promise<AgentRuntime> {
     });
 
     await runtime.initialize();
-    console.log("elizaOS runtime initialized successfully");
+    console.log("tokagentOS runtime initialized successfully");
   })();
 
   await initializationPromise;
@@ -144,7 +144,7 @@ function jsonResponse(
 }
 
 /**
- * Handle chat message using full elizaOS runtime (same as chat demo)
+ * Handle chat message using full tokagentOS runtime (same as chat demo)
  */
 async function handleChat(
   request: ChatRequest,
@@ -224,7 +224,7 @@ export async function handler(
     if (method === "GET") {
       const response: HealthResponse = {
         status: "healthy",
-        runtime: "elizaos-typescript",
+        runtime: "tokagentos-typescript",
         version: "1.0.0",
       };
       return jsonResponse(200, response);

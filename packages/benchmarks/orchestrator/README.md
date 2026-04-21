@@ -1,9 +1,9 @@
-# ElizaOS Benchmark Orchestrator
+# TokagentOS Benchmark Orchestrator
 
 Run any integrated benchmark (or all benchmarks), store normalized results in
 SQLite/JSON, and inspect history in the browser viewer.
 
-Use the workspace Python (`/Users/shawwalters/eliza-workspace/.venv/bin/python`)
+Use the workspace Python (`/Users/shawwalters/tokagent-workspace/.venv/bin/python`)
 for consistent dependency versions across benchmark subprocesses.
 
 ## Paths
@@ -76,9 +76,9 @@ while still letting you override knobs when needed.
 in one `--all` run:
 
 ```bash
-/Users/shawwalters/eliza-workspace/.venv/bin/python -m benchmarks.orchestrator run \
+/Users/shawwalters/tokagent-workspace/.venv/bin/python -m benchmarks.orchestrator run \
   --all \
-  --agent eliza \
+  --agent tokagent \
   --provider groq \
   --model qwen/qwen3-32b \
   --extra "$(cat benchmarks/orchestrator/profiles/sample10.json)"
@@ -131,7 +131,7 @@ Lifecycle suite example:
   --extra '{"per_benchmark":{"orchestrator_lifecycle":{"max_scenarios":12,"strict":true}}}'
 ```
 
-Replay scoring example (from normalized Eliza capture artifacts):
+Replay scoring example (from normalized Tokagent capture artifacts):
 
 ```bash
 /opt/miniconda3/bin/python -m benchmarks.orchestrator run \
@@ -198,5 +198,5 @@ Each run stores:
 - status, duration, score, metrics, artifacts
 - provider, model, agent label
 - extra config used for the run
-- benchmark and Eliza commit/version metadata
+- benchmark and Tokagent commit/version metadata
 - high-score reference and delta

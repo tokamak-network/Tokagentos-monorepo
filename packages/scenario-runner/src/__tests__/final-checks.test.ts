@@ -1,4 +1,4 @@
-import type { ScenarioContext } from "@elizaos/scenario-schema";
+import type { ScenarioContext } from "@tokagentos/scenario-schema";
 import { describe, expect, it } from "vitest";
 import { runFinalCheck } from "../final-checks/index.ts";
 

@@ -46,22 +46,22 @@ const ROOT_BUN_NODE_MODULES = path.join(ROOT_NODE_MODULES, ".bun");
 const PACKAGE_JSON_PATH = path.join(ROOT, "package.json");
 const REGISTRY_PACKAGE_CACHE = path.join(
   os.tmpdir(),
-  "eliza-runtime-package-cache",
+  "tokagent-runtime-package-cache",
 );
 const TRACKED_PACKAGE_CACHE = path.join(
   os.tmpdir(),
-  "eliza-tracked-package-cache",
+  "tokagent-tracked-package-cache",
 );
 const PUBLISHED_PACKAGE_FETCH_TIMEOUT_MS = 10_000;
 const ALLOW_REGISTRY_FETCH =
-  process.env.ELIZA_RUNTIME_COPY_ALLOW_REGISTRY_FETCH === "1";
+  process.env.TOKAGENT_RUNTIME_COPY_ALLOW_REGISTRY_FETCH === "1";
 const DEP_SKIP = new Set(["typescript", "@types/node", "lucide-react"]);
-const ALWAYS_HOISTED_PACKAGES = new Set(["@elizaos/core"]);
+const ALWAYS_HOISTED_PACKAGES = new Set(["@tokagentos/core"]);
 const PACKAGED_DEPENDENCY_SKIPS = new Map<string, Set<string>>([
   [
     "@elizaos/plugin-cron",
     new Set([
-      // The desktop/runtime bundle does not expose the Eliza CLI surface.
+      // The desktop/runtime bundle does not expose the Tokagent CLI surface.
       // Cron only imports plugin-cli to register commands at module load.
       "@elizaos/plugin-cli",
     ]),
@@ -365,7 +365,7 @@ export function stripPackagedCronCliRegistration(source: string): string {
   return source.replace(
     'import { defineCliCommand, registerCliCommand } from "@elizaos/plugin-cli";',
     [
-      "// Packaged desktop/runtime bundles do not expose the Eliza CLI registry.",
+      "// Packaged desktop/runtime bundles do not expose the Tokagent CLI registry.",
       "const defineCliCommand = () => null;",
       "const registerCliCommand = () => {};",
     ].join("\n"),

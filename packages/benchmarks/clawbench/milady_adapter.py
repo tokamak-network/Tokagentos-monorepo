@@ -1,8 +1,8 @@
-"""Eliza adapter for ClawBench scenarios.
+"""Tokagent adapter for ClawBench scenarios.
 
-This adapter allows running ClawBench scenarios against the eliza benchmark server
+This adapter allows running ClawBench scenarios against the tokagent benchmark server
 instead of the OpenClaw gateway. It translates between ClawBench's scenario format
-and eliza's benchmark API.
+and tokagent's benchmark API.
 
 Usage:
     python milady_adapter.py --scenario client_escalation
@@ -36,7 +36,7 @@ FIXTURES_DIR = CLAWBENCH_DIR / "fixtures"
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-ELIZA_URL = os.getenv("ELIZA_BENCH_URL", "http://localhost:3939")
+TOKAGENT_URL = os.getenv("TOKAGENT_BENCH_URL", "http://localhost:3939")
 
 
 def load_scenario(name: str) -> dict | None:
@@ -86,7 +86,7 @@ def build_context(scenario_config: dict, scenario: str) -> dict:
 
 
 class MiladyClawBenchRunner:
-    """Run ClawBench scenarios against eliza benchmark server."""
+    """Run ClawBench scenarios against tokagent benchmark server."""
 
     def __init__(self, client: MiladyClient):
         self.client = client
@@ -101,7 +101,7 @@ class MiladyClawBenchRunner:
         prompt = scenario_config.get("prompt", "Help me with my tasks.")
         context = build_context(scenario_config, scenario)
 
-        # Reset eliza session
+        # Reset tokagent session
         self.client.reset(task_id=scenario, benchmark="clawbench")
         self.tool_calls = []
 
@@ -152,7 +152,7 @@ class MiladyClawBenchRunner:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run ClawBench scenarios against eliza")
+    parser = argparse.ArgumentParser(description="Run ClawBench scenarios against tokagent")
     parser.add_argument("--scenario", "-s", type=str, default="inbox_triage",
                         help="Scenario name")
     parser.add_argument("--variant", "-v", type=str, default="optimized",
@@ -162,7 +162,7 @@ def main():
     parser.add_argument("--json", "-j", action="store_true",
                         help="Output JSON")
     parser.add_argument("--start-server", action="store_true",
-                        help="Auto-start eliza benchmark server")
+                        help="Auto-start tokagent benchmark server")
 
     args = parser.parse_args()
 
@@ -181,7 +181,7 @@ def main():
         mgr.start()
         client = mgr.client
     else:
-        client = MiladyClient(ELIZA_URL)
+        client = MiladyClient(TOKAGENT_URL)
         client.wait_until_ready()
 
     runner = MiladyClawBenchRunner(client)

@@ -5,13 +5,13 @@
 import crypto from "node:crypto";
 import type http from "node:http";
 import path from "node:path";
-import type { AgentRuntime, UUID } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime, UUID } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   resolveApiSecurityConfig,
   resolveApiToken,
   setApiToken,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import { isCloudProvisionedContainer } from "./cloud-provisioning.js";
 import { sendJsonError } from "./http-helpers.js";
 import { BLOCKED_ENV_KEYS } from "./plugin-discovery-helpers.js";
@@ -32,10 +32,10 @@ export function extractAuthToken(req: http.IncomingMessage): string | null {
   }
 
   const header =
-    (typeof req.headers["x-eliza-token"] === "string" &&
-      req.headers["x-eliza-token"]) ||
-    (typeof req.headers["x-eliza-token"] === "string" &&
-      req.headers["x-eliza-token"]) ||
+    (typeof req.headers["x-tokagent-token"] === "string" &&
+      req.headers["x-tokagent-token"]) ||
+    (typeof req.headers["x-tokagent-token"] === "string" &&
+      req.headers["x-tokagent-token"]) ||
     (typeof req.headers["x-api-key"] === "string" && req.headers["x-api-key"]);
   if (typeof header === "string" && header.trim()) return header.trim();
 
@@ -113,16 +113,16 @@ export function ensureApiTokenForBindHost(host: string): void {
 
   if (cloudProvisioned) {
     logger.warn(
-      "[eliza-api] Steward-managed cloud container started without ELIZA_API_TOKEN/ELIZA_API_TOKEN; generated a temporary inbound API token for this process.",
+      "[tokagent-api] Steward-managed cloud container started without TOKAGENT_API_TOKEN/TOKAGENT_API_TOKEN; generated a temporary inbound API token for this process.",
     );
   } else {
     logger.warn(
-      `[eliza-api] ELIZA_API_BIND/ELIZA_API_BIND=${host} is non-loopback and ELIZA_API_TOKEN/ELIZA_API_TOKEN is unset.`,
+      `[tokagent-api] TOKAGENT_API_BIND/TOKAGENT_API_BIND=${host} is non-loopback and TOKAGENT_API_TOKEN/TOKAGENT_API_TOKEN is unset.`,
     );
   }
   const tokenFingerprint = `${generated.slice(0, 4)}...${generated.slice(-4)}`;
   logger.warn(
-    `[eliza-api] Generated temporary API token (${tokenFingerprint}) for this process. Set ELIZA_API_TOKEN or ELIZA_API_TOKEN explicitly to override.`,
+    `[tokagent-api] Generated temporary API token (${tokenFingerprint}) for this process. Set TOKAGENT_API_TOKEN or TOKAGENT_API_TOKEN explicitly to override.`,
   );
 }
 
@@ -181,7 +181,7 @@ export function resolvePluginConfigMutationRejections(
 import type {
   WalletExportRejection,
   WalletExportRequestBody,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 
 export type { WalletExportRejection };
 
@@ -198,19 +198,19 @@ export function resolveWalletExportRejection(
   }
 
   const expected =
-    process.env.ELIZA_WALLET_EXPORT_TOKEN?.trim() ||
-    process.env.ELIZA_WALLET_EXPORT_TOKEN?.trim();
+    process.env.TOKAGENT_WALLET_EXPORT_TOKEN?.trim() ||
+    process.env.TOKAGENT_WALLET_EXPORT_TOKEN?.trim();
   if (!expected) {
     return {
       status: 403,
       reason:
-        "Wallet export is disabled. Set ELIZA_WALLET_EXPORT_TOKEN (or ELIZA_WALLET_EXPORT_TOKEN) to enable secure exports.",
+        "Wallet export is disabled. Set TOKAGENT_WALLET_EXPORT_TOKEN (or TOKAGENT_WALLET_EXPORT_TOKEN) to enable secure exports.",
     };
   }
 
   const headerToken =
-    typeof req.headers["x-eliza-export-token"] === "string"
-      ? req.headers["x-eliza-export-token"].trim()
+    typeof req.headers["x-tokagent-export-token"] === "string"
+      ? req.headers["x-tokagent-export-token"].trim()
       : "";
   const bodyToken =
     typeof body.exportToken === "string" ? body.exportToken.trim() : "";
@@ -220,7 +220,7 @@ export function resolveWalletExportRejection(
     return {
       status: 401,
       reason:
-        "Missing export token. Provide X-Eliza-Export-Token header or exportToken in request body.",
+        "Missing export token. Provide X-Tokagent-Export-Token header or exportToken in request body.",
     };
   }
 
@@ -248,7 +248,7 @@ export function resolveTerminalRunRejection(
   req: http.IncomingMessage,
   body: TerminalRunRequestBody,
 ): TerminalRunRejection | null {
-  const expected = process.env.ELIZA_TERMINAL_RUN_TOKEN?.trim();
+  const expected = process.env.TOKAGENT_TERMINAL_RUN_TOKEN?.trim();
   const apiTokenEnabled = Boolean(getConfiguredApiToken());
 
   // Compatibility mode: local loopback sessions without API token keep
@@ -261,13 +261,13 @@ export function resolveTerminalRunRejection(
     return {
       status: 403,
       reason:
-        "Terminal run is disabled for token-authenticated API sessions. Set ELIZA_TERMINAL_RUN_TOKEN to enable command execution.",
+        "Terminal run is disabled for token-authenticated API sessions. Set TOKAGENT_TERMINAL_RUN_TOKEN to enable command execution.",
     };
   }
 
   const headerToken =
-    typeof req.headers["x-eliza-terminal-token"] === "string"
-      ? req.headers["x-eliza-terminal-token"].trim()
+    typeof req.headers["x-tokagent-terminal-token"] === "string"
+      ? req.headers["x-tokagent-terminal-token"].trim()
       : "";
   const bodyToken =
     typeof body.terminalToken === "string" ? body.terminalToken.trim() : "";
@@ -277,7 +277,7 @@ export function resolveTerminalRunRejection(
     return {
       status: 401,
       reason:
-        "Missing terminal token. Provide X-Eliza-Terminal-Token header or terminalToken in request body.",
+        "Missing terminal token. Provide X-Tokagent-Terminal-Token header or terminalToken in request body.",
     };
   }
 
@@ -296,7 +296,7 @@ export function resolveTerminalRunRejection(
 // ---------------------------------------------------------------------------
 
 export function extractWsQueryToken(url: URL): string | null {
-  const allowQueryToken = process.env.ELIZA_ALLOW_WS_QUERY_TOKEN === "1";
+  const allowQueryToken = process.env.TOKAGENT_ALLOW_WS_QUERY_TOKEN === "1";
   if (!allowQueryToken) return null;
 
   const token =
@@ -364,7 +364,7 @@ export function resolveWebSocketUpgradeRejection(
   }
 
   if (
-    process.env.ELIZA_ALLOW_WS_QUERY_TOKEN !== "1" &&
+    process.env.TOKAGENT_ALLOW_WS_QUERY_TOKEN !== "1" &&
     hasWsQueryToken(wsUrl)
   ) {
     return { status: 401, reason: "Unauthorized" };
@@ -389,10 +389,10 @@ export function resolveWebSocketUpgradeRejection(
 // ---------------------------------------------------------------------------
 
 const RESET_STATE_ALLOWED_SEGMENTS = new Set([
-  ".eliza",
-  "eliza",
-  ".eliza",
-  "eliza",
+  ".tokagent",
+  "tokagent",
+  ".tokagent",
+  "tokagent",
 ]);
 
 function hasAllowedResetSegment(resolvedState: string): boolean {

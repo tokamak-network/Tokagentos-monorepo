@@ -1,14 +1,14 @@
 """
-BFCL Agent Wrapper - Full ElizaOS Integration
+BFCL Agent Wrapper - Full TokagentOS Integration
 
-Uses the canonical ElizaOS runtime with:
+Uses the canonical TokagentOS runtime with:
 - message_service.handle_message() for full pipeline
 - Actions registered for BFCL functions  
 - Providers giving context
 - Basic capabilities enabled (default)
 - Trajectory logging for training data capture
 
-This is NOT a bypass - it uses the full ElizaOS agent flow.
+This is NOT a bypass - it uses the full TokagentOS agent flow.
 """
 
 from __future__ import annotations
@@ -40,11 +40,11 @@ logger = logging.getLogger(__name__)
 
 # Import trajectory logger plugin for training data capture (optional)
 try:
-    from elizaos_plugin_trajectory_logger.runtime_service import (
+    from tokagentos_plugin_trajectory_logger.runtime_service import (
         TrajectoryExportConfig,
         TrajectoryLoggerRuntimeService,
     )
-    from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+    from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
     TRAJECTORY_LOGGER_AVAILABLE = True
 except Exception:
@@ -55,18 +55,18 @@ except Exception:
     logger.debug("Trajectory logger plugin not available - training data capture disabled")
 
 
-# Import ElizaOS types - required dependency for full agent
+# Import TokagentOS types - required dependency for full agent
 try:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
-    from elizaos.types.memory import Memory
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.primitives import Content, as_uuid
-    from elizaos.types.components import Action, ActionResult, Provider, ProviderResult
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.primitives import Content, as_uuid
+    from tokagentos.types.components import Action, ActionResult, Provider, ProviderResult
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State
 
-    ELIZAOS_AVAILABLE = True
+    TOKAGENTOS_AVAILABLE = True
 except ImportError:
     AgentRuntime = None  # type: ignore[misc, assignment]
     Character = None  # type: ignore[misc, assignment]
@@ -80,8 +80,8 @@ except ImportError:
     ProviderResult = None  # type: ignore[misc, assignment]
     IAgentRuntime = None  # type: ignore[misc, assignment]
     State = None  # type: ignore[misc, assignment]
-    ELIZAOS_AVAILABLE = False
-    logger.warning("ElizaOS not available, agent will use mock mode")
+    TOKAGENTOS_AVAILABLE = False
+    logger.warning("TokagentOS not available, agent will use mock mode")
 
 
 def get_model_provider_plugin(
@@ -115,7 +115,7 @@ def get_model_provider_plugin(
         get_model_config,
     )
     
-    if not ELIZAOS_AVAILABLE:
+    if not TOKAGENTOS_AVAILABLE:
         return None, None
     
     # Determine which provider/model to use
@@ -167,53 +167,53 @@ def _create_provider_plugin(provider_name: str) -> Optional["Plugin"]:
     try:
         if provider == ModelProvider.GROQ:
             try:
-                from elizaos_plugin_groq.plugin import get_groq_elizaos_plugin
+                from tokagentos_plugin_groq.plugin import get_groq_tokagentos_plugin
                 logger.info("Using Groq model provider (llama-3.1-8b-instant default)")
-                return get_groq_elizaos_plugin()
+                return get_groq_tokagentos_plugin()
             except ImportError:
-                # Groq plugin may not have elizaos integration yet, create one
+                # Groq plugin may not have tokagentos integration yet, create one
                 return _create_groq_plugin()
         
         elif provider == ModelProvider.OPENAI:
-            from elizaos_plugin_openai import create_openai_elizaos_plugin
+            from tokagentos_plugin_openai import create_openai_tokagentos_plugin
             logger.info("Using OpenAI model provider")
-            return create_openai_elizaos_plugin()
+            return create_openai_tokagentos_plugin()
         
         elif provider == ModelProvider.ANTHROPIC:
             try:
-                from elizaos_plugin_anthropic.plugin import get_anthropic_elizaos_plugin
+                from tokagentos_plugin_anthropic.plugin import get_anthropic_tokagentos_plugin
                 logger.info("Using Anthropic model provider")
-                return get_anthropic_elizaos_plugin()
+                return get_anthropic_tokagentos_plugin()
             except ImportError:
                 # Create plugin manually
                 return _create_anthropic_plugin()
         
         elif provider == ModelProvider.GOOGLE_GENAI:
             try:
-                from elizaos_plugin_google_genai.plugin import get_google_elizaos_plugin
+                from tokagentos_plugin_google_genai.plugin import get_google_tokagentos_plugin
                 logger.info("Using Google GenAI model provider")
-                return get_google_elizaos_plugin()
+                return get_google_tokagentos_plugin()
             except ImportError:
                 logger.warning("Google GenAI plugin not fully installed")
         
         elif provider == ModelProvider.XAI:
-            from elizaos_plugin_xai.plugin import get_xai_elizaos_plugin
+            from tokagentos_plugin_xai.plugin import get_xai_tokagentos_plugin
             logger.info("Using xAI Grok model provider")
-            return get_xai_elizaos_plugin()
+            return get_xai_tokagentos_plugin()
         
         elif provider == ModelProvider.OPENROUTER:
             try:
-                from elizaos_plugin_openrouter.plugin import get_openrouter_elizaos_plugin
+                from tokagentos_plugin_openrouter.plugin import get_openrouter_tokagentos_plugin
                 logger.info("Using OpenRouter model provider")
-                return get_openrouter_elizaos_plugin()
+                return get_openrouter_tokagentos_plugin()
             except ImportError:
                 logger.warning("OpenRouter plugin not fully installed")
         
         elif provider == ModelProvider.OLLAMA:
             try:
-                from elizaos_plugin_ollama.plugin import get_ollama_elizaos_plugin
+                from tokagentos_plugin_ollama.plugin import get_ollama_tokagentos_plugin
                 logger.info("Using Ollama model provider (local)")
-                return get_ollama_elizaos_plugin()
+                return get_ollama_tokagentos_plugin()
             except ImportError:
                 logger.warning("Ollama plugin not fully installed")
         
@@ -230,14 +230,14 @@ def _create_provider_plugin(provider_name: str) -> Optional["Plugin"]:
 
 
 def _create_groq_plugin() -> Optional["Plugin"]:
-    """Create an elizaOS plugin for Groq."""
-    if not ELIZAOS_AVAILABLE:
+    """Create an tokagentOS plugin for Groq."""
+    if not TOKAGENTOS_AVAILABLE:
         return None
     
     try:
-        from elizaos.types.model import ModelType
-        from elizaos.types.plugin import Plugin
-        from elizaos_plugin_groq import GroqClient, GroqConfig, GenerateTextParams
+        from tokagentos.types.model import ModelType
+        from tokagentos.types.plugin import Plugin
+        from tokagentos_plugin_groq import GroqClient, GroqConfig, GenerateTextParams
         
         api_key = os.environ.get("GROQ_API_KEY", "")
         if not api_key:
@@ -306,14 +306,14 @@ def _create_groq_plugin() -> Optional["Plugin"]:
 
 
 def _create_anthropic_plugin() -> Optional["Plugin"]:
-    """Create an elizaOS plugin for Anthropic."""
-    if not ELIZAOS_AVAILABLE:
+    """Create an tokagentOS plugin for Anthropic."""
+    if not TOKAGENTOS_AVAILABLE:
         return None
     
     try:
-        from elizaos.types.model import ModelType
-        from elizaos.types.plugin import Plugin
-        from elizaos_plugin_anthropic import AnthropicClient, AnthropicConfig, TextGenerationParams
+        from tokagentos.types.model import ModelType
+        from tokagentos.types.plugin import Plugin
+        from tokagentos_plugin_anthropic import AnthropicClient, AnthropicConfig, TextGenerationParams
         
         api_key = os.environ.get("ANTHROPIC_API_KEY", "")
         if not api_key:
@@ -499,7 +499,7 @@ def _create_bfcl_plugin() -> "Plugin":
     This plugin is registered ONCE during initialization and reads current
     test-case data from the global ``BFCLTestContext``.
     """
-    from elizaos.types.components import (
+    from tokagentos.types.components import (
         Action,
         ActionExample,
         ActionParameter,
@@ -508,11 +508,11 @@ def _create_bfcl_plugin() -> "Plugin":
         Provider,
         ProviderResult,
     )
-    from elizaos.types.memory import Memory as MemoryType
-    from elizaos.types.plugin import Plugin as PluginType
-    from elizaos.types.primitives import Content as ContentType
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State as StateType
+    from tokagentos.types.memory import Memory as MemoryType
+    from tokagentos.types.plugin import Plugin as PluginType
+    from tokagentos.types.primitives import Content as ContentType
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State as StateType
 
     # -- BFCL_FUNCTIONS provider ------------------------------------------
 
@@ -670,15 +670,15 @@ Use the BFCL_CALL action to make function calls.""",
 
 class BFCLAgent:
     """
-    Agent wrapper for BFCL benchmark execution using FULL ElizaOS pipeline.
+    Agent wrapper for BFCL benchmark execution using FULL TokagentOS pipeline.
 
-    This agent uses the canonical ElizaOS flow:
+    This agent uses the canonical TokagentOS flow:
     - message_service.handle_message() for full message processing
     - Actions registered for BFCL test functions
     - Providers giving context (bootstrap providers + BFCL functions)
     - Basic capabilities enabled (default)
     
-    This is NOT a bypass - it uses the complete ElizaOS agent architecture.
+    This is NOT a bypass - it uses the complete TokagentOS agent architecture.
     
     Default Model:
     - Groq with llama-3.1-8b-instant (fast and efficient for function calling)
@@ -694,7 +694,7 @@ class BFCLAgent:
         model: Optional[str] = None,
     ):
         """
-        Initialize BFCL agent with full ElizaOS support.
+        Initialize BFCL agent with full TokagentOS support.
 
         Args:
             config: BFCL benchmark configuration
@@ -725,10 +725,10 @@ class BFCLAgent:
 
     async def initialize(self) -> None:
         """
-        Initialize the agent runtime with FULL ElizaOS capabilities.
+        Initialize the agent runtime with FULL TokagentOS capabilities.
 
         This sets up:
-        1. The ElizaOS AgentRuntime with bootstrap plugin (basic capabilities)
+        1. The TokagentOS AgentRuntime with bootstrap plugin (basic capabilities)
         2. A model provider plugin (Groq default, or other providers)
         3. The BFCL plugin (BFCL_CALL action + BFCL_FUNCTIONS provider)
         4. The message service for proper handle_message() pipeline
@@ -738,8 +738,8 @@ class BFCLAgent:
         if self._initialized:
             return
 
-        if not ELIZAOS_AVAILABLE:
-            logger.warning("ElizaOS not available, running in mock mode")
+        if not TOKAGENTOS_AVAILABLE:
+            logger.warning("TokagentOS not available, running in mock mode")
             self._initialized = True
             return
 
@@ -781,12 +781,12 @@ class BFCLAgent:
 
             # Create runtime with model plugin, BFCL plugin, and bootstrap (basic capabilities)
             # disable_basic_capabilities=False is the default - ensures full agent pipeline
-            # This matches the canonical pattern from tau-bench's eliza_agent.py
+            # This matches the canonical pattern from tau-bench's tokagent_agent.py
             plugins_list = [self.model_plugin, self._bfcl_plugin]
 
             # Add sql_plugin for proper message_service support (like telegram_agent.py)
             try:
-                from elizaos_plugin_sql import sql_plugin
+                from tokagentos_plugin_sql import sql_plugin
                 plugins_list.append(sql_plugin)
             except ImportError:
                 logger.warning("sql_plugin not available - message_service may have limited functionality")
@@ -816,7 +816,7 @@ class BFCLAgent:
         self._has_model_provider = self.runtime.has_model("TEXT_LARGE")
 
         if self._has_model_provider:
-            logger.info(f"BFCL agent initialized with CANONICAL ElizaOS flow")
+            logger.info(f"BFCL agent initialized with CANONICAL TokagentOS flow")
             logger.info(f"  - Model: {self._model_name or 'unknown'}")
             logger.info(f"  - Actions: {[a.name for a in self.runtime.actions]}")
             logger.info(f"  - Providers: {[p.name for p in self.runtime.providers]}")
@@ -855,7 +855,7 @@ class BFCLAgent:
         timeout_ms: Optional[int] = None,
     ) -> tuple[list[FunctionCall], str, float]:
         """
-        Execute a BFCL query using the FULL ElizaOS agent pipeline.
+        Execute a BFCL query using the FULL TokagentOS agent pipeline.
 
         This uses message_service.handle_message() for proper:
         - Provider context injection (BFCL_FUNCTIONS + bootstrap providers)
@@ -880,7 +880,7 @@ class BFCLAgent:
         traj_logger: object | None = None
         trajectory_id: Optional[str] = None
         step_id: Optional[str] = None
-        if ELIZAOS_AVAILABLE and self.runtime is not None and TRAJECTORY_LOGGER_AVAILABLE:
+        if TOKAGENTOS_AVAILABLE and self.runtime is not None and TRAJECTORY_LOGGER_AVAILABLE:
             svc = self.runtime.get_service("trajectory_logger")
             if TrajectoryLoggerRuntimeService is not None and isinstance(svc, TrajectoryLoggerRuntimeService):
                 traj_logger = svc
@@ -909,8 +909,8 @@ class BFCLAgent:
 
             # Execute based on runtime availability. If we have a step id, bind it so
             # runtime.use_model logs the full prompt/response automatically.
-            if ELIZAOS_AVAILABLE and self.runtime and self._has_model_provider:
-                from elizaos.trajectory_context import bind_trajectory_step
+            if TOKAGENTOS_AVAILABLE and self.runtime and self._has_model_provider:
+                from tokagentos.trajectory_context import bind_trajectory_step
 
                 with bind_trajectory_step(step_id):
                     response = await self._execute_with_message_service(test_case, timeout_ms)
@@ -1001,7 +1001,7 @@ class BFCLAgent:
         timeout_ms: int,
     ) -> str:
         """
-        Execute query using the CANONICAL ElizaOS message service pipeline.
+        Execute query using the CANONICAL TokagentOS message service pipeline.
 
         This uses runtime.message_service.handle_message() which:
         1. Saves message to memory (gracefully skips if no DB adapter)
@@ -1019,7 +1019,7 @@ class BFCLAgent:
         timeout_seconds = timeout_ms / 1000
 
         # Use a fresh room_id per test case to bypass state caching
-        # (same pattern as tau-bench's eliza_agent.py)
+        # (same pattern as tau-bench's tokagent_agent.py)
         user_id = as_uuid(str(uuid4()))
         room_id = as_uuid(str(uuid4()))
 
@@ -1035,7 +1035,7 @@ class BFCLAgent:
 
         # ================================================================
         # CANONICAL FLOW: Use message_service.handle_message()
-        # This is the correct way to process messages in ElizaOS:
+        # This is the correct way to process messages in TokagentOS:
         # 1. Saves message to memory (if adapter available)
         # 2. Composes state from ALL registered providers
         # 3. Uses MESSAGE_HANDLER_TEMPLATE (or custom template)
@@ -1062,7 +1062,7 @@ class BFCLAgent:
         return response_text
 
     async def _execute_mock(self, test_case: BFCLTestCase) -> str:
-        """Execute query in mock mode (no ElizaOS runtime)."""
+        """Execute query in mock mode (no TokagentOS runtime)."""
         logger.debug(f"Mock execution for {test_case.id}")
         return f"MOCK_MODE: Test case {test_case.id}"
 
@@ -1124,7 +1124,7 @@ class BFCLAgent:
     
     def get_trajectories(self) -> list[object]:
         """Get all collected trajectories for export."""
-        if ELIZAOS_AVAILABLE and self.runtime is not None and TRAJECTORY_LOGGER_AVAILABLE:
+        if TOKAGENTOS_AVAILABLE and self.runtime is not None and TRAJECTORY_LOGGER_AVAILABLE:
             svc = self.runtime.get_service("trajectory_logger")
             if (
                 TrajectoryLoggerRuntimeService is not None
@@ -1164,7 +1164,7 @@ class BFCLAgent:
             return None
         
         try:
-            if format in ("art", "grpo") and ELIZAOS_AVAILABLE and self.runtime is not None:
+            if format in ("art", "grpo") and TOKAGENTOS_AVAILABLE and self.runtime is not None:
                 svc = self.runtime.get_service("trajectory_logger")
                 if (
                     TrajectoryLoggerRuntimeService is not None
@@ -1213,7 +1213,7 @@ class BFCLAgent:
 
 class MockBFCLAgent:
     """
-    Mock agent for testing benchmark infrastructure without ElizaOS.
+    Mock agent for testing benchmark infrastructure without TokagentOS.
 
     Returns expected calls to verify the benchmark harness works correctly.
     """

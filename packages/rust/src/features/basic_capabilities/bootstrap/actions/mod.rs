@@ -1,4 +1,4 @@
-//! Actions module for the elizaOS BasicCapabilities Plugin.
+//! Actions module for the tokagentOS BasicCapabilities Plugin.
 //!
 //! This module contains all action implementations.
 

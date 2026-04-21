@@ -1,5 +1,5 @@
-import type { Plugin, ServiceClass } from "@elizaos/core";
-import { gatePluginSessionForHostedApp } from "@elizaos/agent/services/app-session-gate";
+import type { Plugin, ServiceClass } from "@tokagentos/core";
+import { gatePluginSessionForHostedApp } from "@tokagentos/agent/services/app-session-gate";
 import { RsSdkGameService } from "./services/game-service.js";
 import { rsSdkProviders } from "./providers/index.js";
 import { rsSdkActions } from "./actions/index.js";

@@ -1,10 +1,10 @@
 /**
- * elizaOS MCP Agent Server - TypeScript
+ * tokagentOS MCP Agent Server - TypeScript
  *
- * Exposes an elizaOS agent as an MCP server. Any MCP-compatible client
+ * Exposes an tokagentOS agent as an MCP server. Any MCP-compatible client
  * (Claude Desktop, VS Code, etc.) can interact with your agent.
  *
- * Uses real elizaOS runtime with OpenAI and SQL plugins.
+ * Uses real tokagentOS runtime with OpenAI and SQL plugins.
  */
 
 import {
@@ -14,7 +14,7 @@ import {
   createMessageMemory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -49,8 +49,8 @@ interface CallToolRequest {
 // ============================================================================
 
 const CHARACTER = createCharacter({
-  name: "Eliza",
-  bio: "A helpful AI assistant powered by elizaOS, accessible via MCP.",
+  name: "Tokagent",
+  bio: "A helpful AI assistant powered by tokagentOS, accessible via MCP.",
   system:
     "You are a helpful, friendly AI assistant. Be concise and informative.",
 });
@@ -62,7 +62,7 @@ const CHARACTER = createCharacter({
 const TOOLS: Tool[] = [
   {
     name: "chat",
-    description: "Send a message to the Eliza agent and receive a response",
+    description: "Send a message to the Tokagent agent and receive a response",
     inputSchema: {
       type: "object" as const,
       properties: {
@@ -80,7 +80,7 @@ const TOOLS: Tool[] = [
   },
   {
     name: "get_agent_info",
-    description: "Get information about the Eliza agent",
+    description: "Get information about the Tokagent agent",
     inputSchema: {
       type: "object" as const,
       properties: {},
@@ -99,7 +99,7 @@ const worldId = stringToUuid("mcp-world");
 async function initializeRuntime(): Promise<AgentRuntime> {
   if (runtime) return runtime;
 
-  console.error("🚀 Initializing elizaOS runtime...");
+  console.error("🚀 Initializing tokagentOS runtime...");
 
   runtime = new AgentRuntime({
     character: CHARACTER,
@@ -108,7 +108,7 @@ async function initializeRuntime(): Promise<AgentRuntime> {
 
   await runtime.initialize();
 
-  console.error("✅ elizaOS runtime initialized");
+  console.error("✅ tokagentOS runtime initialized");
   return runtime;
 }
 
@@ -175,7 +175,7 @@ function getAgentInfo(): { name: string; bio: string; capabilities: string[] } {
 async function main(): Promise<void> {
   const server = new Server(
     {
-      name: "eliza-mcp-server",
+      name: "tokagent-mcp-server",
       version: "1.0.0",
     },
     {
@@ -251,7 +251,7 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
 
-  console.error("🌐 elizaOS MCP Server running on stdio");
+  console.error("🌐 tokagentOS MCP Server running on stdio");
   console.error("📚 Available tools: chat, get_agent_info");
 }
 

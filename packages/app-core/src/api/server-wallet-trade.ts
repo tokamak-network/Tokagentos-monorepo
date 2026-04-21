@@ -3,8 +3,8 @@
  * guards, and wallet export rejection wrappers.
  */
 import type http from "node:http";
-import { resolveWalletExportRejection as upstreamResolveWalletExportRejection } from "@elizaos/agent/api/server";
-import { syncAppEnvToEliza, syncElizaEnvAliases } from "../utils/env.js";
+import { resolveWalletExportRejection as upstreamResolveWalletExportRejection } from "@tokagentos/agent/api/server";
+import { syncAppEnvToTokagent, syncTokagentEnvAliases } from "../utils/env.js";
 
 import { mirrorCompatHeaders } from "./server-cloud-tts";
 import {
@@ -18,10 +18,10 @@ import {
 
 function normalizeCompatReason(reason: string): string {
   return reason
-    .replaceAll("ELIZA_WALLET_EXPORT_TOKEN", "ELIZA_WALLET_EXPORT_TOKEN")
-    .replaceAll("ELIZA_TERMINAL_RUN_TOKEN", "ELIZA_TERMINAL_RUN_TOKEN")
-    .replaceAll("X-Eliza-Export-Token", "X-Eliza-Export-Token")
-    .replaceAll("X-Eliza-Terminal-Token", "X-Eliza-Terminal-Token");
+    .replaceAll("TOKAGENT_WALLET_EXPORT_TOKEN", "TOKAGENT_WALLET_EXPORT_TOKEN")
+    .replaceAll("TOKAGENT_TERMINAL_RUN_TOKEN", "TOKAGENT_TERMINAL_RUN_TOKEN")
+    .replaceAll("X-Tokagent-Export-Token", "X-Tokagent-Export-Token")
+    .replaceAll("X-Tokagent-Terminal-Token", "X-Tokagent-Terminal-Token");
 }
 
 export function normalizeCompatRejection<
@@ -41,15 +41,15 @@ export function runWithCompatAuthContext<T>(
   req: Pick<http.IncomingMessage, "headers">,
   operation: () => T,
 ): T {
-  syncElizaEnvAliases();
-  syncAppEnvToEliza();
+  syncTokagentEnvAliases();
+  syncAppEnvToTokagent();
   mirrorCompatHeaders(req);
 
   try {
     return operation();
   } finally {
-    syncAppEnvToEliza();
-    syncElizaEnvAliases();
+    syncAppEnvToTokagent();
+    syncTokagentEnvAliases();
   }
 }
 

@@ -2,8 +2,8 @@ import type {
   InboxAutoReplyConfig as SharedInboxAutoReplyConfig,
   InboxTriageConfig as SharedInboxTriageConfig,
   InboxTriageRules as SharedInboxTriageRules,
-} from "@elizaos/shared/config";
-import type { UUID } from "@elizaos/core";
+} from "@tokagentos/shared/config";
+import type { UUID } from "@tokagentos/core";
 
 // ---------------------------------------------------------------------------
 // Classification & urgency enums
@@ -33,7 +33,7 @@ export interface InboundMessage {
   id: string;
   /** Connector source tag: "discord", "telegram", "gmail", etc. */
   source: string;
-  /** elizaOS room UUID (chat channels only). */
+  /** tokagentOS room UUID (chat channels only). */
   roomId?: string;
   /** Sender entity UUID. */
   entityId?: string;

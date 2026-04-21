@@ -1,13 +1,13 @@
 /**
  * Duffel travel API relay — proxies the local agent's Duffel calls through
- * Eliza Cloud so the upstream Duffel API key is never bundled with the
+ * Tokagent Cloud so the upstream Duffel API key is never bundled with the
  * desktop install and so each call is metered against the user's Cloud
  * credit balance with a creator markup.
  *
  * Pattern mirrors `cloud-billing-routes.ts` (commandment 4 — BFF is
  * auth + proxy + usage write, nothing else):
  *
- *   1. Resolve the user's Eliza Cloud API key (runtime CLOUD_AUTH service
+ *   1. Resolve the user's Tokagent Cloud API key (runtime CLOUD_AUTH service
  *      first, then saved config).
  *   2. Forward the request to `${cloudBaseUrl}/api/v1/duffel/...` with
  *      `Authorization: Bearer <apiKey>` + `X-Service-Key`.
@@ -38,7 +38,7 @@
  */
 
 import type http from "node:http";
-import type { AgentRuntime, Service } from "@elizaos/core";
+import type { AgentRuntime, Service } from "@tokagentos/core";
 import { normalizeCloudSiteUrl } from "../cloud/base-url.js";
 import { validateCloudBaseUrl } from "../cloud/validate-url.js";
 import type { CloudProxyConfigLike } from "../types/config-like.js";
@@ -165,7 +165,7 @@ export async function handleDuffelRelayRoute(
   if (!apiKey) {
     sendJsonError(
       res,
-      "Not connected to Eliza Cloud. Sign in to use travel search.",
+      "Not connected to Tokagent Cloud. Sign in to use travel search.",
       401,
     );
     return true;

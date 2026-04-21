@@ -47,7 +47,7 @@ def _parse_bool(value: str | None, *, default: bool) -> bool:
 
 
 def _build_redact_keys() -> frozenset[str]:
-    extra = os.environ.get("ELIZA_LOG_REDACT_KEYS", "")
+    extra = os.environ.get("TOKAGENT_LOG_REDACT_KEYS", "")
     extra_keys = {k.strip().lower() for k in extra.split(",") if k.strip()}
     return _DEFAULT_REDACT_KEYS.union(extra_keys)
 
@@ -69,7 +69,7 @@ def _redact_value(value: object, *, redact_keys: frozenset[str]) -> object:
 def _redaction_processor(
     _logger: logging.Logger, _method_name: str, event_dict: structlog.types.EventDict
 ) -> structlog.types.EventDict:
-    enabled = _parse_bool(os.environ.get("ELIZA_LOG_REDACT"), default=True)
+    enabled = _parse_bool(os.environ.get("TOKAGENT_LOG_REDACT"), default=True)
     if not enabled:
         return event_dict
     redact_keys = _build_redact_keys()
@@ -123,7 +123,7 @@ class Logger:
         namespace: str | None = None,
         level: str = "INFO",
     ) -> None:
-        self._namespace = namespace or "elizaos"
+        self._namespace = namespace or "tokagentos"
         self._level = level
         self._logger = structlog.get_logger(self._namespace)
 

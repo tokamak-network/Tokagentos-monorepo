@@ -1,10 +1,10 @@
-import type { RouteRequestContext } from "@elizaos/agent/api/route-helpers";
-import type { ElizaConfig } from "@elizaos/agent/config/config";
+import type { RouteRequestContext } from "@tokagentos/agent/api/route-helpers";
+import type { TokagentConfig } from "@tokagentos/agent/config/config";
 import type {
   BscTradeQuoteResponse,
   BscUnsignedApprovalTx,
   BscUnsignedTradeTx,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import type { ethers } from "ethers";
 import type { TradePermissionMode } from "./trade-safety";
 import type { WalletTradeLedgerRecordInput } from "./wallet-trading-profile";
@@ -55,8 +55,8 @@ export interface StewardSignResult {
 
 export interface WalletTradeExecuteDeps {
   getWalletAddresses: () => WalletAddresses;
-  resolveWalletRpcReadiness: (config: ElizaConfig) => WalletRpcReadiness;
-  resolveTradePermissionMode: (config: ElizaConfig) => TradePermissionMode;
+  resolveWalletRpcReadiness: (config: TokagentConfig) => WalletRpcReadiness;
+  resolveTradePermissionMode: (config: TokagentConfig) => TradePermissionMode;
   isAgentAutomationRequest: (req: RouteRequestContext["req"]) => boolean;
   canUseLocalTradeExecution: (
     mode: TradePermissionMode,
@@ -129,7 +129,7 @@ export interface WalletTradeExecuteDeps {
 
 export interface WalletTradeExecuteRouteContext extends RouteRequestContext {
   state: {
-    config: ElizaConfig;
+    config: TokagentConfig;
   };
   deps: WalletTradeExecuteDeps;
 }

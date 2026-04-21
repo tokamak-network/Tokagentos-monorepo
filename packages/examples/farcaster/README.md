@@ -1,6 +1,6 @@
 # Farcaster Agent Example
 
-A self-contained reference showing how to run an elizaOS agent that monitors and posts on [Farcaster](https://www.farcaster.xyz/) – implemented in **TypeScript**, **Python**, and **Rust**.
+A self-contained reference showing how to run an tokagentOS agent that monitors and posts on [Farcaster](https://www.farcaster.xyz/) – implemented in **TypeScript**, **Python**, and **Rust**.
 
 ## Overview
 
@@ -73,7 +73,7 @@ Copy `env.example` to `.env` and fill in the required values:
 
 ## How It Works
 
-For each incoming mention, the examples route the event through the elizaOS "message service" for consistent state composition and response generation.
+For each incoming mention, the examples route the event through the tokagentOS "message service" for consistent state composition and response generation.
 
 ### TypeScript (Plugin-Driven)
 
@@ -105,7 +105,7 @@ For each incoming mention, the examples route the event through the elizaOS "mes
 For each incoming mention:
 
 1. **Create a `Memory`** for the Farcaster cast (stable IDs per cast/thread)
-2. **Ensure connection/room** exists in elizaOS (world + room + entity)
+2. **Ensure connection/room** exists in tokagentOS (world + room + entity)
 3. Call the language runtime's **message service**
 4. **Post reply** to Farcaster (unless `FARCASTER_DRY_RUN=true`)
 
@@ -122,7 +122,7 @@ The default character (`FarcasterBot`) is configured as a helpful AI agent on Fa
 
 ## Features
 
-- **Full elizaOS Pipeline**: Uses `message_service.handle_message()` for proper state composition and response generation
+- **Full tokagentOS Pipeline**: Uses `message_service.handle_message()` for proper state composition and response generation
 - **Reply to mentions**: Automatically respond to users who mention your agent
 - **Memory Persistence**: All conversations stored in SQL for continuity and deduplication
 - **Thread awareness**: Understand conversation context when replying
@@ -191,5 +191,5 @@ Casts are automatically truncated to `MAX_CAST_LENGTH` (default 320 characters).
 ## See Also
 
 - [Farcaster Plugin Documentation](../../plugins/plugin-farcaster/README.md)
-- [elizaOS Core Documentation](../../packages/docs/)
+- [tokagentOS Core Documentation](../../packages/docs/)
 - [Neynar API Documentation](https://docs.neynar.com/)

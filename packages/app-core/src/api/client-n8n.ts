@@ -6,7 +6,7 @@
  * but exposed through the same base URL via the plugin's route registration.
  */
 
-import { ElizaClient } from "./client-base";
+import { TokagentClient } from "./client-base";
 import type { N8nStatusResponse, N8nWorkflow } from "./client-types-chat";
 
 // ---------------------------------------------------------------------------
@@ -14,7 +14,7 @@ import type { N8nStatusResponse, N8nWorkflow } from "./client-types-chat";
 // ---------------------------------------------------------------------------
 
 declare module "./client-base" {
-  interface ElizaClient {
+  interface TokagentClient {
     getN8nStatus(): Promise<N8nStatusResponse>;
     getN8nWorkflow(id: string): Promise<N8nWorkflow>;
     listN8nWorkflows(): Promise<N8nWorkflow[]>;
@@ -29,21 +29,21 @@ declare module "./client-base" {
 // Implementations
 // ---------------------------------------------------------------------------
 
-ElizaClient.prototype.getN8nStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getN8nStatus = async function (
+  this: TokagentClient,
 ): Promise<N8nStatusResponse> {
   return this.fetch<N8nStatusResponse>("/api/n8n/status");
 };
 
-ElizaClient.prototype.getN8nWorkflow = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getN8nWorkflow = async function (
+  this: TokagentClient,
   id: string,
 ): Promise<N8nWorkflow> {
   return this.fetch<N8nWorkflow>(`/api/n8n/workflows/${encodeURIComponent(id)}`);
 };
 
-ElizaClient.prototype.listN8nWorkflows = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listN8nWorkflows = async function (
+  this: TokagentClient,
 ): Promise<N8nWorkflow[]> {
   const res = await this.fetch<{ workflows: N8nWorkflow[] }>(
     "/api/n8n/workflows",
@@ -51,8 +51,8 @@ ElizaClient.prototype.listN8nWorkflows = async function (
   return res.workflows ?? [];
 };
 
-ElizaClient.prototype.activateN8nWorkflow = async function (
-  this: ElizaClient,
+TokagentClient.prototype.activateN8nWorkflow = async function (
+  this: TokagentClient,
   id: string,
 ): Promise<N8nWorkflow> {
   return this.fetch<N8nWorkflow>(
@@ -63,8 +63,8 @@ ElizaClient.prototype.activateN8nWorkflow = async function (
   );
 };
 
-ElizaClient.prototype.deactivateN8nWorkflow = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deactivateN8nWorkflow = async function (
+  this: TokagentClient,
   id: string,
 ): Promise<N8nWorkflow> {
   return this.fetch<N8nWorkflow>(
@@ -73,8 +73,8 @@ ElizaClient.prototype.deactivateN8nWorkflow = async function (
   );
 };
 
-ElizaClient.prototype.deleteN8nWorkflow = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteN8nWorkflow = async function (
+  this: TokagentClient,
   id: string,
 ): Promise<{ ok: boolean }> {
   return this.fetch<{ ok: boolean }>(
@@ -83,8 +83,8 @@ ElizaClient.prototype.deleteN8nWorkflow = async function (
   );
 };
 
-ElizaClient.prototype.startN8nSidecar = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startN8nSidecar = async function (
+  this: TokagentClient,
 ): Promise<{ ok: boolean }> {
   return this.fetch<{ ok: boolean }>("/api/n8n/sidecar/start", {
     method: "POST",

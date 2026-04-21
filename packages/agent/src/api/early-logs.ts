@@ -1,12 +1,12 @@
 /**
  * Early log capture — split out from server.ts to avoid pulling in the entire
  * API server dependency graph when only the log-buffer init is needed
- * (e.g. during headless `startEliza()`).
+ * (e.g. during headless `startTokagent()`).
  *
  * @module api/early-logs
  */
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -32,18 +32,18 @@ let earlyPatchCleanup: (() => void) | null = null;
 // ---------------------------------------------------------------------------
 
 /**
- * Start capturing logs from the global @elizaos/core logger before the API
+ * Start capturing logs from the global @tokagentos/core logger before the API
  * server is up.  Call this once, early in the startup flow (e.g. before
- * `startEliza`).  When `startApiServer` runs it will flush and take over.
+ * `startTokagent`).  When `startApiServer` runs it will flush and take over.
  */
 export function captureEarlyLogs(): void {
   if (earlyLogBuffer) return; // already capturing
   // If the global logger is already fully patched (e.g. dev-server started
-  // the API server before calling startEliza), skip early capture entirely.
-  if ((logger as typeof logger & Record<string, unknown>).__elizaLogPatched)
+  // the API server before calling startTokagent), skip early capture entirely.
+  if ((logger as typeof logger & Record<string, unknown>).__tokagentLogPatched)
     return;
   earlyLogBuffer = [];
-  const EARLY_PATCHED = "__elizaEarlyPatched";
+  const EARLY_PATCHED = "__tokagentEarlyPatched";
   if ((logger as typeof logger & Record<string, unknown>)[EARLY_PATCHED])
     return;
 
@@ -92,7 +92,7 @@ export function captureEarlyLogs(): void {
     delete (logger as typeof logger & Record<string, unknown>)[EARLY_PATCHED];
     // Don't set the main PATCHED_MARKER — `patchLogger` will do that
     delete (logger as typeof logger & Record<string, unknown>)
-      .__elizaLogPatched;
+      .__tokagentLogPatched;
   };
 }
 

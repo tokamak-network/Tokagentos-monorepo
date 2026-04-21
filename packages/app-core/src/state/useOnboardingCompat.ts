@@ -38,7 +38,7 @@ export function useOnboardingCompat({
       setOnboardingOwnerName: bindField("ownerName") as (value: string) => void,
       setOnboardingStyle: bindField("style") as (value: string) => void,
       setOnboardingServerTarget: bindField("serverTarget") as (
-        value: "" | "local" | "remote" | "elizacloud",
+        value: "" | "local" | "remote" | "tokagentcloud",
       ) => void,
       setOnboardingCloudApiKey: bindField("cloudApiKey") as (
         value: string,
@@ -113,7 +113,7 @@ export function useOnboardingCompat({
       setOnboardingSubscriptionTab: bindField("subscriptionTab") as (
         value: "token" | "oauth",
       ) => void,
-      setOnboardingElizaCloudTab: bindField("elizaCloudTab") as (
+      setOnboardingTokagentCloudTab: bindField("tokagentCloudTab") as (
         value: "login" | "apikey",
       ) => void,
       setOnboardingSelectedChains: bindField("selectedChains") as (

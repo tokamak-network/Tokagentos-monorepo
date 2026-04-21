@@ -1,4 +1,4 @@
-# elizaOS Cloudflare Worker (Python)
+# tokagentOS Cloudflare Worker (Python)
 
 A serverless AI agent running on Cloudflare Workers using Python.
 

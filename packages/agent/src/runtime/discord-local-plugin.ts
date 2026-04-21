@@ -20,7 +20,7 @@ import {
   Service,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { resolveStateDir } from "../config/paths.js";
 
 const execFileAsync = promisify(execFile);
@@ -1101,8 +1101,8 @@ export class DiscordLocalService extends Service {
       message.author?.username ||
       `Discord ${channelId}`;
 
-    // `roomName` is accepted by the local `./eliza` source but not by
-    // the npm alpha dist-tag of `@elizaos/core`. Cast around the
+    // `roomName` is accepted by the local `./tokagent` source but not by
+    // the npm alpha dist-tag of `@tokagentos/core`. Cast around the
     // excess-property check so the call works under both resolutions;
     // the runtime itself reads `roomName` in both versions, the type
     // just lags in the published package.
@@ -1213,7 +1213,7 @@ export class DiscordLocalService extends Service {
 const discordLocalPlugin: Plugin = {
   name: DISCORD_LOCAL_PLUGIN_NAME,
   description:
-    "Local Discord desktop integration for Eliza via Discord RPC and macOS UI automation",
+    "Local Discord desktop integration for Tokagent via Discord RPC and macOS UI automation",
   services: [DiscordLocalService],
 };
 

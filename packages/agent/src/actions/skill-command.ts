@@ -6,7 +6,7 @@
  * with the skill context + user args so the agent can act on them directly.
  *
  * Works with @elizaos/plugin-commands — skills are registered as commands
- * in the registry during eliza-plugin init(), and this action handles the
+ * in the registry during tokagent-plugin init(), and this action handles the
  * dispatch when a skill command is detected.
  */
 
@@ -17,8 +17,8 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { hasRoleAccess } from "../security/access.js";
 import type { AgentSkillsServiceLike } from "../types/agent-skills.js";
 
@@ -26,7 +26,7 @@ import type { AgentSkillsServiceLike } from "../types/agent-skills.js";
 const registeredSkillSlugs = new Set<string>();
 
 /**
- * Called from eliza-plugin init() after skills are loaded.
+ * Called from tokagent-plugin init() after skills are loaded.
  * Populates the set so validate() can match quickly.
  */
 export function addRegisteredSkillSlug(slug: string): void {

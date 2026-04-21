@@ -3,17 +3,17 @@ import {
   type OnboardingCredentialInputs,
   type OnboardingLocalProviderId,
   requiresAdditionalRuntimeProvider,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import type {
   DeploymentTargetConfig,
   LinkedAccountsConfig,
   ServiceRouteConfig,
   ServiceRoutingConfig,
-} from "@elizaos/shared/contracts/service-routing";
+} from "@tokagentos/shared/contracts/service-routing";
 import {
-  buildDefaultElizaCloudServiceRouting,
-  buildElizaCloudServiceRoute,
-} from "@elizaos/shared/contracts/service-routing";
+  buildDefaultTokagentCloudServiceRouting,
+  buildTokagentCloudServiceRoute,
+} from "@tokagentos/shared/contracts/service-routing";
 import type { OnboardingServerTarget } from "./onboarding/server-target";
 
 export interface BuildOnboardingConnectionArgs {
@@ -79,7 +79,7 @@ function resolveLocalProviderId(
   provider: string,
 ): OnboardingLocalProviderId | null {
   const normalized = normalizeOnboardingProviderId(provider);
-  return normalized && normalized !== "elizacloud" ? normalized : null;
+  return normalized && normalized !== "tokagentcloud" ? normalized : null;
 }
 
 function resolveArgsServerTarget(
@@ -119,7 +119,7 @@ export function buildOnboardingRuntimeConfig(
   const linkedAccounts: LinkedAccountsConfig = {};
   const cloudApiKey = trimToUndefined(args.onboardingCloudApiKey);
   if (cloudApiKey) {
-    linkedAccounts.elizacloud = {
+    linkedAccounts.tokagentcloud = {
       status: "linked",
       source: "api-key",
     };
@@ -148,10 +148,10 @@ export function buildOnboardingRuntimeConfig(
             ? { remoteAccessToken: trimToUndefined(args.onboardingRemoteToken) }
             : {}),
         }
-      : serverTarget === "elizacloud" && !args.onboardingRemoteConnected
+      : serverTarget === "tokagentcloud" && !args.onboardingRemoteConnected
         ? {
             runtime: "cloud",
-            provider: "elizacloud",
+            provider: "tokagentcloud",
           }
         : { runtime: "local" };
 
@@ -162,10 +162,10 @@ export function buildOnboardingRuntimeConfig(
     !requiresAdditionalRuntimeProvider(args.onboardingProvider);
 
   if (
-    args.onboardingProvider === "elizacloud" &&
+    args.onboardingProvider === "tokagentcloud" &&
     shouldConfigureRuntimeProvider
   ) {
-    llmTextRoute = buildElizaCloudServiceRoute({
+    llmTextRoute = buildTokagentCloudServiceRoute({
       nanoModel,
       smallModel,
       mediumModel,
@@ -200,17 +200,17 @@ export function buildOnboardingRuntimeConfig(
   }
 
   const cloudDefaultsSelected =
-    args.onboardingProvider === "elizacloud" ||
+    args.onboardingProvider === "tokagentcloud" ||
     (deploymentTarget.runtime === "cloud" &&
-      deploymentTarget.provider === "elizacloud");
+      deploymentTarget.provider === "tokagentcloud");
   if (cloudDefaultsSelected) {
     Object.assign(
       serviceRouting,
-      buildDefaultElizaCloudServiceRouting({
+      buildDefaultTokagentCloudServiceRouting({
         base: serviceRouting,
         includeInference:
           shouldConfigureRuntimeProvider &&
-          args.onboardingProvider === "elizacloud",
+          args.onboardingProvider === "tokagentcloud",
         nanoModel,
         smallModel,
         mediumModel,
@@ -234,7 +234,7 @@ export function buildOnboardingRuntimeConfig(
   if (
     llmApiKey &&
     llmTextRoute?.backend &&
-    llmTextRoute.backend !== "elizacloud"
+    llmTextRoute.backend !== "tokagentcloud"
   ) {
     credentialInputs.llmApiKey = llmApiKey;
   }

@@ -1,6 +1,6 @@
 # Agentic Game of Life
 
-A multi-agent simulation demonstrating emergent behavior using elizaOS. Watch 40+ autonomous agents evolve on a grid world through natural selection!
+A multi-agent simulation demonstrating emergent behavior using tokagentOS. Watch 40+ autonomous agents evolve on a grid world through natural selection!
 
 ## Key Features
 
@@ -116,7 +116,7 @@ const CONFIG = {
 1. **No LLM Calls**: Pure algorithmic agents, instant decisions
 2. **Emergent Complexity**: Simple rules → complex ecosystem behavior
 3. **Visual Evolution**: See DNA traits change across generations
-4. **elizaOS Integration**: Demonstrates custom model handlers and plugin system
+4. **tokagentOS Integration**: Demonstrates custom model handlers and plugin system
 5. **Self-Replicating Agents**: True digital life simulation!
 
 ## Performance

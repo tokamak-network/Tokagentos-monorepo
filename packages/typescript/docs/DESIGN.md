@@ -1,6 +1,6 @@
 # Design decisions and rationale
 
-This document explains **why** core behaviors and APIs in `@elizaos/core` are the way they are. It complements the code and README by recording intent and tradeoffs.
+This document explains **why** core behaviors and APIs in `@tokagentos/core` are the way they are. It complements the code and README by recording intent and tradeoffs.
 
 ---
 

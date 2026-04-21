@@ -1,12 +1,12 @@
 /**
  * Plugin discovery and resolution logic.
  *
- * Resolves Eliza plugins from config and auto-enable logic, loading them
+ * Resolves Tokagent plugins from config and auto-enable logic, loading them
  * from static imports, npm packages, workspace overrides, or drop-in
  * directories. Each plugin is wrapped in an error boundary so a single
  * failing plugin cannot crash the agent startup.
  *
- * Extracted from eliza.ts to reduce file size.
+ * Extracted from tokagent.ts to reduce file size.
  *
  * @module plugin-resolver
  */
@@ -16,15 +16,15 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import { logger, type Plugin } from "@elizaos/core";
+import { logger, type Plugin } from "@tokagentos/core";
 
-import { type ElizaConfig, saveElizaConfig } from "../config/config.js";
+import { type TokagentConfig, saveTokagentConfig } from "../config/config.js";
 import { resolveStateDir, resolveUserPath } from "../config/paths.js";
 import {
   type ApplyPluginAutoEnableParams,
   applyPluginAutoEnable,
 } from "../config/plugin-auto-enable.js";
-import type { PluginInstallRecord } from "../config/types.eliza.js";
+import type { PluginInstallRecord } from "../config/types.tokagent.js";
 import { diagnoseNoAIProvider } from "../services/version-compat.js";
 import { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS } from "./core-plugins.js";
 import {
@@ -43,9 +43,9 @@ import {
   type PluginModuleShape,
   type ResolvedPlugin,
   repairBrokenInstallRecord,
-  resolveElizaPluginImportSpecifier,
+  resolveTokagentPluginImportSpecifier,
   resolvePackageEntry,
-  STATIC_ELIZA_PLUGINS,
+  STATIC_TOKAGENT_PLUGINS,
   scanDropInPlugins,
   shouldIgnoreMissingPluginExport,
 } from "./plugin-types.js";
@@ -249,7 +249,7 @@ async function ensureStagedPackageDependencies(params: {
 
     if (!staged && !dependency.optional) {
       logger.warn(
-        `[eliza] Staged plugin ${params.packageName} is missing declared dependency ${dependency.name}`,
+        `[tokagent] Staged plugin ${params.packageName} is missing declared dependency ${dependency.name}`,
       );
     }
   }
@@ -273,20 +273,20 @@ function uniquePaths(paths: string[]): string[] {
 }
 
 function resolveWorkspaceRoots(): string[] {
-  const envRoot = process.env.ELIZA_WORKSPACE_ROOT?.trim();
+  const envRoot = process.env.TOKAGENT_WORKSPACE_ROOT?.trim();
   if (envRoot) {
     return uniquePaths([envRoot]);
   }
 
   // Phase 3: only search cwd — parent-directory and module-relative fallbacks
-  // removed. Repo-local ./eliza submodule + setup:upstreams symlinks handle
-  // plugin resolution for development. Set ELIZA_WORKSPACE_ROOT explicitly
+  // removed. Repo-local ./tokagent submodule + setup:upstreams symlinks handle
+  // plugin resolution for development. Set TOKAGENT_WORKSPACE_ROOT explicitly
   // for external override scenarios.
   return uniquePaths([process.cwd()]);
 }
 
 function getWorkspacePluginOverridePath(pluginName: string): string | null {
-  if (process.env.ELIZA_DISABLE_WORKSPACE_PLUGIN_OVERRIDES === "1") {
+  if (process.env.TOKAGENT_DISABLE_WORKSPACE_PLUGIN_OVERRIDES === "1") {
     return null;
   }
 
@@ -298,9 +298,9 @@ function getWorkspacePluginOverridePath(pluginName: string): string | null {
     const candidates = uniquePaths([
       path.join(workspaceRoot, "plugins", pluginSegment, "typescript"),
       path.join(workspaceRoot, "plugins", pluginSegment),
-      path.join(workspaceRoot, "eliza", "plugins", pluginSegment, "typescript"),
-      path.join(workspaceRoot, "eliza", "plugins", pluginSegment),
-      path.join(workspaceRoot, "eliza", "packages", pluginSegment),
+      path.join(workspaceRoot, "tokagent", "plugins", pluginSegment, "typescript"),
+      path.join(workspaceRoot, "tokagent", "plugins", pluginSegment),
+      path.join(workspaceRoot, "tokagent", "packages", pluginSegment),
       path.join(workspaceRoot, "packages", pluginSegment),
     ]);
 
@@ -349,7 +349,7 @@ async function hasNonSymlinkWorkspaceNodeModulesPackage(
  * Wrap a plugin's `init` and `providers` with error boundaries so that a
  * crash in any single plugin does not take down the entire agent or GUI.
  *
- * NOTE: Actions are NOT wrapped here because elizaOS's action dispatch
+ * NOTE: Actions are NOT wrapped here because tokagentOS's action dispatch
  * already has its own error boundary.  Only `init` (startup) and
  * `providers` (called every turn) need protection at this layer.
  *
@@ -371,7 +371,7 @@ function wrapPluginWithErrorBoundary(
         return await originalInit(...args);
       } catch (err) {
         logger.error(
-          `[eliza] Plugin "${pluginName}" crashed during init: ${formatError(err)}`,
+          `[tokagent] Plugin "${pluginName}" crashed during init: ${formatError(err)}`,
         );
         throw err;
       }
@@ -388,7 +388,7 @@ function wrapPluginWithErrorBoundary(
         } catch (err) {
           const msg = formatError(err);
           logger.error(
-            `[eliza] Provider "${provider.name}" (plugin: ${pluginName}) crashed: ${msg}`,
+            `[tokagent] Provider "${provider.name}" (plugin: ${pluginName}) crashed: ${msg}`,
           );
           throw err;
         }
@@ -410,7 +410,7 @@ function wrapPluginWithErrorBoundary(
  *   1. npm layout:  <installPath>/node_modules/@scope/package/  (from `bun add`)
  *   2. git layout:  <installPath>/ is the package root directly  (from `git clone`)
  *
- * @param installPath  Root directory of the installation (e.g. ~/.eliza/plugins/installed/foo/).
+ * @param installPath  Root directory of the installation (e.g. ~/.tokagent/plugins/installed/foo/).
  * @param packageName  The npm package name (e.g. "@elizaos/plugin-discord") — used
  *                     to navigate directly into node_modules when present.
  */
@@ -823,10 +823,10 @@ async function stagePluginImportRoot(params: {
 
 /**
  * Resolve a statically-imported @elizaos plugin by name.
- * Returns the module if found in STATIC_ELIZA_PLUGINS, otherwise null.
+ * Returns the module if found in STATIC_TOKAGENT_PLUGINS, otherwise null.
  */
-function resolveStaticElizaPlugin(pluginName: string): unknown | null {
-  return STATIC_ELIZA_PLUGINS[pluginName] ?? null;
+function resolveStaticTokagentPlugin(pluginName: string): unknown | null {
+  return STATIC_TOKAGENT_PLUGINS[pluginName] ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -834,19 +834,19 @@ function resolveStaticElizaPlugin(pluginName: string): unknown | null {
 // ---------------------------------------------------------------------------
 
 /**
- * Resolve Eliza plugins from config and auto-enable logic.
- * Returns an array of elizaOS Plugin instances ready for AgentRuntime.
+ * Resolve Tokagent plugins from config and auto-enable logic.
+ * Returns an array of tokagentOS Plugin instances ready for AgentRuntime.
  *
  * Handles three categories of plugins:
  * 1. Built-in/npm plugins — imported by package name
- * 2. User-installed plugins — from ~/.eliza/plugins/installed/
- * 3. Custom/drop-in plugins — from ~/.eliza/plugins/custom/ and plugins.load.paths
+ * 2. User-installed plugins — from ~/.tokagent/plugins/installed/
+ * 3. Custom/drop-in plugins — from ~/.tokagent/plugins/custom/ and plugins.load.paths
  *
  * Each plugin is loaded inside an error boundary so a single failing plugin
  * cannot crash the entire agent startup.
  */
 export async function resolvePlugins(
-  config: ElizaConfig,
+  config: TokagentConfig,
   opts?: { quiet?: boolean },
 ): Promise<ResolvedPlugin[]> {
   const plugins: ResolvedPlugin[] = [];
@@ -867,7 +867,7 @@ export async function resolvePlugins(
   } satisfies ApplyPluginAutoEnableParams);
   if (autoEnableResult.changes.length > 0) {
     logger.info(
-      `[eliza] Plugin auto-enable: ${autoEnableResult.changes.join("; ")}`,
+      `[tokagent] Plugin auto-enable: ${autoEnableResult.changes.join("; ")}`,
     );
   }
   // Merge the cloned plugins.allow back into the caller's config so both
@@ -875,7 +875,7 @@ export async function resolvePlugins(
   config.plugins = autoEnableResult.config.plugins;
 
   // Provenance for "why is this package in the load set?" — surfaced when an
-  // optional plugin fails to resolve so logs point at config/env, not "eliza broke".
+  // optional plugin fails to resolve so logs point at config/env, not "tokagent broke".
   const loadReasons: PluginLoadReasons = new Map();
   const pluginsToLoad = collectPluginNames(config, loadReasons);
   const corePluginSet = new Set<string>(CORE_PLUGINS);
@@ -886,7 +886,7 @@ export async function resolvePlugins(
   };
 
   const denyList = new Set<string>((config.plugins?.deny || []) as string[]);
-  const envSkipPlugins = (process.env.ELIZA_SKIP_PLUGINS ?? "")
+  const envSkipPlugins = (process.env.TOKAGENT_SKIP_PLUGINS ?? "")
     .split(",")
     .map((value) => value.trim())
     .filter(Boolean);
@@ -895,7 +895,7 @@ export async function resolvePlugins(
   }
   if (envSkipPlugins.length > 0) {
     logger.info(
-      `[eliza] Skipping ${envSkipPlugins.length} plugin(s) via ELIZA_SKIP_PLUGINS: ${envSkipPlugins.join(", ")}`,
+      `[tokagent] Skipping ${envSkipPlugins.length} plugin(s) via TOKAGENT_SKIP_PLUGINS: ${envSkipPlugins.join(", ")}`,
     );
   }
   for (const pluginName of denyList) {
@@ -921,7 +921,7 @@ export async function resolvePlugins(
   }
   if (ejectedPluginNames.length > 0) {
     logger.info(
-      `[eliza] Discovered ${ejectedPluginNames.length} ejected plugin(s): ${ejectedPluginNames.join(", ")}`,
+      `[tokagent] Discovered ${ejectedPluginNames.length} ejected plugin(s): ${ejectedPluginNames.join(", ")}`,
     );
   }
 
@@ -950,11 +950,11 @@ export async function resolvePlugins(
   for (const msg of skipped) logger.warn(msg);
   if (customPluginNames.length > 0) {
     logger.info(
-      `[eliza] Discovered ${customPluginNames.length} custom plugin(s): ${customPluginNames.join(", ")}`,
+      `[tokagent] Discovered ${customPluginNames.length} custom plugin(s): ${customPluginNames.join(", ")}`,
     );
   }
 
-  logger.info(`[eliza] Resolving ${pluginsToLoad.size} plugins...`);
+  logger.info(`[tokagent] Resolving ${pluginsToLoad.size} plugins...`);
   const loadStartTime = Date.now();
 
   // Built once so we don't rebuild on every optional plugin failure.
@@ -970,16 +970,16 @@ export async function resolvePlugins(
     plugin: Plugin;
   } | null> {
     const isCore = corePluginSet.has(pluginName);
-    const isOfficialElizaPlugin = pluginName.startsWith("@elizaos/plugin-");
+    const isOfficialTokagentPlugin = pluginName.startsWith("@elizaos/plugin-");
     const ejectedRecord = ejectedRecords[pluginName];
     const installRecord = installRecords[pluginName];
     const workspaceOverridePath = getWorkspacePluginOverridePath(pluginName);
-    const staticElizaPlugin = await resolveStaticElizaPlugin(pluginName);
+    const staticTokagentPlugin = await resolveStaticTokagentPlugin(pluginName);
 
     const importOfficialPluginFromNodeModules =
       async (): Promise<PluginModuleShape> =>
         (await import(
-          resolveElizaPluginImportSpecifier(pluginName)
+          resolveTokagentPluginImportSpecifier(pluginName)
         )) as PluginModuleShape;
 
     // Pre-flight: ensure native dependencies are available for special plugins.
@@ -1000,30 +1000,30 @@ export async function resolvePlugins(
       if (ejectedRecord?.installPath) {
         // Ejected plugin — always prefer local source over npm/core.
         logger.debug(
-          `[eliza] Loading ejected plugin: ${pluginName} from ${ejectedRecord.installPath}`,
+          `[tokagent] Loading ejected plugin: ${pluginName} from ${ejectedRecord.installPath}`,
         );
         mod = await importPluginModuleFromPath(
           ejectedRecord.installPath,
           pluginName,
         );
-      } else if (staticElizaPlugin) {
+      } else if (staticTokagentPlugin) {
         // Prefer statically imported official plugins over workspace staging.
         // This keeps local node_modules links working while avoiding staging
         // bugs in workspace packages with nested symlinked dependencies.
-        mod = staticElizaPlugin as PluginModuleShape;
+        mod = staticTokagentPlugin as PluginModuleShape;
       } else if (workspaceOverridePath) {
         const shouldPreferRepoNodeModules =
-          isOfficialElizaPlugin &&
+          isOfficialTokagentPlugin &&
           (await hasNonSymlinkWorkspaceNodeModulesPackage(pluginName));
         if (shouldPreferRepoNodeModules) {
           logger.debug(
-            `[eliza] Loading repo node_modules plugin: ${pluginName}`,
+            `[tokagent] Loading repo node_modules plugin: ${pluginName}`,
           );
           try {
             mod = await importOfficialPluginFromNodeModules();
           } catch (error) {
             logger.warn(
-              `[eliza] Repo node_modules plugin import failed for ${pluginName}; falling back to workspace override: ${formatError(error)}`,
+              `[tokagent] Repo node_modules plugin import failed for ${pluginName}; falling back to workspace override: ${formatError(error)}`,
             );
             mod = await importPluginModuleFromPath(
               workspaceOverridePath,
@@ -1032,7 +1032,7 @@ export async function resolvePlugins(
           }
         } else {
           logger.debug(
-            `[eliza] Loading workspace plugin override: ${pluginName} from ${workspaceOverridePath}`,
+            `[tokagent] Loading workspace plugin override: ${pluginName} from ${workspaceOverridePath}`,
           );
           // Always stage workspace overrides instead of re-importing the bare
           // package specifier from node_modules. Bun can wedge a subsequent
@@ -1044,8 +1044,8 @@ export async function resolvePlugins(
           );
         }
       } else if (installRecord?.installPath) {
-        // Prefer bundled/node_modules copies for official Eliza plugins.
-        if (isOfficialElizaPlugin) {
+        // Prefer bundled/node_modules copies for official Tokagent plugins.
+        if (isOfficialTokagentPlugin) {
           try {
             mod = await importOfficialPluginFromNodeModules();
             if (repairBrokenInstallRecord(config, pluginName)) {
@@ -1053,7 +1053,7 @@ export async function resolvePlugins(
             }
           } catch (npmErr) {
             logger.warn(
-              `[eliza] Node_modules resolution failed for ${pluginName} (${formatError(npmErr)}). Trying installed path at ${redactUserSegments(installRecord.installPath)}.`,
+              `[tokagent] Node_modules resolution failed for ${pluginName} (${formatError(npmErr)}). Trying installed path at ${redactUserSegments(installRecord.installPath)}.`,
             );
             mod = await importPluginModuleFromPath(
               installRecord.installPath,
@@ -1069,9 +1069,9 @@ export async function resolvePlugins(
             );
           } catch (installErr) {
             logger.warn(
-              `[eliza] Installed plugin ${pluginName} failed at ${redactUserSegments(installRecord.installPath)} (${formatError(installErr)}). Falling back to node_modules resolution.`,
+              `[tokagent] Installed plugin ${pluginName} failed at ${redactUserSegments(installRecord.installPath)} (${formatError(installErr)}). Falling back to node_modules resolution.`,
             );
-            const staticMod = await resolveStaticElizaPlugin(pluginName);
+            const staticMod = await resolveStaticTokagentPlugin(pluginName);
             mod = staticMod
               ? (staticMod as PluginModuleShape)
               : ((await import(pluginName)) as PluginModuleShape);
@@ -1080,17 +1080,17 @@ export async function resolvePlugins(
             }
           }
         }
-      } else if (isOfficialElizaPlugin) {
-        // Eliza plugins can resolve either from bundled local wrappers
-        // under eliza-dist/plugins/* or from packaged node_modules.
+      } else if (isOfficialTokagentPlugin) {
+        // Tokagent plugins can resolve either from bundled local wrappers
+        // under tokagent-dist/plugins/* or from packaged node_modules.
         mod = await importOfficialPluginFromNodeModules();
       } else {
         // Built-in/npm plugin — prefer a bundled static import regardless of
         // naming convention (short-name plugins like "agent-orchestrator" are
-        // registered in STATIC_ELIZA_PLUGINS and would otherwise fail a bare
+        // registered in STATIC_TOKAGENT_PLUGINS and would otherwise fail a bare
         // node_modules resolution).
-        mod = staticElizaPlugin
-          ? (staticElizaPlugin as PluginModuleShape)
+        mod = staticTokagentPlugin
+          ? (staticTokagentPlugin as PluginModuleShape)
           : ((await import(pluginName)) as PluginModuleShape);
       }
 
@@ -1104,17 +1104,17 @@ export async function resolvePlugins(
           pluginInstance,
           { isCore },
         );
-        logger.debug(`[eliza] ✓ Loaded plugin: ${pluginName}`);
+        logger.debug(`[tokagent] ✓ Loaded plugin: ${pluginName}`);
         return { name: pluginName, plugin: wrappedPlugin };
       } else {
         if (shouldIgnoreMissingPluginExport(pluginName)) {
           logger.info(
-            `[eliza] Skipping helper package ${pluginName}: no Plugin export is expected`,
+            `[tokagent] Skipping helper package ${pluginName}: no Plugin export is expected`,
           );
           return null;
         }
 
-        const msg = `[eliza] Plugin ${pluginName} did not export a valid Plugin object`;
+        const msg = `[tokagent] Plugin ${pluginName} did not export a valid Plugin object`;
         failedPlugins.push({
           name: pluginName,
           error: "no valid Plugin export",
@@ -1132,17 +1132,17 @@ export async function resolvePlugins(
       failedPlugins.push({ name: pluginName, error: msg });
       if (isCore) {
         logger.error(
-          `[eliza] Failed to load core plugin ${pluginName}: ${msg}`,
+          `[tokagent] Failed to load core plugin ${pluginName}: ${msg}`,
         );
       } else {
         if (optionalPluginNames.has(pluginName)) {
           if (!isBenignOptionalPluginFailure(msg)) {
             logger.warn(
-              `[eliza] Optional plugin ${pluginName} failed to load: ${msg}`,
+              `[tokagent] Optional plugin ${pluginName} failed to load: ${msg}`,
             );
           }
         } else {
-          logger.info(`[eliza] Could not load plugin ${pluginName}: ${msg}`);
+          logger.info(`[tokagent] Could not load plugin ${pluginName}: ${msg}`);
         }
       }
       return null;
@@ -1154,9 +1154,9 @@ export async function resolvePlugins(
   // may race with each other. This is an accepted trade-off for startup
   // performance. Critical env vars (database, AI provider keys) are set
   // before this point in buildCharacterFromConfig / resolveDbEnv.
-  const serializePluginLoads = process.env.ELIZA_SERIALIZE_PLUGIN_LOADS === "1";
+  const serializePluginLoads = process.env.TOKAGENT_SERIALIZE_PLUGIN_LOADS === "1";
   logger.info(
-    `[eliza] Loading ${pluginsToLoad.size} plugins${serializePluginLoads ? " sequentially" : ""}...`,
+    `[tokagent] Loading ${pluginsToLoad.size} plugins${serializePluginLoads ? " sequentially" : ""}...`,
   );
   const pluginResults = serializePluginLoads
     ? await (async () => {
@@ -1165,7 +1165,7 @@ export async function resolvePlugins(
         for (const pluginName of pluginsToLoad) {
           index += 1;
           logger.info(
-            `[eliza] Loading plugin ${index}/${pluginsToLoad.size}: ${pluginName}`,
+            `[tokagent] Loading plugin ${index}/${pluginsToLoad.size}: ${pluginName}`,
           );
           results.push(await loadSinglePlugin(pluginName));
         }
@@ -1181,7 +1181,7 @@ export async function resolvePlugins(
   }
 
   const loadDuration = Date.now() - loadStartTime;
-  logger.info(`[eliza] Plugin loading took ${loadDuration}ms`);
+  logger.info(`[tokagent] Plugin loading took ${loadDuration}ms`);
 
   // Summary logging — do not treat “optional + not installed” as top-level failures.
   const optionalFailed = failedPlugins.filter((f) =>
@@ -1198,7 +1198,7 @@ export async function resolvePlugins(
   );
   const detailFailures = [...seriousFailed, ...noisyOptionalFailed];
 
-  let completeMsg = `[eliza] Plugin resolution complete: ${plugins.length}/${pluginsToLoad.size} loaded`;
+  let completeMsg = `[tokagent] Plugin resolution complete: ${plugins.length}/${pluginsToLoad.size} loaded`;
   if (detailFailures.length > 0) {
     completeMsg += `, ${detailFailures.length} failed`;
   }
@@ -1209,7 +1209,7 @@ export async function resolvePlugins(
 
   if (detailFailures.length > 0) {
     logger.info(
-      `[eliza] Failed plugins: ${detailFailures.map((f) => `${f.name} (${f.error})`).join(", ")}`,
+      `[tokagent] Failed plugins: ${detailFailures.map((f) => `${f.name} (${f.error})`).join(", ")}`,
     );
   }
   if (benignOptionalFailed.length > 0) {
@@ -1218,7 +1218,7 @@ export async function resolvePlugins(
       return reason ? `${f.name} (added by: ${reason})` : f.name;
     });
     logger.info(
-      `[eliza] Optional plugins not installed: ${withReasons.join(", ")}`,
+      `[tokagent] Optional plugins not installed: ${withReasons.join(", ")}`,
     );
   }
 
@@ -1231,9 +1231,9 @@ export async function resolvePlugins(
     if (opts?.quiet) {
       // In headless/GUI mode before onboarding, this is expected — the user
       // will configure a provider through the onboarding wizard and restart.
-      logger.info(`[eliza] ${diagnostic}`);
+      logger.info(`[tokagent] ${diagnostic}`);
     } else {
-      logger.error(`[eliza] ${diagnostic}`);
+      logger.error(`[tokagent] ${diagnostic}`);
     }
   }
 
@@ -1241,13 +1241,13 @@ export async function resolvePlugins(
   // to import from stale install directories.
   if (repairedInstallRecords.size > 0) {
     try {
-      saveElizaConfig(config);
+      saveTokagentConfig(config);
       logger.info(
-        `[eliza] Repaired ${repairedInstallRecords.size} plugin install record(s): ${Array.from(repairedInstallRecords).join(", ")}`,
+        `[tokagent] Repaired ${repairedInstallRecords.size} plugin install record(s): ${Array.from(repairedInstallRecords).join(", ")}`,
       );
     } catch (err) {
       logger.warn(
-        `[eliza] Failed to persist plugin install repairs: ${formatError(err)}`,
+        `[tokagent] Failed to persist plugin install repairs: ${formatError(err)}`,
       );
     }
   }

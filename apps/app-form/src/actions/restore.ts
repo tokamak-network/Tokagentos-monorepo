@@ -56,7 +56,7 @@ import {
   type Memory,
   type State,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { quickIntentDetect } from "../intent";
 import type { FormService } from "../service";
 

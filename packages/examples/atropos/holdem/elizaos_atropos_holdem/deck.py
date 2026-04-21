@@ -7,7 +7,7 @@ from __future__ import annotations
 import random
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_holdem.types import Card, Rank, Suit
+from tokagentos_atropos_holdem.types import Card, Rank, Suit
 
 if TYPE_CHECKING:
     pass

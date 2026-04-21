@@ -18,7 +18,7 @@ def test_live_markets_fetch_gated() -> None:
     os.environ["POLYMARKET_PRIVATE_KEY"] = key
     os.environ["CLOB_API_URL"] = "https://clob.polymarket.com"
 
-    from elizaos_plugin_polymarket.providers.clob import ClobClientProvider
+    from tokagentos_plugin_polymarket.providers.clob import ClobClientProvider
 
     client = ClobClientProvider().get_client()
     resp = getattr(client, "get_markets")()

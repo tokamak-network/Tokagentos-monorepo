@@ -6,7 +6,7 @@ import {
   CardDescription,
   CardHeader,
   StatusBadge,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useState } from "react";
 import { client } from "../../api";
 import { useBranding } from "../../config/branding";

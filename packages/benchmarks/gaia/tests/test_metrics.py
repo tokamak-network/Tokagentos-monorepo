@@ -1,13 +1,13 @@
 """Tests for GAIA metrics calculation."""
 
 import pytest
-from elizaos_gaia.types import (
+from tokagentos_gaia.types import (
     GAIALevel,
     ToolType,
     GAIAResult,
     LEADERBOARD_SCORES,
 )
-from elizaos_gaia.metrics import MetricsCalculator
+from tokagentos_gaia.metrics import MetricsCalculator
 
 
 class TestMetricsCalculator:
@@ -169,7 +169,7 @@ class TestLeaderboardComparison(TestMetricsCalculator):
         assert comparison.our_score == 0.5
         assert comparison.rank >= 1
         assert comparison.total_entries > 0
-        assert "ElizaOS Agent" in comparison.comparison
+        assert "TokagentOS Agent" in comparison.comparison
     
     def test_custom_leaderboard(self, calculator, sample_results):
         """Test with custom leaderboard."""

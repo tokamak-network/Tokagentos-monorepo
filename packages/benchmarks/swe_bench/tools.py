@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from dataclasses import asdict
 
-from elizaos.types.components import (
+from tokagentos.types.components import (
     Action,
     ActionParameter,
     ActionParameterSchema,
@@ -13,9 +13,9 @@ from elizaos.types.components import (
     HandlerCallback,
     HandlerOptions,
 )
-from elizaos.types.memory import Memory
-from elizaos.types.runtime import IAgentRuntime
-from elizaos.types.state import State
+from tokagentos.types.memory import Memory
+from tokagentos.types.runtime import IAgentRuntime
+from tokagentos.types.state import State
 
 from .repo_manager import RepositoryManager
 

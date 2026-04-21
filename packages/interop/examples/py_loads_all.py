@@ -23,8 +23,8 @@ from typing import TYPE_CHECKING
 sys.path.insert(0, str(Path(__file__).parent.parent / "python"))
 
 if TYPE_CHECKING:
-    from elizaos.types.memory import Memory
-    from elizaos.types.state import State
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.state import State
 
 
 # ============================================================================
@@ -37,17 +37,17 @@ async def load_rust_via_ffi() -> None:
     print("\n=== Loading Rust Plugin via FFI ===\n")
 
     try:
-        from elizaos.interop import load_rust_plugin
+        from tokagentos.interop import load_rust_plugin
 
         # Path to compiled shared library
         lib_path = Path(__file__).parent.parent.parent.parent / (
-            "plugins/plugin-eliza-classic/rust/target/release/libelizaos_plugin_eliza_classic.so"
+            "plugins/plugin-tokagent-classic/rust/target/release/libtokagentos_plugin_tokagent_classic.so"
         )
 
         if not lib_path.exists():
             # Try debug build
             lib_path = Path(__file__).parent.parent.parent.parent / (
-                "plugins/plugin-eliza-classic/rust/target/debug/libelizaos_plugin_eliza_classic.so"
+                "plugins/plugin-tokagent-classic/rust/target/debug/libtokagentos_plugin_tokagent_classic.so"
             )
 
         plugin = load_rust_plugin(str(lib_path))
@@ -92,12 +92,12 @@ async def load_rust_via_wasm() -> None:
     print("\n=== Loading Rust Plugin via WASM ===\n")
 
     try:
-        from elizaos.interop import load_wasm_plugin
+        from tokagentos.interop import load_wasm_plugin
 
         # Path to compiled WASM module
         wasm_path = Path(__file__).parent.parent.parent.parent / (
-            "plugins/plugin-eliza-classic/rust/target/wasm32-unknown-unknown/release/"
-            "elizaos_plugin_eliza_classic.wasm"
+            "plugins/plugin-tokagent-classic/rust/target/wasm32-unknown-unknown/release/"
+            "tokagentos_plugin_tokagent_classic.wasm"
         )
 
         plugin = load_wasm_plugin(str(wasm_path))
@@ -138,11 +138,11 @@ async def load_typescript_via_ipc() -> None:
     print("\n=== Loading TypeScript Plugin via IPC ===\n")
 
     try:
-        from elizaos.interop import load_ts_plugin
+        from tokagentos.interop import load_ts_plugin
 
         # Path to TypeScript plugin
         ts_plugin_path = Path(__file__).parent.parent.parent.parent / (
-            "plugins/plugin-eliza-classic/typescript"
+            "plugins/plugin-tokagent-classic/typescript"
         )
 
         plugin = load_ts_plugin(str(ts_plugin_path))
@@ -184,14 +184,14 @@ async def load_native_python() -> None:
 
     try:
         # Add plugin to path
-        plugin_path = Path(__file__).parent.parent.parent.parent / "plugins/plugin-eliza-classic/python"
+        plugin_path = Path(__file__).parent.parent.parent.parent / "plugins/plugin-tokagent-classic/python"
         sys.path.insert(0, str(plugin_path))
 
-        from elizaos_plugin_eliza_classic import ElizaClassicPlugin
+        from tokagentos_plugin_tokagent_classic import TokagentClassicPlugin
 
-        plugin_instance = ElizaClassicPlugin()
+        plugin_instance = TokagentClassicPlugin()
 
-        print(f"Plugin: eliza-classic (native Python)")
+        print(f"Plugin: tokagent-classic (native Python)")
         print(f"Greeting: {plugin_instance.get_greeting()}")
 
         # Test response generation
@@ -206,7 +206,7 @@ async def load_native_python() -> None:
         for user_input in test_inputs:
             response = plugin_instance.generate_response(user_input)
             print(f"  User: {user_input}")
-            print(f"  ELIZA: {response}\n")
+            print(f"  TOKAGENT: {response}\n")
 
     except ImportError as e:
         print(f"Native Python loading skipped: {e}")
@@ -222,7 +222,7 @@ async def load_native_python() -> None:
 def print_interop_matrix() -> None:
     """Print the full interop capability matrix."""
     print("\n" + "=" * 60)
-    print("elizaOS Cross-Language Interop Matrix")
+    print("tokagentOS Cross-Language Interop Matrix")
     print("=" * 60)
 
     matrix = """

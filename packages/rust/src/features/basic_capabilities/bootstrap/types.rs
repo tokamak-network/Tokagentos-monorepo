@@ -1,4 +1,4 @@
-//! Core types for the elizaOS BasicCapabilities Plugin.
+//! Core types for the tokagentOS BasicCapabilities Plugin.
 //!
 //! This module defines the fundamental types used throughout the plugin,
 //! including content, memory, actions, providers, and evaluators.

@@ -14,11 +14,11 @@ export function isKnownUnstableBunOnLinux({ platform, bunVersion }) {
 
 /**
  * Runtime selection priority:
- * 1) Explicit ELIZA_RUNTIME override (bun|node)
+ * 1) Explicit TOKAGENT_RUNTIME override (bun|node)
  * 2) Safety fallback for known unstable Bun/Linux combo
  * 3) Default to bun
  */
-export function chooseElizaRuntime({
+export function chooseTokagentRuntime({
   requestedRuntime,
   platform,
   bunVersion,

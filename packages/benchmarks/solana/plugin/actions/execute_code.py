@@ -3,7 +3,7 @@
 Provides both:
 - execute_solana_skill(): shared execution function used by Phase 1 (deterministic)
   and Phase 2 (LLM-assisted via action handler)
-- execute_code_action: ElizaOS Action registered in the solana-bench plugin
+- execute_code_action: TokagentOS Action registered in the solana-bench plugin
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ import base64
 import logging
 from typing import TYPE_CHECKING
 
-from elizaos.types import (
+from tokagentos.types import (
     Action,
     ActionExample,
     ActionParameter,
@@ -22,7 +22,7 @@ from elizaos.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -54,7 +54,7 @@ async def execute_solana_skill(
           - ``"error"``: ``str`` — error description when *success* is False
     """
     # Lazy imports so the module can be loaded without sys.path side-effects.
-    from benchmarks.solana.eliza_explorer import run_typescript_skill
+    from benchmarks.solana.tokagent_explorer import run_typescript_skill
     from solders.transaction import Transaction as SoldersTransaction
 
     blockhash = str((await env.client.get_latest_blockhash()).value.blockhash)

@@ -1,10 +1,10 @@
-// messaging.proto - Messaging types for elizaOS
+// messaging.proto - Messaging types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
-import "eliza/v1/memory.proto";
-import "eliza/v1/primitives.proto";
+import "tokagent/v1/memory.proto";
+import "tokagent/v1/primitives.proto";
 
 // Socket message type enumeration
 enum SocketMessageType {

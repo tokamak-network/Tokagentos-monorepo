@@ -23,11 +23,11 @@ export interface CustomProviderOption {
 }
 
 export interface BrandingConfig {
-  /** Product name shown in UI ("Eliza" | "the app") */
+  /** Product name shown in UI ("Tokagent" | "the app") */
   appName: string;
-  /** GitHub org ("elizaos" | "elizaos") */
+  /** GitHub org ("tokagentos" | "tokagentos") */
   orgName: string;
-  /** GitHub repo name ("eliza" | "eliza") */
+  /** GitHub repo name ("tokagent" | "tokagent") */
   repoName: string;
   /** Documentation site URL */
   docsUrl: string;
@@ -35,32 +35,32 @@ export interface BrandingConfig {
   appUrl: string;
   /** GitHub bug report URL */
   bugReportUrl: string;
-  /** Twitter hashtag ("#ElizaAgent" | "#AppAgent") */
+  /** Twitter hashtag ("#TokagentAgent" | "#AppAgent") */
   hashtag: string;
-  /** Agent file extension (".eliza-agent" | ".eliza-agent") */
+  /** Agent file extension (".tokagent-agent" | ".tokagent-agent") */
   fileExtension: string;
-  /** npm package scope ("elizaos" | "elizaos") */
+  /** npm package scope ("tokagentos" | "tokagentos") */
   packageScope: string;
   /** Custom providers injected by the app into the onboarding flow */
   customProviders?: CustomProviderOption[];
-  /** When true, the app requires Eliza Cloud — local backend mode is disabled. */
+  /** When true, the app requires Tokagent Cloud — local backend mode is disabled. */
   cloudOnly?: boolean;
 }
 
 /** Default for i18n copy that uses `{{appName}}` (e.g. "Where should {{appName}} run?"). */
-export const DEFAULT_APP_DISPLAY_NAME = "Eliza";
+export const DEFAULT_APP_DISPLAY_NAME = "Tokagent";
 
 export const DEFAULT_BRANDING: BrandingConfig = {
   appName: DEFAULT_APP_DISPLAY_NAME,
-  orgName: "elizaos",
-  repoName: "eliza",
-  docsUrl: "https://docs.elizaos.ai",
-  appUrl: "https://app.elizaos.ai",
+  orgName: "tokagentos",
+  repoName: "tokagent",
+  docsUrl: "https://docs.tokagentos.ai",
+  appUrl: "https://app.tokagentos.ai",
   bugReportUrl:
-    "https://github.com/elizaos/eliza/issues/new?template=bug_report.yml",
-  hashtag: "#ElizaAgent",
-  fileExtension: ".eliza-agent",
-  packageScope: "elizaos",
+    "https://github.com/tokagentos/tokagent/issues/new?template=bug_report.yml",
+  hashtag: "#TokagentAgent",
+  fileExtension: ".tokagent-agent",
+  packageScope: "tokagentos",
 };
 
 export const BrandingContext = createContext<BrandingConfig>(DEFAULT_BRANDING);

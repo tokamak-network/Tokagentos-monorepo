@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_textworld.types import (
+from tokagentos_atropos_textworld.types import (
     GameType,
     Difficulty,
     GameState,
@@ -16,7 +16,7 @@ from elizaos_atropos_textworld.types import (
     Room,
     Item,
 )
-from elizaos_atropos_textworld.game_generator import GameGenerator
+from tokagentos_atropos_textworld.game_generator import GameGenerator
 
 if TYPE_CHECKING:
     pass
@@ -27,7 +27,7 @@ class TextWorldEnvironment:
     TextWorld-style text adventure environment.
     
     Generates procedural text-based games and provides an interface
-    for ElizaOS agents to interact with them.
+    for TokagentOS agents to interact with them.
     
     Example:
         >>> env = TextWorldEnvironment(game_type="treasure_hunt", difficulty="medium")

@@ -6,12 +6,12 @@
  *   bun run examples/wasm/benchmark.ts
  */
 
-import * as elizaos from "../../pkg-node/elizaos.js";
+import * as tokagentos from "../../pkg-node/tokagentos.js";
 
 async function main() {
-  console.log("=== elizaOS WASM Benchmark ===\n");
+  console.log("=== tokagentOS WASM Benchmark ===\n");
 
-  const runtime = elizaos.WasmAgentRuntime.create(
+  const runtime = tokagentos.WasmAgentRuntime.create(
     JSON.stringify({
       name: "BenchBot",
       bio: "Benchmark agent",
@@ -20,7 +20,7 @@ async function main() {
   );
   await runtime.initialize();
 
-  const handler = new elizaos.JsModelHandler({
+  const handler = new tokagentos.JsModelHandler({
     handle: async (paramsJson: string): Promise<string> => {
       const params = JSON.parse(paramsJson) as { prompt?: string };
       const prompt = params.prompt ?? "";
@@ -35,8 +35,8 @@ async function main() {
 
   for (let i = 0; i < iterations; i += 1) {
     const messageJson = JSON.stringify({
-      entityId: elizaos.generateUUID(),
-      roomId: elizaos.generateUUID(),
+      entityId: tokagentos.generateUUID(),
+      roomId: tokagentos.generateUUID(),
       content: { text: `Hello ${i}` },
     });
     await runtime.handleMessage(messageJson);
@@ -51,11 +51,11 @@ async function main() {
 
   console.log("\n--- JSON Round-Trip ---");
   const memoryJson = JSON.stringify({
-    entityId: elizaos.generateUUID(),
-    roomId: elizaos.generateUUID(),
+    entityId: tokagentos.generateUUID(),
+    roomId: tokagentos.generateUUID(),
     content: { text: "Round trip" },
   });
-  const memory = elizaos.parseMemory(memoryJson);
+  const memory = tokagentos.parseMemory(memoryJson);
   const roundTrip = memory.toJson();
   console.log(`Round-trip bytes: ${roundTrip.length}`);
 }

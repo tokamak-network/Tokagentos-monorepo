@@ -1,6 +1,6 @@
 ---
 title: "Browser Examples"
-description: "Run elizaOS agents client-side with React, Next.js, and vanilla HTML"
+description: "Run tokagentOS agents client-side with React, Next.js, and vanilla HTML"
 ---
 
 Run AI agents entirely in the browser. No server required for basic functionality. These examples use in-browser databases and pattern matching to work offline.
@@ -68,7 +68,7 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
 **Features:**
 
 - Zero build step required
-- Classic ELIZA pattern matching
+- Classic TOKAGENT pattern matching
 - localStorage persistence
 - Retro phosphor green aesthetic
 - Works completely offline
@@ -77,12 +77,12 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ELIZA - elizaOS Browser Demo</title>
+    <title>TOKAGENT - tokagentOS Browser Demo</title>
     <script type="importmap">
       {
         "imports": {
-          "@elizaos/core": "../../packages/typescript/dist/browser/index.browser.js",
-          "@elizaos/plugin-eliza-classic": "../../plugins/plugin-eliza-classic/dist/browser/index.browser.js",
+          "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
+          "@elizaos/plugin-tokagent-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js",
           "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/dist/browser/index.browser.js"
         }
       }
@@ -97,17 +97,17 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
     />
 
     <script type="module">
-      import { AgentRuntime, ModelType, stringToUuid } from "@elizaos/core";
-      import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+      import { AgentRuntime, ModelType, stringToUuid } from "@tokagentos/core";
+      import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
       import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
 
       // Create runtime
       const runtime = new AgentRuntime({
         character: {
-          name: "Eliza",
+          name: "Tokagent",
           bio: "A Rogerian psychotherapist simulation.",
         },
-        plugins: [localdbPlugin, elizaClassicPlugin],
+        plugins: [localdbPlugin, tokagentClassicPlugin],
       });
 
       await runtime.initialize();
@@ -129,7 +129,7 @@ The simplest browser implementation. Pure HTML, CSS, and JavaScript with a beaut
               prompt: text,
             });
 
-            appendMessage("Eliza", String(response));
+            appendMessage("Tokagent", String(response));
           }
         });
 
@@ -151,16 +151,16 @@ Full React application with PGLite for in-browser PostgreSQL-compatible storage.
 
 **Features:**
 
-- Full elizaOS AgentRuntime
+- Full tokagentOS AgentRuntime
 - PGLite database (IndexedDB backend)
-- Classic ELIZA plugin (no API keys)
+- Classic TOKAGENT plugin (no API keys)
 - Retro CRT terminal styling
 - Persistent conversation history
 
 ```typescript
-// eliza-runtime.ts
-import { AgentRuntime, stringToUuid } from "@elizaos/core";
-import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+// tokagent-runtime.ts
+import { AgentRuntime, stringToUuid } from "@tokagentos/core";
+import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
 import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
 let runtime: AgentRuntime | null = null;
@@ -170,10 +170,10 @@ export async function getRuntime(): Promise<AgentRuntime> {
 
   runtime = new AgentRuntime({
     character: {
-      name: "Eliza",
+      name: "Tokagent",
       bio: "A Rogerian psychotherapist simulation.",
     },
-    plugins: [sqlPlugin, elizaClassicPlugin],
+    plugins: [sqlPlugin, tokagentClassicPlugin],
   });
 
   await runtime.initialize();
@@ -184,12 +184,12 @@ export async function getRuntime(): Promise<AgentRuntime> {
 ```tsx
 // App.tsx
 import { useState, useEffect, useRef } from "react";
-import { getRuntime } from "./eliza-runtime";
-import type { AgentRuntime } from "@elizaos/core";
-import { ModelType } from "@elizaos/core";
+import { getRuntime } from "./tokagent-runtime";
+import type { AgentRuntime } from "@tokagentos/core";
+import { ModelType } from "@tokagentos/core";
 
 interface Message {
-  sender: "user" | "eliza";
+  sender: "user" | "tokagent";
   text: string;
 }
 
@@ -218,7 +218,7 @@ export default function App() {
 
       setMessages((prev) => [
         ...prev,
-        { sender: "eliza", text: String(response) },
+        { sender: "tokagent", text: String(response) },
       ]);
     } catch (error) {
       console.error("Error:", error);
@@ -232,11 +232,11 @@ export default function App() {
       <div className="chat">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
-            <strong>{msg.sender === "user" ? "YOU" : "ELIZA"}:</strong>
+            <strong>{msg.sender === "user" ? "YOU" : "TOKAGENT"}:</strong>
             <span>{msg.text}</span>
           </div>
         ))}
-        {loading && <div className="typing">ELIZA is typing...</div>}
+        {loading && <div className="typing">TOKAGENT is typing...</div>}
       </div>
       <input
         value={input}
@@ -264,8 +264,8 @@ Uses the Rust implementation compiled to WebAssembly for the best performance.
 - Type-safe interop
 
 ```typescript
-// eliza-runtime.ts (WASM version)
-import init, { WasmAgentRuntime } from "@elizaos/core/rust";
+// tokagent-runtime.ts (WASM version)
+import init, { WasmAgentRuntime } from "@tokagentos/core/rust";
 
 let runtime: WasmAgentRuntime | null = null;
 
@@ -278,7 +278,7 @@ export async function getRuntime(): Promise<WasmAgentRuntime> {
   // Create runtime with character JSON
   runtime = await new WasmAgentRuntime(
     JSON.stringify({
-      name: "Eliza",
+      name: "Tokagent",
       bio: "A Rogerian psychotherapist simulation.",
     }),
   );
@@ -304,7 +304,7 @@ Full-stack Next.js application with server-side rendering and API routes.
 ```typescript
 // app/api/chat/route.ts
 import { NextResponse } from "next/server";
-import { AgentRuntime } from "@elizaos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
@@ -315,7 +315,7 @@ async function getRuntime() {
 
   runtime = new AgentRuntime({
     character: {
-      name: "Eliza",
+      name: "Tokagent",
       bio: "A helpful AI assistant.",
       secrets: {
         OPENAI_API_KEY: process.env.OPENAI_API_KEY,
@@ -374,7 +374,7 @@ export async function POST(request: Request) {
 
 | Plugin                 | Requires API | Offline | Response Time |
 | ---------------------- | ------------ | ------- | ------------- |
-| `plugin-eliza-classic` | ❌           | ✅      | ~1ms          |
+| `plugin-tokagent-classic` | ❌           | ✅      | ~1ms          |
 | `plugin-openai`        | ✅           | ❌      | ~500-2000ms   |
 | `plugin-anthropic`     | ✅           | ❌      | ~500-2000ms   |
 

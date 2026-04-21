@@ -1,5 +1,5 @@
 /**
- * Edge runtime entry point for @elizaos/core (Vercel Edge, Cloudflare Workers, Deno Deploy).
+ * Edge runtime entry point for @tokagentos/core (Vercel Edge, Cloudflare Workers, Deno Deploy).
  * Same API as node minus Node-only modules: character-loader, sessions, plugins discovery,
  * media, network/ssrf, services/hook, provisioning, utils/node.
  *

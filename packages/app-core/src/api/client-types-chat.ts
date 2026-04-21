@@ -6,7 +6,7 @@
 import type {
   ConversationMetadata,
   ConversationScope,
-} from "@elizaos/agent/api/server-types";
+} from "@tokagentos/agent/api/server-types";
 
 // Conversations
 export interface Conversation {

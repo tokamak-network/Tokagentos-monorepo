@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import { stringToUuid, type UUID } from "@elizaos/core";
+import { stringToUuid, type UUID } from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 import type {
   ChatRoom,
@@ -17,7 +17,7 @@ import {
   type SessionIdentity,
 } from "./identity.js";
 
-const SESSION_DIR = ".eliza-code";
+const SESSION_DIR = ".tokagent-code";
 const SESSION_FILE = "session.json";
 
 export interface SessionData {
@@ -46,7 +46,7 @@ export interface SerializedRoom {
   messages: SerializedMessage[];
   createdAt: number;
   taskIds: string[];
-  elizaRoomId: string;
+  tokagentRoomId: string;
 }
 
 export interface SerializedMessage {
@@ -107,7 +107,7 @@ function sanitizeRole(role: string): MessageRole {
 }
 
 function shouldPersistToDisk(): boolean {
-  if (process.env.ELIZA_CODE_DISABLE_SESSION_PERSISTENCE === "1") return false;
+  if (process.env.TOKAGENT_CODE_DISABLE_SESSION_PERSISTENCE === "1") return false;
   if (process.env.BUN_TEST === "1") return false;
   if (process.env.NODE_ENV === "test") return false;
   return true;
@@ -127,7 +127,7 @@ function serializeRoom(room: ChatRoom): SerializedRoom {
     })),
     createdAt: toEpoch(room.createdAt),
     taskIds: room.taskIds || [],
-    elizaRoomId: room.elizaRoomId,
+    tokagentRoomId: room.tokagentRoomId,
   };
 }
 
@@ -135,11 +135,11 @@ function deserializeRoom(data: SerializedRoom): ChatRoom {
   // Validate required fields
   const id = data.id || uuidv4();
   const name = data.name || "Chat";
-  const elizaRoomIdRaw =
-    typeof data.elizaRoomId === "string" ? data.elizaRoomId : "";
-  const elizaRoomId: UUID = isUuidString(elizaRoomIdRaw)
-    ? elizaRoomIdRaw
-    : stringToUuid(`eliza-code:room:${id}`);
+  const tokagentRoomIdRaw =
+    typeof data.tokagentRoomId === "string" ? data.tokagentRoomId : "";
+  const tokagentRoomId: UUID = isUuidString(tokagentRoomIdRaw)
+    ? tokagentRoomIdRaw
+    : stringToUuid(`tokagent-code:room:${id}`);
 
   return {
     id,
@@ -156,7 +156,7 @@ function deserializeRoom(data: SerializedRoom): ChatRoom {
     ),
     createdAt: toDate(data.createdAt),
     taskIds: data.taskIds || [],
-    elizaRoomId,
+    tokagentRoomId,
   };
 }
 
@@ -234,7 +234,7 @@ export async function loadSession(): Promise<SessionState | null> {
     const rooms = data.rooms
       .map((roomData) => {
         try {
-          if (!isUuidString(roomData.elizaRoomId)) {
+          if (!isUuidString(roomData.tokagentRoomId)) {
             needsMigrationSave = true;
           }
           return deserializeRoom(roomData);
@@ -303,7 +303,7 @@ export async function loadSession(): Promise<SessionState | null> {
           : undefined,
     };
 
-    // If we repaired invalid UUIDs (e.g. bad elizaRoomId from earlier runs/tests), persist the fixed session.
+    // If we repaired invalid UUIDs (e.g. bad tokagentRoomId from earlier runs/tests), persist the fixed session.
     if (needsMigrationSave && shouldPersistToDisk()) {
       try {
         await saveSession(state);

@@ -42,13 +42,13 @@ export interface JournalStoreOptions {
   displayName: string;
   /**
    * Override the journal root. Defaults to
-   * `~/.eliza/scape-journals/`. Mostly used by tests.
+   * `~/.tokagent/scape-journals/`. Mostly used by tests.
    */
   rootDir?: string;
 }
 
 function defaultRootDir(): string {
-  return join(homedir(), ".eliza", "scape-journals");
+  return join(homedir(), ".tokagent", "scape-journals");
 }
 
 function sanitizeFilename(name: string): string {

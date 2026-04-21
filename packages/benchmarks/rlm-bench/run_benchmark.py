@@ -12,14 +12,14 @@ Benchmarks:
 
 Modes:
 - stub: Fast testing with heuristic-based mock
-- rlm: Direct RLM plugin inference (bypasses Eliza runtime)
-- eliza: Full Eliza agent loop (Provider -> Model -> Action -> Evaluator)
+- rlm: Direct RLM plugin inference (bypasses Tokagent runtime)
+- tokagent: Full Tokagent agent loop (Provider -> Model -> Action -> Evaluator)
 - custom: Custom LLM query function
 
 Example:
     python run_benchmark.py --mode stub --context-lengths 1000,10000
     python run_benchmark.py --mode rlm --backend gemini
-    python run_benchmark.py --mode eliza --context-lengths 1000,10000
+    python run_benchmark.py --mode tokagent --context-lengths 1000,10000
 """
 
 import argparse
@@ -33,7 +33,7 @@ from typing import Callable
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from elizaos_rlm_bench import (
+from tokagentos_rlm_bench import (
     RLMBenchConfig,
     RLMBenchRunner,
     save_results,
@@ -88,11 +88,11 @@ Examples:
   # Quick stub test
   python run_benchmark.py --mode stub --context-lengths 1000,10000
 
-  # Full RLM benchmark (direct client, bypasses Eliza)
+  # Full RLM benchmark (direct client, bypasses Tokagent)
   python run_benchmark.py --mode rlm --backend gemini
 
-  # Full Eliza agent loop (uses runtime + RLM plugin)
-  python run_benchmark.py --mode eliza --context-lengths 1000,10000
+  # Full Tokagent agent loop (uses runtime + RLM plugin)
+  python run_benchmark.py --mode tokagent --context-lengths 1000,10000
 
   # Custom context lengths
   python run_benchmark.py --context-lengths 1000,10000,100000,1000000
@@ -101,7 +101,7 @@ Examples:
 
     parser.add_argument(
         "--mode",
-        choices=["stub", "rlm", "eliza", "custom"],
+        choices=["stub", "rlm", "tokagent", "custom"],
         default="stub",
         help="Execution mode (default: stub)",
     )
@@ -194,14 +194,14 @@ def progress_callback(current: int, total: int) -> None:
     print(f"\r[{bar}] {current}/{total} ({pct:.1f}%)", end="", flush=True)
 
 
-async def run_eliza_benchmark_mode(
+async def run_tokagent_benchmark_mode(
     config: RLMBenchConfig,
     progress_callback_fn: Callable[[int, int], None],
     output_dir: str,
 ) -> int:
-    """Run the full Eliza agent loop benchmark.
+    """Run the full Tokagent agent loop benchmark.
 
-    This mode exercises the complete canonical Eliza flow:
+    This mode exercises the complete canonical Tokagent flow:
     1. RLM_CONTEXT provider injects benchmark context
     2. MESSAGE_HANDLER_TEMPLATE generates response with actions
     3. REPLY action (from bootstrap) processes the response
@@ -216,14 +216,14 @@ async def run_eliza_benchmark_mode(
         Exit code.
 
     """
-    from elizaos_rlm_bench.runner import run_eliza_benchmark
+    from tokagentos_rlm_bench.runner import run_tokagent_benchmark
 
-    print("Running FULL Eliza Agent Loop benchmark...")
+    print("Running FULL Tokagent Agent Loop benchmark...")
     print("This tests the complete canonical flow:")
     print("  RLM_CONTEXT Provider -> MESSAGE_HANDLER -> REPLY Action -> Evaluator")
     print()
 
-    results = await run_eliza_benchmark(
+    results = await run_tokagent_benchmark(
         config=config,
         progress_callback=progress_callback_fn,
     )
@@ -235,7 +235,7 @@ async def run_eliza_benchmark_mode(
 
     # Print summary
     print("\n" + "=" * 60)
-    print("ELIZA AGENT LOOP BENCHMARK COMPLETE")
+    print("TOKAGENT AGENT LOOP BENCHMARK COMPLETE")
     print("=" * 60)
     print(f"\nOverall Accuracy: {results.metrics.overall_accuracy:.1%}")
     print(f"Tasks: {results.metrics.passed_tasks}/{results.metrics.total_tasks}")
@@ -255,7 +255,7 @@ async def run_eliza_benchmark_mode(
         strategies = [s.value for s in results.metrics.most_common_strategies[:3]]
         print(f"\nTop Strategies: {', '.join(strategies)}")
 
-    print("\nBenchmark Mode: Full Eliza Agent Loop")
+    print("\nBenchmark Mode: Full Tokagent Agent Loop")
     print("  Tested: Provider -> Model (RLM) -> Action (REPLY) -> Evaluator")
     print(f"\nResults saved to: {output_path}")
     print("=" * 60)
@@ -308,9 +308,9 @@ async def main() -> int:
         logger.info(f"Dual-model: root={args.root_model}, subcall={args.subcall_model}")
     logger.info("=" * 60)
 
-    # Special handling for eliza mode (FULL canonical agent loop)
-    if args.mode == "eliza":
-        return await run_eliza_benchmark_mode(
+    # Special handling for tokagent mode (FULL canonical agent loop)
+    if args.mode == "tokagent":
+        return await run_tokagent_benchmark_mode(
             config=config,
             progress_callback_fn=progress_callback,
             output_dir=args.output_dir,

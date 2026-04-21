@@ -1,24 +1,24 @@
 # frozen_string_literal: true
 
-# Homebrew formula for elizaOS App — personal AI assistant built on elizaOS
-# Use this for the tap's Formula/elizaos-app.rb entry.
+# Homebrew formula for tokagentOS App — personal AI assistant built on tokagentOS
+# Use this for the tap's Formula/tokagentos-app.rb entry.
 #
 # Key fixes from the original:
-#   - npm package name is "elizaos"
+#   - npm package name is "tokagentos"
 #   - URL points to correct npm registry path
 #   - Added livecheck block for auto-update detection
 #   - Added head for --HEAD installs from develop branch
 
-class ElizaosApp < Formula
+class TokagentosApp < Formula
   desc "Personal AI assistant — cute agents for the acceleration"
-  homepage "https://github.com/elizaos/elizaos-app"
-  url "https://registry.npmjs.org/elizaos/-/elizaos-2.0.0-alpha.76.tgz"
+  homepage "https://github.com/tokagentos/tokagentos-app"
+  url "https://registry.npmjs.org/tokagentos/-/tokagentos-2.0.0-alpha.76.tgz"
   sha256 "3f3749c0e591547eac1992ae90eb20ccdc10b899dd3b9edce9801ac416e3a60a"
   license "MIT"
-  head "https://github.com/elizaos/elizaos-app.git", branch: "develop"
+  head "https://github.com/tokagentos/tokagentos-app.git", branch: "develop"
 
   livecheck do
-    url "https://registry.npmjs.org/elizaos"
+    url "https://registry.npmjs.org/tokagentos"
     regex(/["']version["']:\s*["']([^"']+)["']/i)
   end
 
@@ -31,19 +31,19 @@ class ElizaosApp < Formula
 
   def caveats
     <<~EOS
-      elizaOS App requires Node.js 22+.
+      tokagentOS App requires Node.js 22+.
 
       Get started:
-        elizaos-app start         Start the agent runtime
-        elizaos-app setup         Run workspace setup
-        elizaos-app configure     Configuration guidance
+        tokagentos-app start         Start the agent runtime
+        tokagentos-app setup         Run workspace setup
+        tokagentos-app configure     Configuration guidance
 
       Dashboard: http://localhost:2138
-      Docs:      https://docs.app.elizaos.ai
+      Docs:      https://docs.app.tokagentos.ai
     EOS
   end
 
   test do
-    assert_match version.to_s, shell_output("#{bin}/elizaos-app --version")
+    assert_match version.to_s, shell_output("#{bin}/tokagentos-app --version")
   end
 end

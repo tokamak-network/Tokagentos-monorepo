@@ -1,11 +1,11 @@
 """
 Trajectory logging integration for the MINT benchmark.
 
-This integrates with the elizaOS trajectory logger plugin:
-`plugins/plugin-trajectory-logger/python/elizaos_plugin_trajectory_logger`.
+This integrates with the tokagentOS trajectory logger plugin:
+`plugins/plugin-trajectory-logger/python/tokagentos_plugin_trajectory_logger`.
 
 Goal:
-- Capture end-to-end ElizaOS flow (providers + model calls + tool execution) during benchmarks.
+- Capture end-to-end TokagentOS flow (providers + model calls + tool execution) during benchmarks.
 - Export trajectories in ART / GRPO-friendly formats for downstream training.
 """
 
@@ -35,7 +35,7 @@ def instrument_runtime_for_trajectory_logging(runtime: object, logger_service: o
         return
 
     # Import plugin types lazily (only when installed / on sys.path).
-    from elizaos_plugin_trajectory_logger.types import LLMCall, ProviderAccess
+    from tokagentos_plugin_trajectory_logger.types import LLMCall, ProviderAccess
 
     # Wrap runtime.use_model
     if hasattr(runtime, "use_model"):
@@ -143,7 +143,7 @@ def export_benchmark_trajectories(
     """
     Export trajectories via the trajectory logger plugin utilities.
     """
-    from elizaos_plugin_trajectory_logger.export import ExportOptions, export_for_openpipe_art, export_grouped_for_grpo
+    from tokagentos_plugin_trajectory_logger.export import ExportOptions, export_for_openpipe_art, export_grouped_for_grpo
 
     trajectories: list[object] = []
     for tid in trajectory_ids:

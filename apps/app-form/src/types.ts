@@ -33,7 +33,7 @@
  *    template literals for excellent IDE support and type safety.
  */
 
-import type { JsonValue, UUID } from "@elizaos/core";
+import type { JsonValue, UUID } from "@tokagentos/core";
 
 // ============================================================================
 // FORM CONTROL - Individual field definition
@@ -875,7 +875,7 @@ export interface ValidationResult {
  */
 export interface ActivationContext {
   /** Runtime for accessing services */
-  runtime: import("@elizaos/core").IAgentRuntime;
+  runtime: import("@tokagentos/core").IAgentRuntime;
   /** The current form session */
   session: FormSession;
   /** The control being activated */
@@ -1055,7 +1055,7 @@ export interface ControlType {
    */
   getSubControls?: (
     control: FormControl,
-    runtime: import("@elizaos/core").IAgentRuntime
+    runtime: import("@tokagentos/core").IAgentRuntime
   ) => FormControl[];
 
   // ═══ EXTERNAL TYPE METHODS ═══
@@ -1411,7 +1411,7 @@ export const FORM_DEFINITION_DEFAULTS = {
  * Component type prefix for form sessions.
  *
  * WHY component-based storage:
- * - Components are elizaOS's entity data storage
+ * - Components are tokagentOS's entity data storage
  * - Scoped to entity, can include room in type
  * - Automatic CRUD via runtime
  */

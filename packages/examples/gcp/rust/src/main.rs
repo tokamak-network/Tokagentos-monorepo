@@ -1,7 +1,7 @@
-//! GCP Cloud Run handler for elizaOS chat worker (Rust)
+//! GCP Cloud Run handler for tokagentOS chat worker (Rust)
 //!
 //! This Cloud Run service processes chat messages and returns AI responses
-//! using the elizaOS runtime with OpenAI as the LLM provider.
+//! using the tokagentOS runtime with OpenAI as the LLM provider.
 
 use anyhow::Result;
 use axum::{
@@ -11,13 +11,13 @@ use axum::{
     Json, Router,
 };
 use chrono::Utc;
-use elizaos::{
+use tokagentos::{
     parse_character,
     runtime::{AgentRuntime, RuntimeOptions},
     types::{Content, Memory, UUID},
 };
-use elizaos::services::IMessageService;
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos::services::IMessageService;
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, env, net::SocketAddr, sync::Arc};
 use tokio::sync::OnceCell;
@@ -30,11 +30,11 @@ static RUNTIME: OnceCell<Arc<AgentRuntime>> = OnceCell::const_new();
 async fn get_runtime() -> Result<Arc<AgentRuntime>> {
     RUNTIME
         .get_or_try_init(|| async {
-            info!("Initializing elizaOS runtime...");
+            info!("Initializing tokagentOS runtime...");
 
             let character_json = format!(
                 r#"{{"name": "{}", "bio": "{}", "system": "{}"}}"#,
-                env::var("CHARACTER_NAME").unwrap_or_else(|_| "Eliza".to_string()),
+                env::var("CHARACTER_NAME").unwrap_or_else(|_| "Tokagent".to_string()),
                 env::var("CHARACTER_BIO").unwrap_or_else(|_| "A helpful AI assistant.".to_string()),
                 env::var("CHARACTER_SYSTEM").unwrap_or_else(|_| {
                     "You are a helpful, concise AI assistant. Respond thoughtfully to user messages."
@@ -44,7 +44,7 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>> {
 
             let character = parse_character(&character_json)?;
 
-            let openai_plugin = create_openai_elizaos_plugin()?;
+            let openai_plugin = create_openai_tokagentos_plugin()?;
 
             let runtime = AgentRuntime::new(RuntimeOptions {
                 character: Some(character),
@@ -59,7 +59,7 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>> {
                 .await
                 ?;
 
-            info!("elizaOS runtime initialized successfully");
+            info!("tokagentOS runtime initialized successfully");
             Ok(Arc::new(runtime))
         })
         .await
@@ -68,7 +68,7 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>> {
 
 /// Get character configuration from environment variables
 fn get_character() -> (String, String, String) {
-    let name = env::var("CHARACTER_NAME").unwrap_or_else(|_| "Eliza".to_string());
+    let name = env::var("CHARACTER_NAME").unwrap_or_else(|_| "Tokagent".to_string());
     let bio = env::var("CHARACTER_BIO").unwrap_or_else(|_| "A helpful AI assistant.".to_string());
     let system = env::var("CHARACTER_SYSTEM").unwrap_or_else(|_| {
         "You are a helpful, concise AI assistant. Respond thoughtfully to user messages."
@@ -122,7 +122,7 @@ struct ErrorResponse {
 async fn handle_health() -> Json<HealthResponse> {
     Json(HealthResponse {
         status: "healthy".to_string(),
-        runtime: "elizaos-rust".to_string(),
+        runtime: "tokagentos-rust".to_string(),
         version: "1.0.0".to_string(),
     })
 }
@@ -143,12 +143,12 @@ async fn handle_info() -> Json<InfoResponse> {
         name,
         bio,
         version: "1.0.0".to_string(),
-        powered_by: "elizaOS".to_string(),
+        powered_by: "tokagentOS".to_string(),
         endpoints,
     })
 }
 
-/// Chat handler using elizaOS runtime
+/// Chat handler using tokagentOS runtime
 async fn handle_chat(Json(request): Json<ChatRequest>) -> Response {
     if request.message.trim().is_empty() {
         return (
@@ -199,7 +199,7 @@ async fn process_chat(request: ChatRequest) -> Result<ChatResponse> {
     };
     let mut message = Memory::new(user_id, room_id, content);
 
-    // Process message through elizaOS runtime
+    // Process message through tokagentOS runtime
     let result = runtime
         .message_service()
         .handle_message(&runtime, &mut message, None, None)
@@ -252,7 +252,7 @@ async fn main() -> Result<()> {
 
     let addr = SocketAddr::from(([0, 0, 0, 0], port));
 
-    info!("🚀 elizaOS Cloud Run worker started on port {}", port);
+    info!("🚀 tokagentOS Cloud Run worker started on port {}", port);
     info!("📍 Health check: http://localhost:{}/health", port);
     info!("💬 Chat endpoint: http://localhost:{}/chat", port);
 

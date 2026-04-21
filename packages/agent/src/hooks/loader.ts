@@ -10,7 +10,7 @@ import { lstat, realpath } from "node:fs/promises";
 import { homedir } from "node:os";
 import { resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type { InternalHooksConfig } from "../config/types.hooks.js";
 import { type DiscoveryOptions, discoverHooks } from "./discovery.js";
 import { checkEligibility, resolveHookConfig } from "./eligibility.js";
@@ -24,7 +24,7 @@ function getSafeHookRoots(
   workspacePath?: string,
   bundledDir?: string,
 ): string[] {
-  const roots: string[] = [resolve(homedir(), ".eliza", "hooks")];
+  const roots: string[] = [resolve(homedir(), ".tokagent", "hooks")];
   if (bundledDir) roots.push(resolve(bundledDir));
   if (workspacePath) {
     roots.push(resolve(workspacePath.replace(/^~/, homedir()), "hooks"));
@@ -116,8 +116,8 @@ async function loadHandlerModule(
 export interface LoadHooksOptions extends DiscoveryOptions {
   /** Internal hooks configuration. */
   internalConfig?: InternalHooksConfig;
-  /** Full Eliza config for eligibility checks. */
-  elizaConfig?: Record<string, unknown>;
+  /** Full Tokagent config for eligibility checks. */
+  tokagentConfig?: Record<string, unknown>;
 }
 
 export interface LoadHooksResult {
@@ -141,7 +141,7 @@ export interface LoadHooksResult {
 export async function loadHooks(
   options: LoadHooksOptions = {},
 ): Promise<LoadHooksResult> {
-  const { internalConfig, elizaConfig = {} } = options;
+  const { internalConfig, tokagentConfig = {} } = options;
 
   // Check if hooks are enabled
   if (internalConfig?.enabled === false) {
@@ -158,17 +158,17 @@ export async function loadHooks(
   // Clear existing hooks (for reload)
   clearHooks();
 
-  // Validate config-supplied extraDirs: only allow paths under ~/.eliza/
+  // Validate config-supplied extraDirs: only allow paths under ~/.tokagent/
   // to prevent config injection from scanning attacker-controlled directories.
   const safeExtraDirs = [...(options.extraDirs ?? [])];
-  const elizaHome = resolve(homedir(), ".eliza");
+  const tokagentHome = resolve(homedir(), ".tokagent");
   for (const dir of internalConfig?.load?.extraDirs ?? []) {
     const resolved = resolve(dir.replace(/^~/, homedir()));
-    if (resolved.startsWith(elizaHome + sep) || resolved === elizaHome) {
+    if (resolved.startsWith(tokagentHome + sep) || resolved === tokagentHome) {
       safeExtraDirs.push(dir);
     } else {
       logger.warn(
-        `[hooks] Rejected config extraDir "${dir}": must be under ~/.eliza/`,
+        `[hooks] Rejected config extraDir "${dir}": must be under ~/.tokagent/`,
       );
     }
   }
@@ -197,7 +197,7 @@ export async function loadHooks(
     const eligibility = checkEligibility(
       entry.metadata,
       hookConfig,
-      elizaConfig,
+      tokagentConfig,
     );
 
     if (!eligibility.eligible) {

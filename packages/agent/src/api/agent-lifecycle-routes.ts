@@ -1,4 +1,4 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { detectRuntimeModel } from "./agent-model.js";
 import type { RouteHelpers, RouteRequestMeta } from "./route-helpers.js";
 

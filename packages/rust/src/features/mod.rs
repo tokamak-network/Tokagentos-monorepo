@@ -1,4 +1,4 @@
-//! Feature modules (parity with TypeScript `eliza/packages/typescript/src/features/`).
+//! Feature modules (parity with TypeScript `tokagent/packages/typescript/src/features/`).
 
 #[cfg(all(
     feature = "basic_capabilities-internal",

@@ -1,7 +1,7 @@
 /**
  * Validation keywords for @elizaos/core.
  *
- * Keyword DATA is generated from JSON: @elizaos/shared/src/i18n/keywords/*.keywords.json
+ * Keyword DATA is generated from JSON: @tokagentos/shared/src/i18n/keywords/*.keywords.json
  *   → generated/validation-keyword-data.ts  (codegen, do not edit)
  *
  * Matching UTILITIES are below (hand-written).

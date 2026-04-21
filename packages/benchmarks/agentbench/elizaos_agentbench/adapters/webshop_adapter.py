@@ -9,14 +9,14 @@ import re
 from collections.abc import Callable
 from typing import TypedDict
 
-from elizaos_agentbench.types import (
+from tokagentos_agentbench.types import (
     AgentBenchEnvironment,
     AgentRuntimeProtocol,
     AgentBenchTask,
     EnvironmentConfig,
     ObservationType,
 )
-from elizaos_agentbench.adapters.base import EnvironmentAdapter
+from tokagentos_agentbench.adapters.base import EnvironmentAdapter
 
 logger = logging.getLogger(__name__)
 

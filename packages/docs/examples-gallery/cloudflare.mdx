@@ -1,6 +1,6 @@
 ---
 title: "Cloudflare Examples"
-description: "Deploy elizaOS to Cloudflare Workers"
+description: "Deploy tokagentOS to Cloudflare Workers"
 ---
 
 Deploy AI agents to Cloudflare's global edge network.
@@ -24,7 +24,7 @@ wrangler deploy
 
 ```typescript
 // src/worker.ts
-import { AgentRuntime, ModelType } from "@elizaos/core";
+import { AgentRuntime, ModelType } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 interface Env {
@@ -38,7 +38,7 @@ async function getRuntime(env: Env) {
 
   runtime = new AgentRuntime({
     character: {
-      name: "Eliza",
+      name: "Tokagent",
       bio: "A helpful AI assistant.",
       secrets: { OPENAI_API_KEY: env.OPENAI_API_KEY },
     },
@@ -74,12 +74,12 @@ export default {
 `wrangler.toml`:
 
 ```toml
-name = "eliza-worker"
+name = "tokagent-worker"
 main = "src/worker.ts"
 compatibility_date = "2024-01-01"
 
 [vars]
-CHARACTER_NAME = "Eliza"
+CHARACTER_NAME = "Tokagent"
 
 [[kv_namespaces]]
 binding = "MEMORY"
@@ -109,7 +109,7 @@ For maximum performance, use the Rust WASM worker:
 ```rust
 // rust-worker/src/lib.rs
 use worker::*;
-use elizaos::{AgentRuntime, RuntimeOptions};
+use tokagentos::{AgentRuntime, RuntimeOptions};
 
 #[event(fetch)]
 async fn fetch(req: Request, env: Env, _ctx: Context) -> Result<Response> {

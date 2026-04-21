@@ -1,4 +1,4 @@
-import type { AgentRuntime, UUID } from "@elizaos/core";
+import type { AgentRuntime, UUID } from "@tokagentos/core";
 import { describe, expect, it, vi } from "vitest";
 
 import { resolveChatAdminEntityId } from "./chat-routes.js";
@@ -14,12 +14,12 @@ describe("conversation callback history persistence", () => {
     const state = {
       runtime: {
         getSetting: (key: string) =>
-          key === "ELIZA_ADMIN_ENTITY_ID"
+          key === "TOKAGENT_ADMIN_ENTITY_ID"
             ? "00000000-0000-0000-0000-000000000123"
             : undefined,
       },
       config: {},
-      agentName: "Eliza",
+      agentName: "Tokagent",
       adminEntityId: "00000000-0000-0000-0000-00000000f00d",
       chatUserId: null,
       logBuffer: [],
@@ -40,12 +40,12 @@ describe("conversation callback history persistence", () => {
     const state = {
       runtime: {
         getSetting: (key: string) =>
-          key === "ELIZA_ADMIN_ENTITY_ID"
+          key === "TOKAGENT_ADMIN_ENTITY_ID"
             ? "00000000-0000-0000-0000-000000000456"
             : undefined,
       },
       config: {},
-      agentName: "Eliza",
+      agentName: "Tokagent",
       adminEntityId: "00000000-0000-0000-0000-00000000f00d",
       chatUserId: null,
       logBuffer: [],

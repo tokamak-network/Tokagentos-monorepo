@@ -1,8 +1,8 @@
-# elizaOS REST API Examples
+# tokagentOS REST API Examples
 
-This directory contains REST API examples for elizaOS using various web frameworks across TypeScript, Python, and Rust.
+This directory contains REST API examples for tokagentOS using various web frameworks across TypeScript, Python, and Rust.
 
-All examples use the **canonical elizaOS implementation pattern**:
+All examples use the **canonical tokagentOS implementation pattern**:
 
 ```
 runtime.messageService.handleMessage(runtime, messageMemory, callback)
@@ -27,13 +27,13 @@ import {
   createCharacter,
   createMessageMemory,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
 
 // Create runtime
 const runtime = new AgentRuntime({
-  character: createCharacter({ name: "Eliza", bio: "A helpful AI assistant." }),
+  character: createCharacter({ name: "Tokagent", bio: "A helpful AI assistant." }),
   plugins: [sqlPlugin, openaiPlugin],
 });
 
@@ -101,7 +101,7 @@ Response:
 ```json
 {
   "response": "Hello! I'm doing well. How can I help you today?",
-  "character": "Eliza",
+  "character": "Tokagent",
   "userId": "generated-uuid"
 }
 ```
@@ -158,8 +158,8 @@ OPENAI_API_KEY=your-key cargo run --release
 
 ```typescript
 // ❌ WRONG - Never call plugin functions directly
-import { generateElizaResponse } from "@elizaos/plugin-eliza-classic";
-const response = generateElizaResponse(message);
+import { generateTokagentResponse } from "@elizaos/plugin-tokagent-classic";
+const response = generateTokagentResponse(message);
 ```
 
 **DO** this instead:

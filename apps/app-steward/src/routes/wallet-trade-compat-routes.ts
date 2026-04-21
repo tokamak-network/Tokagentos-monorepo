@@ -6,17 +6,17 @@
  *   POST /api/wallet/transfer/execute — token / BNB transfer execution
  */
 import type http from "node:http";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import {
   readCompatJsonBody,
   type CompatRuntimeState,
-} from "@elizaos/app-core/api/compat-route-shared";
-import { ensureCompatApiAuthorized } from "@elizaos/app-core/api/auth";
+} from "@tokagentos/app-core/api/compat-route-shared";
+import { ensureCompatApiAuthorized } from "@tokagentos/app-core/api/auth";
 import {
   sendJsonError as sendJsonErrorResponse,
   sendJson as sendJsonResponse,
-} from "@elizaos/app-core/api/response";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/app-core/api/response";
+import { logger } from "@tokagentos/core";
 import { type PolicyResult, StewardApiError } from "@stwd/sdk";
 import { ethers } from "ethers";
 import {
@@ -43,7 +43,7 @@ import {
 // Constants
 // ---------------------------------------------------------------------------
 
-const AGENT_AUTOMATION_HEADER = "x-elizaos-agent-action";
+const AGENT_AUTOMATION_HEADER = "x-tokagentos-agent-action";
 
 // ---------------------------------------------------------------------------
 // Helpers (only used by trade / transfer routes)
@@ -60,7 +60,7 @@ function resolveBscExecutionNetwork(): {
   chainId: number;
   explorerBaseUrl: string;
 } {
-  if (process.env.ELIZA_WALLET_NETWORK?.trim().toLowerCase() === "testnet") {
+  if (process.env.TOKAGENT_WALLET_NETWORK?.trim().toLowerCase() === "testnet") {
     const parsedChainId = Number.parseInt(
       process.env.BSC_TESTNET_CHAIN_ID?.trim() ?? "97",
       10,
@@ -190,7 +190,7 @@ export async function handleWalletTradeCompatRoutes(
       return true;
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const tradePermissionMode = _resolveTradePermissionMode(config);
     const canExecuteLocally = _canUseLocalTradeExecution(
       tradePermissionMode,
@@ -512,7 +512,7 @@ export async function handleWalletTradeCompatRoutes(
       return true;
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const tradePermissionMode = _resolveTradePermissionMode(config);
     const canExecuteLocally = _canUseLocalTradeExecution(
       tradePermissionMode,

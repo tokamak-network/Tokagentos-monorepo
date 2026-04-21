@@ -13,12 +13,12 @@ import { createLiveRuntimeChildEnv } from "../../../../../test/helpers/live-chil
 
 export const LIVE_TESTS_ENABLED =
   process.env.MILADY_LIVE_TEST === "1" ||
-  process.env.ELIZA_LIVE_TEST === "1";
+  process.env.TOKAGENT_LIVE_TEST === "1";
 export const LIVE_PROVIDER_OVERRIDE =
-  process.env.ELIZA_LIVE_PROVIDER?.trim().toLowerCase() ?? "";
+  process.env.TOKAGENT_LIVE_PROVIDER?.trim().toLowerCase() ?? "";
 export const LIVE_CHAT_TEST_TIMEOUT_MS = 300_000;
 export const LIVE_RUNTIME_BOOT_TIMEOUT_MS = 180_000;
-/** Monorepo root (parent of `eliza/`). */
+/** Monorepo root (parent of `tokagent/`). */
 export const REPO_ROOT = path.resolve(
   import.meta.dirname,
   "..",
@@ -33,7 +33,7 @@ const LIVE_BOOT_HTTP_TIMEOUT_MS = 15_000;
 const LIVE_CONVERSATION_REQUEST_TIMEOUT_MS = 45_000;
 const LIVE_ENTITY_RESOLUTION_TIMEOUT_MS = 20_000;
 const LIVE_ENTITY_RESOLUTION_RETRY_MS = 500;
-const LIVE_TEST_LANGUAGE = process.env.ELIZA_LIVE_TEST_LANGUAGE?.trim() || "en";
+const LIVE_TEST_LANGUAGE = process.env.TOKAGENT_LIVE_TEST_LANGUAGE?.trim() || "en";
 
 try {
   const { config } = await import("dotenv");
@@ -96,8 +96,8 @@ const LIVE_PROVIDER_PLUGIN_NAMES = new Set(
   LIVE_PROVIDER_CANDIDATES.map((candidate) => candidate.plugin),
 );
 export const LIVE_CLOUD_ENV_PREFIXES = [
-  "ELIZAOS_CLOUD_",
-  "ELIZA_CLOUD_",
+  "TOKAGENTOS_CLOUD_",
+  "TOKAGENT_CLOUD_",
 ] as const;
 
 const LIVE_PROVIDER_CHEAP_MODELS = {
@@ -166,7 +166,7 @@ export type LifeOpsOverviewRecord = {
   agentOps?: Record<string, unknown>;
 };
 
-const ELIZA_CLOUD_OPENAI_BASE_URL = "https://elizacloud.ai/api/v1";
+const TOKAGENT_CLOUD_OPENAI_BASE_URL = "https://tokagentcloud.ai/api/v1";
 
 function resolveLiveProviderModelEnv(
   providerName: LiveProviderName,
@@ -304,7 +304,7 @@ export async function selectLifeOpsLiveProvider(): Promise<SelectedLiveProvider 
       name: "openai",
       env: {
         OPENAI_API_KEY: configuredCloudApiKey,
-        OPENAI_BASE_URL: ELIZA_CLOUD_OPENAI_BASE_URL,
+        OPENAI_BASE_URL: TOKAGENT_CLOUD_OPENAI_BASE_URL,
         ...resolveLiveProviderModelEnv("openai"),
       },
       plugin: "@elizaos/plugin-openai",
@@ -318,9 +318,9 @@ export function getLifeOpsLiveSetupWarnings(
   selectedProvider: SelectedLiveProvider | null,
 ): string[] {
   return [
-    !LIVE_TESTS_ENABLED ? "set MILADY_LIVE_TEST=1 or ELIZA_LIVE_TEST=1" : null,
+    !LIVE_TESTS_ENABLED ? "set MILADY_LIVE_TEST=1 or TOKAGENT_LIVE_TEST=1" : null,
     !selectedProvider
-      ? "provide a live provider key such as OPENAI_API_KEY, OPENROUTER_API_KEY, GOOGLE_API_KEY, ANTHROPIC_API_KEY, or GROQ_API_KEY, or configure cloud.apiKey in the Eliza config"
+      ? "provide a live provider key such as OPENAI_API_KEY, OPENROUTER_API_KEY, GOOGLE_API_KEY, ANTHROPIC_API_KEY, or GROQ_API_KEY, or configure cloud.apiKey in the Tokagent config"
       : null,
   ].filter((entry): entry is string => Boolean(entry));
 }
@@ -328,7 +328,7 @@ export function getLifeOpsLiveSetupWarnings(
 export function applyLocalEmbeddingDefaults(
   env: Record<string, string | undefined>,
 ): void {
-  delete env.ELIZA_DISABLE_LOCAL_EMBEDDINGS;
+  delete env.TOKAGENT_DISABLE_LOCAL_EMBEDDINGS;
 
   if (!env.LOCAL_EMBEDDING_DIMENSIONS?.trim()) {
     env.LOCAL_EMBEDDING_DIMENSIONS = "384";
@@ -381,8 +381,8 @@ export function buildSelectedLiveProviderEnv(
 
 async function loadBaseLiveConfig(): Promise<Record<string, unknown>> {
   const configuredPath =
-    process.env.ELIZA_CONFIG_PATH?.trim() ||
-    path.join(os.homedir(), ".eliza", "eliza.json");
+    process.env.TOKAGENT_CONFIG_PATH?.trim() ||
+    path.join(os.homedir(), ".tokagent", "tokagent.json");
 
   try {
     const raw = await readFile(configuredPath, "utf8");
@@ -526,16 +526,16 @@ export async function startLifeOpsLiveRuntime(options?: {
 
   if (!selectedProvider) {
     throw new Error(
-      "No live provider was configured. Set ELIZA_LIVE_PROVIDER or provide a supported provider API key.",
+      "No live provider was configured. Set TOKAGENT_LIVE_PROVIDER or provide a supported provider API key.",
     );
   }
 
   const tempRoot = await mkdtemp(
-    path.join(os.tmpdir(), "eliza-lifeops-live-"),
+    path.join(os.tmpdir(), "tokagent-lifeops-live-"),
   );
   const stateDir = path.join(tempRoot, "state");
   const pgliteDir = path.join(tempRoot, "pglite");
-  const configPath = path.join(tempRoot, "eliza.json");
+  const configPath = path.join(tempRoot, "tokagent.json");
   const apiPort = await getFreePort();
   const logs: string[] = [];
   const baseConfig = await loadBaseLiveConfig();
@@ -646,17 +646,17 @@ export async function startLifeOpsLiveRuntime(options?: {
     "utf8",
   );
 
-  const child = spawn("bun", ["run", "start:eliza"], {
+  const child = spawn("bun", ["run", "start:tokagent"], {
     cwd: REPO_ROOT,
     env: createLiveRuntimeChildEnv({
       ...buildSelectedLiveProviderEnv(selectedProvider),
-      ELIZA_CONFIG_PATH: configPath,
-      ELIZA_STATE_DIR: stateDir,
+      TOKAGENT_CONFIG_PATH: configPath,
+      TOKAGENT_STATE_DIR: stateDir,
       PGLITE_DATA_DIR: pgliteDir,
-      ELIZA_PORT: String(apiPort),
-      ELIZA_API_PORT: String(apiPort),
+      TOKAGENT_PORT: String(apiPort),
+      TOKAGENT_API_PORT: String(apiPort),
       ENABLE_AUTONOMY: "false",
-      ELIZA_DISABLE_PROACTIVE_AGENT: "1",
+      TOKAGENT_DISABLE_PROACTIVE_AGENT: "1",
       ALLOW_NO_DATABASE: "",
       DISCORD_API_TOKEN: "",
       DISCORD_BOT_TOKEN: "",

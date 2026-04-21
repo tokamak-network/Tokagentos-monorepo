@@ -1,6 +1,6 @@
 //! Prompt template rendering utilities.
 //!
-//! elizaOS prompt templates use Handlebars-style syntax (e.g. `{{agentName}}`).
+//! tokagentOS prompt templates use Handlebars-style syntax (e.g. `{{agentName}}`).
 //! This module provides a small, deterministic wrapper around the `handlebars` crate.
 
 use anyhow::Result;

@@ -20,7 +20,7 @@ description: "Build and coordinate multiple specialized agents working together 
 You already have Shakespeare in `src/character.ts` from the previous guide. Now let's add another agent to our project so they can interact. We'll create a fresh character file for Hemingway using the CLI:
 
 ```bash Terminal
-elizaos create --type agent hemingway
+tokagentos create --type agent hemingway
 ```
 
 This clones a JSON character template as `hemingway.json`. You'll now have:
@@ -251,7 +251,7 @@ import {
   type IAgentRuntime,
   type Project,
   type ProjectAgent,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { character } from "./character.ts";
 import hemingway from "../hemingway.json"; // [!code ++]
 
@@ -287,7 +287,7 @@ const project: Project = {
 Now when you start your project, both agents launch automatically:
 
 ```bash Terminal
-elizaos start
+tokagentos start
 ```
 
 You'll see both agents initialize in the console output:
@@ -341,6 +341,6 @@ Now that you know how to add multiple agents to a single project, you can add as
     Build custom plugins to extend your agents' capabilities
   </Card>
   <Card title="Publish a Plugin" icon="upload" href="/guides/publish-a-plugin">
-    Learn how to publish your plugins to the elizaOS registry
+    Learn how to publish your plugins to the tokagentOS registry
   </Card>
 </CardGroup>

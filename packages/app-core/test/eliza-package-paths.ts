@@ -4,8 +4,8 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const skipLocalUpstreams =
-  process.env.ELIZA_SKIP_LOCAL_UPSTREAMS === "1" ||
-  process.env.ELIZA_SKIP_LOCAL_UPSTREAMS === "1";
+  process.env.TOKAGENT_SKIP_LOCAL_UPSTREAMS === "1" ||
+  process.env.TOKAGENT_SKIP_LOCAL_UPSTREAMS === "1";
 
 function getRepoLocalWorkspaceRoot(
   packageName: string,
@@ -15,20 +15,20 @@ function getRepoLocalWorkspaceRoot(
     return undefined;
   }
 
-  if (packageName === "@elizaos/core") {
-    return getRepoLocalElizaCoreRoot(packageName, repoRoot);
+  if (packageName === "@tokagentos/core") {
+    return getRepoLocalTokagentCoreRoot(packageName, repoRoot);
   }
 
   const relativeRoots: Record<string, string[]> = {
-    "@elizaos/agent": ["eliza/packages/agent", "../eliza/packages/agent"],
-    "@elizaos/app-core": [
-      "eliza/packages/app-core",
-      "../eliza/packages/app-core",
+    "@tokagentos/agent": ["tokagent/packages/agent", "../tokagent/packages/agent"],
+    "@tokagentos/app-core": [
+      "tokagent/packages/app-core",
+      "../tokagent/packages/app-core",
     ],
-    "@elizaos/shared": ["eliza/packages/shared", "../eliza/packages/shared"],
+    "@tokagentos/shared": ["tokagent/packages/shared", "../tokagent/packages/shared"],
     "@elizaos/app-companion": [
-      "eliza/apps/app-companion",
-      "../eliza/apps/app-companion",
+      "tokagent/apps/app-companion",
+      "../tokagent/apps/app-companion",
     ],
   };
 
@@ -43,36 +43,36 @@ function getRepoLocalWorkspaceRoot(
 }
 
 /**
- * Return the repo-local eliza core workspace root when it is checked out as
- * part of the Eliza repo. This avoids relying on node_modules symlinks which
+ * Return the repo-local tokagent core workspace root when it is checked out as
+ * part of the Tokagent repo. This avoids relying on node_modules symlinks which
  * Bun can rewrite differently across fresh CI installs.
  */
-function getRepoLocalElizaCoreRoot(
+function getRepoLocalTokagentCoreRoot(
   packageName: string,
   repoRoot: string,
 ): string | undefined {
-  if (packageName !== "@elizaos/core" || skipLocalUpstreams) {
+  if (packageName !== "@tokagentos/core" || skipLocalUpstreams) {
     return undefined;
   }
 
-  const elizaRoots = [
-    path.resolve(repoRoot, "eliza"),
-    path.resolve(repoRoot, "..", "eliza"),
+  const tokagentRoots = [
+    path.resolve(repoRoot, "tokagent"),
+    path.resolve(repoRoot, "..", "tokagent"),
   ];
 
-  for (const elizaRoot of elizaRoots) {
-    if (!existsSync(path.join(elizaRoot, "package.json"))) {
+  for (const tokagentRoot of tokagentRoots) {
+    if (!existsSync(path.join(tokagentRoot, "package.json"))) {
       continue;
     }
 
-    const candidate = path.join(elizaRoot, "packages", "typescript");
+    const candidate = path.join(tokagentRoot, "packages", "typescript");
     if (!existsSync(path.join(candidate, "package.json"))) {
       continue;
     }
 
     // Require both a source entry AND installed dependencies. CI checks out the
     // submodule (submodules: recursive) but skips its dependency install
-    // (ELIZA_SKIP_LOCAL_UPSTREAMS=1), so the source exists but imports of
+    // (TOKAGENT_SKIP_LOCAL_UPSTREAMS=1), so the source exists but imports of
     // transitive deps like 'dedent' or 'adze' fail at runtime.
     const hasSource =
       existsSync(path.join(candidate, "dist", "node", "index.node.js")) ||
@@ -91,16 +91,16 @@ function getRepoLocalElizaCoreRoot(
   return undefined;
 }
 
-function isRepoLocalElizaCorePackageRoot(
+function isRepoLocalTokagentCorePackageRoot(
   packageName: string,
   packageRoot: string,
   repoRoot: string,
 ): boolean {
-  if (packageName !== "@elizaos/core") {
+  if (packageName !== "@tokagentos/core") {
     return false;
   }
 
-  const localRoot = getRepoLocalElizaCoreRoot(packageName, repoRoot);
+  const localRoot = getRepoLocalTokagentCoreRoot(packageName, repoRoot);
   if (!localRoot) {
     return false;
   }
@@ -185,7 +185,7 @@ export function getInstalledPackageEntry(
     return undefined;
   }
 
-  const preferSource = isRepoLocalElizaCorePackageRoot(
+  const preferSource = isRepoLocalTokagentCorePackageRoot(
     packageName,
     packageRoot,
     repoRoot,
@@ -312,14 +312,14 @@ export async function getInstalledPackageNamedExport<T>(
   );
 }
 
-export function getElizaCoreEntry(repoRoot: string): string | undefined {
-  const packageRoot = getInstalledPackageRoot("@elizaos/core", repoRoot);
+export function getTokagentCoreEntry(repoRoot: string): string | undefined {
+  const packageRoot = getInstalledPackageRoot("@tokagentos/core", repoRoot);
   if (!packageRoot) {
     return undefined;
   }
 
-  const candidates = isRepoLocalElizaCorePackageRoot(
-    "@elizaos/core",
+  const candidates = isRepoLocalTokagentCorePackageRoot(
+    "@tokagentos/core",
     packageRoot,
     repoRoot,
   )
@@ -349,8 +349,8 @@ export function getElizaCoreEntry(repoRoot: string): string | undefined {
 
 export function getAutonomousSourceRoot(repoRoot: string): string | undefined {
   const packageRoot =
-    getInstalledPackageRoot("@elizaos/agent", repoRoot) ??
-    getInstalledPackageRoot("@elizaos/agent", repoRoot);
+    getInstalledPackageRoot("@tokagentos/agent", repoRoot) ??
+    getInstalledPackageRoot("@tokagentos/agent", repoRoot);
 
   if (!packageRoot) {
     return undefined;
@@ -370,8 +370,8 @@ export function getAutonomousSourceRoot(repoRoot: string): string | undefined {
 
 export function getAppCoreSourceRoot(repoRoot: string): string | undefined {
   const packageRoot =
-    getInstalledPackageRoot("@elizaos/app-core", repoRoot) ??
-    getInstalledPackageRoot("@elizaos/app-core", repoRoot);
+    getInstalledPackageRoot("@tokagentos/app-core", repoRoot) ??
+    getInstalledPackageRoot("@tokagentos/app-core", repoRoot);
   if (!packageRoot) {
     return undefined;
   }
@@ -386,8 +386,8 @@ export function getAppCoreSourceRoot(repoRoot: string): string | undefined {
 
 export function getSharedSourceRoot(repoRoot: string): string | undefined {
   const packageRoot =
-    getInstalledPackageRoot("@elizaos/shared", repoRoot) ??
-    getInstalledPackageRoot("@elizaos/shared", repoRoot);
+    getInstalledPackageRoot("@tokagentos/shared", repoRoot) ??
+    getInstalledPackageRoot("@tokagentos/shared", repoRoot);
   if (!packageRoot) {
     return undefined;
   }
@@ -401,7 +401,7 @@ export function getSharedSourceRoot(repoRoot: string): string | undefined {
 }
 
 export function getUiSourceRoot(repoRoot: string): string | undefined {
-  const packageRoot = getInstalledPackageRoot("@elizaos/ui", repoRoot);
+  const packageRoot = getInstalledPackageRoot("@tokagentos/ui", repoRoot);
   if (!packageRoot) {
     return undefined;
   }

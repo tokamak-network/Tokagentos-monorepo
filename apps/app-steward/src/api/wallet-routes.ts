@@ -2,16 +2,16 @@ import type http from "node:http";
 import type {
   RouteHelpers,
   RouteRequestMeta,
-} from "@elizaos/agent/api/route-helpers";
-import type { ElizaConfig } from "@elizaos/agent/config/config";
-import { createIntegrationTelemetrySpan } from "@elizaos/agent/diagnostics";
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/agent/api/route-helpers";
+import type { TokagentConfig } from "@tokagentos/agent/config/config";
+import { createIntegrationTelemetrySpan } from "@tokagentos/agent/diagnostics";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   normalizeWalletRpcSelections,
   type WalletConfigUpdateRequest,
   type WalletRpcSelections,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import {
   fetchEvmBalances,
   fetchSolanaBalances,
@@ -36,7 +36,7 @@ import {
 import type {
   WalletExportRequestBody,
   WalletExportRejection as WalletExportRejectionLike,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 
 // Rate limiter for wallet export.
 // In test/CI mode the limit is relaxed to avoid blocking E2E suites.
@@ -167,9 +167,9 @@ export const DEFAULT_WALLET_ROUTE_DEPENDENCIES: WalletRouteDependencies = {
 export interface WalletRouteContext
   extends RouteRequestMeta,
     Pick<RouteHelpers, "readJsonBody" | "json" | "error"> {
-  config: ElizaConfig;
-  saveConfig: (config: ElizaConfig) => void;
-  ensureWalletKeysInEnvAndConfig: (config: ElizaConfig) => boolean;
+  config: TokagentConfig;
+  saveConfig: (config: TokagentConfig) => void;
+  ensureWalletKeysInEnvAndConfig: (config: TokagentConfig) => boolean;
   resolveWalletExportRejection: (
     req: http.IncomingMessage,
     body: WalletExportRequestBody,
@@ -354,8 +354,8 @@ export async function handleWalletRoutes(
       try {
         const agentId =
           process.env.STEWARD_AGENT_ID?.trim() ||
-          process.env.ELIZA_STEWARD_AGENT_ID?.trim() ||
-          process.env.ELIZA_STEWARD_AGENT_ID?.trim() ||
+          process.env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
+          process.env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
           null;
 
         if (!agentId) {
@@ -491,7 +491,7 @@ export async function handleWalletRoutes(
       (config.env as Record<string, string>).EVM_PRIVATE_KEY =
         result.privateKey;
       generated.push({ chain: "evm", address: result.address });
-      logger.info(`[eliza-api] Generated EVM wallet: ${result.address}`);
+      logger.info(`[tokagent-api] Generated EVM wallet: ${result.address}`);
     }
 
     if (targetChain === "both" || targetChain === "solana") {
@@ -500,7 +500,7 @@ export async function handleWalletRoutes(
       (config.env as Record<string, string>).SOLANA_PRIVATE_KEY =
         result.privateKey;
       generated.push({ chain: "solana", address: result.address });
-      logger.info(`[eliza-api] Generated Solana wallet: ${result.address}`);
+      logger.info(`[tokagent-api] Generated Solana wallet: ${result.address}`);
     }
 
     let configSaveWarning: string | undefined;

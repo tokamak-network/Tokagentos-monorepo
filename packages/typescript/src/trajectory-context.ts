@@ -61,7 +61,7 @@ class StackContextManager implements ITrajectoryContextManager {
 // through async/await — so logLlmCall never saw the trajectory step ID.
 let globalContextManager: ITrajectoryContextManager | null = null;
 const TRAJECTORY_CONTEXT_MANAGER_KEY = Symbol.for(
-	"elizaos.trajectoryContextManager",
+	"tokagentos.trajectoryContextManager",
 );
 
 type GlobalWithTrajectoryContextManager = typeof globalThis & {

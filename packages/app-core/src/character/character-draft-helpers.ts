@@ -1,13 +1,13 @@
 /** Character action helpers — CRUD and draft management. */
 
-import type { CharacterData, ElizaClient } from "../api/client";
+import type { CharacterData, TokagentClient } from "../api/client";
 
 type MessageExampleGroup = {
   examples: Array<{ name: string; content: { text: string } }>;
 };
 
 export interface CharacterActionContext {
-  client: ElizaClient;
+  client: TokagentClient;
   setCharacterData: (data: CharacterData | null) => void;
   setCharacterDraft: (
     fn: CharacterData | ((prev: CharacterData) => CharacterData),

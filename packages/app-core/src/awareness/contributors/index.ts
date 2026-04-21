@@ -1,4 +1,4 @@
-import type { AwarenessContributor } from "@elizaos/agent/contracts";
+import type { AwarenessContributor } from "@tokagentos/agent/contracts";
 // opinion contributor deferred to feat/bsc-opinion-markets PR
 import { cloudContributor } from "./cloud";
 import { connectorsContributor } from "./connectors";

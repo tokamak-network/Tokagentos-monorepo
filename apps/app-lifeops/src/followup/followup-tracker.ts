@@ -3,13 +3,13 @@ import type {
   JsonValue,
   Memory,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   MemoryType,
   createUniqueUuid,
   logger,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { loadLifeOpsAppState } from "../lifeops/app-state.js";
 import {
   BackgroundPlannerError,

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * elizaOS App Benchmark Orchestrator
+ * tokagentOS App Benchmark Orchestrator
  *
  * Loads task definitions, invokes the benchmark CLI for each task,
  * collects results, and produces a summary report.
@@ -24,14 +24,14 @@ const __dirname = dirname(__filename);
 
 /**
  * Resolve the app repo root. Accepts an explicit --root flag,
- * falls back to ELIZA_APP_ROOT env var, then
+ * falls back to TOKAGENT_APP_ROOT env var, then
  * walks up from this file looking for a package.json with a
  * "benchmark" script.
  */
 function resolveRepoRoot(): string {
-  const fromEnv = process.env.ELIZA_APP_ROOT;
+  const fromEnv = process.env.TOKAGENT_APP_ROOT;
   if (fromEnv) return resolve(fromEnv);
-  // Default: assume we're inside eliza/packages/benchmarks/app-eval/
+  // Default: assume we're inside tokagent/packages/benchmarks/app-eval/
   return resolve(__dirname, "../../../..");
 }
 
@@ -154,7 +154,7 @@ function parseArgs(argv: string[]): CliArgs {
 
 function printUsage(): void {
   console.log(`
-elizaOS App Benchmark Orchestrator
+tokagentOS App Benchmark Orchestrator
 
 Usage:
   bun run app-eval/run-benchmarks.ts [options]
@@ -162,7 +162,7 @@ Usage:
 Options:
   --type <research|coding>  Run only tasks of this type
   --task <id>               Run a single task by ID
-  --root <path>             App repo root (default: ELIZA_APP_ROOT env or auto-detect)
+  --root <path>             App repo root (default: TOKAGENT_APP_ROOT env or auto-detect)
   --dry-run                 Show tasks without running them
   --server                  Use server mode (boot runtime once, stream tasks)
   --timeout <ms>            Timeout per task in milliseconds (default: 120000)
@@ -258,7 +258,7 @@ function runSingleTask(
       cwd: REPO_ROOT,
       env: {
         ...process.env,
-        ELIZA_HEADLESS: "1",
+        TOKAGENT_HEADLESS: "1",
         LOG_LEVEL: "error",
       },
       stdio: ["pipe", "pipe", "pipe"],
@@ -346,7 +346,7 @@ async function runTasksServerMode(
         cwd: REPO_ROOT,
         env: {
           ...process.env,
-          ELIZA_HEADLESS: "1",
+          TOKAGENT_HEADLESS: "1",
           LOG_LEVEL: "error",
         },
         stdio: ["pipe", "pipe", "pipe"],

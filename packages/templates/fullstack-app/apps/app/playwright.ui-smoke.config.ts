@@ -6,19 +6,19 @@ const appDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(appDir, "../..");
 const uiSmokeLiveStack = path.join(
   repoRoot,
-  "eliza",
+  "tokagent",
   "packages",
   "app-core",
   "scripts",
   "playwright-ui-live-stack.ts",
 );
-const uiSmokeApiPort = Number(process.env.ELIZA_UI_SMOKE_API_PORT || "31337");
-const uiSmokePort = Number(process.env.ELIZA_UI_SMOKE_PORT || "2138");
+const uiSmokeApiPort = Number(process.env.TOKAGENT_UI_SMOKE_API_PORT || "31337");
+const uiSmokePort = Number(process.env.TOKAGENT_UI_SMOKE_PORT || "2138");
 
 // Keep the app's API port env aligned with the live stack when the suite runs
 // on non-default ports.
-if (!process.env.ELIZA_API_PORT) {
-  process.env.ELIZA_API_PORT = String(uiSmokeApiPort);
+if (!process.env.TOKAGENT_API_PORT) {
+  process.env.TOKAGENT_API_PORT = String(uiSmokeApiPort);
 }
 
 export default defineConfig({
@@ -44,7 +44,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `node ${JSON.stringify(path.join(repoRoot, "eliza", "packages", "app-core", "scripts", "run-node-tsx.mjs"))} ${JSON.stringify(uiSmokeLiveStack)}`,
+    command: `node ${JSON.stringify(path.join(repoRoot, "tokagent", "packages", "app-core", "scripts", "run-node-tsx.mjs"))} ${JSON.stringify(uiSmokeLiveStack)}`,
     cwd: repoRoot,
     port: uiSmokePort,
     reuseExistingServer: false,

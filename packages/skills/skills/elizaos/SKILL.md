@@ -1,11 +1,11 @@
 ---
-name: elizaos
-description: "Use when the task involves elizaOS core runtime concepts, plugins, actions, providers, evaluators, services, memories, state composition, or upstream elizaOS development. Covers the main abstractions and the TypeScript runtime mental model."
+name: tokagentos
+description: "Use when the task involves tokagentOS core runtime concepts, plugins, actions, providers, evaluators, services, memories, state composition, or upstream tokagentOS development. Covers the main abstractions and the TypeScript runtime mental model."
 ---
 
-# elizaOS
+# tokagentOS
 
-elizaOS is the plugin-based agent runtime that Eliza builds on top of.
+tokagentOS is the plugin-based agent runtime that Tokagent builds on top of.
 
 ## Read These References First
 
@@ -14,14 +14,14 @@ elizaOS is the plugin-based agent runtime that Eliza builds on top of.
 
 ## Use This Skill When
 
-- a change touches `eliza/`
+- a change touches `tokagent/`
 - you need to reason about `AgentRuntime`
 - you are implementing or debugging actions, providers, evaluators, services, or model handlers
-- you need the correct plugin lifecycle instead of guessing from Eliza wrappers
+- you need the correct plugin lifecycle instead of guessing from Tokagent wrappers
 
 ## Working Rules
 
-- Treat the TypeScript runtime in `eliza/packages/typescript/src/` as the primary reference implementation.
-- Prefer elizaOS-native abstractions over product-specific wrappers when reasoning about upstream behavior.
+- Treat the TypeScript runtime in `tokagent/packages/typescript/src/` as the primary reference implementation.
+- Prefer tokagentOS-native abstractions over product-specific wrappers when reasoning about upstream behavior.
 - Remember the split between persistent `Memory` and ephemeral `State`.
 - Remember that plugins are the main composition mechanism.

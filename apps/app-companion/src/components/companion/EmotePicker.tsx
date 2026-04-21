@@ -4,11 +4,11 @@ import {
   EMOTE_PICKER_EVENT,
   STOP_EMOTE_EVENT,
   useApp,
-} from "@elizaos/app-core";
-import { Button } from "@elizaos/ui/components/ui/button";
-import { Input } from "@elizaos/ui/components/ui/input";
-import { useTimeout } from "@elizaos/ui/hooks/useTimeout";
-import { Z_SYSTEM_CRITICAL } from "@elizaos/ui/lib/floating-layers";
+} from "@tokagentos/app-core";
+import { Button } from "@tokagentos/ui/components/ui/button";
+import { Input } from "@tokagentos/ui/components/ui/input";
+import { useTimeout } from "@tokagentos/ui/hooks/useTimeout";
+import { Z_SYSTEM_CRITICAL } from "@tokagentos/ui/lib/floating-layers";
 import { Menu, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 

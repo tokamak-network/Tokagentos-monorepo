@@ -1,7 +1,7 @@
 {
   "id": "plugin",
   "name": "plugin",
-  "description": "Create an elizaOS plugin starter",
+  "description": "Create an tokagentOS plugin starter",
   "kind": "plugin",
   "version": 1,
   "languages": ["typescript", "python", "rust"]

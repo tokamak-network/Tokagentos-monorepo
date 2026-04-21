@@ -56,7 +56,7 @@ export interface TravelConnectorStatus {
   provider: "travel";
   connected: boolean;
   adapter: "duffel" | null;
-  /** "cloud" when routing through Eliza Cloud relay (default), "direct"
+  /** "cloud" when routing through Tokagent Cloud relay (default), "direct"
    *  when MILADY_DUFFEL_DIRECT=1 + DUFFEL_API_KEY are set. null when the
    *  travel connector is unconfigured. */
   mode: "cloud" | "direct" | null;

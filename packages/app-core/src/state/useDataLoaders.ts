@@ -7,7 +7,7 @@
  * checkExtensionStatus.
  */
 
-import { resolveStylePresetByAvatarIndex } from "@elizaos/shared/onboarding-presets";
+import { resolveStylePresetByAvatarIndex } from "@tokagentos/shared/onboarding-presets";
 import {
   type RefObject,
   useCallback,
@@ -246,7 +246,7 @@ export function useDataLoaders(deps: DataLoadersDeps) {
         autonomousRunHealthByRunIdRef.current = partial;
         setAutonomousRunHealthByRunId(partial);
       }
-      console.warn("[eliza] Failed to fetch autonomous event replay", err);
+      console.warn("[tokagent] Failed to fetch autonomous event replay", err);
     } finally {
       autonomousReplayInFlightRef.current = false;
     }
@@ -490,7 +490,7 @@ export function useDataLoaders(deps: DataLoadersDeps) {
         await loadCharacter();
       } catch (err) {
         console.warn(
-          "[eliza] Failed to sync localized character preset after language change",
+          "[tokagent] Failed to sync localized character preset after language change",
           err,
         );
       }

@@ -3,8 +3,8 @@ import fs from "node:fs";
 import path from "node:path";
 import type {
   LifeOpsConnectorSide,
-} from "@elizaos/shared/contracts/lifeops";
-import { resolveOAuthDir } from "@elizaos/agent/config/paths";
+} from "@tokagentos/shared/contracts/lifeops";
+import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
 
 // Re-export the real GramJS auth session from plugin-telegram.
 // The plugin's TelegramAccountAuthSession handles the full MTProto flow:
@@ -106,7 +106,7 @@ function resolveApiId(
   env: NodeJS.ProcessEnv = process.env,
 ): number | null {
   if (explicit !== undefined && explicit > 0) return explicit;
-  const envValue = env.ELIZA_TELEGRAM_API_ID;
+  const envValue = env.TOKAGENT_TELEGRAM_API_ID;
   if (envValue) {
     const parsed = Number.parseInt(envValue, 10);
     if (Number.isFinite(parsed) && parsed > 0) return parsed;
@@ -120,7 +120,7 @@ function resolveApiHash(
   env: NodeJS.ProcessEnv = process.env,
 ): string | null {
   if (explicit && explicit.length > 0) return explicit;
-  const envValue = env.ELIZA_TELEGRAM_API_HASH;
+  const envValue = env.TOKAGENT_TELEGRAM_API_HASH;
   if (envValue && envValue.length > 0) return envValue;
   return null;
 }
@@ -648,7 +648,7 @@ function persistTelegramToken(session: PendingTelegramAuthSession): void {
     agentId: session.agentId,
     side: session.side,
     // The session string is persisted by TelegramAccountAuthSession
-    // in ~/.eliza/telegram-account/session.txt — we store the path reference.
+    // in ~/.tokagent/telegram-account/session.txt — we store the path reference.
     sessionString: connectorConfig?.appId ? "persisted" : "",
     apiId: connectorConfig ? Number(connectorConfig.appId) : (session.apiId ?? 0),
     apiHash: connectorConfig?.appHash ?? session.apiHash ?? "",

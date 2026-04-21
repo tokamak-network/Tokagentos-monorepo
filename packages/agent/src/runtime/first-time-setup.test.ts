@@ -4,7 +4,7 @@ import path from "node:path";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { ElizaConfig } from "../config/config.js";
+import type { TokagentConfig } from "../config/config.js";
 import {
   applyFirstTimeSetupTopology,
   bindCloudProvider,
@@ -18,17 +18,17 @@ describe("applyFirstTimeSetupTopology", () => {
         selectedProviderId: "openai",
         cloudOnboardingResult: {
           apiKey: "cloud-key",
-          baseUrl: "https://elizacloud.ai",
+          baseUrl: "https://tokagentcloud.ai",
           agentId: "agent-123",
         },
       }),
     ).toMatchObject({
       deploymentTarget: {
         runtime: "cloud",
-        provider: "elizacloud",
+        provider: "tokagentcloud",
       },
       linkedAccounts: {
-        elizacloud: {
+        tokagentcloud: {
           status: "linked",
           source: "oauth",
         },
@@ -39,42 +39,42 @@ describe("applyFirstTimeSetupTopology", () => {
           transport: "direct",
         },
         tts: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         media: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         embeddings: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         rpc: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
       },
       cloud: {
         apiKey: "cloud-key",
-        baseUrl: "https://elizacloud.ai",
+        baseUrl: "https://tokagentcloud.ai",
         agentId: "agent-123",
       },
     });
   });
 
-  it("defaults all cloud services on when local runtime uses Eliza Cloud inference", () => {
+  it("defaults all cloud services on when local runtime uses Tokagent Cloud inference", () => {
     expect(
       applyFirstTimeSetupTopology({} as never, {
         isCloudRuntime: false,
-        selectedProviderId: "elizacloud",
+        selectedProviderId: "tokagentcloud",
         cloudOnboardingResult: {
           apiKey: "cloud-key",
-          baseUrl: "https://elizacloud.ai",
+          baseUrl: "https://tokagentcloud.ai",
           agentId: undefined,
         },
       }),
@@ -83,36 +83,36 @@ describe("applyFirstTimeSetupTopology", () => {
         runtime: "local",
       },
       linkedAccounts: {
-        elizacloud: {
+        tokagentcloud: {
           status: "linked",
           source: "oauth",
         },
       },
       serviceRouting: {
         llmText: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         tts: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         media: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         embeddings: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         rpc: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
       },
     });
@@ -124,35 +124,35 @@ describe("applyFirstTimeSetupTopology", () => {
         isCloudRuntime: true,
         cloudOnboardingResult: {
           apiKey: "cloud-key",
-          baseUrl: "https://elizacloud.ai",
+          baseUrl: "https://tokagentcloud.ai",
           agentId: "agent-123",
         },
       }),
     ).toMatchObject({
       deploymentTarget: {
         runtime: "cloud",
-        provider: "elizacloud",
+        provider: "tokagentcloud",
       },
       serviceRouting: {
         tts: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         media: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         embeddings: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
         rpc: {
-          backend: "elizacloud",
+          backend: "tokagentcloud",
           transport: "cloud-proxy",
-          accountId: "elizacloud",
+          accountId: "tokagentcloud",
         },
       },
     });
@@ -180,12 +180,12 @@ describe("bindCloudProvider", () => {
 
   function buildConfig(
     cloud: Record<string, unknown> | undefined,
-  ): ElizaConfig {
+  ): TokagentConfig {
     const base: Record<string, unknown> = {};
     if (cloud !== undefined) {
       base.wallet = { cloud };
     }
-    return base as ElizaConfig;
+    return base as TokagentConfig;
   }
 
   it("is a no-op when ENABLE_CLOUD_WALLET is off", async () => {
@@ -252,7 +252,7 @@ describe("bindCloudProvider", () => {
     // Config with cloud descriptors AND user's explicit choice to use local
     const config = buildConfig({
       evm: { walletAddress: "0xabc" },
-    }) as ElizaConfig & {
+    }) as TokagentConfig & {
       wallet?: {
         primary?: { evm?: string; solana?: string | null };
       };

@@ -1,7 +1,7 @@
 """
 MINT Agent for Multi-turn Task Solving
 
-Uses the CANONICAL ElizaOS pipeline:
+Uses the CANONICAL TokagentOS pipeline:
 - Memory/Content for messages
 - message_service.handle_message() for full processing
 - Providers compose state with context (MINT_CONTEXT)
@@ -26,14 +26,14 @@ from benchmarks.mint.plugin import (
     get_mint_context,
     set_mint_context,
     update_mint_context_history,
-    ELIZAOS_AVAILABLE,
+    TOKAGENTOS_AVAILABLE,
 )
 
 logger = logging.getLogger(__name__)
 
 
 @runtime_checkable
-class ElizaRuntime(Protocol):
+class TokagentRuntime(Protocol):
     """Protocol matching the canonical IAgentRuntime interface."""
 
     @property
@@ -54,7 +54,7 @@ class MINTAgent:
     """
     Agent for solving MINT benchmark tasks through multi-turn interaction.
 
-    Uses the CANONICAL ElizaOS message handling pipeline:
+    Uses the CANONICAL TokagentOS message handling pipeline:
     - Creates Memory objects with Content
     - Calls message_service.handle_message() for full pipeline
     - Leverages MINT_CONTEXT provider for context composition
@@ -99,7 +99,7 @@ class MINTAgent:
 
     def __init__(
         self,
-        runtime: Optional[ElizaRuntime] = None,
+        runtime: Optional[TokagentRuntime] = None,
         tool_executor: Optional[PythonExecutor] = None,
         feedback_generator: Optional[FeedbackGenerator] = None,
         temperature: float = 0.0,
@@ -110,33 +110,33 @@ class MINTAgent:
         Initialize the MINT agent.
 
         Args:
-            runtime: ElizaOS runtime for CANONICAL message handling
+            runtime: TokagentOS runtime for CANONICAL message handling
             tool_executor: Executor for Python code
             feedback_generator: Generator for feedback messages
             temperature: Temperature for model responses (0.0-1.0)
             trajectory_logger_service: Optional trajectory logger service
             trajectory_ids_sink: Optional list to collect trajectory IDs
         """
-        self._runtime: Optional[ElizaRuntime] = None
-        if runtime is not None and isinstance(runtime, ElizaRuntime):
+        self._runtime: Optional[TokagentRuntime] = None
+        if runtime is not None and isinstance(runtime, TokagentRuntime):
             self._runtime = runtime
         self.tool_executor = tool_executor or PythonExecutor()
         self.feedback_generator = feedback_generator or FeedbackGenerator()
         # Validate temperature
         self.temperature = max(0.0, min(1.0, temperature))
 
-        # Session tracking for canonical Eliza flow
+        # Session tracking for canonical Tokagent flow
         self._room_id: object | None = None
         self._user_id: object | None = None
 
-        # Optional elizaOS trajectory logger plugin service + sink for IDs
+        # Optional tokagentOS trajectory logger plugin service + sink for IDs
         self._trajectory_logger_service: object | None = trajectory_logger_service
         self._trajectory_ids_sink: list[str] | None = trajectory_ids_sink
         self._active_trajectory_id: str | None = None
         self._active_step_id: str | None = None
 
     @property
-    def runtime(self) -> Optional[ElizaRuntime]:
+    def runtime(self) -> Optional[TokagentRuntime]:
         """Get the runtime instance."""
         return self._runtime
 
@@ -147,7 +147,7 @@ class MINTAgent:
         enable_feedback: bool = True,
     ) -> MINTTrajectory:
         """
-        Solve a MINT task using the CANONICAL ElizaOS pipeline.
+        Solve a MINT task using the CANONICAL TokagentOS pipeline.
 
         Args:
             task: The MINT task to solve
@@ -164,7 +164,7 @@ class MINTAgent:
             start_time_ms=time.time() * 1000,
         )
 
-        # Start elizaOS trajectory logging for this task
+        # Start tokagentOS trajectory logging for this task
         step_id_for_turn: str | None = None
         if self._runtime is not None and self._trajectory_logger_service is not None:
             try:
@@ -232,7 +232,7 @@ class MINTAgent:
             # Update plugin context with latest conversation history
             update_mint_context_history(conversation_history)
 
-            # Get response using CANONICAL Eliza pipeline
+            # Get response using CANONICAL Tokagent pipeline
             response, action_triggered = await self._get_response_canonical(
                 prompt=current_prompt,
                 system_prompt=system_prompt,
@@ -533,7 +533,7 @@ class MINTAgent:
 
         trajectory.end_time_ms = time.time() * 1000
 
-        # End elizaOS trajectory logging for this task
+        # End tokagentOS trajectory logging for this task
         if self._active_trajectory_id and self._trajectory_logger_service is not None:
             try:
                 status = "completed" if trajectory.success else "terminated"
@@ -566,7 +566,7 @@ class MINTAgent:
         enable_tools: bool = True,
     ) -> tuple[str, bool]:
         """
-        Get response using the CANONICAL ElizaOS pipeline.
+        Get response using the CANONICAL TokagentOS pipeline.
 
         Uses message_service.handle_message() when a runtime is available.
         Falls back to mock response when no runtime is configured.
@@ -578,14 +578,14 @@ class MINTAgent:
             mock_response = await self._get_mock_response(prompt, task)
             return mock_response, False
 
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             mock_response = await self._get_mock_response(prompt, task)
             return mock_response, False
 
         try:
             from uuid import uuid4
-            from elizaos.types.primitives import Content, as_uuid
-            from elizaos.types.memory import Memory
+            from tokagentos.types.primitives import Content, as_uuid
+            from tokagentos.types.memory import Memory
 
             # Create/reuse session IDs for this task
             if self._room_id is None:
@@ -611,7 +611,7 @@ class MINTAgent:
 
             # ============================================================
             # CANONICAL FLOW: Use message_service.handle_message()
-            # This is the correct way to process messages in ElizaOS:
+            # This is the correct way to process messages in TokagentOS:
             # 1. Saves message to memory (if adapter available)
             # 2. Composes state from ALL registered providers (MINT_CONTEXT)
             # 3. Uses MESSAGE_HANDLER_TEMPLATE (or custom template)
@@ -640,7 +640,7 @@ class MINTAgent:
 
         except ImportError as e:
             logger.warning(
-                f"[MINTAgent] Eliza imports unavailable: {e}, using mock response"
+                f"[MINTAgent] Tokagent imports unavailable: {e}, using mock response"
             )
             mock_response = await self._get_mock_response(prompt, task)
             return mock_response, False

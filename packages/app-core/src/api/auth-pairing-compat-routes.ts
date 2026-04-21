@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import type http from "node:http";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import {
   ensureCompatApiAuthorized,
   getCompatApiToken,
@@ -47,8 +47,8 @@ if (typeof pairingSweepTimer === "object" && "unref" in pairingSweepTimer) {
 function pairingEnabled(): boolean {
   return (
     Boolean(getCompatApiToken()) &&
-    process.env.ELIZA_PAIRING_DISABLED !== "1" &&
-    process.env.ELIZA_PAIRING_DISABLED !== "1"
+    process.env.TOKAGENT_PAIRING_DISABLED !== "1" &&
+    process.env.TOKAGENT_PAIRING_DISABLED !== "1"
   );
 }
 
@@ -128,7 +128,7 @@ export async function handleAuthPairingCompatRoutes(
     if (!ensureCompatApiAuthorized(req, res)) {
       return true;
     }
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     sendJsonResponse(res, 200, {
       complete: hasCompatPersistedOnboardingState(config),
     });

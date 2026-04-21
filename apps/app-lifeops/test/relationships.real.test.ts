@@ -7,7 +7,7 @@
  * skipped and only the deterministic branches run.
  */
 
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   createRealTestRuntime,

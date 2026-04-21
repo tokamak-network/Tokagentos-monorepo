@@ -12,7 +12,7 @@
  *
  * 1. **showProviderSelection** = a hosting target is already chosen and either:
  *    - it is `local`
- *    - it is Eliza Cloud-hosted
+ *    - it is Tokagent Cloud-hosted
  *    - or the user already connected to a remote backend
  *    **effectiveServerTarget:** if `forceCloud && onboardingServerTarget === ""`, use `"local"`. **Why:** cloud-only
  *    builds skip the hosting chooser and land directly on the provider grid.
@@ -54,7 +54,7 @@ export type {
  * update this constant and `ConnectionStep` / grid screen (see README in `components/onboarding/connection/`).
  */
 export const CONNECTION_RECOMMENDED_PROVIDER_IDS = [
-  "elizacloud",
+  "tokagentcloud",
   "anthropic-subscription",
   "openai-subscription",
 ] as const;
@@ -77,7 +77,7 @@ export const CONNECTION_TRANSITIONS: ReadonlyArray<ConnectionTransitionDocRow> =
     },
     {
       from: "hosting",
-      event: "selectElizaCloudHosting",
+      event: "selectTokagentCloudHosting",
       to: "providerGrid",
     },
     {
@@ -92,7 +92,7 @@ export const CONNECTION_TRANSITIONS: ReadonlyArray<ConnectionTransitionDocRow> =
     },
     {
       from: "providerDetail",
-      event: "setElizaCloudTab",
+      event: "setTokagentCloudTab",
       to: "same",
     },
     {
@@ -174,7 +174,7 @@ export function resolveConnectionUiSpec(
     showHostingLocalCard: !snapshot.cloudOnly && !snapshot.isNative,
     forceCloud: snapshot.forceCloud,
     providerId: snapshot.onboardingProvider,
-    elizaCloudTab: snapshot.onboardingElizaCloudTab,
+    tokagentCloudTab: snapshot.onboardingTokagentCloudTab,
     subscriptionTab: snapshot.onboardingSubscriptionTab,
   };
 }
@@ -192,7 +192,7 @@ const resetCloudSelectionPatch = (): ConnectionStatePatch => ({
 const resetHostingSelectionPatch = (): ConnectionStatePatch => ({
   ...resetCloudSelectionPatch(),
   onboardingSubscriptionTab: "token",
-  onboardingElizaCloudTab: "login",
+  onboardingTokagentCloudTab: "login",
 });
 
 /**
@@ -200,7 +200,7 @@ const resetHostingSelectionPatch = (): ConnectionStatePatch => ({
  * (`ConnectionHostingScreen`) instead of a stale remote/provider screen from a prior selection.
  *
  * **When:** `revertOnboarding` / sidebar jump from `providers` (or later) back to `hosting` — previously
- * only `onboardingStep` changed, so `deriveConnectionScreen` still returned the Eliza Cloud pre-provider UI.
+ * only `onboardingStep` changed, so `deriveConnectionScreen` still returned the Tokagent Cloud pre-provider UI.
  */
 export function getResetConnectionWizardToHostingStepPatch(): ConnectionStatePatch {
   return {
@@ -255,11 +255,11 @@ export function applyConnectionTransition(
           onboardingPrimaryModel: "",
         },
       };
-    case "selectElizaCloudHosting":
+    case "selectTokagentCloudHosting":
       return {
         kind: "patch",
         patch: {
-          ...toOnboardingTargetPatch("elizacloud"),
+          ...toOnboardingTargetPatch("tokagentcloud"),
           onboardingProvider: "",
           onboardingApiKey: "",
           onboardingPrimaryModel: "",
@@ -272,14 +272,14 @@ export function applyConnectionTransition(
       }
       return { kind: "patch", patch: resetHostingSelectionPatch() };
     }
-    case "backElizaCloudPreProvider":
+    case "backTokagentCloudPreProvider":
       return { kind: "patch", patch: resetHostingSelectionPatch() };
     case "selectProvider": {
       const detected = snapshot.onboardingDetectedProviders?.find(
         (d) => d.id === event.providerId,
       );
       const patch: ConnectionStatePatch =
-        event.providerId === "elizacloud"
+        event.providerId === "tokagentcloud"
           ? {
               onboardingProvider: event.providerId,
               onboardingApiKey: "",
@@ -307,10 +307,10 @@ export function applyConnectionTransition(
           onboardingPrimaryModel: "",
         },
       };
-    case "setElizaCloudTab":
+    case "setTokagentCloudTab":
       return {
         kind: "patch",
-        patch: { onboardingElizaCloudTab: event.tab },
+        patch: { onboardingTokagentCloudTab: event.tab },
       };
     case "setSubscriptionTab":
       return {
@@ -338,22 +338,22 @@ const NO_KEY_REQUIRED = new Set(["ollama"]);
 export function isProviderConfirmDisabled(opts: {
   provider: string;
   apiKey: string;
-  elizaCloudTab: "login" | "apikey";
-  elizaCloudConnected: boolean;
+  tokagentCloudTab: "login" | "apikey";
+  tokagentCloudConnected: boolean;
   subscriptionTab: "token" | "oauth";
 }): boolean {
   const {
     provider,
     apiKey,
-    elizaCloudTab,
-    elizaCloudConnected,
+    tokagentCloudTab,
+    tokagentCloudConnected,
     subscriptionTab,
   } = opts;
   if (!provider) return true;
-  if (provider === "elizacloud") {
+  if (provider === "tokagentcloud") {
     return (
-      (elizaCloudTab === "login" && !elizaCloudConnected) ||
-      (elizaCloudTab === "apikey" && !apiKey.trim())
+      (tokagentCloudTab === "login" && !tokagentCloudConnected) ||
+      (tokagentCloudTab === "apikey" && !apiKey.trim())
     );
   }
   if (provider === "anthropic-subscription") {
@@ -382,8 +382,8 @@ export function mergeConnectionSnapshot(
   if (patch.onboardingRemoteConnected !== undefined) {
     next.onboardingRemoteConnected = patch.onboardingRemoteConnected;
   }
-  if (patch.onboardingElizaCloudTab !== undefined) {
-    next.onboardingElizaCloudTab = patch.onboardingElizaCloudTab;
+  if (patch.onboardingTokagentCloudTab !== undefined) {
+    next.onboardingTokagentCloudTab = patch.onboardingTokagentCloudTab;
   }
   if (patch.onboardingSubscriptionTab !== undefined) {
     next.onboardingSubscriptionTab = patch.onboardingSubscriptionTab;

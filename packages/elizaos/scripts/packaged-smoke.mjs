@@ -7,18 +7,18 @@ import { fileURLToPath } from "node:url";
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const packageDir = path.resolve(scriptDir, "..");
 const tmpBaseDir =
-  process.env.ELIZAOS_SMOKE_TMPDIR ||
+  process.env.TOKAGENTOS_SMOKE_TMPDIR ||
   (fs.existsSync("/tmp") ? "/tmp" : os.tmpdir());
 const tmpRoot = fs.mkdtempSync(
-  path.join(tmpBaseDir, "elizaos-packaged-smoke-"),
+  path.join(tmpBaseDir, "tokagentos-packaged-smoke-"),
 );
-const shouldKeepTemp = process.env.ELIZAOS_SMOKE_KEEP_TEMP === "1";
+const shouldKeepTemp = process.env.TOKAGENTOS_SMOKE_KEEP_TEMP === "1";
 const shouldInstallGeneratedFullstack =
-  process.env.ELIZAOS_SMOKE_FULLSTACK_INSTALL === "1";
+  process.env.TOKAGENTOS_SMOKE_FULLSTACK_INSTALL === "1";
 const shouldUseRemoteUpstream =
-  process.env.ELIZAOS_SMOKE_REMOTE_UPSTREAM === "1";
+  process.env.TOKAGENTOS_SMOKE_REMOTE_UPSTREAM === "1";
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-const elizaosBinName = process.platform === "win32" ? "elizaos.cmd" : "elizaos";
+const tokagentosBinName = process.platform === "win32" ? "tokagentos.cmd" : "tokagentos";
 const localUpstreamRepo = path.resolve(packageDir, "..", "..");
 const cliEnv =
   !shouldUseRemoteUpstream &&
@@ -27,9 +27,9 @@ const cliEnv =
   )
     ? {
         ...process.env,
-        ELIZAOS_UPSTREAM_BRANCH: process.env.ELIZAOS_UPSTREAM_BRANCH ?? "",
-        ELIZAOS_UPSTREAM_REPO:
-          process.env.ELIZAOS_UPSTREAM_REPO || localUpstreamRepo,
+        TOKAGENTOS_UPSTREAM_BRANCH: process.env.TOKAGENTOS_UPSTREAM_BRANCH ?? "",
+        TOKAGENTOS_UPSTREAM_REPO:
+          process.env.TOKAGENTOS_UPSTREAM_REPO || localUpstreamRepo,
       }
     : process.env;
 const fullstackInstallEnv = {
@@ -62,7 +62,7 @@ function getTarballName(output) {
 }
 
 function getInstalledCli(smokeDir) {
-  return path.join(smokeDir, "node_modules", ".bin", elizaosBinName);
+  return path.join(smokeDir, "node_modules", ".bin", tokagentosBinName);
 }
 
 function assertPathExists(targetPath) {
@@ -99,7 +99,7 @@ function main() {
     fs.mkdirSync(smokeDir, { recursive: true });
     fs.writeFileSync(
       path.join(smokeDir, "package.json"),
-      `${JSON.stringify({ name: "elizaos-packaged-smoke", private: true }, null, 2)}\n`,
+      `${JSON.stringify({ name: "tokagentos-packaged-smoke", private: true }, null, 2)}\n`,
     );
     run(npmCommand, ["install", tarballPath], { cwd: smokeDir });
 
@@ -119,7 +119,7 @@ function main() {
     ]);
     const pluginDir = path.join(workspaceDir, "plugin-demo");
     assertPathExists(path.join(pluginDir, "package.json"));
-    assertPathExists(path.join(pluginDir, ".elizaos", "template.json"));
+    assertPathExists(path.join(pluginDir, ".tokagentos", "template.json"));
     if (shouldInstallGeneratedFullstack) {
       run("bun", ["install"], { cwd: pluginDir });
       run("bun", ["run", "typecheck"], { cwd: pluginDir });
@@ -136,9 +136,9 @@ function main() {
     ]);
     const fullstackDir = path.join(workspaceDir, "fullstack-demo");
     assertPathExists(path.join(fullstackDir, "package.json"));
-    assertPathExists(path.join(fullstackDir, ".elizaos", "template.json"));
+    assertPathExists(path.join(fullstackDir, ".tokagentos", "template.json"));
     assertPathExists(path.join(fullstackDir, "apps", "app", "package.json"));
-    assertPathExists(path.join(fullstackDir, "eliza"));
+    assertPathExists(path.join(fullstackDir, "tokagent"));
     if (shouldInstallGeneratedFullstack) {
       run("bun", ["install"], { cwd: fullstackDir, env: fullstackInstallEnv });
       run("bun", ["run", "typecheck"], {
@@ -161,18 +161,18 @@ function main() {
       "--skip-upstream",
     ]);
     const deferredDir = path.join(workspaceDir, "deferred-fullstack");
-    assertPathMissing(path.join(deferredDir, "eliza"));
+    assertPathMissing(path.join(deferredDir, "tokagent"));
     runCli(smokeDir, deferredDir, ["upgrade"]);
-    assertPathExists(path.join(deferredDir, "eliza"));
+    assertPathExists(path.join(deferredDir, "tokagent"));
     assertPathExists(path.join(deferredDir, ".gitmodules"));
 
     passed = true;
-    console.log("elizaos packaged smoke test passed");
+    console.log("tokagentos packaged smoke test passed");
   } finally {
     if (!shouldKeepTemp && passed) {
       fs.rmSync(tmpRoot, { force: true, recursive: true });
     } else if (!passed || shouldKeepTemp) {
-      console.log(`elizaos packaged smoke temp dir: ${tmpRoot}`);
+      console.log(`tokagentos packaged smoke temp dir: ${tmpRoot}`);
     }
   }
 }

@@ -1,6 +1,6 @@
 /**
- * @elizaos/shared — Browser-safe code shared between agent and app-core.
- * Use subpath imports for granular access (e.g. @elizaos/shared/contracts).
+ * @tokagentos/shared — Browser-safe code shared between agent and app-core.
+ * Use subpath imports for granular access (e.g. @tokagentos/shared/contracts).
  */
 
 export * from "./connectors";
@@ -10,7 +10,7 @@ export * from "./recent-messages-state";
 export * from "./restart";
 export * from "./runtime-env";
 export {
-  isElizaSettingsDebugEnabled,
+  isTokagentSettingsDebugEnabled,
   sanitizeForSettingsDebug,
   settingsDebugCloudSummary,
 } from "./settings-debug";

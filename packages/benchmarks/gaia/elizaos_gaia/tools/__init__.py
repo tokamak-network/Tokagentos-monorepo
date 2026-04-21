@@ -5,11 +5,11 @@ Tools required for GAIA benchmark tasks including web search, web browsing,
 file processing, code execution, and calculations.
 """
 
-from elizaos_gaia.tools.calculator import Calculator
-from elizaos_gaia.tools.code_executor import CodeExecutor
-from elizaos_gaia.tools.file_processor import FileProcessor
-from elizaos_gaia.tools.web_browser import WebBrowserTool
-from elizaos_gaia.tools.web_search import WebSearchTool
+from tokagentos_gaia.tools.calculator import Calculator
+from tokagentos_gaia.tools.code_executor import CodeExecutor
+from tokagentos_gaia.tools.file_processor import FileProcessor
+from tokagentos_gaia.tools.web_browser import WebBrowserTool
+from tokagentos_gaia.tools.web_search import WebSearchTool
 
 __all__ = [
     "WebSearchTool",

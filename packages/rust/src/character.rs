@@ -1,4 +1,4 @@
-//! Character parsing and validation for elizaOS
+//! Character parsing and validation for tokagentOS
 //!
 //! This module provides functions for loading, parsing, and validating character files.
 
@@ -107,7 +107,7 @@ pub fn build_character_plugins(env: &HashMap<String, String>) -> Vec<String> {
         plugins.push("@elizaos/plugin-telegram".to_string());
     }
 
-    // BasicCapabilities plugin is now part of @elizaos/core and loaded automatically
+    // BasicCapabilities plugin is now part of @tokagentos/core and loaded automatically
     // No need to explicitly add it to the plugins list
 
     // Ollama fallback (only if no other LLM providers configured)

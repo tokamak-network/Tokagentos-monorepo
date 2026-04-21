@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { ResponseStreamExtractor } from "@elizaos/core";
+import { ResponseStreamExtractor } from "@tokagentos/core";
 
 // Tests the ResponseStreamExtractor used by messageService.handleMessage
 // The TUI passes onStreamChunk via options; the service filters XML internally

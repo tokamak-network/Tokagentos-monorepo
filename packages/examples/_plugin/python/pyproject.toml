@@ -3,16 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-plugin-starter"
+name = "tokagentos-plugin-starter"
 version = "2.0.0"
-description = "Starter template for elizaOS Python plugins with cross-language support"
+description = "Starter template for tokagentOS Python plugins with cross-language support"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
-keywords = ["elizaos", "plugin", "ai", "agent"]
+keywords = ["tokagentos", "plugin", "ai", "agent"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "elizaos>=2.0.0a4",
+    "tokagentos>=2.0.0a4",
     "pydantic>=2.12.5",
 ]
 
@@ -36,11 +36,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/elizaos/eliza"
-Repository = "https://github.com/elizaos/eliza"
+Homepage = "https://github.com/tokagentos/tokagent"
+Repository = "https://github.com/tokagentos/tokagent"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_plugin_starter"]
+packages = ["tokagentos_plugin_starter"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

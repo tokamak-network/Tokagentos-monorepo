@@ -1,6 +1,6 @@
-//! WASM bindings for elizaOS core
+//! WASM bindings for tokagentOS core
 //!
-//! This module provides JavaScript/TypeScript and Python bindings for the elizaOS
+//! This module provides JavaScript/TypeScript and Python bindings for the tokagentOS
 //! core types and functionality through WebAssembly.
 
 pub mod error;
@@ -393,7 +393,7 @@ pub fn string_to_uuid(input: &str) -> String {
     crate::types::string_to_uuid(input).to_string()
 }
 
-/// Get the version of the elizaOS core
+/// Get the version of the tokagentOS core
 #[cfg(feature = "wasm")]
 #[wasm_bindgen(js_name = "getVersion")]
 pub fn get_version() -> String {

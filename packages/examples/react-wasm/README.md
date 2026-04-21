@@ -1,13 +1,13 @@
-# ELIZA React WASM Example
+# TOKAGENT React WASM Example
 
-A React implementation of the classic ELIZA chatbot powered by **elizaOS Rust WASM runtime**, featuring a beautiful retro CRT terminal interface.
+A React implementation of the classic TOKAGENT chatbot powered by **tokagentOS Rust WASM runtime**, featuring a beautiful retro CRT terminal interface.
 
 ## Overview
 
 This example demonstrates:
 
 - **Rust WASM Runtime**: Core agent logic runs in WebAssembly compiled from Rust
-- **Classic ELIZA Plugin**: Pattern matching model handler (no LLM required)
+- **Classic TOKAGENT Plugin**: Pattern matching model handler (no LLM required)
 - **LocalDB Storage**: Browser localStorage-based persistence via plugin-localdb
 - **Retro CRT aesthetic**: Phosphor green text, scanlines, and glow effects
 - **Fully client-side**: No server needed
@@ -28,7 +28,7 @@ cd examples/react-wasm
 
 # Copy the WASM module to public folder
 mkdir -p public/wasm
-cp ../../packages/rust/pkg/elizaos_bg.wasm public/wasm/
+cp ../../packages/rust/pkg/tokagentos_bg.wasm public/wasm/
 
 # Start development server
 bun dev
@@ -38,7 +38,7 @@ The app will open at http://localhost:5173
 
 ## Architecture
 
-This example uses the Rust WASM elizaOS runtime:
+This example uses the Rust WASM tokagentOS runtime:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -48,7 +48,7 @@ This example uses the Rust WASM elizaOS runtime:
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    eliza-runtime.ts                          │
+│                    tokagent-runtime.ts                          │
 │              (WASM Runtime singleton manager)                │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -58,7 +58,7 @@ This example uses the Rust WASM elizaOS runtime:
 │    WasmAgentRuntime      │    │  Plugin Integration      │
 │    (Rust → WebAssembly)  │    │                          │
 │                          │    │  ┌────────────────────┐  │
-│  • Message processing    │◄───┤  │ plugin-eliza-classic│  │
+│  • Message processing    │◄───┤  │ plugin-tokagent-classic│  │
 │  • State management      │    │  │ (Pattern matching) │  │
 │  • Model handler calls   │    │  └────────────────────┘  │
 │                          │    │                          │
@@ -71,7 +71,7 @@ This example uses the Rust WASM elizaOS runtime:
 
 ### Plugins Used
 
-1. **@elizaos/plugin-eliza-classic**: Provides TEXT_LARGE/TEXT_SMALL model handlers using classic ELIZA pattern matching
+1. **@elizaos/plugin-tokagent-classic**: Provides TEXT_LARGE/TEXT_SMALL model handlers using classic TOKAGENT pattern matching
 2. **@elizaos/plugin-localdb**: Simple JSON-based storage using browser localStorage
 
 ## How It Works
@@ -84,9 +84,9 @@ The core agent runtime is compiled from Rust to WebAssembly:
 - **Model handlers**: Registered from JavaScript and called by the Rust runtime
 - **Cross-language bridge**: JSON serialization for passing data between Rust and JavaScript
 
-### Pattern Matching (plugin-eliza-classic)
+### Pattern Matching (plugin-tokagent-classic)
 
-This implementation uses the original ELIZA pattern matching algorithm from Joseph Weizenbaum's 1966 program:
+This implementation uses the original TOKAGENT pattern matching algorithm from Joseph Weizenbaum's 1966 program:
 
 1. **Keywords**: Input is scanned for keywords with associated weights
 2. **Patterns**: Each keyword has regex patterns to match against
@@ -103,7 +103,7 @@ Conversations are persisted using browser localStorage:
 
 ### No LLM Required
 
-Unlike modern chatbots, classic ELIZA uses purely rule-based pattern matching. This makes it:
+Unlike modern chatbots, classic TOKAGENT uses purely rule-based pattern matching. This makes it:
 
 - **Instant responses** (no API calls)
 - **Works offline** (all logic is client-side)
@@ -115,13 +115,13 @@ Unlike modern chatbots, classic ELIZA uses purely rule-based pattern matching. T
 examples/react-wasm/
 ├── public/
 │   └── wasm/
-│       └── elizaos_bg.wasm   # Rust WASM module (copy from core/rust/pkg)
+│       └── tokagentos_bg.wasm   # Rust WASM module (copy from core/rust/pkg)
 ├── src/
 │   ├── main.tsx              # React entry point
 │   ├── App.tsx               # Main chat component
 │   ├── App.css               # Terminal styling
 │   ├── index.css             # Global styles
-│   └── eliza-runtime.ts      # WASM Runtime singleton manager
+│   └── tokagent-runtime.ts      # WASM Runtime singleton manager
 ├── index.html
 ├── package.json
 ├── tsconfig.json
@@ -144,7 +144,7 @@ The UI features:
 ```bash
 # Ensure WASM module is copied
 mkdir -p public/wasm
-cp ../../packages/rust/pkg/elizaos_bg.wasm public/wasm/
+cp ../../packages/rust/pkg/tokagentos_bg.wasm public/wasm/
 
 # Build
 bun run build
@@ -187,20 +187,20 @@ import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
 // Use PGLite for in-browser PostgreSQL
 const runtime = new AgentRuntime({
-  character: elizaCharacter,
-  plugins: [sqlPlugin, elizaClassicPlugin],
+  character: tokagentCharacter,
+  plugins: [sqlPlugin, tokagentClassicPlugin],
 });
 ```
 
-## About Classic ELIZA
+## About Classic TOKAGENT
 
-ELIZA was created by Joseph Weizenbaum at MIT in 1966. It simulates a Rogerian psychotherapist by:
+TOKAGENT was created by Joseph Weizenbaum at MIT in 1966. It simulates a Rogerian psychotherapist by:
 
 - Reflecting statements back as questions
 - Using keyword-based pattern matching
 - Creating the illusion of understanding through clever rephrasing
 
-This "ELIZA effect" - where people attribute human-like understanding to simple pattern matching - remains relevant in discussions about AI today.
+This "TOKAGENT effect" - where people attribute human-like understanding to simple pattern matching - remains relevant in discussions about AI today.
 
 ## Why Rust WASM?
 

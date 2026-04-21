@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { runPluginMigrations, type IAgentRuntime } from "@elizaos/core";
+import { runPluginMigrations, type IAgentRuntime } from "@tokagentos/core";
 import type {
   LifeOpsActivitySignal,
   LifeOpsAuditEvent,
@@ -43,7 +43,7 @@ import type {
   LifeOpsNegotiationState,
   LifeOpsProposalStatus,
   LifeOpsProposalProposer,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   executeRawSql,
   parseJsonArray,

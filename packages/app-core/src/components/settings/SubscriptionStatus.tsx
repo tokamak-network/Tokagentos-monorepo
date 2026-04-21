@@ -7,7 +7,7 @@
  * shell; provider-specific bits (token tab, callback hint) are slots.
  */
 
-import { Button, Input, Label, useTimeout } from "@elizaos/ui";
+import { Button, Input, Label, useTimeout } from "@tokagentos/ui";
 import {
   type ReactNode,
   useCallback,

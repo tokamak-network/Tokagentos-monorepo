@@ -14,9 +14,9 @@
  * - Falls back to whichever is available
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
-import * as ElizaCore from "@elizaos/core";
-import type { Trajectory } from "@elizaos/agent/types/trajectory";
+import type { IAgentRuntime } from "@tokagentos/core";
+import * as TokagentCore from "@tokagentos/core";
+import type { Trajectory } from "@tokagentos/agent/types/trajectory";
 import { randomUUID } from "crypto";
 import { mkdir, writeFile } from "fs/promises";
 import { join } from "path";
@@ -264,15 +264,15 @@ type TeacherCallLog = {
 };
 
 const logActiveTrajectoryLlmCall =
-  "logActiveTrajectoryLlmCall" in ElizaCore &&
-  typeof ElizaCore.logActiveTrajectoryLlmCall === "function"
-    ? ElizaCore.logActiveTrajectoryLlmCall
+  "logActiveTrajectoryLlmCall" in TokagentCore &&
+  typeof TokagentCore.logActiveTrajectoryLlmCall === "function"
+    ? TokagentCore.logActiveTrajectoryLlmCall
     : undefined;
 
 const withStandaloneTrajectory =
-  "withStandaloneTrajectory" in ElizaCore &&
-  typeof ElizaCore.withStandaloneTrajectory === "function"
-    ? ElizaCore.withStandaloneTrajectory
+  "withStandaloneTrajectory" in TokagentCore &&
+  typeof TokagentCore.withStandaloneTrajectory === "function"
+    ? TokagentCore.withStandaloneTrajectory
     : async <T>(
         _runtime: IAgentRuntime | undefined,
         _options: Record<string, unknown>,
@@ -1002,7 +1002,7 @@ export async function exportToGeminiJSONL(
 }
 
 /**
- * Export from existing Eliza trajectories to training format.
+ * Export from existing Tokagent trajectories to training format.
  * Converts real trajectory data into the same JSONL format.
  */
 export async function exportTrajectoriesAsTraining(

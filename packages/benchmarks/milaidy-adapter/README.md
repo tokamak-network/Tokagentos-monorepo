@@ -11,7 +11,7 @@ milady-adapter  (this package)
     |  (HTTP requests)
 Milady Benchmark Server  (TypeScript / Node.js)
     |  (runs agent)
-ElizaOS AgentRuntime
+TokagentOS AgentRuntime
 ```
 
 The **server side** lives in the milady repo at [`src/benchmark/`](../../milady/src/benchmark/):
@@ -77,7 +77,7 @@ The server auto-detects model provider plugins from API key env vars (`ANTHROPIC
 - [`benchmarks/agentbench/`](../agentbench/) -- `run_benchmark.py`
 - [`benchmarks/context-bench/`](../context-bench/) -- `run_benchmark.py`
 - [`benchmarks/mind2web/`](../mind2web/) -- `runner.py`
-- [`benchmarks/tau-bench/`](../tau-bench/) -- `elizaos_tau_bench/runner.py`
+- [`benchmarks/tau-bench/`](../tau-bench/) -- `tokagentos_tau_bench/runner.py`
 
 ## Server-side reference
 

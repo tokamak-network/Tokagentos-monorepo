@@ -14,7 +14,7 @@ import {
   type MessagePayload,
   ModelType,
   type Service,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { StarterService, starterPlugin } from "../index";

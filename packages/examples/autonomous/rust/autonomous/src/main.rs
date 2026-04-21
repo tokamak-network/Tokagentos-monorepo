@@ -1,7 +1,7 @@
 use anyhow::{Context, Result};
-use elizaos_plugin_inmemorydb::{IStorage, MemoryStorage};
-use elizaos_plugin_local_ai::{LocalAIPlugin, TextGenerationParams};
-use elizaos_plugin_shell::{ShellConfig, ShellService};
+use tokagentos_plugin_inmemorydb::{IStorage, MemoryStorage};
+use tokagentos_plugin_local_ai::{LocalAIPlugin, TextGenerationParams};
+use tokagentos_plugin_shell::{ShellConfig, ShellService};
 use serde::Serialize;
 use serde_json::json;
 use std::path::{Path, PathBuf};
@@ -157,7 +157,7 @@ async fn main() -> Result<()> {
 
     if !LocalAIPlugin::is_llm_enabled() {
         anyhow::bail!(
-            "Rust local-ai inference requires `elizaos-plugin-local-ai` with feature `llm` enabled."
+            "Rust local-ai inference requires `tokagentos-plugin-local-ai` with feature `llm` enabled."
         );
     }
 

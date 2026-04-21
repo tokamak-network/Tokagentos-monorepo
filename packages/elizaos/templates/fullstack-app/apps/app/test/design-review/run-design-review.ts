@@ -117,7 +117,7 @@ const NETWORK_QUIET_WINDOW_MS = 750;
 const DOM_QUIET_TIMEOUT_MS = 10_000;
 const DOM_QUIET_WINDOW_MS = 500;
 const DEFAULT_SETTLE_MS = Number.parseInt(
-  process.env.ELIZA_DESIGN_REVIEW_SETTLE_MS ?? "1200",
+  process.env.TOKAGENT_DESIGN_REVIEW_SETTLE_MS ?? "1200",
   10,
 );
 
@@ -350,7 +350,7 @@ async function startAppServer(apiBaseUrl: string): Promise<{
   server: ViteDevServer;
   baseUrl: string;
 }> {
-  process.env.ELIZA_API_PORT = new URL(apiBaseUrl).port;
+  process.env.TOKAGENT_API_PORT = new URL(apiBaseUrl).port;
   const port = await getFreePort();
   const server = await createViteServer({
     configFile: path.join(appRoot, "vite.config.ts"),
@@ -442,26 +442,26 @@ async function createPage(
       try {
         window.localStorage.clear();
         window.sessionStorage.clear();
-        window.localStorage.setItem("eliza:ui-language", "en");
-        window.localStorage.setItem("eliza:ui-theme", "dark");
-        window.localStorage.setItem("eliza:ui-shell-mode", init.shellMode);
+        window.localStorage.setItem("tokagent:ui-language", "en");
+        window.localStorage.setItem("tokagent:ui-theme", "dark");
+        window.localStorage.setItem("tokagent:ui-shell-mode", init.shellMode);
         window.localStorage.setItem(
-          "eliza:last-native-tab",
+          "tokagent:last-native-tab",
           init.lastNativeTab,
         );
-        window.localStorage.setItem("eliza:ui-language", "en");
-        window.localStorage.setItem("eliza:ui-theme", "dark");
-        window.localStorage.setItem("eliza:ui-shell-mode", init.shellMode);
+        window.localStorage.setItem("tokagent:ui-language", "en");
+        window.localStorage.setItem("tokagent:ui-theme", "dark");
+        window.localStorage.setItem("tokagent:ui-shell-mode", init.shellMode);
         window.localStorage.setItem(
-          "eliza:last-native-tab",
+          "tokagent:last-native-tab",
           init.lastNativeTab,
         );
         window.localStorage.setItem(
-          "eliza:chat:activeConversationId",
+          "tokagent:chat:activeConversationId",
           "conv-1",
         );
-        window.sessionStorage.setItem("eliza_api_base", init.apiBaseUrl);
-        window.__ELIZA_API_BASE__ = init.apiBaseUrl;
+        window.sessionStorage.setItem("tokagent_api_base", init.apiBaseUrl);
+        window.__TOKAGENT_API_BASE__ = init.apiBaseUrl;
       } catch {
         // Ignore storage setup failures on intermediate documents.
       }
@@ -582,22 +582,22 @@ async function waitForDomQuiet(page: Page): Promise<boolean> {
     await page.waitForFunction(
       (quietWindowMs) => {
         const win = window as Window & {
-          __elizaLastMutationAt?: number;
-          __elizaMutationObserver?: MutationObserver;
+          __tokagentLastMutationAt?: number;
+          __tokagentMutationObserver?: MutationObserver;
         };
-        if (!win.__elizaMutationObserver) {
-          win.__elizaLastMutationAt = performance.now();
-          win.__elizaMutationObserver = new MutationObserver(() => {
-            win.__elizaLastMutationAt = performance.now();
+        if (!win.__tokagentMutationObserver) {
+          win.__tokagentLastMutationAt = performance.now();
+          win.__tokagentMutationObserver = new MutationObserver(() => {
+            win.__tokagentLastMutationAt = performance.now();
           });
-          win.__elizaMutationObserver.observe(document.documentElement, {
+          win.__tokagentMutationObserver.observe(document.documentElement, {
             subtree: true,
             childList: true,
             attributes: true,
             characterData: true,
           });
         }
-        const lastMutationAt = win.__elizaLastMutationAt ?? performance.now();
+        const lastMutationAt = win.__tokagentLastMutationAt ?? performance.now();
         return performance.now() - lastMutationAt >= quietWindowMs;
       },
       DOM_QUIET_WINDOW_MS,
@@ -820,7 +820,7 @@ async function writeGallery(manifest: Manifest): Promise<void> {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Eliza Design Review</title>
+    <title>Tokagent Design Review</title>
     <style>
       :root { color-scheme: dark; --bg: #090b0f; --panel: #11161d; --panel-2: #171e28; --border: rgba(255, 255, 255, 0.08); --text: #edf2f7; --muted: #9aa8bc; --accent: #f0b232; }
       * { box-sizing: border-box; }
@@ -843,7 +843,7 @@ async function writeGallery(manifest: Manifest): Promise<void> {
     <main>
       <header>
         <div>
-          <h1>Eliza Design Review</h1>
+          <h1>Tokagent Design Review</h1>
           <p class="meta">${escapeHtml(
             `${dateLabel} · ${manifest.captures.length} screenshots`,
           )}</p>
@@ -868,7 +868,7 @@ async function main(): Promise<void> {
   const api = await startMockApiServer({ onboardingComplete: true, port: 0 });
   const { server, baseUrl: appBaseUrl } = await startAppServer(api.baseUrl);
   const browser = await chromium.launch({
-    headless: process.env.ELIZA_DESIGN_REVIEW_HEADLESS === "1",
+    headless: process.env.TOKAGENT_DESIGN_REVIEW_HEADLESS === "1",
     args: [
       "--enable-webgl",
       "--ignore-gpu-blocklist",

@@ -8,8 +8,8 @@
 import type {
   WalletAddresses,
   WalletBalancesResponse,
-} from "@elizaos/shared/contracts/wallet";
-import { Button, StatusBadge } from "@elizaos/app-core";
+} from "@tokagentos/shared/contracts/wallet";
+import { Button, StatusBadge } from "@tokagentos/app-core";
 import { Copy, Wallet } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 

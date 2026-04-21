@@ -1,8 +1,8 @@
 /**
- * Browser Extension Eliza Runtime Manager
+ * Browser Extension Tokagent Runtime Manager
  *
  * Manages the AgentRuntime for the browser extension with support for
- * multiple providers (OpenAI, Anthropic, Groq, Gemini, xAI, ELIZA classic).
+ * multiple providers (OpenAI, Anthropic, Groq, Gemini, xAI, TOKAGENT classic).
  *
  * Based on the pattern from examples/vrm/src/runtime/runtimeManager.ts
  */
@@ -17,12 +17,12 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import anthropicPlugin from "@elizaos/plugin-anthropic";
 import {
-  elizaClassicPlugin,
-  getElizaGreeting,
-} from "@elizaos/plugin-eliza-classic";
+  tokagentClassicPlugin,
+  getTokagentGreeting,
+} from "@elizaos/plugin-tokagent-classic";
 import googleGenAIPlugin from "@elizaos/plugin-google-genai";
 import groqPlugin from "@elizaos/plugin-groq";
 import localdbPlugin from "@elizaos/plugin-localdb";
@@ -54,13 +54,13 @@ const WEBPAGE_ASSISTANT_CHARACTER = createCharacter({
 You have access to the page content and can help the user understand, summarize, or find information on the page.
 Be concise and helpful. If you don't know the answer based on the page content, say so.
 When asked about the page, refer to specific content from it.`,
-  bio: "An AI assistant built on elizaOS that helps you chat with and understand webpages.",
+  bio: "An AI assistant built on tokagentOS that helps you chat with and understand webpages.",
 });
 
 // Storage keys
 const STORAGE_KEYS = {
-  userId: "eliza-browser-ext:userId",
-  roomId: "eliza-browser-ext:roomId",
+  userId: "tokagent-browser-ext:userId",
+  roomId: "tokagent-browser-ext:roomId",
 } as const;
 
 // Get or create persistent user ID
@@ -151,8 +151,8 @@ function buildPlugins(effectiveMode: ProviderMode): Plugin[] {
 
   // Add the appropriate model plugin based on mode
   switch (effectiveMode) {
-    case "elizaClassic":
-      return [...base, elizaClassicPlugin];
+    case "tokagentClassic":
+      return [...base, tokagentClassicPlugin];
     case "openai":
       return [...base, openaiPlugin];
     case "anthropic":
@@ -165,7 +165,7 @@ function buildPlugins(effectiveMode: ProviderMode): Plugin[] {
     case "groq":
       return [...base, groqPlugin];
     default:
-      return [...base, elizaClassicPlugin];
+      return [...base, tokagentClassicPlugin];
   }
 }
 
@@ -218,7 +218,7 @@ export async function getOrCreateRuntime(
 
     const userId = getOrCreateUserId();
     const roomId = getOrCreateRoomId();
-    const worldId = stringToUuid("eliza-browser-extension-world");
+    const worldId = stringToUuid("tokagent-browser-extension-world");
 
     const runtime = new AgentRuntime({
       character: WEBPAGE_ASSISTANT_CHARACTER,
@@ -256,8 +256,8 @@ export async function getOrCreateRuntime(
  * Get the greeting text based on mode
  */
 export function getGreetingText(effectiveMode: ProviderMode): string {
-  if (effectiveMode === "elizaClassic") {
-    return getElizaGreeting();
+  if (effectiveMode === "tokagentClassic") {
+    return getTokagentGreeting();
   }
   return "Hello! I can help you understand this webpage. What would you like to know?";
 }

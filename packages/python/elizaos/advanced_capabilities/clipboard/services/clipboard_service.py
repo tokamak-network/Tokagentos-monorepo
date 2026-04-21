@@ -25,12 +25,12 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_CLIPBOARD_CONFIG = ClipboardConfig(
-    base_path=os.path.join(os.path.expanduser("~"), ".eliza", "clipboard"),
+    base_path=os.path.join(os.path.expanduser("~"), ".tokagent", "clipboard"),
     max_file_size=1024 * 1024,
     allowed_extensions=[".md", ".txt"],
 )

@@ -1,12 +1,12 @@
 """
-Integration tests for ElizaOS ART.
+Integration tests for TokagentOS ART.
 
 Tests the integration between:
 - ART training pipeline
-- ElizaOS trajectory logging
+- TokagentOS trajectory logging
 - Local AI model inference
 - Local database storage
-- Full ElizaOS AgentRuntime
+- Full TokagentOS AgentRuntime
 """
 
 import asyncio
@@ -23,19 +23,19 @@ def temp_data_dir():
 
 
 class TestTrajectoryAdapter:
-    """Tests for ElizaTrajectoryLogger."""
+    """Tests for TokagentTrajectoryLogger."""
 
     @pytest.mark.asyncio
     async def test_trajectory_lifecycle(self, temp_data_dir):
         """Test complete trajectory logging lifecycle."""
-        from elizaos_art.eliza_integration.trajectory_adapter import (
-            ElizaActionAttempt,
-            ElizaEnvironmentState,
-            ElizaLLMCall,
-            ElizaTrajectoryLogger,
+        from tokagentos_art.tokagent_integration.trajectory_adapter import (
+            TokagentActionAttempt,
+            TokagentEnvironmentState,
+            TokagentLLMCall,
+            TokagentTrajectoryLogger,
         )
 
-        logger = ElizaTrajectoryLogger(
+        logger = TokagentTrajectoryLogger(
             agent_id="test-agent",
             data_dir=temp_data_dir / "trajectories",
         )
@@ -48,7 +48,7 @@ class TestTrajectoryAdapter:
         assert traj_id is not None
 
         # Start step
-        env_state = ElizaEnvironmentState(
+        env_state = TokagentEnvironmentState(
             timestamp=1234567890,
             agent_balance=1000.0,
             custom={"score": 100},
@@ -57,7 +57,7 @@ class TestTrajectoryAdapter:
         assert step_id is not None
 
         # Log LLM call
-        llm_call = ElizaLLMCall(
+        llm_call = TokagentLLMCall(
             model="test-model",
             system_prompt="You are a test agent.",
             user_prompt="What should I do?",
@@ -67,7 +67,7 @@ class TestTrajectoryAdapter:
         logger.log_llm_call(step_id, llm_call)
 
         # Complete step
-        action = ElizaActionAttempt(
+        action = TokagentActionAttempt(
             action_type="TEST_ACTION",
             action_name="test_action",
             parameters={"value": 42},
@@ -100,14 +100,14 @@ class TestTrajectoryAdapter:
 
 
 class TestStorageAdapter:
-    """Tests for ElizaStorageAdapter."""
+    """Tests for TokagentStorageAdapter."""
 
     @pytest.mark.asyncio
     async def test_trajectory_storage(self, temp_data_dir):
         """Test trajectory storage and retrieval."""
-        from elizaos_art.eliza_integration.storage_adapter import ElizaStorageAdapter
+        from tokagentos_art.tokagent_integration.storage_adapter import TokagentStorageAdapter
 
-        storage = ElizaStorageAdapter(data_dir=temp_data_dir)
+        storage = TokagentStorageAdapter(data_dir=temp_data_dir)
 
         # Save trajectory
         trajectory = {
@@ -129,9 +129,9 @@ class TestStorageAdapter:
     @pytest.mark.asyncio
     async def test_trajectory_search_by_scenario(self, temp_data_dir):
         """Test searching trajectories by scenario."""
-        from elizaos_art.eliza_integration.storage_adapter import ElizaStorageAdapter
+        from tokagentos_art.tokagent_integration.storage_adapter import TokagentStorageAdapter
 
-        storage = ElizaStorageAdapter(data_dir=temp_data_dir)
+        storage = TokagentStorageAdapter(data_dir=temp_data_dir)
 
         # Save multiple trajectories
         for i in range(5):
@@ -152,9 +152,9 @@ class TestStorageAdapter:
     @pytest.mark.asyncio
     async def test_cache_operations(self, temp_data_dir):
         """Test cache operations."""
-        from elizaos_art.eliza_integration.storage_adapter import ElizaStorageAdapter
+        from tokagentos_art.tokagent_integration.storage_adapter import TokagentStorageAdapter
 
-        storage = ElizaStorageAdapter(data_dir=temp_data_dir)
+        storage = TokagentStorageAdapter(data_dir=temp_data_dir)
 
         # Set and get
         await storage.set_cache("test-key", {"value": 42})
@@ -169,9 +169,9 @@ class TestStorageAdapter:
     @pytest.mark.asyncio
     async def test_checkpoint_operations(self, temp_data_dir):
         """Test checkpoint save and load."""
-        from elizaos_art.eliza_integration.storage_adapter import ElizaStorageAdapter
+        from tokagentos_art.tokagent_integration.storage_adapter import TokagentStorageAdapter
 
-        storage = ElizaStorageAdapter(data_dir=temp_data_dir)
+        storage = TokagentStorageAdapter(data_dir=temp_data_dir)
 
         # Save checkpoint
         checkpoint_data = {
@@ -192,12 +192,12 @@ class TestStorageAdapter:
 
 
 class TestLocalAIAdapter:
-    """Tests for ElizaLocalAIProvider."""
+    """Tests for TokagentLocalAIProvider."""
 
     @pytest.mark.asyncio
     async def test_mock_provider(self):
         """Test mock provider for testing without models."""
-        from elizaos_art.eliza_integration.local_ai_adapter import MockLocalAIProvider
+        from tokagentos_art.tokagent_integration.local_ai_adapter import MockLocalAIProvider
 
         provider = MockLocalAIProvider()
 
@@ -216,7 +216,7 @@ class TestLocalAIAdapter:
     @pytest.mark.asyncio
     async def test_config_defaults(self):
         """Test configuration defaults."""
-        from elizaos_art.eliza_integration.local_ai_adapter import LocalModelConfig
+        from tokagentos_art.tokagent_integration.local_ai_adapter import LocalModelConfig
 
         config = LocalModelConfig()
         assert "Llama" in config.small_model or "gguf" in config.small_model.lower()
@@ -230,8 +230,8 @@ class TestGameEnvironments:
     @pytest.mark.asyncio
     async def test_2048_environment(self):
         """Test 2048 game environment."""
-        from elizaos_art.games.game_2048 import Game2048Environment
-        from elizaos_art.games.game_2048.types import Game2048Action
+        from tokagentos_art.games.game_2048 import Game2048Environment
+        from tokagentos_art.games.game_2048.types import Game2048Action
 
         env = Game2048Environment()
         await env.initialize()
@@ -249,7 +249,7 @@ class TestGameEnvironments:
     @pytest.mark.asyncio
     async def test_2048_full_game(self):
         """Test playing a full 2048 game."""
-        from elizaos_art.games.game_2048 import Game2048Environment, Game2048HeuristicAgent
+        from tokagentos_art.games.game_2048 import Game2048Environment, Game2048HeuristicAgent
 
         env = Game2048Environment()
         agent = Game2048HeuristicAgent()
@@ -272,8 +272,8 @@ class TestGameEnvironments:
     @pytest.mark.asyncio
     async def test_tictactoe_environment(self):
         """Test Tic-Tac-Toe environment."""
-        from elizaos_art.games.tic_tac_toe import TicTacToeEnvironment
-        from elizaos_art.games.tic_tac_toe.types import TicTacToeAction
+        from tokagentos_art.games.tic_tac_toe import TicTacToeEnvironment
+        from tokagentos_art.games.tic_tac_toe.types import TicTacToeAction
 
         env = TicTacToeEnvironment()
         await env.initialize()
@@ -291,7 +291,7 @@ class TestGameEnvironments:
     @pytest.mark.asyncio
     async def test_tictactoe_full_game(self):
         """Test playing a full Tic-Tac-Toe game."""
-        from elizaos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
+        from tokagentos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
 
         env = TicTacToeEnvironment()
         agent = TicTacToeHeuristicAgent()
@@ -311,8 +311,8 @@ class TestGameEnvironments:
     @pytest.mark.asyncio
     async def test_codenames_environment(self):
         """Test Codenames environment."""
-        from elizaos_art.games.codenames import CodenamesEnvironment
-        from elizaos_art.games.codenames.types import CodenamesAction, CodenamesConfig, Role, CardColor
+        from tokagentos_art.games.codenames import CodenamesEnvironment
+        from tokagentos_art.games.codenames.types import CodenamesAction, CodenamesConfig, Role, CardColor
 
         config = CodenamesConfig(ai_role=Role.GUESSER, ai_team=CardColor.RED)
         env = CodenamesEnvironment(config)
@@ -328,8 +328,8 @@ class TestGameEnvironments:
     @pytest.mark.asyncio
     async def test_temporal_clue_environment(self):
         """Test Temporal Clue environment."""
-        from elizaos_art.games.temporal_clue import TemporalClueEnvironment
-        from elizaos_art.games.temporal_clue.types import TemporalClueAction
+        from tokagentos_art.games.temporal_clue import TemporalClueEnvironment
+        from tokagentos_art.games.temporal_clue.types import TemporalClueAction
 
         env = TemporalClueEnvironment()
         await env.initialize()
@@ -344,7 +344,7 @@ class TestGameEnvironments:
     @pytest.mark.asyncio
     async def test_temporal_clue_full_puzzle(self):
         """Test solving a full Temporal Clue puzzle."""
-        from elizaos_art.games.temporal_clue import TemporalClueEnvironment, TemporalClueHeuristicAgent
+        from tokagentos_art.games.temporal_clue import TemporalClueEnvironment, TemporalClueHeuristicAgent
 
         env = TemporalClueEnvironment()
         agent = TemporalClueHeuristicAgent()
@@ -368,8 +368,8 @@ class TestAgents:
     @pytest.mark.asyncio
     async def test_2048_agent_parsing(self):
         """Test 2048 agent action parsing."""
-        from elizaos_art.games.game_2048 import Game2048Agent
-        from elizaos_art.games.game_2048.types import Game2048Action
+        from tokagentos_art.games.game_2048 import Game2048Agent
+        from tokagentos_art.games.game_2048.types import Game2048Action
 
         agent = Game2048Agent()
 
@@ -388,8 +388,8 @@ class TestAgents:
     @pytest.mark.asyncio
     async def test_tictactoe_agent_parsing(self):
         """Test Tic-Tac-Toe agent action parsing."""
-        from elizaos_art.games.tic_tac_toe import TicTacToeAgent
-        from elizaos_art.games.tic_tac_toe.types import TicTacToeAction
+        from tokagentos_art.games.tic_tac_toe import TicTacToeAgent
+        from tokagentos_art.games.tic_tac_toe.types import TicTacToeAction
 
         agent = TicTacToeAgent()
 
@@ -408,10 +408,10 @@ class TestExport:
     @pytest.mark.asyncio
     async def test_export_for_art(self, temp_data_dir):
         """Test export to ART format."""
-        from elizaos_art.eliza_integration.export import ExportOptions, export_for_art
-        from elizaos_art.eliza_integration.storage_adapter import ElizaStorageAdapter
+        from tokagentos_art.tokagent_integration.export import ExportOptions, export_for_art
+        from tokagentos_art.tokagent_integration.storage_adapter import TokagentStorageAdapter
 
-        storage = ElizaStorageAdapter(data_dir=temp_data_dir)
+        storage = TokagentStorageAdapter(data_dir=temp_data_dir)
 
         # Add test trajectories
         for i in range(10):
@@ -447,7 +447,7 @@ class TestExport:
     @pytest.mark.asyncio
     async def test_export_jsonl(self, temp_data_dir):
         """Test JSONL export."""
-        from elizaos_art.eliza_integration.export import export_trajectories_jsonl
+        from tokagentos_art.tokagent_integration.export import export_trajectories_jsonl
 
         trajectories = [
             {"trajectoryId": f"traj-{i}", "reward": float(i)}
@@ -468,7 +468,7 @@ class TestBaseTypes:
 
     def test_trajectory_creation(self):
         """Test Trajectory dataclass."""
-        from elizaos_art.base import Trajectory
+        from tokagentos_art.base import Trajectory
 
         traj = Trajectory(
             trajectory_id="test-123",
@@ -489,7 +489,7 @@ class TestBaseTypes:
 
     def test_training_config(self):
         """Test TrainingConfig dataclass."""
-        from elizaos_art.base import TrainingConfig
+        from tokagentos_art.base import TrainingConfig
 
         config = TrainingConfig(
             model_name="meta-llama/Llama-3.2-3B-Instruct",
@@ -508,7 +508,7 @@ class TestBenchmarkRunner:
     @pytest.mark.asyncio
     async def test_run_game_baseline(self):
         """Test running baseline for a single game."""
-        from elizaos_art.benchmark_runner import run_game_baseline
+        from tokagentos_art.benchmark_runner import run_game_baseline
 
         result = await run_game_baseline("tic_tac_toe", episodes=10)
 
@@ -519,7 +519,7 @@ class TestBenchmarkRunner:
     @pytest.mark.asyncio
     async def test_benchmark_result_properties(self):
         """Test BenchmarkResult properties."""
-        from elizaos_art.benchmark_runner import BenchmarkResult
+        from tokagentos_art.benchmark_runner import BenchmarkResult
 
         result = BenchmarkResult(
             game="test",

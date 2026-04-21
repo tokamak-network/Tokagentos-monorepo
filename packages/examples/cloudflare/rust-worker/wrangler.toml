@@ -1,7 +1,7 @@
-# elizaOS Cloudflare Worker Configuration (Rust)
+# tokagentOS Cloudflare Worker Configuration (Rust)
 # See https://developers.cloudflare.com/workers/wrangler/configuration/
 
-name = "elizaos-worker-rust"
+name = "tokagentos-worker-rust"
 main = "build/worker/shim.mjs"
 compatibility_date = "2024-12-01"
 
@@ -13,9 +13,9 @@ port = 8788
 local_protocol = "http"
 
 [vars]
-CHARACTER_NAME = "Eliza"
-CHARACTER_BIO = "A helpful AI assistant powered by elizaOS, running on Cloudflare Workers (Rust)."
-CHARACTER_SYSTEM = "You are Eliza, a helpful AI assistant. You are friendly, knowledgeable, and always eager to help users with their questions."
+CHARACTER_NAME = "Tokagent"
+CHARACTER_BIO = "A helpful AI assistant powered by tokagentOS, running on Cloudflare Workers (Rust)."
+CHARACTER_SYSTEM = "You are Tokagent, a helpful AI assistant. You are friendly, knowledgeable, and always eager to help users with their questions."
 OPENAI_MODEL = "gpt-5-mini"
 
 

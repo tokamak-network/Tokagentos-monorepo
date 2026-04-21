@@ -2,7 +2,7 @@
  * Shared app manager contracts.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 export type AppSessionMode = "viewer" | "spectate-and-steer" | "external";
 
@@ -106,7 +106,7 @@ export interface RegistryAppInfo {
   /**
    * Absolute or app-scoped URL to a large hero image (ideally a 1024×1024
    * square webp) used as the card background on the apps page. Apps declare
-   * this in their `package.json` under `elizaos.app.heroImage` as a path
+   * this in their `package.json` under `tokagentos.app.heroImage` as a path
    * relative to the package root; the runtime rewrites the relative path
    * to `/api/apps/hero/<slug>` before surfacing the field to clients.
    */
@@ -268,7 +268,7 @@ export interface InstalledAppInfo {
   installedAt: string;
 }
 
-export interface ElizaCuratedAppDefinition {
+export interface TokagentCuratedAppDefinition {
   slug: string;
   canonicalName: string;
   aliases: string[];
@@ -292,7 +292,7 @@ function packageNameToBasename(packageName: string): string {
     .trim();
 }
 
-export const ELIZA_CURATED_APP_DEFINITIONS: readonly ElizaCuratedAppDefinition[] =
+export const TOKAGENT_CURATED_APP_DEFINITIONS: readonly TokagentCuratedAppDefinition[] =
   [
     {
       slug: "companion",
@@ -341,8 +341,8 @@ export const ELIZA_CURATED_APP_DEFINITIONS: readonly ElizaCuratedAppDefinition[]
     },
   ] as const;
 
-function getElizaCuratedAppMatchKeys(
-  definition: ElizaCuratedAppDefinition,
+function getTokagentCuratedAppMatchKeys(
+  definition: TokagentCuratedAppDefinition,
 ): string[] {
   const keys = new Set<string>([
     definition.slug.trim().toLowerCase(),
@@ -370,12 +370,12 @@ function getElizaCuratedAppMatchKeys(
   return Array.from(keys);
 }
 
-const ELIZA_CURATED_APP_DEFINITION_BY_KEY = new Map<
+const TOKAGENT_CURATED_APP_DEFINITION_BY_KEY = new Map<
   string,
-  ElizaCuratedAppDefinition
+  TokagentCuratedAppDefinition
 >(
-  ELIZA_CURATED_APP_DEFINITIONS.flatMap((definition) =>
-    getElizaCuratedAppMatchKeys(definition).map((key) => [key, definition]),
+  TOKAGENT_CURATED_APP_DEFINITIONS.flatMap((definition) =>
+    getTokagentCuratedAppMatchKeys(definition).map((key) => [key, definition]),
   ),
 );
 
@@ -406,13 +406,13 @@ export function hasAppInterface(
   return Boolean(value && (value.kind === "app" || value.appMeta));
 }
 
-export function getElizaCuratedAppDefinition(
+export function getTokagentCuratedAppDefinition(
   value: string,
-): ElizaCuratedAppDefinition | null {
+): TokagentCuratedAppDefinition | null {
   const trimmed = value.trim();
   if (!trimmed) return null;
 
-  const directMatch = ELIZA_CURATED_APP_DEFINITION_BY_KEY.get(
+  const directMatch = TOKAGENT_CURATED_APP_DEFINITION_BY_KEY.get(
     trimmed.toLowerCase(),
   );
   if (directMatch) {
@@ -424,15 +424,15 @@ export function getElizaCuratedAppDefinition(
     return null;
   }
 
-  return ELIZA_CURATED_APP_DEFINITION_BY_KEY.get(routeSlug) ?? null;
+  return TOKAGENT_CURATED_APP_DEFINITION_BY_KEY.get(routeSlug) ?? null;
 }
 
-export function normalizeElizaCuratedAppName(value: string): string | null {
-  return getElizaCuratedAppDefinition(value)?.canonicalName ?? null;
+export function normalizeTokagentCuratedAppName(value: string): string | null {
+  return getTokagentCuratedAppDefinition(value)?.canonicalName ?? null;
 }
 
-export function isElizaCuratedAppName(value: string): boolean {
-  return normalizeElizaCuratedAppName(value) !== null;
+export function isTokagentCuratedAppName(value: string): boolean {
+  return normalizeTokagentCuratedAppName(value) !== null;
 }
 
 // ---------------------------------------------------------------------------
@@ -440,14 +440,14 @@ export function isElizaCuratedAppName(value: string): boolean {
 // definitions at runtime without modifying the hardcoded list.
 // ---------------------------------------------------------------------------
 
-const _registeredCuratedApps: ElizaCuratedAppDefinition[] = [];
+const _registeredCuratedApps: TokagentCuratedAppDefinition[] = [];
 
 /**
  * Register an additional curated app definition at runtime.
  * Plugins should call this during initialization to add their app to the
  * curated catalog.
  */
-export function registerCuratedApp(def: ElizaCuratedAppDefinition): void {
+export function registerCuratedApp(def: TokagentCuratedAppDefinition): void {
   const existing = _registeredCuratedApps.findIndex((d) => d.slug === def.slug);
   if (existing >= 0) {
     _registeredCuratedApps[existing] = def;
@@ -463,9 +463,9 @@ export function registerCuratedApp(def: ElizaCuratedAppDefinition): void {
  * runtime-registered apps. Runtime registrations with the same slug
  * override hardcoded entries.
  */
-export function getCuratedAppDefinitions(): ElizaCuratedAppDefinition[] {
-  const merged = new Map<string, ElizaCuratedAppDefinition>();
-  for (const def of ELIZA_CURATED_APP_DEFINITIONS) {
+export function getCuratedAppDefinitions(): TokagentCuratedAppDefinition[] {
+  const merged = new Map<string, TokagentCuratedAppDefinition>();
+  for (const def of TOKAGENT_CURATED_APP_DEFINITIONS) {
     merged.set(def.slug, def);
   }
   for (const def of _registeredCuratedApps) {
@@ -477,26 +477,26 @@ export function getCuratedAppDefinitions(): ElizaCuratedAppDefinition[] {
 function _rebuildCuratedAppLookup(): void {
   // Add registered apps to the mutable lookup map
   for (const def of _registeredCuratedApps) {
-    for (const key of getElizaCuratedAppMatchKeys(def)) {
-      ELIZA_CURATED_APP_DEFINITION_BY_KEY.set(key, def);
+    for (const key of getTokagentCuratedAppMatchKeys(def)) {
+      TOKAGENT_CURATED_APP_DEFINITION_BY_KEY.set(key, def);
     }
   }
 }
 
-export function getElizaCuratedAppCatalogOrder(value: string): number {
-  const canonicalName = normalizeElizaCuratedAppName(value);
+export function getTokagentCuratedAppCatalogOrder(value: string): number {
+  const canonicalName = normalizeTokagentCuratedAppName(value);
   if (!canonicalName) {
     return Number.MAX_SAFE_INTEGER;
   }
 
-  const index = ELIZA_CURATED_APP_DEFINITIONS.findIndex(
+  const index = TOKAGENT_CURATED_APP_DEFINITIONS.findIndex(
     (definition) => definition.canonicalName === canonicalName,
   );
   return index >= 0 ? index : Number.MAX_SAFE_INTEGER;
 }
 
-export function getElizaCuratedAppLookupNames(value: string): string[] {
-  const definition = getElizaCuratedAppDefinition(value);
+export function getTokagentCuratedAppLookupNames(value: string): string[] {
+  const definition = getTokagentCuratedAppDefinition(value);
   if (!definition) {
     const trimmed = value.trim();
     return trimmed ? [trimmed] : [];

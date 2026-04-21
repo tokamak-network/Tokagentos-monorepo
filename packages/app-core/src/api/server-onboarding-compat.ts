@@ -3,14 +3,14 @@
  * cloud-mode detection, and cloud-provisioned container detection.
  */
 
-import { applyOnboardingCredentialPersistence } from "@elizaos/agent/api/provider-switch-config";
-import { loadElizaConfig, saveElizaConfig } from "@elizaos/agent/config/config";
-import { logger, stringToUuid } from "@elizaos/core";
+import { applyOnboardingCredentialPersistence } from "@tokagentos/agent/api/provider-switch-config";
+import { loadTokagentConfig, saveTokagentConfig } from "@tokagentos/agent/config/config";
+import { logger, stringToUuid } from "@tokagentos/core";
 import {
   deriveOnboardingCredentialPersistencePlan,
   migrateLegacyRuntimeConfig,
   normalizeOnboardingCredentialInputs,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import {
   type DeploymentTargetConfig,
   type LinkedAccountsConfig,
@@ -18,12 +18,12 @@ import {
   normalizeLinkedAccountsConfig,
   normalizeServiceRoutingConfig,
   type ServiceRoutingConfig,
-} from "@elizaos/shared/contracts/service-routing";
+} from "@tokagentos/shared/contracts/service-routing";
 import {
   getDefaultStylePreset,
   getStylePresets,
   normalizeCharacterLanguage,
-} from "@elizaos/shared/onboarding-presets";
+} from "@tokagentos/shared/onboarding-presets";
 import { PREMADE_VOICES } from "../voice/types";
 import { resolveProviderCredential } from "./credential-resolver";
 
@@ -34,7 +34,7 @@ import { resolveProviderCredential } from "./credential-resolver";
 /** Resolve the API token using app-first priority. */
 function getCompatApiToken(): string | null {
   const token =
-    process.env.ELIZA_API_TOKEN?.trim() ?? process.env.ELIZA_API_TOKEN?.trim();
+    process.env.TOKAGENT_API_TOKEN?.trim() ?? process.env.TOKAGENT_API_TOKEN?.trim();
   return token ? token : null;
 }
 
@@ -145,7 +145,7 @@ export async function extractAndPersistOnboardingApiKey(
   // key from local credential stores (files, keychain, env).
   if (
     llmSelection?.transport === "direct" &&
-    llmSelection.backend !== "elizacloud" &&
+    llmSelection.backend !== "tokagentcloud" &&
     (!llmSelection.apiKey || llmSelection.apiKey.startsWith("****"))
   ) {
     const resolved = resolveProviderCredential(llmSelection.backend);
@@ -187,13 +187,13 @@ export async function extractAndPersistOnboardingApiKey(
     }).llmSelection;
   }
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const result = await applyOnboardingCredentialPersistence(config, {
     credentialInputs: effectiveCredentialInputs,
     deploymentTarget: explicitDeploymentTarget,
     serviceRouting: effectiveServiceRouting,
   });
-  saveElizaConfig(config);
+  saveTokagentConfig(config);
 
   if (result) {
     logger.info(`[onboarding] Persisted ${result} from onboarding credentials`);
@@ -209,7 +209,7 @@ export function persistCompatOnboardingDefaults(
     return null;
   }
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const language = normalizeCharacterLanguage(body.language);
   const stylePreset = resolveCompatOnboardingStyle(body, language);
   if (!config.agents || typeof config.agents !== "object") {
@@ -310,7 +310,7 @@ export function persistCompatOnboardingDefaults(
   }
 
   migrateLegacyRuntimeConfig(config as Record<string, unknown>);
-  saveElizaConfig(config);
+  saveTokagentConfig(config);
   return adminEntityId;
 }
 
@@ -358,11 +358,11 @@ export function deriveCompatOnboardingReplayBody(
 /**
  * Check if this is a cloud-provisioned container.
  *
- * Cloud-provisioned containers (e.g., Eliza Cloud, enterprise deployments) skip
+ * Cloud-provisioned containers (e.g., Tokagent Cloud, enterprise deployments) skip
  * pairing and onboarding since the platform handles setup and authentication.
  *
  * Security: The bypass ONLY activates when BOTH conditions are met:
- * 1. ELIZA_CLOUD_PROVISIONED=1 (or ELIZA_CLOUD_PROVISIONED=1)
+ * 1. TOKAGENT_CLOUD_PROVISIONED=1 (or TOKAGENT_CLOUD_PROVISIONED=1)
  * 2. A platform-managed token is configured (`STEWARD_AGENT_TOKEN`, with
  *    compat-token fallback for older environments)
  *
@@ -371,11 +371,11 @@ export function deriveCompatOnboardingReplayBody(
  * would be unauthenticated and must go through normal onboarding.
  */
 export function isCloudProvisioned(): boolean {
-  const hasCloudFlag = process.env.ELIZA_CLOUD_PROVISIONED === "1";
+  const hasCloudFlag = process.env.TOKAGENT_CLOUD_PROVISIONED === "1";
 
   const hasCloudApiKeyProvisioning =
-    process.env.ELIZAOS_CLOUD_ENABLED === "true" &&
-    Boolean(process.env.ELIZAOS_CLOUD_API_KEY?.trim());
+    process.env.TOKAGENTOS_CLOUD_ENABLED === "true" &&
+    Boolean(process.env.TOKAGENTOS_CLOUD_API_KEY?.trim());
 
   const hasPlatformToken = Boolean(
     process.env.STEWARD_AGENT_TOKEN?.trim() ||

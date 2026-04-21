@@ -113,8 +113,8 @@ export class SandboxManager {
 
   constructor(config: SandboxManagerConfig) {
     this.config = {
-      image: "eliza-sandbox:bookworm-slim",
-      containerPrefix: "eliza-sandbox",
+      image: "tokagent-sandbox:bookworm-slim",
+      containerPrefix: "tokagent-sandbox",
       workdir: "/workspace",
       network: "none",
       user: "1000:1000",
@@ -149,8 +149,8 @@ export class SandboxManager {
     user: string;
     wsRoot: string;
   } {
-    const image = this.config.image ?? "eliza-sandbox:bookworm-slim";
-    const containerPrefix = this.config.containerPrefix ?? "eliza-sandbox";
+    const image = this.config.image ?? "tokagent-sandbox:bookworm-slim";
+    const containerPrefix = this.config.containerPrefix ?? "tokagent-sandbox";
     const workdir = this.config.workdir ?? "/workspace";
     const network = this.config.network ?? "none";
     const user = this.config.user ?? "1000:1000";
@@ -158,7 +158,7 @@ export class SandboxManager {
       this.config.workspaceRoot ??
       join(
         process.env.HOME ?? process.env.USERPROFILE ?? os.tmpdir(),
-        ".eliza",
+        ".tokagent",
         "sandbox-workspace",
       );
     mkdirSync(wsRoot, { recursive: true });
@@ -473,7 +473,7 @@ export class SandboxManager {
     const enableNoVnc = this.config.browser?.enableNoVnc ?? false;
     const headless = this.config.browser?.headless ?? false;
     const image =
-      this.config.browser?.image ?? "eliza-sandbox-browser:bookworm-slim";
+      this.config.browser?.image ?? "tokagent-sandbox-browser:bookworm-slim";
 
     return this.engine.runContainer({
       image,
@@ -481,11 +481,11 @@ export class SandboxManager {
       detach: true,
       mounts: [],
       env: {
-        ELIZA_BROWSER_CDP_PORT: String(cdpPort),
-        ELIZA_BROWSER_VNC_PORT: String(vncPort),
-        ELIZA_BROWSER_NOVNC_PORT: String(noVncPort),
-        ELIZA_BROWSER_ENABLE_NOVNC: enableNoVnc ? "1" : "0",
-        ELIZA_BROWSER_HEADLESS: headless ? "1" : "0",
+        TOKAGENT_BROWSER_CDP_PORT: String(cdpPort),
+        TOKAGENT_BROWSER_VNC_PORT: String(vncPort),
+        TOKAGENT_BROWSER_NOVNC_PORT: String(noVncPort),
+        TOKAGENT_BROWSER_ENABLE_NOVNC: enableNoVnc ? "1" : "0",
+        TOKAGENT_BROWSER_HEADLESS: headless ? "1" : "0",
       },
       network: "bridge",
       user: "1000:1000",

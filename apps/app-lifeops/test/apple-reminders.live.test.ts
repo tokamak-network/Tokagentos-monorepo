@@ -13,18 +13,18 @@ import {
 const execFileAsync = promisify(execFile);
 const LIVE_TESTS_ENABLED =
   process.env.MILADY_LIVE_TEST === "1" ||
-  process.env.ELIZA_LIVE_TEST === "1";
+  process.env.TOKAGENT_LIVE_TEST === "1";
 const LIVE_APPLE_REMINDER_TESTS_ENABLED =
   LIVE_TESTS_ENABLED &&
   process.platform === "darwin" &&
-  process.env.ELIZA_LIVE_APPLE_REMINDERS_TEST === "1";
+  process.env.TOKAGENT_LIVE_APPLE_REMINDERS_TEST === "1";
 
 if (!LIVE_APPLE_REMINDER_TESTS_ENABLED) {
   const reasons = [
-    !LIVE_TESTS_ENABLED ? "set ELIZA_LIVE_TEST=1 or ELIZA_LIVE_TEST=1" : null,
+    !LIVE_TESTS_ENABLED ? "set TOKAGENT_LIVE_TEST=1 or TOKAGENT_LIVE_TEST=1" : null,
     process.platform !== "darwin" ? "run on macOS" : null,
-    process.env.ELIZA_LIVE_APPLE_REMINDERS_TEST !== "1"
-      ? "set ELIZA_LIVE_APPLE_REMINDERS_TEST=1"
+    process.env.TOKAGENT_LIVE_APPLE_REMINDERS_TEST !== "1"
+      ? "set TOKAGENT_LIVE_APPLE_REMINDERS_TEST=1"
       : null,
   ]
     .filter(Boolean)
@@ -136,8 +136,8 @@ describeLive("native Apple reminders live integration", () => {
     "creates, updates, and deletes a real reminder in Reminders.app",
     async () => {
       const suffix = crypto.randomUUID().slice(0, 8);
-      const initialTitle = `Eliza live reminder ${suffix}`;
-      const updatedTitle = `Eliza live reminder updated ${suffix}`;
+      const initialTitle = `Tokagent live reminder ${suffix}`;
+      const updatedTitle = `Tokagent live reminder updated ${suffix}`;
       const createdDueAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
       const updatedDueAt = new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString();
 
@@ -165,7 +165,7 @@ describeLive("native Apple reminders live integration", () => {
           (snapshot) =>
             snapshot.title === initialTitle &&
             snapshot.body.includes("Created by the live macOS reminder test.") &&
-            snapshot.body.includes("Eliza request: live test create a reminder"),
+            snapshot.body.includes("Tokagent request: live test create a reminder"),
         );
         expect(initialSnapshot.dueText.length).toBeGreaterThan(0);
 
@@ -188,7 +188,7 @@ describeLive("native Apple reminders live integration", () => {
           (snapshot) =>
             snapshot.title === updatedTitle &&
             snapshot.body.includes("Updated by the live macOS reminder test.") &&
-            snapshot.body.includes("Eliza request: live test update the reminder"),
+            snapshot.body.includes("Tokagent request: live test update the reminder"),
         );
         expect(updatedSnapshot.dueText.length).toBeGreaterThan(0);
       } finally {

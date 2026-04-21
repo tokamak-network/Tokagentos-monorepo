@@ -42,7 +42,7 @@ mod character_tests {
 #[cfg(feature = "live")]
 mod live_tests {
     use super::*;
-    use elizaos_plugin_bluesky::{BlueSkyClient, BlueSkyConfig, CreatePostRequest, TimelineRequest};
+    use tokagentos_plugin_bluesky::{BlueSkyClient, BlueSkyConfig, CreatePostRequest, TimelineRequest};
 
     fn setup_client() -> BlueSkyClient {
         let _ = dotenvy::dotenv();

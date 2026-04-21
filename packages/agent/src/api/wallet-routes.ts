@@ -1,22 +1,22 @@
 import type http from "node:http";
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type {
   WalletExportRejection as WalletExportRejectionLike,
   WalletExportRequestBody,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 import { normalizeCloudSiteUrl } from "../cloud/base-url.js";
 import {
   type CloudWalletDescriptor,
   type CloudWalletProvider,
-  ElizaCloudClient,
+  TokagentCloudClient,
 } from "../cloud/bridge-client.js";
 import {
   getOrCreateClientAddressKey,
   persistCloudWalletCache,
   provisionCloudWalletsBestEffort,
 } from "../cloud/cloud-wallet.js";
-import type { ElizaConfig } from "../config/config.js";
+import type { TokagentConfig } from "../config/config.js";
 import { isCloudWalletEnabled } from "../config/feature-flags.js";
 import {
   normalizeWalletRpcSelections,
@@ -201,7 +201,7 @@ interface CachedCloudWalletDescriptor {
 }
 
 function readCloudWalletCache(
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): Partial<Record<WalletChainKind, CachedCloudWalletDescriptor>> {
   const wallet = config.wallet;
   if (!wallet || typeof wallet !== "object") return {};
@@ -210,7 +210,7 @@ function readCloudWalletCache(
   return cloud as Partial<Record<WalletChainKind, CachedCloudWalletDescriptor>>;
 }
 
-function readPrimaryMap(config: ElizaConfig): WalletPrimaryMap {
+function readPrimaryMap(config: TokagentConfig): WalletPrimaryMap {
   const wallet = config.wallet;
   const raw =
     wallet && typeof wallet === "object"
@@ -237,7 +237,7 @@ function coerceCloudProvider(value: unknown): CloudWalletProvider {
  * preserve the pre-flag response shape exactly.
  */
 function buildDualWalletShape(
-  config: ElizaConfig,
+  config: TokagentConfig,
   addresses: { evmAddress: string | null; solanaAddress: string | null },
 ): { wallets: WalletEntry[]; primary: WalletPrimaryMap } | null {
   if (!isCloudWalletEnabled()) return null;
@@ -291,7 +291,7 @@ function readCloudWalletAddress(
 }
 
 function readCachedCloudWalletDescriptor(
-  config: ElizaConfig,
+  config: TokagentConfig,
   chain: WalletChainKind,
 ): CloudWalletDescriptor | null {
   const descriptor = readCloudWalletCache(config)[chain];
@@ -311,7 +311,7 @@ function readCachedCloudWalletDescriptor(
 }
 
 function readCachedCloudWalletDescriptors(
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): Partial<Record<WalletChainKind, CloudWalletDescriptor>> {
   const evm = readCachedCloudWalletDescriptor(config, "evm");
   const solana = readCachedCloudWalletDescriptor(config, "solana");
@@ -322,7 +322,7 @@ function readCachedCloudWalletDescriptors(
 }
 
 function resolvePrimaryWalletAddresses(
-  config: ElizaConfig,
+  config: TokagentConfig,
   addresses: { evmAddress: string | null; solanaAddress: string | null },
 ): { evmAddress: string | null; solanaAddress: string | null } {
   const primary = readPrimaryMap(config);
@@ -341,7 +341,7 @@ function resolvePrimaryWalletAddresses(
 }
 
 function persistPrimarySelection(
-  config: ElizaConfig,
+  config: TokagentConfig,
   chain: WalletChainKind,
   source: WalletSource,
 ): void {
@@ -358,9 +358,9 @@ function persistPrimarySelection(
 export interface WalletRouteContext
   extends RouteRequestMeta,
     Pick<RouteHelpers, "readJsonBody" | "json" | "error"> {
-  config: ElizaConfig;
-  saveConfig: (config: ElizaConfig) => void;
-  ensureWalletKeysInEnvAndConfig: (config: ElizaConfig) => boolean;
+  config: TokagentConfig;
+  saveConfig: (config: TokagentConfig) => void;
+  ensureWalletKeysInEnvAndConfig: (config: TokagentConfig) => boolean;
   resolveWalletExportRejection: (
     req: http.IncomingMessage,
     body: WalletExportRequestBody,
@@ -577,8 +577,8 @@ export async function handleWalletRoutes(
       try {
         const agentId =
           process.env.STEWARD_AGENT_ID?.trim() ||
-          process.env.ELIZA_STEWARD_AGENT_ID?.trim() ||
-          process.env.ELIZA_STEWARD_AGENT_ID?.trim() ||
+          process.env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
+          process.env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
           null;
 
         if (!agentId) {
@@ -715,7 +715,7 @@ export async function handleWalletRoutes(
       (config.env as Record<string, string>).EVM_PRIVATE_KEY =
         result.privateKey;
       generated.push({ chain: "evm", address: result.address });
-      logger.info(`[eliza-api] Generated EVM wallet: ${result.address}`);
+      logger.info(`[tokagent-api] Generated EVM wallet: ${result.address}`);
     }
 
     if (targetChain === "both" || targetChain === "solana") {
@@ -724,7 +724,7 @@ export async function handleWalletRoutes(
       (config.env as Record<string, string>).SOLANA_PRIVATE_KEY =
         result.privateKey;
       generated.push({ chain: "solana", address: result.address });
-      logger.info(`[eliza-api] Generated Solana wallet: ${result.address}`);
+      logger.info(`[tokagent-api] Generated Solana wallet: ${result.address}`);
     }
 
     let configSaveWarning: string | undefined;
@@ -878,7 +878,7 @@ export async function handleWalletRoutes(
   }
 
   // POST /api/wallet/refresh-cloud — flag-gated.
-  // Re-queries the Eliza Cloud bridge for per-chain wallet descriptors and
+  // Re-queries the Tokagent Cloud bridge for per-chain wallet descriptors and
   // refreshes `config.wallet.cloud.*`. Provision is best-effort so one bad
   // chain does not discard the other imported wallet(s). This is a refresh
   // operation, so we re-fetch all chains to pick up any upstream changes
@@ -893,9 +893,9 @@ export async function handleWalletRoutes(
     const apiKey = resolveCloudApiKey(config, ctx.runtime) ?? "";
     const baseUrl = cloud?.baseUrl
       ? normalizeCloudSiteUrl(cloud.baseUrl)
-      : "https://www.elizacloud.ai";
+      : "https://www.tokagentcloud.ai";
     if (!apiKey) {
-      error(res, "Cloud not linked — sign in to Eliza Cloud first", 400);
+      error(res, "Cloud not linked — sign in to Tokagent Cloud first", 400);
       return true;
     }
 
@@ -911,7 +911,7 @@ export async function handleWalletRoutes(
 
     try {
       const { address: clientAddress } = await getOrCreateClientAddressKey();
-      const bridge = new ElizaCloudClient(baseUrl, apiKey);
+      const bridge = new TokagentCloudClient(baseUrl, apiKey);
       const cachedDescriptors = readCachedCloudWalletDescriptors(config);
       const chainsToProvision = (["evm", "solana"] as const).filter(
         (chain) => !cachedDescriptors[chain],
@@ -1061,7 +1061,7 @@ export async function handleWalletRoutes(
       updateRequest.selections,
     );
     const shouldEnableCloudWallet = Object.values(selectedProviders).every(
-      (provider) => provider === "eliza-cloud",
+      (provider) => provider === "tokagent-cloud",
     );
 
     if (shouldEnableCloudWallet) {

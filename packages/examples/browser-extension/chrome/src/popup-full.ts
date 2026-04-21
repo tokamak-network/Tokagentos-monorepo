@@ -1,5 +1,5 @@
 /**
- * Full Popup Script with ElizaOS Runtime
+ * Full Popup Script with TokagentOS Runtime
  * 
  * Supports multiple LLM providers and uses localdb for persistence
  */
@@ -27,7 +27,7 @@ import {
   getScreenshot,
   clearScreenshot,
   resolveEffectiveMode,
-} from "../../shared/eliza-runtime-full";
+} from "../../shared/tokagent-runtime-full";
 import {
   deepMergeConfig,
   DEFAULT_CONFIG,
@@ -101,8 +101,8 @@ interface StoredMessage {
 // Storage Keys
 // ============================================
 
-const CONFIG_KEY = "elizaos-extension-config";
-const CHAT_HISTORY_KEY = "elizaos-chat-history"; // Stores { [url]: StoredMessage[] }
+const CONFIG_KEY = "tokagentos-extension-config";
+const CHAT_HISTORY_KEY = "tokagentos-chat-history"; // Stores { [url]: StoredMessage[] }
 
 async function loadConfig(): Promise<void> {
   try {
@@ -243,7 +243,7 @@ function setMessageContent(msgDiv: HTMLDivElement, role: "user" | "assistant", t
 
 function getModeLabel(mode: ProviderMode): string {
   const labels: Record<ProviderMode, string> = {
-    elizaClassic: "ELIZA Classic",
+    tokagentClassic: "TOKAGENT Classic",
     openai: "OpenAI",
     anthropic: "Claude",
     xai: "Grok",
@@ -361,7 +361,7 @@ function restoreMessages(messages: StoredMessage[]): void {
 // ============================================
 
 const providerSettingsSections: Record<ProviderMode, HTMLDivElement | null> = {
-  elizaClassic: null,
+  tokagentClassic: null,
   openai: elements.openaiSettings,
   anthropic: elements.anthropicSettings,
   xai: elements.xaiSettings,
@@ -387,11 +387,11 @@ function updateProviderSettings(): void {
   const noteDot = elements.providerNote?.querySelector(".dot") as HTMLElement;
   
   if (noteText && noteDot) {
-    if (config.mode === "elizaClassic") {
-      noteText.textContent = "ELIZA Classic works offline - no API key needed";
+    if (config.mode === "tokagentClassic") {
+      noteText.textContent = "TOKAGENT Classic works offline - no API key needed";
       noteDot.style.background = "#22c55e";
-    } else if (effectiveMode === "elizaClassic") {
-      noteText.textContent = "No API key set - will use ELIZA Classic fallback";
+    } else if (effectiveMode === "tokagentClassic") {
+      noteText.textContent = "No API key set - will use TOKAGENT Classic fallback";
       noteDot.style.background = "#eab308";
     } else {
       noteText.textContent = "API key configured";
@@ -621,7 +621,7 @@ async function handleSendMessage(text: string): Promise<void> {
     }
 
     // Fallback: inference in popup (Safari / unsupported) — will stop if popup closes.
-    if (effectiveMode === "elizaClassic") {
+    if (effectiveMode === "tokagentClassic") {
       const { responseText } = await sendMessage(config, text);
       updateMessage(assistantMsg, responseText, true);
     } else {

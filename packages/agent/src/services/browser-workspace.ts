@@ -486,7 +486,7 @@ async function resolveHostedCloudBrowserTargetTabId(
   const fallbackId = tabs.find((tab) => tab.visible)?.id ?? tabs[0]?.id;
   if (!fallbackId) {
     throw new Error(
-      "Eliza browser workspace command requires an active cloud browser session.",
+      "Tokagent browser workspace command requires an active cloud browser session.",
     );
   }
   return fallbackId;
@@ -653,7 +653,7 @@ export async function executeBrowserWorkspaceCommand(
       const steps = Array.isArray(command.steps) ? command.steps : [];
       if (steps.length === 0) {
         throw new Error(
-          "Eliza browser workspace batch requires at least one step.",
+          "Tokagent browser workspace batch requires at least one step.",
         );
       }
       const results: BrowserWorkspaceCommandResult[] = [];
@@ -828,7 +828,7 @@ export async function executeBrowserWorkspaceCommand(
         const rightUrl = command.secondaryUrl?.trim();
         if (!rightUrl) {
           throw new Error(
-            "Eliza browser workspace diff url requires secondaryUrl.",
+            "Tokagent browser workspace diff url requires secondaryUrl.",
           );
         }
         const left = await browserWorkspacePageFetch(leftUrl);
@@ -924,7 +924,7 @@ export async function executeBrowserWorkspaceCommand(
         const filePath = command.filePath?.trim() || command.outputPath?.trim();
         if (!filePath) {
           throw new Error(
-            "Eliza browser workspace state load requires filePath.",
+            "Tokagent browser workspace state load requires filePath.",
           );
         }
         const payload = JSON.parse(
@@ -966,7 +966,7 @@ export async function executeBrowserWorkspaceCommand(
       }
       const filePath = command.filePath?.trim() || command.outputPath?.trim();
       if (!filePath) {
-        throw new Error("Eliza browser workspace pdf requires filePath.");
+        throw new Error("Tokagent browser workspace pdf requires filePath.");
       }
       const snapshot = await getDesktopBrowserWorkspaceSnapshotRecord(
         command,
@@ -1021,7 +1021,7 @@ export async function executeBrowserWorkspaceCommand(
             : null;
         if (!target) {
           throw new Error(
-            "Eliza browser workspace tab switch requires a valid id or index.",
+            "Tokagent browser workspace tab switch requires a valid id or index.",
           );
         }
         return {
@@ -1035,7 +1035,7 @@ export async function executeBrowserWorkspaceCommand(
         (await listBrowserWorkspaceTabs(env))[command.index ?? -1]?.id;
       if (!targetId) {
         throw new Error(
-          "Eliza browser workspace tab close requires a valid id or index.",
+          "Tokagent browser workspace tab close requires a valid id or index.",
         );
       }
       return {

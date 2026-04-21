@@ -1,11 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
-  isElizaSettingsDebugEnabled,
+  isTokagentSettingsDebugEnabled,
   migrateLegacyRuntimeConfig,
   sanitizeForSettingsDebug,
   settingsDebugCloudSummary,
-} from "@elizaos/shared";
+} from "@tokagentos/shared";
 import JSON5 from "json5";
 import { readConfigEnvSync } from "../api/config-env.js";
 import { syncSolanaPublicKeyEnv } from "../api/wallet-env-sync.js";
@@ -16,14 +16,14 @@ import {
   resolveStateDir,
   resolveUserPath,
 } from "./paths.js";
-import type { ElizaConfig } from "./types.js";
+import type { TokagentConfig } from "./types.js";
 
 export * from "./types.js";
 
 function resolveConfigWritePath(env: NodeJS.ProcessEnv = process.env): string {
   const persistPath =
     env.MILADY_PERSIST_CONFIG_PATH?.trim() ??
-    env.ELIZA_PERSIST_CONFIG_PATH?.trim();
+    env.TOKAGENT_PERSIST_CONFIG_PATH?.trim();
   return persistPath ? resolveUserPath(persistPath) : resolveConfigPath();
 }
 
@@ -34,7 +34,7 @@ function applyConfigEnvToProcessEnv(entries: Record<string, string>): void {
 }
 
 function getConfigEnvString(
-  config: ElizaConfig,
+  config: TokagentConfig,
   key: string,
 ): string | undefined {
   const envConfig = config.env as
@@ -74,7 +74,7 @@ function mergeConfigRecords(base: unknown, overlay: unknown): unknown {
   return overlay;
 }
 
-function readConfigFile(configPath: string): ElizaConfig | null {
+function readConfigFile(configPath: string): TokagentConfig | null {
   let raw: string;
   try {
     raw = fs.readFileSync(configPath, "utf-8");
@@ -86,10 +86,10 @@ function readConfigFile(configPath: string): ElizaConfig | null {
   }
 
   const parsed = JSON5.parse(raw) as Record<string, unknown>;
-  return resolveConfigIncludes(parsed, configPath) as ElizaConfig;
+  return resolveConfigIncludes(parsed, configPath) as TokagentConfig;
 }
 
-export function loadElizaConfig(): ElizaConfig {
+export function loadTokagentConfig(): TokagentConfig {
   const configPath = resolveConfigPath();
   const persistPath = resolveConfigWritePath();
 
@@ -100,7 +100,7 @@ export function loadElizaConfig(): ElizaConfig {
     baseConfig || persistedConfig
       ? mergeConfigRecords(baseConfig ?? {}, persistedConfig ?? {})
       : { logging: { level: "error" } }
-  ) as ElizaConfig;
+  ) as TokagentConfig;
   migrateLegacyRuntimeConfig(resolved as Record<string, unknown>);
 
   const skillsJsonPath = path.join(resolveStateDir(), "skills.json");
@@ -118,7 +118,7 @@ export function loadElizaConfig(): ElizaConfig {
       );
     } catch (err) {
       console.warn(
-        `[eliza] Failed to auto-create ~/.eliza/skills.json: ${String(err)}`,
+        `[tokagent] Failed to auto-create ~/.tokagent/skills.json: ${String(err)}`,
       );
     }
   }
@@ -150,7 +150,7 @@ export function loadElizaConfig(): ElizaConfig {
       }
     } catch (err) {
       console.warn(
-        `[eliza] Failed to load ~/.eliza/skills.json: ${String(err)}`,
+        `[tokagent] Failed to load ~/.tokagent/skills.json: ${String(err)}`,
       );
     }
   }
@@ -188,9 +188,9 @@ export function loadElizaConfig(): ElizaConfig {
   // Keep public-key aliases available when only the private key is configured.
   syncSolanaPublicKeyEnv(getConfigEnvString(resolved, "SOLANA_PRIVATE_KEY"));
 
-  if (isElizaSettingsDebugEnabled()) {
+  if (isTokagentSettingsDebugEnabled()) {
     const cloud = resolved.cloud as Record<string, unknown> | undefined;
-    console.debug("[eliza][settings][loadElizaConfig]", {
+    console.debug("[tokagent][settings][loadTokagentConfig]", {
       path: configPath,
       persistPath: persistPath !== configPath ? persistPath : undefined,
       topLevelKeys: Object.keys(resolved as object).sort(),
@@ -220,13 +220,13 @@ function stripIncludeDirectives(value: unknown): unknown {
   return result;
 }
 
-function isWalletOsStoreEnabledInConfig(config: ElizaConfig): boolean {
+function isWalletOsStoreEnabledInConfig(config: TokagentConfig): boolean {
   const envConfig = config.env;
   if (!envConfig || typeof envConfig !== "object" || Array.isArray(envConfig)) {
     return false;
   }
 
-  const raw = envConfig.ELIZA_WALLET_OS_STORE;
+  const raw = envConfig.TOKAGENT_WALLET_OS_STORE;
   if (typeof raw !== "string") {
     return false;
   }
@@ -240,7 +240,7 @@ function isWalletOsStoreEnabledInConfig(config: ElizaConfig): boolean {
   );
 }
 
-function stripWalletPrivateKeysFromConfig(config: ElizaConfig): void {
+function stripWalletPrivateKeysFromConfig(config: TokagentConfig): void {
   const envConfig = config.env;
   if (!envConfig || typeof envConfig !== "object" || Array.isArray(envConfig)) {
     return;
@@ -261,7 +261,7 @@ function stripWalletPrivateKeysFromConfig(config: ElizaConfig): void {
   }
 }
 
-export function saveElizaConfig(config: ElizaConfig): void {
+export function saveTokagentConfig(config: TokagentConfig): void {
   const configPath = resolveConfigWritePath();
   const dir = path.dirname(configPath);
 
@@ -276,13 +276,13 @@ export function saveElizaConfig(config: ElizaConfig): void {
   const sanitized = stripIncludeDirectives(config);
   if (!sanitized || typeof sanitized !== "object") {
     throw new Error(
-      `[eliza-config] stripIncludeDirectives returned invalid result: ${typeof sanitized}`,
+      `[tokagent-config] stripIncludeDirectives returned invalid result: ${typeof sanitized}`,
     );
   }
 
   migrateLegacyRuntimeConfig(sanitized as Record<string, unknown>);
-  if (isWalletOsStoreEnabledInConfig(sanitized as ElizaConfig)) {
-    stripWalletPrivateKeysFromConfig(sanitized as ElizaConfig);
+  if (isWalletOsStoreEnabledInConfig(sanitized as TokagentConfig)) {
+    stripWalletPrivateKeysFromConfig(sanitized as TokagentConfig);
   }
 
   const content = `${JSON.stringify(sanitized, null, 2)}\n`;
@@ -315,20 +315,20 @@ export function saveElizaConfig(config: ElizaConfig): void {
 
   if (!fs.existsSync(configPath)) {
     throw new Error(
-      `[eliza-config] Config file missing after write: ${configPath}`,
+      `[tokagent-config] Config file missing after write: ${configPath}`,
     );
   }
   const stat = fs.statSync(configPath);
   if (stat.size === 0) {
     throw new Error(
-      `[eliza-config] Config file is empty after write: ${configPath}`,
+      `[tokagent-config] Config file is empty after write: ${configPath}`,
     );
   }
 
-  if (isElizaSettingsDebugEnabled()) {
+  if (isTokagentSettingsDebugEnabled()) {
     const c = sanitized as Record<string, unknown>;
     const cloud = c.cloud as Record<string, unknown> | undefined;
-    console.debug("[eliza][settings][saveElizaConfig]", {
+    console.debug("[tokagent][settings][saveTokagentConfig]", {
       path: configPath,
       bytes: stat.size,
       topLevelKeys: Object.keys(c).sort(),

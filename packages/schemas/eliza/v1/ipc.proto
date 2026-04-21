@@ -1,13 +1,13 @@
 // ipc.proto - Inter-Process Communication types for cross-language plugin interop
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
-import "eliza/v1/components.proto";
-import "eliza/v1/memory.proto";
-import "eliza/v1/plugin.proto";
-import "eliza/v1/service.proto";
-import "eliza/v1/state.proto";
+import "tokagent/v1/components.proto";
+import "tokagent/v1/memory.proto";
+import "tokagent/v1/plugin.proto";
+import "tokagent/v1/service.proto";
+import "tokagent/v1/state.proto";
 import "google/protobuf/struct.proto";
 
 // Interop protocol enumeration

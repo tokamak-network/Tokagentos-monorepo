@@ -1,8 +1,8 @@
 {
-  "name": "@elizaos/prompts",
+  "name": "@tokagentos/prompts",
   "private": false,
   "version": "2.0.0-alpha.223",
-  "description": "Shared prompt templates for elizaOS across TypeScript, Python, and Rust",
+  "description": "Shared prompt templates for tokagentOS across TypeScript, Python, and Rust",
   "type": "module",
   "main": "./dist/typescript/index.ts",
   "types": "./dist/typescript/index.ts",
@@ -33,7 +33,7 @@
     "scripts/"
   ],
   "keywords": [
-    "elizaos",
+    "tokagentos",
     "prompts",
     "templates",
     "ai",

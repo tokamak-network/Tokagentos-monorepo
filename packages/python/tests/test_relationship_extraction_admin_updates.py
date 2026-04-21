@@ -5,10 +5,10 @@ from typing import cast
 
 import pytest
 
-from elizaos.features.advanced_capabilities.evaluators.relationship_extraction import (
+from tokagentos.features.advanced_capabilities.evaluators.relationship_extraction import (
     _handle_admin_updates,
 )
-from elizaos.types import Content, IAgentRuntime, Memory, as_uuid
+from tokagentos.types import Content, IAgentRuntime, Memory, as_uuid
 
 
 class FakeLogger:

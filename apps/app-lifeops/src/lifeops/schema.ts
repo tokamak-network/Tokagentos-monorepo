@@ -1,7 +1,7 @@
 /**
  * LifeOps Drizzle schema.
  *
- * Tables are created and migrated via the elizaOS plugin-migration system
+ * Tables are created and migrated via the tokagentOS plugin-migration system
  * when the plugin's `schema` field is populated. Indexes are intentionally
  * NOT declared here — the runtime migrator does not emit `CREATE INDEX IF
  * NOT EXISTS`, which would collide with pre-existing production databases

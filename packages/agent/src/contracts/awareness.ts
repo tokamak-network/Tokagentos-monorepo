@@ -4,7 +4,7 @@
  * @architecture Layered lazy-load + declarative AwarenessContributor
  * @see docs/plans/2026-03-01-self-awareness-design.md
  */
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 export const SELF_STATUS_SCHEMA_VERSION = 1;
 

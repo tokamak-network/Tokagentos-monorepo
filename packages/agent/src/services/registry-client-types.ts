@@ -34,7 +34,7 @@ export interface RegistryAppMeta {
   icon: string | null;
   /**
    * URL or package-relative path to a full-card hero image. Apps declare
-   * this in `package.json` → `elizaos.app.heroImage` as a relative path
+   * this in `package.json` → `tokagentos.app.heroImage` as a relative path
    * (e.g. `"assets/hero.png"`); the runtime resolves it to a served
    * URL before surfacing the field on `RegistryAppInfo`.
    */
@@ -75,7 +75,7 @@ export interface RegistryPluginInfo {
   appMeta?: RegistryAppMeta;
 }
 
-export type { RegistryAppInfo } from "@elizaos/shared/contracts/apps";
+export type { RegistryAppInfo } from "@tokagentos/shared/contracts/apps";
 
 export interface RegistrySearchResult {
   name: string;

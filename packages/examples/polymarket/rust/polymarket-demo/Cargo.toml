@@ -10,8 +10,8 @@ name = "polymarket-demo"
 path = "src/main.rs"
 
 [dependencies]
-elizaos-plugin-evm = "2.0.0"
-elizaos-plugin-polymarket = "2.0.0"
+tokagentos-plugin-evm = "2.0.0"
+tokagentos-plugin-polymarket = "2.0.0"
 
 tokio = { version = "1.42", features = ["rt-multi-thread", "macros"] }
 anyhow = "1.0"

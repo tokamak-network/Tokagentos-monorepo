@@ -1,5 +1,5 @@
 {
-  "name": "elizagotchi",
+  "name": "tokagentgotchi",
   "version": "2.0.0-alpha",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-localdb": "alpha",
     "react": "19.2.3",
     "react-dom": "19.2.3"

@@ -11,9 +11,9 @@ function createWalletConfig(
 ): WalletConfigStatus {
   return {
     selectedRpcProviders: {
-      evm: "eliza-cloud",
-      bsc: "eliza-cloud",
-      solana: "eliza-cloud",
+      evm: "tokagent-cloud",
+      bsc: "tokagent-cloud",
+      solana: "tokagent-cloud",
     },
     legacyCustomChains: [],
     alchemyKeySet: false,

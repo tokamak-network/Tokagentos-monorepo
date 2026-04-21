@@ -1,5 +1,5 @@
-import { client, useApp, usePtySessions } from "@elizaos/app-core";
-import { Button } from "@elizaos/ui/components/ui/button";
+import { client, useApp, usePtySessions } from "@tokagentos/app-core";
+import { Button } from "@tokagentos/ui/components/ui/button";
 import { Square, Terminal } from "lucide-react";
 import { useCallback } from "react";
 

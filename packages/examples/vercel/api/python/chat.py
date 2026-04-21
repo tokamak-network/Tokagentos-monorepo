@@ -2,7 +2,7 @@
 Vercel Serverless Function - Chat Endpoint (Python)
 
 This Serverless Function processes chat messages and returns AI responses
-using the elizaOS runtime with OpenAI as the LLM provider.
+using the tokagentOS runtime with OpenAI as the LLM provider.
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ _runtime_initialized = False
 def get_character() -> dict[str, str]:
     """Get character configuration from environment."""
     return {
-        "name": os.environ.get("CHARACTER_NAME", "Eliza"),
+        "name": os.environ.get("CHARACTER_NAME", "Tokagent"),
         "bio": os.environ.get("CHARACTER_BIO", "A helpful AI assistant."),
         "system": os.environ.get(
             "CHARACTER_SYSTEM",
@@ -52,17 +52,17 @@ def get_character() -> dict[str, str]:
 
 
 async def get_runtime():
-    """Get or create the elizaOS runtime (singleton pattern)."""
+    """Get or create the tokagentOS runtime (singleton pattern)."""
     global _runtime, _runtime_initialized
 
     if _runtime_initialized:
         return _runtime
 
-    logger.info("Initializing elizaOS runtime...")
+    logger.info("Initializing tokagentOS runtime...")
 
-    from elizaos import Character
-    from elizaos.runtime import AgentRuntime
-    from elizaos_plugin_openai import get_openai_plugin
+    from tokagentos import Character
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_plugin_openai import get_openai_plugin
 
     character_config = get_character()
     character = Character(
@@ -79,7 +79,7 @@ async def get_runtime():
     await _runtime.initialize()
     _runtime_initialized = True
 
-    logger.info("elizaOS runtime initialized successfully")
+    logger.info("tokagentOS runtime initialized successfully")
     return _runtime
 
 
@@ -102,14 +102,14 @@ def parse_request_body(body: str | None) -> ChatRequest:
 
 
 async def handle_chat_async(request: ChatRequest) -> ChatResponse:
-    """Handle a chat message using elizaOS runtime."""
+    """Handle a chat message using tokagentOS runtime."""
     runtime = await get_runtime()
 
     # Generate IDs
     conversation_id = request.get("conversationId") or f"conv-{uuid.uuid4().hex[:12]}"
 
     # Route through the full message pipeline (planning/actions/providers/memory)
-    from elizaos import ChannelType, Content, Memory, string_to_uuid
+    from tokagentos import ChannelType, Content, Memory, string_to_uuid
 
     user_id_raw = request.get("userId") or f"user-{uuid.uuid4().hex}"
     user_id = string_to_uuid(user_id_raw)

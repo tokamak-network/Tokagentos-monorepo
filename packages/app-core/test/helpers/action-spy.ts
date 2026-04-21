@@ -1,6 +1,6 @@
 /** Records action lifecycle events so tests can assert which actions ran. */
-import type { ActionEventPayload, IAgentRuntime, UUID } from "@elizaos/core";
-import { EventType } from "@elizaos/core";
+import type { ActionEventPayload, IAgentRuntime, UUID } from "@tokagentos/core";
+import { EventType } from "@tokagentos/core";
 
 export interface ActionSpyCall {
   phase: "started" | "completed";

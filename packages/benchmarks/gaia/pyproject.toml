@@ -3,16 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-gaia"
+name = "tokagentos-gaia"
 version = "2.0.0"
-description = "GAIA Benchmark Implementation for ElizaOS - Evaluating AI assistants on real-world tasks"
+description = "GAIA Benchmark Implementation for TokagentOS - Evaluating AI assistants on real-world tasks"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
-keywords = ["ai", "benchmark", "gaia", "agents", "llm", "elizaos", "evaluation"]
+keywords = ["ai", "benchmark", "gaia", "agents", "llm", "tokagentos", "evaluation"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -59,26 +59,26 @@ dev = [
     "black>=24.1.0",
 ]
 
-# ElizaOS integration
-elizaos = [
-    "elizaos>=1.0.0",
+# TokagentOS integration
+tokagentos = [
+    "tokagentos>=1.0.0",
 ]
 
 [project.scripts]
-gaia-benchmark = "elizaos_gaia.cli:main"
+gaia-benchmark = "tokagentos_gaia.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/elizaos/eliza"
-Documentation = "https://elizaos.ai/docs/benchmarks/gaia"
-Repository = "https://github.com/elizaos/eliza"
-"Bug Tracker" = "https://github.com/elizaos/eliza/issues"
+Homepage = "https://github.com/tokagentos/tokagent"
+Documentation = "https://tokagentos.ai/docs/benchmarks/gaia"
+Repository = "https://github.com/tokagentos/tokagent"
+"Bug Tracker" = "https://github.com/tokagentos/tokagent/issues"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_gaia"]
+packages = ["tokagentos_gaia"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "/elizaos_gaia",
+    "/tokagentos_gaia",
     "/tests",
     "/README.md",
 ]
@@ -121,7 +121,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["elizaos_gaia"]
+known-first-party = ["tokagentos_gaia"]
 
 [tool.black]
 line-length = 100

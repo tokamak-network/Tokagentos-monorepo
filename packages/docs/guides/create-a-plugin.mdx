@@ -34,7 +34,7 @@ Create a project with a plugin inside using CLI commands:
 <Steps>
   <Step title="Create project">
     ```bash Terminal
-    elizaos create --type project my-eliza-project
+    tokagentos create --type project my-tokagent-project
     ```
     
     Configure when prompted:
@@ -42,25 +42,25 @@ Create a project with a plugin inside using CLI commands:
     - **Model**: OpenAI
     
     ```bash Terminal
-    cd my-eliza-project
+    cd my-tokagent-project
     ```
   </Step>
 
 <Step title="Create plugin inside project">
-  ```bash Terminal elizaos create --type plugin plugin-fal-ai ``` When prompted,
+  ```bash Terminal tokagentos create --type plugin plugin-fal-ai ``` When prompted,
   choose **Quick Plugin** (we don't need frontend UI) Your structure now looks
-  like: ``` my-eliza-project/ ├── src/character.ts # Default Eliza character └──
+  like: ``` my-tokagent-project/ ├── src/character.ts # Default Tokagent character └──
   plugin-fal-ai/ # 👈 Plugin lives alongside project ├── src/ │ ├── index.ts #
   Plugin exports │ ├── plugin.ts # Main plugin (start here) │ └── __tests__/ #
   Plugin tests └── package.json ```
 </Step>
 
   <Step title="Add plugin to character">
-    In `my-eliza-project/src/character.ts`, add the local path to Eliza's plugins array:
+    In `my-tokagent-project/src/character.ts`, add the local path to Tokagent's plugins array:
     
     ```typescript src/character.ts
     export const character: Character = {
-      name: 'Eliza',
+      name: 'Tokagent',
       plugins: [
         '@elizaos/plugin-sql',
         '@elizaos/plugin-openai',
@@ -79,7 +79,7 @@ Create a project with a plugin inside using CLI commands:
 
 <Steps>
   <Step title="Build plugin and test connection">
-    The plugin needs to be built first to create the `dist/` folder that ElizaOS loads from:
+    The plugin needs to be built first to create the `dist/` folder that TokagentOS loads from:
     
     ```bash Terminal
     # Build the plugin first
@@ -88,7 +88,7 @@ Create a project with a plugin inside using CLI commands:
     
     # Go back to project and start
     cd ..
-    elizaos start
+    tokagentos start
     ```
     
     **Verify it's loaded:**
@@ -149,7 +149,7 @@ Now we know exactly what to build and how to call it, so let's start developing 
     ```typescript src/actions/generateVideo.ts
     import {
       Action, ActionResult, IAgentRuntime, Memory, HandlerCallback, HandlerOptions, State, logger
-    } from '@elizaos/core';
+    } from '@tokagentos/core';
     import { fal } from '@fal-ai/client'; // [!code ++]
     ```
     
@@ -248,7 +248,7 @@ Now we know exactly what to build and how to call it, so let's start developing 
     Finally, update `src/index.ts` to use our new plugin:
     
     ```typescript src/index.ts
-    import { Plugin } from '@elizaos/core';
+    import { Plugin } from '@tokagentos/core';
     import { generateVideoAction } from './actions/generateVideo'; // [!code ++]
 
     export const falaiPlugin: Plugin = { // [!code ++]
@@ -277,7 +277,7 @@ Now we know exactly what to build and how to call it, so let's start developing 
     Get an API key from [fal.ai](https://fal.ai) and copy/paste it into your .env:
 
     ```bash .env
-    PGLITE_DATA_DIR=./.eliza/.elizadb
+    PGLITE_DATA_DIR=./.tokagent/.tokagentdb
     OPENAI_API_KEY=your_openai_key_here
 
     FAL_KEY=your_fal_key_here # [!code ++]
@@ -304,12 +304,12 @@ Verify your plugin works as expected:
     
     # Start from project root  
     cd ..
-    elizaos start
+    tokagentos start
     ```
   </Step>
 
   <Step title="Test video generation">
-    Try your new action by chatting with Eliza in the GUI (`http://localhost:3000`):
+    Try your new action by chatting with Tokagent in the GUI (`http://localhost:3000`):
     
     - `"Create video: dolphins jumping in ocean"`
     - `"Make video: cat playing piano"`  
@@ -330,7 +330,7 @@ Plugins come default with component and E2E tests. Let's add custom component te
     
     ```typescript src/__tests__/plugin.test.ts
     import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-    import type { IAgentRuntime, Memory } from '@elizaos/core'; // [!code ++]
+    import type { IAgentRuntime, Memory } from '@tokagentos/core'; // [!code ++]
     import { falaiPlugin, generateVideoAction } from '../index'; // [!code ++]
     import { createTestRuntime, cleanupRuntime } from './test-utils'; // [!code ++]
 
@@ -365,7 +365,7 @@ Plugins come default with component and E2E tests. Let's add custom component te
   <Step title="Run component tests">
     ```bash Terminal
     cd plugin-fal-ai
-    elizaos test --type component
+    tokagentos test --type component
     ```
   </Step>
 </Steps>
@@ -395,7 +395,7 @@ Let's also add a custom E2E test:
   <Step title="Run E2E tests">
     ```bash Terminal
     cd plugin-fal-ai  
-    elizaos test --type e2e
+    tokagentos test --type e2e
     ```
   </Step>
 </Steps>
@@ -409,7 +409,7 @@ Congratulations! You now have a working video generation plugin. Here are some w
 ### Enhance Your Action
 
 - **Add more similes** - Handle requests like "animate this", "video of", "show me a clip of"
-- **Better examples** - Add more conversation examples so Eliza learns different chat patterns
+- **Better examples** - Add more conversation examples so Tokagent learns different chat patterns
 - **Error handling** - Handle rate limits, invalid prompts, or API timeouts
 
 ### Add Plugin Components
@@ -426,19 +426,19 @@ The possibilities are endless!
 
 <CardGroup cols={2}>
   <Card title="Publish a Plugin" icon="upload" href="/guides/publish-a-plugin">
-    Share your plugin with the elizaOS community
+    Share your plugin with the tokagentOS community
   </Card>
   <Card
     title="Contribute to Core"
     icon="heart"
     href="/guides/contribute-to-core"
   >
-    Help improve elizaOS by contributing to the core framework
+    Help improve tokagentOS by contributing to the core framework
   </Card>
   <Card title="Plugin Registry" icon="book" href="/plugin-registry/overview">
     Explore existing plugins and find inspiration
   </Card>
   <Card title="CLI Reference" icon="terminal" href="/cli-reference/overview">
-    Master all elizaOS CLI commands for plugin development
+    Master all tokagentOS CLI commands for plugin development
   </Card>
 </CardGroup>

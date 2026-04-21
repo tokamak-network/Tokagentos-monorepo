@@ -1,10 +1,10 @@
 import type { EventPayload, EventPayloadMap } from "../../types/events.ts";
-import type { Plugin as ElizaPlugin } from "../../types/plugin.ts";
+import type { Plugin as TokagentPlugin } from "../../types/plugin.ts";
 import type { ServiceTypeName } from "../../types/service.ts";
 
 // Service type declarations for plugin manager
 // Note: When used as part of the core package, these augment the ServiceTypeRegistry
-// directly. When consumed externally via @elizaos/core, declare module "@elizaos/core" instead.
+// directly. When consumed externally via @tokagentos/core, declare module "@tokagentos/core" instead.
 declare module "../../types/service.ts" {
 	interface ServiceTypeRegistry {
 		PLUGIN_MANAGER: "plugin_manager";
@@ -59,7 +59,7 @@ export interface PluginState {
 	id: string;
 	name: string;
 	status: PluginStatus;
-	plugin?: ElizaPlugin;
+	plugin?: TokagentPlugin;
 	error?: string;
 	createdAt: number;
 	loadedAt?: number;

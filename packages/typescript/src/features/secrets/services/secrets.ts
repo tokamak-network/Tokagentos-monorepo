@@ -1,7 +1,7 @@
 /**
  * Secrets Service
  *
- * Core service for multi-level secret management in ElizaOS.
+ * Core service for multi-level secret management in TokagentOS.
  * Provides unified API for accessing global, world, and user secrets
  * with encryption, access control, and change notification support.
  */
@@ -148,7 +148,7 @@ export class SecretsService extends Service {
 		this.mirrorSecretsToProcessEnv =
 			!isSandboxMode &&
 			["1", "true", "yes", "on"].includes(
-				String(process.env.ELIZA_ALLOW_SECRET_ENV_SYNC ?? "")
+				String(process.env.TOKAGENT_ALLOW_SECRET_ENV_SYNC ?? "")
 					.trim()
 					.toLowerCase(),
 			);

@@ -24,7 +24,7 @@ import {
   Spinner,
   Switch,
   useLinkedSidebarSelection,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { AlertTriangle, Download, Upload } from "lucide-react";
 import {
   type ComponentPropsWithoutRef,
@@ -46,7 +46,7 @@ import { FeatureTogglesSection } from "../settings/FeatureTogglesSection";
 import { PermissionsSection } from "../settings/PermissionsSection";
 import { ProviderSwitcher } from "../settings/ProviderSwitcher";
 import { TrainingSettingsPanel } from "../settings/TrainingSettings";
-import { CloudDashboard } from "./ElizaCloudDashboard";
+import { CloudDashboard } from "./TokagentCloudDashboard";
 import { ReleaseCenterView } from "./ReleaseCenterView";
 
 interface SettingsSectionDef {
@@ -65,7 +65,7 @@ const SETTINGS_SECTION_STACK_CLASS = "space-y-6 pb-14 sm:space-y-8 sm:pb-16";
 const SETTINGS_SECTIONS: SettingsSectionDef[] = [
   {
     id: "cloud",
-    label: "providerswitcher.elizaCloud",
+    label: "providerswitcher.tokagentCloud",
     description: "settings.sections.cloud.desc",
     keywords: ["cloud", "billing", "credits", "auth", "subscription"],
     keywordKeys: ["settings.keyword.cloud", "settings.keyword.billing"],
@@ -786,7 +786,7 @@ function AdvancedSection() {
               ref={importFileInputRef}
               type="file"
               className="hidden"
-              accept=".eliza-agent,.agent,application/octet-stream"
+              accept=".tokagent-agent,.agent,application/octet-stream"
               onChange={(e) =>
                 setState("importFile", e.target.files?.[0] ?? null)
               }
@@ -1085,7 +1085,7 @@ export function SettingsView({
           ref={registerContentItem("ai-model")}
         >
           {/*
-            Cloud providers + subscriptions (Eliza Cloud, Anthropic, OpenAI,
+            Cloud providers + subscriptions (Tokagent Cloud, Anthropic, OpenAI,
             Grok, Claude/ChatGPT subscriptions). Sets API keys and small /
             large tier defaults.
           */}

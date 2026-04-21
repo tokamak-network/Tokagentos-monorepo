@@ -7,11 +7,11 @@
  * accidentally deployed to a marketing/static origin).
  *
  * Usage:
- *   node scripts/smoke-api-status.mjs https://eliza.ai https://app.eliza.ai
+ *   node scripts/smoke-api-status.mjs https://tokagent.ai https://app.tokagent.ai
  * or
- *   ELIZA_DEPLOY_BASE_URLS=https://eliza.ai,https://app.eliza.ai node scripts/smoke-api-status.mjs
+ *   TOKAGENT_DEPLOY_BASE_URLS=https://tokagent.ai,https://app.tokagent.ai node scripts/smoke-api-status.mjs
  * or
- *   ELIZA_DEPLOY_BASE_URLS=https://eliza.ai,https://app.eliza.ai node scripts/smoke-api-status.mjs
+ *   TOKAGENT_DEPLOY_BASE_URLS=https://tokagent.ai,https://app.tokagent.ai node scripts/smoke-api-status.mjs
  */
 
 import { pathToFileURL } from "node:url";
@@ -23,12 +23,12 @@ export function resolveBaseUrls(
   env = process.env,
 ) {
   const argvBases = argv.map((value) => value.trim()).filter(Boolean);
-  const envList = [env.ELIZA_DEPLOY_BASE_URLS, env.ELIZA_DEPLOY_BASE_URLS]
+  const envList = [env.TOKAGENT_DEPLOY_BASE_URLS, env.TOKAGENT_DEPLOY_BASE_URLS]
     .flatMap((value) => value?.split(",") ?? [])
     .map((value) => value.trim())
     .filter(Boolean);
   const legacyEnv =
-    env.ELIZA_DEPLOY_BASE_URL?.trim() || env.ELIZA_DEPLOY_BASE_URL?.trim();
+    env.TOKAGENT_DEPLOY_BASE_URL?.trim() || env.TOKAGENT_DEPLOY_BASE_URL?.trim();
   if (legacyEnv) {
     envList.push(legacyEnv);
   }
@@ -48,7 +48,7 @@ export async function runSmokeApiStatus(options = {}) {
   const bases = resolveBaseUrls(argv, env);
   if (bases.length === 0) {
     error(
-      "[smoke-api-status] Missing base URLs. Pass args or set ELIZA_DEPLOY_BASE_URLS or ELIZA_DEPLOY_BASE_URLS.",
+      "[smoke-api-status] Missing base URLs. Pass args or set TOKAGENT_DEPLOY_BASE_URLS or TOKAGENT_DEPLOY_BASE_URLS.",
     );
     return 2;
   }

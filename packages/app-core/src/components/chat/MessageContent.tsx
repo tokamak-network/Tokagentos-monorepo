@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { client } from "../../api/client";
 import type { ConversationMessage } from "../../api/client-types-chat";
@@ -59,7 +59,7 @@ const CONFIG_RE = /\[CONFIG:([@\w][\w@./:-]*)\]/g;
 const FENCED_JSON_RE = /```(?:json)?\s*\n([\s\S]*?)```/g;
 
 /**
- * Strip elizaOS action XML blocks (`<actions>...</actions>` and
+ * Strip tokagentOS action XML blocks (`<actions>...</actions>` and
  * `<params>...</params>`) from displayed text. These are framework
  * metadata, not user-facing content.
  */

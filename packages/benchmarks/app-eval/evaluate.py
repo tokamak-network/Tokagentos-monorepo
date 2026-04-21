@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unified benchmark evaluator for elizaOS app agents.
+Unified benchmark evaluator for tokagentOS app agents.
 
 Takes a results directory (from run-benchmarks.ts) and produces a
 scored report. Can also re-evaluate historical runs.
@@ -173,7 +173,7 @@ def print_table(report: dict[str, Any]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Evaluate elizaOS app benchmark results",
+        description="Evaluate tokagentOS app benchmark results",
     )
     parser.add_argument(
         "results_dir",

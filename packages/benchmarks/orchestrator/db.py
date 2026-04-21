@@ -67,8 +67,8 @@ def initialize_database(conn: sqlite3.Connection) -> None:
             delta_to_high_score REAL,
             benchmark_version TEXT,
             benchmarks_commit TEXT,
-            eliza_commit TEXT,
-            eliza_version TEXT,
+            tokagent_commit TEXT,
+            tokagent_version TEXT,
             created_at TEXT NOT NULL,
             FOREIGN KEY(run_group_id) REFERENCES run_groups(run_group_id)
         );
@@ -198,8 +198,8 @@ def insert_run_start(
     stderr_path: str,
     benchmark_version: str | None,
     benchmarks_commit: str | None,
-    eliza_commit: str | None,
-    eliza_version: str | None,
+    tokagent_commit: str | None,
+    tokagent_version: str | None,
 ) -> None:
     conn.execute(
         """
@@ -232,8 +232,8 @@ def insert_run_start(
             delta_to_high_score,
             benchmark_version,
             benchmarks_commit,
-            eliza_commit,
-            eliza_version,
+            tokagent_commit,
+            tokagent_version,
             created_at
         ) VALUES (?, ?, ?, ?, ?, 'running', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL, '{}', '[]', NULL, NULL, NULL, NULL, ?, ?, ?, ?, ?)
         """,
@@ -255,8 +255,8 @@ def insert_run_start(
             stderr_path,
             benchmark_version,
             benchmarks_commit,
-            eliza_commit,
-            eliza_version,
+            tokagent_commit,
+            tokagent_version,
             started_at,
         ),
     )
@@ -363,8 +363,8 @@ def list_runs(
             delta_to_high_score,
             benchmark_version,
             benchmarks_commit,
-            eliza_commit,
-            eliza_version
+            tokagent_commit,
+            tokagent_version
         FROM benchmark_runs
         ORDER BY started_at DESC, run_id DESC
         LIMIT ?

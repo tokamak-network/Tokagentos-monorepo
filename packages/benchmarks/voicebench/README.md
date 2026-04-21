@@ -1,6 +1,6 @@
 # Voicebench
 
-`voicebench` benchmarks end-to-end voice latency with Eliza across TypeScript, Python, and Rust.
+`voicebench` benchmarks end-to-end voice latency with Tokagent across TypeScript, Python, and Rust.
 
 ## What It Measures
 

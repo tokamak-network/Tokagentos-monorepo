@@ -1,4 +1,4 @@
-import { Button, Input } from "@elizaos/ui";
+import { Button, Input } from "@tokagentos/ui";
 import type { ChangeEvent } from "react";
 import { useBranding } from "../../../config";
 import type { ConnectionEvent } from "../../../onboarding/connection-flow";
@@ -22,9 +22,9 @@ import {
   onboardingPrimaryActionTextShadowStyle,
   spawnOnboardingRipple,
 } from "../onboarding-step-chrome";
-import { useAdvanceOnboardingWhenElizaCloudOAuthConnected } from "./useAdvanceOnboardingWhenElizaCloudOAuthConnected";
+import { useAdvanceOnboardingWhenTokagentCloudOAuthConnected } from "./useAdvanceOnboardingWhenTokagentCloudOAuthConnected";
 
-export function ConnectionElizaCloudPreProviderScreen({
+export function ConnectionTokagentCloudPreProviderScreen({
   dispatch,
 }: {
   dispatch: (event: ConnectionEvent) => void;
@@ -33,22 +33,22 @@ export function ConnectionElizaCloudPreProviderScreen({
   const {
     t,
     onboardingCloudApiKey,
-    onboardingElizaCloudTab,
-    elizaCloudConnected,
-    elizaCloudLoginBusy,
-    elizaCloudLoginError,
+    onboardingTokagentCloudTab,
+    tokagentCloudConnected,
+    tokagentCloudLoginBusy,
+    tokagentCloudLoginError,
     handleCloudLogin,
     handleOnboardingNext,
     setState,
   } = useApp();
 
-  const elizaCloudReady =
-    elizaCloudConnected || onboardingCloudApiKey.trim().length > 0;
+  const tokagentCloudReady =
+    tokagentCloudConnected || onboardingCloudApiKey.trim().length > 0;
 
-  useAdvanceOnboardingWhenElizaCloudOAuthConnected({
+  useAdvanceOnboardingWhenTokagentCloudOAuthConnected({
     active: true,
-    elizaCloudConnected,
-    elizaCloudTab: onboardingElizaCloudTab,
+    tokagentCloudConnected,
+    tokagentCloudTab: onboardingTokagentCloudTab,
     handleOnboardingNext,
   });
 
@@ -58,7 +58,7 @@ export function ConnectionElizaCloudPreProviderScreen({
 
   return (
     <>
-      <OnboardingStepHeader eyebrow="Eliza Cloud" />
+      <OnboardingStepHeader eyebrow="Tokagent Cloud" />
 
       <div className="w-full text-left">
         <OnboardingTabs
@@ -66,13 +66,13 @@ export function ConnectionElizaCloudPreProviderScreen({
             { id: "login" as const, label: t("onboarding.login") },
             { id: "apikey" as const, label: t("onboarding.apiKey") },
           ]}
-          active={onboardingElizaCloudTab}
-          onChange={(tab) => dispatch({ type: "setElizaCloudTab", tab })}
+          active={onboardingTokagentCloudTab}
+          onChange={(tab) => dispatch({ type: "setTokagentCloudTab", tab })}
         />
 
-        {onboardingElizaCloudTab === "login" ? (
+        {onboardingTokagentCloudTab === "login" ? (
           <div className={onboardingCenteredStackClassName}>
-            {elizaCloudConnected ? (
+            {tokagentCloudConnected ? (
               <OnboardingStatusBanner tone="success">
                 <svg
                   width="16"
@@ -101,16 +101,16 @@ export function ConnectionElizaCloudPreProviderScreen({
                   });
                   handleCloudLogin();
                 }}
-                disabled={elizaCloudLoginBusy}
+                disabled={tokagentCloudLoginBusy}
               >
-                {elizaCloudLoginBusy
+                {tokagentCloudLoginBusy
                   ? t("onboarding.connecting")
                   : t("onboarding.connectAccount")}
               </Button>
             )}
-            {elizaCloudLoginError &&
+            {tokagentCloudLoginError &&
               (() => {
-                const urlMatch = elizaCloudLoginError.match(
+                const urlMatch = tokagentCloudLoginError.match(
                   /^Open this link to log in: (.+)$/,
                 );
                 if (urlMatch) {
@@ -132,11 +132,11 @@ export function ConnectionElizaCloudPreProviderScreen({
                 }
                 return (
                   <OnboardingStatusBanner tone="error" live="assertive">
-                    {elizaCloudLoginError}
+                    {tokagentCloudLoginError}
                   </OnboardingStatusBanner>
                 );
               })()}
-            {elizaCloudLoginError ? (
+            {tokagentCloudLoginError ? (
               <OnboardingLinkActionButton
                 type="button"
                 className="mt-1 text-xs underline"
@@ -153,13 +153,13 @@ export function ConnectionElizaCloudPreProviderScreen({
           <div className={onboardingDetailStackClassName}>
             <OnboardingField
               align="center"
-              controlId="elizacloud-apikey-pre"
+              controlId="tokagentcloud-apikey-pre"
               label={t("onboarding.apiKey")}
               description={
                 <>
                   {t("onboarding.useExistingKey")}{" "}
                   <a
-                    href="https://elizacloud.ai/dashboard/settings"
+                    href="https://tokagentcloud.ai/dashboard/settings"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[var(--onboarding-link)] underline underline-offset-2 transition-colors duration-200 hover:text-[var(--onboarding-text-strong)]"
@@ -171,7 +171,7 @@ export function ConnectionElizaCloudPreProviderScreen({
             >
               {({ describedBy, invalid }) => (
                 <Input
-                  id="elizacloud-apikey-pre"
+                  id="tokagentcloud-apikey-pre"
                   type="password"
                   aria-describedby={describedBy}
                   aria-invalid={invalid}
@@ -188,7 +188,7 @@ export function ConnectionElizaCloudPreProviderScreen({
 
       <div className={onboardingFooterClass}>
         <OnboardingSecondaryActionButton
-          onClick={() => dispatch({ type: "backElizaCloudPreProvider" })}
+          onClick={() => dispatch({ type: "backTokagentCloudPreProvider" })}
           type="button"
         >
           {t("onboarding.back")}
@@ -203,7 +203,7 @@ export function ConnectionElizaCloudPreProviderScreen({
             });
             void handleOnboardingNext();
           }}
-          disabled={!elizaCloudReady}
+          disabled={!tokagentCloudReady}
           type="button"
         >
           {t("onboarding.confirm")}

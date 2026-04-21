@@ -194,7 +194,7 @@ export class GatewayWeb extends WebPlugin {
       minProtocol: 3,
       maxProtocol: 3,
       client: {
-        id: this.options.clientName || "eliza-capacitor",
+        id: this.options.clientName || "tokagent-capacitor",
         version: this.options.clientVersion || "1.0.0",
         platform: this.getPlatform(),
         mode: "ui",

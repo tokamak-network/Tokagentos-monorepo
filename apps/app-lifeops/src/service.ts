@@ -1,4 +1,4 @@
-import { type IAgentRuntime, Service } from "@elizaos/core";
+import { type IAgentRuntime, Service } from "@tokagentos/core";
 
 export class LifeOpsBrowserPluginService extends Service {
   static serviceType = "lifeops_browser_plugin";

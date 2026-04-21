@@ -2,7 +2,7 @@
 REALM Benchmark Actions.
 
 These actions enable the agent to generate and execute plans
-for REALM benchmark tasks using the full ElizaOS action system.
+for REALM benchmark tasks using the full TokagentOS action system.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ import json
 import re
 from typing import TYPE_CHECKING
 
-from elizaos.types import (
+from tokagentos.types import (
     Action,
     ActionExample,
     ActionParameter,
@@ -22,7 +22,7 @@ from elizaos.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
 from .providers import get_task_context, set_task_context
 

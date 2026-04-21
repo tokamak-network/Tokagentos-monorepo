@@ -3,16 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-atropos-diplomacy"
+name = "tokagentos-atropos-diplomacy"
 version = "2.0.0"
-description = "Diplomacy multi-agent environment for ElizaOS RL training with Atropos"
+description = "Diplomacy multi-agent environment for TokagentOS RL training with Atropos"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
-keywords = ["elizaos", "atropos", "reinforcement-learning", "diplomacy", "multi-agent"]
+keywords = ["tokagentos", "atropos", "reinforcement-learning", "diplomacy", "multi-agent"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Games/Entertainment :: Board Games",
 ]
 dependencies = [
-    "elizaos>=2.0.0a4",
+    "tokagentos>=2.0.0a4",
     "pydantic>=2.0.0",
 ]
 
@@ -34,14 +34,14 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 openai = [
-    "elizaos-plugin-openai>=2.0.0a4",
+    "tokagentos-plugin-openai>=2.0.0a4",
 ]
 
 [project.scripts]
-elizaos-diplomacy = "elizaos_atropos_diplomacy.cli:main"
+tokagentos-diplomacy = "tokagentos_atropos_diplomacy.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_atropos_diplomacy"]
+packages = ["tokagentos_atropos_diplomacy"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

@@ -2,12 +2,12 @@
 /**
  * Ensure required skills exist in the managed skills store.
  *
- * Shipped skill assets come from `@elizaos/skills` (`skills/` inside that package).
+ * Shipped skill assets come from `@tokagentos/skills` (`skills/` inside that package).
  * Seeds into:
- *   $ELIZA_STATE_DIR/skills
- *   $ELIZA_STATE_DIR/skills
- * or, by default for Eliza:
- *   ~/.eliza/skills
+ *   $TOKAGENT_STATE_DIR/skills
+ *   $TOKAGENT_STATE_DIR/skills
+ * or, by default for Tokagent:
+ *   ~/.tokagent/skills
  *
  * Run automatically during startup, or manually:
  *   node scripts/ensure-skills.mjs
@@ -48,7 +48,7 @@ export function hasShippedSkillTree(dir) {
 }
 
 export function resolveRepoBundledSkillsAssetsDir(repoRoot = REPO_ROOT) {
-  const repoDir = join(repoRoot, "eliza", "packages", "skills", "skills");
+  const repoDir = join(repoRoot, "tokagent", "packages", "skills", "skills");
   if (hasShippedSkillTree(repoDir)) {
     return repoDir;
   }
@@ -59,11 +59,11 @@ export function resolveRepoBundledSkillsAssetsDir(repoRoot = REPO_ROOT) {
 
 /**
  * Resolve the directory containing bundled skill folders (each with SKILL.md).
- * Prefer installed `@elizaos/skills`; fall back to repo-local `eliza/packages/skills/skills` for bootstrap.
+ * Prefer installed `@tokagentos/skills`; fall back to repo-local `tokagent/packages/skills/skills` for bootstrap.
  */
 export function resolveShippedSkillsAssetsDir() {
   try {
-    const pkgJson = require.resolve("@elizaos/skills/package.json");
+    const pkgJson = require.resolve("@tokagentos/skills/package.json");
     const dir = join(dirname(pkgJson), "skills");
     if (hasShippedSkillTree(dir)) {
       return dir;
@@ -79,7 +79,7 @@ export function resolveShippedSkillsAssetsDir() {
   }
 
   throw new Error(
-    "Could not resolve bundled skills. Install dependencies (bun install) so @elizaos/skills is available, or ensure eliza/packages/skills/skills exists.",
+    "Could not resolve bundled skills. Install dependencies (bun install) so @tokagentos/skills is available, or ensure tokagent/packages/skills/skills exists.",
   );
 }
 
@@ -97,12 +97,12 @@ function resolveUserPath(input, home = homedir) {
 }
 
 export function resolveStateDir(env = process.env, home = homedir) {
-  const override = env.ELIZA_STATE_DIR?.trim() || env.ELIZA_STATE_DIR?.trim();
+  const override = env.TOKAGENT_STATE_DIR?.trim() || env.TOKAGENT_STATE_DIR?.trim();
   if (override) {
     return resolveUserPath(override, home);
   }
-  const namespace = env.ELIZA_NAMESPACE?.trim();
-  return join(home(), `.${namespace || "eliza"}`);
+  const namespace = env.TOKAGENT_NAMESPACE?.trim();
+  return join(home(), `.${namespace || "tokagent"}`);
 }
 
 export function resolveSkillsDir(env = process.env, home = homedir) {

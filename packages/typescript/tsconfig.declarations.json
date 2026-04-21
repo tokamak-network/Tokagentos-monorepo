@@ -12,10 +12,10 @@
 		"incremental": false,
 		"skipLibCheck": true,
 		"paths": {
-			"@elizaos/core": ["./index.node.ts"],
-			"@elizaos/core/*": ["./*"],
-			"@elizaos/shared": ["../../shared/src/index.ts"],
-			"@elizaos/shared/*": ["../../shared/src/*"]
+			"@tokagentos/core": ["./index.node.ts"],
+			"@tokagentos/core/*": ["./*"],
+			"@tokagentos/shared": ["../../shared/src/index.ts"],
+			"@tokagentos/shared/*": ["../../shared/src/*"]
 		}
 	},
 	"include": ["src/index.ts", "src/index.node.ts", "src/index.browser.ts"],

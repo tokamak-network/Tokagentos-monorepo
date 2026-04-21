@@ -8,7 +8,7 @@
  * errors are captured and surfaced as `[{id}: unavailable]` markers — the
  * registry itself NEVER throws from composeSummary / getDetail.
  */
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import {
   type AwarenessContributor,
   type AwarenessInvalidationEvent,

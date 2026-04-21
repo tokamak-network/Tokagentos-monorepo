@@ -1,5 +1,5 @@
 /**
- * elizaOS Rust-WASM CLI Chat
+ * tokagentOS Rust-WASM CLI Chat
  *
  * Demonstrates the Rust agent runtime compiled to WebAssembly with TypeScript
  * model handler integration for LLM inference.
@@ -90,8 +90,8 @@ interface MessageResponse {
 
 async function loadWasmModule(): Promise<WasmModule> {
   const paths = [
-    path.join(__dirname, "../../../packages/rust/pkg/elizaos.js"),
-    path.join(__dirname, "../../../packages/rust/pkg-node/elizaos.js"),
+    path.join(__dirname, "../../../packages/rust/pkg/tokagentos.js"),
+    path.join(__dirname, "../../../packages/rust/pkg-node/tokagentos.js"),
   ];
 
   for (const p of paths) {
@@ -268,7 +268,7 @@ function testWasmBindings(wasm: WasmModule): TestResult[] {
 }
 
 // ============================================================================
-// MODEL HANDLER USING ELIZAOS OPENAI PLUGIN
+// MODEL HANDLER USING TOKAGENTOS OPENAI PLUGIN
 // ============================================================================
 
 /**
@@ -342,7 +342,7 @@ function createSmallModelHandler(apiKey: string) {
 // ============================================================================
 
 async function main() {
-  console.log("\n🦀 elizaOS Rust-WASM CLI Chat\n");
+  console.log("\n🦀 tokagentOS Rust-WASM CLI Chat\n");
   console.log("═".repeat(60));
   console.log("This demo runs the Rust AgentRuntime in WebAssembly");
   console.log("Model inference is bridged to TypeScript/OpenAI");
@@ -391,9 +391,9 @@ async function main() {
   console.log("\n🤖 Creating agent character...\n");
 
   const character = {
-    name: "Eliza",
-    bio: "A helpful AI assistant powered by elizaOS with a Rust-WASM runtime.",
-    system: `You are Eliza, a helpful and friendly AI assistant.
+    name: "Tokagent",
+    bio: "A helpful AI assistant powered by tokagentOS with a Rust-WASM runtime.",
+    system: `You are Tokagent, a helpful and friendly AI assistant.
 
 Key traits:
 - Concise but warm in your responses

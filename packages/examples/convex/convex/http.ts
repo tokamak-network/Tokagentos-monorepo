@@ -1,5 +1,5 @@
 /**
- * Convex HTTP router — exposes the elizaOS agent over HTTP.
+ * Convex HTTP router — exposes the tokagentOS agent over HTTP.
  *
  * Routes:
  *   POST /chat   — send a message and receive a response
@@ -81,7 +81,7 @@ http.route({
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Internal server error";
-      console.error("[elizaOS] Chat error:", errorMessage);
+      console.error("[tokagentOS] Chat error:", errorMessage);
       return jsonResponse({ error: errorMessage }, 500);
     }
   }),
@@ -95,7 +95,7 @@ http.route({
   handler: httpAction(async () => {
     return jsonResponse({
       status: "healthy",
-      runtime: "elizaos-convex",
+      runtime: "tokagentos-convex",
       version: "2.0.0-alpha",
     });
   }),

@@ -1,7 +1,7 @@
 """Trajectory logger service adapter for SWE-bench.
 
-This bridges the standalone `elizaos_plugin_trajectory_logger.TrajectoryLoggerService`
-into the ElizaOS runtime service registry under the canonical service key:
+This bridges the standalone `tokagentos_plugin_trajectory_logger.TrajectoryLoggerService`
+into the TokagentOS runtime service registry under the canonical service key:
 `trajectory_logger`.
 
 That lets core runtime code log:
@@ -17,14 +17,14 @@ import time
 import uuid
 from typing import ClassVar, TypeAlias
 
-from elizaos.types.service import Service
+from tokagentos.types.service import Service
 
 # Keep JsonValue simple/non-recursive for typing + Pydantic schema stability.
 JsonValue: TypeAlias = object
 
 try:
-    from elizaos_plugin_trajectory_logger import TrajectoryLoggerService as _RawTrajectoryLogger
-    from elizaos_plugin_trajectory_logger.types import (
+    from tokagentos_plugin_trajectory_logger import TrajectoryLoggerService as _RawTrajectoryLogger
+    from tokagentos_plugin_trajectory_logger.types import (
         ActionAttempt,
         EnvironmentState,
         FinalStatus,

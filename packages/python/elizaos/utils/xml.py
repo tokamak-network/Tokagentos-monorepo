@@ -1,4 +1,4 @@
-"""XML parsing utilities for elizaOS.
+"""XML parsing utilities for tokagentOS.
 
 Parses simple key-value XML emitted by LLM prompts. Matches behavior of
 TypeScript and Rust implementations.

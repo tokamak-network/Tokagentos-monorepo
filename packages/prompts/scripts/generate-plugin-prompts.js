@@ -196,17 +196,17 @@ from __future__ import annotations
   console.log(`Generated Python output: ${outputDir}/prompts.py`);
 
   // Try to copy to Python package directory if it exists
-  // Look for python/elizaos_plugin_*/ directory structure
+  // Look for python/tokagentos_plugin_*/ directory structure
   const pluginRoot = path.resolve(outputBaseDir, "../..");
   const pythonDir = path.join(pluginRoot, "python");
 
   if (fs.existsSync(pythonDir)) {
-    // Find elizaos_plugin_* directory
+    // Find tokagentos_plugin_* directory
     const pythonPkgDirs = fs
       .readdirSync(pythonDir)
       .filter(
         (dir) =>
-          dir.startsWith("elizaos_plugin_") &&
+          dir.startsWith("tokagentos_plugin_") &&
           fs.statSync(path.join(pythonDir, dir)).isDirectory(),
       );
 

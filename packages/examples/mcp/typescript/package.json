@@ -1,14 +1,14 @@
 {
   "name": "@elizaos/example-mcp-server",
   "version": "2.0.0-alpha",
-  "description": "elizaOS MCP Agent Server - Expose your agent via Model Context Protocol",
+  "description": "tokagentOS MCP Agent Server - Expose your agent via Model Context Protocol",
   "type": "module",
   "scripts": {
     "start": "bun run server.ts",
     "test": "bun run test-client.ts"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
     "@modelcontextprotocol/sdk": "^1.0.0",

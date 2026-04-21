@@ -1,11 +1,11 @@
 """Tests for context generator."""
 
 
-from elizaos_context_bench.generator import (
+from tokagentos_context_bench.generator import (
     ContextGenerator,
     create_benchmark_suite,
 )
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.types import (
     ContextBenchType,
     NeedlePosition,
     NeedleType,

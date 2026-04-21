@@ -11,13 +11,13 @@ from typing import TYPE_CHECKING, Any
 
 from google.protobuf.struct_pb2 import Struct
 
-from elizaos.types.memory import Memory
-from elizaos.types.model import ModelType
-from elizaos.types.primitives import ChannelType, Content, as_uuid
-from elizaos.types.state import SchemaRow, State
+from tokagentos.types.memory import Memory
+from tokagentos.types.model import ModelType
+from tokagentos.types.primitives import ChannelType, Content, as_uuid
+from tokagentos.types.state import SchemaRow, State
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 HandlerCallback = Callable[[Content], Coroutine[Any, Any, list[Memory]]]
 StreamChunkCallback = Callable[[str], Coroutine[Any, Any, None]]
@@ -451,7 +451,7 @@ def _parse_params_from_xml(xml_response: str) -> dict[str, list[dict[str, str]]]
 
 
 class DefaultMessageService(IMessageService):
-    """Canonical message service that processes the full Eliza agent loop.
+    """Canonical message service that processes the full Tokagent agent loop.
 
     This service implements the canonical flow:
     1. Save incoming message to memory
@@ -474,7 +474,7 @@ class DefaultMessageService(IMessageService):
         """Handle an incoming message through the full agent loop.
 
         Args:
-            runtime: The Eliza runtime.
+            runtime: The Tokagent runtime.
             message: The incoming message.
             callback: Optional callback for streaming responses.
 
@@ -482,15 +482,15 @@ class DefaultMessageService(IMessageService):
             MessageProcessingResult with response content and state.
 
         """
-        from elizaos.prompts import (
+        from tokagentos.prompts import (
             MESSAGE_HANDLER_TEMPLATE,
             MULTI_STEP_DECISION_TEMPLATE,
             MULTI_STEP_SUMMARY_TEMPLATE,
             POST_ACTION_DECISION_TEMPLATE,
             SHOULD_RESPOND_TEMPLATE,
         )
-        from elizaos.runtime import DynamicPromptOptions
-        from elizaos.utils import compose_prompt_from_state
+        from tokagentos.runtime import DynamicPromptOptions
+        from tokagentos.utils import compose_prompt_from_state
 
         _ = runtime.start_run(message.room_id)
         response_id = str(uuid.uuid4())
@@ -562,7 +562,7 @@ class DefaultMessageService(IMessageService):
                 return value
             return str(value)[:2000]
 
-        from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+        from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
         token = CURRENT_TRAJECTORY_STEP_ID.set(traj_step_id)
         try:
@@ -1127,7 +1127,7 @@ class DefaultMessageService(IMessageService):
         template: str,
         initial_action_results: list[object],
     ) -> tuple[Content | None, list[Memory], State]:
-        from elizaos.runtime import DynamicPromptOptions
+        from tokagentos.runtime import DynamicPromptOptions
 
         if not message.id or not initial_action_results:
             return None, [], state
@@ -1291,7 +1291,7 @@ class DefaultMessageService(IMessageService):
         """Build the canonical prompt using MESSAGE_HANDLER_TEMPLATE.
 
         Args:
-            runtime: The Eliza runtime.
+            runtime: The Tokagent runtime.
             message: The incoming message.
             state: Composed state from providers.
             template: The message handler template.
@@ -1368,8 +1368,8 @@ class DefaultMessageService(IMessageService):
         """
         import json
 
-        from elizaos.runtime import DynamicPromptOptions
-        from elizaos.types.components import ActionResult
+        from tokagentos.runtime import DynamicPromptOptions
+        from tokagentos.types.components import ActionResult
 
         trace_results: list[ActionResult] = []
         last_action_results_len = 0
@@ -1745,7 +1745,7 @@ class DefaultMessageService(IMessageService):
             state = await runtime.compose_state(message)
 
             # Build the prompt using canonical template
-            from elizaos.prompts import MESSAGE_HANDLER_TEMPLATE
+            from tokagentos.prompts import MESSAGE_HANDLER_TEMPLATE
 
             template = MESSAGE_HANDLER_TEMPLATE
             if (

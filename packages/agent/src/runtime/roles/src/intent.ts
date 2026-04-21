@@ -1,14 +1,14 @@
-import type { IAgentRuntime, Memory, State, UUID } from "@elizaos/core";
+import type { IAgentRuntime, Memory, State, UUID } from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   findKeywordTermMatch,
   getValidationKeywordTerms,
-} from "@elizaos/shared/validation-keywords";
-import { getRecentMessagesData } from "@elizaos/shared/recent-messages-state";
+} from "@tokagentos/shared/validation-keywords";
+import { getRecentMessagesData } from "@tokagentos/shared/recent-messages-state";
 
 import type { RoleName } from "./types";
 
@@ -61,7 +61,7 @@ function splitStateTextCandidates(value: string): string[] {
     .map((line) =>
       line
         .replace(
-          /^(?:user|assistant|system|owner|admin|shaw|chen|eliza)\s*:\s*/i,
+          /^(?:user|assistant|system|owner|admin|shaw|chen|tokagent)\s*:\s*/i,
           "",
         )
         .trim(),

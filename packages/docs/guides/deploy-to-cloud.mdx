@@ -1,19 +1,19 @@
 ---
-title: "Deploy to Eliza Cloud"
+title: "Deploy to Tokagent Cloud"
 description: "Ship your agent with a single command - infrastructure and monitoring handled for you"
 ---
 
-## Why Eliza Cloud?
+## Why Tokagent Cloud?
 
 You built an agent. Now you need it running 24/7, accessible from anywhere, with proper monitoring.
 
 The traditional path: write a Dockerfile, configure cloud infrastructure, set up load balancing, create CI/CD pipelines, manage SSL certificates, configure health checks...
 
-**With Eliza Cloud: two commands.**
+**With Tokagent Cloud: two commands.**
 
 ```bash
-elizaos login
-elizaos deploy --project-name my-agent
+tokagentos login
+tokagentos deploy --project-name my-agent
 ```
 
 That's not a simplified example. That's the entire deployment process.
@@ -25,7 +25,7 @@ That's not a simplified example. That's the entire deployment process.
   <Card title="Zero config" icon="wand-magic-sparkles">
     No infrastructure setup needed
   </Card>
-  <Card title="Built for elizaOS" icon="microchip">
+  <Card title="Built for tokagentOS" icon="microchip">
     Optimized for agent workloads
   </Card>
 </CardGroup>
@@ -38,21 +38,21 @@ Beyond deployment: on-chain agent discovery (ERC-8004), crypto payments (X402), 
 
 <Steps>
   <Step title="Sign up">
-    Create your account at [elizacloud.ai](https://elizacloud.ai)
+    Create your account at [tokagentcloud.ai](https://tokagentcloud.ai)
   </Step>
   <Step title="Login from CLI">
-    ```bash elizaos login ``` Opens your browser for auth. Your API key is saved
+    ```bash tokagentos login ``` Opens your browser for auth. Your API key is saved
     automatically.
   </Step>
   <Step title="Deploy">
-    ```bash elizaos deploy --project-name my-agent ``` First deploy: ~5 min.
+    ```bash tokagentos deploy --project-name my-agent ``` First deploy: ~5 min.
     Updates: ~2 min.
   </Step>
 </Steps>
 
 <Tip>
   **That's it.** You now have a production agent at `https://{userId}-
-  {project - name}.containers.elizacloud.ai`
+  {project - name}.containers.tokagentcloud.ai`
 </Tip>
 
 ---
@@ -78,7 +78,7 @@ Every deployment includes:
     Same URL across all deployments
   </Card>
   <Card title="Real-time Logs" icon="terminal">
-    `elizaos containers logs --follow`
+    `tokagentos containers logs --follow`
   </Card>
 </CardGroup>
 
@@ -91,7 +91,7 @@ The defaults work for most agents. When you need more control:
 ### Add Environment Variables
 
 ```bash
-elizaos deploy \
+tokagentos deploy \
   --project-name my-agent \
   --env "OPENAI_API_KEY=sk-xxx" \
   --env "DATABASE_URL=postgresql://..."
@@ -100,7 +100,7 @@ elizaos deploy \
 ### Scale Resources
 
 ```bash
-elizaos deploy \
+tokagentos deploy \
   --project-name my-agent \
   --cpu 512 \
   --memory 1024 \
@@ -119,7 +119,7 @@ elizaos deploy \
 Same command, zero downtime:
 
 ```bash
-elizaos deploy --project-name my-agent
+tokagentos deploy --project-name my-agent
 ```
 
 The CLI detects it's an update and rolls out changes without interruption.
@@ -131,23 +131,23 @@ The CLI detects it's an update and rolls out changes without interruption.
 ### View Your Agents
 
 ```bash
-elizaos containers list
+tokagentos containers list
 ```
 
 ### Check Logs
 
 ```bash
 # Real-time logs
-elizaos containers logs --follow
+tokagentos containers logs --follow
 
 # Last 200 lines
-elizaos containers logs --tail 200
+tokagentos containers logs --tail 200
 ```
 
 ### Remove a Deployment
 
 ```bash
-elizaos containers delete --project-name my-agent
+tokagentos containers delete --project-name my-agent
 ```
 
 ## Troubleshooting
@@ -157,20 +157,20 @@ elizaos containers delete --project-name my-agent
 **"Browser didn't open"**
 
 ```bash
-elizaos login --no-browser
+tokagentos login --no-browser
 ```
 
 **"Authentication timed out"**
 
 ```bash
-elizaos login --timeout 600
+tokagentos login --timeout 600
 ```
 
 **"API key not found after login"**
 
-- Ensure you ran `elizaos login` from your project directory
-- Check `.env` for `ELIZAOS_CLOUD_API_KEY`
-- Verify the key starts with `eliza_`
+- Ensure you ran `tokagentos login` from your project directory
+- Check `.env` for `TOKAGENTOS_CLOUD_API_KEY`
+- Verify the key starts with `tokagent_`
 
 ### Deployment Issues
 
@@ -180,8 +180,8 @@ Start Docker Desktop, then verify with `docker info`.
 
 **"API key invalid"**
 
-- Check you copied the full key (starts with `eliza_`)
-- Verify: `echo $ELIZAOS_CLOUD_API_KEY`
+- Check you copied the full key (starts with `tokagent_`)
+- Verify: `echo $TOKAGENTOS_CLOUD_API_KEY`
 
 **"Build failed"**
 
@@ -191,7 +191,7 @@ Start Docker Desktop, then verify with `docker info`.
 
 **"Deployment stuck"**
 
-- Check logs: `elizaos containers logs --project-name my-agent`
+- Check logs: `tokagentos containers logs --project-name my-agent`
 - Verify you have credits in your account
 
 ## CLI Reference
@@ -200,46 +200,46 @@ Start Docker Desktop, then verify with `docker info`.
 
 | Command                       | Description                  |
 | ----------------------------- | ---------------------------- |
-| `elizaos login`               | Authenticate (opens browser) |
-| `elizaos login --no-browser`  | Authenticate without browser |
-| `elizaos login --timeout 600` | Custom timeout (seconds)     |
+| `tokagentos login`               | Authenticate (opens browser) |
+| `tokagentos login --no-browser`  | Authenticate without browser |
+| `tokagentos login --timeout 600` | Custom timeout (seconds)     |
 
 ### Deployment
 
 | Command                                | Description                        |
 | -------------------------------------- | ---------------------------------- |
-| `elizaos deploy --project-name <name>` | Deploy with project name           |
-| `elizaos deploy --api-key <key>`       | Deploy with explicit API key       |
-| `elizaos deploy --port <port>`         | Set container port (default: 3000) |
-| `elizaos deploy --cpu <units>`         | Set CPU units (default: 1792)      |
-| `elizaos deploy --memory <mb>`         | Set memory in MB (default: 1792)   |
-| `elizaos deploy --desired-count <n>`   | Set instance count (default: 1)    |
-| `elizaos deploy --env "KEY=VALUE"`     | Add environment variable           |
-| `elizaos deploy --skip-build`          | Skip Docker build                  |
-| `elizaos deploy --platform <arch>`     | Set Docker platform                |
+| `tokagentos deploy --project-name <name>` | Deploy with project name           |
+| `tokagentos deploy --api-key <key>`       | Deploy with explicit API key       |
+| `tokagentos deploy --port <port>`         | Set container port (default: 3000) |
+| `tokagentos deploy --cpu <units>`         | Set CPU units (default: 1792)      |
+| `tokagentos deploy --memory <mb>`         | Set memory in MB (default: 1792)   |
+| `tokagentos deploy --desired-count <n>`   | Set instance count (default: 1)    |
+| `tokagentos deploy --env "KEY=VALUE"`     | Add environment variable           |
+| `tokagentos deploy --skip-build`          | Skip Docker build                  |
+| `tokagentos deploy --platform <arch>`     | Set Docker platform                |
 
 ### Container Management
 
 | Command                              | Description                 |
 | ------------------------------------ | --------------------------- |
-| `elizaos containers list`            | List all deployments        |
-| `elizaos containers list --json`     | List as JSON                |
-| `elizaos containers logs`            | View logs                   |
-| `elizaos containers logs --follow`   | Follow log output           |
-| `elizaos containers logs --tail <n>` | Show last N lines           |
-| `elizaos containers delete`          | Delete deployment           |
-| `elizaos containers delete --force`  | Delete without confirmation |
+| `tokagentos containers list`            | List all deployments        |
+| `tokagentos containers list --json`     | List as JSON                |
+| `tokagentos containers logs`            | View logs                   |
+| `tokagentos containers logs --follow`   | Follow log output           |
+| `tokagentos containers logs --tail <n>` | Show last N lines           |
+| `tokagentos containers delete`          | Delete deployment           |
+| `tokagentos containers delete --force`  | Delete without confirmation |
 
 ## Environment Variables
 
 The CLI looks for API keys in this order:
 
 1. `--api-key` flag (if provided)
-2. `ELIZAOS_API_KEY` environment variable
-3. `ELIZAOS_CLOUD_API_KEY` environment variable
-4. `ELIZAOS_CLOUD_API_KEY` in project `.env` file
+2. `TOKAGENTOS_API_KEY` environment variable
+3. `TOKAGENTOS_CLOUD_API_KEY` environment variable
+4. `TOKAGENTOS_CLOUD_API_KEY` in project `.env` file
 
-The `elizaos login` command writes to `ELIZAOS_CLOUD_API_KEY` in your project's `.env` file.
+The `tokagentos login` command writes to `TOKAGENTOS_CLOUD_API_KEY` in your project's `.env` file.
 
 ## Next Steps
 

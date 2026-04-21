@@ -1,4 +1,4 @@
-import { Button, Spinner } from "@elizaos/ui";
+import { Button, Spinner } from "@tokagentos/ui";
 
 import { useEffect, useRef } from "react";
 import { useBranding } from "../../config";
@@ -28,9 +28,9 @@ const errorCardClass = `${statusCardClass} border-[color:color-mix(in_srgb,var(-
 export function CloudLoginStep() {
   const branding = useBranding();
   const {
-    elizaCloudConnected,
-    elizaCloudLoginBusy,
-    elizaCloudLoginError,
+    tokagentCloudConnected,
+    tokagentCloudLoginBusy,
+    tokagentCloudLoginError,
     handleCloudLogin,
     handleOnboardingNext,
     handleOnboardingBack,
@@ -39,11 +39,11 @@ export function CloudLoginStep() {
 
   const advancedRef = useRef(false);
   useEffect(() => {
-    if (elizaCloudConnected && !advancedRef.current) {
+    if (tokagentCloudConnected && !advancedRef.current) {
       advancedRef.current = true;
       void handleOnboardingNext();
     }
-  }, [elizaCloudConnected, handleOnboardingNext]);
+  }, [tokagentCloudConnected, handleOnboardingNext]);
 
   return (
     <>
@@ -53,7 +53,7 @@ export function CloudLoginStep() {
         descriptionClassName="mx-auto mt-1 max-w-[34ch] text-balance"
       />
 
-      {elizaCloudConnected ? (
+      {tokagentCloudConnected ? (
         <div
           className={connectedCardClass}
           role="status"
@@ -61,7 +61,7 @@ export function CloudLoginStep() {
         >
           {t("onboarding.cloudLoginConnected")}
         </div>
-      ) : elizaCloudLoginBusy ? (
+      ) : tokagentCloudLoginBusy ? (
         <div
           className={busyCardClass}
           role="status"
@@ -73,14 +73,14 @@ export function CloudLoginStep() {
         </div>
       ) : (
         <>
-          {elizaCloudLoginError ? (
+          {tokagentCloudLoginError ? (
             <>
               <div
                 className={errorCardClass}
                 role="alert"
                 style={onboardingBodyTextShadowStyle}
               >
-                {elizaCloudLoginError}
+                {tokagentCloudLoginError}
               </div>
               <Button
                 variant="ghost"
@@ -104,7 +104,7 @@ export function CloudLoginStep() {
             }}
             type="button"
           >
-            {elizaCloudLoginError
+            {tokagentCloudLoginError
               ? t("onboarding.cloudLoginRetry")
               : t("onboarding.cloudLoginBtn")}
           </Button>

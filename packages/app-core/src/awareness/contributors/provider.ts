@@ -2,8 +2,8 @@
  * Provider contributor — reports the active model provider.
  */
 
-import type { AwarenessContributor } from "@elizaos/agent/contracts";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { AwarenessContributor } from "@tokagentos/agent/contracts";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 export const providerContributor: AwarenessContributor = {
   id: "provider",

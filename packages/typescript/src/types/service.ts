@@ -8,7 +8,7 @@ import type { IAgentRuntime } from "./runtime";
  *
  * @example
  * ```typescript
- * declare module '@elizaos/core' {
+ * declare module '@tokagentos/core' {
  *   interface ServiceTypeRegistry {
  *     MY_CUSTOM_SERVICE: 'my_custom_service';
  *   }
@@ -72,7 +72,7 @@ export type TypedServiceClass<T extends ServiceTypeName> = {
  * Plugins can extend this via module augmentation:
  * @example
  * ```typescript
- * declare module '@elizaos/core' {
+ * declare module '@tokagentos/core' {
  *   interface ServiceClassMap {
  *     MY_SERVICE: typeof MyService;
  *   }

@@ -1,17 +1,17 @@
 {
-  "name": "@elizaos/ui",
+  "name": "@tokagentos/ui",
   "version": "2.0.0-alpha.223",
-  "description": "Shared UI primitives, composites, and layout utilities for elizaOS apps.",
+  "description": "Shared UI primitives, composites, and layout utilities for tokagentOS apps.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/elizaOS/eliza",
+  "homepage": "https://github.com/tokagentOS/tokagent",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaOS/eliza.git",
+    "url": "https://github.com/tokagentOS/tokagent.git",
     "directory": "packages/ui"
   },
   "keywords": [
-    "elizaos",
+    "tokagentos",
     "ui",
     "react",
     "design-system"

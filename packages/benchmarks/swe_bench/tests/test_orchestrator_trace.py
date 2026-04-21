@@ -110,7 +110,7 @@ async def test_task_description_generation_can_fallback_when_explicitly_enabled(
         variant=SWEBenchVariant.LITE,
         workspace_dir=str(tmp_path / "workspace"),
         output_dir=str(tmp_path / "output"),
-        providers=[ProviderType.ELIZA_CODE],
+        providers=[ProviderType.TOKAGENT_CODE],
         allow_task_description_fallback=True,
     )
     agent = OrchestratingAgent(
@@ -120,7 +120,7 @@ async def test_task_description_generation_can_fallback_when_explicitly_enabled(
     )
     trace = RunTraceRecorder(
         instance_id="repo__repo-1",
-        provider_id="eliza-code",
+        provider_id="tokagent-code",
         output_dir=str(tmp_path / "traces"),
     )
 

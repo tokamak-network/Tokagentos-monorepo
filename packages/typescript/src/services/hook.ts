@@ -2,7 +2,7 @@
  * HookService - Unified Hook Management Service
  *
  * Provides centralized hook registration, management, and execution for the
- * Eliza agent runtime. Integrates with the runtime event system to dispatch
+ * Tokagent agent runtime. Integrates with the runtime event system to dispatch
  * hooks when events are emitted.
  *
  * Key features:

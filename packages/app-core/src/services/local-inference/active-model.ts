@@ -10,7 +10,7 @@
  * preference survives enabling the plugin later.
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { localInferenceEngine } from "./engine";
 import { touchMiladyModel } from "./registry";
 import type { ActiveModelState, InstalledModel } from "./types";

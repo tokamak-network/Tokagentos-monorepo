@@ -8,7 +8,7 @@ import {
   logger,
   type Memory,
   type State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   MacosAlarmHelperUnavailableError,
   type HelperRunOptions,

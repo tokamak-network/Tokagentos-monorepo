@@ -2,7 +2,7 @@
 
 Single reference for **`registerPipelineHook` / `applyPipelineHooks`**: every phase (incoming, should-respond, **outgoing text**, model, memory, streaming), **why** they exist, stream dedupe on Node, optional DPE (dynamic prompt optimization) persistence, and how to extend safely.
 
-Types live in `src/types/pipeline-hooks.ts` (exported from `@elizaos/core`). Handlers receive a **discriminated** `PipelineHookContext` keyed by `phase`.
+Types live in `src/types/pipeline-hooks.ts` (exported from `@tokagentos/core`). Handlers receive a **discriminated** `PipelineHookContext` keyed by `phase`.
 
 ---
 
@@ -38,7 +38,7 @@ Post-processing of reply text **before** the handler callback and related memory
 - `runtime.unregisterPipelineHook(id)`
 - `await runtime.applyPipelineHooks("outgoing_before_deliver", outgoingPipelineHookContext(content, ctx))` — runs handlers, then coerces `content.text` and applies `redactSecrets`.
 
-Import `outgoingPipelineHookContext` from `@elizaos/core` (or `../types/pipeline-hooks` in-repo). Types: `OutgoingContentSource`, `OutgoingContentContext`, `PipelineHookContext`, `PipelineHookSpec`.
+Import `outgoingPipelineHookContext` from `@tokagentos/core` (or `../types/pipeline-hooks` in-repo). Types: `OutgoingContentSource`, `OutgoingContentContext`, `PipelineHookContext`, `PipelineHookSpec`.
 
 ### Behavior
 
@@ -66,8 +66,8 @@ Extensions should use `OutgoingContentSource` strings consistent with the union 
 ### Example
 
 ```typescript
-import type { Plugin } from "@elizaos/core";
-import { outgoingPipelineHookContext } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
+import { outgoingPipelineHookContext } from "@tokagentos/core";
 
 export const myPlugin: Plugin = {
   name: "my-plugin",

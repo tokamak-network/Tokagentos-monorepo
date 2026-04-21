@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import * as elizaCore from "@elizaos/core";
+import * as tokagentCore from "@tokagentos/core";
 import { resolveStateDir, resolveUserPath } from "../config/paths.js";
 
 export interface RunCommandResult {
@@ -102,7 +102,7 @@ export function resolveDefaultAgentWorkspaceDir(
     }
   }
 
-  const profile = env.ELIZA_PROFILE?.trim();
+  const profile = env.TOKAGENT_PROFILE?.trim();
   const stateDir = resolveStateDir(env, homedir);
   if (profile && profile.toLowerCase() !== "default") {
     return path.join(stateDir, `workspace-${profile}`);
@@ -111,10 +111,10 @@ export function resolveDefaultAgentWorkspaceDir(
 }
 
 const EXPLICIT_WORKSPACE_DIR_KEYS = [
-  "ELIZA_WORKSPACE_DIR",
-  "ELIZA_WORKSPACE_DIR",
+  "TOKAGENT_WORKSPACE_DIR",
+  "TOKAGENT_WORKSPACE_DIR",
 ] as const;
-const EXPLICIT_STATE_DIR_KEYS = ["ELIZA_STATE_DIR", "ELIZA_STATE_DIR"] as const;
+const EXPLICIT_STATE_DIR_KEYS = ["TOKAGENT_STATE_DIR", "TOKAGENT_STATE_DIR"] as const;
 const PROJECT_WORKSPACE_MARKERS = [
   "AGENTS.md",
   "CLAUDE.md",
@@ -193,7 +193,7 @@ const LEGACY_WORKSPACE_TEMPLATES: Partial<Record<string, string[]>> = {
   [DEFAULT_AGENTS_FILENAME]: [
     `# Agents
 
-You are an autonomous AI agent powered by elizaOS.
+You are an autonomous AI agent powered by tokagentOS.
 
 ## Capabilities
 
@@ -248,7 +248,7 @@ function isLikelyPackagedRuntimeDir(dir: string): boolean {
   if (typeof dir !== "string") return false;
   const normalized = dir.replace(/\\/g, "/").toLowerCase();
   return (
-    normalized.includes("/eliza-dist") ||
+    normalized.includes("/tokagent-dist") ||
     normalized.includes("/contents/resources/app/") ||
     normalized.includes("/resources/app/") ||
     normalized.includes("/self-extraction/")
@@ -312,20 +312,20 @@ export function isDefaultBoilerplate(name: string, content: string): boolean {
   );
 }
 
-type ElizaCoreWorkspaceHelpers = {
+type TokagentCoreWorkspaceHelpers = {
   isSubagentSessionKey?: (key: string) => boolean;
   logger?: {
     warn: (message: string) => void;
   };
 };
 
-const coreWorkspaceHelpers = elizaCore as ElizaCoreWorkspaceHelpers;
+const coreWorkspaceHelpers = tokagentCore as TokagentCoreWorkspaceHelpers;
 
 function isSubagentSessionKey(sessionKey: string): boolean {
   if (typeof coreWorkspaceHelpers.isSubagentSessionKey === "function") {
     return coreWorkspaceHelpers.isSubagentSessionKey(sessionKey);
   }
-  // Older @elizaos/core versions do not expose subagent helpers.
+  // Older @tokagentos/core versions do not expose subagent helpers.
   // Treat all sessions as primary sessions in that case.
   return false;
 }

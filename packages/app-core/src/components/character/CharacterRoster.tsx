@@ -1,5 +1,5 @@
-import type { StylePreset } from "@elizaos/shared/contracts/onboarding";
-import { Button } from "@elizaos/ui";
+import type { StylePreset } from "@tokagentos/shared/contracts/onboarding";
+import { Button } from "@tokagentos/ui";
 
 import { useEffect, useState } from "react";
 import { useApp } from "../../state";

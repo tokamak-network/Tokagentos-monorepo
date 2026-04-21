@@ -1,5 +1,5 @@
 """
-Tests for the Eliza OSWorld desktop actions.
+Tests for the Tokagent OSWorld desktop actions.
 
 Tests every desktop action that the agent can invoke, verifying:
 1. Correct pyautogui code generation
@@ -24,7 +24,7 @@ if OSWORLD_ROOT not in sys.path:
 
 
 # ---------------------------------------------------------------------------
-# Mock the elizaos imports before importing our modules
+# Mock the tokagentos imports before importing our modules
 # ---------------------------------------------------------------------------
 
 class MockActionResult:
@@ -129,16 +129,16 @@ mock_runtime = MagicMock()
 mock_state = MagicMock()
 
 # Patch module imports
-sys.modules["elizaos"] = MagicMock()
-sys.modules["elizaos.types"] = MagicMock()
-sys.modules["elizaos.types.components"] = mock_components
-sys.modules["elizaos.types.memory"] = mock_memory
-sys.modules["elizaos.types.primitives"] = mock_primitives
-sys.modules["elizaos.types.runtime"] = mock_runtime
-sys.modules["elizaos.types.state"] = mock_state
+sys.modules["tokagentos"] = MagicMock()
+sys.modules["tokagentos.types"] = MagicMock()
+sys.modules["tokagentos.types.components"] = mock_components
+sys.modules["tokagentos.types.memory"] = mock_memory
+sys.modules["tokagentos.types.primitives"] = mock_primitives
+sys.modules["tokagentos.types.runtime"] = mock_runtime
+sys.modules["tokagentos.types.state"] = mock_state
 
 # Now import our modules
-from mm_agents.eliza_desktop_actions import (
+from mm_agents.tokagent_desktop_actions import (
     ActionCollector,
     DESKTOP_CLICK,
     DESKTOP_TYPE,
@@ -159,7 +159,7 @@ from mm_agents.eliza_desktop_actions import (
     ALL_DESKTOP_ACTIONS,
     _extract,
 )
-from mm_agents.eliza_observation import ObservationStore, OBSERVATION_PROVIDER
+from mm_agents.tokagent_observation import ObservationStore, OBSERVATION_PROVIDER
 
 
 # ---------------------------------------------------------------------------
@@ -684,9 +684,9 @@ class TestParamExtraction:
 
     NOTE: These tests use MockHandlerOptions with a .params dict, which
     tests the fallback .params path in _get_param_from_options. The real
-    Eliza runtime passes parameters as a plain dict via the _Opts dynamic
+    Tokagent runtime passes parameters as a plain dict via the _Opts dynamic
     class (see runtime.py process_actions). The protobuf Struct path is
-    tested in the integration_dryrun test with real Eliza runtime.
+    tested in the integration_dryrun test with real Tokagent runtime.
     """
     def test_extract_from_options(self):
         msg = make_message({"x": 100})

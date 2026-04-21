@@ -22,8 +22,8 @@ export const api = {
         return apiRequest('/health')
     },
 
-    // Chat with Eliza AI
-    async chatWithEliza(params: {
+    // Chat with Tokagent AI
+    async chatWithTokagent(params: {
         message: string
         sessionId?: string
         userId?: string
@@ -33,7 +33,7 @@ export const api = {
         suggestions: string[]
         sessionId: string
     }> {
-        return apiRequest('/chat/eliza', {
+        return apiRequest('/chat/tokagent', {
             method: 'POST',
             body: JSON.stringify(params),
         })

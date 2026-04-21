@@ -16,9 +16,9 @@ import type {
   HandlerCallback,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
-import { ModelType, logger, parseJSONObjectFromText } from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { ModelType, logger, parseJSONObjectFromText } from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import { createApprovalQueue } from "../lifeops/approval-queue.js";
 import {
   ApprovalNotFoundError,

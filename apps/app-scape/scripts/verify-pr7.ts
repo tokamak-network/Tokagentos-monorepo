@@ -26,7 +26,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 
 import { decode, encode } from "@toon-format/toon";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 import { handleAppRoutes } from "../src/routes.js";
 import { JournalService } from "../src/services/journal-service.js";

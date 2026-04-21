@@ -51,7 +51,7 @@ export async function startLiveRuntimeServer(
 ): Promise<RuntimeHarness> {
   const tmp = await mkdtemp(path.join(os.tmpdir(), options.tempPrefix));
   const stateDir = path.join(tmp, "state");
-  const configPath = path.join(tmp, "eliza.json");
+  const configPath = path.join(tmp, "tokagent.json");
   const port = await getFreePort();
   const logBuf: string[] = [];
   let childExitReason: string | null = null;
@@ -66,14 +66,14 @@ export async function startLiveRuntimeServer(
     "utf8",
   );
 
-  const child = spawn("bun", ["run", "start:eliza"], {
+  const child = spawn("bun", ["run", "start:tokagent"], {
     cwd: REPO_ROOT,
     env: createLiveRuntimeChildEnv({
-      ELIZA_CONFIG_PATH: configPath,
-      ELIZA_STATE_DIR: stateDir,
-      ELIZA_API_PORT: String(port),
-      ELIZA_PORT: String(port),
-      ELIZA_DISABLE_LOCAL_EMBEDDINGS: "1",
+      TOKAGENT_CONFIG_PATH: configPath,
+      TOKAGENT_STATE_DIR: stateDir,
+      TOKAGENT_API_PORT: String(port),
+      TOKAGENT_PORT: String(port),
+      TOKAGENT_DISABLE_LOCAL_EMBEDDINGS: "1",
       ALLOW_NO_DATABASE: "",
       DISCORD_API_TOKEN: "",
       DISCORD_BOT_TOKEN: "",

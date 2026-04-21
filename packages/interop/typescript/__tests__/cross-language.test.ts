@@ -1,11 +1,11 @@
 /**
- * Cross-language interop tests for elizaOS
+ * Cross-language interop tests for tokagentOS
  *
  * These tests verify that plugins written in different languages
  * can be loaded and executed correctly across runtimes.
  */
 
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { stopPythonPlugin } from "../python-bridge";
 
@@ -187,7 +187,7 @@ describe("Cross-Language Plugin Interop", () => {
         version: "1.0.0",
         language: "typescript" as const,
         config: { setting1: "value1" },
-        dependencies: ["@elizaos/core"],
+        dependencies: ["@tokagentos/core"],
         actions: [
           {
             name: "ACTION_ONE",
@@ -277,9 +277,9 @@ describe("Cross-Language Plugin Interop", () => {
   });
 });
 
-describe("ELIZA Classic Cross-Language Parity", () => {
+describe("TOKAGENT Classic Cross-Language Parity", () => {
   it("should have same response patterns across implementations", () => {
-    // Test that the core ELIZA patterns are consistent
+    // Test that the core TOKAGENT patterns are consistent
     const corePatterns = [
       { keyword: "hello", weight: 0 },
       { keyword: "sorry", weight: 1 },

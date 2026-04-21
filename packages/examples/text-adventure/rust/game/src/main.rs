@@ -1,8 +1,8 @@
-//! elizaOS Rust Adventure Game Demo
+//! tokagentOS Rust Adventure Game Demo
 //!
-//! A text adventure game where an AI agent (powered by elizaOS) explores a dungeon,
+//! A text adventure game where an AI agent (powered by tokagentOS) explores a dungeon,
 //! making decisions about which actions to take. Demonstrates:
-//! - elizaOS runtime with plugins
+//! - tokagentOS runtime with plugins
 //! - OpenAI integration for AI decision making
 //! - Custom game actions
 //! - State management
@@ -16,12 +16,12 @@
 use anyhow::Result;
 use console::{style, Term};
 use dialoguer::{theme::ColorfulTheme, Select};
-use elizaos::{
+use tokagentos::{
     runtime::{AgentRuntime, RuntimeOptions},
     types::{Bio, ChannelType, Character, Content, Memory, UUID},
     IMessageService,
 };
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use std::collections::HashMap;
 use std::io::{self, Write};
 use tokio::time::{sleep, Duration};
@@ -682,8 +682,8 @@ async fn create_session() -> Result<GameSession> {
 
     // Create character
     let character = Character {
-        name: "Eliza the Adventurer".to_string(),
-        username: Some("eliza_adventurer".to_string()),
+        name: "Tokagent the Adventurer".to_string(),
+        username: Some("tokagent_adventurer".to_string()),
         bio: Bio::Multiple(vec![
             "A brave AI adventurer exploring dangerous dungeons.".to_string(),
             "Known for clever problem-solving and careful exploration.".to_string(),
@@ -698,7 +698,7 @@ async fn create_session() -> Result<GameSession> {
     // which is critical for game scenarios where state changes after each action
     let runtime = AgentRuntime::new(RuntimeOptions {
         character: Some(character),
-        plugins: vec![create_openai_elizaos_plugin()?],
+        plugins: vec![create_openai_tokagentos_plugin()?],
         action_planning: Some(false), // Single action per turn for game state consistency
         ..Default::default()
     })
@@ -852,13 +852,13 @@ Respond with ONLY the exact action text you want to take (e.g., "go north" or "a
 // ============================================================================
 
 fn show_intro() {
-    println!("\n🏰 elizaOS Adventure Game Demo");
+    println!("\n🏰 tokagentOS Adventure Game Demo");
     println!(
         r#"
 ╔════════════════════════════════════════════════════════════════════╗
 ║                   THE DUNGEON OF DOOM                              ║
 ╠════════════════════════════════════════════════════════════════════╣
-║  Watch as Eliza the AI Adventurer explores a dangerous dungeon!    ║
+║  Watch as Tokagent the AI Adventurer explores a dangerous dungeon!    ║
 ║                                                                    ║
 ║  The AI will:                                                      ║
 ║  • Explore rooms and collect items                                 ║
@@ -866,7 +866,7 @@ fn show_intro() {
 ║  • Manage health and inventory                                     ║
 ║  • Seek the dragon's treasure!                                     ║
 ║                                                                    ║
-║  AI: OpenAI via elizaos-plugin-openai                              ║
+║  AI: OpenAI via tokagentos-plugin-openai                              ║
 ╚════════════════════════════════════════════════════════════════════╝
 "#
     );
@@ -876,7 +876,7 @@ fn show_turn(turn_number: i32, action: &str) {
     println!("\n{}", "═".repeat(60));
     println!("🎮 TURN {}", turn_number);
     println!("{}", "─".repeat(60));
-    println!("🤖 Eliza decides: \"{}\"", action);
+    println!("🤖 Tokagent decides: \"{}\"", action);
     println!("{}", "─".repeat(60));
 }
 
@@ -890,14 +890,14 @@ fn show_game_over(victory: bool, score: i32, turns: i32) {
     if victory {
         println!(
             "{}",
-            style("🏆 VICTORY! Eliza has conquered the dungeon!")
+            style("🏆 VICTORY! Tokagent has conquered the dungeon!")
                 .green()
                 .bold()
         );
     } else {
         println!(
             "{}",
-            style("💀 GAME OVER! Eliza has fallen...").red().bold()
+            style("💀 GAME OVER! Tokagent has fallen...").red().bold()
         );
     }
     println!("Final Score: {} points in {} turns", score, turns);
@@ -957,8 +957,8 @@ async fn run_interactive_mode() -> Result<()> {
 
     let mut session = create_session().await?;
 
-    println!("\n📜 INTERACTIVE MODE: Guide Eliza through the dungeon!\n");
-    println!("You can type actions yourself, or type 'ai' to let Eliza decide.\n");
+    println!("\n📜 INTERACTIVE MODE: Guide Tokagent through the dungeon!\n");
+    println!("You can type actions yourself, or type 'ai' to let Tokagent decide.\n");
     println!("{}", session.game.describe_room());
 
     let stdin = io::stdin();
@@ -987,9 +987,9 @@ async fn run_interactive_mode() -> Result<()> {
         }
 
         let action = if input.eq_ignore_ascii_case("ai") {
-            println!("Eliza is thinking...");
+            println!("Tokagent is thinking...");
             let action = decide_action(&mut session).await?;
-            println!("Eliza chooses: \"{}\"", action);
+            println!("Tokagent chooses: \"{}\"", action);
             action
         } else {
             input.to_string()
@@ -1029,8 +1029,8 @@ async fn main() -> Result<()> {
     let selection = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("Choose game mode")
         .items(&[
-            "Watch AI Play - Eliza plays automatically",
-            "Interactive - Guide Eliza or play yourself",
+            "Watch AI Play - Tokagent plays automatically",
+            "Interactive - Guide Tokagent or play yourself",
         ])
         .default(0)
         .interact()?;

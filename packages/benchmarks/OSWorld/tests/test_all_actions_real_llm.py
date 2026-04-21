@@ -1,10 +1,10 @@
 """
-Real integration tests for EVERY desktop action through the full Eliza pipeline.
+Real integration tests for EVERY desktop action through the full Tokagent pipeline.
 
 NO MOCKS. Each test:
-1. Creates a real ElizaOSWorldAgent with a real Groq model handler
+1. Creates a real TokagentOSWorldAgent with a real Groq model handler
 2. Provides an a11y tree designed to trigger a specific action
-3. Calls predict() which calls Eliza's message_service.handle_message()
+3. Calls predict() which calls Tokagent's message_service.handle_message()
 4. Verifies the LLM chose the correct action and generated valid pyautogui code
 
 Requires: GROQ_API_KEY environment variable.
@@ -23,8 +23,8 @@ if OSWORLD_ROOT not in sys.path:
     sys.path.insert(0, OSWORLD_ROOT)
 
 _generated_dir = os.path.normpath(os.path.join(
-    OSWORLD_ROOT, "..", "..", "eliza", "packages", "python",
-    "elizaos", "types", "generated",
+    OSWORLD_ROOT, "..", "..", "tokagent", "packages", "python",
+    "tokagentos", "types", "generated",
 ))
 if os.path.isdir(_generated_dir) and _generated_dir not in sys.path:
     sys.path.insert(0, _generated_dir)
@@ -37,15 +37,15 @@ TINY_PNG = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/58hHgAH+AL/hY2qNAAAAABJRU5ErkJggg=="
 )
 
-# Shared agent instance (expensive to create -- one Eliza runtime for all tests)
+# Shared agent instance (expensive to create -- one Tokagent runtime for all tests)
 _agent = None
 
 
 def get_agent():
     global _agent
     if _agent is None:
-        from mm_agents.eliza_agent import ElizaOSWorldAgent
-        _agent = ElizaOSWorldAgent(
+        from mm_agents.tokagent_agent import TokagentOSWorldAgent
+        _agent = TokagentOSWorldAgent(
             model="qwen/qwen3-32b",
             observation_type="screenshot_a11y_tree",
             groq_api_key=GROQ_KEY,
@@ -56,7 +56,7 @@ def get_agent():
 
 
 def run_predict(instruction: str, a11y_tree: str) -> tuple[str, list[str]]:
-    """Run a single predict call through the real Eliza pipeline."""
+    """Run a single predict call through the real Tokagent pipeline."""
     agent = get_agent()
     obs = {"screenshot": TINY_PNG, "accessibility_tree": a11y_tree}
     return agent.predict(instruction, obs)

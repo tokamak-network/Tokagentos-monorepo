@@ -1,9 +1,9 @@
-import type { IAgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type {
   AppSessionJsonValue,
   AppSessionState,
-} from "@elizaos/shared/contracts/apps";
+} from "@tokagentos/shared/contracts/apps";
 import type { AppLaunchResult } from "../../contracts/apps.js";
 import type {
   AppLaunchSessionContext,

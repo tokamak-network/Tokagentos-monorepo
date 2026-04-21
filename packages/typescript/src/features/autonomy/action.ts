@@ -1,5 +1,5 @@
 /**
- * Autonomy Actions for elizaOS
+ * Autonomy Actions for tokagentOS
  *
  * Actions that enable autonomous agent communication.
  */

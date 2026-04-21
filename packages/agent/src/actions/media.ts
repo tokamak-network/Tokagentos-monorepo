@@ -7,15 +7,15 @@
  * - GENERATE_AUDIO: Text-to-audio/music generation
  * - ANALYZE_IMAGE: Vision/image analysis
  *
- * Uses the media-provider abstraction with Eliza Cloud as default,
+ * Uses the media-provider abstraction with Tokagent Cloud as default,
  * or user-configured providers (FAL, OpenAI, Google, Anthropic, etc.)
  *
  * @module actions/media
  */
 
-import type { Action, ActionExample, HandlerOptions, IAgentRuntime } from "@elizaos/core";
-import { isElizaCloudServiceSelectedInConfig } from "@elizaos/shared/contracts";
-import { loadElizaConfig } from "../config/config.js";
+import type { Action, ActionExample, HandlerOptions, IAgentRuntime } from "@tokagentos/core";
+import { isTokagentCloudServiceSelectedInConfig } from "@tokagentos/shared/contracts";
+import { loadTokagentConfig } from "../config/config.js";
 import {
   createAudioProvider,
   createImageProvider,
@@ -25,14 +25,14 @@ import {
 } from "../providers/media-provider.js";
 
 function getMediaProviderOptions(): MediaProviderFactoryOptions {
-  const config = loadElizaConfig();
-  const cloudMediaSelected = isElizaCloudServiceSelectedInConfig(
+  const config = loadTokagentConfig();
+  const cloudMediaSelected = isTokagentCloudServiceSelectedInConfig(
     config as Record<string, unknown>,
     "media",
   );
   return {
-    elizaCloudBaseUrl: config.cloud?.baseUrl ?? "https://elizacloud.ai/api/v1",
-    elizaCloudApiKey: config.cloud?.apiKey,
+    tokagentCloudBaseUrl: config.cloud?.baseUrl ?? "https://tokagentcloud.ai/api/v1",
+    tokagentCloudApiKey: config.cloud?.apiKey,
     cloudMediaDisabled: !cloudMediaSelected,
   };
 }
@@ -80,7 +80,7 @@ export const generateImageAction: Action = {
       };
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const provider = createImageProvider(
       config.media?.image,
       getMediaProviderOptions(),
@@ -232,7 +232,7 @@ export const generateVideoAction: Action = {
       };
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const provider = createVideoProvider(
       config.media?.video,
       getMediaProviderOptions(),
@@ -372,7 +372,7 @@ export const generateAudioAction: Action = {
       };
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const provider = createAudioProvider(
       config.media?.audio,
       getMediaProviderOptions(),
@@ -517,7 +517,7 @@ export const analyzeImageAction: Action = {
       };
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const provider = createVisionProvider(
       config.media?.vision,
       getMediaProviderOptions(),

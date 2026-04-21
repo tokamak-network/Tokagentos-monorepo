@@ -18,9 +18,9 @@
     "build:swift": "swiftc -O native/macos/activity-collector.swift -o native/macos/activity-collector"
   },
   "dependencies": {
-    "@elizaos/core": "workspace:*"
+    "@tokagentos/core": "workspace:*"
   },
-  "elizaos": {
+  "tokagentos": {
     "platforms": ["darwin"],
     "runtime": "native",
     "platformDetails": {

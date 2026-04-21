@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import type { ActionResult, HandlerOptions, Memory, UUID } from "@elizaos/core";
+import type { ActionResult, HandlerOptions, Memory, UUID } from "@tokagentos/core";
 import { blockUntilTaskCompleteAction } from "../actions/blockUntilTaskComplete.js";
 import { listActiveBlocksAction } from "../actions/listActiveBlocks.js";
 import { releaseBlockAction } from "../actions/releaseBlock.js";
@@ -126,7 +126,7 @@ describe("T7g actions", () => {
       startedAt: "2026-04-19T03:00:00.000Z",
       endsAt: "2026-04-19T05:00:00.000Z",
       websites: ["x.com"],
-      managedBy: "eliza-selfcontrol",
+      managedBy: "tokagent-selfcontrol",
       metadata: null,
       scheduledByAgentId: null,
       canUnblockEarly: true,

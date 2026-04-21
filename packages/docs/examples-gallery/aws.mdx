@@ -1,6 +1,6 @@
 ---
 title: "AWS Examples"
-description: "Deploy elizaOS to AWS Lambda with API Gateway"
+description: "Deploy tokagentOS to AWS Lambda with API Gateway"
 ---
 
 Deploy AI agents as serverless AWS Lambda functions.
@@ -21,7 +21,7 @@ sam deploy --guided --parameter-overrides OpenAIApiKey=$OPENAI_API_KEY
 ```
 ┌──────────────┐     ┌─────────────────┐     ┌────────────────┐
 │  Client      │────▶│  API Gateway    │────▶│  Lambda        │
-│              │◀────│  (HTTP API)     │◀────│  (elizaOS)     │
+│              │◀────│  (HTTP API)     │◀────│  (tokagentOS)     │
 └──────────────┘     └─────────────────┘     └────────────────┘
 ```
 
@@ -37,7 +37,7 @@ sam deploy --guided --parameter-overrides OpenAIApiKey=$OPENAI_API_KEY
 
 ```typescript
 import { APIGatewayProxyHandler } from "aws-lambda";
-import { AgentRuntime } from "@elizaos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
@@ -45,7 +45,7 @@ let runtime: AgentRuntime | null = null;
 export const handler: APIGatewayProxyHandler = async (event) => {
   if (!runtime) {
     runtime = new AgentRuntime({
-      character: { name: "Eliza", bio: "A helpful AI." },
+      character: { name: "Tokagent", bio: "A helpful AI." },
       plugins: [openaiPlugin],
     });
     await runtime.initialize();
@@ -76,7 +76,7 @@ curl -X POST http://localhost:3000/chat \
 | Variable         | Default       | Description    |
 | ---------------- | ------------- | -------------- |
 | `OPENAI_API_KEY` | Required      | OpenAI API key |
-| `CHARACTER_NAME` | Eliza         | Agent name     |
+| `CHARACTER_NAME` | Tokagent         | Agent name     |
 | `CHARACTER_BIO`  | A helpful AI. | Agent bio      |
 | `LOG_LEVEL`      | INFO          | Logging level  |
 

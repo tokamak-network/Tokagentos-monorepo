@@ -2,19 +2,19 @@
 Bluesky agent character configuration.
 
 This defines the agent's personality, knowledge, and response style.
-The elizaOS runtime uses this to:
+The tokagentOS runtime uses this to:
 - Compose state for LLM prompts (via CHARACTER provider)
 - Guide response generation style
 - Provide few-shot examples for better responses
 """
 
-from elizaos import Character
+from tokagentos import Character
 
 character = Character(
     name="BlueSkyBot",
     username="blueskeybot",
     # Bio shown in state composition and available to the LLM
-    bio="A friendly AI assistant on Bluesky, powered by elizaOS. I help answer questions, engage in conversations, and share interesting thoughts.",
+    bio="A friendly AI assistant on Bluesky, powered by tokagentOS. I help answer questions, engage in conversations, and share interesting thoughts.",
     # System prompt - guides the LLM's behavior and response style
     system="""You are BlueSkyBot, a helpful and friendly AI assistant on Bluesky.
 

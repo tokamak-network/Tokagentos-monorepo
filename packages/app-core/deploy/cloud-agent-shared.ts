@@ -168,25 +168,25 @@ export function startCloudAgent(userConfig: CloudAgentConfig = {}): void {
     });
   }
 
-  // ─── elizaOS Runtime ──────────────────────────────────────────────────
+  // ─── tokagentOS Runtime ──────────────────────────────────────────────────
 
   async function initRuntime(): Promise<void> {
-    const elizaAvailable = await import("@elizaos/core")
+    const tokagentAvailable = await import("@tokagentos/core")
       .then(() => true)
       .catch(() => false);
 
-    if (elizaAvailable) {
+    if (tokagentAvailable) {
       const {
         AgentRuntime: AgentRuntimeCtor,
         createCharacter,
         createMessageMemory,
         stringToUuid,
         ChannelType,
-      } = await import("@elizaos/core");
+      } = await import("@tokagentos/core");
 
       const character = createCharacter({
         name: process.env.AGENT_NAME ?? "CloudAgent",
-        bio: "An elizaOS agent running in the cloud.",
+        bio: "An tokagentOS agent running in the cloud.",
         settings: {
           ...(process.env.DATABASE_URL
             ? {
@@ -196,8 +196,8 @@ export function startCloudAgent(userConfig: CloudAgentConfig = {}): void {
             : {}),
         },
         secrets: {
-          ...(process.env.ELIZAOS_CLOUD_API_KEY
-            ? { ELIZAOS_CLOUD_API_KEY: process.env.ELIZAOS_CLOUD_API_KEY }
+          ...(process.env.TOKAGENTOS_CLOUD_API_KEY
+            ? { TOKAGENTOS_CLOUD_API_KEY: process.env.TOKAGENTOS_CLOUD_API_KEY }
             : {}),
           ...(process.env.OPENAI_API_KEY
             ? { OPENAI_API_KEY: process.env.OPENAI_API_KEY }
@@ -219,8 +219,8 @@ export function startCloudAgent(userConfig: CloudAgentConfig = {}): void {
 
       const plugins = [];
 
-      const cloudPlugin = await import("@elizaos/plugin-elizacloud")
-        .then((m) => m.default ?? m.elizaOSCloudPlugin)
+      const cloudPlugin = await import("@elizaos/plugin-tokagentcloud")
+        .then((m) => m.default ?? m.tokagentOSCloudPlugin)
         .catch(() => null);
       if (cloudPlugin) plugins.push(cloudPlugin);
 
@@ -458,10 +458,10 @@ export function startCloudAgent(userConfig: CloudAgentConfig = {}): void {
         getConfig: () => state.config,
       };
 
-      console.log("[cloud-agent] elizaOS runtime initialized with real agent");
+      console.log("[cloud-agent] tokagentOS runtime initialized with real agent");
     } else {
       console.warn(
-        "[cloud-agent] @elizaos/core not available, running in echo mode",
+        "[cloud-agent] @tokagentos/core not available, running in echo mode",
       );
       agentRuntime = {
         processMessage: async (params: BridgeRpcParams): Promise<string> => {
@@ -550,7 +550,7 @@ export function startCloudAgent(userConfig: CloudAgentConfig = {}): void {
       res.writeHead(200, { "Content-Type": "application/json" });
       res.end(
         JSON.stringify({
-          service: "elizaos-cloud-agent",
+          service: "tokagentos-cloud-agent",
           status: "running",
         }),
       );

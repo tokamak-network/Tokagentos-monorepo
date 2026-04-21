@@ -1,8 +1,8 @@
-# buf.yaml - Buf configuration for elizaOS proto schemas
+# buf.yaml - Buf configuration for tokagentOS proto schemas
 version: v2
 modules:
   - path: .
-    name: buf.build/elizaos/eliza
+    name: buf.build/tokagentos/tokagent
 lint:
   use:
     - STANDARD

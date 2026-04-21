@@ -1,4 +1,4 @@
-import type { LifeOpsCalendarEvent } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsCalendarEvent } from "@tokagentos/shared/contracts/lifeops";
 import { GoogleApiError } from "./google-api-error.js";
 import { googleApiFetch } from "./google-fetch.js";
 import {

@@ -1,4 +1,4 @@
-# elizaOS Cloudflare Worker (Rust)
+# tokagentOS Cloudflare Worker (Rust)
 
 A serverless AI agent running on Cloudflare Workers using Rust compiled to WebAssembly.
 

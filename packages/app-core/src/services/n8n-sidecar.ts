@@ -2,7 +2,7 @@
  * n8n local sidecar: lifecycle + readiness + API-key provisioning.
  *
  * Fallback for the @elizaos/plugin-n8n-workflow plugin when the user has
- * no Eliza Cloud session. Spawns `bunx n8n@<pinned>` (no package.json
+ * no Tokagent Cloud session. Spawns `bunx n8n@<pinned>` (no package.json
  * dependency on n8n — that tree is ~300MB), polls `/rest/login` until
  * the instance is reachable, then provisions a personal API key via
  * `/rest/me/api-keys` so the plugin has `N8N_HOST` + `N8N_API_KEY` to
@@ -41,7 +41,7 @@ import fs from "node:fs/promises";
 import { createServer } from "node:net";
 import os from "node:os";
 import path from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -204,8 +204,8 @@ const TERMINAL_STATUSES: ReadonlySet<N8nSidecarStatus> = new Set([
 
 function defaultStateDir(): string {
   const home = process.env.HOME ?? process.env.USERPROFILE ?? os.tmpdir();
-  // Matches develop namespace — see runtime/eliza.ts state-dir resolution.
-  return path.join(home, ".eliza", "n8n");
+  // Matches develop namespace — see runtime/tokagent.ts state-dir resolution.
+  return path.join(home, ".tokagent", "n8n");
 }
 
 /** Async port picker: asks the OS for a free port starting at `start`. */

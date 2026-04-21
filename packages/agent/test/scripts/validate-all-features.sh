@@ -7,7 +7,7 @@
 # 2. Computer Use (Rust tests)
 # 3. Browser Use (TypeScript plugin tests)
 # 4. Browser Extension (WebSocket test harness)
-# 5. Eliza Core Tests
+# 5. Tokagent Core Tests
 #
 # Usage:
 #   ./test/scripts/validate-all-features.sh [options]
@@ -17,7 +17,7 @@
 #   --computeruse-only Run only Computer Use tests
 #   --browser-only     Run only Browser Use tests
 #   --extension-only   Run only Browser Extension tests
-#   --eliza-only     Run only Eliza core tests
+#   --tokagent-only     Run only Tokagent core tests
 #   --quick            Skip slow tests (Rust build, integration tests)
 #   --report           Generate detailed HTML report
 #   --verbose          Show all output
@@ -41,12 +41,12 @@ BOLD='\033[1m'
 
 # Script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ELIZA_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-ELIZA_ROOT="$ELIZA_ROOT/eliza"
-PLUGINS_ROOT="$(cd "$ELIZA_ROOT/../plugins" 2>/dev/null && pwd || echo "")"
+TOKAGENT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+TOKAGENT_ROOT="$TOKAGENT_ROOT/tokagent"
+PLUGINS_ROOT="$(cd "$TOKAGENT_ROOT/../plugins" 2>/dev/null && pwd || echo "")"
 
 # Results tracking
-RESULTS_FILE="$(mktemp "${TMPDIR:-/tmp}/eliza-feature-results.XXXXXX")"
+RESULTS_FILE="$(mktemp "${TMPDIR:-/tmp}/tokagent-feature-results.XXXXXX")"
 TOTAL_PASSED=0
 TOTAL_FAILED=0
 TOTAL_SKIPPED=0
@@ -63,7 +63,7 @@ RUN_VISION=true
 RUN_COMPUTERUSE=true
 RUN_BROWSER=true
 RUN_EXTENSION=true
-RUN_ELIZA=true
+RUN_TOKAGENT=true
 QUICK_MODE=false
 GENERATE_REPORT=false
 VERBOSE=false
@@ -75,31 +75,31 @@ while [[ $# -gt 0 ]]; do
             RUN_COMPUTERUSE=false
             RUN_BROWSER=false
             RUN_EXTENSION=false
-            RUN_ELIZA=false
+            RUN_TOKAGENT=false
             shift
             ;;
         --computeruse-only)
             RUN_VISION=false
             RUN_BROWSER=false
             RUN_EXTENSION=false
-            RUN_ELIZA=false
+            RUN_TOKAGENT=false
             shift
             ;;
         --browser-only)
             RUN_VISION=false
             RUN_COMPUTERUSE=false
             RUN_EXTENSION=false
-            RUN_ELIZA=false
+            RUN_TOKAGENT=false
             shift
             ;;
         --extension-only)
             RUN_VISION=false
             RUN_COMPUTERUSE=false
             RUN_BROWSER=false
-            RUN_ELIZA=false
+            RUN_TOKAGENT=false
             shift
             ;;
-        --eliza-only)
+        --tokagent-only)
             RUN_VISION=false
             RUN_COMPUTERUSE=false
             RUN_BROWSER=false
@@ -174,7 +174,7 @@ record_result() {
 run_test_suite() {
     local name="$1"
     local command="$2"
-    local working_dir="${3:-$ELIZA_ROOT}"
+    local working_dir="${3:-$TOKAGENT_ROOT}"
 
     log_section "Running: $name"
 
@@ -245,12 +245,12 @@ run_test_suite() {
 # ============================================================================
 run_vision_tests() {
     log_header "COMPUTER VISION TESTS"
-    log_info "Testing media providers: OpenAI, Google, Anthropic, xAI, Eliza Cloud"
+    log_info "Testing media providers: OpenAI, Google, Anthropic, xAI, Tokagent Cloud"
 
     run_test_suite \
         "Computer Vision (media-provider.test.ts)" \
         "npx vitest run src/providers/media-provider.test.ts --reporter=basic" \
-        "$ELIZA_ROOT" || true
+        "$TOKAGENT_ROOT" || true
 }
 
 # ============================================================================
@@ -260,7 +260,7 @@ run_computeruse_tests() {
     log_header "COMPUTER USE TESTS (RUST)"
     log_info "Testing desktop automation: MCP agent, workflow recorder, UI automation"
 
-    local computeruse_dir="$ELIZA_ROOT/packages/computeruse"
+    local computeruse_dir="$TOKAGENT_ROOT/packages/computeruse"
 
     if [[ ! -d "$computeruse_dir" ]]; then
         log_skip "Computer Use tests - directory not found: $computeruse_dir"
@@ -320,7 +320,7 @@ run_extension_tests() {
     log_header "BROWSER EXTENSION TESTS"
     log_info "Testing ComputerUse Bridge Extension: WebSocket, CDP, JS evaluation"
 
-    local extension_dir="$ELIZA_ROOT/packages/computeruse/crates/computeruse/browser-extension"
+    local extension_dir="$TOKAGENT_ROOT/packages/computeruse/crates/computeruse/browser-extension"
 
     if [[ ! -d "$extension_dir" ]]; then
         log_skip "Browser Extension tests - directory not found: $extension_dir"
@@ -356,23 +356,23 @@ run_extension_tests() {
 }
 
 # ============================================================================
-# ELIZA CORE TESTS
+# TOKAGENT CORE TESTS
 # ============================================================================
-run_eliza_tests() {
-    log_header "ELIZA CORE TESTS"
-    log_info "Testing Eliza core functionality"
+run_tokagent_tests() {
+    log_header "TOKAGENT CORE TESTS"
+    log_info "Testing Tokagent core functionality"
 
     if $QUICK_MODE; then
         # Run only a subset of tests
         run_test_suite \
-            "Eliza - Quick (config + utils)" \
+            "Tokagent - Quick (config + utils)" \
             "npx vitest run src/config/*.test.ts src/utils/*.test.ts --reporter=basic" \
-            "$ELIZA_ROOT" || true
+            "$TOKAGENT_ROOT" || true
     else
         run_test_suite \
-            "Eliza - Full Test Suite" \
+            "Tokagent - Full Test Suite" \
             "npm test" \
-            "$ELIZA_ROOT" || true
+            "$TOKAGENT_ROOT" || true
     fi
 }
 
@@ -380,7 +380,7 @@ run_eliza_tests() {
 # REPORT GENERATION
 # ============================================================================
 generate_report() {
-    local report_file="$ELIZA_ROOT/test-results/feature-validation-report.html"
+    local report_file="$TOKAGENT_ROOT/test-results/feature-validation-report.html"
     mkdir -p "$(dirname "$report_file")"
 
     local end_time=$(date +%s)
@@ -484,10 +484,10 @@ EOF
         <h2>Feature Coverage</h2>
         <div class="feature-section">
             <div class="feature-title">🔍 Computer Vision</div>
-            <p>Vision analysis providers: OpenAI, Google, Anthropic, xAI, Eliza Cloud</p>
+            <p>Vision analysis providers: OpenAI, Google, Anthropic, xAI, Tokagent Cloud</p>
             <p>Image generation: FAL, OpenAI DALL-E, Google Imagen, xAI Grok</p>
             <p>Video generation: FAL, OpenAI Sora, Google Veo</p>
-            <p>Audio generation: Suno, Eliza Cloud</p>
+            <p>Audio generation: Suno, Tokagent Cloud</p>
         </div>
 
         <div class="feature-section">
@@ -522,8 +522,8 @@ EOF
 # ============================================================================
 main() {
     log_header "FEATURE VALIDATION SUITE"
-    echo -e "${BOLD}Eliza Root:${NC} $ELIZA_ROOT"
-    echo -e "${BOLD}Eliza Root:${NC} $ELIZA_ROOT"
+    echo -e "${BOLD}Tokagent Root:${NC} $TOKAGENT_ROOT"
+    echo -e "${BOLD}Tokagent Root:${NC} $TOKAGENT_ROOT"
     echo -e "${BOLD}Plugins Root:${NC} ${PLUGINS_ROOT:-'Not found'}"
     echo -e "${BOLD}Quick Mode:${NC} $QUICK_MODE"
     echo -e "${BOLD}Verbose:${NC} $VERBOSE"
@@ -533,7 +533,7 @@ main() {
     $RUN_COMPUTERUSE && run_computeruse_tests
     $RUN_BROWSER && run_browser_tests
     $RUN_EXTENSION && run_extension_tests
-    $RUN_ELIZA && run_eliza_tests
+    $RUN_TOKAGENT && run_tokagent_tests
 
     # Generate report if requested
     $GENERATE_REPORT && generate_report

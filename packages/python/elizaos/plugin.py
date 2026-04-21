@@ -3,11 +3,11 @@ from __future__ import annotations
 import importlib
 from typing import TYPE_CHECKING
 
-from elizaos.logger import logger
-from elizaos.types.plugin import Plugin
+from tokagentos.logger import logger
+from tokagentos.types.plugin import Plugin
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 
 class PluginLoadError(Exception):

@@ -17,10 +17,10 @@ import type {
   Memory,
   State,
   UUID,
-} from "@elizaos/core";
-import { ModelType, logger, parseJSONObjectFromText } from "@elizaos/core";
-import { hasAdminAccess } from "@elizaos/agent/security";
-import { getRecentMessagesData } from "@elizaos/shared/recent-messages-state";
+} from "@tokagentos/core";
+import { ModelType, logger, parseJSONObjectFromText } from "@tokagentos/core";
+import { hasAdminAccess } from "@tokagentos/agent/security";
+import { getRecentMessagesData } from "@tokagentos/shared/recent-messages-state";
 import {
   type UnifiedSearchChannel,
   UNIFIED_SEARCH_CHANNELS,

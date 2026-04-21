@@ -108,22 +108,22 @@ function makeMessage(): Memory {
 }
 
 let prevStateDir: string | undefined;
-let prevElizaStateDir: string | undefined;
+let prevTokagentStateDir: string | undefined;
 let stateDir: string;
 
 beforeEach(() => {
 	stateDir = mkdtempSync(join(tmpdir(), "skill-extract-"));
 	prevStateDir = process.env.MILADY_STATE_DIR;
-	prevElizaStateDir = process.env.ELIZA_STATE_DIR;
+	prevTokagentStateDir = process.env.TOKAGENT_STATE_DIR;
 	process.env.MILADY_STATE_DIR = stateDir;
-	delete process.env.ELIZA_STATE_DIR;
+	delete process.env.TOKAGENT_STATE_DIR;
 });
 
 afterEach(() => {
 	if (prevStateDir === undefined) delete process.env.MILADY_STATE_DIR;
 	else process.env.MILADY_STATE_DIR = prevStateDir;
-	if (prevElizaStateDir !== undefined)
-		process.env.ELIZA_STATE_DIR = prevElizaStateDir;
+	if (prevTokagentStateDir !== undefined)
+		process.env.TOKAGENT_STATE_DIR = prevTokagentStateDir;
 	rmSync(stateDir, { recursive: true, force: true });
 });
 

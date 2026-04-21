@@ -5,12 +5,12 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value as JsonValue;
 use std::collections::{BTreeMap, HashMap};
 
-pub use super::generated::eliza::v1::{
+pub use super::generated::tokagent::v1::{
     ActionPlan, ActionPlanStep, ProviderCacheEntry, State, StateData, StateValues,
     WorkingMemoryItem,
 };
 // Use proto types that match StateData fields
-use super::generated::eliza::v1::{
+use super::generated::tokagent::v1::{
     ActionResult as ProtoActionResult, Entity as ProtoEntity, Room as ProtoRoom,
     World as ProtoWorld,
 };
@@ -27,7 +27,7 @@ use super::generated::eliza::v1::{
 ///
 /// # Example
 /// ```
-/// use elizaos::types::SchemaRow;
+/// use tokagentos::types::SchemaRow;
 ///
 /// let schema = vec![
 ///     SchemaRow::new("thought", "Your internal reasoning"),

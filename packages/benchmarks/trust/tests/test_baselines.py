@@ -10,11 +10,11 @@ If Random gets high scores, the benchmark isn't discriminating.
 
 import warnings
 
-from elizaos_trust_bench.baselines import PerfectHandler, RandomHandler
-from elizaos_trust_bench.corpus import TEST_CORPUS
-from elizaos_trust_bench.runner import TrustBenchmarkRunner
-from elizaos_trust_bench.scorer import score_results
-from elizaos_trust_bench.types import BenchmarkConfig, DetectionResult, ThreatCategory
+from tokagentos_trust_bench.baselines import PerfectHandler, RandomHandler
+from tokagentos_trust_bench.corpus import TEST_CORPUS
+from tokagentos_trust_bench.runner import TrustBenchmarkRunner
+from tokagentos_trust_bench.scorer import score_results
+from tokagentos_trust_bench.types import BenchmarkConfig, DetectionResult, ThreatCategory
 
 
 def _run_handler(handler: object) -> list[DetectionResult]:

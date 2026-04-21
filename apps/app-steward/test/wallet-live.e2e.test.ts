@@ -41,8 +41,8 @@ describeIf(CAN_RUN)("Wallet live E2E — real RPCs and real wallets", () => {
 
   beforeAll(async () => {
     try {
-      savedExportToken = process.env.ELIZA_WALLET_EXPORT_TOKEN;
-      process.env.ELIZA_WALLET_EXPORT_TOKEN = WALLET_EXPORT_TOKEN;
+      savedExportToken = process.env.TOKAGENT_WALLET_EXPORT_TOKEN;
+      process.env.TOKAGENT_WALLET_EXPORT_TOKEN = WALLET_EXPORT_TOKEN;
 
       const { startApiServer } = await import("../src/api/server");
       const server = await startApiServer({
@@ -79,9 +79,9 @@ describeIf(CAN_RUN)("Wallet live E2E — real RPCs and real wallets", () => {
   afterAll(async () => {
     await close?.();
     if (savedExportToken === undefined) {
-      delete process.env.ELIZA_WALLET_EXPORT_TOKEN;
+      delete process.env.TOKAGENT_WALLET_EXPORT_TOKEN;
     } else {
-      process.env.ELIZA_WALLET_EXPORT_TOKEN = savedExportToken;
+      process.env.TOKAGENT_WALLET_EXPORT_TOKEN = savedExportToken;
     }
   });
 

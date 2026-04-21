@@ -3,7 +3,7 @@
  */
 
 // Provider modes - matches VRM demo pattern
-export type ProviderMode = "elizaClassic" | "openai" | "anthropic" | "xai" | "gemini" | "groq";
+export type ProviderMode = "tokagentClassic" | "openai" | "anthropic" | "xai" | "gemini" | "groq";
 
 // Provider settings for API keys
 export type ProviderSettings = {
@@ -44,7 +44,7 @@ export type ExtensionConfig = {
 
 // Default configuration
 export const DEFAULT_CONFIG: ExtensionConfig = {
-  mode: "elizaClassic",
+  mode: "tokagentClassic",
   provider: {
     // OpenAI
     openaiApiKey: "",
@@ -118,8 +118,8 @@ export type ExtensionMessage =
 // Provider mode labels for UI
 export function getModeLabel(mode: ProviderMode): string {
   switch (mode) {
-    case "elizaClassic":
-      return "ELIZA (offline)";
+    case "tokagentClassic":
+      return "TOKAGENT (offline)";
     case "openai":
       return "OpenAI";
     case "anthropic":
@@ -131,14 +131,14 @@ export function getModeLabel(mode: ProviderMode): string {
     case "groq":
       return "Groq";
     default:
-      return "ELIZA (offline)";
+      return "TOKAGENT (offline)";
   }
 }
 
 // Check if a mode has a valid API key configured
 export function hasValidApiKey(config: ExtensionConfig): boolean {
   switch (config.mode) {
-    case "elizaClassic":
+    case "tokagentClassic":
       return true; // No API key needed
     case "openai":
       return (config.provider.openaiApiKey ?? "").trim().length > 0;
@@ -155,10 +155,10 @@ export function hasValidApiKey(config: ExtensionConfig): boolean {
   }
 }
 
-// Get effective mode (falls back to elizaClassic if no API key)
+// Get effective mode (falls back to tokagentClassic if no API key)
 export function getEffectiveMode(config: ExtensionConfig): ProviderMode {
-  if (config.mode === "elizaClassic") return "elizaClassic";
-  return hasValidApiKey(config) ? config.mode : "elizaClassic";
+  if (config.mode === "tokagentClassic") return "tokagentClassic";
+  return hasValidApiKey(config) ? config.mode : "tokagentClassic";
 }
 
 // Deep merge utility for config objects

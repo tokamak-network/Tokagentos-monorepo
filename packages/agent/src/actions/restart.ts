@@ -16,12 +16,12 @@
  */
 
 import crypto from "node:crypto";
-import type { Action, ActionExample, HandlerOptions, Memory, UUID } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { Action, ActionExample, HandlerOptions, Memory, UUID } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   getValidationKeywordTerms,
   textIncludesKeywordTerm,
-} from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/shared/validation-keywords";
 import { requestRestart } from "../runtime/restart.js";
 import { hasOwnerAccess } from "../security/access.js";
 
@@ -99,7 +99,7 @@ export const restartAction: Action = {
 
     const restartText = reason ? `Restarting… (${reason})` : "Restarting…";
 
-    logger.info(`[eliza] ${restartText}`);
+    logger.info(`[tokagent] ${restartText}`);
 
     // Persist a "Restarting…" memory so it shows up in the message log.
     const restartMemory: Memory = {
@@ -109,7 +109,7 @@ export const restartAction: Action = {
       worldId: message.worldId,
       content: {
         text: restartText,
-        source: "eliza",
+        source: "tokagent",
         type: "system",
       },
     };

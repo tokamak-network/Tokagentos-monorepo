@@ -7,6 +7,6 @@
  * callsite in `ensure-local-inference-handler.ts` compiling cleanly.
  */
 declare module "@elizaos/capacitor-llama" {
-  import type { AgentRuntime } from "@elizaos/core";
+  import type { AgentRuntime } from "@tokagentos/core";
   export function registerCapacitorLlamaLoader(runtime: AgentRuntime): void;
 }

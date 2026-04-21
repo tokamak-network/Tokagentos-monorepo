@@ -1,7 +1,7 @@
 //! Farcaster Agent Example (Rust)
 //!
-//! A minimal elizaOS agent that monitors and responds to Farcaster mentions
-//! using OpenAI for text generation and the full elizaOS message pipeline.
+//! A minimal tokagentOS agent that monitors and responds to Farcaster mentions
+//! using OpenAI for text generation and the full tokagentOS message pipeline.
 //!
 //! Usage:
 //!     cargo run --release
@@ -15,14 +15,14 @@
 mod character;
 
 use anyhow::{Context, Result};
-use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-use elizaos::services::IMessageService;
-use elizaos::types::environment::{ChannelType, Entity, Room, World};
-use elizaos::types::memory::Memory;
-use elizaos::types::primitives::{Content, MentionContext, UUID};
-use elizaos_plugin_farcaster::{FarcasterConfig, FarcasterService};
-use elizaos_plugin_openai::plugin as openai_plugin;
-use elizaos_plugin_sql::plugin as sql_plugin;
+use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+use tokagentos::services::IMessageService;
+use tokagentos::types::environment::{ChannelType, Entity, Room, World};
+use tokagentos::types::memory::Memory;
+use tokagentos::types::primitives::{Content, MentionContext, UUID};
+use tokagentos_plugin_farcaster::{FarcasterConfig, FarcasterService};
+use tokagentos_plugin_openai::plugin as openai_plugin;
+use tokagentos_plugin_sql::plugin as sql_plugin;
 use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -88,7 +88,7 @@ fn now_ms() -> i64 {
         .as_millis() as i64
 }
 
-/// Ensure the Farcaster world exists in elizaOS.
+/// Ensure the Farcaster world exists in tokagentOS.
 async fn ensure_world(runtime: &AgentRuntime, world_id: &UUID) -> Result<()> {
     let world = World {
         id: world_id.clone(),
@@ -144,11 +144,11 @@ async fn ensure_room_and_participants(
     Ok(())
 }
 
-/// Process a single Farcaster mention through the full elizaOS pipeline.
+/// Process a single Farcaster mention through the full tokagentOS pipeline.
 async fn process_mention(
     runtime: &AgentRuntime,
     farcaster_service: &FarcasterService,
-    cast: &elizaos_plugin_farcaster::Cast,
+    cast: &tokagentos_plugin_farcaster::Cast,
     world_id: &UUID,
     my_fid: u64,
     dry_run: bool,
@@ -241,7 +241,7 @@ async fn process_mention(
         &cast.text[..50.min(cast.text.len())]
     );
 
-    // Process through elizaOS message service
+    // Process through tokagentOS message service
     let message_service = runtime.message_service();
 
     // Create callback to handle response
@@ -341,7 +341,7 @@ async fn main() -> Result<()> {
     // Fail fast if SQL isn't active
     runtime
         .get_adapter()
-        .context("SQL adapter not available; ensure elizaos-plugin-sql is configured")?;
+        .context("SQL adapter not available; ensure tokagentos-plugin-sql is configured")?;
 
     // Initialize Farcaster service
     let farcaster_config = FarcasterConfig::from_env()?;

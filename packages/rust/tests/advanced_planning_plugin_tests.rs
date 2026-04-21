@@ -1,9 +1,9 @@
 #![cfg(all(feature = "native", not(feature = "wasm")))]
 
 use anyhow::Result;
-use elizaos::runtime::RuntimeOptions;
-use elizaos::types::agent::{Bio, Character};
-use elizaos::AgentRuntime;
+use tokagentos::runtime::RuntimeOptions;
+use tokagentos::types::agent::{Bio, Character};
+use tokagentos::AgentRuntime;
 use std::sync::Arc;
 
 #[tokio::test]
@@ -33,9 +33,9 @@ async fn advanced_planning_registers_actions_and_provider_when_enabled() -> Resu
     assert!(names.iter().any(|n| n == "CREATE_PLAN"));
 
     // Provider is registered (indirectly verified by state composition including its text)
-    let msg = elizaos::Memory::message(
-        elizaos::UUID::new_v4(),
-        elizaos::UUID::new_v4(),
+    let msg = tokagentos::Memory::message(
+        tokagentos::UUID::new_v4(),
+        tokagentos::UUID::new_v4(),
         "plan this",
     );
     let state = runtime.compose_state(&msg).await?;

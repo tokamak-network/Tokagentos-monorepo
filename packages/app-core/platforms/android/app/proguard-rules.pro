@@ -1,4 +1,4 @@
-# elizaOS ProGuard/R8 Rules
+# tokagentOS ProGuard/R8 Rules
 # =========================
 
 # Capacitor — keep the bridge and plugin classes
@@ -6,9 +6,9 @@
 -keep @com.getcapacitor.annotation.CapacitorPlugin class * { *; }
 -keep class com.getcapacitor.community.** { *; }
 
-# elizaOS custom plugins
--keep class ai.elizaos.plugins.** { *; }
--keep class ai.elizaos.app.** { *; }
+# tokagentOS custom plugins
+-keep class ai.tokagentos.plugins.** { *; }
+-keep class ai.tokagentos.app.** { *; }
 
 # WebView JavaScript interface
 -keepclassmembers class * {

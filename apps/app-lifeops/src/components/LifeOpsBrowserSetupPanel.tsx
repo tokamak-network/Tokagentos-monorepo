@@ -13,7 +13,7 @@ import {
   Switch,
   Textarea,
   useApp,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import {
   type CreateLifeOpsBrowserCompanionPairingRequest,
   LIFEOPS_BROWSER_SITE_ACCESS_MODES,

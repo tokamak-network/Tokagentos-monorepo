@@ -17,7 +17,7 @@ import {
   describeIf,
   itIf,
 } from "../../../app-core/test/helpers/conditional-tests.ts";
-import type { ImageConfig, VisionConfig } from "../config/types.eliza";
+import type { ImageConfig, VisionConfig } from "../config/types.tokagent";
 import {
   createImageProvider,
   createVisionProvider,
@@ -29,7 +29,7 @@ import {
 const REAL_API_MODE = process.env.REAL_API_TEST === "1";
 const describeFn = describeIf(REAL_API_MODE);
 
-// Load API keys from environment (user should set these from eliza/.env)
+// Load API keys from environment (user should set these from tokagent/.env)
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY || "";
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY || "";
 
@@ -276,7 +276,7 @@ describeFn("Ollama Local Vision Provider (Real API)", () => {
     }
   }, 60000);
 
-  itIf(REAL_API_MODE && process.env.ELIZA_OLLAMA_DOWNLOAD_TEST === "1")(
+  itIf(REAL_API_MODE && process.env.TOKAGENT_OLLAMA_DOWNLOAD_TEST === "1")(
     "should auto-download vision model if not present (SLOW - downloads ~4GB model)",
     async () => {
       if (!ollamaAvailable) {

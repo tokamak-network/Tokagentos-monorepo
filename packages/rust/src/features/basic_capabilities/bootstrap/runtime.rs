@@ -1,4 +1,4 @@
-//! Runtime trait definitions for the elizaOS plugin system.
+//! Runtime trait definitions for the tokagentOS plugin system.
 //!
 //! This module defines the traits that the agent runtime must implement
 //! for plugins to interact with the core system.

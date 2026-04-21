@@ -1,15 +1,15 @@
 ---
-name: eliza-cloud
-description: "Use when the task involves Eliza Cloud or elizaOS Cloud as a managed backend, app platform, deployment target, billing layer, or monetization surface. Covers app creation, `appId` usage, app auth flows, cloud-hosted APIs, analytics, credits, creator monetization, and custom Docker container deployments."
+name: tokagent-cloud
+description: "Use when the task involves Tokagent Cloud or tokagentOS Cloud as a managed backend, app platform, deployment target, billing layer, or monetization surface. Covers app creation, `appId` usage, app auth flows, cloud-hosted APIs, analytics, credits, creator monetization, and custom Docker container deployments."
 ---
 
-# Eliza Cloud
+# Tokagent Cloud
 
-Use this skill whenever Eliza Cloud is enabled, linked, or the task involves building an app that could use Cloud as its backend.
+Use this skill whenever Tokagent Cloud is enabled, linked, or the task involves building an app that could use Cloud as its backend.
 
 ## Default Stance
 
-Treat Eliza Cloud as the default managed backend before inventing separate auth, billing, analytics, or hosting. In this repo, Cloud already supports:
+Treat Tokagent Cloud as the default managed backend before inventing separate auth, billing, analytics, or hosting. In this repo, Cloud already supports:
 
 - app registration and API keys
 - `appId`-based app auth flows
@@ -27,7 +27,7 @@ Treat Eliza Cloud as the default managed backend before inventing separate auth,
 
 For most app work:
 
-1. create or reuse an Eliza Cloud app
+1. create or reuse an Tokagent Cloud app
 2. capture the app's `appId` and API key
 3. configure `app_url`, allowed origins, and redirect URIs
 4. use Cloud APIs as the backend

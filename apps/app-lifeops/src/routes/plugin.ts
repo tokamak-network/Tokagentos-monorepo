@@ -1,6 +1,6 @@
 /**
  * LifeOps plugin — registers LifeOps and website-blocker routes with the
- * elizaOS runtime plugin route system.
+ * tokagentOS runtime plugin route system.
  *
  * Unlike Vincent/Shopify/Steward (which have a handful of routes each),
  * LifeOps has 60+ routes with many dynamic segments. Rather than
@@ -15,13 +15,13 @@
  */
 
 import type http from "node:http";
-import type { AgentRuntime, Plugin, Route } from "@elizaos/core";
+import type { AgentRuntime, Plugin, Route } from "@tokagentos/core";
 import {
   sendJson as httpSendJson,
   sendJsonError as httpSendJsonError,
   readJsonBody as httpReadJsonBody,
-} from "@elizaos/agent/api/http-helpers";
-import { decodePathComponent as httpDecodePathComponent } from "@elizaos/agent/api/server-helpers";
+} from "@tokagentos/agent/api/http-helpers";
+import { decodePathComponent as httpDecodePathComponent } from "@tokagentos/agent/api/server-helpers";
 import { handleLifeOpsRoutes } from "./lifeops-routes.js";
 import type { LifeOpsRouteContext } from "./lifeops-routes.js";
 import { handleWebsiteBlockerRoutes } from "./website-blocker-routes.js";

@@ -1,6 +1,6 @@
 # Tic-Tac-Toe Demo - No LLM, Pure Minimax
 
-A tic-tac-toe game demonstrating elizaOS's ability to run agents **without an LLM**. This example showcases:
+A tic-tac-toe game demonstrating tokagentOS's ability to run agents **without an LLM**. This example showcases:
 
 - **No Character Required**: Uses the new anonymous character feature (`Agent-N`)
 - **No LLM Calls**: Custom model handlers implement perfect play via minimax

@@ -9,9 +9,9 @@ import type {
 
 export const DEFAULT_TIMEOUT_MS = 12_000;
 export const DEFAULT_WAIT_INTERVAL_MS = 120;
-export const DEFAULT_WEB_PARTITION = "persist:eliza-browser";
+export const DEFAULT_WEB_PARTITION = "persist:tokagent-browser";
 export const DESKTOP_BRIDGE_UNAVAILABLE_MESSAGE =
-  "Eliza browser workspace desktop bridge is unavailable.";
+  "Tokagent browser workspace desktop bridge is unavailable.";
 export const browserWorkspacePageFetch = globalThis.fetch.bind(globalThis);
 
 export function normalizeEnvValue(value: string | undefined): string | null {
@@ -69,16 +69,16 @@ export function inferBrowserWorkspaceTitle(url: string): string {
   }
 
   try {
-    return new URL(url).hostname.replace(/^www\./, "") || "Eliza Browser";
+    return new URL(url).hostname.replace(/^www\./, "") || "Tokagent Browser";
   } catch {
-    return "Eliza Browser";
+    return "Tokagent Browser";
   }
 }
 
 export function createBrowserWorkspaceDesktopOnlyMessage(
   subaction: BrowserWorkspaceSubaction,
 ): string {
-  return `Eliza browser workspace ${subaction} is only available in the desktop app.`;
+  return `Tokagent browser workspace ${subaction} is only available in the desktop app.`;
 }
 
 export function createBrowserWorkspaceNotFoundError(tabId: string): Error {
@@ -91,7 +91,7 @@ export function createBrowserWorkspaceCommandTargetError(
   subaction: BrowserWorkspaceSubaction,
 ): Error {
   return new Error(
-    `Eliza browser workspace ${subaction} requires a current tab. Open or show a tab first, or pass an explicit id.`,
+    `Tokagent browser workspace ${subaction} requires a current tab. Open or show a tab first, or pass an explicit id.`,
   );
 }
 

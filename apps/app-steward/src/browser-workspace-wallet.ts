@@ -1,15 +1,15 @@
 import type {
   WalletAddresses,
   WalletConfigStatus,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import type {
   StewardSignResponse,
   StewardStatusResponse,
 } from "./types/steward";
 
-export const BROWSER_WALLET_REQUEST_TYPE = "ELIZA_BROWSER_WALLET_REQUEST";
-export const BROWSER_WALLET_RESPONSE_TYPE = "ELIZA_BROWSER_WALLET_RESPONSE";
-export const BROWSER_WALLET_READY_TYPE = "ELIZA_BROWSER_WALLET_READY";
+export const BROWSER_WALLET_REQUEST_TYPE = "TOKAGENT_BROWSER_WALLET_REQUEST";
+export const BROWSER_WALLET_RESPONSE_TYPE = "TOKAGENT_BROWSER_WALLET_RESPONSE";
+export const BROWSER_WALLET_READY_TYPE = "TOKAGENT_BROWSER_WALLET_READY";
 
 export type BrowserWorkspaceWalletMode =
   | "steward"

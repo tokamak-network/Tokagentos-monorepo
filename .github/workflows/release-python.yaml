@@ -2,8 +2,8 @@ name: Python Release
 
 # Publish Python packages to PyPI on release
 # Packages:
-#   - elizaos (packages/python)
-#   - elizaos-plugin-* (plugins/plugin-*/python)
+#   - tokagentos (packages/python)
+#   - tokagentos-plugin-* (plugins/plugin-*/python)
 #
 # Version management:
 #   - Uses scripts/update-python-versions.py to update all versions

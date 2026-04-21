@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { promisify } from "node:util";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { createIntegrationTelemetrySpan } from "../diagnostics/integration-observability.js";
 
 const execFileAsync = promisify(execFile);
@@ -209,8 +209,8 @@ export interface InstallSkillInput {
 
 function stateDirBase(): string {
   const base =
-    process.env.ELIZA_STATE_DIR?.trim() || process.env.ELIZA_STATE_DIR?.trim();
-  return base || path.join(os.homedir(), ".eliza");
+    process.env.TOKAGENT_STATE_DIR?.trim() || process.env.TOKAGENT_STATE_DIR?.trim();
+  return base || path.join(os.homedir(), ".tokagent");
 }
 
 function safeName(raw: string): string {

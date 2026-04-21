@@ -23,11 +23,11 @@ import {
   runWithTrajectoryContext,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
-import { normalizeCharacterLanguage } from "@elizaos/shared/onboarding-presets";
-import { asRecord } from "@elizaos/shared/type-guards";
-import type { ElizaConfig } from "../config/config.js";
+import { normalizeCharacterLanguage } from "@tokagentos/shared/onboarding-presets";
+import { asRecord } from "@tokagentos/shared/type-guards";
+import type { TokagentConfig } from "../config/config.js";
 import { resolveTrajectoryGrouping } from "../runtime/trajectory-internals.js";
 import { startTrajectoryStepInDatabase } from "../runtime/trajectory-storage.js";
 import { syncCharacterIntoConfig } from "../services/character-persistence.js";
@@ -141,7 +141,7 @@ function normalizeActionCallbackText(text: string): string {
 
 const PROVIDER_ISSUE_CHAT_REPLY = "Sorry, I'm having a provider issue";
 const INSUFFICIENT_CREDITS_CHAT_REPLY =
-  "Eliza Cloud credits are depleted. Top up the cloud balance and try again.";
+  "Tokagent Cloud credits are depleted. Top up the cloud balance and try again.";
 const GENERIC_NO_RESPONSE_CHAT_REPLY = PROVIDER_ISSUE_CHAT_REPLY;
 const DEFAULT_CHAT_GENERATION_TIMEOUT_MS = 90_000;
 const NON_EXECUTABLE_FALLBACK_ACTIONS = new Set(["REPLY", "NONE", "IGNORE"]);
@@ -283,8 +283,8 @@ function resolveChatGenerationTimeoutMs(explicit?: number): number {
   }
 
   const fromEnv =
-    process.env.ELIZA_CHAT_GENERATION_TIMEOUT_MS?.trim() ||
-    process.env.ELIZA_CHAT_GENERATION_TIMEOUT_MS?.trim();
+    process.env.TOKAGENT_CHAT_GENERATION_TIMEOUT_MS?.trim() ||
+    process.env.TOKAGENT_CHAT_GENERATION_TIMEOUT_MS?.trim();
   if (!fromEnv) return DEFAULT_CHAT_GENERATION_TIMEOUT_MS;
 
   const parsed = Number.parseInt(fromEnv, 10);
@@ -636,7 +636,7 @@ function readUiLanguageHeader(
   if (!req) {
     return undefined;
   }
-  const header = req.headers["x-eliza-ui-language"];
+  const header = req.headers["x-tokagent-ui-language"];
   if (Array.isArray(header)) {
     return header.find((value) => value.trim())?.trim();
   }
@@ -897,7 +897,7 @@ export async function generateChatResponse(
       runtime.logger?.warn(
         {
           err,
-          src: "eliza-api",
+          src: "tokagent-api",
           messageId: message.id,
           roomId: message.roomId,
         },
@@ -927,11 +927,11 @@ export async function generateChatResponse(
       seenActionTags.add(actionTag.toUpperCase());
       runtime.logger?.info(
         {
-          src: "eliza-api",
+          src: "tokagent-api",
           action: actionTag,
           hasText,
         },
-        `[eliza-api] Action callback fired: ${actionTag}`,
+        `[tokagent-api] Action callback fired: ${actionTag}`,
       );
     };
 
@@ -973,11 +973,11 @@ export async function generateChatResponse(
               if (createTaskAction) {
                 runtime.logger?.info(
                   {
-                    src: "eliza-api",
+                    src: "tokagent-api",
                     agentType: contentMetadata.agentType,
                     intent: "create_task",
                   },
-                  "[eliza-api] Direct dispatch CREATE_TASK from UI intent",
+                  "[tokagent-api] Direct dispatch CREATE_TASK from UI intent",
                 );
                 let actionResponseText = "";
                 await createTaskAction.handler(
@@ -1119,7 +1119,7 @@ export async function generateChatResponse(
             runtime.logger?.warn(
               {
                 err,
-                src: "eliza-api",
+                src: "tokagent-api",
                 messageId: message.id,
                 roomId: message.roomId,
               },
@@ -1132,13 +1132,13 @@ export async function generateChatResponse(
             const resultRecord = asRecord(result);
             runtime.logger?.info(
               {
-                src: "eliza-api",
+                src: "tokagent-api",
                 mode: resultRecord?.mode,
                 actions: rc?.actions,
                 simple: rc?.simple,
                 hasText: Boolean(rc?.text),
               },
-              "[eliza-api] Chat response metadata",
+              "[tokagent-api] Chat response metadata",
             );
 
             const rawActionsPayload = rc?.actions ?? resultRecord?.actions;
@@ -1217,12 +1217,12 @@ export async function generateChatResponse(
               if (remainingExecutableFallbackActions.length > 0) {
                 runtime.logger?.error(
                   {
-                    src: "eliza-api",
+                    src: "tokagent-api",
                     parsedActions: remainingExecutableFallbackActions.map(
                       (a) => a.name,
                     ),
                   },
-                  "[eliza-api] Unexecuted action payload detected; failing closed",
+                  "[tokagent-api] Unexecuted action payload detected; failing closed",
                 );
                 const failureText = buildUnexecutedActionPayloadReply(
                   remainingExecutableFallbackActions.map(
@@ -1359,7 +1359,7 @@ export async function generateChatResponse(
       runtime.logger?.warn(
         {
           err,
-          src: "eliza-api",
+          src: "tokagent-api",
           messageId: message.id,
           roomId: message.roomId,
         },
@@ -1411,7 +1411,7 @@ Title:`;
     return cleanTitle;
   } catch (err) {
     logger.warn(
-      `[eliza] Failed to generate conversation title: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent] Failed to generate conversation title: ${err instanceof Error ? err.message : String(err)}`,
     );
     return null;
   }
@@ -1423,7 +1423,7 @@ Title:`;
 
 export interface ChatRouteState {
   runtime: AgentRuntime | null;
-  config: ElizaConfig;
+  config: TokagentConfig;
   agentName: string;
   logBuffer: LogEntry[];
   chatRoomId: UUID | null;
@@ -1530,7 +1530,7 @@ export async function handleChatRoutes(
   if (method === "GET" && pathname === "/v1/models") {
     const created = Math.floor(Date.now() / 1000);
     const ids = new Set<string>();
-    ids.add("eliza");
+    ids.add("tokagent");
     if (state.agentName?.trim()) ids.add(state.agentName.trim());
     if (state.runtime?.character.name?.trim())
       ids.add(state.runtime.character.name.trim());
@@ -1541,7 +1541,7 @@ export async function handleChatRoutes(
         id,
         object: "model",
         created,
-        owned_by: "eliza",
+        owned_by: "tokagent",
       })),
     });
     return true;
@@ -1567,7 +1567,7 @@ export async function handleChatRoutes(
       );
       return true;
     }
-    json(res, { id, object: "model", created, owned_by: "eliza" });
+    json(res, { id, object: "model", created, owned_by: "tokagent" });
     return true;
   }
 
@@ -1621,7 +1621,7 @@ export async function handleChatRoutes(
 
     const created = Math.floor(Date.now() / 1000);
     const id = `chatcmpl-${crypto.randomUUID()}`;
-    const model = requestedModel ?? state.agentName ?? "eliza";
+    const model = requestedModel ?? state.agentName ?? "tokagent";
 
     if (wantsStream) {
       initSse(res);
@@ -1674,7 +1674,7 @@ export async function handleChatRoutes(
         {
           const runtime = state.runtime;
           if (!runtime) throw new Error("Agent is not running");
-          const agentName = runtime.character.name ?? "Eliza";
+          const agentName = runtime.character.name ?? "Tokagent";
           const { userId, roomId } = await ensureCompatChatConnection(
             state,
             runtime,
@@ -1759,7 +1759,7 @@ export async function handleChatRoutes(
           return true;
         }
         const runtime = state.runtime;
-        const agentName = runtime.character.name ?? "Eliza";
+        const agentName = runtime.character.name ?? "Tokagent";
         const { userId, roomId } = await ensureCompatChatConnection(
           state,
           runtime,
@@ -1870,7 +1870,7 @@ export async function handleChatRoutes(
       : extracted.user;
 
     const id = `msg_${crypto.randomUUID().replace(/-/g, "")}`;
-    const model = requestedModel ?? state.agentName ?? "eliza";
+    const model = requestedModel ?? state.agentName ?? "tokagent";
 
     if (wantsStream) {
       initSse(res);
@@ -1941,7 +1941,7 @@ export async function handleChatRoutes(
         {
           const runtime = state.runtime;
           if (!runtime) throw new Error("Agent is not running");
-          const agentName = runtime.character.name ?? "Eliza";
+          const agentName = runtime.character.name ?? "Tokagent";
           const { userId, roomId } = await ensureCompatChatConnection(
             state,
             runtime,
@@ -2033,7 +2033,7 @@ export async function handleChatRoutes(
           return true;
         }
         const runtime = state.runtime;
-        const agentName = runtime.character.name ?? "Eliza";
+        const agentName = runtime.character.name ?? "Tokagent";
         const { userId, roomId } = await ensureCompatChatConnection(
           state,
           runtime,

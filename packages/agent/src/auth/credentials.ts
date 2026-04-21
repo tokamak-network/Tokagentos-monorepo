@@ -1,14 +1,14 @@
 /**
  * Credential storage and token refresh for subscription providers.
  *
- * Stores OAuth credentials in ~/.eliza/auth/ as JSON files.
+ * Stores OAuth credentials in ~/.tokagent/auth/ as JSON files.
  */
 
 import { execSync } from "node:child_process";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { refreshAnthropicToken } from "./anthropic.js";
 import { refreshCodexToken } from "./openai-codex.js";
 import {
@@ -19,7 +19,7 @@ import {
 } from "./types.js";
 
 const AUTH_DIR = path.join(
-  process.env.ELIZA_HOME || path.join(os.homedir(), ".eliza"),
+  process.env.TOKAGENT_HOME || path.join(os.homedir(), ".tokagent"),
   "auth",
 );
 
@@ -141,15 +141,15 @@ export async function getAccessToken(
 
 function readConfiguredAnthropicSetupToken(): string | null {
   const configPath =
-    process.env.ELIZA_CONFIG_PATH?.trim() ||
-    process.env.ELIZA_CONFIG_PATH?.trim() ||
+    process.env.TOKAGENT_CONFIG_PATH?.trim() ||
+    process.env.TOKAGENT_CONFIG_PATH?.trim() ||
     path.join(
-      process.env.ELIZA_STATE_DIR?.trim() ||
-        process.env.ELIZA_STATE_DIR?.trim() ||
-        path.join(os.homedir(), ".eliza"),
-      (process.env.ELIZA_NAMESPACE?.trim() || "eliza") === "eliza"
-        ? "eliza.json"
-        : `${process.env.ELIZA_NAMESPACE?.trim()}.json`,
+      process.env.TOKAGENT_STATE_DIR?.trim() ||
+        process.env.TOKAGENT_STATE_DIR?.trim() ||
+        path.join(os.homedir(), ".tokagent"),
+      (process.env.TOKAGENT_NAMESPACE?.trim() || "tokagent") === "tokagent"
+        ? "tokagent.json"
+        : `${process.env.TOKAGENT_NAMESPACE?.trim()}.json`,
     );
   try {
     const parsed = JSON.parse(fs.readFileSync(configPath, "utf-8")) as {
@@ -394,11 +394,11 @@ async function importClaudeCodeOAuthToken(): Promise<string | null> {
 
 /**
  * Apply subscription credentials to the environment.
- * Called at startup to make credentials available to elizaOS plugins.
+ * Called at startup to make credentials available to tokagentOS plugins.
  *
  * **Claude subscription tokens are NOT applied to the runtime environment.**
  * Anthropic's TOS only permits Claude subscription tokens to be used through
- * the Claude Code CLI itself.  Eliza honours this by keeping the token
+ * the Claude Code CLI itself.  Tokagent honours this by keeping the token
  * available for the task-agent orchestrator (which spawns `claude` CLI
  * subprocesses) but never injecting it into `process.env.ANTHROPIC_API_KEY`
  * or installing the stealth fetch interceptor.
@@ -417,7 +417,7 @@ export async function applySubscriptionCredentials(config?: {
   };
 }): Promise<void> {
   const subscriptionCredentialsDisabled =
-    process.env.ELIZA_DISABLE_SUBSCRIPTION_CREDENTIALS?.trim().toLowerCase();
+    process.env.TOKAGENT_DISABLE_SUBSCRIPTION_CREDENTIALS?.trim().toLowerCase();
   if (
     subscriptionCredentialsDisabled === "1" ||
     subscriptionCredentialsDisabled === "true" ||
@@ -425,7 +425,7 @@ export async function applySubscriptionCredentials(config?: {
     subscriptionCredentialsDisabled === "on"
   ) {
     logger.info(
-      "[auth] Subscription credential application disabled by ELIZA_DISABLE_SUBSCRIPTION_CREDENTIALS",
+      "[auth] Subscription credential application disabled by TOKAGENT_DISABLE_SUBSCRIPTION_CREDENTIALS",
     );
     return;
   }
@@ -434,11 +434,11 @@ export async function applySubscriptionCredentials(config?: {
   //
   // Anthropic subscription tokens (sk-ant-oat*) are restricted to the
   // Claude Code CLI by Anthropic's TOS. They must NOT be used for direct
-  // API calls from the elizaOS runtime. The subscription token only flows
+  // API calls from the tokagentOS runtime. The subscription token only flows
   // to spawned coding-agent CLI sessions via the orchestrator plugin
   // (which ARE Claude Code). If the user has only a subscription and no
   // API key, the runtime simply won't have an Anthropic provider — they
-  // need an API key or Eliza Cloud for the main agent.
+  // need an API key or Tokagent Cloud for the main agent.
   let anthropicToken = await getAccessToken("anthropic-subscription");
   if (!anthropicToken) {
     anthropicToken = await importClaudeCodeOAuthToken();
@@ -446,7 +446,7 @@ export async function applySubscriptionCredentials(config?: {
   if (anthropicToken) {
     logger.info(
       "[auth] Anthropic subscription detected — available for coding agents (Claude Code CLI). " +
-        "Not applied to runtime env. Add an API key or connect Eliza Cloud for the main agent.",
+        "Not applied to runtime env. Add an API key or connect Tokagent Cloud for the main agent.",
     );
   }
 

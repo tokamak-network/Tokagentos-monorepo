@@ -8,9 +8,9 @@ import type { PluginMetadata } from "../types.ts";
 // ---------------------------------------------------------------------------
 
 const GENERATED_REGISTRY_URL =
-	"https://raw.githubusercontent.com/elizaos-plugins/registry/next/generated-registry.json";
+	"https://raw.githubusercontent.com/tokagentos-plugins/registry/next/generated-registry.json";
 const INDEX_REGISTRY_URL =
-	"https://raw.githubusercontent.com/elizaos-plugins/registry/next/index.json";
+	"https://raw.githubusercontent.com/tokagentos-plugins/registry/next/index.json";
 
 const CACHE_DURATION = 3_600_000; // 1 hour
 
@@ -195,7 +195,7 @@ function stubPlugin(name: string, gitRef: string): RegistryPlugin {
 }
 
 // ---------------------------------------------------------------------------
-// Local plugin discovery - scans plugins/ for elizaos.plugin.json files
+// Local plugin discovery - scans plugins/ for tokagentos.plugin.json files
 // ---------------------------------------------------------------------------
 
 interface LocalPluginJson {
@@ -236,7 +236,7 @@ function localPluginToRegistry(
 	const repo =
 		pluginJson.repository
 			?.replace("https://github.com/", "")
-			.replace(".git", "") || `elizaos/${dirName}`;
+			.replace(".git", "") || `tokagentos/${dirName}`;
 
 	return {
 		name,
@@ -287,7 +287,7 @@ async function scanLocalPlugins(): Promise<Map<string, RegistryPlugin>> {
 			const pluginJsonPath = path.join(
 				pluginsDir,
 				entry.name,
-				"elizaos.plugin.json",
+				"tokagentos.plugin.json",
 			);
 			if (!fs.existsSync(pluginJsonPath)) continue;
 
@@ -354,7 +354,7 @@ async function fetchIndexRegistry(): Promise<Map<string, RegistryPlugin>> {
 /**
  * Load the plugin registry from the next@registry branch.
  * Tries generated-registry.json first, falls back to index.json.
- * Also scans local plugins/ directory for elizaos.plugin.json files.
+ * Also scans local plugins/ directory for tokagentos.plugin.json files.
  * Local plugins override remote registry entries.
  * Cached in-memory for 1 hour.
  */

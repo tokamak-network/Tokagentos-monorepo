@@ -4,10 +4,10 @@
 //! 
 //! Run with: cargo run --bin test_local
 
-use elizaos_vercel_edge::{ChatRequest, ChatResponse, HealthResponse, ErrorResponse};
+use tokagentos_vercel_edge::{ChatRequest, ChatResponse, HealthResponse, ErrorResponse};
 
 fn main() {
-    println!("🧪 Testing elizaOS Vercel Edge Function Handler (Rust)\n");
+    println!("🧪 Testing tokagentOS Vercel Edge Function Handler (Rust)\n");
     println!("Note: For full WASM testing, use wasm-pack test --node");
     println!();
 
@@ -15,7 +15,7 @@ fn main() {
     println!("1️⃣  Testing health response serialization...");
     let health = HealthResponse {
         status: "healthy".to_string(),
-        runtime: "elizaos-rust".to_string(),
+        runtime: "tokagentos-rust".to_string(),
         version: "1.0.0".to_string(),
     };
     let json = serde_json::to_string(&health).expect("Failed to serialize");
@@ -49,18 +49,18 @@ fn main() {
     // Test 4: Chat response serialization
     println!("4️⃣  Testing chat response serialization...");
     let response = ChatResponse {
-        response: "Hello! I'm Eliza.".to_string(),
+        response: "Hello! I'm Tokagent.".to_string(),
         conversation_id: "conv-123".to_string(),
         timestamp: "2025-01-10T12:00:00.000Z".to_string(),
     };
     let json = serde_json::to_string(&response).expect("Failed to serialize");
     println!("   Response: {}", json);
-    assert!(json.contains("Eliza"));
+    assert!(json.contains("Tokagent"));
     println!("   ✅ Chat response serialization passed\n");
 
     println!("🎉 All serialization tests passed!");
     println!();
-    println!("To run full WASM tests with elizaOS runtime:");
+    println!("To run full WASM tests with tokagentOS runtime:");
     println!("  wasm-pack test --node");
 }
 

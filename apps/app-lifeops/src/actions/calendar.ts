@@ -7,19 +7,19 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   CreateLifeOpsCalendarEventAttendee,
   CreateLifeOpsCalendarEventRequest,
   GetLifeOpsCalendarFeedRequest,
   LifeOpsCalendarEvent,
   LifeOpsCalendarFeed,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { resolveDefaultTimeZone } from "../lifeops/defaults.js";
 import { LifeOpsService, LifeOpsServiceError } from "../lifeops/service.js";
 import {
@@ -28,7 +28,7 @@ import {
   getWeekdayForLocalDate,
   getZonedDateParts,
 } from "../lifeops/time.js";
-import { renderGroundedActionReply } from "@elizaos/agent/actions";
+import { renderGroundedActionReply } from "@tokagentos/agent/actions";
 import { recentConversationTexts as collectRecentConversationTexts } from "./life-recent-context.js";
 import {
   calendarReadUnavailableMessage,

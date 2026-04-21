@@ -7,7 +7,7 @@
 
 import path from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
-import { createElizaPlugin } from "@elizaos/agent/runtime/eliza-plugin";
+import { createTokagentPlugin } from "@tokagentos/agent/runtime/tokagent-plugin";
 import { config as loadDotenv } from "dotenv";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { describeIf } from "../../../../../test/helpers/conditional-tests.ts";
@@ -126,7 +126,7 @@ async function ensureWalletKeys(): Promise<void> {
   }
 
   const { deriveEvmAddress, deriveSolanaAddress, generateWalletKeys } =
-    await import("@elizaos/agent/api/wallet");
+    await import("@tokagentos/agent/api/wallet");
 
   let generatedKeys: {
     evmPrivateKey: string;
@@ -162,10 +162,10 @@ async function startLiveServer(args: {
 }): Promise<{ restore: () => Promise<void>; server: StartedLiveServer }> {
   const envBackup = saveEnv(
     ...LIVE_PROVIDER_ENV_KEYS,
-    "ELIZA_API_TOKEN",
-    "ELIZA_WALLET_EXPORT_TOKEN",
-    "ELIZA_PAIRING_DISABLED",
-    "ELIZA_API_BIND",
+    "TOKAGENT_API_TOKEN",
+    "TOKAGENT_WALLET_EXPORT_TOKEN",
+    "TOKAGENT_PAIRING_DISABLED",
+    "TOKAGENT_API_BIND",
     "EVM_PRIVATE_KEY",
     "SOLANA_PRIVATE_KEY",
     "SOLANA_API_KEY",
@@ -179,20 +179,20 @@ async function startLiveServer(args: {
   for (const key of LIVE_PROVIDER_ENV_KEYS) {
     process.env[key] = isolatedProviderEnv[key] ?? "";
   }
-  process.env.ELIZA_API_TOKEN = args.apiToken;
+  process.env.TOKAGENT_API_TOKEN = args.apiToken;
   if (args.exportToken) {
-    process.env.ELIZA_WALLET_EXPORT_TOKEN = args.exportToken;
+    process.env.TOKAGENT_WALLET_EXPORT_TOKEN = args.exportToken;
   } else {
-    delete process.env.ELIZA_WALLET_EXPORT_TOKEN;
+    delete process.env.TOKAGENT_WALLET_EXPORT_TOKEN;
   }
-  delete process.env.ELIZA_PAIRING_DISABLED;
+  delete process.env.TOKAGENT_PAIRING_DISABLED;
 
   await ensureWalletKeys();
 
   const runtimeResult = await createRealTestRuntime({
     withLLM: true,
     preferredProvider: LIVE_PROVIDER?.name,
-    plugins: [createElizaPlugin({ agentId: "main" })],
+    plugins: [createTokagentPlugin({ agentId: "main" })],
   });
   const { startApiServer } = await import("../../src/api/server");
   const { _resetForTesting } = await import(
@@ -470,14 +470,14 @@ describeIf(CAN_RUN)("Live: Token header variants with LLM", () => {
     });
   }, 120_000);
 
-  it("X-Eliza-Token works for status", async () => {
+  it("X-Tokagent-Token works for status", async () => {
     const { status } = await req(
       server?.port ?? 0,
       "GET",
       "/api/status",
       undefined,
       {
-        "X-Eliza-Token": API_TOKEN,
+        "X-Tokagent-Token": API_TOKEN,
       },
     );
     expect(status).toBe(200);

@@ -1,4 +1,4 @@
-import { PagePanel } from "@elizaos/ui";
+import { PagePanel } from "@tokagentos/ui";
 import { useEffect, useState } from "react";
 import { client } from "../../api/client";
 import type {

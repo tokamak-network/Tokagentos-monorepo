@@ -1,4 +1,4 @@
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import { readLifeOpsOwnerProfile } from "../owner-profile.js";
 
 /**

@@ -1,5 +1,5 @@
 """
-ElizaSystem — Benchmark system that routes through a real ElizaOS AgentRuntime.
+TokagentSystem — Benchmark system that routes through a real TokagentOS AgentRuntime.
 
 Instead of standalone Python logic, this system:
   1. Creates an AgentRuntime with a social-alpha Character
@@ -13,7 +13,7 @@ EXTRACT_RECOMMENDATION action (backed by an LLM call through the runtime).
 For process_call / update_price / get_trust_score / get_leaderboard / is_scam:
 these operate on the plugin's shared in-process state, which is the same state
 the agent's actions mutate.  This keeps the benchmark harness's synchronous
-protocol working while still routing LLM calls through the Eliza runtime.
+protocol working while still routing LLM calls through the Tokagent runtime.
 """
 
 from __future__ import annotations
@@ -29,9 +29,9 @@ from pathlib import Path
 from ..protocol import ExtractionResult, SocialAlphaSystem, UserTrustScore
 
 
-class ElizaSystem(SocialAlphaSystem):
+class TokagentSystem(SocialAlphaSystem):
     """
-    Production system backed by an ElizaOS AgentRuntime.
+    Production system backed by an TokagentOS AgentRuntime.
 
     Uses the social-alpha benchmark plugin for LLM extraction and the shared
     plugin state for trust scoring / leaderboard / scam detection.
@@ -48,7 +48,7 @@ class ElizaSystem(SocialAlphaSystem):
 
         # Extraction cache (same format as FullSystem for interoperability)
         self._cache: dict[str, dict[str, str | bool]] = {}
-        self._cache_file = self._cache_dir / "eliza_extraction_cache.json"
+        self._cache_file = self._cache_dir / "tokagent_extraction_cache.json"
         self._load_cache()
 
         self._runtime_initialized = False
@@ -85,14 +85,14 @@ class ElizaSystem(SocialAlphaSystem):
         if self._runtime_initialized:
             return
 
-        from elizaos.runtime import AgentRuntime
-        from elizaos.types.agent import Character
-        from elizaos.prompts import MESSAGE_HANDLER_TEMPLATE
+        from tokagentos.runtime import AgentRuntime
+        from tokagentos.types.agent import Character
+        from tokagentos.prompts import MESSAGE_HANDLER_TEMPLATE
 
         # Re-use the InMemoryBenchmarkAdapter from the GAIA benchmark
         # (it lives in the sibling gaia package; import from there)
         try:
-            from elizaos_gaia.inmemory_adapter import InMemoryBenchmarkAdapter
+            from tokagentos_gaia.inmemory_adapter import InMemoryBenchmarkAdapter
         except ImportError:
             # Fallback: define a minimal adapter inline
             InMemoryBenchmarkAdapter = _build_minimal_adapter()  # type: ignore[assignment,misc]
@@ -166,7 +166,7 @@ class ElizaSystem(SocialAlphaSystem):
             self._cache_hits += 1
             return self._parse_cached(self._cache[key])
 
-        # Route through Eliza runtime
+        # Route through Tokagent runtime
         self._ensure_runtime()
         result = self._run_async(self._extract_via_runtime(message_text))
         self._api_calls += 1
@@ -186,7 +186,7 @@ class ElizaSystem(SocialAlphaSystem):
             elapsed = time.time() - self._start_time
             rate = self._api_calls / max(elapsed, 1)
             print(
-                f"  [ElizaSystem] {self._extract_calls:,} extractions | "
+                f"  [TokagentSystem] {self._extract_calls:,} extractions | "
                 f"{self._api_calls} API | {self._cache_hits} cache | "
                 f"{rate:.1f}/sec",
                 flush=True,
@@ -195,9 +195,9 @@ class ElizaSystem(SocialAlphaSystem):
         return result
 
     async def _extract_via_runtime(self, message_text: str) -> ExtractionResult:
-        """Send a message through the Eliza runtime and parse the extraction."""
-        from elizaos.types.memory import Memory
-        from elizaos.types.primitives import Content, as_uuid, string_to_uuid
+        """Send a message through the Tokagent runtime and parse the extraction."""
+        from tokagentos.types.memory import Memory
+        from tokagentos.types.primitives import Content, as_uuid, string_to_uuid
 
         runtime = self._runtime
         if runtime is None:
@@ -363,16 +363,16 @@ class ElizaSystem(SocialAlphaSystem):
     def warm_cache(self, messages: list[str]) -> None:
         """Pre-populate cache using batched LLM calls through the runtime.
 
-        For messages not already cached, sends them through the Eliza runtime
+        For messages not already cached, sends them through the Tokagent runtime
         in serial (the runtime itself will batch via the model handler).
         """
         uncached = [m for m in messages if self._cache_key(m) not in self._cache]
         if not uncached:
-            print(f"  [ElizaSystem] Cache already warm ({len(self._cache)} entries)")
+            print(f"  [TokagentSystem] Cache already warm ({len(self._cache)} entries)")
             return
 
         print(
-            f"  [ElizaSystem] Warming cache: {len(uncached):,} messages "
+            f"  [TokagentSystem] Warming cache: {len(uncached):,} messages "
             f"({len(self._cache)} already cached)",
             flush=True,
         )
@@ -401,14 +401,14 @@ class ElizaSystem(SocialAlphaSystem):
                 rate = (i + 1) / max(elapsed, 1)
                 remaining = (len(uncached) - i - 1) / max(rate, 0.1) / 60
                 print(
-                    f"  [ElizaSystem] Cache warm: {i + 1:,}/{len(uncached):,} "
+                    f"  [TokagentSystem] Cache warm: {i + 1:,}/{len(uncached):,} "
                     f"({rate:.1f} msg/sec, ~{remaining:.0f}m remaining)",
                     flush=True,
                 )
 
         self._save_cache()
         print(
-            f"  [ElizaSystem] Cache warm complete: {len(self._cache)} total entries",
+            f"  [TokagentSystem] Cache warm complete: {len(self._cache)} total entries",
             flush=True,
         )
 
@@ -417,7 +417,7 @@ class ElizaSystem(SocialAlphaSystem):
         self._save_cache()
         pct = self._cache_hits / max(self._extract_calls, 1) * 100
         print(
-            f"\n  [ElizaSystem] Final stats: {self._extract_calls} extractions, "
+            f"\n  [TokagentSystem] Final stats: {self._extract_calls} extractions, "
             f"{self._cache_hits} cache hits ({pct:.0f}%), "
             f"{self._api_calls} API calls, {len(self._cache)} cached total",
         )
@@ -432,8 +432,8 @@ def _build_minimal_adapter() -> type:
     """Build a minimal in-memory adapter class for when GAIA is not available."""
     import time as _time
     import uuid as _uuid
-    from elizaos.types.memory import Memory, MessageMetadata, MemoryType
-    from elizaos.types.primitives import UUID, as_uuid
+    from tokagentos.types.memory import Memory, MessageMetadata, MemoryType
+    from tokagentos.types.primitives import UUID, as_uuid
 
     class _MinimalAdapter:
         def __init__(self) -> None:

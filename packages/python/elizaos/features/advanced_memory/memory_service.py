@@ -6,9 +6,9 @@ import time
 from typing import cast
 from uuid import UUID, uuid4
 
-from elizaos.types.model import ModelType
-from elizaos.types.primitives import string_to_uuid
-from elizaos.types.service import Service
+from tokagentos.types.model import ModelType
+from tokagentos.types.primitives import string_to_uuid
+from tokagentos.types.service import Service
 
 from .prompts import (
     INITIAL_SUMMARIZATION_TEMPLATE,
@@ -479,7 +479,7 @@ class MemoryService(Service):
     async def summarize_from_messages(
         self, room_id: UUID, agent_id: UUID, agent_name: str, messages: list[object]
     ) -> None:
-        # `messages` is a list of elizaos Memory objects; we only use common fields.
+        # `messages` is a list of tokagentos Memory objects; we only use common fields.
         dialogue = []
         for m in messages:
             content = getattr(m, "content", None)

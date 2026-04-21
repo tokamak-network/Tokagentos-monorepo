@@ -23,7 +23,7 @@ export function shouldSkipExactPackDryRun(
     return false;
   }
 
-  if (env.ELIZA_FORCE_PACK_DRY_RUN === "1") {
+  if (env.TOKAGENT_FORCE_PACK_DRY_RUN === "1") {
     return false;
   }
 

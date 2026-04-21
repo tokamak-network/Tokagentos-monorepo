@@ -18,10 +18,10 @@ import type {
   SyncLifeOpsBrowserStateRequest,
   UpdateLifeOpsBrowserSessionProgressRequest,
   UpdateLifeOpsBrowserSettingsRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_BROWSER_KINDS,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   fail,
   normalizeEnumValue,

@@ -1,4 +1,4 @@
-//! Streaming type definitions and extractors for elizaOS
+//! Streaming type definitions and extractors for tokagentOS
 //!
 //! This module defines stream content extractors with cross-language parity
 //! (matching TypeScript and Python implementations).

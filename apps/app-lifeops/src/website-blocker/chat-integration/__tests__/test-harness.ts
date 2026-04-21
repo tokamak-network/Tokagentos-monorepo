@@ -1,7 +1,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
-import type { IAgentRuntime, Task, UUID } from "@elizaos/core";
+import type { IAgentRuntime, Task, UUID } from "@tokagentos/core";
 
 export interface BlockRuleTestHarness {
   runtime: IAgentRuntime;

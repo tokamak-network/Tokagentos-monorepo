@@ -1,23 +1,23 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { loadElizaConfigMock } = vi.hoisted(() => ({
-  loadElizaConfigMock: vi.fn(),
+const { loadTokagentConfigMock } = vi.hoisted(() => ({
+  loadTokagentConfigMock: vi.fn(),
 }));
 
-vi.mock("@elizaos/agent/config/config", () => ({
-  loadElizaConfig: loadElizaConfigMock,
+vi.mock("@tokagentos/agent/config/config", () => ({
+  loadTokagentConfig: loadTokagentConfigMock,
 }));
 
 import { resolveLifeOpsIMessageBridgeConfig } from "./service-mixin-imessage.js";
 
 describe("resolveLifeOpsIMessageBridgeConfig", () => {
   beforeEach(() => {
-    loadElizaConfigMock.mockReset();
-    loadElizaConfigMock.mockReturnValue({});
+    loadTokagentConfigMock.mockReset();
+    loadTokagentConfigMock.mockReturnValue({});
   });
 
   it("prefers BlueBubbles config from Milady config when present", () => {
-    loadElizaConfigMock.mockReturnValue({
+    loadTokagentConfigMock.mockReturnValue({
       connectors: {
         bluebubbles: {
           enabled: true,
@@ -40,7 +40,7 @@ describe("resolveLifeOpsIMessageBridgeConfig", () => {
   });
 
   it("falls back to the configured imsg CLI when BlueBubbles is unavailable", () => {
-    loadElizaConfigMock.mockReturnValue({
+    loadTokagentConfigMock.mockReturnValue({
       connectors: {
         imessage: {
           enabled: true,
@@ -58,7 +58,7 @@ describe("resolveLifeOpsIMessageBridgeConfig", () => {
   });
 
   it("honors environment overrides over config values", () => {
-    loadElizaConfigMock.mockReturnValue({
+    loadTokagentConfigMock.mockReturnValue({
       connectors: {
         bluebubbles: {
           enabled: true,
@@ -70,7 +70,7 @@ describe("resolveLifeOpsIMessageBridgeConfig", () => {
 
     expect(
       resolveLifeOpsIMessageBridgeConfig({
-        ELIZA_IMESSAGE_BACKEND: "bluebubbles",
+        TOKAGENT_IMESSAGE_BACKEND: "bluebubbles",
         BLUEBUBBLES_SERVER_URL: "http://127.0.0.1:2345",
         BLUEBUBBLES_PASSWORD: "override",
       } as NodeJS.ProcessEnv),

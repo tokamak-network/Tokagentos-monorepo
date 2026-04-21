@@ -4,8 +4,8 @@ import type {
   LifeOpsScheduleMealInsight,
   LifeOpsScheduleMealLabel,
   LifeOpsSchedulePhase,
-} from "@elizaos/shared/contracts/lifeops";
-import { asRecord } from "@elizaos/shared/type-guards";
+} from "@tokagentos/shared/contracts/lifeops";
+import { asRecord } from "@tokagentos/shared/type-guards";
 import type { LifeOpsScheduleInsightRecord } from "./repository.js";
 import type {
   LifeOpsScheduleDeviceKind,
@@ -284,7 +284,7 @@ function normalizeDurationMinutes(
 export function resolveScheduleDeviceIdentity(): ResolvedScheduleDeviceIdentity {
   const envDeviceId =
     process.env.MILADY_DEVICE_ID?.trim() ??
-    process.env.ELIZA_DEVICE_ID?.trim() ??
+    process.env.TOKAGENT_DEVICE_ID?.trim() ??
     process.env.HOSTNAME?.trim();
   const deviceId =
     envDeviceId && envDeviceId.length > 0
@@ -292,7 +292,7 @@ export function resolveScheduleDeviceIdentity(): ResolvedScheduleDeviceIdentity 
       : `${process.platform}-${crypto.createHash("sha1").update(process.cwd()).digest("hex").slice(0, 8)}`;
   const envDeviceKind =
     process.env.MILADY_DEVICE_KIND?.trim().toLowerCase() ??
-    process.env.ELIZA_DEVICE_KIND?.trim().toLowerCase() ??
+    process.env.TOKAGENT_DEVICE_KIND?.trim().toLowerCase() ??
     "";
   if (
     envDeviceKind === "iphone" ||

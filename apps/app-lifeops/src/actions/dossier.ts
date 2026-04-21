@@ -6,8 +6,8 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
-import { hasAdminAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasAdminAccess } from "@tokagentos/agent/security";
 import { LifeOpsService } from "../lifeops/service.js";
 
 const ACTION_NAME = "DOSSIER";

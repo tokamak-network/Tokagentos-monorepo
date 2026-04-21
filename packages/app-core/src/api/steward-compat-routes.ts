@@ -1,5 +1,5 @@
 import type http from "node:http";
-import { getWalletAddresses } from "@elizaos/agent/api/wallet";
+import { getWalletAddresses } from "@tokagentos/agent/api/wallet";
 import {
   approveStewardTransaction,
   createStewardClient,
@@ -18,7 +18,7 @@ import {
   type StewardWebhookEventType,
   signViaSteward,
 } from "@elizaos/app-steward/routes/steward-bridge";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { ensureCompatApiAuthorized } from "./auth";
 import {
   type CompatRuntimeState,

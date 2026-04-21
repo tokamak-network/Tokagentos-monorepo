@@ -2,7 +2,7 @@
  * Hook Service Type Definitions
  *
  * Provides the type system for the unified hook service that consolidates
- * event-driven hooks across the Eliza agent runtime.
+ * event-driven hooks across the Tokagent agent runtime.
  */
 
 import { type EventPayload, EventType } from "./events";
@@ -16,8 +16,8 @@ import type { Service } from "./service";
  * Identifies the origin of a hook registration.
  */
 export type HookSource =
-	| "bundled" // Built-in hooks from @elizaos/core
-	| "managed" // User-installed hooks (~/.elizaos/hooks/)
+	| "bundled" // Built-in hooks from @tokagentos/core
+	| "managed" // User-installed hooks (~/.tokagentos/hooks/)
 	| "workspace" // Project-local hooks (./hooks/)
 	| "plugin" // Plugin-registered hooks
 	| "runtime"; // Programmatic registration via API
@@ -237,7 +237,7 @@ export interface HookLoadResult {
 
 /**
  * The HookService provides a unified interface for registering, managing,
- * and executing hooks across the Eliza agent runtime.
+ * and executing hooks across the Tokagent agent runtime.
  *
  * Hooks are event-driven handlers that can respond to various lifecycle
  * events in the agent system. The service integrates with the runtime's

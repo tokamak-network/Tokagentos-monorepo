@@ -4,7 +4,7 @@ set -euo pipefail
 # =============================================================================
 # Solana Benchmark Setup Script
 #
-# Sets up the solana-gym-env and all dependencies for running the Eliza
+# Sets up the solana-gym-env and all dependencies for running the Tokagent
 # benchmark explorer.
 # =============================================================================
 
@@ -116,7 +116,7 @@ echo "============================================================"
 echo "  Setup Complete!"
 echo "============================================================"
 echo ""
-echo "To run the Eliza benchmark explorer:"
+echo "To run the Tokagent benchmark explorer:"
 echo ""
 echo "  # Option 1: With external surfpool (recommended)"
 echo "  # Terminal 1:"
@@ -125,16 +125,16 @@ echo ""
 echo "  # Terminal 2:"
 echo "  cd $GYM_ENV_DIR"
 echo "  USE_EXTERNAL_SURFPOOL=true ENVIRONMENT_CONFIG=voyager/environments/basic_env.json \\"
-echo "    python -m benchmarks.solana.eliza_explorer"
+echo "    python -m benchmarks.solana.tokagent_explorer"
 echo ""
 echo "  # Option 2: Auto-managed surfpool"
 echo "  cd $GYM_ENV_DIR"
 echo "  ENVIRONMENT_CONFIG=voyager/environments/basic_env.json \\"
-echo "    python -m benchmarks.solana.eliza_explorer"
+echo "    python -m benchmarks.solana.tokagent_explorer"
 echo ""
 echo "  # Run from workspace root:"
 echo "  cd $(dirname "$SCRIPT_DIR")"
-echo "  python -m benchmarks.solana.eliza_explorer"
+echo "  python -m benchmarks.solana.tokagent_explorer"
 echo ""
 echo "Environment variables:"
 echo "  MODEL_NAME          LLM model (default: anthropic/claude-sonnet-4)"

@@ -2,10 +2,10 @@
  * @module storage
  * @description Component-based persistence for form data
  *
- * Form data is stored using elizaOS's Component system because:
+ * Form data is stored using tokagentOS's Component system because:
  * 1. Entity-Scoped: Components belong to entities (users)
  * 2. Typed Storage: Component type field allows different kinds of form data
- * 3. No Custom Schema: Uses existing elizaOS infrastructure
+ * 3. No Custom Schema: Uses existing tokagentOS infrastructure
  * 4. Room Scoping: Component type includes roomId for session isolation
  */
 

@@ -1,4 +1,4 @@
-import { Button, Input, useIntervalWhenDocumentVisible } from "@elizaos/ui";
+import { Button, Input, useIntervalWhenDocumentVisible } from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { client } from "../../api";
 import type {

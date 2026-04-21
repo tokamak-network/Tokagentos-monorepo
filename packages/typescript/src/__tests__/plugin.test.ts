@@ -351,7 +351,7 @@ describe("Plugin Functions", () => {
 		});
 
 		test("should return original name for scoped packages without plugin- prefix", () => {
-			expect(normalizePluginName("@elizaos/core")).toBe("@elizaos/core");
+			expect(normalizePluginName("@tokagentos/core")).toBe("@tokagentos/core");
 			expect(normalizePluginName("@myorg/utils")).toBe("@myorg/utils");
 		});
 	});
@@ -655,9 +655,9 @@ describe("Plugin Functions", () => {
 			process.env = { ...originalEnv } as Record<string, string | undefined>;
 			process.env.NODE_ENV = "development";
 			delete process.env.CI;
-			delete process.env.ELIZA_TEST_MODE;
-			delete process.env.ELIZA_NO_AUTO_INSTALL;
-			delete process.env.ELIZA_NO_PLUGIN_AUTO_INSTALL;
+			delete process.env.TOKAGENT_TEST_MODE;
+			delete process.env.TOKAGENT_NO_AUTO_INSTALL;
+			delete process.env.TOKAGENT_NO_PLUGIN_AUTO_INSTALL;
 		});
 
 		afterEach(() => {
@@ -666,8 +666,8 @@ describe("Plugin Functions", () => {
 			process.env = { ...originalEnv } as Record<string, string | undefined>;
 		});
 
-		test("returns false when auto-install disallowed by ELIZA_NO_PLUGIN_AUTO_INSTALL", async () => {
-			process.env.ELIZA_NO_PLUGIN_AUTO_INSTALL = "true";
+		test("returns false when auto-install disallowed by TOKAGENT_NO_PLUGIN_AUTO_INSTALL", async () => {
+			process.env.TOKAGENT_NO_PLUGIN_AUTO_INSTALL = "true";
 
 			let called = 0;
 			BunGlobal.spawn = (_cmd: string[]): SpawnResult => {
@@ -682,8 +682,8 @@ describe("Plugin Functions", () => {
 			expect(called).toBe(0);
 		});
 
-		test("returns false when auto-install disallowed by ELIZA_NO_AUTO_INSTALL", async () => {
-			process.env.ELIZA_NO_AUTO_INSTALL = "true";
+		test("returns false when auto-install disallowed by TOKAGENT_NO_AUTO_INSTALL", async () => {
+			process.env.TOKAGENT_NO_AUTO_INSTALL = "true";
 
 			let called = 0;
 			BunGlobal.spawn = (_cmd: string[]): SpawnResult => {

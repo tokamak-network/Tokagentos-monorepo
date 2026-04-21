@@ -3,10 +3,10 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 
 def format_role_info(entity_name: str, role: str) -> str:

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ELIZA - elizaOS Browser Demo</title>
+    <title>TOKAGENT - tokagentOS Browser Demo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,12 +11,12 @@
       rel="stylesheet"
     />
 
-    <!-- Import Map for elizaOS packages -->
+    <!-- Import Map for tokagentOS packages -->
     <script type="importmap">
       {
         "imports": {
-          "@elizaos/core": "../../packages/typescript/dist/browser/index.browser.js",
-          "@elizaos/plugin-eliza-classic": "../../plugins/plugin-eliza-classic/typescript/dist/browser/index.browser.js",
+          "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
+          "@elizaos/plugin-tokagent-classic": "../../plugins/plugin-tokagent-classic/typescript/dist/browser/index.browser.js",
           "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/typescript/dist/browser/index.browser.js",
           "uuid": "https://esm.sh/uuid@11"
         }
@@ -205,7 +205,7 @@
         color: #88ff88;
       }
 
-      .message.eliza .text {
+      .message.tokagent .text {
         text-shadow: 0 0 5px rgba(51, 255, 51, 0.3);
       }
 
@@ -400,7 +400,7 @@
       <div class="crt-bezel">
         <div class="terminal">
           <header class="header">
-            <h1>ELIZA</h1>
+            <h1>TOKAGENT</h1>
           </header>
 
           <div class="status-bar">
@@ -412,12 +412,12 @@
 
           <div class="chat-container" id="chat">
             <div class="message system" id="init-message">
-              <span class="text">Initializing elizaOS AgentRuntime...</span>
+              <span class="text">Initializing tokagentOS AgentRuntime...</span>
             </div>
           </div>
 
           <div class="typing-indicator" id="typing">
-            <span class="label">ELIZA:</span> <span class="dots"></span>
+            <span class="label">TOKAGENT:</span> <span class="dots"></span>
           </div>
 
           <div class="input-area">
@@ -437,16 +437,16 @@
       </div>
     </div>
 
-    <!-- elizaOS Browser Runtime - mirrors examples/chat/typescript/chat.ts -->
+    <!-- tokagentOS Browser Runtime - mirrors examples/chat/typescript/chat.ts -->
     <script type="module">
       /**
-       * elizaOS Browser Demo
+       * tokagentOS Browser Demo
        *
        * This is the browser equivalent of examples/chat/typescript/chat.ts
        * Uses:
-       * - @elizaos/core (AgentRuntime)
+       * - @tokagentos/core (AgentRuntime)
        * - @elizaos/plugin-localdb (localStorage persistence)
-       * - @elizaos/plugin-eliza-classic (pattern matching, no API keys)
+       * - @elizaos/plugin-tokagent-classic (pattern matching, no API keys)
        */
 
       import {
@@ -454,8 +454,8 @@
         ChannelType,
         createMessageMemory,
         stringToUuid,
-      } from "@elizaos/core";
-      import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+      } from "@tokagentos/core";
+      import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
       import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
       import { v4 as uuidv4 } from "uuid";
 
@@ -464,8 +464,8 @@
       // ============================================================================
 
       const character = {
-        name: "Eliza",
-        bio: "I am ELIZA, a Rogerian psychotherapist simulation created at MIT in 1966.",
+        name: "Tokagent",
+        bio: "I am TOKAGENT, a Rogerian psychotherapist simulation created at MIT in 1966.",
       };
 
       // ============================================================================
@@ -493,9 +493,9 @@
       function addMessage(text, isUser = false) {
         const { chat } = getElements();
         const messageDiv = document.createElement("div");
-        messageDiv.className = `message ${isUser ? "user" : "eliza"}`;
+        messageDiv.className = `message ${isUser ? "user" : "tokagent"}`;
         messageDiv.innerHTML = `
-        <span class="label">${isUser ? "YOU" : "ELIZA"}:</span>
+        <span class="label">${isUser ? "YOU" : "TOKAGENT"}:</span>
         <span class="text">${escapeHtml(text)}</span>
       `;
         chat.appendChild(messageDiv);
@@ -548,15 +548,15 @@
       // ============================================================================
 
       async function initializeRuntime() {
-        console.log("🚀 Starting Eliza (Browser)...\n");
+        console.log("🚀 Starting Tokagent (Browser)...\n");
         updateStatus("Initializing runtime...", true);
 
         // Create runtime with plugins (browser version)
         // - localdbPlugin instead of sqlPlugin (localStorage for browser)
-        // - elizaClassicPlugin instead of openaiPlugin (no API keys needed)
+        // - tokagentClassicPlugin instead of openaiPlugin (no API keys needed)
         runtime = new AgentRuntime({
           character,
-          plugins: [localdbPlugin, elizaClassicPlugin],
+          plugins: [localdbPlugin, tokagentClassicPlugin],
         });
 
         updateStatus("Initializing AgentRuntime...", true);
@@ -585,7 +585,7 @@
         // Enable input
         setInputEnabled(true);
 
-        console.log("💬 Chat with Eliza (browser runtime)\n");
+        console.log("💬 Chat with Tokagent (browser runtime)\n");
 
         // Welcome message with typing animation
         await new Promise((resolve) => setTimeout(resolve, 500));
@@ -593,7 +593,7 @@
         await new Promise((resolve) => setTimeout(resolve, 800));
         hideTyping();
         addMessage(
-          "Hello. I am ELIZA, running on elizaOS. How are you feeling today?",
+          "Hello. I am TOKAGENT, running on tokagentOS. How are you feeling today?",
         );
       }
 
@@ -622,9 +622,9 @@
         // Create an output bubble now so we can stream into it.
         const { chat } = getElements();
         const responseDiv = document.createElement("div");
-        responseDiv.className = "message eliza";
+        responseDiv.className = "message tokagent";
         responseDiv.innerHTML = `
-        <span class="label">ELIZA:</span>
+        <span class="label">TOKAGENT:</span>
         <span class="text"></span>
       `;
         chat.appendChild(responseDiv);
@@ -692,7 +692,7 @@
       });
 
       // Export runtime for debugging
-      window.elizaRuntime = runtime;
+      window.tokagentRuntime = runtime;
     </script>
   </body>
 </html>

@@ -2,8 +2,8 @@ import unittest
 import uuid
 from unittest.mock import AsyncMock, MagicMock
 
-from elizaos.features.basic_capabilities.services.embedding import EmbeddingService
-from elizaos.types import ModelType
+from tokagentos.features.basic_capabilities.services.embedding import EmbeddingService
+from tokagentos.types import ModelType
 
 
 class TestAsyncEmbedding(unittest.IsolatedAsyncioTestCase):

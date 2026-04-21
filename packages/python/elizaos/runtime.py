@@ -9,11 +9,11 @@ from collections.abc import AsyncIterator, Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import Any
 
-from elizaos.action_docs import with_canonical_action_docs, with_canonical_evaluator_docs
-from elizaos.logger import Logger, create_logger
-from elizaos.settings import decrypt_secret, get_salt
-from elizaos.types.agent import Character, TemplateType
-from elizaos.types.components import (
+from tokagentos.action_docs import with_canonical_action_docs, with_canonical_evaluator_docs
+from tokagentos.logger import Logger, create_logger
+from tokagentos.settings import decrypt_secret, get_salt
+from tokagentos.types.agent import Character, TemplateType
+from tokagentos.types.components import (
     Action,
     ActionResult,
     Evaluator,
@@ -22,26 +22,26 @@ from elizaos.types.components import (
     Provider,
     ProviderResult,
 )
-from elizaos.types.database import AgentRunSummaryResult, IDatabaseAdapter, Log
-from elizaos.types.environment import Component, Entity, Room, World
-from elizaos.types.events import EventType
-from elizaos.types.memory import Memory
-from elizaos.types.model import GenerateTextOptions, GenerateTextResult, LLMMode, ModelType
-from elizaos.types.plugin import Plugin, Route
-from elizaos.types.primitives import DEFAULT_UUID, UUID, Content, as_uuid, string_to_uuid
-from elizaos.types.runtime import (
+from tokagentos.types.database import AgentRunSummaryResult, IDatabaseAdapter, Log
+from tokagentos.types.environment import Component, Entity, Room, World
+from tokagentos.types.events import EventType
+from tokagentos.types.memory import Memory
+from tokagentos.types.model import GenerateTextOptions, GenerateTextResult, LLMMode, ModelType
+from tokagentos.types.plugin import Plugin, Route
+from tokagentos.types.primitives import DEFAULT_UUID, UUID, Content, as_uuid, string_to_uuid
+from tokagentos.types.runtime import (
     IAgentRuntime,
     RuntimeSettings,
     SendHandlerFunction,
     StreamingModelHandler,
     TargetInfo,
 )
-from elizaos.types.service import Service
-from elizaos.types.state import RetryBackoffConfig, SchemaRow, State, StateData, StreamEvent
-from elizaos.types.task import TaskWorker
-from elizaos.utils import compose_prompt_from_state as _compose_prompt_from_state
-from elizaos.utils import get_current_time_ms as _get_current_time_ms
-from elizaos.utils.streaming import ValidationStreamExtractor, ValidationStreamExtractorConfig
+from tokagentos.types.service import Service
+from tokagentos.types.state import RetryBackoffConfig, SchemaRow, State, StateData, StreamEvent
+from tokagentos.types.task import TaskWorker
+from tokagentos.utils import compose_prompt_from_state as _compose_prompt_from_state
+from tokagentos.utils import get_current_time_ms as _get_current_time_ms
+from tokagentos.utils.streaming import ValidationStreamExtractor, ValidationStreamExtractorConfig
 
 _message_service_class: type | None = None
 _COMPOSE_STATE_PROVIDER_TIMEOUT_SECONDS = 30
@@ -50,7 +50,7 @@ _COMPOSE_STATE_PROVIDER_TIMEOUT_SECONDS = 30
 def _get_message_service_class() -> type:
     global _message_service_class
     if _message_service_class is None:
-        from elizaos.services.message_service import DefaultMessageService
+        from tokagentos.services.message_service import DefaultMessageService
 
         _message_service_class = DefaultMessageService
     return _message_service_class
@@ -333,14 +333,14 @@ class AgentRuntime(IAgentRuntime):
         if setting_value is not None:
             return setting_value
 
-        from elizaos.native_features import (
+        from tokagentos.native_features import (
             native_runtime_feature_defaults,
         )
 
         return native_runtime_feature_defaults[feature]  # type: ignore[index]
 
     def _has_native_runtime_feature(self, feature: str) -> bool:
-        from elizaos.native_features import native_runtime_feature_plugin_names
+        from tokagentos.native_features import native_runtime_feature_plugin_names
 
         plugin_name = native_runtime_feature_plugin_names[feature]  # type: ignore[index]
         return any(plugin.name == plugin_name for plugin in self._plugins)
@@ -362,7 +362,7 @@ class AgentRuntime(IAgentRuntime):
         return self._native_feature_states.get(feature, False)
 
     def _is_plugin_managed_as_native_feature(self, plugin: Plugin | None) -> bool:
-        from elizaos.native_features import resolve_native_runtime_feature_from_plugin_name
+        from tokagentos.native_features import resolve_native_runtime_feature_from_plugin_name
 
         return (
             resolve_native_runtime_feature_from_plugin_name(plugin.name if plugin else None)
@@ -409,7 +409,7 @@ class AgentRuntime(IAgentRuntime):
         if current == enabled:
             return
 
-        from elizaos.native_features import (
+        from tokagentos.native_features import (
             get_native_runtime_feature_plugin,
             native_runtime_feature_plugin_names,
         )
@@ -466,7 +466,7 @@ class AgentRuntime(IAgentRuntime):
             None,
         )
         if basic_capabilities_plugin is None:
-            from elizaos.features.basic_capabilities_compat import (  # type: ignore[import-not-found]
+            from tokagentos.features.basic_capabilities_compat import (  # type: ignore[import-not-found]
                 basic_capabilities_plugin as default_basic_capabilities_plugin,
             )
 
@@ -474,7 +474,7 @@ class AgentRuntime(IAgentRuntime):
 
         await self.register_plugin(basic_capabilities_plugin)
 
-        from elizaos.native_features import (
+        from tokagentos.native_features import (
             get_native_runtime_feature_plugin,
             native_runtime_feature_defaults,
         )
@@ -487,13 +487,13 @@ class AgentRuntime(IAgentRuntime):
 
         # Advanced planning is built into core, but only loaded when enabled on the character.
         if getattr(self._character, "advanced_planning", None) is True:
-            from elizaos.features.advanced_planning import advanced_planning_plugin
+            from tokagentos.features.advanced_planning import advanced_planning_plugin
 
             await self.register_plugin(advanced_planning_plugin)
 
         # Advanced memory is built into core, but only loaded when enabled on the character.
         if getattr(self._character, "advanced_memory", None) is True:
-            from elizaos.features.advanced_memory import advanced_memory_plugin
+            from tokagentos.features.advanced_memory import advanced_memory_plugin
 
             await self.register_plugin(advanced_memory_plugin)
 
@@ -509,11 +509,11 @@ class AgentRuntime(IAgentRuntime):
         self.logger.info("AgentRuntime initialized successfully")
 
     async def register_plugin(self, plugin: Plugin) -> None:
-        from elizaos.native_features import (
+        from tokagentos.native_features import (
             get_native_runtime_feature_plugin,
             resolve_native_runtime_feature_from_plugin_name,
         )
-        from elizaos.plugin import register_plugin
+        from tokagentos.plugin import register_plugin
 
         plugin_to_register = plugin
         native_feature = resolve_native_runtime_feature_from_plugin_name(plugin.name)
@@ -543,7 +543,7 @@ class AgentRuntime(IAgentRuntime):
             )
 
             if disable_basic or enable_extended or skip_character_provider or enable_autonomy:
-                from elizaos.features.basic_capabilities_compat import (
+                from tokagentos.features.basic_capabilities_compat import (
                     CapabilityConfig,
                     create_basic_capabilities_plugin,
                 )
@@ -1098,7 +1098,7 @@ class AgentRuntime(IAgentRuntime):
                 if validated_params:
                     from google.protobuf import struct_pb2
 
-                    from elizaos.types.components import ActionParameters
+                    from tokagentos.types.components import ActionParameters
 
                     struct_values = struct_pb2.Struct()
                     for k, v in validated_params.items():
@@ -1486,7 +1486,7 @@ class AgentRuntime(IAgentRuntime):
 
         # Optional trajectory logging: associate model calls with the current trajectory step
         try:
-            from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+            from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
             step_id = CURRENT_TRAJECTORY_STEP_ID.get()
             traj_svc = self.get_service("trajectories")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from elizaos.types.generated.eliza.v1 import memory_pb2
+from tokagentos.types.generated.tokagent.v1 import memory_pb2
 
 
 class _MemoryTypeValue(str):

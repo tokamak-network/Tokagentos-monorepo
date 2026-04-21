@@ -10,10 +10,10 @@ platform :android do
       build_type: "Release",
       print_command: true,
       properties: {
-        "android.injected.signing.store.file" => ENV["ELIZAOS_KEYSTORE_PATH"],
-        "android.injected.signing.store.password" => ENV["ELIZAOS_KEYSTORE_PASSWORD"],
-        "android.injected.signing.key.alias" => ENV["ELIZAOS_KEY_ALIAS"],
-        "android.injected.signing.key.password" => ENV["ELIZAOS_KEY_PASSWORD"],
+        "android.injected.signing.store.file" => ENV["TOKAGENTOS_KEYSTORE_PATH"],
+        "android.injected.signing.store.password" => ENV["TOKAGENTOS_KEYSTORE_PASSWORD"],
+        "android.injected.signing.key.alias" => ENV["TOKAGENTOS_KEY_ALIAS"],
+        "android.injected.signing.key.password" => ENV["TOKAGENTOS_KEY_PASSWORD"],
       }
     )
   end

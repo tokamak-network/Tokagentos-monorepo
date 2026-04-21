@@ -1,5 +1,5 @@
 /**
- * WASM Plugin Loader for elizaOS
+ * WASM Plugin Loader for tokagentOS
  *
  * Loads Rust (or other) plugins compiled to WebAssembly and adapts them
  * to the TypeScript Plugin interface.
@@ -19,8 +19,8 @@ import type {
   ProviderResult,
   ProviderValue,
   State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 
 import type {
   ActionResultPayload,
@@ -53,7 +53,7 @@ const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
 /**
- * Load a WASM plugin and return an elizaOS Plugin interface
+ * Load a WASM plugin and return an tokagentOS Plugin interface
  */
 export async function loadWasmPlugin(
   options: WasmLoaderOptions,

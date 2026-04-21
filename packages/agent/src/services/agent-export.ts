@@ -4,13 +4,13 @@
  * Provides encrypted, portable agent archives for migrating agents between
  * machines. Captures all database state (character, memories, entities,
  * relationships, rooms, participants, worlds, tasks, and optionally logs)
- * into a single password-encrypted binary file (.eliza-agent).
+ * into a single password-encrypted binary file (.tokagent-agent).
  *
  * Encryption: PBKDF2-SHA256 key derivation + AES-256-GCM
  * Compression: gzip
  *
  * File format (binary):
- *   ELIZA_AGENT_V1\n   (15 bytes magic header)
+ *   TOKAGENT_AGENT_V1\n   (15 bytes magic header)
  *   iterations           (4 bytes uint32 BE — PBKDF2 iteration count)
  *   salt                 (32 bytes — PBKDF2 salt)
  *   iv                   (12 bytes — AES-256-GCM nonce)
@@ -33,15 +33,15 @@ import type {
   Task,
   UUID,
   World,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { z } from "zod";
 
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
 
-const MAGIC_HEADER = "ELIZA_AGENT_V1\n";
+const MAGIC_HEADER = "TOKAGENT_AGENT_V1\n";
 const MAGIC_BYTES = Buffer.from(MAGIC_HEADER, "utf-8"); // 15 bytes
 const PBKDF2_ITERATIONS = 600_000; // OWASP 2024 recommendation for SHA-256
 const MAX_PBKDF2_ITERATIONS = 1_200_000; // 2× the default — reject anything higher on import
@@ -56,7 +56,7 @@ const MAX_IMPORT_DECOMPRESSED_BYTES = 16 * 1024 * 1024; // 16 MiB safety cap
 
 // Memory table names we need to export. The adapter's getMemories requires
 // a tableName parameter. These are the known built-in table names used by
-// elizaOS. We query each individually and merge the results.
+// tokagentOS. We query each individually and merge the results.
 const MEMORY_TABLES = [
   "messages",
   "facts",
@@ -253,14 +253,14 @@ function unpackFile(fileBuffer: Buffer): {
 } {
   if (fileBuffer.length < HEADER_SIZE) {
     throw new AgentExportError(
-      "File is too small to be a valid .eliza-agent export.",
+      "File is too small to be a valid .tokagent-agent export.",
     );
   }
 
   const magic = fileBuffer.subarray(0, MAGIC_BYTES.length);
   if (!magic.equals(MAGIC_BYTES)) {
     throw new AgentExportError(
-      "Invalid file format — this does not appear to be an .eliza-agent export file.",
+      "Invalid file format — this does not appear to be an .tokagent-agent export file.",
     );
   }
 
@@ -772,7 +772,7 @@ async function restoreAgentData(
 
 /**
  * Resolve the memory table name from a memory record's metadata.
- * The elizaOS adapter requires a tableName for createMemory.
+ * The tokagentOS adapter requires a tableName for createMemory.
  */
 function resolveMemoryTableName(mem: Memory): string {
   const metaType = mem.metadata?.type;
@@ -782,7 +782,7 @@ function resolveMemoryTableName(mem: Memory): string {
   if (metaType === "description") return "descriptions";
   if (metaType === "custom") return "custom";
 
-  // Fallback: use the "type" field on the memory itself (elizaOS stores it
+  // Fallback: use the "type" field on the memory itself (tokagentOS stores it
   // as a top-level field in the DB row, which the proto Memory type inherits).
   const memType = (mem as Memory & { type?: string }).type;
   if (typeof memType === "string" && memType.length > 0) return memType;
@@ -800,7 +800,7 @@ function resolveMemoryTableName(mem: Memory): string {
  * @param runtime - The running AgentRuntime with an active database adapter
  * @param password - User-provided password for encryption
  * @param options - Export options (e.g., whether to include logs)
- * @returns A Buffer containing the encrypted .eliza-agent file
+ * @returns A Buffer containing the encrypted .tokagent-agent file
  */
 export async function exportAgent(
   runtime: AgentRuntime,
@@ -837,11 +837,11 @@ export async function exportAgent(
 }
 
 /**
- * Import an agent from a password-encrypted .eliza-agent file.
+ * Import an agent from a password-encrypted .tokagent-agent file.
  *
  * @param runtime - An AgentRuntime with an active database adapter (the agent
  *                  will be created in this database, not overwriting the current agent)
- * @param fileBuffer - The raw bytes of the .eliza-agent file
+ * @param fileBuffer - The raw bytes of the .tokagent-agent file
  * @param password - The password used when the file was exported
  * @returns An ImportResult describing what was imported
  */

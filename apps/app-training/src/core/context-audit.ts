@@ -1,4 +1,4 @@
-import type { AgentRuntime, Plugin } from "@elizaos/core";
+import type { AgentRuntime, Plugin } from "@tokagentos/core";
 import {
   ALL_CONTEXTS,
   type ContextResolutionSource,
@@ -7,7 +7,7 @@ import {
 } from "./context-catalog.js";
 import type { AgentContext } from "./context-types.js";
 
-/** Eliza extends elizaOS plugins/actions/providers with optional context hints. */
+/** Tokagent extends tokagentOS plugins/actions/providers with optional context hints. */
 type PluginWithContexts = Plugin & { contexts?: unknown };
 type ActionWithContexts = NonNullable<Plugin["actions"]>[number] & {
   contexts?: unknown;

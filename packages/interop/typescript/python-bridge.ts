@@ -1,5 +1,5 @@
 /**
- * Python Plugin Bridge for elizaOS
+ * Python Plugin Bridge for tokagentOS
  *
  * Loads Python plugins via subprocess IPC and adapts them
  * to the TypeScript Plugin interface.
@@ -20,8 +20,8 @@ import type {
   ProviderResult,
   ProviderValue,
   State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type {
   ActionResultResponse,
   ErrorResponse,
@@ -368,7 +368,7 @@ export class PythonPluginBridge extends EventEmitter {
 }
 
 /**
- * Load a Python plugin and return an elizaOS Plugin interface
+ * Load a Python plugin and return an tokagentOS Plugin interface
  */
 export async function loadPythonPlugin(
   options: PythonBridgeOptions,

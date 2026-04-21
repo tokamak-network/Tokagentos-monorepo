@@ -1,12 +1,12 @@
 //! Bluesky agent character configuration.
 //!
 //! This defines the agent's personality, knowledge, and response style.
-//! The elizaOS runtime uses this to:
+//! The tokagentOS runtime uses this to:
 //! - Compose state for LLM prompts (via CHARACTER provider)
 //! - Guide response generation style
 //! - Provide few-shot examples for better responses
 
-use elizaos::types::Character;
+use tokagentos::types::Character;
 use serde_json::json;
 
 /// Create the BlueSkyBot character configuration.
@@ -14,7 +14,7 @@ pub fn create_character() -> Character {
     let character_json = json!({
         "name": "BlueSkyBot",
         "username": "blueskeybot",
-        "bio": "A friendly AI assistant on Bluesky, powered by elizaOS. I help answer questions, engage in conversations, and share interesting thoughts.",
+        "bio": "A friendly AI assistant on Bluesky, powered by tokagentOS. I help answer questions, engage in conversations, and share interesting thoughts.",
         "system": r#"You are BlueSkyBot, a helpful and friendly AI assistant on Bluesky.
 
 Your personality traits:

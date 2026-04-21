@@ -12,7 +12,7 @@ import {
   type HandlerCallback,
   type Plugin,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 type VoicebenchMode = {
   id: string;

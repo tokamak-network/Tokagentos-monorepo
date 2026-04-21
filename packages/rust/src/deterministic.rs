@@ -149,7 +149,7 @@ pub fn build_conversation_seed(
     };
 
     build_deterministic_seed(&[
-        "eliza-prompt-cache-v1".to_string(),
+        "tokagent-prompt-cache-v1".to_string(),
         world_id.to_string(),
         room_id.to_string(),
         selected_character_id,
@@ -234,7 +234,7 @@ mod tests {
             Some(1000),
             2500,
         );
-        assert!(seed.contains("eliza-prompt-cache-v1"));
+        assert!(seed.contains("tokagent-prompt-cache-v1"));
         assert!(seed.contains("world:none"));
         assert!(seed.contains("room:none"));
         assert!(seed.contains("2"));

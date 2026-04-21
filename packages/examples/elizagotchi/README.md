@@ -1,8 +1,8 @@
-# 🥚 Elizagotchi - Virtual Pet Game
+# 🥚 Tokagentgotchi - Virtual Pet Game
 
-A Tamagotchi-style virtual pet game running on **elizaOS** with **NO LLM required**!
+A Tamagotchi-style virtual pet game running on **tokagentOS** with **NO LLM required**!
 
-![Elizagotchi](https://img.shields.io/badge/elizaOS-Virtual_Pet-FF6B9D?style=for-the-badge)
+![Tokagentgotchi](https://img.shields.io/badge/tokagentOS-Virtual_Pet-FF6B9D?style=for-the-badge)
 
 ## 🎮 Features
 
@@ -17,7 +17,7 @@ A Tamagotchi-style virtual pet game running on **elizaOS** with **NO LLM require
 
 ```bash
 # From the monorepo root
-cd examples/elizagotchi
+cd examples/tokagentgotchi
 
 # Install dependencies
 bun install
@@ -49,12 +49,12 @@ Open http://localhost:5174 in your browser!
 
 ## 🏗️ Architecture
 
-This example demonstrates elizaOS's ability to run agents **without an LLM**:
+This example demonstrates tokagentOS's ability to run agents **without an LLM**:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    React UI                              │
-│              (Elizagotchi App)                           │
+│              (Tokagentgotchi App)                           │
 ├─────────────────────────────────────────────────────────┤
 │  Game Engine                                             │
 │  ├── State Management (PetState)                         │
@@ -62,11 +62,11 @@ This example demonstrates elizaOS's ability to run agents **without an LLM**:
 │  ├── Action Handling (feed, play, clean, etc.)           │
 │  └── Evolution System                                    │
 ├─────────────────────────────────────────────────────────┤
-│  elizagotchiPlugin (Custom Model Handlers)               │
+│  tokagentgotchiPlugin (Custom Model Handlers)               │
 │  ├── models[TEXT_LARGE] → game logic                     │
 │  └── models[TEXT_SMALL] → game logic                     │
 ├─────────────────────────────────────────────────────────┤
-│  AgentRuntime (elizaOS Core)                             │
+│  AgentRuntime (tokagentOS Core)                             │
 │  └── useModel() → routed to game engine, NOT an LLM!    │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -74,7 +74,7 @@ This example demonstrates elizaOS's ability to run agents **without an LLM**:
 ## 📁 File Structure
 
 ```
-elizagotchi/
+tokagentgotchi/
 ├── src/
 │   ├── App.tsx              # Main React component
 │   ├── App.css              # Styling (kawaii aesthetic)
@@ -85,7 +85,7 @@ elizagotchi/
 │   └── game/
 │       ├── types.ts         # TypeScript types
 │       ├── engine.ts        # Core game logic
-│       └── plugin.ts        # elizaOS plugin with model handlers
+│       └── plugin.ts        # tokagentOS plugin with model handlers
 ├── index.html
 ├── package.json
 ├── vite.config.ts
@@ -119,15 +119,15 @@ Your pet's mood is determined by their stats:
 
 ### No LLM Pattern
 
-Like the tic-tac-toe example, Elizagotchi uses custom model handlers:
+Like the tic-tac-toe example, Tokagentgotchi uses custom model handlers:
 
 ```typescript
-const elizagotchiPlugin: Plugin = {
-  name: "elizagotchi",
+const tokagentgotchiPlugin: Plugin = {
+  name: "tokagentgotchi",
   priority: 100,
   models: {
-    [ModelType.TEXT_LARGE]: elizagotchiModelHandler,
-    [ModelType.TEXT_SMALL]: elizagotchiModelHandler,
+    [ModelType.TEXT_LARGE]: tokagentgotchiModelHandler,
+    [ModelType.TEXT_SMALL]: tokagentgotchiModelHandler,
   },
 };
 ```
@@ -150,11 +150,11 @@ Contributions are welcome! Some ideas:
 
 ## 📜 License
 
-MIT License - Part of the elizaOS project.
+MIT License - Part of the tokagentOS project.
 
 ---
 
-Made with 💕 using elizaOS
+Made with 💕 using tokagentOS
 
 
 

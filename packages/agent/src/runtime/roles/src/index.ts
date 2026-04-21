@@ -14,7 +14,7 @@
  *   }
  */
 
-import { type IAgentRuntime, logger, type Plugin } from "@elizaos/core";
+import { type IAgentRuntime, logger, type Plugin } from "@tokagentos/core";
 import { updateRoleAction } from "./action";
 import { rolesProvider } from "./provider";
 import type { RolesConfig, RolesWorldMetadata } from "./types";
@@ -29,7 +29,7 @@ const BOOTSTRAP_RETRY_TIMERS_KEY = Symbol.for(
   "@elizaos/runtime.roles.bootstrapRetries",
 );
 const BOOTSTRAP_RETRY_LIMIT = 3;
-const CONNECTOR_ADMINS_SETTING_KEY = "ELIZA_ROLES_CONNECTOR_ADMINS_JSON";
+const CONNECTOR_ADMINS_SETTING_KEY = "TOKAGENT_ROLES_CONNECTOR_ADMINS_JSON";
 
 type RuntimeWithBootstrapRetries = IAgentRuntime & {
   [BOOTSTRAP_RETRY_TIMERS_KEY]?: Map<string, ReturnType<typeof setTimeout>>;

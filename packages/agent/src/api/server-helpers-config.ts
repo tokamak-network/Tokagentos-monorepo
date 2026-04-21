@@ -5,13 +5,13 @@
 import type http from "node:http";
 import os from "node:os";
 import path from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import {
   getDefaultStylePreset,
   getStylePresets,
   normalizeCharacterLanguage,
-} from "@elizaos/shared/onboarding-presets";
-import type { ElizaConfig } from "../config/config.js";
+} from "@tokagentos/shared/onboarding-presets";
+import type { TokagentConfig } from "../config/config.js";
 import {
   ONBOARDING_CLOUD_PROVIDER_OPTIONS,
   ONBOARDING_PROVIDER_CATALOG,
@@ -163,7 +163,7 @@ export function readUiLanguageHeader(
     return undefined;
   }
   const header =
-    req.headers["x-eliza-ui-language"] ?? req.headers["x-eliza-ui-language"];
+    req.headers["x-tokagent-ui-language"] ?? req.headers["x-tokagent-ui-language"];
   if (Array.isArray(header)) {
     return header.find((value) => value.trim())?.trim();
   }
@@ -173,7 +173,7 @@ export function readUiLanguageHeader(
 }
 
 export function resolveConfiguredCharacterLanguage(
-  config?: ElizaConfig,
+  config?: TokagentConfig,
   req?: http.IncomingMessage,
 ) {
   const uiLanguage =
@@ -216,7 +216,7 @@ export function resolveOnboardingStylePreset(
 }
 
 export function applyOnboardingVoicePreset(
-  config: ElizaConfig,
+  config: TokagentConfig,
   body: Record<string, unknown>,
   language: string,
 ) {
@@ -266,7 +266,7 @@ export function applyOnboardingVoicePreset(
 }
 
 export function resolveDefaultAgentName(
-  config?: ElizaConfig,
+  config?: TokagentConfig,
   req?: http.IncomingMessage,
 ): string {
   const configuredName =
@@ -310,7 +310,7 @@ export function getCloudProviderOptions(): Array<{
   }));
 }
 
-export function ensureWalletKeysInEnvAndConfig(config: ElizaConfig): boolean {
+export function ensureWalletKeysInEnvAndConfig(config: TokagentConfig): boolean {
   const missingEvm =
     typeof process.env.EVM_PRIVATE_KEY !== "string" ||
     !process.env.EVM_PRIVATE_KEY.trim();
@@ -336,21 +336,21 @@ export function ensureWalletKeysInEnvAndConfig(config: ElizaConfig): boolean {
     if (missingEvm) {
       envConfig.EVM_PRIVATE_KEY = walletKeys.evmPrivateKey;
       process.env.EVM_PRIVATE_KEY = walletKeys.evmPrivateKey;
-      logger.info(`[eliza-api] Generated EVM wallet: ${walletKeys.evmAddress}`);
+      logger.info(`[tokagent-api] Generated EVM wallet: ${walletKeys.evmAddress}`);
     }
 
     if (missingSolana) {
       envConfig.SOLANA_PRIVATE_KEY = walletKeys.solanaPrivateKey;
       setSolanaWalletEnv(walletKeys.solanaPrivateKey);
       logger.info(
-        `[eliza-api] Generated Solana wallet: ${walletKeys.solanaAddress}`,
+        `[tokagent-api] Generated Solana wallet: ${walletKeys.solanaAddress}`,
       );
     }
 
     return true;
   } catch (err) {
     logger.warn(
-      `[eliza-api] Failed to generate wallet keys: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent-api] Failed to generate wallet keys: ${err instanceof Error ? err.message : String(err)}`,
     );
     return false;
   }
@@ -361,10 +361,10 @@ export function ensureWalletKeysInEnvAndConfig(config: ElizaConfig): boolean {
 // ---------------------------------------------------------------------------
 
 const RESET_STATE_ALLOWED_SEGMENTS = new Set([
-  ".eliza",
-  "eliza",
-  ".eliza",
-  "eliza",
+  ".tokagent",
+  "tokagent",
+  ".tokagent",
+  "tokagent",
 ]);
 
 function hasAllowedResetSegment(resolvedState: string): boolean {

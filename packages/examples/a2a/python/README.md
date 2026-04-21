@@ -1,6 +1,6 @@
-# elizaOS A2A Agent Server - Python
+# tokagentOS A2A Agent Server - Python
 
-An HTTP server that exposes an elizaOS agent for agent-to-agent communication using Python and FastAPI.
+An HTTP server that exposes an tokagentOS agent for agent-to-agent communication using Python and FastAPI.
 
 ## Requirements
 
@@ -15,7 +15,7 @@ python -m venv venv
 source venv/bin/activate
 pip install -e packages/python
 pip install -e plugins/plugin-openai/python
-pip install -e plugins/plugin-eliza-classic/python
+pip install -e plugins/plugin-tokagent-classic/python
 pip install -e plugins/plugin-inmemorydb/python
 pip install -r examples/a2a/python/requirements.txt
 
@@ -82,4 +82,4 @@ Stream a response from the agent (Server-Sent Events).
 - `OPENAI_API_KEY` - OpenAI API key (optional)
 - `OPENAI_BASE_URL` - Custom OpenAI endpoint
 
-When `OPENAI_API_KEY` is not set, the server uses `elizaos-plugin-inmemorydb` (ephemeral) + `elizaos-plugin-eliza-classic` so it can run deterministically without external services.
+When `OPENAI_API_KEY` is not set, the server uses `tokagentos-plugin-inmemorydb` (ephemeral) + `tokagentos-plugin-tokagent-classic` so it can run deterministically without external services.

@@ -1,8 +1,8 @@
 /**
  * Proto-generated Types
  *
- * This module provides the proto-generated types for elizaOS.
- * Types are generated from /packages/@schemas/eliza/v1/*.proto using @bufbuild/protoc-gen-es
+ * This module provides the proto-generated types for tokagentOS.
+ * Types are generated from /packages/@schemas/tokagent/v1/*.proto using @bufbuild/protoc-gen-es
  *
  * ## Type Structure
  *
@@ -14,7 +14,7 @@
  * 3. **Dynamic properties**: Use `google.protobuf.Struct` (JsonObject)
  *    - Access via `.data` field on Content, State, etc.
  *
- * @module @elizaos/core/types/proto
+ * @module @tokagentos/core/types/proto
  */
 
 import type {
@@ -22,27 +22,27 @@ import type {
 	JsonValue as BufJsonValue,
 } from "@bufbuild/protobuf";
 
-export * from "./generated/eliza/v1/agent_pb.js";
-export * from "./generated/eliza/v1/components_pb.js";
-export * from "./generated/eliza/v1/database_pb.js";
-export * from "./generated/eliza/v1/environment_pb.js";
-export * from "./generated/eliza/v1/events_pb.js";
-export * from "./generated/eliza/v1/ipc_pb.js";
-export * from "./generated/eliza/v1/knowledge_pb.js";
-export * from "./generated/eliza/v1/memory_pb.js";
-export * from "./generated/eliza/v1/message_service_pb.js";
-export * from "./generated/eliza/v1/messaging_pb.js";
-export * from "./generated/eliza/v1/model_pb.js";
-export * from "./generated/eliza/v1/plugin_pb.js";
-export * from "./generated/eliza/v1/primitives_pb.js";
-export * from "./generated/eliza/v1/prompts_pb.js";
-export * from "./generated/eliza/v1/service_interfaces_pb.js";
-export * from "./generated/eliza/v1/service_pb.js";
-export * from "./generated/eliza/v1/settings_pb.js";
-export * from "./generated/eliza/v1/state_pb.js";
-export * from "./generated/eliza/v1/task_pb.js";
-export * from "./generated/eliza/v1/tee_pb.js";
-export * from "./generated/eliza/v1/testing_pb.js";
+export * from "./generated/tokagent/v1/agent_pb.js";
+export * from "./generated/tokagent/v1/components_pb.js";
+export * from "./generated/tokagent/v1/database_pb.js";
+export * from "./generated/tokagent/v1/environment_pb.js";
+export * from "./generated/tokagent/v1/events_pb.js";
+export * from "./generated/tokagent/v1/ipc_pb.js";
+export * from "./generated/tokagent/v1/knowledge_pb.js";
+export * from "./generated/tokagent/v1/memory_pb.js";
+export * from "./generated/tokagent/v1/message_service_pb.js";
+export * from "./generated/tokagent/v1/messaging_pb.js";
+export * from "./generated/tokagent/v1/model_pb.js";
+export * from "./generated/tokagent/v1/plugin_pb.js";
+export * from "./generated/tokagent/v1/primitives_pb.js";
+export * from "./generated/tokagent/v1/prompts_pb.js";
+export * from "./generated/tokagent/v1/service_interfaces_pb.js";
+export * from "./generated/tokagent/v1/service_pb.js";
+export * from "./generated/tokagent/v1/settings_pb.js";
+export * from "./generated/tokagent/v1/state_pb.js";
+export * from "./generated/tokagent/v1/task_pb.js";
+export * from "./generated/tokagent/v1/tee_pb.js";
+export * from "./generated/tokagent/v1/testing_pb.js";
 
 /**
  * Type alias for JSON-serializable object (used for dynamic properties)

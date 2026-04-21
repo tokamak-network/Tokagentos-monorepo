@@ -1,10 +1,10 @@
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 
 export function createAppDefenseOfTheAgentsPlugin(): Plugin {
   return {
     name: "@elizaos/app-defense-of-the-agents",
     description:
-      "Defense of the Agents app wrapper for Eliza. Serves a Eliza spectator shell and routes session commands to the live game API.",
+      "Defense of the Agents app wrapper for Tokagent. Serves a Tokagent spectator shell and routes session commands to the live game API.",
     app: {
       displayName: "Defense of the Agents",
       category: "game",

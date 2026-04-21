@@ -7,8 +7,8 @@ import type {
   BscTradeQuoteResponse,
   BscTradeTxStatusResponse,
   StewardPolicyResult,
-} from "@elizaos/shared/contracts/wallet";
-import { Button, Input } from "@elizaos/ui";
+} from "@tokagentos/shared/contracts/wallet";
+import { Button, Input } from "@tokagentos/ui";
 import { useCallback, useState } from "react";
 import { useApp } from "../../state/useApp";
 import { formatBalance, HEX_ADDRESS_RE, type TrackedToken } from "./constants";

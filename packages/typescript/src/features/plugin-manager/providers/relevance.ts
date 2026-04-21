@@ -9,7 +9,7 @@ import {
  * Read the recent-messages memory array that `recentMessagesProvider` writes
  * into `state.data.providers.RECENT_MESSAGES.data.recentMessages`.
  *
- * Inlined from @elizaos/shared to avoid a cross-package type import that
+ * Inlined from @tokagentos/shared to avoid a cross-package type import that
  * breaks tsc declaration emit (rootDir constraint).
  */
 function getRecentMessagesData(state: State | undefined): Memory[] {
@@ -21,8 +21,8 @@ function getRecentMessagesData(state: State | undefined): Memory[] {
 const IGNORED_PLUGIN_NAME_TOKENS = new Set([
 	"app",
 	"core",
-	"eliza",
-	"elizaos",
+	"tokagent",
+	"tokagentos",
 	"manager",
 	"plugin",
 	"plugins",

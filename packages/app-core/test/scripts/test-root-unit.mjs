@@ -15,24 +15,24 @@ const unitEnv = buildTestEnv(repoRoot);
 const unitShards = [
   {
     label: "unit:agent-src",
-    patterns: ["eliza/packages/agent/src"],
+    patterns: ["tokagent/packages/agent/src"],
   },
   {
     label: "unit:agent-tests",
-    patterns: ["eliza/packages/agent/test"],
+    patterns: ["tokagent/packages/agent/test"],
   },
   {
     label: "unit:app-core",
-    patterns: ["eliza/packages/app-core/src", "eliza/packages/shared/src"],
+    patterns: ["tokagent/packages/app-core/src", "tokagent/packages/shared/src"],
   },
   {
     label: "unit:plugins",
     patterns: [
-      "eliza/packages/agent/src/runtime/roles/test",
-      "eliza/apps/app-lifeops/src/selfcontrol",
+      "tokagent/packages/agent/src/runtime/roles/test",
+      "tokagent/apps/app-lifeops/src/selfcontrol",
       "packages/plugin-wechat/src",
-      "eliza/plugins/plugin-music-player/src",
-      "eliza/plugins/plugin-discord/typescript/__tests__/identity.test.ts",
+      "tokagent/plugins/plugin-music-player/src",
+      "tokagent/plugins/plugin-discord/typescript/__tests__/identity.test.ts",
     ],
   },
   {
@@ -40,7 +40,7 @@ const unitShards = [
     patterns: [
       "src",
       "scripts",
-      "eliza/packages/app-core/platforms/electrobun/src",
+      "tokagent/packages/app-core/platforms/electrobun/src",
       "apps/chrome-extension",
       "test/format-error.test.ts",
     ],

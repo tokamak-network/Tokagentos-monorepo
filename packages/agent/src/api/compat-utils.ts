@@ -1,4 +1,4 @@
-import { asRecord } from "@elizaos/shared/type-guards";
+import { asRecord } from "@tokagentos/shared/type-guards";
 
 function readString(value: unknown): string {
   return typeof value === "string" ? value : "";

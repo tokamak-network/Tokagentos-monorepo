@@ -3,11 +3,11 @@ name: Rust Release
 # Publish Rust crates to crates.io on release
 # 
 # Publishing Order:
-#   1. elizaos (core library) - must publish first
-#   2. Plugins with elizaos dependency (after elizaos is indexed):
-#      - elizaos-plugin-sql, elizaos-plugin-openai, elizaos-plugin-goals,
-#        elizaos-plugin-localdb, elizaos-plugin-todo, elizaos-plugin-xai,
-#        elizaos-plugin-discord
+#   1. tokagentos (core library) - must publish first
+#   2. Plugins with tokagentos dependency (after tokagentos is indexed):
+#      - tokagentos-plugin-sql, tokagentos-plugin-openai, tokagentos-plugin-goals,
+#        tokagentos-plugin-localdb, tokagentos-plugin-todo, tokagentos-plugin-xai,
+#        tokagentos-plugin-discord
 #   4. All other plugins (45 total) - independent, publish in parallel
 
 on:
@@ -21,53 +21,53 @@ on:
         type: choice
         options:
           - all
-          - elizaos
-          # Plugins with elizaos dependency
-          - elizaos-plugin-sql
-          - elizaos-plugin-openai
-          - elizaos-plugin-goals
-          - elizaos-plugin-localdb
-          - elizaos-plugin-todo
-          - elizaos-plugin-xai
-          - elizaos-plugin-discord
+          - tokagentos
+          # Plugins with tokagentos dependency
+          - tokagentos-plugin-sql
+          - tokagentos-plugin-openai
+          - tokagentos-plugin-goals
+          - tokagentos-plugin-localdb
+          - tokagentos-plugin-todo
+          - tokagentos-plugin-xai
+          - tokagentos-plugin-discord
           # Independent plugins
-          - elizaos-plugin-agent-orchestrator
-          - elizaos-plugin-anthropic
-          - elizaos-plugin-bluesky
-          - elizaos-plugin-browser
-          - elizaos-plugin-code
-          - elizaos-plugin-computeruse
-          - elizaos-plugin-elevenlabs
-          - elizaos-plugin-eliza-classic
-          - elizaos-plugin-evm
-          - elizaos-plugin-experience
-          - elizaos-plugin-farcaster
-          - elizaos-plugin-github
-          - elizaos-plugin-google-genai
-          - elizaos-plugin-groq
-          - elizaos-plugin-inmemorydb
-          - elizaos-plugin-instagram
-          - elizaos-plugin-knowledge
-          - elizaos-plugin-linear
-          - elizaos-plugin-local-ai
-          - elizaos-plugin-mcp
-          - elizaos-plugin-minecraft
-          - elizaos-plugin-n8n
-          - elizaos-plugin-ollama
-          - elizaos-plugin-openrouter
-          - elizaos-plugin-pdf
-          - elizaos-plugin-polymarket
-          - elizaos-plugin-roblox
-          - elizaos-plugin-rss
-          - elizaos-plugin-s3-storage
-          - elizaos-plugin-shell
-          - elizaos-plugin-simple-voice
-          - elizaos-plugin-solana
-          - elizaos-plugin-tee
-          - elizaos-plugin-telegram
-          - elizaos-plugin-trajectory-logger
-          - elizaos-plugin-vercel-ai-gateway
-          - elizaos-plugin-vision
+          - tokagentos-plugin-agent-orchestrator
+          - tokagentos-plugin-anthropic
+          - tokagentos-plugin-bluesky
+          - tokagentos-plugin-browser
+          - tokagentos-plugin-code
+          - tokagentos-plugin-computeruse
+          - tokagentos-plugin-elevenlabs
+          - tokagentos-plugin-tokagent-classic
+          - tokagentos-plugin-evm
+          - tokagentos-plugin-experience
+          - tokagentos-plugin-farcaster
+          - tokagentos-plugin-github
+          - tokagentos-plugin-google-genai
+          - tokagentos-plugin-groq
+          - tokagentos-plugin-inmemorydb
+          - tokagentos-plugin-instagram
+          - tokagentos-plugin-knowledge
+          - tokagentos-plugin-linear
+          - tokagentos-plugin-local-ai
+          - tokagentos-plugin-mcp
+          - tokagentos-plugin-minecraft
+          - tokagentos-plugin-n8n
+          - tokagentos-plugin-ollama
+          - tokagentos-plugin-openrouter
+          - tokagentos-plugin-pdf
+          - tokagentos-plugin-polymarket
+          - tokagentos-plugin-roblox
+          - tokagentos-plugin-rss
+          - tokagentos-plugin-s3-storage
+          - tokagentos-plugin-shell
+          - tokagentos-plugin-simple-voice
+          - tokagentos-plugin-solana
+          - tokagentos-plugin-tee
+          - tokagentos-plugin-telegram
+          - tokagentos-plugin-trajectory-logger
+          - tokagentos-plugin-vercel-ai-gateway
+          - tokagentos-plugin-vision
       dry_run:
         description: "Dry run (do not publish)"
         required: false
@@ -81,7 +81,7 @@ env:
 
 jobs:
   # ============================================
-  # Build and publish elizaos-core first
+  # Build and publish tokagentos-core first
   # ============================================
   build-core:
     runs-on: ubuntu-latest
@@ -96,7 +96,7 @@ jobs:
         id: check
         run: |
           CRATE="${{ github.event.inputs.crate || 'all' }}"
-          if [[ "$CRATE" == "all" ]] || [[ "$CRATE" == "elizaos" ]]; then
+          if [[ "$CRATE" == "all" ]] || [[ "$CRATE" == "tokagentos" ]]; then
             echo "should_publish=true" >> $GITHUB_OUTPUT
           else
             echo "should_publish=false" >> $GITHUB_OUTPUT
@@ -143,7 +143,7 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" Cargo.toml
-          echo "Updated elizaos version to ${VERSION}"
+          echo "Updated tokagentos version to ${VERSION}"
 
       - name: Check formatting
         if: steps.check.outputs.should_publish == 'true'
@@ -182,14 +182,14 @@ jobs:
         working-directory: packages/rust
         run: |
           mkdir -p artifacts
-          tar -czvf artifacts/elizaos-wasm-web.tar.gz -C pkg/web .
-          tar -czvf artifacts/elizaos-wasm-node.tar.gz -C pkg/node .
+          tar -czvf artifacts/tokagentos-wasm-web.tar.gz -C pkg/web .
+          tar -czvf artifacts/tokagentos-wasm-node.tar.gz -C pkg/node .
 
       - name: Upload WASM artifacts
         if: steps.check.outputs.should_publish == 'true'
         uses: actions/upload-artifact@v7
         with:
-          name: elizaos-wasm
+          name: tokagentos-wasm
           path: packages/rust/artifacts/
           retention-days: 7
 
@@ -198,8 +198,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           files: |
-            packages/rust/artifacts/elizaos-wasm-web.tar.gz
-            packages/rust/artifacts/elizaos-wasm-node.tar.gz
+            packages/rust/artifacts/tokagentos-wasm-web.tar.gz
+            packages/rust/artifacts/tokagentos-wasm-node.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -218,9 +218,9 @@ jobs:
       - name: Summary
         if: steps.check.outputs.should_publish == 'true'
         run: |
-          echo "# elizaos Release" >> $GITHUB_STEP_SUMMARY
+          echo "# tokagentos Release" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Crate**: elizaos" >> $GITHUB_STEP_SUMMARY
+          echo "- **Crate**: tokagentos" >> $GITHUB_STEP_SUMMARY
           if [[ "${{ github.event_name }}" == "release" ]]; then
             echo "- **Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           fi
@@ -228,16 +228,16 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Install" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "cargo add elizaos" >> $GITHUB_STEP_SUMMARY
+          echo "cargo add tokagentos" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## WASM Artifacts" >> $GITHUB_STEP_SUMMARY
-          echo "- elizaos-wasm-web.tar.gz (browser/bundler)" >> $GITHUB_STEP_SUMMARY
-          echo "- elizaos-wasm-node.tar.gz (Node.js)" >> $GITHUB_STEP_SUMMARY
+          echo "- tokagentos-wasm-web.tar.gz (browser/bundler)" >> $GITHUB_STEP_SUMMARY
+          echo "- tokagentos-wasm-node.tar.gz (Node.js)" >> $GITHUB_STEP_SUMMARY
 
   # ============================================
-  # Build and publish elizaos-plugin-sql (with WASM)
-  # Has elizaos dependency
+  # Build and publish tokagentos-plugin-sql (with WASM)
+  # Has tokagentos dependency
   # ============================================
   build-plugin-sql:
     runs-on: ubuntu-latest
@@ -249,7 +249,7 @@ jobs:
         id: check
         run: |
           CRATE="${{ github.event.inputs.crate || 'all' }}"
-          if [[ "$CRATE" == "all" ]] || [[ "$CRATE" == "elizaos-plugin-sql" ]]; then
+          if [[ "$CRATE" == "all" ]] || [[ "$CRATE" == "tokagentos-plugin-sql" ]]; then
             echo "should_publish=true" >> $GITHUB_OUTPUT
           else
             echo "should_publish=false" >> $GITHUB_OUTPUT
@@ -282,10 +282,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-plugin-sql-
 
-      - name: Wait for crates.io to index elizaos
+      - name: Wait for crates.io to index tokagentos
         if: steps.check.outputs.should_publish == 'true' && needs.build-core.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
         run: |
-          echo "Waiting 120 seconds for crates.io to index elizaos..."
+          echo "Waiting 120 seconds for crates.io to index tokagentos..."
           sleep 120
 
       - name: Extract version from release tag
@@ -302,9 +302,9 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" Cargo.toml
-          # Update the elizaos dependency to use the published version
-          sed -i "s|elizaos = { version = \"[^\"]*\", path = \"[^\"]*\"[^}]*}|elizaos = \"${VERSION}\"|" Cargo.toml
-          echo "Updated elizaos-plugin-sql version to ${VERSION}"
+          # Update the tokagentos dependency to use the published version
+          sed -i "s|tokagentos = { version = \"[^\"]*\", path = \"[^\"]*\"[^}]*}|tokagentos = \"${VERSION}\"|" Cargo.toml
+          echo "Updated tokagentos-plugin-sql version to ${VERSION}"
 
       - name: Check formatting
         if: steps.check.outputs.should_publish == 'true'
@@ -343,14 +343,14 @@ jobs:
         working-directory: plugins/plugin-sql/rust
         run: |
           mkdir -p artifacts
-          tar -czvf artifacts/elizaos-plugin-sql-wasm-web.tar.gz -C pkg/web .
-          tar -czvf artifacts/elizaos-plugin-sql-wasm-node.tar.gz -C pkg/node .
+          tar -czvf artifacts/tokagentos-plugin-sql-wasm-web.tar.gz -C pkg/web .
+          tar -czvf artifacts/tokagentos-plugin-sql-wasm-node.tar.gz -C pkg/node .
 
       - name: Upload WASM artifacts
         if: steps.check.outputs.should_publish == 'true'
         uses: actions/upload-artifact@v7
         with:
-          name: elizaos-plugin-sql-wasm
+          name: tokagentos-plugin-sql-wasm
           path: plugins/plugin-sql/rust/artifacts/
           retention-days: 7
 
@@ -359,8 +359,8 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           files: |
-            plugins/plugin-sql/rust/artifacts/elizaos-plugin-sql-wasm-web.tar.gz
-            plugins/plugin-sql/rust/artifacts/elizaos-plugin-sql-wasm-node.tar.gz
+            plugins/plugin-sql/rust/artifacts/tokagentos-plugin-sql-wasm-web.tar.gz
+            plugins/plugin-sql/rust/artifacts/tokagentos-plugin-sql-wasm-node.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -379,17 +379,17 @@ jobs:
       - name: Summary
         if: steps.check.outputs.should_publish == 'true'
         run: |
-          echo "# elizaos-plugin-sql Release" >> $GITHUB_STEP_SUMMARY
+          echo "# tokagentos-plugin-sql Release" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Crate**: elizaos-plugin-sql" >> $GITHUB_STEP_SUMMARY
+          echo "- **Crate**: tokagentos-plugin-sql" >> $GITHUB_STEP_SUMMARY
           if [[ "${{ github.event_name }}" == "release" ]]; then
             echo "- **Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           fi
           echo "- **Published**: ${{ github.event.inputs.dry_run != 'true' }}" >> $GITHUB_STEP_SUMMARY
 
   # ============================================
-  # Build and publish plugins WITH elizaos dependency
-  # These must wait for elizaos to be indexed on crates.io
+  # Build and publish plugins WITH tokagentos dependency
+  # These must wait for tokagentos to be indexed on crates.io
   # ============================================
   build-dependent-plugins:
     runs-on: ubuntu-latest
@@ -400,17 +400,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: elizaos-plugin-openai
+          - name: tokagentos-plugin-openai
             path: plugins/plugin-openai/rust
-          - name: elizaos-plugin-goals
+          - name: tokagentos-plugin-goals
             path: plugins/plugin-goals/rust
-          - name: elizaos-plugin-localdb
+          - name: tokagentos-plugin-localdb
             path: plugins/plugin-localdb/rust
-          - name: elizaos-plugin-todo
+          - name: tokagentos-plugin-todo
             path: plugins/plugin-todo/rust
-          - name: elizaos-plugin-xai
+          - name: tokagentos-plugin-xai
             path: plugins/plugin-xai/rust
-          - name: elizaos-plugin-discord
+          - name: tokagentos-plugin-discord
             path: plugins/plugin-discord/rust
 
     steps:
@@ -447,10 +447,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-${{ matrix.name }}-
 
-      - name: Wait for crates.io to index elizaos
+      - name: Wait for crates.io to index tokagentos
         if: steps.check.outputs.should_publish == 'true' && needs.build-core.outputs.should_publish == 'true' && github.event.inputs.dry_run != 'true'
         run: |
-          echo "Waiting 120 seconds for crates.io to index elizaos..."
+          echo "Waiting 120 seconds for crates.io to index tokagentos..."
           sleep 120
 
       - name: Extract version from release tag
@@ -467,9 +467,9 @@ jobs:
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           sed -i "s/^version = \".*\"/version = \"${VERSION}\"/" Cargo.toml
-          # Update elizaos dependency to use published version (handles various formats)
-          sed -i "s|elizaos = { version = \"[^\"]*\", path = \"[^\"]*\"[^}]*}|elizaos = \"${VERSION}\"|" Cargo.toml
-          sed -i "s|elizaos = { path = \"[^\"]*\"[^}]*}|elizaos = \"${VERSION}\"|" Cargo.toml
+          # Update tokagentos dependency to use published version (handles various formats)
+          sed -i "s|tokagentos = { version = \"[^\"]*\", path = \"[^\"]*\"[^}]*}|tokagentos = \"${VERSION}\"|" Cargo.toml
+          sed -i "s|tokagentos = { path = \"[^\"]*\"[^}]*}|tokagentos = \"${VERSION}\"|" Cargo.toml
           echo "Updated ${{ matrix.name }} version to ${VERSION}"
 
       - name: Check formatting
@@ -511,7 +511,7 @@ jobs:
           echo "- **Published**: ${{ github.event.inputs.dry_run != 'true' }}" >> $GITHUB_STEP_SUMMARY
 
   # ============================================
-  # Build and publish plugins WITHOUT elizaos dependency
+  # Build and publish plugins WITHOUT tokagentos dependency
   # These can run in parallel, no waiting required
   # ============================================
   build-independent-plugins:
@@ -523,79 +523,79 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: elizaos-plugin-agent-orchestrator
+          - name: tokagentos-plugin-agent-orchestrator
             path: plugins/plugin-agent-orchestrator/rust
-          - name: elizaos-plugin-anthropic
+          - name: tokagentos-plugin-anthropic
             path: plugins/plugin-anthropic/rust
-          - name: elizaos-plugin-bluesky
+          - name: tokagentos-plugin-bluesky
             path: plugins/plugin-bluesky/rust
-          - name: elizaos-plugin-browser
+          - name: tokagentos-plugin-browser
             path: plugins/plugin-browser/rust
-          - name: elizaos-plugin-code
+          - name: tokagentos-plugin-code
             path: plugins/plugin-code/rust
-          - name: elizaos-plugin-computeruse
+          - name: tokagentos-plugin-computeruse
             path: plugins/plugin-computeruse/rust
-          - name: elizaos-plugin-elevenlabs
+          - name: tokagentos-plugin-elevenlabs
             path: plugins/plugin-elevenlabs/rust
-          - name: elizaos-plugin-eliza-classic
-            path: plugins/plugin-eliza-classic/rust
-          - name: elizaos-plugin-evm
+          - name: tokagentos-plugin-tokagent-classic
+            path: plugins/plugin-tokagent-classic/rust
+          - name: tokagentos-plugin-evm
             path: plugins/plugin-evm/rust
-          - name: elizaos-plugin-experience
+          - name: tokagentos-plugin-experience
             path: plugins/plugin-experience/rust
-          - name: elizaos-plugin-farcaster
+          - name: tokagentos-plugin-farcaster
             path: plugins/plugin-farcaster/rust
-          - name: elizaos-plugin-github
+          - name: tokagentos-plugin-github
             path: plugins/plugin-github/rust
-          - name: elizaos-plugin-google-genai
+          - name: tokagentos-plugin-google-genai
             path: plugins/plugin-google-genai/rust
-          - name: elizaos-plugin-groq
+          - name: tokagentos-plugin-groq
             path: plugins/plugin-groq/rust
-          - name: elizaos-plugin-inmemorydb
+          - name: tokagentos-plugin-inmemorydb
             path: plugins/plugin-inmemorydb/rust
-          - name: elizaos-plugin-instagram
+          - name: tokagentos-plugin-instagram
             path: plugins/plugin-instagram/rust
-          - name: elizaos-plugin-knowledge
+          - name: tokagentos-plugin-knowledge
             path: plugins/plugin-knowledge/rust
-          - name: elizaos-plugin-linear
+          - name: tokagentos-plugin-linear
             path: plugins/plugin-linear/rust
-          - name: elizaos-plugin-local-ai
+          - name: tokagentos-plugin-local-ai
             path: plugins/plugin-local-ai/rust
-          - name: elizaos-plugin-mcp
+          - name: tokagentos-plugin-mcp
             path: plugins/plugin-mcp/rust
-          - name: elizaos-plugin-minecraft
+          - name: tokagentos-plugin-minecraft
             path: plugins/plugin-minecraft/rust
-          - name: elizaos-plugin-n8n
+          - name: tokagentos-plugin-n8n
             path: plugins/plugin-n8n/rust
-          - name: elizaos-plugin-ollama
+          - name: tokagentos-plugin-ollama
             path: plugins/plugin-ollama/rust
-          - name: elizaos-plugin-openrouter
+          - name: tokagentos-plugin-openrouter
             path: plugins/plugin-openrouter/rust
-          - name: elizaos-plugin-pdf
+          - name: tokagentos-plugin-pdf
             path: plugins/plugin-pdf/rust
-          - name: elizaos-plugin-polymarket
+          - name: tokagentos-plugin-polymarket
             path: plugins/plugin-polymarket/rust
-          - name: elizaos-plugin-roblox
+          - name: tokagentos-plugin-roblox
             path: plugins/plugin-roblox/rust
-          - name: elizaos-plugin-rss
+          - name: tokagentos-plugin-rss
             path: plugins/plugin-rss/rust
-          - name: elizaos-plugin-s3-storage
+          - name: tokagentos-plugin-s3-storage
             path: plugins/plugin-s3-storage/rust
-          - name: elizaos-plugin-shell
+          - name: tokagentos-plugin-shell
             path: plugins/plugin-shell/rust
-          - name: elizaos-plugin-simple-voice
+          - name: tokagentos-plugin-simple-voice
             path: plugins/plugin-simple-voice/rust
-          - name: elizaos-plugin-solana
+          - name: tokagentos-plugin-solana
             path: plugins/plugin-solana/rust
-          - name: elizaos-plugin-tee
+          - name: tokagentos-plugin-tee
             path: plugins/plugin-tee/rust
-          - name: elizaos-plugin-telegram
+          - name: tokagentos-plugin-telegram
             path: plugins/plugin-telegram/rust
-          - name: elizaos-plugin-trajectory-logger
+          - name: tokagentos-plugin-trajectory-logger
             path: plugins/plugin-trajectory-logger/rust
-          - name: elizaos-plugin-vercel-ai-gateway
+          - name: tokagentos-plugin-vercel-ai-gateway
             path: plugins/plugin-vercel-ai-gateway/rust
-          - name: elizaos-plugin-vision
+          - name: tokagentos-plugin-vision
             path: plugins/plugin-vision/rust
 
     steps:
@@ -702,17 +702,17 @@ jobs:
           echo "## Core Packages" >> $GITHUB_STEP_SUMMARY
           echo "| Crate | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| elizaos | ${{ needs.build-core.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| tokagentos | ${{ needs.build-core.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Plugins" >> $GITHUB_STEP_SUMMARY
           echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
           echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| elizaos-plugin-sql | ${{ needs.build-plugin-sql.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| tokagentos-plugin-sql | ${{ needs.build-plugin-sql.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Dependent Plugins (6) | ${{ needs.build-dependent-plugins.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Independent Plugins (38) | ${{ needs.build-independent-plugins.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Total Crates Published" >> $GITHUB_STEP_SUMMARY
           echo "- **Core packages**: 1" >> $GITHUB_STEP_SUMMARY
-          echo "- **Plugins with elizaos dep**: 7" >> $GITHUB_STEP_SUMMARY
+          echo "- **Plugins with tokagentos dep**: 7" >> $GITHUB_STEP_SUMMARY
           echo "- **Independent plugins**: 38" >> $GITHUB_STEP_SUMMARY
           echo "- **Total**: 46" >> $GITHUB_STEP_SUMMARY

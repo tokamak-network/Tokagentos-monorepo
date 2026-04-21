@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test client for elizaOS Vercel Edge Functions
+Test client for tokagentOS Vercel Edge Functions
 
 Usage:
     python3 test-client.py                                    # Test local
@@ -60,7 +60,7 @@ def api_request(base_url: str, path: str, method: str = "GET", body: dict | None
 
 def run_tests(base_url: str) -> bool:
     """Run automated tests."""
-    print("🧪 Testing elizaOS Vercel Edge Functions\n")
+    print("🧪 Testing tokagentOS Vercel Edge Functions\n")
 
     passed = 0
     failed = 0
@@ -178,7 +178,7 @@ def interactive_mode(base_url: str) -> None:
 
         if status == 200:
             conversation_id = data.get("conversationId")
-            print(f"\nEliza: {data.get('response', 'No response')}\n")
+            print(f"\nTokagent: {data.get('response', 'No response')}\n")
         else:
             print(f"\n❌ Error: {data.get('error', 'Unknown error')}\n")
 
@@ -186,7 +186,7 @@ def interactive_mode(base_url: str) -> None:
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="elizaOS Vercel Edge Function Test Client"
+        description="tokagentOS Vercel Edge Function Test Client"
     )
     parser.add_argument(
         "-e", "--endpoint",

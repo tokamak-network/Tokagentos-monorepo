@@ -1,5 +1,5 @@
 /**
- * Test client for elizaOS MCP Server
+ * Test client for tokagentOS MCP Server
  *
  * Connects to the MCP server and tests the chat and get_agent_info tools.
  */
@@ -9,7 +9,7 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 async function main(): Promise<void> {
-  console.log("🧪 Testing elizaOS MCP Server\n");
+  console.log("🧪 Testing tokagentOS MCP Server\n");
 
   // Spawn the server process
   const serverProcess = spawn("bun", ["run", "server.ts"], {

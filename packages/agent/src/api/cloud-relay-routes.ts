@@ -3,11 +3,11 @@
  *
  * Exposes the current state of the CloudManagedGatewayRelayService
  * so the UI can show whether this local instance is registered with
- * Eliza Cloud and actively receiving routed messages.
+ * Tokagent Cloud and actively receiving routed messages.
  *
  *   GET /api/cloud/relay-status
  *
- * The relay service lives in plugin-elizacloud and registers itself
+ * The relay service lives in plugin-tokagentcloud and registers itself
  * as a runtime service named "cloud-managed-gateway-relay". We query
  * it via the runtime.getService interface to avoid a build-time dep.
  */
@@ -65,7 +65,7 @@ export async function handleCloudRelayRoute(
       available: false,
       status: "not_registered",
       reason:
-        "Gateway relay service not active. Connect to Eliza Cloud in Settings to enable instance routing.",
+        "Gateway relay service not active. Connect to Tokagent Cloud in Settings to enable instance routing.",
     });
     return true;
   }

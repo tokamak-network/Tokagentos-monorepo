@@ -1,7 +1,7 @@
 {
   "model": "claude-opus-4-20250514",
   "run_index": 0,
-  "run_id": "eliza_26-02-07_143113_322f514a",
+  "run_id": "tokagent_26-02-07_143113_322f514a",
   "start_time": "2026-02-07T14:31:13.624560",
   "environment_config": "voyager/environments/basic_env.json",
   "messages": [

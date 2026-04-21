@@ -1,4 +1,4 @@
-"""SWE-bench agent implementation using canonical ElizaOS message handling."""
+"""SWE-bench agent implementation using canonical TokagentOS message handling."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid, string_to_uuid
-from elizaos.types.memory import MemoryType, MessageMetadata
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid, string_to_uuid
+from tokagentos.types.memory import MemoryType, MessageMetadata
 
 from .providers import (
     SWEBenchActionResultsProvider,
@@ -31,7 +31,7 @@ from .types import (
 
 # Trajectory logger integration (optional)
 try:
-    from elizaos_plugin_trajectory_logger import (
+    from tokagentos_plugin_trajectory_logger import (
         TrajectoryLoggerService,
         ActionAttempt,
         EnvironmentState,
@@ -46,7 +46,7 @@ except ImportError:
     Trajectory = None  # type: ignore[misc, assignment]
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
+    from tokagentos.runtime import AgentRuntime
 
 logger = logging.getLogger(__name__)
 
@@ -173,7 +173,7 @@ def _parse_param_value(value: str) -> str | int | float | bool | None:
 
 
 class SWEAgent:
-    """Agent for solving SWE-bench issues using canonical ElizaOS message handling."""
+    """Agent for solving SWE-bench issues using canonical TokagentOS message handling."""
 
     def __init__(
         self,
@@ -196,7 +196,7 @@ class SWEAgent:
         self._user_id = string_to_uuid("swebench:user")
 
     async def solve_issue(self, instance: SWEBenchInstance) -> SWEBenchResult:
-        """Attempt to solve a SWE-bench issue using canonical ElizaOS flow.
+        """Attempt to solve a SWE-bench issue using canonical TokagentOS flow.
         
         This method:
         1. Sets up the repository

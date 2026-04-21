@@ -6,14 +6,14 @@ const APP_CORE_ROOT = path.resolve(import.meta.dirname, "..");
 const REPO_ROOT = path.resolve(APP_CORE_ROOT, "..", "..", "..");
 
 const releaseContractTests = [
-  "eliza/packages/app-core/scripts/asset-cdn.test.ts",
-  "eliza/packages/app-core/scripts/docker-contract.test.ts",
-  "eliza/packages/app-core/scripts/chrome-extension-release-surface.test.ts",
-  "eliza/packages/app-core/scripts/electrobun-release-workflow-drift.test.ts",
-  "eliza/packages/app-core/scripts/electrobun-test-workflow-drift.test.ts",
-  "eliza/packages/app-core/scripts/whisper-build-script-drift.test.ts",
-  "eliza/packages/app-core/scripts/release-check.test.ts",
-  "eliza/packages/app-core/scripts/static-asset-manifest.test.ts",
+  "tokagent/packages/app-core/scripts/asset-cdn.test.ts",
+  "tokagent/packages/app-core/scripts/docker-contract.test.ts",
+  "tokagent/packages/app-core/scripts/chrome-extension-release-surface.test.ts",
+  "tokagent/packages/app-core/scripts/electrobun-release-workflow-drift.test.ts",
+  "tokagent/packages/app-core/scripts/electrobun-test-workflow-drift.test.ts",
+  "tokagent/packages/app-core/scripts/whisper-build-script-drift.test.ts",
+  "tokagent/packages/app-core/scripts/release-check.test.ts",
+  "tokagent/packages/app-core/scripts/static-asset-manifest.test.ts",
 ];
 
 function run(command, args, cwd = APP_CORE_ROOT) {
@@ -36,7 +36,7 @@ run("bunx", ["vitest", "run", ...releaseContractTests], REPO_ROOT);
 run("bunx", [
   "vitest",
   "run",
-  "eliza/packages/app-core/scripts/startup-integration-script-drift.test.ts",
+  "tokagent/packages/app-core/scripts/startup-integration-script-drift.test.ts",
 ], REPO_ROOT);
 
 // tsdown and the release check both resolve repo-root-relative entries/config.

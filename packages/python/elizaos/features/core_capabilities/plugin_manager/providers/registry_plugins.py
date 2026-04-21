@@ -1,6 +1,6 @@
 """Registry plugins provider.
 
-Provides available plugins from the elizaOS registry, installed plugin
+Provides available plugins from the tokagentOS registry, installed plugin
 status, and searchable plugin knowledge to the agent context.
 
 Ported from plugin-manager/providers/registryPluginsProvider.ts.
@@ -11,7 +11,7 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 from ..relevance import (
     COMMON_CONNECTOR_KEYWORDS,
@@ -22,12 +22,12 @@ from ..relevance import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
     from ..service import PluginManagerService
     from ..services.plugin_registry_service import PluginRegistryService
 
-logger = logging.getLogger("elizaos.plugin_manager.registry_plugins")
+logger = logging.getLogger("tokagentos.plugin_manager.registry_plugins")
 
 _REGISTRY_EXTRA_KEYWORDS: list[str] = [
     "plugin registry",
@@ -161,7 +161,7 @@ async def get_registry_plugins(
 registry_plugins_provider = Provider(
     name="REGISTRY_PLUGINS",
     description=(
-        "Provides available plugins from the elizaOS registry, "
+        "Provides available plugins from the tokagentOS registry, "
         "installed plugin status, and searchable plugin knowledge"
     ),
     get=get_registry_plugins,

@@ -1,4 +1,4 @@
-//! Service interface definitions for elizaOS
+//! Service interface definitions for tokagentOS
 //!
 //! This module provides standardized service interface trait definitions that plugins implement.
 //! Each trait extends the base Service trait and defines the contract for a specific
@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use super::primitives::{Metadata, UUID};
 use super::service::Service;
 
-// Local alias to keep field names aligned with upstream docs/types while using elizaOS's UUID wrapper.
+// Local alias to keep field names aligned with upstream docs/types while using tokagentOS's UUID wrapper.
 type Uuid = UUID;
 
 // ============================================================================

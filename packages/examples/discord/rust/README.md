@@ -1,6 +1,6 @@
 # Discord Agent (Rust)
 
-A full-featured Discord AI agent written in Rust using elizaOS.
+A full-featured Discord AI agent written in Rust using tokagentOS.
 
 ## Prerequisites
 

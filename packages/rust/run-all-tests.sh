@@ -1,5 +1,5 @@
 #!/bin/bash
-# Comprehensive test runner for elizaOS Rust implementation
+# Comprehensive test runner for tokagentOS Rust implementation
 
 set -e
 
@@ -8,7 +8,7 @@ CORE_RUST="$SCRIPT_DIR"
 PLUGIN_SQL_RUST="$SCRIPT_DIR/../../plugin-sql/rust"
 
 echo "=========================================="
-echo "  elizaOS Rust Implementation Test Suite"
+echo "  tokagentOS Rust Implementation Test Suite"
 echo "=========================================="
 echo ""
 
@@ -119,8 +119,8 @@ run_python_tests() {
 }
 
 # Run all test suites
-run_rust_tests "elizaos" "$CORE_RUST"
-run_rust_tests "elizaos-plugin-sql" "$PLUGIN_SQL_RUST"
+run_rust_tests "tokagentos" "$CORE_RUST"
+run_rust_tests "tokagentos-plugin-sql" "$PLUGIN_SQL_RUST"
 run_python_tests
 
 # Summary

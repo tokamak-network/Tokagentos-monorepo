@@ -19,7 +19,7 @@
  */
 
 import crypto from "node:crypto";
-import type { AgentRuntime, Memory, State, UUID } from "@elizaos/core";
+import type { AgentRuntime, Memory, State, UUID } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createRealTestRuntime } from "../../../../test/helpers/real-runtime";
 import { appLifeOpsPlugin } from "../src/plugin.js";

@@ -2,9 +2,9 @@ import { execFile } from "node:child_process";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { promisify } from "node:util";
-import { resolveStateDir } from "@elizaos/agent/config/paths";
-import { getPluginInfo } from "@elizaos/agent/services/registry-client";
-import { logger } from "@elizaos/core";
+import { resolveStateDir } from "@tokagentos/agent/config/paths";
+import { getPluginInfo } from "@tokagentos/agent/services/registry-client";
+import { logger } from "@tokagentos/core";
 import { createSerialise } from "../utils/serialise";
 import {
   assertValidGitUrl,
@@ -17,7 +17,7 @@ import {
 } from "./plugin-installer";
 
 const execFileAsync = promisify(execFile);
-const UPSTREAM_SCHEMA = "eliza-upstream-v1";
+const UPSTREAM_SCHEMA = "tokagent-upstream-v1";
 
 function isSupportedUpstreamSchema(value: string): boolean {
   return value === UPSTREAM_SCHEMA;

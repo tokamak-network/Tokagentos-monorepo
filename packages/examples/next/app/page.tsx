@@ -60,12 +60,12 @@ export default function Home() {
         const statusEl = document.getElementById("status-text");
         if (statusEl) {
           statusEl.textContent =
-            data.mode === "elizaos" ? "elizaOS" : "Classic";
+            data.mode === "tokagentos" ? "tokagentOS" : "Classic";
         }
         const welcomeMsg =
-          data.mode === "elizaos"
-            ? "Hello! I'm Eliza, powered by elizaOS. How can I help you today?"
-            : "Hello! I'm Eliza (classic mode). For LLM responses, set POSTGRES_URL or run `elizaos start`.";
+          data.mode === "tokagentos"
+            ? "Hello! I'm Tokagent, powered by tokagentOS. How can I help you today?"
+            : "Hello! I'm Tokagent (classic mode). For LLM responses, set POSTGRES_URL or run `tokagentos start`.";
         setMessages([
           {
             id: "welcome",
@@ -177,8 +177,8 @@ export default function Home() {
           <div className={styles.logo}>
             <div className={styles.logoIcon}>E</div>
             <div className={styles.logoText}>
-              <h1>ELIZA</h1>
-              <span>elizaOS Next.js Demo</span>
+              <h1>TOKAGENT</h1>
+              <span>tokagentOS Next.js Demo</span>
             </div>
           </div>
           <div className={styles.status}>
@@ -206,7 +206,7 @@ export default function Home() {
               <div className={styles.messageContent}>
                 <div className={styles.messageMeta}>
                   <span className={styles.messageRole}>
-                    {message.role === "assistant" ? "Eliza" : "You"}
+                    {message.role === "assistant" ? "Tokagent" : "You"}
                   </span>
                   <span className={styles.messageTime}>
                     {message.timestamp.toLocaleTimeString([], {
@@ -279,7 +279,7 @@ export default function Home() {
             )}
           </button>
         </form>
-        <div className={styles.footerMeta}>Powered by elizaOS AgentRuntime</div>
+        <div className={styles.footerMeta}>Powered by tokagentOS AgentRuntime</div>
       </footer>
     </div>
   );

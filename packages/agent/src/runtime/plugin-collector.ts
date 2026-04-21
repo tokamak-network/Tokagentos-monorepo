@@ -8,28 +8,28 @@
  * added each package is recorded so `resolvePlugins` (`plugin-resolver.ts`)
  * can explain optional load failures (config vs env vs feature flag).
  *
- * Extracted from eliza.ts to reduce file size.
+ * Extracted from tokagent.ts to reduce file size.
  *
  * @module plugin-collector
  */
 import {
-  type ResolvedElizaCloudTopology,
-  resolveElizaCloudTopology,
-} from "@elizaos/shared/contracts";
+  type ResolvedTokagentCloudTopology,
+  resolveTokagentCloudTopology,
+} from "@tokagentos/shared/contracts";
 import {
   hasExplicitCanonicalRuntimeConfig,
   migrateLegacyRuntimeConfig,
-} from "@elizaos/shared/contracts/onboarding";
-import type { ElizaConfig } from "../config/config.js";
+} from "@tokagentos/shared/contracts/onboarding";
+import type { TokagentConfig } from "../config/config.js";
 import { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS } from "./core-plugins.js";
 
 const OPTIONAL_CORE_PLUGIN_NAMES = new Set<string>(OPTIONAL_CORE_PLUGINS);
 
 /**
  * Agent orchestrator ships as the standalone @elizaos/plugin-agent-orchestrator package;
- * Eliza loads it via STATIC_ELIZA_PLUGINS["agent-orchestrator"].
+ * Tokagent loads it via STATIC_TOKAGENT_PLUGINS["agent-orchestrator"].
  */
-function orchestratorCompatPluginRequested(config: ElizaConfig): boolean {
+function orchestratorCompatPluginRequested(config: TokagentConfig): boolean {
   const agentEntry = config.agents?.list?.[0];
   const fromEntry = agentEntry?.agentOrchestrator;
   const fromDefaults = config.agents?.defaults?.agentOrchestrator;
@@ -39,7 +39,7 @@ function orchestratorCompatPluginRequested(config: ElizaConfig): boolean {
   if (typeof fromDefaults === "boolean") {
     return fromDefaults;
   }
-  const raw = process.env.ELIZA_AGENT_ORCHESTRATOR?.trim().toLowerCase();
+  const raw = process.env.TOKAGENT_AGENT_ORCHESTRATOR?.trim().toLowerCase();
   if (raw === "0" || raw === "false" || raw === "no") {
     return false;
   }
@@ -67,7 +67,7 @@ function isTruthyCloudEnvValue(raw: string | undefined): boolean {
   return value === "1" || value === "true" || value === "yes";
 }
 
-/** Maps Eliza channel names to plugin package names. */
+/** Maps Tokagent channel names to plugin package names. */
 export const CHANNEL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   bluebubbles: "@elizaos/plugin-bluebubbles",
   discord: "@elizaos/plugin-discord",
@@ -109,9 +109,9 @@ export const PROVIDER_PLUGIN_MAP: Readonly<Record<string, string>> = {
   AIGATEWAY_API_KEY: "@elizaos/plugin-vercel-ai-gateway",
   OLLAMA_BASE_URL: "@elizaos/plugin-ollama",
   ZAI_API_KEY: "@homunculuslabs/plugin-zai",
-  // ElizaCloud — loaded when API key is present OR cloud is explicitly enabled
-  ELIZAOS_CLOUD_API_KEY: "@elizaos/plugin-elizacloud",
-  ELIZAOS_CLOUD_ENABLED: "@elizaos/plugin-elizacloud",
+  // TokagentCloud — loaded when API key is present OR cloud is explicitly enabled
+  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-tokagentcloud",
+  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-tokagentcloud",
 };
 
 /**
@@ -134,16 +134,16 @@ export const OPTIONAL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   evm: "@elizaos/plugin-evm",
   solana: "@elizaos/plugin-solana",
   browser: "@elizaos/plugin-browser",
-  /** Eliza desktop browser workspace + Steward; package is `@elizaos/app-browser`. */
+  /** Tokagent desktop browser workspace + Steward; package is `@elizaos/app-browser`. */
   "app-browser": "@elizaos/app-browser",
   appBrowser: "@elizaos/app-browser",
-  "eliza-browser": "@elizaos/app-browser",
-  elizaBrowser: "@elizaos/app-browser",
+  "tokagent-browser": "@elizaos/app-browser",
+  tokagentBrowser: "@elizaos/app-browser",
   /** Legacy LifeOps browser entry (separate package from `@elizaos/app-lifeops`). */
   "lifeops-browser": "@elizaos/plugin-lifeops-browser",
   lifeopsBrowser: "@elizaos/plugin-lifeops-browser",
   vision: "@elizaos/plugin-vision",
-  elizacloud: "@elizaos/plugin-elizacloud",
+  tokagentcloud: "@elizaos/plugin-tokagentcloud",
   selfcontrol: "@elizaos/app-lifeops",
   cron: "@elizaos/plugin-cron",
   cua: "@elizaos/plugin-cua",
@@ -163,7 +163,7 @@ export const OPTIONAL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   "pumpfun-streaming": "@elizaos/plugin-pumpfun-streaming",
   "x-streaming": "@elizaos/plugin-x-streaming",
   // Steward wallet plugin — short ID used by auto-enable
-  "stwd-eliza-plugin": "@stwd/eliza-plugin",
+  "stwd-tokagent-plugin": "@stwd/tokagent-plugin",
 };
 
 // ---------------------------------------------------------------------------
@@ -191,30 +191,30 @@ export type PluginLoadReasons = Map<string, string>;
  * @internal Exported for testing.
  */
 export function collectPluginNames(
-  config: ElizaConfig,
+  config: TokagentConfig,
   reasons?: PluginLoadReasons,
 ): Set<string> {
   migrateLegacyRuntimeConfig(config as Record<string, unknown>);
   const shellPluginDisabled = config.features?.shellEnabled === false;
   const localEmbeddingsExplicitlyDisabled = (() => {
-    const raw = process.env.ELIZA_DISABLE_LOCAL_EMBEDDINGS;
+    const raw = process.env.TOKAGENT_DISABLE_LOCAL_EMBEDDINGS;
     if (!raw) return false;
     const normalized = raw.trim().toLowerCase();
     return normalized === "1" || normalized === "true" || normalized === "yes";
   })();
-  const cloudTopology = resolveElizaCloudTopology(
+  const cloudTopology = resolveTokagentCloudTopology(
     config as Record<string, unknown>,
   );
   const hasCanonicalRuntimeConfig = hasExplicitCanonicalRuntimeConfig(
     config as Record<string, unknown>,
   );
-  const isCloudContainer = process.env.ELIZA_CLOUD_PROVISIONED === "1";
+  const isCloudContainer = process.env.TOKAGENT_CLOUD_PROVISIONED === "1";
   const cloudExplicitlyDisabled = config.cloud?.enabled === false;
   const cloudPluginRequestedByEnv =
     !hasCanonicalRuntimeConfig &&
     !cloudExplicitlyDisabled &&
-    (Boolean(process.env.ELIZAOS_CLOUD_API_KEY?.trim()) ||
-      isTruthyCloudEnvValue(process.env.ELIZAOS_CLOUD_ENABLED));
+    (Boolean(process.env.TOKAGENTOS_CLOUD_API_KEY?.trim()) ||
+      isTruthyCloudEnvValue(process.env.TOKAGENTOS_CLOUD_ENABLED));
   const cloudEffectivelyEnabled =
     resolveCloudPluginRequirement(cloudTopology, cloudPluginRequestedByEnv) ||
     isCloudContainer;
@@ -222,10 +222,10 @@ export function collectPluginNames(
   // provider plugins for model calls.  Cloud containers that go through the
   // steward proxy (OPENAI_BASE_URL → host.docker.internal) need plugin-openai
   // to stay loaded, so only claim inference when the topology explicitly says
-  // so OR the container has a direct cloud API key for elizacloud inference.
+  // so OR the container has a direct cloud API key for tokagentcloud inference.
   const cloudHandlesInference =
     cloudTopology.services.inference ||
-    (isCloudContainer && Boolean(process.env.ELIZAOS_CLOUD_API_KEY?.trim()));
+    (isCloudContainer && Boolean(process.env.TOKAGENTOS_CLOUD_API_KEY?.trim()));
   const _configEnv = config.env as
     | (Record<string, unknown> & { vars?: Record<string, unknown> })
     | undefined;
@@ -321,8 +321,8 @@ export function collectPluginNames(
   // Model-provider plugins — load when env key is present
   for (const [envKey, pluginName] of Object.entries(PROVIDER_PLUGIN_MAP)) {
     if (
-      envKey === "ELIZAOS_CLOUD_API_KEY" ||
-      envKey === "ELIZAOS_CLOUD_ENABLED"
+      envKey === "TOKAGENTOS_CLOUD_API_KEY" ||
+      envKey === "TOKAGENTOS_CLOUD_ENABLED"
     ) {
       continue;
     }
@@ -348,19 +348,19 @@ export function collectPluginNames(
 
   const applyProviderPrecedence = (): void => {
     // Provider precedence:
-    // 1) ElizaCloud for inference (when enabled AND inferenceMode is "cloud")
+    // 1) TokagentCloud for inference (when enabled AND inferenceMode is "cloud")
     // 2) direct provider plugins (api-key/env based)
     //
     // When inferenceMode is "byok" or "local", cloud stays loaded for
     // RPC/services but direct AI provider plugins are preserved so the
     // user's own API keys (e.g. Anthropic) handle model inference.
     if (cloudEffectivelyEnabled) {
-      pluginsToLoad.add("@elizaos/plugin-elizacloud");
+      pluginsToLoad.add("@elizaos/plugin-tokagentcloud");
 
       if (cloudHandlesInference) {
         // Cloud handles ALL model calls — remove direct AI provider plugins.
         const directProviders = new Set(Object.values(PROVIDER_PLUGIN_MAP));
-        directProviders.delete("@elizaos/plugin-elizacloud");
+        directProviders.delete("@elizaos/plugin-tokagentcloud");
         for (const p of directProviders) {
           pluginsToLoad.delete(p);
         }
@@ -374,7 +374,7 @@ export function collectPluginNames(
     // Cloud is not part of the resolved topology — remove it even though
     // it is listed in CORE_PLUGINS so stale env/config does not hijack
     // provider selection after the user switches away.
-    pluginsToLoad.delete("@elizaos/plugin-elizacloud");
+    pluginsToLoad.delete("@elizaos/plugin-tokagentcloud");
   };
 
   // Apply once before additive plugin-entry/feature paths.
@@ -441,7 +441,7 @@ export function collectPluginNames(
   }
 
   // These are plugins that were installed via the plugin-manager at runtime
-  // and tracked in eliza.json so they persist across restarts.
+  // and tracked in tokagent.json so they persist across restarts.
   const installs = config.plugins?.installs;
   if (installs && typeof installs === "object") {
     for (const [packageName, record] of Object.entries(installs)) {
@@ -473,7 +473,7 @@ export function collectPluginNames(
 }
 
 function resolveCloudPluginRequirement(
-  topology: ResolvedElizaCloudTopology,
+  topology: ResolvedTokagentCloudTopology,
   requestedByEnv: boolean,
 ): boolean {
   return topology.shouldLoadPlugin || requestedByEnv;

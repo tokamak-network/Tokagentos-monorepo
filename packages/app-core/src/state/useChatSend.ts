@@ -108,8 +108,8 @@ export interface UseChatSendDeps {
   ) => Promise<LoadConversationMessagesResult>;
 
   // Cloud state
-  elizaCloudEnabled: boolean;
-  elizaCloudConnected: boolean;
+  tokagentCloudEnabled: boolean;
+  tokagentCloudConnected: boolean;
   pollCloudCredits: () => Promise<boolean>;
 }
 
@@ -143,8 +143,8 @@ export function useChatSend(deps: UseChatSendDeps) {
     chatSendNonceRef,
     loadConversations,
     loadConversationMessages,
-    elizaCloudEnabled,
-    elizaCloudConnected,
+    tokagentCloudEnabled,
+    tokagentCloudConnected,
     pollCloudCredits,
   } = deps;
 
@@ -601,7 +601,7 @@ export function useChatSend(deps: UseChatSendDeps) {
           void loadConversations();
         }
 
-        if (elizaCloudEnabled || elizaCloudConnected) {
+        if (tokagentCloudEnabled || tokagentCloudConnected) {
           void pollCloudCredits();
         }
       } catch (err) {
@@ -694,8 +694,8 @@ export function useChatSend(deps: UseChatSendDeps) {
       setConversationMessages,
       setConversations,
       uiLanguage,
-      elizaCloudEnabled,
-      elizaCloudConnected,
+      tokagentCloudEnabled,
+      tokagentCloudConnected,
       pollCloudCredits,
     ],
   );
@@ -934,7 +934,7 @@ export function useChatSend(deps: UseChatSendDeps) {
           }
 
           void loadConversations();
-          if (elizaCloudEnabled || elizaCloudConnected) {
+          if (tokagentCloudEnabled || tokagentCloudConnected) {
             void pollCloudCredits();
           }
         } catch (err) {
@@ -975,8 +975,8 @@ export function useChatSend(deps: UseChatSendDeps) {
       chatMode,
       activeConversationId,
       chatSendQueueRef,
-      elizaCloudEnabled,
-      elizaCloudConnected,
+      tokagentCloudEnabled,
+      tokagentCloudConnected,
       flushQueuedChatSends,
       loadConversationMessages,
       loadConversations,

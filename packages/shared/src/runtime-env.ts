@@ -10,18 +10,18 @@ const LOOPBACK_BIND_RE =
   /^(localhost|127(?:\.\d{1,3}){3}|::1|\[::1\]|0:0:0:0:0:0:0:1|::ffff:127(?:\.\d{1,3}){3})$/i;
 const WILDCARD_BIND_RE = /^(0\.0\.0\.0|::|0:0:0:0:0:0:0:0)$/i;
 
-const API_BIND_KEYS = ["ELIZA_API_BIND"] as const;
-const API_TOKEN_KEYS = ["ELIZA_API_TOKEN"] as const;
+const API_BIND_KEYS = ["TOKAGENT_API_BIND"] as const;
+const API_TOKEN_KEYS = ["TOKAGENT_API_TOKEN"] as const;
 const API_ALLOWED_ORIGINS_KEYS = [
-  "ELIZA_ALLOWED_ORIGINS",
+  "TOKAGENT_ALLOWED_ORIGINS",
   "CORS_ORIGINS",
 ] as const;
-const API_ALLOWED_HOSTS_KEYS = ["ELIZA_ALLOWED_HOSTS"] as const;
-const API_ALLOW_NULL_ORIGIN_KEYS = ["ELIZA_ALLOW_NULL_ORIGIN"] as const;
-const DISABLE_AUTO_API_TOKEN_KEYS = ["ELIZA_DISABLE_AUTO_API_TOKEN"] as const;
-const DESKTOP_API_PORT_KEYS = ["ELIZA_API_PORT", "ELIZA_PORT"] as const;
-const DESKTOP_UI_PORT_KEYS = ["ELIZA_UI_PORT"] as const;
-const SINGLE_PROCESS_PORT_KEYS = ["ELIZA_PORT", "ELIZA_UI_PORT"] as const;
+const API_ALLOWED_HOSTS_KEYS = ["TOKAGENT_ALLOWED_HOSTS"] as const;
+const API_ALLOW_NULL_ORIGIN_KEYS = ["TOKAGENT_ALLOW_NULL_ORIGIN"] as const;
+const DISABLE_AUTO_API_TOKEN_KEYS = ["TOKAGENT_DISABLE_AUTO_API_TOKEN"] as const;
+const DESKTOP_API_PORT_KEYS = ["TOKAGENT_API_PORT", "TOKAGENT_PORT"] as const;
+const DESKTOP_UI_PORT_KEYS = ["TOKAGENT_UI_PORT"] as const;
+const SINGLE_PROCESS_PORT_KEYS = ["TOKAGENT_PORT", "TOKAGENT_UI_PORT"] as const;
 
 export type RuntimeEnvRecord = Record<string, string | undefined>;
 
@@ -42,7 +42,7 @@ export interface ResolvedApiSecurityConfig {
   isWildcardBind: boolean;
 }
 
-export interface ElizaRuntimeEnv {
+export interface TokagentRuntimeEnv {
   apiBind: string;
   apiToken: string | undefined;
   allowedOrigins: string[];
@@ -54,7 +54,7 @@ export interface ElizaRuntimeEnv {
   uiPort: number;
 }
 
-export const ELIZA_RUNTIME_ENV_KEYS = {
+export const TOKAGENT_RUNTIME_ENV_KEYS = {
   apiBind: API_BIND_KEYS,
   apiToken: API_TOKEN_KEYS,
   allowedOrigins: API_ALLOWED_ORIGINS_KEYS,
@@ -106,7 +106,7 @@ export function resolveDesktopApiPortPreference(
       return {
         port: p,
         sourceLabel: `env set — ${key}=${p}`,
-        changeLabel: `unset ${key} or set ELIZA_API_PORT / ELIZA_PORT (first wins); built-in ${DEFAULT_DESKTOP_API_PORT}`,
+        changeLabel: `unset ${key} or set TOKAGENT_API_PORT / TOKAGENT_PORT (first wins); built-in ${DEFAULT_DESKTOP_API_PORT}`,
         winningKey: key,
       };
     }
@@ -115,12 +115,12 @@ export function resolveDesktopApiPortPreference(
     port: DEFAULT_DESKTOP_API_PORT,
     sourceLabel: `default (unset — built-in ${DEFAULT_DESKTOP_API_PORT})`,
     changeLabel:
-      "export ELIZA_API_PORT=<port> (or ELIZA_PORT; first non-empty wins)",
+      "export TOKAGENT_API_PORT=<port> (or TOKAGENT_PORT; first non-empty wins)",
     winningKey: null,
   };
 }
 
-/** Preferred dashboard UI port from ELIZA_UI_PORT (Vite dev), before reallocation. */
+/** Preferred dashboard UI port from TOKAGENT_UI_PORT (Vite dev), before reallocation. */
 export function resolveDesktopUiPortPreference(
   env: RuntimeEnvRecord = process.env,
 ): PortPreferenceResolution {
@@ -138,7 +138,7 @@ export function resolveDesktopUiPortPreference(
   return {
     port: DEFAULT_DESKTOP_UI_PORT,
     sourceLabel: `default (unset — built-in ${DEFAULT_DESKTOP_UI_PORT})`,
-    changeLabel: "export ELIZA_UI_PORT=<port>",
+    changeLabel: "export TOKAGENT_UI_PORT=<port>",
     winningKey: null,
   };
 }
@@ -209,15 +209,15 @@ export function resolveRuntimePorts(
 ): ResolvedRuntimePorts {
   return {
     serverOnlyPort:
-      parsePositivePort(env.ELIZA_PORT) ??
-      parsePositivePort(env.ELIZA_UI_PORT) ??
+      parsePositivePort(env.TOKAGENT_PORT) ??
+      parsePositivePort(env.TOKAGENT_UI_PORT) ??
       DEFAULT_SERVER_ONLY_PORT,
     desktopApiPort:
-      parsePositivePort(env.ELIZA_API_PORT) ??
-      parsePositivePort(env.ELIZA_PORT) ??
+      parsePositivePort(env.TOKAGENT_API_PORT) ??
+      parsePositivePort(env.TOKAGENT_PORT) ??
       DEFAULT_DESKTOP_API_PORT,
     desktopUiPort:
-      parsePositivePort(env.ELIZA_UI_PORT) ?? DEFAULT_DESKTOP_UI_PORT,
+      parsePositivePort(env.TOKAGENT_UI_PORT) ?? DEFAULT_DESKTOP_UI_PORT,
   };
 }
 
@@ -329,7 +329,7 @@ export function setApiToken(
   env: RuntimeEnvRecord = process.env,
   token: string,
 ): void {
-  env.ELIZA_API_TOKEN = token;
+  env.TOKAGENT_API_TOKEN = token;
 }
 
 export function syncResolvedApiPort(
@@ -338,21 +338,21 @@ export function syncResolvedApiPort(
   opts?: { overwriteUiPort?: boolean },
 ): void {
   const normalizedPort = String(actualPort);
-  env.ELIZA_API_PORT = normalizedPort;
+  env.TOKAGENT_API_PORT = normalizedPort;
   if (opts?.overwriteUiPort) {
-    env.ELIZA_UI_PORT = normalizedPort;
-    env.ELIZA_PORT = normalizedPort;
+    env.TOKAGENT_UI_PORT = normalizedPort;
+    env.TOKAGENT_PORT = normalizedPort;
     return;
   }
 
-  if (!env.ELIZA_UI_PORT) {
-    env.ELIZA_PORT = normalizedPort;
+  if (!env.TOKAGENT_UI_PORT) {
+    env.TOKAGENT_PORT = normalizedPort;
   }
 }
 
-export function resolveElizaRuntimeEnv(
+export function resolveTokagentRuntimeEnv(
   env: RuntimeEnvRecord = process.env,
-): ElizaRuntimeEnv {
+): TokagentRuntimeEnv {
   const ports = resolveRuntimePorts(env);
   const security = resolveApiSecurityConfig(env);
   return {

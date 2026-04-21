@@ -1,4 +1,4 @@
-import { Input, Label } from "@elizaos/ui";
+import { Input, Label } from "@tokagentos/ui";
 import type { SpendingLimitConfig } from "./types";
 
 function UsdInput({

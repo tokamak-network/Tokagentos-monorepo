@@ -8,10 +8,10 @@ import type {
   SubmitLifeOpsTelegramAuthRequest,
   VerifyLifeOpsTelegramConnectorRequest,
   VerifyLifeOpsTelegramConnectorResponse,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_TELEGRAM_CAPABILITIES,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { createLifeOpsConnectorGrant } from "./repository.js";
 import {
   fail,

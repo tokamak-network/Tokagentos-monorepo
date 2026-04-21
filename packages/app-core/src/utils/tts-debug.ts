@@ -1,5 +1,5 @@
 /**
- * TTS pipeline tracing (opt-in). Prefix: `[eliza][tts]`.
+ * TTS pipeline tracing (opt-in). Prefix: `[tokagent][tts]`.
  * Never pass secrets in `detail`. With debug on, `preview` fields may contain
  * user-visible spoken text — disable in shared logs / production.
  *
@@ -8,13 +8,13 @@
  * `play:browser:speechSynthesis:start|end|error`, `play:talkmode:dispatch|speak-failed`,
  * `play:browser:no-synth`. Server logs: `server:cloud-tts:*` (includes optional
  * `messageId`, `clipSegment`, `hearingFull` when the client sends
- * `x-elizaos-tts-*` headers on `/api/tts/cloud`), ChatView: `chat:*`.
+ * `x-tokagentos-tts-*` headers on `/api/tts/cloud`), ChatView: `chat:*`.
  *
  * Enable with:
- * - **Node / API:** `ELIZA_TTS_DEBUG=1` (or `true`, `yes`, `on`) — logs appear in the API
+ * - **Node / API:** `TOKAGENT_TTS_DEBUG=1` (or `true`, `yes`, `on`) — logs appear in the API
  *   terminal / `[api]` aggregator only for **server** routes (e.g. `server:cloud-tts:*`).
  * - **Renderer (WebView / browser):** same env is mirrored via Vite `define` in
- *   `apps/app/vite.config.ts` when you start dev with `ELIZA_TTS_DEBUG=1`. Those lines
+ *   `apps/app/vite.config.ts` when you start dev with `TOKAGENT_TTS_DEBUG=1`. Those lines
  *   go to the **renderer** JavaScript console (Electrobun: Web Inspector on the window),
  *   not `LOG_LEVEL` on the API process alone.
  */
@@ -26,13 +26,13 @@ function ttsDebugEnabled(): boolean {
   };
 
   if (typeof process !== "undefined" && process.env) {
-    if (truthy(process.env.ELIZA_TTS_DEBUG)) return true;
+    if (truthy(process.env.TOKAGENT_TTS_DEBUG)) return true;
   }
 
   try {
-    // Use static `import.meta.env.*` so Vite `define` can replace ELIZA_TTS_DEBUG at build time.
-    if (truthy(String(import.meta.env.ELIZA_TTS_DEBUG ?? ""))) return true;
-    if (truthy(String(import.meta.env.VITE_ELIZA_TTS_DEBUG ?? ""))) return true;
+    // Use static `import.meta.env.*` so Vite `define` can replace TOKAGENT_TTS_DEBUG at build time.
+    if (truthy(String(import.meta.env.TOKAGENT_TTS_DEBUG ?? ""))) return true;
+    if (truthy(String(import.meta.env.VITE_TOKAGENT_TTS_DEBUG ?? ""))) return true;
   } catch {
     /* no import.meta */
   }
@@ -49,7 +49,7 @@ const DEFAULT_PREVIEW_MAX = 160;
 
 /**
  * Single-line preview of text for TTS debug logs (avoids huge console lines).
- * Enable `ELIZA_TTS_DEBUG` only when you accept that spoken lines may appear in logs.
+ * Enable `TOKAGENT_TTS_DEBUG` only when you accept that spoken lines may appear in logs.
  */
 export function ttsDebugTextPreview(
   text: string,
@@ -66,8 +66,8 @@ export function ttsDebug(
 ): void {
   if (!ttsDebugEnabled()) return;
   if (detail && Object.keys(detail).length > 0) {
-    console.info(`[eliza][tts] ${phase}`, detail);
+    console.info(`[tokagent][tts] ${phase}`, detail);
   } else {
-    console.info(`[eliza][tts] ${phase}`);
+    console.info(`[tokagent][tts] ${phase}`);
   }
 }

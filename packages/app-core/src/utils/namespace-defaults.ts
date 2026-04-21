@@ -13,15 +13,15 @@ export function ensureNamespaceDefaults(
   env: NodeJS.ProcessEnv = process.env,
 ): void {
   const resolvedNamespace =
-    trimEnvValue(env.ELIZA_NAMESPACE) ??
-    trimEnvValue(env.ELIZA_NAMESPACE) ??
-    "eliza";
+    trimEnvValue(env.TOKAGENT_NAMESPACE) ??
+    trimEnvValue(env.TOKAGENT_NAMESPACE) ??
+    "tokagent";
 
-  if (!trimEnvValue(env.ELIZA_NAMESPACE)) {
-    env.ELIZA_NAMESPACE = resolvedNamespace;
+  if (!trimEnvValue(env.TOKAGENT_NAMESPACE)) {
+    env.TOKAGENT_NAMESPACE = resolvedNamespace;
   }
-  if (!trimEnvValue(env.ELIZA_NAMESPACE)) {
-    env.ELIZA_NAMESPACE = resolvedNamespace;
+  if (!trimEnvValue(env.TOKAGENT_NAMESPACE)) {
+    env.TOKAGENT_NAMESPACE = resolvedNamespace;
   }
 }
 

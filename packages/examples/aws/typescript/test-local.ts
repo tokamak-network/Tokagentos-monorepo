@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 
 /**
- * Local test script for the AWS Lambda handler using full elizaOS runtime
+ * Local test script for the AWS Lambda handler using full tokagentOS runtime
  * Run with: bun run test-local.ts
  *
- * This uses the same elizaOS runtime as the chat demo.
+ * This uses the same tokagentOS runtime as the chat demo.
  */
 
 import type { APIGatewayProxyEventV2, Context } from "aws-lambda";
@@ -75,7 +75,7 @@ function getResultData(result: Awaited<ReturnType<typeof handler>>): {
 }
 
 async function runTests(): Promise<void> {
-  console.log("🧪 Testing elizaOS AWS Lambda Handler (Full Runtime)\n");
+  console.log("🧪 Testing tokagentOS AWS Lambda Handler (Full Runtime)\n");
 
   // Test 1: Health check
   console.log("1️⃣  Testing health check...");
@@ -90,8 +90,8 @@ async function runTests(): Promise<void> {
   }
   console.log("   ✅ Health check passed\n");
 
-  // Test 2: Chat message (this uses the full elizaOS runtime!)
-  console.log("2️⃣  Testing chat endpoint with elizaOS runtime...");
+  // Test 2: Chat message (this uses the full tokagentOS runtime!)
+  console.log("2️⃣  Testing chat endpoint with tokagentOS runtime...");
   const chatEvent = createEvent(
     "POST",
     "/chat",
@@ -113,7 +113,7 @@ async function runTests(): Promise<void> {
   const response = JSON.parse(chatResult.body);
   console.log(`   Response: ${response.response.substring(0, 100)}...`);
   console.log(`   Conversation ID: ${response.conversationId}\n`);
-  console.log("   ✅ Chat endpoint passed (elizaOS runtime working!)\n");
+  console.log("   ✅ Chat endpoint passed (tokagentOS runtime working!)\n");
 
   // Test 3: Invalid request
   console.log("3️⃣  Testing validation (empty message)...");
@@ -145,7 +145,7 @@ async function runTests(): Promise<void> {
   }
   console.log("   ✅ 404 handling passed\n");
 
-  console.log("🎉 All tests passed with elizaOS runtime!");
+  console.log("🎉 All tests passed with tokagentOS runtime!");
 }
 
 runTests().catch((error) => {

@@ -3,16 +3,16 @@
   "version": "2.0.0-alpha",
   "private": true,
   "type": "module",
-  "description": "elizaOS REST API example using Hono",
+  "description": "tokagentOS REST API example using Hono",
   "scripts": {
     "start": "bun run server.ts",
     "dev": "bun --watch run server.ts"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
-    "@elizaos/plugin-eliza-classic": "alpha",
+    "@elizaos/plugin-tokagent-classic": "alpha",
     "hono": "^4.6.0",
     "uuid": "^13.0.0"
   },

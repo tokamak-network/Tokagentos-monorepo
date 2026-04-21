@@ -5,7 +5,7 @@ node_modules/
 dist/
 
 # Local data
-.eliza-code/
+.tokagent-code/
 
 # Environment
 .env

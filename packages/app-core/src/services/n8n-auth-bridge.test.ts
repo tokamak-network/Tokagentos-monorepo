@@ -10,7 +10,7 @@
  * - unauth → auth with no sidecar is a no-op
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startN8nAuthBridge } from "./n8n-auth-bridge";
 import {

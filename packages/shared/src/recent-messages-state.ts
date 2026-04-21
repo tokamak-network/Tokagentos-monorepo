@@ -1,4 +1,4 @@
-import type { Memory, State } from "@elizaos/core";
+import type { Memory, State } from "@tokagentos/core";
 
 /**
  * Read the recent-messages memory array that `recentMessagesProvider` writes

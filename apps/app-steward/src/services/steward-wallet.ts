@@ -13,7 +13,7 @@ import { getWalletAddresses } from "../api/wallet";
 const DEFAULT_TIMEOUT_MS = 12_000;
 const STEWARD_CREDENTIALS_PATH = path.join(
   os.homedir(),
-  ".eliza",
+  ".tokagent",
   "steward-credentials.json",
 );
 
@@ -87,8 +87,8 @@ export function resolveEffectiveStewardConfig(
       normalizeEnvValue(env.STEWARD_TENANT_ID) ?? persisted?.tenantId ?? "",
     agentId:
       normalizeEnvValue(env.STEWARD_AGENT_ID) ??
-      normalizeEnvValue(env.ELIZA_STEWARD_AGENT_ID) ??
-      normalizeEnvValue(env.ELIZA_STEWARD_AGENT_ID) ??
+      normalizeEnvValue(env.TOKAGENT_STEWARD_AGENT_ID) ??
+      normalizeEnvValue(env.TOKAGENT_STEWARD_AGENT_ID) ??
       persisted?.agentId ??
       "",
     apiKey: normalizeEnvValue(env.STEWARD_API_KEY) ?? persisted?.apiKey ?? "",
@@ -106,8 +106,8 @@ function resolveStewardWalletAgentId(
   const addresses = getWalletAddresses();
   return (
     normalizeEnvValue(env.STEWARD_AGENT_ID) ??
-    normalizeEnvValue(env.ELIZA_STEWARD_AGENT_ID) ??
-    normalizeEnvValue(env.ELIZA_STEWARD_AGENT_ID) ??
+    normalizeEnvValue(env.TOKAGENT_STEWARD_AGENT_ID) ??
+    normalizeEnvValue(env.TOKAGENT_STEWARD_AGENT_ID) ??
     normalizeEnvValue(config?.agentId) ??
     normalizeEnvValue(addresses.evmAddress ?? undefined)
   );
@@ -128,7 +128,7 @@ export function isStewardWalletConfigured(
 }
 
 export function getStewardWalletUnavailableMessage(): string {
-  return "Eliza agent wallet is unavailable. Configure Steward in Eliza wallet settings or set STEWARD_API_URL and Steward credentials.";
+  return "Tokagent agent wallet is unavailable. Configure Steward in Tokagent wallet settings or set STEWARD_API_URL and Steward credentials.";
 }
 
 function buildStewardWalletHeaders(

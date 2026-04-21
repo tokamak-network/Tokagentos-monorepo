@@ -9,9 +9,9 @@ import {
   ChannelType,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
-import { sendJson, sendJsonError, readJsonBody } from "@elizaos/agent/api/http-helpers";
-import { decodePathComponent } from "@elizaos/agent/api/server-helpers";
+} from "@tokagentos/core";
+import { sendJson, sendJsonError, readJsonBody } from "@tokagentos/agent/api/http-helpers";
+import { decodePathComponent } from "@tokagentos/agent/api/server-helpers";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { itIf } from "../../../../test/helpers/conditional-tests.ts";
 import { req } from "../../../../test/helpers/http.ts";
@@ -333,19 +333,19 @@ describe("Real E2E: LifeOps Signal", () => {
   beforeEach(async () => {
     oauthDir = await mkdtemp(path.join(os.tmpdir(), "lifeops-signal-oauth-"));
     stateDir = path.join(oauthDir, "state");
-    configPath = path.join(stateDir, "eliza.json");
+    configPath = path.join(stateDir, "tokagent.json");
     await mkdir(stateDir, { recursive: true });
-    previousOAuthDir = process.env.ELIZA_OAUTH_DIR;
-    previousStateDir = process.env.ELIZA_STATE_DIR;
-    previousConfigPath = process.env.ELIZA_CONFIG_PATH;
-    previousPersistConfigPath = process.env.ELIZA_PERSIST_CONFIG_PATH;
-    previousDisableProactiveAgent = process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
+    previousOAuthDir = process.env.TOKAGENT_OAUTH_DIR;
+    previousStateDir = process.env.TOKAGENT_STATE_DIR;
+    previousConfigPath = process.env.TOKAGENT_CONFIG_PATH;
+    previousPersistConfigPath = process.env.TOKAGENT_PERSIST_CONFIG_PATH;
+    previousDisableProactiveAgent = process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
     previousSignalHttpUrl = process.env.SIGNAL_HTTP_URL;
-    process.env.ELIZA_OAUTH_DIR = oauthDir;
-    process.env.ELIZA_STATE_DIR = stateDir;
-    process.env.ELIZA_CONFIG_PATH = configPath;
-    process.env.ELIZA_PERSIST_CONFIG_PATH = configPath;
-    process.env.ELIZA_DISABLE_PROACTIVE_AGENT = "1";
+    process.env.TOKAGENT_OAUTH_DIR = oauthDir;
+    process.env.TOKAGENT_STATE_DIR = stateDir;
+    process.env.TOKAGENT_CONFIG_PATH = configPath;
+    process.env.TOKAGENT_PERSIST_CONFIG_PATH = configPath;
+    process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = "1";
   });
 
   afterEach(async () => {
@@ -362,29 +362,29 @@ describe("Real E2E: LifeOps Signal", () => {
       signalStub = undefined;
     }
     if (previousOAuthDir === undefined) {
-      delete process.env.ELIZA_OAUTH_DIR;
+      delete process.env.TOKAGENT_OAUTH_DIR;
     } else {
-      process.env.ELIZA_OAUTH_DIR = previousOAuthDir;
+      process.env.TOKAGENT_OAUTH_DIR = previousOAuthDir;
     }
     if (previousStateDir === undefined) {
-      delete process.env.ELIZA_STATE_DIR;
+      delete process.env.TOKAGENT_STATE_DIR;
     } else {
-      process.env.ELIZA_STATE_DIR = previousStateDir;
+      process.env.TOKAGENT_STATE_DIR = previousStateDir;
     }
     if (previousConfigPath === undefined) {
-      delete process.env.ELIZA_CONFIG_PATH;
+      delete process.env.TOKAGENT_CONFIG_PATH;
     } else {
-      process.env.ELIZA_CONFIG_PATH = previousConfigPath;
+      process.env.TOKAGENT_CONFIG_PATH = previousConfigPath;
     }
     if (previousPersistConfigPath === undefined) {
-      delete process.env.ELIZA_PERSIST_CONFIG_PATH;
+      delete process.env.TOKAGENT_PERSIST_CONFIG_PATH;
     } else {
-      process.env.ELIZA_PERSIST_CONFIG_PATH = previousPersistConfigPath;
+      process.env.TOKAGENT_PERSIST_CONFIG_PATH = previousPersistConfigPath;
     }
     if (previousDisableProactiveAgent === undefined) {
-      delete process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
+      delete process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
     } else {
-      process.env.ELIZA_DISABLE_PROACTIVE_AGENT = previousDisableProactiveAgent;
+      process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = previousDisableProactiveAgent;
     }
     if (previousSignalHttpUrl === undefined) {
       delete process.env.SIGNAL_HTTP_URL;

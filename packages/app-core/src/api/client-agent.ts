@@ -7,25 +7,25 @@ import type {
   AllPermissionsState,
   PermissionState,
   SystemPermissionId,
-} from "@elizaos/agent/contracts/permissions";
+} from "@tokagentos/agent/contracts/permissions";
 import {
-  isElizaSettingsDebugEnabled,
+  isTokagentSettingsDebugEnabled,
   sanitizeForSettingsDebug,
   settingsDebugCloudSummary,
-} from "@elizaos/shared";
+} from "@tokagentos/shared";
 import type {
   OnboardingConnectorConfig as ConnectorConfig,
   OnboardingData,
   OnboardingOptions,
   SubscriptionStatusResponse,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import {
   getWebsiteBlockerPlugin,
   type WebsiteBlockerPermissionResult,
   type WebsiteBlockerStatusResult,
 } from "../bridge/native-plugins";
 import { TERMINAL_STATUSES } from "../chat/coding-agent-session-state";
-import { ElizaClient } from "./client-base";
+import { TokagentClient } from "./client-base";
 import type {
   AgentAutomationMode,
   AgentAutomationModeResponse,
@@ -96,7 +96,7 @@ function clientSettingsDebug(): boolean {
   } catch {
     viteEnv = undefined;
   }
-  return isElizaSettingsDebugEnabled({
+  return isTokagentSettingsDebugEnabled({
     importMetaEnv: viteEnv,
     env: typeof process !== "undefined" ? process.env : undefined,
   });
@@ -148,7 +148,7 @@ function logSettingsClient(
 ): void {
   if (!clientSettingsDebug()) return;
   console.debug(
-    `[eliza][settings][client] ${phase}`,
+    `[tokagent][settings][client] ${phase}`,
     sanitizeForSettingsDebug(detail),
   );
 }
@@ -160,7 +160,7 @@ const SETTINGS_MUTATION_TIMEOUT_MS = 30_000;
 // ---------------------------------------------------------------------------
 
 declare module "./client-base" {
-  interface ElizaClient {
+  interface TokagentClient {
     getStatus(): Promise<AgentStatus>;
     getAgentSelfStatus(): Promise<AgentSelfStatusSnapshot>;
     getRuntimeSnapshot(opts?: {
@@ -614,16 +614,16 @@ declare module "./client-base" {
 // Prototype augmentation
 // ---------------------------------------------------------------------------
 
-ElizaClient.prototype.getStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getStatus = async function (this: TokagentClient) {
   return this.fetch("/api/status");
 };
 
-ElizaClient.prototype.getAgentSelfStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getAgentSelfStatus = async function (this: TokagentClient) {
   return this.fetch("/api/agent/self-status");
 };
 
-ElizaClient.prototype.getRuntimeSnapshot = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRuntimeSnapshot = async function (
+  this: TokagentClient,
   opts?,
 ) {
   const params = new URLSearchParams();
@@ -641,8 +641,8 @@ ElizaClient.prototype.getRuntimeSnapshot = async function (
   return this.fetch(`/api/runtime${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.setAutomationMode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setAutomationMode = async function (
+  this: TokagentClient,
   mode,
 ) {
   return this.fetch("/api/permissions/automation-mode", {
@@ -651,22 +651,22 @@ ElizaClient.prototype.setAutomationMode = async function (
   });
 };
 
-ElizaClient.prototype.setTradeMode = async function (this: ElizaClient, mode) {
+TokagentClient.prototype.setTradeMode = async function (this: TokagentClient, mode) {
   return this.fetch("/api/permissions/trade-mode", {
     method: "PUT",
     body: JSON.stringify({ mode }),
   });
 };
 
-ElizaClient.prototype.playEmote = async function (this: ElizaClient, emoteId) {
+TokagentClient.prototype.playEmote = async function (this: TokagentClient, emoteId) {
   return this.fetch("/api/emote", {
     method: "POST",
     body: JSON.stringify({ emoteId }),
   });
 };
 
-ElizaClient.prototype.runTerminalCommand = async function (
-  this: ElizaClient,
+TokagentClient.prototype.runTerminalCommand = async function (
+  this: TokagentClient,
   command,
 ) {
   return this.fetch("/api/terminal/run", {
@@ -675,22 +675,22 @@ ElizaClient.prototype.runTerminalCommand = async function (
   });
 };
 
-ElizaClient.prototype.getOnboardingStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getOnboardingStatus = async function (this: TokagentClient) {
   return this.fetch("/api/onboarding/status");
 };
 
-ElizaClient.prototype.getWalletKeys = async function (this: ElizaClient) {
+TokagentClient.prototype.getWalletKeys = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/keys");
 };
 
-ElizaClient.prototype.getWalletOsStoreStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getWalletOsStoreStatus = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/wallet/os-store");
 };
 
-ElizaClient.prototype.postWalletOsStoreAction = async function (
-  this: ElizaClient,
+TokagentClient.prototype.postWalletOsStoreAction = async function (
+  this: TokagentClient,
   action,
 ) {
   return this.fetch("/api/wallet/os-store", {
@@ -699,7 +699,7 @@ ElizaClient.prototype.postWalletOsStoreAction = async function (
   });
 };
 
-ElizaClient.prototype.getAuthStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getAuthStatus = async function (this: TokagentClient) {
   const maxRetries = 3;
   const baseBackoffMs = 1000;
   let lastErr: unknown;
@@ -723,7 +723,7 @@ ElizaClient.prototype.getAuthStatus = async function (this: ElizaClient) {
   throw lastErr;
 };
 
-ElizaClient.prototype.pair = async function (this: ElizaClient, code) {
+TokagentClient.prototype.pair = async function (this: TokagentClient, code) {
   const res = await this.fetch<{ token: string }>("/api/auth/pair", {
     method: "POST",
     body: JSON.stringify({ code }),
@@ -731,14 +731,14 @@ ElizaClient.prototype.pair = async function (this: ElizaClient, code) {
   return res;
 };
 
-ElizaClient.prototype.getOnboardingOptions = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getOnboardingOptions = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/onboarding/options");
 };
 
-ElizaClient.prototype.submitOnboarding = async function (
-  this: ElizaClient,
+TokagentClient.prototype.submitOnboarding = async function (
+  this: TokagentClient,
   data,
 ) {
   await this.fetch("/api/onboarding", {
@@ -747,12 +747,12 @@ ElizaClient.prototype.submitOnboarding = async function (
   });
 };
 
-ElizaClient.prototype.startAnthropicLogin = async function (this: ElizaClient) {
+TokagentClient.prototype.startAnthropicLogin = async function (this: TokagentClient) {
   return this.fetch("/api/subscription/anthropic/start", { method: "POST" });
 };
 
-ElizaClient.prototype.exchangeAnthropicCode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.exchangeAnthropicCode = async function (
+  this: TokagentClient,
   code,
 ) {
   return this.fetch("/api/subscription/anthropic/exchange", {
@@ -762,8 +762,8 @@ ElizaClient.prototype.exchangeAnthropicCode = async function (
   });
 };
 
-ElizaClient.prototype.submitAnthropicSetupToken = async function (
-  this: ElizaClient,
+TokagentClient.prototype.submitAnthropicSetupToken = async function (
+  this: TokagentClient,
   token,
 ) {
   return this.fetch("/api/subscription/anthropic/setup-token", {
@@ -773,14 +773,14 @@ ElizaClient.prototype.submitAnthropicSetupToken = async function (
   });
 };
 
-ElizaClient.prototype.getSubscriptionStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getSubscriptionStatus = async function (
+  this: TokagentClient,
 ) {
   return this.fetch<SubscriptionStatusResponse>("/api/subscription/status");
 };
 
-ElizaClient.prototype.deleteSubscription = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteSubscription = async function (
+  this: TokagentClient,
   provider,
 ) {
   return this.fetch(`/api/subscription/${encodeURIComponent(provider)}`, {
@@ -788,8 +788,8 @@ ElizaClient.prototype.deleteSubscription = async function (
   });
 };
 
-ElizaClient.prototype.switchProvider = async function (
-  this: ElizaClient,
+TokagentClient.prototype.switchProvider = async function (
+  this: TokagentClient,
   provider,
   apiKey?,
   primaryModel?,
@@ -818,12 +818,12 @@ ElizaClient.prototype.switchProvider = async function (
   return result;
 };
 
-ElizaClient.prototype.startOpenAILogin = async function (this: ElizaClient) {
+TokagentClient.prototype.startOpenAILogin = async function (this: TokagentClient) {
   return this.fetch("/api/subscription/openai/start", { method: "POST" });
 };
 
-ElizaClient.prototype.exchangeOpenAICode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.exchangeOpenAICode = async function (
+  this: TokagentClient,
   code,
 ) {
   return this.fetch("/api/subscription/openai/exchange", {
@@ -833,19 +833,19 @@ ElizaClient.prototype.exchangeOpenAICode = async function (
   });
 };
 
-ElizaClient.prototype.startAgent = async function (this: ElizaClient) {
+TokagentClient.prototype.startAgent = async function (this: TokagentClient) {
   const res = await this.fetch<{ status: AgentStatus }>("/api/agent/start", {
     method: "POST",
   });
   return res.status;
 };
 
-ElizaClient.prototype.startAndWait = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startAndWait = async function (
+  this: TokagentClient,
   maxWaitMs = 30_000,
 ) {
   const t0 = Date.now();
-  console.info("[eliza][lifecycle][client] startAndWait: begin", {
+  console.info("[tokagent][lifecycle][client] startAndWait: begin", {
     baseUrl: this.getBaseUrl(),
     maxWaitMs,
   });
@@ -856,7 +856,7 @@ ElizaClient.prototype.startAndWait = async function (
     }
   } catch (e) {
     console.info(
-      "[eliza][lifecycle][client] startAndWait: initial status check failed",
+      "[tokagent][lifecycle][client] startAndWait: initial status check failed",
       e,
     );
   }
@@ -865,12 +865,12 @@ ElizaClient.prototype.startAndWait = async function (
     if (started.state === "running") {
       return started;
     }
-    console.info("[eliza][lifecycle][client] startAndWait: start accepted", {
+    console.info("[tokagent][lifecycle][client] startAndWait: start accepted", {
       state: started.state,
     });
   } catch (e) {
     console.info(
-      "[eliza][lifecycle][client] startAndWait: initial start call failed",
+      "[tokagent][lifecycle][client] startAndWait: initial start call failed",
       e,
     );
   }
@@ -883,7 +883,7 @@ ElizaClient.prototype.startAndWait = async function (
     try {
       const status = await this.getStatus();
       if (status.state === "running") {
-        console.info("[eliza][lifecycle][client] startAndWait: running", {
+        console.info("[tokagent][lifecycle][client] startAndWait: running", {
           pollN,
           waitedMs: Date.now() - t0,
           port: status.port,
@@ -894,7 +894,7 @@ ElizaClient.prototype.startAndWait = async function (
         return status;
       }
       if (pollN === 1 || pollN % 5 === 0) {
-        console.debug("[eliza][lifecycle][client] startAndWait: poll", {
+        console.debug("[tokagent][lifecycle][client] startAndWait: poll", {
           pollN,
           state: status.state,
           waitedMs: Date.now() - t0,
@@ -903,7 +903,7 @@ ElizaClient.prototype.startAndWait = async function (
     } catch (pollErr) {
       if (pollN === 1 || pollN % 5 === 0) {
         console.debug(
-          "[eliza][lifecycle][client] startAndWait: getStatus error while polling",
+          "[tokagent][lifecycle][client] startAndWait: getStatus error while polling",
           { pollN, waitedMs: Date.now() - t0 },
           pollErr,
         );
@@ -912,7 +912,7 @@ ElizaClient.prototype.startAndWait = async function (
   }
   const final = await this.getStatus();
   console.warn(
-    "[eliza][lifecycle][client] startAndWait: timed out — returning last status",
+    "[tokagent][lifecycle][client] startAndWait: timed out — returning last status",
     {
       state: final.state,
       waitedMs: Date.now() - t0,
@@ -922,49 +922,49 @@ ElizaClient.prototype.startAndWait = async function (
   return final;
 };
 
-ElizaClient.prototype.stopAgent = async function (this: ElizaClient) {
+TokagentClient.prototype.stopAgent = async function (this: TokagentClient) {
   const res = await this.fetch<{ status: AgentStatus }>("/api/agent/stop", {
     method: "POST",
   });
   return res.status;
 };
 
-ElizaClient.prototype.pauseAgent = async function (this: ElizaClient) {
+TokagentClient.prototype.pauseAgent = async function (this: TokagentClient) {
   const res = await this.fetch<{ status: AgentStatus }>("/api/agent/pause", {
     method: "POST",
   });
   return res.status;
 };
 
-ElizaClient.prototype.resumeAgent = async function (this: ElizaClient) {
+TokagentClient.prototype.resumeAgent = async function (this: TokagentClient) {
   const res = await this.fetch<{ status: AgentStatus }>("/api/agent/resume", {
     method: "POST",
   });
   return res.status;
 };
 
-ElizaClient.prototype.restartAgent = async function (this: ElizaClient) {
+TokagentClient.prototype.restartAgent = async function (this: TokagentClient) {
   const res = await this.fetch<{ status: AgentStatus }>("/api/agent/restart", {
     method: "POST",
   });
   return res.status;
 };
 
-ElizaClient.prototype.restartAndWait = async function (
-  this: ElizaClient,
+TokagentClient.prototype.restartAndWait = async function (
+  this: TokagentClient,
   maxWaitMs = 30000,
 ) {
   const t0 = Date.now();
-  console.info("[eliza][reset][client] restartAndWait: begin", {
+  console.info("[tokagent][reset][client] restartAndWait: begin", {
     baseUrl: this.getBaseUrl(),
     maxWaitMs,
   });
   try {
     await this.restartAgent();
-    console.info("[eliza][reset][client] restartAndWait: restart accepted");
+    console.info("[tokagent][reset][client] restartAndWait: restart accepted");
   } catch (e) {
     console.info(
-      "[eliza][reset][client] restartAndWait: initial restart call failed (often 409 while restarting)",
+      "[tokagent][reset][client] restartAndWait: initial restart call failed (often 409 while restarting)",
       e,
     );
   }
@@ -977,7 +977,7 @@ ElizaClient.prototype.restartAndWait = async function (
     try {
       const status = await this.getStatus();
       if (status.state === "running") {
-        console.info("[eliza][reset][client] restartAndWait: running", {
+        console.info("[tokagent][reset][client] restartAndWait: running", {
           pollN,
           waitedMs: Date.now() - t0,
           port: status.port,
@@ -985,7 +985,7 @@ ElizaClient.prototype.restartAndWait = async function (
         return status;
       }
       if (pollN === 1 || pollN % 5 === 0) {
-        console.debug("[eliza][reset][client] restartAndWait: poll", {
+        console.debug("[tokagent][reset][client] restartAndWait: poll", {
           pollN,
           state: status.state,
           waitedMs: Date.now() - t0,
@@ -994,7 +994,7 @@ ElizaClient.prototype.restartAndWait = async function (
     } catch (pollErr) {
       if (pollN === 1 || pollN % 5 === 0) {
         console.debug(
-          "[eliza][reset][client] restartAndWait: getStatus error while polling",
+          "[tokagent][reset][client] restartAndWait: getStatus error while polling",
           { pollN, waitedMs: Date.now() - t0 },
           pollErr,
         );
@@ -1003,7 +1003,7 @@ ElizaClient.prototype.restartAndWait = async function (
   }
   const final = await this.getStatus();
   console.warn(
-    "[eliza][reset][client] restartAndWait: timed out — returning last status",
+    "[tokagent][reset][client] restartAndWait: timed out — returning last status",
     {
       state: final.state,
       waitedMs: Date.now() - t0,
@@ -1013,19 +1013,19 @@ ElizaClient.prototype.restartAndWait = async function (
   return final;
 };
 
-ElizaClient.prototype.resetAgent = async function (this: ElizaClient) {
-  console.info("[eliza][reset][client] POST /api/agent/reset", {
+TokagentClient.prototype.resetAgent = async function (this: TokagentClient) {
+  console.info("[tokagent][reset][client] POST /api/agent/reset", {
     baseUrl: this.getBaseUrl(),
   });
   await this.fetch("/api/agent/reset", { method: "POST" });
-  console.info("[eliza][reset][client] POST /api/agent/reset OK");
+  console.info("[tokagent][reset][client] POST /api/agent/reset OK");
 };
 
-ElizaClient.prototype.restart = async function (this: ElizaClient) {
+TokagentClient.prototype.restart = async function (this: TokagentClient) {
   return this.fetch("/api/restart", { method: "POST" });
 };
 
-ElizaClient.prototype.getConfig = async function (this: ElizaClient) {
+TokagentClient.prototype.getConfig = async function (this: TokagentClient) {
   logSettingsClient("GET /api/config → start", {
     baseUrl: this.getBaseUrl(),
   });
@@ -1039,11 +1039,11 @@ ElizaClient.prototype.getConfig = async function (this: ElizaClient) {
   return r;
 };
 
-ElizaClient.prototype.getConfigSchema = async function (this: ElizaClient) {
+TokagentClient.prototype.getConfigSchema = async function (this: TokagentClient) {
   return this.fetch("/api/config/schema");
 };
 
-ElizaClient.prototype.updateConfig = async function (this: ElizaClient, patch) {
+TokagentClient.prototype.updateConfig = async function (this: TokagentClient, patch) {
   logSettingsClient("PUT /api/config → start", {
     baseUrl: this.getBaseUrl(),
     patch,
@@ -1068,8 +1068,8 @@ ElizaClient.prototype.updateConfig = async function (this: ElizaClient, patch) {
   return out;
 };
 
-ElizaClient.prototype.uploadCustomVrm = async function (
-  this: ElizaClient,
+TokagentClient.prototype.uploadCustomVrm = async function (
+  this: TokagentClient,
   file,
 ) {
   const buf = await file.arrayBuffer();
@@ -1080,7 +1080,7 @@ ElizaClient.prototype.uploadCustomVrm = async function (
   });
 };
 
-ElizaClient.prototype.hasCustomVrm = async function (this: ElizaClient) {
+TokagentClient.prototype.hasCustomVrm = async function (this: TokagentClient) {
   try {
     const res = await this.rawRequest(
       "/api/avatar/vrm",
@@ -1093,8 +1093,8 @@ ElizaClient.prototype.hasCustomVrm = async function (this: ElizaClient) {
   }
 };
 
-ElizaClient.prototype.uploadCustomBackground = async function (
-  this: ElizaClient,
+TokagentClient.prototype.uploadCustomBackground = async function (
+  this: TokagentClient,
   file,
 ) {
   const buf = await file.arrayBuffer();
@@ -1105,7 +1105,7 @@ ElizaClient.prototype.uploadCustomBackground = async function (
   });
 };
 
-ElizaClient.prototype.hasCustomBackground = async function (this: ElizaClient) {
+TokagentClient.prototype.hasCustomBackground = async function (this: TokagentClient) {
   try {
     const res = await this.rawRequest(
       "/api/avatar/background",
@@ -1118,12 +1118,12 @@ ElizaClient.prototype.hasCustomBackground = async function (this: ElizaClient) {
   }
 };
 
-ElizaClient.prototype.getConnectors = async function (this: ElizaClient) {
+TokagentClient.prototype.getConnectors = async function (this: TokagentClient) {
   return this.fetch("/api/connectors");
 };
 
-ElizaClient.prototype.saveConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.saveConnector = async function (
+  this: TokagentClient,
   name,
   config,
 ) {
@@ -1133,8 +1133,8 @@ ElizaClient.prototype.saveConnector = async function (
   });
 };
 
-ElizaClient.prototype.deleteConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteConnector = async function (
+  this: TokagentClient,
   name,
 ) {
   return this.fetch(`/api/connectors/${encodeURIComponent(name)}`, {
@@ -1142,16 +1142,16 @@ ElizaClient.prototype.deleteConnector = async function (
   });
 };
 
-ElizaClient.prototype.getTriggers = async function (this: ElizaClient) {
+TokagentClient.prototype.getTriggers = async function (this: TokagentClient) {
   return this.fetch("/api/triggers");
 };
 
-ElizaClient.prototype.getTrigger = async function (this: ElizaClient, id) {
+TokagentClient.prototype.getTrigger = async function (this: TokagentClient, id) {
   return this.fetch(`/api/triggers/${encodeURIComponent(id)}`);
 };
 
-ElizaClient.prototype.createTrigger = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createTrigger = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/triggers", {
@@ -1160,8 +1160,8 @@ ElizaClient.prototype.createTrigger = async function (
   });
 };
 
-ElizaClient.prototype.updateTrigger = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateTrigger = async function (
+  this: TokagentClient,
   id,
   request,
 ) {
@@ -1171,32 +1171,32 @@ ElizaClient.prototype.updateTrigger = async function (
   });
 };
 
-ElizaClient.prototype.deleteTrigger = async function (this: ElizaClient, id) {
+TokagentClient.prototype.deleteTrigger = async function (this: TokagentClient, id) {
   return this.fetch(`/api/triggers/${encodeURIComponent(id)}`, {
     method: "DELETE",
   });
 };
 
-ElizaClient.prototype.runTriggerNow = async function (this: ElizaClient, id) {
+TokagentClient.prototype.runTriggerNow = async function (this: TokagentClient, id) {
   return this.fetch(`/api/triggers/${encodeURIComponent(id)}/execute`, {
     method: "POST",
   });
 };
 
-ElizaClient.prototype.getTriggerRuns = async function (this: ElizaClient, id) {
+TokagentClient.prototype.getTriggerRuns = async function (this: TokagentClient, id) {
   return this.fetch(`/api/triggers/${encodeURIComponent(id)}/runs`);
 };
 
-ElizaClient.prototype.getTriggerHealth = async function (this: ElizaClient) {
+TokagentClient.prototype.getTriggerHealth = async function (this: TokagentClient) {
   return this.fetch("/api/triggers/health");
 };
 
-ElizaClient.prototype.getTrainingStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getTrainingStatus = async function (this: TokagentClient) {
   return this.fetch("/api/training/status");
 };
 
-ElizaClient.prototype.listTrainingTrajectories = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listTrainingTrajectories = async function (
+  this: TokagentClient,
   opts?,
 ) {
   const params = new URLSearchParams();
@@ -1207,8 +1207,8 @@ ElizaClient.prototype.listTrainingTrajectories = async function (
   return this.fetch(`/api/training/trajectories${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.getTrainingTrajectory = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getTrainingTrajectory = async function (
+  this: TokagentClient,
   trajectoryId,
 ) {
   return this.fetch(
@@ -1216,14 +1216,14 @@ ElizaClient.prototype.getTrainingTrajectory = async function (
   );
 };
 
-ElizaClient.prototype.listTrainingDatasets = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listTrainingDatasets = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/training/datasets");
 };
 
-ElizaClient.prototype.buildTrainingDataset = async function (
-  this: ElizaClient,
+TokagentClient.prototype.buildTrainingDataset = async function (
+  this: TokagentClient,
   options?,
 ) {
   return this.fetch("/api/training/datasets/build", {
@@ -1232,12 +1232,12 @@ ElizaClient.prototype.buildTrainingDataset = async function (
   });
 };
 
-ElizaClient.prototype.listTrainingJobs = async function (this: ElizaClient) {
+TokagentClient.prototype.listTrainingJobs = async function (this: TokagentClient) {
   return this.fetch("/api/training/jobs");
 };
 
-ElizaClient.prototype.startTrainingJob = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startTrainingJob = async function (
+  this: TokagentClient,
   options?,
 ) {
   return this.fetch("/api/training/jobs", {
@@ -1246,15 +1246,15 @@ ElizaClient.prototype.startTrainingJob = async function (
   });
 };
 
-ElizaClient.prototype.getTrainingJob = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getTrainingJob = async function (
+  this: TokagentClient,
   jobId,
 ) {
   return this.fetch(`/api/training/jobs/${encodeURIComponent(jobId)}`);
 };
 
-ElizaClient.prototype.cancelTrainingJob = async function (
-  this: ElizaClient,
+TokagentClient.prototype.cancelTrainingJob = async function (
+  this: TokagentClient,
   jobId,
 ) {
   return this.fetch(`/api/training/jobs/${encodeURIComponent(jobId)}/cancel`, {
@@ -1262,12 +1262,12 @@ ElizaClient.prototype.cancelTrainingJob = async function (
   });
 };
 
-ElizaClient.prototype.listTrainingModels = async function (this: ElizaClient) {
+TokagentClient.prototype.listTrainingModels = async function (this: TokagentClient) {
   return this.fetch("/api/training/models");
 };
 
-ElizaClient.prototype.importTrainingModelToOllama = async function (
-  this: ElizaClient,
+TokagentClient.prototype.importTrainingModelToOllama = async function (
+  this: TokagentClient,
   modelId,
   options?,
 ) {
@@ -1280,8 +1280,8 @@ ElizaClient.prototype.importTrainingModelToOllama = async function (
   );
 };
 
-ElizaClient.prototype.activateTrainingModel = async function (
-  this: ElizaClient,
+TokagentClient.prototype.activateTrainingModel = async function (
+  this: TokagentClient,
   modelId,
   providerModel?,
 ) {
@@ -1294,8 +1294,8 @@ ElizaClient.prototype.activateTrainingModel = async function (
   );
 };
 
-ElizaClient.prototype.benchmarkTrainingModel = async function (
-  this: ElizaClient,
+TokagentClient.prototype.benchmarkTrainingModel = async function (
+  this: TokagentClient,
   modelId,
 ) {
   return this.fetch(
@@ -1304,12 +1304,12 @@ ElizaClient.prototype.benchmarkTrainingModel = async function (
   );
 };
 
-ElizaClient.prototype.getPlugins = async function (this: ElizaClient) {
+TokagentClient.prototype.getPlugins = async function (this: TokagentClient) {
   return this.fetch("/api/plugins");
 };
 
-ElizaClient.prototype.fetchModels = async function (
-  this: ElizaClient,
+TokagentClient.prototype.fetchModels = async function (
+  this: TokagentClient,
   provider,
   refresh = true,
 ) {
@@ -1318,12 +1318,12 @@ ElizaClient.prototype.fetchModels = async function (
   return this.fetch(`/api/models?${params.toString()}`);
 };
 
-ElizaClient.prototype.getCorePlugins = async function (this: ElizaClient) {
+TokagentClient.prototype.getCorePlugins = async function (this: TokagentClient) {
   return this.fetch("/api/plugins/core");
 };
 
-ElizaClient.prototype.toggleCorePlugin = async function (
-  this: ElizaClient,
+TokagentClient.prototype.toggleCorePlugin = async function (
+  this: TokagentClient,
   npmName,
   enabled,
 ) {
@@ -1333,8 +1333,8 @@ ElizaClient.prototype.toggleCorePlugin = async function (
   });
 };
 
-ElizaClient.prototype.updatePlugin = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updatePlugin = async function (
+  this: TokagentClient,
   id,
   config,
 ) {
@@ -1359,12 +1359,12 @@ ElizaClient.prototype.updatePlugin = async function (
   return result;
 };
 
-ElizaClient.prototype.getSecrets = async function (this: ElizaClient) {
+TokagentClient.prototype.getSecrets = async function (this: TokagentClient) {
   return this.fetch("/api/secrets");
 };
 
-ElizaClient.prototype.updateSecrets = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateSecrets = async function (
+  this: TokagentClient,
   secrets,
 ) {
   logSettingsClient("PUT /api/secrets → start", {
@@ -1387,8 +1387,8 @@ ElizaClient.prototype.updateSecrets = async function (
   return out;
 };
 
-ElizaClient.prototype.testPluginConnection = async function (
-  this: ElizaClient,
+TokagentClient.prototype.testPluginConnection = async function (
+  this: TokagentClient,
   id,
 ) {
   return this.fetch(`/api/plugins/${encodeURIComponent(id)}/test`, {
@@ -1396,7 +1396,7 @@ ElizaClient.prototype.testPluginConnection = async function (
   });
 };
 
-ElizaClient.prototype.getLogs = async function (this: ElizaClient, filter?) {
+TokagentClient.prototype.getLogs = async function (this: TokagentClient, filter?) {
   const params = new URLSearchParams();
   if (filter?.source) params.set("source", filter.source);
   if (filter?.level) params.set("level", filter.level);
@@ -1426,16 +1426,16 @@ function buildSecurityAuditParams(
   return params;
 }
 
-ElizaClient.prototype.getSecurityAudit = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getSecurityAudit = async function (
+  this: TokagentClient,
   filter?,
 ) {
   const qs = buildSecurityAuditParams(filter).toString();
   return this.fetch(`/api/security/audit${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.streamSecurityAudit = async function (
-  this: ElizaClient,
+TokagentClient.prototype.streamSecurityAudit = async function (
+  this: TokagentClient,
   onEvent,
   filter?,
   signal?,
@@ -1528,8 +1528,8 @@ ElizaClient.prototype.streamSecurityAudit = async function (
   }
 };
 
-ElizaClient.prototype.getAgentEvents = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getAgentEvents = async function (
+  this: TokagentClient,
   opts?,
 ) {
   const params = new URLSearchParams();
@@ -1542,12 +1542,12 @@ ElizaClient.prototype.getAgentEvents = async function (
   return this.fetch(`/api/agent/events${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.getExtensionStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getExtensionStatus = async function (this: TokagentClient) {
   return this.fetch("/api/extension/status");
 };
 
-ElizaClient.prototype.getRelationshipsGraph = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRelationshipsGraph = async function (
+  this: TokagentClient,
   query,
 ) {
   const params = new URLSearchParams();
@@ -1564,8 +1564,8 @@ ElizaClient.prototype.getRelationshipsGraph = async function (
   return response.data;
 };
 
-ElizaClient.prototype.getRelationshipsPeople = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRelationshipsPeople = async function (
+  this: TokagentClient,
   query,
 ) {
   const params = new URLSearchParams();
@@ -1586,8 +1586,8 @@ ElizaClient.prototype.getRelationshipsPeople = async function (
   };
 };
 
-ElizaClient.prototype.getRelationshipsPerson = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRelationshipsPerson = async function (
+  this: TokagentClient,
   id,
 ) {
   const response = await this.fetch<{ data: RelationshipsPersonDetail }>(
@@ -1596,8 +1596,8 @@ ElizaClient.prototype.getRelationshipsPerson = async function (
   return response.data;
 };
 
-ElizaClient.prototype.getRelationshipsActivity = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRelationshipsActivity = async function (
+  this: TokagentClient,
   limit?,
 ) {
   const params = new URLSearchParams();
@@ -1606,8 +1606,8 @@ ElizaClient.prototype.getRelationshipsActivity = async function (
   return this.fetch(`/api/relationships/activity${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.getRelationshipsCandidates = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRelationshipsCandidates = async function (
+  this: TokagentClient,
 ) {
   const response = await this.fetch<{ data: RelationshipsMergeCandidate[] }>(
     "/api/relationships/candidates",
@@ -1615,8 +1615,8 @@ ElizaClient.prototype.getRelationshipsCandidates = async function (
   return response.data;
 };
 
-ElizaClient.prototype.acceptRelationshipsCandidate = async function (
-  this: ElizaClient,
+TokagentClient.prototype.acceptRelationshipsCandidate = async function (
+  this: TokagentClient,
   candidateId,
 ) {
   const response = await this.fetch<{ data: { id: string; status: string } }>(
@@ -1626,8 +1626,8 @@ ElizaClient.prototype.acceptRelationshipsCandidate = async function (
   return response.data;
 };
 
-ElizaClient.prototype.rejectRelationshipsCandidate = async function (
-  this: ElizaClient,
+TokagentClient.prototype.rejectRelationshipsCandidate = async function (
+  this: TokagentClient,
   candidateId,
 ) {
   const response = await this.fetch<{ data: { id: string; status: string } }>(
@@ -1637,8 +1637,8 @@ ElizaClient.prototype.rejectRelationshipsCandidate = async function (
   return response.data;
 };
 
-ElizaClient.prototype.proposeRelationshipsLink = async function (
-  this: ElizaClient,
+TokagentClient.prototype.proposeRelationshipsLink = async function (
+  this: TokagentClient,
   sourceEntityId,
   targetEntityId,
   evidence,
@@ -1657,37 +1657,37 @@ ElizaClient.prototype.proposeRelationshipsLink = async function (
   return response.data;
 };
 
-ElizaClient.prototype.getRolodexGraph = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRolodexGraph = async function (
+  this: TokagentClient,
   query,
 ) {
   return this.getRelationshipsGraph(query);
 };
 
-ElizaClient.prototype.getRolodexPeople = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRolodexPeople = async function (
+  this: TokagentClient,
   query,
 ) {
   return this.getRelationshipsPeople(query);
 };
 
-ElizaClient.prototype.getRolodexPerson = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getRolodexPerson = async function (
+  this: TokagentClient,
   id,
 ) {
   return this.getRelationshipsPerson(id);
 };
 
-ElizaClient.prototype.getCharacter = async function (this: ElizaClient) {
+TokagentClient.prototype.getCharacter = async function (this: TokagentClient) {
   return this.fetch("/api/character");
 };
 
-ElizaClient.prototype.getRandomName = async function (this: ElizaClient) {
+TokagentClient.prototype.getRandomName = async function (this: TokagentClient) {
   return this.fetch("/api/character/random-name");
 };
 
-ElizaClient.prototype.generateCharacterField = async function (
-  this: ElizaClient,
+TokagentClient.prototype.generateCharacterField = async function (
+  this: TokagentClient,
   field,
   context,
   mode?,
@@ -1698,8 +1698,8 @@ ElizaClient.prototype.generateCharacterField = async function (
   });
 };
 
-ElizaClient.prototype.updateCharacter = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateCharacter = async function (
+  this: TokagentClient,
   character,
 ) {
   return this.fetch("/api/character", {
@@ -1708,15 +1708,15 @@ ElizaClient.prototype.updateCharacter = async function (
   });
 };
 
-ElizaClient.prototype.getUpdateStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getUpdateStatus = async function (
+  this: TokagentClient,
   force = false,
 ) {
   return this.fetch(`/api/update/status${force ? "?force=true" : ""}`);
 };
 
-ElizaClient.prototype.setUpdateChannel = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setUpdateChannel = async function (
+  this: TokagentClient,
   channel,
 ) {
   return this.fetch("/api/update/channel", {
@@ -1725,14 +1725,14 @@ ElizaClient.prototype.setUpdateChannel = async function (
   });
 };
 
-ElizaClient.prototype.getAgentAutomationMode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getAgentAutomationMode = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/permissions/automation-mode");
 };
 
-ElizaClient.prototype.setAgentAutomationMode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setAgentAutomationMode = async function (
+  this: TokagentClient,
   mode,
 ) {
   return this.fetch("/api/permissions/automation-mode", {
@@ -1741,14 +1741,14 @@ ElizaClient.prototype.setAgentAutomationMode = async function (
   });
 };
 
-ElizaClient.prototype.getTradePermissionMode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getTradePermissionMode = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/permissions/trade-mode");
 };
 
-ElizaClient.prototype.setTradePermissionMode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setTradePermissionMode = async function (
+  this: TokagentClient,
   mode,
 ) {
   return this.fetch("/api/permissions/trade-mode", {
@@ -1757,7 +1757,7 @@ ElizaClient.prototype.setTradePermissionMode = async function (
   });
 };
 
-ElizaClient.prototype.getPermissions = async function (this: ElizaClient) {
+TokagentClient.prototype.getPermissions = async function (this: TokagentClient) {
   const permissions = await this.fetch<AllPermissionsState>("/api/permissions");
   const plugin = getNativeWebsiteBlockerPluginIfAvailable();
   if (!plugin) {
@@ -1773,7 +1773,7 @@ ElizaClient.prototype.getPermissions = async function (this: ElizaClient) {
   };
 };
 
-ElizaClient.prototype.getPermission = async function (this: ElizaClient, id) {
+TokagentClient.prototype.getPermission = async function (this: TokagentClient, id) {
   if (id === WEBSITE_BLOCKING_PERMISSION_ID) {
     const plugin = getNativeWebsiteBlockerPluginIfAvailable();
     if (plugin) {
@@ -1783,8 +1783,8 @@ ElizaClient.prototype.getPermission = async function (this: ElizaClient, id) {
   return this.fetch(`/api/permissions/${id}`);
 };
 
-ElizaClient.prototype.requestPermission = async function (
-  this: ElizaClient,
+TokagentClient.prototype.requestPermission = async function (
+  this: TokagentClient,
   id,
 ) {
   if (id === WEBSITE_BLOCKING_PERMISSION_ID) {
@@ -1798,8 +1798,8 @@ ElizaClient.prototype.requestPermission = async function (
   return this.fetch(`/api/permissions/${id}/request`, { method: "POST" });
 };
 
-ElizaClient.prototype.openPermissionSettings = async function (
-  this: ElizaClient,
+TokagentClient.prototype.openPermissionSettings = async function (
+  this: TokagentClient,
   id,
 ) {
   if (id === WEBSITE_BLOCKING_PERMISSION_ID) {
@@ -1814,7 +1814,7 @@ ElizaClient.prototype.openPermissionSettings = async function (
   });
 };
 
-ElizaClient.prototype.refreshPermissions = async function (this: ElizaClient) {
+TokagentClient.prototype.refreshPermissions = async function (this: TokagentClient) {
   const permissions = await this.fetch<AllPermissionsState>(
     "/api/permissions/refresh",
     {
@@ -1835,8 +1835,8 @@ ElizaClient.prototype.refreshPermissions = async function (this: ElizaClient) {
   };
 };
 
-ElizaClient.prototype.setShellEnabled = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setShellEnabled = async function (
+  this: TokagentClient,
   enabled,
 ) {
   return this.fetch("/api/permissions/shell", {
@@ -1845,15 +1845,15 @@ ElizaClient.prototype.setShellEnabled = async function (
   });
 };
 
-ElizaClient.prototype.isShellEnabled = async function (this: ElizaClient) {
+TokagentClient.prototype.isShellEnabled = async function (this: TokagentClient) {
   const result = await this.fetch<{ enabled: boolean }>(
     "/api/permissions/shell",
   );
   return result.enabled;
 };
 
-ElizaClient.prototype.getWebsiteBlockerStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getWebsiteBlockerStatus = async function (
+  this: TokagentClient,
 ) {
   const plugin = getNativeWebsiteBlockerPluginIfAvailable();
   if (plugin) {
@@ -1862,8 +1862,8 @@ ElizaClient.prototype.getWebsiteBlockerStatus = async function (
   return this.fetch("/api/website-blocker");
 };
 
-ElizaClient.prototype.startWebsiteBlock = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startWebsiteBlock = async function (
+  this: TokagentClient,
   options,
 ) {
   const plugin = getNativeWebsiteBlockerPluginIfAvailable();
@@ -1876,7 +1876,7 @@ ElizaClient.prototype.startWebsiteBlock = async function (
   });
 };
 
-ElizaClient.prototype.stopWebsiteBlock = async function (this: ElizaClient) {
+TokagentClient.prototype.stopWebsiteBlock = async function (this: TokagentClient) {
   const plugin = getNativeWebsiteBlockerPluginIfAvailable();
   if (plugin) {
     return await plugin.stopBlock();
@@ -1886,8 +1886,8 @@ ElizaClient.prototype.stopWebsiteBlock = async function (this: ElizaClient) {
   });
 };
 
-ElizaClient.prototype.getCodingAgentStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCodingAgentStatus = async function (
+  this: TokagentClient,
 ) {
   try {
     const status = await this.fetch<CodingAgentStatus>(
@@ -1926,8 +1926,8 @@ ElizaClient.prototype.getCodingAgentStatus = async function (
   }
 };
 
-ElizaClient.prototype.listCodingAgentTaskThreads = function (
-  this: ElizaClient,
+TokagentClient.prototype.listCodingAgentTaskThreads = function (
+  this: TokagentClient,
   options,
 ) {
   const params = new URLSearchParams();
@@ -1943,8 +1943,8 @@ ElizaClient.prototype.listCodingAgentTaskThreads = function (
   );
 };
 
-ElizaClient.prototype.getCodingAgentTaskThread = function (
-  this: ElizaClient,
+TokagentClient.prototype.getCodingAgentTaskThread = function (
+  this: TokagentClient,
   threadId,
 ) {
   return this.fetch<CodingAgentTaskThreadDetail>(
@@ -1952,8 +1952,8 @@ ElizaClient.prototype.getCodingAgentTaskThread = function (
   );
 };
 
-ElizaClient.prototype.archiveCodingAgentTaskThread = async function (
-  this: ElizaClient,
+TokagentClient.prototype.archiveCodingAgentTaskThread = async function (
+  this: TokagentClient,
   threadId,
 ) {
   await this.fetch(
@@ -1963,8 +1963,8 @@ ElizaClient.prototype.archiveCodingAgentTaskThread = async function (
   return true;
 };
 
-ElizaClient.prototype.reopenCodingAgentTaskThread = async function (
-  this: ElizaClient,
+TokagentClient.prototype.reopenCodingAgentTaskThread = async function (
+  this: TokagentClient,
   threadId,
 ) {
   await this.fetch(
@@ -1974,8 +1974,8 @@ ElizaClient.prototype.reopenCodingAgentTaskThread = async function (
   return true;
 };
 
-ElizaClient.prototype.stopCodingAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.stopCodingAgent = async function (
+  this: TokagentClient,
   sessionId,
 ) {
   try {
@@ -1989,8 +1989,8 @@ ElizaClient.prototype.stopCodingAgent = async function (
   }
 };
 
-ElizaClient.prototype.listCodingAgentScratchWorkspaces = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listCodingAgentScratchWorkspaces = async function (
+  this: TokagentClient,
 ) {
   try {
     return await this.fetch<CodingAgentScratchWorkspace[]>(
@@ -2005,8 +2005,8 @@ ElizaClient.prototype.listCodingAgentScratchWorkspaces = async function (
   }
 };
 
-ElizaClient.prototype.keepCodingAgentScratchWorkspace = async function (
-  this: ElizaClient,
+TokagentClient.prototype.keepCodingAgentScratchWorkspace = async function (
+  this: TokagentClient,
   sessionId,
 ) {
   try {
@@ -2020,8 +2020,8 @@ ElizaClient.prototype.keepCodingAgentScratchWorkspace = async function (
   }
 };
 
-ElizaClient.prototype.deleteCodingAgentScratchWorkspace = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteCodingAgentScratchWorkspace = async function (
+  this: TokagentClient,
   sessionId,
 ) {
   try {
@@ -2035,8 +2035,8 @@ ElizaClient.prototype.deleteCodingAgentScratchWorkspace = async function (
   }
 };
 
-ElizaClient.prototype.promoteCodingAgentScratchWorkspace = async function (
-  this: ElizaClient,
+TokagentClient.prototype.promoteCodingAgentScratchWorkspace = async function (
+  this: TokagentClient,
   sessionId,
   name?,
 ) {
@@ -2054,8 +2054,8 @@ ElizaClient.prototype.promoteCodingAgentScratchWorkspace = async function (
   }
 };
 
-ElizaClient.prototype.spawnShellSession = async function (
-  this: ElizaClient,
+TokagentClient.prototype.spawnShellSession = async function (
+  this: TokagentClient,
   workdir?: string,
 ) {
   const res = await this.fetch<{ session: { id: string } }>(
@@ -2071,30 +2071,30 @@ ElizaClient.prototype.spawnShellSession = async function (
   return { sessionId: res.session.id };
 };
 
-ElizaClient.prototype.subscribePtyOutput = function (
-  this: ElizaClient,
+TokagentClient.prototype.subscribePtyOutput = function (
+  this: TokagentClient,
   sessionId,
 ) {
   this.sendWsMessage({ type: "pty-subscribe", sessionId });
 };
 
-ElizaClient.prototype.unsubscribePtyOutput = function (
-  this: ElizaClient,
+TokagentClient.prototype.unsubscribePtyOutput = function (
+  this: TokagentClient,
   sessionId,
 ) {
   this.sendWsMessage({ type: "pty-unsubscribe", sessionId });
 };
 
-ElizaClient.prototype.sendPtyInput = function (
-  this: ElizaClient,
+TokagentClient.prototype.sendPtyInput = function (
+  this: TokagentClient,
   sessionId,
   data,
 ) {
   this.sendWsMessage({ type: "pty-input", sessionId, data });
 };
 
-ElizaClient.prototype.resizePty = function (
-  this: ElizaClient,
+TokagentClient.prototype.resizePty = function (
+  this: TokagentClient,
   sessionId,
   cols,
   rows,
@@ -2102,8 +2102,8 @@ ElizaClient.prototype.resizePty = function (
   this.sendWsMessage({ type: "pty-resize", sessionId, cols, rows });
 };
 
-ElizaClient.prototype.getPtyBufferedOutput = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getPtyBufferedOutput = async function (
+  this: TokagentClient,
   sessionId,
 ) {
   try {
@@ -2116,26 +2116,26 @@ ElizaClient.prototype.getPtyBufferedOutput = async function (
   }
 };
 
-ElizaClient.prototype.streamGoLive = async function (this: ElizaClient) {
+TokagentClient.prototype.streamGoLive = async function (this: TokagentClient) {
   return this.fetch("/api/stream/live", { method: "POST" });
 };
 
-ElizaClient.prototype.streamGoOffline = async function (this: ElizaClient) {
+TokagentClient.prototype.streamGoOffline = async function (this: TokagentClient) {
   return this.fetch("/api/stream/offline", { method: "POST" });
 };
 
-ElizaClient.prototype.streamStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.streamStatus = async function (this: TokagentClient) {
   return this.fetch("/api/stream/status");
 };
 
-ElizaClient.prototype.getStreamingDestinations = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getStreamingDestinations = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/streaming/destinations");
 };
 
-ElizaClient.prototype.setActiveDestination = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setActiveDestination = async function (
+  this: TokagentClient,
   destinationId,
 ) {
   return this.fetch("/api/streaming/destination", {
@@ -2144,8 +2144,8 @@ ElizaClient.prototype.setActiveDestination = async function (
   });
 };
 
-ElizaClient.prototype.setStreamVolume = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setStreamVolume = async function (
+  this: TokagentClient,
   volume,
 ) {
   return this.fetch("/api/stream/volume", {
@@ -2154,20 +2154,20 @@ ElizaClient.prototype.setStreamVolume = async function (
   });
 };
 
-ElizaClient.prototype.muteStream = async function (this: ElizaClient) {
+TokagentClient.prototype.muteStream = async function (this: TokagentClient) {
   return this.fetch("/api/stream/mute", { method: "POST" });
 };
 
-ElizaClient.prototype.unmuteStream = async function (this: ElizaClient) {
+TokagentClient.prototype.unmuteStream = async function (this: TokagentClient) {
   return this.fetch("/api/stream/unmute", { method: "POST" });
 };
 
-ElizaClient.prototype.getStreamVoice = async function (this: ElizaClient) {
+TokagentClient.prototype.getStreamVoice = async function (this: TokagentClient) {
   return this.fetch("/api/stream/voice");
 };
 
-ElizaClient.prototype.saveStreamVoice = async function (
-  this: ElizaClient,
+TokagentClient.prototype.saveStreamVoice = async function (
+  this: TokagentClient,
   settings,
 ) {
   return this.fetch("/api/stream/voice", {
@@ -2176,8 +2176,8 @@ ElizaClient.prototype.saveStreamVoice = async function (
   });
 };
 
-ElizaClient.prototype.streamVoiceSpeak = async function (
-  this: ElizaClient,
+TokagentClient.prototype.streamVoiceSpeak = async function (
+  this: TokagentClient,
   text,
 ) {
   return this.fetch("/api/stream/voice/speak", {
@@ -2186,8 +2186,8 @@ ElizaClient.prototype.streamVoiceSpeak = async function (
   });
 };
 
-ElizaClient.prototype.getOverlayLayout = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getOverlayLayout = async function (
+  this: TokagentClient,
   destinationId?,
 ) {
   const qs = destinationId
@@ -2196,8 +2196,8 @@ ElizaClient.prototype.getOverlayLayout = async function (
   return this.fetch(`/api/stream/overlay-layout${qs}`);
 };
 
-ElizaClient.prototype.saveOverlayLayout = async function (
-  this: ElizaClient,
+TokagentClient.prototype.saveOverlayLayout = async function (
+  this: TokagentClient,
   layout,
   destinationId?,
 ) {
@@ -2210,12 +2210,12 @@ ElizaClient.prototype.saveOverlayLayout = async function (
   });
 };
 
-ElizaClient.prototype.getStreamSource = async function (this: ElizaClient) {
+TokagentClient.prototype.getStreamSource = async function (this: TokagentClient) {
   return this.fetch("/api/stream/source");
 };
 
-ElizaClient.prototype.setStreamSource = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setStreamSource = async function (
+  this: TokagentClient,
   sourceType,
   customUrl?,
 ) {
@@ -2225,12 +2225,12 @@ ElizaClient.prototype.setStreamSource = async function (
   });
 };
 
-ElizaClient.prototype.getStreamSettings = async function (this: ElizaClient) {
+TokagentClient.prototype.getStreamSettings = async function (this: TokagentClient) {
   return this.fetch("/api/stream/settings");
 };
 
-ElizaClient.prototype.saveStreamSettings = async function (
-  this: ElizaClient,
+TokagentClient.prototype.saveStreamSettings = async function (
+  this: TokagentClient,
   settings,
 ) {
   return this.fetch("/api/stream/settings", {

@@ -1,5 +1,5 @@
 {
-  "name": "eliza-react-example",
+  "name": "tokagent-react-example",
   "version": "2.0.0-alpha",
   "private": true,
   "type": "module",
@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.3",
-    "@elizaos/core": "alpha",
-    "@elizaos/plugin-eliza-classic": "alpha",
+    "@tokagentos/core": "alpha",
+    "@elizaos/plugin-tokagent-classic": "alpha",
     "@elizaos/plugin-sql": "alpha",
     "react": "19.2.3",
     "react-dom": "19.2.3",

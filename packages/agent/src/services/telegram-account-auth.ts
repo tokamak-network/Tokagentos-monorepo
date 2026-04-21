@@ -104,9 +104,9 @@ const TELEGRAM_ACCOUNT_AUTH_STATUSES = new Set<TelegramAccountAuthStatus>([
 
 function resolveStateDir(): string {
   return (
-    process.env.ELIZA_STATE_DIR?.trim() ||
-    process.env.ELIZA_STATE_DIR?.trim() ||
-    path.join(os.homedir(), ".eliza")
+    process.env.TOKAGENT_STATE_DIR?.trim() ||
+    process.env.TOKAGENT_STATE_DIR?.trim() ||
+    path.join(os.homedir(), ".tokagent")
   );
 }
 
@@ -305,7 +305,7 @@ export function telegramAccountAuthStateExists(): boolean {
 }
 
 export function defaultTelegramAccountDeviceModel(): string {
-  return "Eliza Desktop";
+  return "Tokagent Desktop";
 }
 
 export function defaultTelegramAccountSystemVersion(): string {
@@ -496,8 +496,8 @@ async function getOrCreateProvisionedApp(
     headers: createFormHeaders(cookie),
     body: new URLSearchParams({
       hash: creationHash,
-      app_title: "eliza",
-      app_shortname: "eliza",
+      app_title: "tokagent",
+      app_shortname: "tokagent",
       app_platform: "other",
       app_url: "",
       app_desc: "",

@@ -1,4 +1,4 @@
-import type { LifeOpsHealthSignal } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsHealthSignal } from "@tokagentos/shared/contracts/lifeops";
 import {
   fail,
   normalizeOptionalBoolean,

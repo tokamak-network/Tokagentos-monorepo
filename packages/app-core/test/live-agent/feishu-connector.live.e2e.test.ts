@@ -15,7 +15,7 @@
  * Requirements for live tests:
  *   FEISHU_APP_ID              — Feishu/Lark application ID (cli_xxx format)
  *   FEISHU_APP_SECRET          — Feishu/Lark application secret
- *   ELIZA_LIVE_TEST=1         — Enable live tests
+ *   TOKAGENT_LIVE_TEST=1         — Enable live tests
  *
  * Additional env vars for write tests:
  *   FEISHU_TEST_CHAT_ID        — Chat ID to test in (e.g., oc_xxx)
@@ -23,7 +23,7 @@
  * Optional env vars:
  *   FEISHU_DOMAIN              — "feishu.cn" (default) or "larksuite.com"
  *
- * Or configure in ~/.eliza/eliza.json:
+ * Or configure in ~/.tokagent/tokagent.json:
  *   { "connectors": { "feishu": { "token": "...", "appId": "...", "appSecret": "..." } } }
  *
  * NO MOCKS for live tests — all tests use real Feishu API.
@@ -34,8 +34,8 @@ import { fileURLToPath } from "node:url";
 import {
   extractPlugin,
   resolveFeishuPluginImportSpecifier,
-} from "@elizaos/app-core";
-import { logger, type Plugin } from "@elizaos/core";
+} from "@tokagentos/app-core";
+import { logger, type Plugin } from "@tokagentos/core";
 import dotenv from "dotenv";
 import { expect, it } from "vitest";
 import { describeIf } from "../../../../../test/helpers/conditional-tests.ts";
@@ -54,7 +54,7 @@ const FEISHU_DOMAIN = process.env.FEISHU_DOMAIN ?? "feishu.cn";
 const FEISHU_TEST_CHAT_ID = process.env.FEISHU_TEST_CHAT_ID;
 
 const hasFeishuCreds = Boolean(FEISHU_APP_ID && FEISHU_APP_SECRET);
-const liveTestsEnabled = process.env.ELIZA_LIVE_TEST === "1";
+const liveTestsEnabled = process.env.TOKAGENT_LIVE_TEST === "1";
 const runLiveTests = hasFeishuCreds && liveTestsEnabled;
 
 const hasWriteTargets = Boolean(FEISHU_TEST_CHAT_ID);
@@ -76,7 +76,7 @@ const _LIVE_WRITE_TIMEOUT = 60_000;
 logger.info(
   `[feishu-connector] Live tests ${runLiveTests ? "ENABLED" : "DISABLED"} ` +
     `(APP_ID=${Boolean(FEISHU_APP_ID)}, APP_SECRET=${Boolean(FEISHU_APP_SECRET)}, ` +
-    `ELIZA_LIVE_TEST=${liveTestsEnabled})`,
+    `TOKAGENT_LIVE_TEST=${liveTestsEnabled})`,
 );
 logger.info(
   `[feishu-connector] Write tests ${runLiveWriteTests ? "ENABLED" : "DISABLED"} ` +
@@ -268,7 +268,7 @@ let _workspaceAvailable: boolean | null = null;
 async function isWorkspaceAvailable(): Promise<boolean> {
   if (_workspaceAvailable === null) {
     _workspaceAvailable =
-      (await tryWorkspaceImport("@elizaos/app-core")) !== null;
+      (await tryWorkspaceImport("@tokagentos/app-core")) !== null;
     if (!_workspaceAvailable) {
       logger.warn(
         "[feishu-connector] Workspace not built — integration tests will be skipped",
@@ -287,7 +287,7 @@ describeIfWorkspace("Feishu Connector - Integration", () => {
   it("Feishu is mapped in CONNECTOR_PLUGINS", async () => {
     const mod = (await tryWorkspaceImport<{
       CONNECTOR_PLUGINS: Record<string, string>;
-    }>("@elizaos/app-core"))!;
+    }>("@tokagentos/app-core"))!;
     expect(mod.CONNECTOR_PLUGINS.feishu).toBe("@elizaos/plugin-feishu");
   });
 });

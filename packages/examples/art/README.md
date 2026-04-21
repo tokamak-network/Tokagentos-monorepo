@@ -1,4 +1,4 @@
-# ElizaOS ART (Adaptive Reinforcement Training) Demos
+# TokagentOS ART (Adaptive Reinforcement Training) Demos
 
 Continuous reinforcement learning system for training local LLMs to play games and solve puzzles using OpenPipe's ART framework with GRPO (Group Relative Policy Optimization).
 
@@ -44,20 +44,20 @@ pip install -e ".[local]"  # Adds vLLM support
 
 ### Run a single game with vanilla model:
 ```bash
-elizaos-art-2048 play --episodes 10
+tokagentos-art-2048 play --episodes 10
 ```
 
 ### Benchmark vanilla vs trained:
 ```bash
-elizaos-art-2048 benchmark --episodes 100
+tokagentos-art-2048 benchmark --episodes 100
 ```
 
 ### Full training pipeline:
 ```bash
-elizaos-art-2048 pipeline --steps 50 --rollouts 8
+tokagentos-art-2048 pipeline --steps 50 --rollouts 8
 
 # Or else try following if above command is failing. 
-HF_HUB_ENABLE_HF_TRANSFER=0 elizaos-art-2048 pipeline --steps 50 --rollouts 8
+HF_HUB_ENABLE_HF_TRANSFER=0 tokagentos-art-2048 pipeline --steps 50 --rollouts 8
 ```
 
 ## Training Pipeline
@@ -96,13 +96,13 @@ The training pipeline follows these stages:
 
 ```bash
 # List all games
-elizaos-art list
+tokagentos-art list
 
 # Run benchmarks across all games
-elizaos-art benchmark-all --episodes 50
+tokagentos-art benchmark-all --episodes 50
 
 # Show training status
-elizaos-art status
+tokagentos-art status
 ```
 
 ### Per-Game Commands
@@ -111,22 +111,22 @@ Each game supports these commands:
 
 ```bash
 # Play mode - watch the agent play
-elizaos-art-{game} play [--episodes N] [--model MODEL]
+tokagentos-art-{game} play [--episodes N] [--model MODEL]
 
 # Interactive mode - play yourself with AI hints  
-elizaos-art-{game} interactive
+tokagentos-art-{game} interactive
 
 # Benchmark mode - compare strategies/models
-elizaos-art-{game} benchmark [--episodes N] [--models MODEL1,MODEL2]
+tokagentos-art-{game} benchmark [--episodes N] [--models MODEL1,MODEL2]
 
 # Train mode - run GRPO training
-elizaos-art-{game} train [--steps N] [--rollouts N] [--lr RATE]
+tokagentos-art-{game} train [--steps N] [--rollouts N] [--lr RATE]
 
 # Pipeline mode - full train + evaluate
-elizaos-art-{game} pipeline [--steps N] [--resume]
+tokagentos-art-{game} pipeline [--steps N] [--resume]
 
 # Evaluate a checkpoint
-elizaos-art-{game} evaluate --checkpoint PATH
+tokagentos-art-{game} evaluate --checkpoint PATH
 ```
 
 ## Configuration
@@ -183,7 +183,7 @@ Train an agent to achieve high scores in the 2048 tile-merging game.
 **Reward**: Score achieved (sum of merged tiles)
 
 ```bash
-elizaos-art-2048 pipeline --steps 100 --target-score 2048
+tokagentos-art-2048 pipeline --steps 100 --target-score 2048
 ```
 
 ### Tic-Tac-Toe
@@ -195,7 +195,7 @@ Train an agent to play optimal Tic-Tac-Toe.
 **Reward**: +1 win, 0 draw, -1 loss
 
 ```bash
-elizaos-art-tictactoe pipeline --steps 50 --opponent random
+tokagentos-art-tictactoe pipeline --steps 50 --opponent random
 ```
 
 ### Codenames
@@ -209,7 +209,7 @@ Train agents for both Spymaster and Guesser roles.
 **Reward**: +1 correct guess, -1 wrong team, -3 assassin
 
 ```bash
-elizaos-art-codenames pipeline --role spymaster --steps 100
+tokagentos-art-codenames pipeline --role spymaster --steps 100
 ```
 
 ### Temporal Clue
@@ -221,7 +221,7 @@ Train an agent to solve logic puzzles requiring temporal reasoning.
 **Reward**: Binary (correct/incorrect solution)
 
 ```bash
-elizaos-art-temporal pipeline --difficulty medium --steps 75
+tokagentos-art-temporal pipeline --difficulty medium --steps 75
 ```
 
 ## Output Structure
@@ -254,7 +254,7 @@ results/
 After training, generate a comparison report:
 
 ```bash
-elizaos-art-2048 report --output benchmark_report.md
+tokagentos-art-2048 report --output benchmark_report.md
 ```
 
 Example output:
@@ -278,8 +278,8 @@ Example output:
 
 ```python
 import asyncio
-from elizaos_art.games.game_2048 import Game2048Environment, Game2048Agent
-from elizaos_art.trainer import GRPOTrainer
+from tokagentos_art.games.game_2048 import Game2048Environment, Game2048Agent
+from tokagentos_art.trainer import GRPOTrainer
 
 async def main():
     # Create environment and agent
@@ -304,9 +304,9 @@ async def main():
 asyncio.run(main())
 ```
 
-## ElizaOS Integration
+## TokagentOS Integration
 
-This package integrates seamlessly with ElizaOS plugins for production use:
+This package integrates seamlessly with TokagentOS plugins for production use:
 
 ### plugin-trajectory-logger
 
@@ -317,9 +317,9 @@ Captures complete trajectories including:
 - Export to HuggingFace and OpenPipe ART format
 
 ```python
-from elizaos_art.eliza_integration import ElizaTrajectoryLogger
+from tokagentos_art.tokagent_integration import TokagentTrajectoryLogger
 
-logger = ElizaTrajectoryLogger(agent_id="my-agent")
+logger = TokagentTrajectoryLogger(agent_id="my-agent")
 traj_id = logger.start_trajectory(scenario_id="game-1")
 
 # ... run episode with logging ...
@@ -332,13 +332,13 @@ logger.end_trajectory(traj_id, status="completed")
 Run local GGUF models for inference:
 
 ```python
-from elizaos_art.eliza_integration import ElizaLocalAIProvider, LocalModelConfig
+from tokagentos_art.tokagent_integration import TokagentLocalAIProvider, LocalModelConfig
 
 config = LocalModelConfig(
     small_model="Llama-3.2-3B-Instruct-Q4_K_M.gguf",
     gpu_layers=43,
 )
-provider = ElizaLocalAIProvider(config)
+provider = TokagentLocalAIProvider(config)
 await provider.initialize()
 
 response = await provider.generate_text(
@@ -352,9 +352,9 @@ response = await provider.generate_text(
 Store trajectories and checkpoints:
 
 ```python
-from elizaos_art.eliza_integration import ElizaStorageAdapter
+from tokagentos_art.tokagent_integration import TokagentStorageAdapter
 
-storage = ElizaStorageAdapter(data_dir="./data")
+storage = TokagentStorageAdapter(data_dir="./data")
 
 # Save trajectory
 await storage.save_trajectory(trajectory)
@@ -368,8 +368,8 @@ trajectories = await storage.get_trajectories_by_scenario("game-1")
 Use `ARTRuntime` for fully integrated training:
 
 ```python
-from elizaos_art.eliza_integration import create_art_runtime, ARTRuntimeConfig
-from elizaos_art.games.game_2048 import Game2048Environment, Game2048Agent
+from tokagentos_art.tokagent_integration import create_art_runtime, ARTRuntimeConfig
+from tokagentos_art.games.game_2048 import Game2048Environment, Game2048Agent
 
 runtime = create_art_runtime(
     env=Game2048Environment(),
@@ -398,4 +398,4 @@ trajectories = await runtime.rollout_batch(
 - [OpenPipe ART Documentation](https://art.openpipe.ai)
 - [GRPO Paper](https://arxiv.org/abs/2402.03300)
 - [Llama 3.2 Models](https://huggingface.co/meta-llama)
-- [ElizaOS Documentation](https://elizaos.ai)
+- [TokagentOS Documentation](https://tokagentos.ai)

@@ -12,7 +12,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional, Union
 
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauBenchConfig,
     TauBenchTask,
     TauBenchResult,
@@ -20,28 +20,28 @@ from elizaos_tau_bench.types import (
     TauDomain,
     DomainReport,
 )
-from elizaos_tau_bench.dataset import TauBenchDataset
-from elizaos_tau_bench.evaluator import TauBenchEvaluator
-from elizaos_tau_bench.eliza_agent import (
-    ElizaOSTauAgent,
+from tokagentos_tau_bench.dataset import TauBenchDataset
+from tokagentos_tau_bench.evaluator import TauBenchEvaluator
+from tokagentos_tau_bench.tokagent_agent import (
+    TokagentOSTauAgent,
     MockTauAgent,
     create_tau_agent,
-    ELIZAOS_AVAILABLE,
+    TOKAGENTOS_AVAILABLE,
 )
-from elizaos_tau_bench.trajectory_integration import (
+from tokagentos_tau_bench.trajectory_integration import (
     TauBenchTrajectoryConfig,
     TauBenchTrajectoryIntegration,
 )
-from elizaos_tau_bench.executor import ToolExecutor
-from elizaos_tau_bench.environments.retail import RetailEnvironment
-from elizaos_tau_bench.environments.airline import AirlineEnvironment
-from elizaos_tau_bench.environments.base import DomainEnvironment
-from elizaos_tau_bench.constants import LEADERBOARD_SCORES
+from tokagentos_tau_bench.executor import ToolExecutor
+from tokagentos_tau_bench.environments.retail import RetailEnvironment
+from tokagentos_tau_bench.environments.airline import AirlineEnvironment
+from tokagentos_tau_bench.environments.base import DomainEnvironment
+from tokagentos_tau_bench.constants import LEADERBOARD_SCORES
 
 logger = logging.getLogger(__name__)
 
 # Type alias for agent
-TauAgentType = Union[ElizaOSTauAgent, MockTauAgent]
+TauAgentType = Union[TokagentOSTauAgent, MockTauAgent]
 
 
 class MemoryTracker:
@@ -98,10 +98,10 @@ class TauBenchRunner:
         self.evaluator = TauBenchEvaluator(use_llm_judge=config.use_llm_judge)
         self.memory_tracker = MemoryTracker(config.enable_memory_tracking)
         self._start_time = 0.0
-        self._elizaos_mode = not config.use_mock and ELIZAOS_AVAILABLE
+        self._tokagentos_mode = not config.use_mock and TOKAGENTOS_AVAILABLE
         self._trajectory: TauBenchTrajectoryIntegration | None = None
 
-        if self._elizaos_mode and config.enable_trajectory_logging:
+        if self._tokagentos_mode and config.enable_trajectory_logging:
             self._trajectory = TauBenchTrajectoryIntegration(
                 TauBenchTrajectoryConfig(
                     enabled=True,
@@ -112,8 +112,8 @@ class TauBenchRunner:
                 )
             )
 
-        if self._elizaos_mode:
-            logger.info("[TauBenchRunner] Running with ElizaOS integration (real LLM)")
+        if self._tokagentos_mode:
+            logger.info("[TauBenchRunner] Running with TokagentOS integration (real LLM)")
         else:
             logger.info("[TauBenchRunner] Running in mock mode (no LLM calls)")
 
@@ -212,8 +212,8 @@ class TauBenchRunner:
             if not task.policy_constraints:
                 task.policy_constraints = environment.get_policy_constraints()
 
-            # Create agent (mock, real ElizaOS, or eliza TS agent)
-            if self.config.model_provider == "eliza":
+            # Create agent (mock, real TokagentOS, or tokagent TS agent)
+            if self.config.model_provider == "tokagent":
                 from milady_adapter.tau_bench import MiladyTauAgent
 
                 agent = MiladyTauAgent(

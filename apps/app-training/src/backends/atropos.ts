@@ -2,7 +2,7 @@
  * Atropos training backend.
  *
  * Atropos is the open-source RL/SFT training stack used elsewhere in the
- * elizaOS ecosystem. There is no in-repo TypeScript SDK, so this backend
+ * tokagentOS ecosystem. There is no in-repo TypeScript SDK, so this backend
  * stages the dataset to the location atropos expects and prints next steps.
  *
  * Activation:
@@ -17,7 +17,7 @@
 import { mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { join, basename, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
-import { resolveStateDir } from "@elizaos/core";
+import { resolveStateDir } from "@tokagentos/core";
 
 export interface AtroposBackendOptions {
 	datasetPath: string;

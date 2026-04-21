@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it, vi } from "vitest";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import {
   JudgeParseError,
   judgeTextWithLlm,

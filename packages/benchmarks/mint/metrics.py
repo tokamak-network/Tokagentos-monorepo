@@ -232,7 +232,7 @@ class MetricsCalculator:
     def compare_to_leaderboard(
         self,
         metrics: MINTMetrics,
-        model_name: str = "elizaos",
+        model_name: str = "tokagentos",
     ) -> dict[str, dict[str, float]]:
         """
         Compare results to published leaderboard scores.

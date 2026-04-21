@@ -7,7 +7,7 @@ import {
 import {
   setAutonomyEnabled,
   stopTownRuntimes,
-} from "../simulation/elizaTownRuntime";
+} from "../simulation/tokagentTownRuntime";
 import type { MafiaGameState } from "../simulation/mafiaGame";
 import type { TownSimulationSnapshot } from "../simulation/townSimulation";
 import {

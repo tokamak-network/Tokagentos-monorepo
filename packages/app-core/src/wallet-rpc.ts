@@ -4,31 +4,31 @@ import type {
   WalletRpcChain,
   WalletRpcCredentialKey,
   WalletRpcSelections,
-} from "@elizaos/agent/contracts/wallet";
+} from "@tokagentos/agent/contracts/wallet";
 import {
   DEFAULT_WALLET_RPC_SELECTIONS,
   normalizeWalletRpcSelections,
-} from "@elizaos/agent/contracts/wallet";
+} from "@tokagentos/agent/contracts/wallet";
 
 const PROVIDER_CREDENTIAL_KEYS: Record<
   WalletRpcChain,
   Record<string, WalletRpcCredentialKey[]>
 > = {
   evm: {
-    "eliza-cloud": [],
+    "tokagent-cloud": [],
     alchemy: ["ALCHEMY_API_KEY"],
     infura: ["INFURA_API_KEY"],
     ankr: ["ANKR_API_KEY"],
   },
   bsc: {
-    "eliza-cloud": [],
+    "tokagent-cloud": [],
     alchemy: ["ALCHEMY_API_KEY"],
     ankr: ["ANKR_API_KEY"],
     nodereal: ["NODEREAL_BSC_RPC_URL"],
     quicknode: ["QUICKNODE_BSC_RPC_URL"],
   },
   solana: {
-    "eliza-cloud": [],
+    "tokagent-cloud": [],
     "helius-birdeye": ["HELIUS_API_KEY", "BIRDEYE_API_KEY"],
   },
 };

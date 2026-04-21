@@ -1,6 +1,6 @@
-import type { IAgentRuntime, UUID } from "@elizaos/core";
-import { logger } from "@elizaos/core";
-import { loadElizaConfig } from "./config.js";
+import type { IAgentRuntime, UUID } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
+import { loadTokagentConfig } from "./config.js";
 import type {
   OwnerContactEntry,
   OwnerContactsConfig,
@@ -146,7 +146,7 @@ export function loadOwnerContactsConfig(
   context: OwnerContactsLoadContext,
 ): OwnerContactsConfig {
   try {
-    return loadElizaConfig().agents?.defaults?.ownerContacts ?? {};
+    return loadTokagentConfig().agents?.defaults?.ownerContacts ?? {};
   } catch (error) {
     logger.warn(
       {

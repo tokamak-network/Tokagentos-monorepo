@@ -12,14 +12,14 @@
  * @module actions/app-control
  */
 
-import type { Action, ActionExample, Memory } from "@elizaos/core";
-import { logger } from "@elizaos/core";
-import { resolveServerOnlyPort } from "@elizaos/shared/runtime-env";
+import type { Action, ActionExample, Memory } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
+import { resolveServerOnlyPort } from "@tokagentos/shared/runtime-env";
 import {
   getValidationKeywordTerms,
   normalizeKeywordMatchText,
   textIncludesKeywordTerm,
-} from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/shared/validation-keywords";
 import { hasOwnerAccess } from "../security/access.js";
 
 const LAUNCH_APP_TERMS = getValidationKeywordTerms(
@@ -178,7 +178,7 @@ export const launchAppAction: Action = {
       }
 
       const displayName = data.displayName || appName;
-      const uiPort = process.env.ELIZA_PORT || "2138";
+      const uiPort = process.env.TOKAGENT_PORT || "2138";
       const appLink = `http://localhost:${uiPort}/#/apps/${appName}`;
 
       logger.info(`[app-control] launched ${displayName}`);

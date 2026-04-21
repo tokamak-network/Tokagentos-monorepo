@@ -13,18 +13,18 @@ _ORCH_PKG = _ROOT / "plugins" / "plugin-agent-orchestrator" / "python"
 if _ORCH_PKG.exists() and str(_ORCH_PKG) not in sys.path:
     sys.path.insert(0, str(_ORCH_PKG))
 
-from elizaos_plugin_agent_orchestrator import (
+from tokagentos_plugin_agent_orchestrator import (
     AgentProviderId,
     OrchestratedTask,
     ProviderTaskExecutionContext,
     TaskResult,
 )
 
-from elizaos_gaia.agent import GAIAAgent
-from elizaos_gaia.types import GAIAConfig, GAIALevel, GAIAQuestion
+from tokagentos_gaia.agent import GAIAAgent
+from tokagentos_gaia.types import GAIAConfig, GAIALevel, GAIAQuestion
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
+    from tokagentos.runtime import AgentRuntime
 
 
 class BaseGAIAProvider:

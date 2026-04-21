@@ -1,6 +1,6 @@
 ---
 title: "Quickstart"
-description: "Create and run your first elizaOS agent in 3 minutes"
+description: "Create and run your first tokagentOS agent in 3 minutes"
 ---
 
 **3 minutes.** That's all it takes to go from zero to a running AI agent with memory, actions, and a web interface.
@@ -18,14 +18,14 @@ Choose your language and follow along.
   <Tab title="TypeScript">
     <Steps>
       <Step title="Create Your Project">
-        Create a new elizaOS project using the interactive CLI:
+        Create a new tokagentOS project using the interactive CLI:
 
         ```bash
-        elizaos create
+        tokagentos create
         ```
 
         <Note>
-          The CLI is for building agents and projects. The monorepo is only for contributing to elizaOS core. See [CLI vs Monorepo](https://www.youtube.com/watch?v=tSO4wpQs2OA&list=PLrjBjP4nU8ehOgKAa0-XddHzE0KK0nNvS).
+          The CLI is for building agents and projects. The monorepo is only for contributing to tokagentOS core. See [CLI vs Monorepo](https://www.youtube.com/watch?v=tSO4wpQs2OA&list=PLrjBjP4nU8ehOgKAa0-XddHzE0KK0nNvS).
         </Note>
       </Step>
 
@@ -44,13 +44,13 @@ Choose your language and follow along.
 
       <Step title="Navigate to Your Project">
         ```bash
-        cd my-eliza-project
+        cd my-tokagent-project
         ```
       </Step>
 
       <Step title="Start Your Agent">
         ```bash
-        elizaos start
+        tokagentos start
         ```
 
         Wait a few seconds for the server to start up.
@@ -62,7 +62,7 @@ Choose your language and follow along.
         http://localhost:3000
         ```
 
-        Start chatting with Eliza through the web interface!
+        Start chatting with Tokagent through the web interface!
       </Step>
     </Steps>
 
@@ -74,8 +74,8 @@ Choose your language and follow along.
         Create a new directory and virtual environment:
 
         ```bash
-        mkdir my-eliza-agent
-        cd my-eliza-agent
+        mkdir my-tokagent-agent
+        cd my-tokagent-agent
         python -m venv .venv
         source .venv/bin/activate  # Windows: .venv\Scripts\activate
         ```
@@ -83,7 +83,7 @@ Choose your language and follow along.
 
       <Step title="Install Dependencies">
         ```bash
-        pip install elizaos elizaos-plugin-openai
+        pip install tokagentos tokagentos-plugin-openai
         ```
       </Step>
 
@@ -103,14 +103,14 @@ Choose your language and follow along.
 
         ```python
         import asyncio
-        from elizaos import AgentRuntime, Character, Memory, Content, ChannelType
-        from elizaos_plugin_openai import get_openai_plugin
+        from tokagentos import AgentRuntime, Character, Memory, Content, ChannelType
+        from tokagentos_plugin_openai import get_openai_plugin
         from uuid6 import uuid7
 
         async def main():
             # Define your character
             character = Character(
-                name="Eliza",
+                name="Tokagent",
                 bio="A helpful AI assistant.",
                 system="You are helpful and concise.",
             )
@@ -169,8 +169,8 @@ Choose your language and follow along.
     <Steps>
       <Step title="Create Your Project">
         ```bash
-        cargo new my-eliza-agent
-        cd my-eliza-agent
+        cargo new my-tokagent-agent
+        cd my-tokagent-agent
         ```
       </Step>
 
@@ -179,13 +179,13 @@ Choose your language and follow along.
 
         ```toml
         [package]
-        name = "my-eliza-agent"
+        name = "my-tokagent-agent"
         version = "0.1.0"
         edition = "2021"
 
         [dependencies]
-        elizaos = "1.0"
-        elizaos-plugin-openai = "1.0"
+        tokagentos = "1.0"
+        tokagentos-plugin-openai = "1.0"
         tokio = { version = "1", features = ["full"] }
         anyhow = "1"
         dotenvy = "0.15"
@@ -204,13 +204,13 @@ Choose your language and follow along.
 
         ```rust
         use anyhow::Result;
-        use elizaos::{
+        use tokagentos::{
             parse_character,
             runtime::{AgentRuntime, RuntimeOptions},
             types::{Content, Memory, UUID},
             IMessageService,
         };
-        use elizaos_plugin_openai::create_openai_plugin;
+        use tokagentos_plugin_openai::create_openai_plugin;
         use std::io::{self, Write};
 
         #[tokio::main]
@@ -220,7 +220,7 @@ Choose your language and follow along.
 
             // Define your character
             let character = parse_character(r#"{
-                "name": "Eliza",
+                "name": "Tokagent",
                 "bio": "A helpful AI assistant.",
                 "system": "You are helpful and concise."
             }"#)?;
@@ -332,7 +332,7 @@ Choose your language and follow along.
   <Accordion icon="database" title="Database Issues">
     **TypeScript (PGLite):**
     ```
-    PGLITE_DATA_DIR=/path/to/your/project/.eliza/.elizadb
+    PGLITE_DATA_DIR=/path/to/your/project/.tokagent/.tokagentdb
     ```
 
     **Python (SQLite by default):**
@@ -354,14 +354,14 @@ Choose your language and follow along.
 
     **TypeScript - Start fresh:**
     ```bash
-    rm -rf my-eliza-project
-    elizaos create
+    rm -rf my-tokagent-project
+    tokagentos create
     ```
 
     **Python - Reinstall:**
     ```bash
-    pip uninstall elizaos elizaos-plugin-openai
-    pip install elizaos elizaos-plugin-openai
+    pip uninstall tokagentos tokagentos-plugin-openai
+    pip install tokagentos tokagentos-plugin-openai
     ```
 
     **Rust - Clean build:**

@@ -87,7 +87,7 @@
  * This enables the concise syntax shown in examples.
  */
 
-import type { JsonValue } from "@elizaos/core";
+import type { JsonValue } from "@tokagentos/core";
 import type {
   FormControl,
   FormControlDependency,

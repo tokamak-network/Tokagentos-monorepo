@@ -10,8 +10,8 @@ import {
   type CodingAgentSession,
   type CodingAgentTaskThread,
   type CodingAgentTaskThreadDetail,
-} from "@elizaos/app-core";
-import { Badge, Button } from "@elizaos/ui";
+} from "@tokagentos/app-core";
+import { Badge, Button } from "@tokagentos/ui";
 import { Activity, SquareArrowOutUpRight } from "lucide-react";
 import {
   type ReactNode,

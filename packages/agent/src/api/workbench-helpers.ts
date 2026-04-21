@@ -2,11 +2,11 @@
  * Workbench task/todo normalization helpers.
  *
  * Extracted from server.ts — used exclusively by workbench-routes.ts
- * to transform elizaOS Task records into the WorkbenchTaskView / WorkbenchTodoView
+ * to transform tokagentOS Task records into the WorkbenchTaskView / WorkbenchTodoView
  * shapes consumed by the dashboard UI.
  */
 
-import type { Task } from "@elizaos/core";
+import type { Task } from "@tokagentos/core";
 import { readTriggerConfig } from "../triggers/runtime.js";
 
 // ---------------------------------------------------------------------------

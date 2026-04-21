@@ -44,8 +44,8 @@
  * - Intent affects what to extract
  */
 
-import type { IAgentRuntime, JsonValue } from "@elizaos/core";
-import { ModelType, parseKeyValueXml } from "@elizaos/core";
+import type { IAgentRuntime, JsonValue } from "@tokagentos/core";
+import { ModelType, parseKeyValueXml } from "@tokagentos/core";
 import type { TemplateValues } from "./template";
 import { resolveControlTemplates } from "./template";
 import type {
@@ -232,7 +232,7 @@ IMPORTANT: Your response must ONLY contain the TOON document above. No preamble 
  *
  * WHY structured parsing:
  * - Structured output is easier to parse than free text
- * - elizaOS parseKeyValueXml handles TOON natively, falls back to XML
+ * - tokagentOS parseKeyValueXml handles TOON natively, falls back to XML
  * - Falls back to regex if both fail
  *
  * @param response - LLM's structured response string

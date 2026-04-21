@@ -1,7 +1,7 @@
 /**
  * Offscreen document script
  *
- * Runs the ElizaOS runtime in a long-lived extension page so that
+ * Runs the TokagentOS runtime in a long-lived extension page so that
  * inference/streaming continues even if the popup is closed.
  */
 
@@ -11,7 +11,7 @@ import {
   sendMessage,
   updatePageContent,
   updateSelectedText,
-} from "../../shared/eliza-runtime-full";
+} from "../../shared/tokagent-runtime-full";
 
 type OffscreenSendChatRequest = {
   type: "OFFSCREEN_SEND_CHAT";

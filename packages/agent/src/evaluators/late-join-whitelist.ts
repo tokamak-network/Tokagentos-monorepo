@@ -23,11 +23,11 @@ import {
   type State,
   setEntityRole,
   type UUID,
-} from "@elizaos/core";
-import { loadElizaConfig } from "../config/config.js";
+} from "@tokagentos/core";
+import { loadTokagentConfig } from "../config/config.js";
 
 /**
- * Load the connectorAdmins whitelist from eliza.json.
+ * Load the connectorAdmins whitelist from tokagent.json.
  * Returns an empty object if not configured.
  */
 function hasWhitelistEntries(whitelist: Record<string, string[]>): boolean {
@@ -45,7 +45,7 @@ function loadConnectorAdminWhitelist(
   }
 
   try {
-    const cfg = loadElizaConfig();
+    const cfg = loadTokagentConfig();
     return cfg.roles?.connectorAdmins ?? {};
   } catch {
     return {};

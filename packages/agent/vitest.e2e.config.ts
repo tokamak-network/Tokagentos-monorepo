@@ -7,25 +7,25 @@ const packageRoot = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(packageRoot, "..", "..");
 // See `test/vitest/default.config.ts` (via root vitest.config.ts) for the
 // monorepo rationale. Prefer the local
-// eliza source; fall back to the committed shim when the checkout is
+// tokagent source; fall back to the committed shim when the checkout is
 // disabled (CI published-only mode).
-const elizaCoreRolesSource = path.join(
+const tokagentCoreRolesSource = path.join(
   repoRoot,
-  "eliza",
+  "tokagent",
   "packages",
   "typescript",
   "src",
   "roles.ts",
 );
-const elizaCoreRolesAlias = fs.existsSync(elizaCoreRolesSource)
-  ? elizaCoreRolesSource
-  : path.join(repoRoot, "scripts", "lib", "elizaos-core-roles-shim.js");
+const tokagentCoreRolesAlias = fs.existsSync(tokagentCoreRolesSource)
+  ? tokagentCoreRolesSource
+  : path.join(repoRoot, "scripts", "lib", "tokagentos-core-roles-shim.js");
 
 export default defineConfig({
   resolve: {
     alias: {
-      "@elizaos/core/roles": elizaCoreRolesAlias,
-      "@elizaos/core": path.join(
+      "@tokagentos/core/roles": tokagentCoreRolesAlias,
+      "@tokagentos/core": path.join(
         packageRoot,
         "..",
         "typescript",
@@ -51,7 +51,7 @@ export default defineConfig({
       "dist/**",
       "**/node_modules/**",
       "test/capacitor-plugins.e2e.test.ts",
-      // plugin-installer.ts source doesn't exist in autonomous (eliza-specific)
+      // plugin-installer.ts source doesn't exist in autonomous (tokagent-specific)
       "test/plugin-install.e2e.test.ts",
       // native module deps (tensorflow, sharp, canvas) not installed in autonomous
       "test/native-modules.e2e.test.ts",
@@ -59,7 +59,7 @@ export default defineConfig({
     server: {
       deps: {
         inline: [
-          "@elizaos/core",
+          "@tokagentos/core",
           "@elizaos/plugin-openai",
           "@elizaos/plugin-anthropic",
           "@elizaos/plugin-sql",

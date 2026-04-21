@@ -1,4 +1,4 @@
-//! Messaging types for elizaOS
+//! Messaging types for tokagentOS
 //!
 //! Contains messaging-related types for agent communication.
 

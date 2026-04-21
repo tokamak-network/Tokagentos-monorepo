@@ -2,8 +2,8 @@
  * Connectors contributor — reports configured communication channels.
  */
 
-import type { AwarenessContributor } from "@elizaos/agent/contracts";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { AwarenessContributor } from "@tokagentos/agent/contracts";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 export const connectorsContributor: AwarenessContributor = {
   id: "connectors",

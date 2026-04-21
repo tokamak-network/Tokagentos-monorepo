@@ -1,10 +1,10 @@
 /**
- * elizaOS Next.js API Route
+ * tokagentOS Next.js API Route
  *
- * Uses the canonical elizaOS runtime with messageService.handleMessage pattern.
+ * Uses the canonical tokagentOS runtime with messageService.handleMessage pattern.
  *
  * NOTE: If PGLite bundling fails with Next.js, set POSTGRES_URL for external database,
- * or run `elizaos start` separately and connect to its API.
+ * or run `tokagentos start` separately and connect to its API.
  */
 
 import {
@@ -17,7 +17,7 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
 
@@ -29,10 +29,10 @@ const typedSqlPlugin = sqlPlugin as Plugin;
 // Character configuration
 // Pass environment variables via character.secrets so getSetting() can find them
 const character: Character = createCharacter({
-  name: "Eliza",
-  bio: "A helpful AI assistant powered by elizaOS.",
+  name: "Tokagent",
+  bio: "A helpful AI assistant powered by tokagentOS.",
   system:
-    "You are Eliza, a helpful AI assistant. Be friendly, knowledgeable, and conversational.",
+    "You are Tokagent, a helpful AI assistant. Be friendly, knowledgeable, and conversational.",
   secrets: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
     POSTGRES_URL: process.env.POSTGRES_URL || "",
@@ -55,7 +55,7 @@ async function getRuntime(): Promise<IAgentRuntime> {
 
   initPromise = (async () => {
     try {
-      console.log("🚀 Initializing elizaOS runtime...");
+      console.log("🚀 Initializing tokagentOS runtime...");
 
       const newRuntime = new AgentRuntime({
         character,
@@ -64,12 +64,12 @@ async function getRuntime(): Promise<IAgentRuntime> {
 
       await newRuntime.initialize();
 
-      console.log("✅ elizaOS runtime initialized");
+      console.log("✅ tokagentOS runtime initialized");
       runtime = newRuntime;
       return newRuntime;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      console.error("❌ Failed to initialize elizaOS runtime:", message);
+      console.error("❌ Failed to initialize tokagentOS runtime:", message);
 
       // Check if it's the PGLite extension error
       if (
@@ -79,7 +79,7 @@ async function getRuntime(): Promise<IAgentRuntime> {
         initError =
           "PGLite extensions not compatible with Next.js bundling. " +
           "Please set POSTGRES_URL environment variable for external database, " +
-          "or run `elizaos start` separately.";
+          "or run `tokagentos start` separately.";
       } else {
         initError = message;
       }
@@ -104,8 +104,8 @@ export async function POST(request: Request) {
       await getRuntime();
       return Response.json({
         success: true,
-        mode: "elizaos",
-        message: "elizaOS runtime initialized",
+        mode: "tokagentos",
+        message: "tokagentOS runtime initialized",
       });
     } catch (_error) {
       return Response.json({
@@ -130,10 +130,10 @@ export async function POST(request: Request) {
   } catch {
     return Response.json(
       {
-        error: "elizaOS runtime not available",
+        error: "tokagentOS runtime not available",
         details: initError,
         suggestion:
-          "Set POSTGRES_URL environment variable or run `elizaos start` separately",
+          "Set POSTGRES_URL environment variable or run `tokagentos start` separately",
       },
       { status: 503 },
     );
@@ -170,7 +170,7 @@ export async function POST(request: Request) {
           },
         });
 
-        // Process through the FULL elizaOS pipeline
+        // Process through the FULL tokagentOS pipeline
         await rt.messageService?.handleMessage(
           rt,
           messageMemory,
@@ -218,7 +218,7 @@ export async function GET() {
     const rt = await getRuntime();
     return Response.json({
       status: "ready",
-      mode: "elizaos",
+      mode: "tokagentos",
       character: rt.character.name,
       messageServiceAvailable: !!rt.messageService,
     });

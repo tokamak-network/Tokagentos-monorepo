@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LifeOpsCalendarEvent } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsCalendarEvent } from "@tokagentos/shared/contracts/lifeops";
 import { matchesCalendarEventEndedFilters } from "./service-mixin-workflows.js";
 
 function makeEvent(

@@ -38,19 +38,19 @@ const SURFACES = [
   {
     id: "app-route-tests",
     include: (relPath) =>
-      /^eliza\/apps\/[^/]+\/src\/.*routes\.test\.[cm]?[jt]sx?$/.test(relPath),
+      /^tokagent\/apps\/[^/]+\/src\/.*routes\.test\.[cm]?[jt]sx?$/.test(relPath),
     patterns: SERVER_TEST_PATTERNS,
   },
   {
     id: "app-service-tests",
     include: (relPath) =>
-      /^eliza\/apps\/[^/]+\/src\/services\/.*\.test\.[cm]?[jt]sx?$/.test(relPath),
+      /^tokagent\/apps\/[^/]+\/src\/services\/.*\.test\.[cm]?[jt]sx?$/.test(relPath),
     patterns: SERVER_TEST_PATTERNS,
   },
   {
     id: "app-core-api-tests",
     include: (relPath) =>
-      /^eliza\/packages\/app-core\/src\/api\/.*\.test\.[cm]?[jt]sx?$/.test(
+      /^tokagent\/packages\/app-core\/src\/api\/.*\.test\.[cm]?[jt]sx?$/.test(
         relPath,
       ),
     patterns: SERVER_TEST_PATTERNS,
@@ -58,7 +58,7 @@ const SURFACES = [
   {
     id: "app-core-service-tests",
     include: (relPath) =>
-      /^eliza\/packages\/app-core\/src\/services\/.*\.test\.[cm]?[jt]sx?$/.test(
+      /^tokagent\/packages\/app-core\/src\/services\/.*\.test\.[cm]?[jt]sx?$/.test(
         relPath,
       ),
     patterns: SERVER_TEST_PATTERNS,

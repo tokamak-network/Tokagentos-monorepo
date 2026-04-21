@@ -1,13 +1,13 @@
-//! elizaOS Cloudflare Worker (Rust)
+//! tokagentOS Cloudflare Worker (Rust)
 //!
 //! A serverless AI agent running on Cloudflare Workers using Rust/WASM.
 //!
-//! NOTE: Due to WASM limitations in Cloudflare Workers, the full elizaOS
+//! NOTE: Due to WASM limitations in Cloudflare Workers, the full tokagentOS
 //! runtime may have limited functionality. This example provides a REST API
 //! that demonstrates the pattern but uses direct OpenAI API calls.
 //!
 //! For production Rust agents, consider:
-//! - Running the full elizaOS Rust runtime on a proper server
+//! - Running the full tokagentOS Rust runtime on a proper server
 //! - Using Cloudflare Durable Objects with the TypeScript runtime
 
 use serde::{Deserialize, Serialize};
@@ -100,12 +100,12 @@ fn get_character(env: &Env) -> Character {
     let name = env
         .var("CHARACTER_NAME")
         .map(|v| v.to_string())
-        .unwrap_or_else(|_| "Eliza".to_string());
+        .unwrap_or_else(|_| "Tokagent".to_string());
 
     let bio = env
         .var("CHARACTER_BIO")
         .map(|v| v.to_string())
-        .unwrap_or_else(|_| "A helpful AI assistant powered by elizaOS.".to_string());
+        .unwrap_or_else(|_| "A helpful AI assistant powered by tokagentOS.".to_string());
 
     let system = env
         .var("CHARACTER_SYSTEM")
@@ -123,7 +123,7 @@ fn get_character(env: &Env) -> Character {
 
 /// Call OpenAI API and return the response text.
 ///
-/// NOTE: In a full elizaOS implementation, this would go through
+/// NOTE: In a full tokagentOS implementation, this would go through
 /// runtime.message_service().handle_message() which handles the model
 /// call, context building, and response generation automatically.
 async fn call_openai(
@@ -220,9 +220,9 @@ fn handle_info(env: &Env) -> Result<Response> {
         name: character.name,
         bio: character.bio,
         version: VERSION.to_string(),
-        powered_by: "elizaOS".to_string(),
+        powered_by: "tokagentOS".to_string(),
         runtime: "Rust (WASM)".to_string(),
-        note: "Limited runtime - for full elizaOS features, use TypeScript worker or dedicated server".to_string(),
+        note: "Limited runtime - for full tokagentOS features, use TypeScript worker or dedicated server".to_string(),
         endpoints,
     };
 
@@ -236,7 +236,7 @@ fn handle_health(env: &Env) -> Result<Response> {
         status: "healthy".to_string(),
         character: character.name,
         mode: "simplified".to_string(),
-        note: "WASM runtime - full elizaOS runtime may have limited functionality".to_string(),
+        note: "WASM runtime - full tokagentOS runtime may have limited functionality".to_string(),
     };
 
     json_response(&health, 200)
@@ -244,7 +244,7 @@ fn handle_health(env: &Env) -> Result<Response> {
 
 /// Handle POST /chat - process a chat message.
 ///
-/// NOTE: This is a simplified implementation. The canonical elizaOS pattern would:
+/// NOTE: This is a simplified implementation. The canonical tokagentOS pattern would:
 /// 1. Create an AgentRuntime with plugins
 /// 2. Create a Memory with the message content
 /// 3. Call runtime.message_service().handle_message()
@@ -268,7 +268,7 @@ async fn handle_chat(mut req: Request, env: Env) -> Result<Response> {
         .unwrap_or_else(|| Uuid::new_v4().to_string());
 
     // Build messages for OpenAI
-    // In full elizaOS, this context would be built by providers
+    // In full tokagentOS, this context would be built by providers
     let messages = vec![
         ChatMessage {
             role: "system".to_string(),

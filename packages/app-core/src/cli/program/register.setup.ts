@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { resolveConfigPath } from "@elizaos/agent/config/paths";
+import { resolveConfigPath } from "@tokagentos/agent/config/paths";
 import type { Command } from "commander";
 import JSON5 from "json5";
 import { formatDocsLink } from "../../terminal/links";
@@ -155,11 +155,11 @@ export function saveConfig(
 }
 
 function resolveLaunchCommand(cwd = process.cwd()): string {
-  const localEntry = path.join(cwd, "eliza.mjs");
+  const localEntry = path.join(cwd, "tokagent.mjs");
   const localPackage = path.join(cwd, "package.json");
   return fs.existsSync(localEntry) && fs.existsSync(localPackage)
-    ? "node eliza.mjs start"
-    : "eliza start";
+    ? "node tokagent.mjs start"
+    : "tokagent start";
 }
 
 function getEnvSection(
@@ -193,7 +193,7 @@ export function hasModelKey(
     "ZAI_API_KEY",
     "Z_AI_API_KEY",
     "AI_GATEWAY_API_KEY",
-    "ELIZAOS_CLOUD_API_KEY",
+    "TOKAGENTOS_CLOUD_API_KEY",
     "OLLAMA_BASE_URL",
   ];
   return keys.find((k) => env[k]?.trim()) ?? null;
@@ -246,7 +246,7 @@ export async function runProviderWizard(
   const provider = PROVIDERS[index];
   if (provider.key === null) {
     log(
-      `${theme.muted("→")} Skipped. Set a key later with ${theme.command("eliza setup")}.`,
+      `${theme.muted("→")} Skipped. Set a key later with ${theme.command("tokagent setup")}.`,
     );
     return;
   }
@@ -289,11 +289,11 @@ export async function runProviderWizard(
 export function registerSetupCommand(program: Command) {
   program
     .command("setup")
-    .description("Initialize ~/.eliza/eliza.json and the agent workspace")
+    .description("Initialize ~/.tokagent/tokagent.json and the agent workspace")
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/getting-started/setup", "docs.eliza.ai/getting-started/setup")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/getting-started/setup", "docs.tokagent.ai/getting-started/setup")}\n`,
     )
     .option("--workspace <dir>", "Agent workspace directory")
     .option("--provider <name>", "Model provider (non-interactive)")
@@ -312,9 +312,9 @@ export function registerSetupCommand(program: Command) {
         wizard: boolean;
       }) => {
         await runCommandWithRuntime(defaultRuntime, async () => {
-          const { loadElizaConfig } = await import("../../config/config");
+          const { loadTokagentConfig } = await import("../../config/config");
           const { ensureAgentWorkspace, resolveDefaultAgentWorkspaceDir } =
-            await import("@elizaos/agent/providers/workspace");
+            await import("@tokagentos/agent/providers/workspace");
 
           const configPath = resolveConfigPath();
           const keyFromStdin = opts.keyStdin ? await readStdinValue() : "";
@@ -361,7 +361,7 @@ export function registerSetupCommand(program: Command) {
           // ── Workspace bootstrap ──────────────────────────────────────────
           let config: Record<string, unknown> = {};
           try {
-            config = loadElizaConfig() as Record<string, unknown>;
+            config = loadTokagentConfig() as Record<string, unknown>;
             console.log(`${theme.success("✓")} Config loaded`);
           } catch (err) {
             if ((err as NodeJS.ErrnoException).code === "ENOENT") {

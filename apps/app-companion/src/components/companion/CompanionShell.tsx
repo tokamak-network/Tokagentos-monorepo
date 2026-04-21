@@ -1,4 +1,4 @@
-import { type ActionNotice, type Tab, useRenderGuard } from "@elizaos/app-core";
+import { type ActionNotice, type Tab, useRenderGuard } from "@tokagentos/app-core";
 import { memo } from "react";
 import { CompanionView } from "./CompanionView";
 

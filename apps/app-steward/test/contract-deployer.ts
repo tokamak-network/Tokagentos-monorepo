@@ -1,7 +1,7 @@
 /**
  * Contract deployment fixture for e2e testing.
  *
- * Deploys MockElizaAgentRegistry (ERC-8004) and MockElizaCollection (ERC-8041)
+ * Deploys MockTokagentAgentRegistry (ERC-8004) and MockTokagentCollection (ERC-8041)
  * to the local Anvil instance.
  */
 
@@ -83,7 +83,7 @@ export interface DeployedContracts {
 }
 
 /**
- * Deploy MockElizaAgentRegistry and MockElizaCollection to the provided network.
+ * Deploy MockTokagentAgentRegistry and MockTokagentCollection to the provided network.
  *
  * @param wallet - An ethers Wallet connected to a provider
  * @returns Deployed contract addresses and instances

@@ -1,6 +1,6 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 
-/** Optional methods on some elizaOS AgentRuntime builds (not in all type versions). */
+/** Optional methods on some tokagentOS AgentRuntime builds (not in all type versions). */
 type AgentRuntimeFeatureFlags = {
   isTrajectoriesEnabled?: () => boolean;
   isKnowledgeEnabled?: () => boolean;

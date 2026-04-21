@@ -2,7 +2,7 @@ import uuid as uuid_module
 
 import pytest
 
-from elizaos.types import string_to_uuid
+from tokagentos.types import string_to_uuid
 
 
 class TestStringToUuidParity:

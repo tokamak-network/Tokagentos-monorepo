@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
-import type { IAgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { executeRawSql, sqlQuote, sqlText } from "../../lifeops/sql.js";
 import {
   startSelfControlBlock,

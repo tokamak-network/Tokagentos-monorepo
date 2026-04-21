@@ -57,13 +57,13 @@ function hasConversationBootstrapMessage(
   );
 }
 
-/** Enable with `ELIZA_TTS_DEBUG=1` or `localStorage.setItem("elizaos:debug:greeting", "1")`. */
+/** Enable with `TOKAGENT_TTS_DEBUG=1` or `localStorage.setItem("tokagentos:debug:greeting", "1")`. */
 function greetingDebugEnabled(): boolean {
   if (isTtsDebugEnabled()) return true;
   try {
     return (
       typeof localStorage !== "undefined" &&
-      localStorage.getItem("elizaos:debug:greeting") === "1"
+      localStorage.getItem("tokagentos:debug:greeting") === "1"
     );
   } catch {
     return false;
@@ -73,9 +73,9 @@ function greetingDebugEnabled(): boolean {
 function traceGreeting(phase: string, detail?: Record<string, unknown>): void {
   if (!greetingDebugEnabled()) return;
   if (detail && Object.keys(detail).length > 0) {
-    console.info(`[eliza][greeting] ${phase}`, detail);
+    console.info(`[tokagent][greeting] ${phase}`, detail);
   } else {
-    console.info(`[eliza][greeting] ${phase}`);
+    console.info(`[tokagent][greeting] ${phase}`);
   }
 }
 
@@ -230,23 +230,23 @@ export interface UseChatCallbacksDeps {
   loadPlugins: () => Promise<unknown>;
 
   // Cloud state
-  elizaCloudEnabled: boolean;
-  elizaCloudConnected: boolean;
+  tokagentCloudEnabled: boolean;
+  tokagentCloudConnected: boolean;
   pollCloudCredits: () => Promise<boolean>;
-  elizaCloudPreferDisconnectedUntilLoginRef: MutableRefObject<boolean>;
-  setElizaCloudEnabled: (v: boolean) => void;
-  setElizaCloudConnected: (v: boolean) => void;
-  setElizaCloudVoiceProxyAvailable: (v: boolean) => void;
-  setElizaCloudHasPersistedKey: (v: boolean) => void;
-  setElizaCloudCredits: (v: number | null) => void;
-  setElizaCloudCreditsLow: (v: boolean) => void;
-  setElizaCloudCreditsCritical: (v: boolean) => void;
-  setElizaCloudAuthRejected: (v: boolean) => void;
-  setElizaCloudCreditsError: (v: string | null) => void;
-  setElizaCloudTopUpUrl: (v: string) => void;
-  setElizaCloudUserId: (v: string | null) => void;
-  setElizaCloudStatusReason: (v: string | null) => void;
-  setElizaCloudLoginError: (v: string | null) => void;
+  tokagentCloudPreferDisconnectedUntilLoginRef: MutableRefObject<boolean>;
+  setTokagentCloudEnabled: (v: boolean) => void;
+  setTokagentCloudConnected: (v: boolean) => void;
+  setTokagentCloudVoiceProxyAvailable: (v: boolean) => void;
+  setTokagentCloudHasPersistedKey: (v: boolean) => void;
+  setTokagentCloudCredits: (v: number | null) => void;
+  setTokagentCloudCreditsLow: (v: boolean) => void;
+  setTokagentCloudCreditsCritical: (v: boolean) => void;
+  setTokagentCloudAuthRejected: (v: boolean) => void;
+  setTokagentCloudCreditsError: (v: string | null) => void;
+  setTokagentCloudTopUpUrl: (v: string) => void;
+  setTokagentCloudUserId: (v: string | null) => void;
+  setTokagentCloudStatusReason: (v: string | null) => void;
+  setTokagentCloudLoginError: (v: string | null) => void;
 
   // Onboarding setters (used by completeResetLocalStateAfterServerWipe)
   onboardingCompletionCommittedRef: MutableRefObject<boolean>;
@@ -341,23 +341,23 @@ export function useChatCallbacks(deps: UseChatCallbacksDeps) {
     loadConversations,
     loadConversationMessages,
     loadPlugins,
-    elizaCloudEnabled,
-    elizaCloudConnected,
+    tokagentCloudEnabled,
+    tokagentCloudConnected,
     pollCloudCredits,
-    elizaCloudPreferDisconnectedUntilLoginRef,
-    setElizaCloudEnabled,
-    setElizaCloudConnected,
-    setElizaCloudVoiceProxyAvailable,
-    setElizaCloudHasPersistedKey,
-    setElizaCloudCredits,
-    setElizaCloudCreditsLow,
-    setElizaCloudCreditsCritical,
-    setElizaCloudAuthRejected,
-    setElizaCloudCreditsError,
-    setElizaCloudTopUpUrl,
-    setElizaCloudUserId,
-    setElizaCloudStatusReason,
-    setElizaCloudLoginError,
+    tokagentCloudPreferDisconnectedUntilLoginRef,
+    setTokagentCloudEnabled,
+    setTokagentCloudConnected,
+    setTokagentCloudVoiceProxyAvailable,
+    setTokagentCloudHasPersistedKey,
+    setTokagentCloudCredits,
+    setTokagentCloudCreditsLow,
+    setTokagentCloudCreditsCritical,
+    setTokagentCloudAuthRejected,
+    setTokagentCloudCreditsError,
+    setTokagentCloudTopUpUrl,
+    setTokagentCloudUserId,
+    setTokagentCloudStatusReason,
+    setTokagentCloudLoginError,
     onboardingCompletionCommittedRef,
     setOnboardingUiRevealNonce,
     setOnboardingLoading,
@@ -486,7 +486,7 @@ export function useChatCallbacks(deps: UseChatCallbacksDeps) {
         }
       } catch (err) {
         console.warn(
-          "[eliza][chat:init] failed to confirm runtime state for greeting",
+          "[tokagent][chat:init] failed to confirm runtime state for greeting",
           err,
         );
       }
@@ -545,7 +545,7 @@ export function useChatCallbacks(deps: UseChatCallbacksDeps) {
             return null;
           }
           console.warn(
-            "[eliza][chat:init] failed to load restored conversation messages",
+            "[tokagent][chat:init] failed to load restored conversation messages",
             err,
           );
           greetingFiredRef.current = false;
@@ -617,13 +617,13 @@ export function useChatCallbacks(deps: UseChatCallbacksDeps) {
           return null;
         }
         console.warn(
-          "[eliza][chat:init] failed to create initial conversation",
+          "[tokagent][chat:init] failed to create initial conversation",
           err,
         );
         return null;
       }
     } catch (err) {
-      console.warn("[eliza][chat:init] failed to hydrate conversations", err);
+      console.warn("[tokagent][chat:init] failed to hydrate conversations", err);
       return null;
     }
   }, [
@@ -672,8 +672,8 @@ export function useChatCallbacks(deps: UseChatCallbacksDeps) {
     chatSendNonceRef,
     loadConversations,
     loadConversationMessages,
-    elizaCloudEnabled,
-    elizaCloudConnected,
+    tokagentCloudEnabled,
+    tokagentCloudConnected,
     pollCloudCredits,
   });
 
@@ -704,20 +704,20 @@ export function useChatCallbacks(deps: UseChatCallbacksDeps) {
     setConversationMessages,
     setConversations,
     activeConversationIdRef,
-    elizaCloudPreferDisconnectedUntilLoginRef,
-    setElizaCloudEnabled,
-    setElizaCloudConnected,
-    setElizaCloudVoiceProxyAvailable,
-    setElizaCloudHasPersistedKey,
-    setElizaCloudCredits,
-    setElizaCloudCreditsLow,
-    setElizaCloudCreditsCritical,
-    setElizaCloudAuthRejected,
-    setElizaCloudCreditsError,
-    setElizaCloudTopUpUrl,
-    setElizaCloudUserId,
-    setElizaCloudStatusReason,
-    setElizaCloudLoginError,
+    tokagentCloudPreferDisconnectedUntilLoginRef,
+    setTokagentCloudEnabled,
+    setTokagentCloudConnected,
+    setTokagentCloudVoiceProxyAvailable,
+    setTokagentCloudHasPersistedKey,
+    setTokagentCloudCredits,
+    setTokagentCloudCreditsLow,
+    setTokagentCloudCreditsCritical,
+    setTokagentCloudAuthRejected,
+    setTokagentCloudCreditsError,
+    setTokagentCloudTopUpUrl,
+    setTokagentCloudUserId,
+    setTokagentCloudStatusReason,
+    setTokagentCloudLoginError,
     onboardingCompletionCommittedRef,
     setOnboardingUiRevealNonce,
     setOnboardingLoading,

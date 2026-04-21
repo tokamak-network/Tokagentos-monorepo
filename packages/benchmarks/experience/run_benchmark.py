@@ -6,13 +6,13 @@ Usage:
     python run_benchmark.py
     python run_benchmark.py --experiences 2000 --queries 200 --output results.json
 
-    # Eliza agent mode:
-    python run_benchmark.py --mode eliza-agent --provider groq --model qwen3-32b
-    python run_benchmark.py --mode eliza-agent --learning-cycles 20 --output results.json
+    # Tokagent agent mode:
+    python run_benchmark.py --mode tokagent-agent --provider groq --model qwen3-32b
+    python run_benchmark.py --mode tokagent-agent --learning-cycles 20 --output results.json
 
 Modes:
     direct:      Direct ExperienceService testing (default, no LLM)
-    eliza-agent: Full Eliza agent loop (Provider -> Model -> Action -> Evaluator)
+    tokagent-agent: Full Tokagent agent loop (Provider -> Model -> Action -> Evaluator)
 """
 
 import argparse
@@ -25,8 +25,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "plugins" / "plugin-experience" / "python"))
 
-from elizaos_experience_bench.runner import ExperienceBenchmarkRunner
-from elizaos_experience_bench.types import BenchmarkConfig, BenchmarkMode
+from tokagentos_experience_bench.runner import ExperienceBenchmarkRunner
+from tokagentos_experience_bench.types import BenchmarkConfig, BenchmarkMode
 
 
 def _load_env_file(env_path: Path) -> None:
@@ -67,8 +67,8 @@ def run_direct(args: argparse.Namespace) -> None:
     runner.run_and_report(output_path=args.output)
 
 
-async def run_eliza_agent(args: argparse.Namespace) -> None:
-    """Run the Eliza agent benchmark mode."""
+async def run_tokagent_agent(args: argparse.Namespace) -> None:
+    """Run the Tokagent agent benchmark mode."""
     # Load .env for API keys
     repo_root = Path(__file__).resolve().parents[2]
     _load_env_file(repo_root / ".env")
@@ -107,7 +107,7 @@ async def run_eliza_agent(args: argparse.Namespace) -> None:
     if not os.environ.get(key_var):
         print(
             f"ERROR: {key_var} is not set.\n"
-            "The eliza-agent mode requires a real LLM.\n"
+            "The tokagent-agent mode requires a real LLM.\n"
             "Add it to the repo-root .env or export it."
         )
         sys.exit(1)
@@ -120,9 +120,9 @@ async def run_eliza_agent(args: argparse.Namespace) -> None:
     )
 
     print("=" * 60)
-    print("ElizaOS Experience Benchmark - Agent Mode")
+    print("TokagentOS Experience Benchmark - Agent Mode")
     print("=" * 60)
-    print("This tests the full Eliza canonical flow:")
+    print("This tests the full Tokagent canonical flow:")
     print("  EXPERIENCE_CONTEXT Provider -> Model -> RECORD/QUERY Actions -> Evaluator")
     print()
 
@@ -137,13 +137,13 @@ async def run_eliza_agent(args: argparse.Namespace) -> None:
 
     def get_model_plugin_factory():  # noqa: ANN202
         if provider == "openai":
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             return get_openai_plugin()
 
         if provider in {"groq", "openrouter"}:
-            from elizaos.types.model import ModelType
-            from elizaos.types.plugin import Plugin
+            from tokagentos.types.model import ModelType
+            from tokagentos.types.plugin import Plugin
             import aiohttp
             import re
 
@@ -213,7 +213,7 @@ async def run_eliza_agent(args: argparse.Namespace) -> None:
         raise RuntimeError(f"Unsupported provider for experience benchmark: {provider}")
 
     runner = ExperienceBenchmarkRunner(config)
-    result = await runner.run_eliza_agent(
+    result = await runner.run_tokagent_agent(
         model_plugin_factory=get_model_plugin_factory,
         progress_callback=on_progress,
     )
@@ -229,23 +229,23 @@ async def run_eliza_agent(args: argparse.Namespace) -> None:
 
 def _serialize_agent_result(result: "BenchmarkResult") -> dict:
     """Serialize agent benchmark result to JSON-friendly dict."""
-    from elizaos_experience_bench.types import BenchmarkResult
+    from tokagentos_experience_bench.types import BenchmarkResult
 
     out: dict = {
-        "mode": "eliza_agent",
+        "mode": "tokagent_agent",
         "total_experiences": result.total_experiences,
     }
-    if result.eliza_agent:
-        out["eliza_agent"] = {
-            "learning_success_rate": result.eliza_agent.learning_success_rate,
-            "total_experiences_recorded": result.eliza_agent.total_experiences_recorded,
-            "total_experiences_in_service": result.eliza_agent.total_experiences_in_service,
-            "avg_learning_latency_ms": result.eliza_agent.avg_learning_latency_ms,
-            "agent_recall_rate": result.eliza_agent.agent_recall_rate,
-            "agent_keyword_incorporation_rate": result.eliza_agent.agent_keyword_incorporation_rate,
-            "avg_retrieval_latency_ms": result.eliza_agent.avg_retrieval_latency_ms,
-            "direct_recall_rate": result.eliza_agent.direct_recall_rate,
-            "direct_mrr": result.eliza_agent.direct_mrr,
+    if result.tokagent_agent:
+        out["tokagent_agent"] = {
+            "learning_success_rate": result.tokagent_agent.learning_success_rate,
+            "total_experiences_recorded": result.tokagent_agent.total_experiences_recorded,
+            "total_experiences_in_service": result.tokagent_agent.total_experiences_in_service,
+            "avg_learning_latency_ms": result.tokagent_agent.avg_learning_latency_ms,
+            "agent_recall_rate": result.tokagent_agent.agent_recall_rate,
+            "agent_keyword_incorporation_rate": result.tokagent_agent.agent_keyword_incorporation_rate,
+            "avg_retrieval_latency_ms": result.tokagent_agent.avg_retrieval_latency_ms,
+            "direct_recall_rate": result.tokagent_agent.direct_recall_rate,
+            "direct_mrr": result.tokagent_agent.direct_mrr,
         }
     if result.retrieval:
         out["direct_retrieval"] = {
@@ -262,11 +262,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Experience Plugin Benchmark")
     parser.add_argument(
         "--mode",
-        choices=["direct", "eliza-agent"],
+        choices=["direct", "tokagent-agent"],
         default="direct",
         help=(
             "Benchmark mode: 'direct' tests ExperienceService directly (default), "
-            "'eliza-agent' tests through a real Eliza agent with LLM"
+            "'tokagent-agent' tests through a real Tokagent agent with LLM"
         ),
     )
     parser.add_argument("--experiences", type=int, default=1000, help="Number of synthetic experiences")
@@ -279,20 +279,20 @@ def main() -> None:
         type=str,
         choices=["openai", "groq", "openrouter", "anthropic", "google", "ollama"],
         default=None,
-        help="Provider for eliza-agent mode (default: auto-detect)",
+        help="Provider for tokagent-agent mode (default: auto-detect)",
     )
     parser.add_argument(
         "--model",
         type=str,
         default=None,
-        help="Model name for eliza-agent mode (e.g. qwen3-32b)",
+        help="Model name for tokagent-agent mode (e.g. qwen3-32b)",
     )
     args = parser.parse_args()
 
     if args.mode == "direct":
         run_direct(args)
-    elif args.mode == "eliza-agent":
-        asyncio.run(run_eliza_agent(args))
+    elif args.mode == "tokagent-agent":
+        asyncio.run(run_tokagent_agent(args))
     else:
         parser.error(f"Unknown mode: {args.mode}")
 

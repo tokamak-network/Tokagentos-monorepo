@@ -21,7 +21,7 @@
  *      `addMemory`) that the LLM-facing Actions call to manipulate
  *      the journal directly.
  *
- * The service is **not** an elizaOS `Service` subclass — it's
+ * The service is **not** an tokagentOS `Service` subclass — it's
  * constructed inline by `ScapeGameService` because it needs to be
  * injected into the `BotManager` callback plumbing before the
  * plugin runtime finishes booting. It exposes a small public

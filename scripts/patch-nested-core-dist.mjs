@@ -2,13 +2,13 @@
 /**
  * patch-nested-core-dist.mjs
  *
- * Bun caches older @elizaos/core versions (e.g. alpha.70) as nested
+ * Bun caches older @tokagentos/core versions (e.g. alpha.70) as nested
  * dependencies inside plugin packages. Some of those cached snapshots were
  * published without the full dist/ tree (only dist/testing/ is present),
  * so the package.json `bun`/`node`/`default` export pointing to
  * dist/node/index.node.js fails to resolve at runtime.
  *
- * This script finds every bun-cached @elizaos/core that is missing
+ * This script finds every bun-cached @tokagentos/core that is missing
  * dist/node/index.node.js and replaces the entire dist/ with the local
  * packages/typescript/dist/ so all subpath exports resolve correctly.
  */
@@ -27,7 +27,7 @@ if (!existsSync(bunCacheDir)) {
 
 if (!existsSync(join(localCoreDist, "node", "index.node.js"))) {
   console.warn(
-    "[patch-nested-core-dist] Local @elizaos/core dist/node/ not built yet — skipping patch.",
+    "[patch-nested-core-dist] Local @tokagentos/core dist/node/ not built yet — skipping patch.",
   );
   process.exit(0);
 }
@@ -56,7 +56,7 @@ for (const entry of readdirSync(bunCacheDir)) {
     !existsSync(join(localCoreDist, "node", "index.node.js"))
   ) {
     console.warn(
-      "[patch-nested-core-dist] Local @elizaos/core dist missing — skipping nested repair.",
+      "[patch-nested-core-dist] Local @tokagentos/core dist missing — skipping nested repair.",
     );
     continue;
   }
@@ -74,6 +74,6 @@ for (const entry of readdirSync(bunCacheDir)) {
 
 if (patched > 0) {
   console.log(
-    `[patch-nested-core-dist] Repaired ${patched} nested @elizaos/core dist(s).`,
+    `[patch-nested-core-dist] Repaired ${patched} nested @tokagentos/core dist(s).`,
   );
 }

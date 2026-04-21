@@ -1,4 +1,4 @@
-import { Button, PagePanel } from "@elizaos/ui";
+import { Button, PagePanel } from "@tokagentos/ui";
 import { useCallback, useEffect, useState } from "react";
 import { client } from "../../api";
 import { useApp } from "../../state";
@@ -14,7 +14,7 @@ type RelayStatus = {
 };
 
 export function CloudInstancePanel() {
-  const { t, elizaCloudConnected } = useApp();
+  const { t, tokagentCloudConnected } = useApp();
   const [relayStatus, setRelayStatus] = useState<RelayStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +46,7 @@ export function CloudInstancePanel() {
 
   return (
     <PagePanel.Notice
-      tone={isActive ? "accent" : elizaCloudConnected ? "default" : "warning"}
+      tone={isActive ? "accent" : tokagentCloudConnected ? "default" : "warning"}
       className="mt-4"
       actions={
         <Button
@@ -71,11 +71,11 @@ export function CloudInstancePanel() {
           })}
         </div>
 
-        {!elizaCloudConnected ? (
+        {!tokagentCloudConnected ? (
           <div className="text-muted">
             {t("settings.instanceRoutingNotConnected", {
               defaultValue:
-                "Connect to Eliza Cloud above to enable instance routing. This lets messages from any platform reach your local instance through the cloud gateway.",
+                "Connect to Tokagent Cloud above to enable instance routing. This lets messages from any platform reach your local instance through the cloud gateway.",
             })}
           </div>
         ) : isActive ? (
@@ -83,7 +83,7 @@ export function CloudInstancePanel() {
             <div className="text-accent">
               {t("settings.instanceRoutingActive", {
                 defaultValue:
-                  "This instance is registered and receiving messages via Eliza Cloud gateway relay.",
+                  "This instance is registered and receiving messages via Tokagent Cloud gateway relay.",
               })}
             </div>
             {relayStatus?.agentName && (
@@ -112,7 +112,7 @@ export function CloudInstancePanel() {
             {relayStatus?.reason ??
               t("settings.instanceRoutingInactive", {
                 defaultValue:
-                  "Cloud connected but gateway relay not active. The relay starts automatically when the elizacloud plugin loads.",
+                  "Cloud connected but gateway relay not active. The relay starts automatically when the tokagentcloud plugin loads.",
               })}
           </div>
         )}

@@ -2,7 +2,7 @@
 import {
   ModelType,
   type IAgentRuntime,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   CreateLifeOpsGmailBatchReplyDraftsRequest,
   CreateLifeOpsGmailReplyDraftRequest,
@@ -22,7 +22,7 @@ import type {
   SendLifeOpsGmailBatchReplyRequest,
   SendLifeOpsGmailMessageRequest,
   SendLifeOpsGmailReplyRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   resolveGoogleExecutionTarget,
   resolveGoogleGrants,
@@ -503,7 +503,7 @@ export function withGmail<TBase extends Constructor<LifeOpsServiceBase>>(Base: T
         }
         fail(
           409,
-          "This Google connection only has Gmail metadata access. Reconnect Google to grant Gmail read access so Eliza can search your full mailbox.",
+          "This Google connection only has Gmail metadata access. Reconnect Google to grant Gmail read access so Tokagent can search your full mailbox.",
         );
       }
 
@@ -605,7 +605,7 @@ export function withGmail<TBase extends Constructor<LifeOpsServiceBase>>(Base: T
       ) {
         fail(
           409,
-          "This Google connection only has Gmail metadata access. Reconnect Google to grant Gmail read access so Eliza can read email bodies.",
+          "This Google connection only has Gmail metadata access. Reconnect Google to grant Gmail read access so Tokagent can read email bodies.",
         );
       }
 
@@ -881,7 +881,7 @@ export function withGmail<TBase extends Constructor<LifeOpsServiceBase>>(Base: T
       const senderName =
         normalizeOptionalString(selection.grant.identity.name) ??
         normalizeOptionalString(selection.grant.identity.email)?.split("@")[0] ??
-        "Eliza";
+        "Tokagent";
       const tone = normalizeGmailDraftTone(request.tone);
       const intent = normalizeOptionalString(request.intent);
       const includeQuotedOriginal =
@@ -1143,7 +1143,7 @@ export function withGmail<TBase extends Constructor<LifeOpsServiceBase>>(Base: T
       const senderName =
         normalizeOptionalString(grant.identity.name) ??
         normalizeOptionalString(grant.identity.email)?.split("@")[0] ??
-        "Eliza";
+        "Tokagent";
       const draft = await this.renderGmailReplyDraft({
         message,
         tone,

@@ -1,13 +1,13 @@
 /**
  * Drop-in replacement for a local AgentRuntime when running in cloud mode.
- * Routes chat/status calls through the ElizaCloudClient to the remote sandbox.
+ * Routes chat/status calls through the TokagentCloudClient to the remote sandbox.
  */
 
-import type { ChatChannelType, ElizaCloudClient } from "./bridge-client.js";
+import type { ChatChannelType, TokagentCloudClient } from "./bridge-client.js";
 
 export class CloudRuntimeProxy {
   constructor(
-    private client: ElizaCloudClient,
+    private client: TokagentCloudClient,
     private agentId: string,
     private _agentName: string,
   ) {}

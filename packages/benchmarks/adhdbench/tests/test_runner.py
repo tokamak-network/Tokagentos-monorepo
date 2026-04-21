@@ -1,8 +1,8 @@
 """Tests for scenario filtering, config, and data integrity."""
 
-from elizaos_adhdbench.config import ADHDBenchConfig
-from elizaos_adhdbench.scenarios import ALL_SCENARIOS, get_scenarios, SCENARIO_BY_ID
-from elizaos_adhdbench.types import ScalePoint, ScenarioLevel
+from tokagentos_adhdbench.config import ADHDBenchConfig
+from tokagentos_adhdbench.scenarios import ALL_SCENARIOS, get_scenarios, SCENARIO_BY_ID
+from tokagentos_adhdbench.types import ScalePoint, ScenarioLevel
 
 
 def test_all_scenarios_count() -> None:

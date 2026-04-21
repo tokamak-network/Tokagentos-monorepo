@@ -2,7 +2,7 @@
  * LifeOps inbox-triage compatibility shim.
  *
  * Historically this module exposed Gmail-only inbox triage. Triage is now
- * implemented cross-platform under `@elizaos/core` (T7d,
+ * implemented cross-platform under `@tokagentos/core` (T7d,
  * `features/messaging/triage`). This file remains for backwards-compat:
  *
  *  - `inboxAction` is still re-exported from `./inbox.js` (existing CLI /
@@ -21,8 +21,8 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
-import { triageMessagesAction } from "@elizaos/core";
+} from "@tokagentos/core";
+import { triageMessagesAction } from "@tokagentos/core";
 
 export { inboxAction } from "./inbox.js";
 

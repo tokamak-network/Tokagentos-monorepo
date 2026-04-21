@@ -1,5 +1,5 @@
 """
-Canonical ElizaOS integration for Atropos Diplomacy.
+Canonical TokagentOS integration for Atropos Diplomacy.
 
 Provides:
 - ATROPOS_DIPLOMACY provider with current board summary for a given power
@@ -12,14 +12,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from elizaos.types import ActionParameterSchema, Character, Plugin, ProviderResult
+from tokagentos.types import ActionParameterSchema, Character, Plugin, ProviderResult
 
-from elizaos_atropos_diplomacy.types import GameState, Power
+from tokagentos_atropos_diplomacy.types import GameState, Power
 
 if TYPE_CHECKING:
-    from elizaos.types import Action, Provider
+    from tokagentos.types import Action, Provider
 
-from elizaos_atropos_shared.canonical_eliza import (
+from tokagentos_atropos_shared.canonical_tokagent import (
     ContextStore,
     CaptureActionResponse,
     create_action_only_template,
@@ -117,7 +117,7 @@ def create_diplomacy_character(name: str = "DiplomacyAgent") -> Character:
     template = create_action_only_template(
         task="Choose orders for {{agentName}} in Diplomacy.",
         instructions=(
-            "Decide orders for ALL of your units. Output ONLY one ElizaOS action: ATROPOS_DIPLOMACY_ORDERS.\n"
+            "Decide orders for ALL of your units. Output ONLY one TokagentOS action: ATROPOS_DIPLOMACY_ORDERS.\n"
             "Put the newline-separated order block into params.orders."
         ),
         action_name="ATROPOS_DIPLOMACY_ORDERS",
@@ -133,7 +133,7 @@ def create_diplomacy_character(name: str = "DiplomacyAgent") -> Character:
     )
 
 
-def get_diplomacy_eliza_plugin() -> Plugin:
+def get_diplomacy_tokagent_plugin() -> Plugin:
     return create_simple_plugin(
         name="atropos-diplomacy",
         description="Atropos Diplomacy canonical provider/action integration.",

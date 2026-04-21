@@ -1,6 +1,6 @@
 #![cfg(target_arch = "wasm32")]
 
-use elizaos::wasm::{error::WasmError, shims::JsModelHandler, WasmMemory};
+use tokagentos::wasm::{error::WasmError, shims::JsModelHandler, WasmMemory};
 use js_sys::{Function, Object, Reflect};
 use wasm_bindgen::JsCast;
 use wasm_bindgen::JsValue;

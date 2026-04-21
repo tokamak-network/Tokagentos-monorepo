@@ -1,9 +1,9 @@
 /**
- * Cloud contributor — reports Eliza Cloud connection status.
+ * Cloud contributor — reports Tokagent Cloud connection status.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
-import type { AwarenessContributor } from "@elizaos/shared/contracts";
+import type { IAgentRuntime } from "@tokagentos/core";
+import type { AwarenessContributor } from "@tokagentos/shared/contracts";
 
 export const cloudContributor: AwarenessContributor = {
   id: "cloud",
@@ -13,8 +13,8 @@ export const cloudContributor: AwarenessContributor = {
   trusted: true,
 
   async summary(runtime: IAgentRuntime): Promise<string> {
-    const elizaToken = runtime.getSetting?.("ELIZA_CLOUD_AUTH_TOKEN");
-    const connected = !!elizaToken;
+    const tokagentToken = runtime.getSetting?.("TOKAGENT_CLOUD_AUTH_TOKEN");
+    const connected = !!tokagentToken;
 
     return connected ? "Cloud: connected" : "Cloud: disconnected";
   },

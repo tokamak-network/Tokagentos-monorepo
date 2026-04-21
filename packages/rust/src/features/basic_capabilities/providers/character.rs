@@ -196,11 +196,11 @@ mod tests {
 
     #[test]
     fn test_resolve_name_in_system_prompt_template() {
-        let system = "You are {{name}}, an autonomous AI agent powered by ElizaOS.";
+        let system = "You are {{name}}, an autonomous AI agent powered by TokagentOS.";
         let resolved = resolve_name(system, "Reimu");
         assert_eq!(
             resolved,
-            "You are Reimu, an autonomous AI agent powered by ElizaOS."
+            "You are Reimu, an autonomous AI agent powered by TokagentOS."
         );
         assert!(!resolved.contains("{{name}}"));
     }

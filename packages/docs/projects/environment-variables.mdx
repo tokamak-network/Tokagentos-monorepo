@@ -1,18 +1,18 @@
 ---
 title: Environment Variables
-description: Server configuration environment variables for ElizaOS
+description: Server configuration environment variables for TokagentOS
 ---
 
-This document describes the server configuration environment variables for ElizaOS.
+This document describes the server configuration environment variables for TokagentOS.
 
 ## Server Security & Authentication
 
-### ELIZA_SERVER_AUTH_TOKEN
+### TOKAGENT_SERVER_AUTH_TOKEN
 
-Controls API authentication for the ElizaOS server.
+Controls API authentication for the TokagentOS server.
 
 ```bash .env
-ELIZA_SERVER_AUTH_TOKEN=your-secret-token
+TOKAGENT_SERVER_AUTH_TOKEN=your-secret-token
 ```
 
 **How it works:**
@@ -36,7 +36,7 @@ curl -H "X-API-KEY: mysecrettoken123" \
 
 ## Web UI Control
 
-### ELIZA_UI_ENABLE
+### TOKAGENT_UI_ENABLE
 
 Controls whether the web user interface is served by the server.
 
@@ -51,13 +51,13 @@ Controls whether the web user interface is served by the server.
 
   ```bash
   # Force enable in production
-  ELIZA_UI_ENABLE=true
+  TOKAGENT_UI_ENABLE=true
 
   # Force disable in development
-  ELIZA_UI_ENABLE=false
+  TOKAGENT_UI_ENABLE=false
 
   # Use automatic behavior
-  ELIZA_UI_ENABLE=
+  TOKAGENT_UI_ENABLE=
   ```
 
 - **Security**: Disabling UI reduces attack surface by removing web interface
@@ -89,37 +89,37 @@ Controls the application environment and affects various behaviors including def
 
 ```bash .env
 NODE_ENV=production
-ELIZA_SERVER_AUTH_TOKEN=secure-random-token-here
-ELIZA_UI_ENABLE=false
+TOKAGENT_SERVER_AUTH_TOKEN=secure-random-token-here
+TOKAGENT_UI_ENABLE=false
 ```
 
 ### Development Setup (Convenient)
 
 ```bash .env
 NODE_ENV=development
-# ELIZA_SERVER_AUTH_TOKEN=  # Unset for easy development
-# ELIZA_UI_ENABLE=         # Unset for automatic behavior (UI enabled)
+# TOKAGENT_SERVER_AUTH_TOKEN=  # Unset for easy development
+# TOKAGENT_UI_ENABLE=         # Unset for automatic behavior (UI enabled)
 ```
 
 ### Headless API Server
 
 ```bash .env
-ELIZA_SERVER_AUTH_TOKEN=api-only-token
-ELIZA_UI_ENABLE=false
+TOKAGENT_SERVER_AUTH_TOKEN=api-only-token
+TOKAGENT_UI_ENABLE=false
 ```
 
 ### Public Web Application
 
 ```bash .env
 NODE_ENV=production
-ELIZA_SERVER_AUTH_TOKEN=my-api-key
-ELIZA_UI_ENABLE=true
+TOKAGENT_SERVER_AUTH_TOKEN=my-api-key
+TOKAGENT_UI_ENABLE=true
 ```
 
 ## Security Considerations
 
 <Warning>
-  **API Authentication**: In production, always set `ELIZA_SERVER_AUTH_TOKEN` to
+  **API Authentication**: In production, always set `TOKAGENT_SERVER_AUTH_TOKEN` to
   prevent unauthorized access to your agent's API endpoints.
 </Warning>
 
@@ -129,8 +129,8 @@ ELIZA_UI_ENABLE=true
    - This prevents accidental exposure of the dashboard but leaves APIs accessible
 
 2. **Recommended Production Setup**:
-   - Set `ELIZA_SERVER_AUTH_TOKEN` to a strong, random value
-   - Keep `ELIZA_UI_ENABLE=false` unless you need the web interface
+   - Set `TOKAGENT_SERVER_AUTH_TOKEN` to a strong, random value
+   - Keep `TOKAGENT_UI_ENABLE=false` unless you need the web interface
    - Use HTTPS in production (configure via reverse proxy)
 
 3. **Development Convenience**:
@@ -143,7 +143,7 @@ ELIZA_UI_ENABLE=true
 For a complete list of all available environment variables including database connections, model providers, and plugin settings, see:
 
 - [Project Overview - Environment Configuration](/projects/overview#environment-configuration)
-- [`.env.example`](https://github.com/elizaos/eliza/blob/main/.env.example) in the repository - Template file showing all available environment variables with example values
+- [`.env.example`](https://github.com/tokagentos/tokagent/blob/main/.env.example) in the repository - Template file showing all available environment variables with example values
 
 <Note>
   **`.env` vs `.env.example`**: - `.env` - Your actual working environment file
@@ -155,7 +155,7 @@ For a complete list of all available environment variables including database co
 
 <CardGroup cols={2}>
   <Card title="Deploy a Project" icon="rocket" href="/guides/deploy-a-project">
-    Learn to deploy your ElizaOS project securely
+    Learn to deploy your TokagentOS project securely
   </Card>
 
 <Card

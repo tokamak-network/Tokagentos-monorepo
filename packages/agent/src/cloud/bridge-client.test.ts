@@ -1,10 +1,10 @@
 /**
- * Tests for ElizaCloudClient wallet methods:
+ * Tests for TokagentCloudClient wallet methods:
  *   - getAgentWallet
  *   - provisionWallet
  *   - executeRpc (body-embedded wallet-signature auth, error mapping)
  *
- * Uses a local HTTP server with a real ElizaCloudClient so fetch is exercised
+ * Uses a local HTTP server with a real TokagentCloudClient so fetch is exercised
  * end-to-end without mocks.
  */
 
@@ -14,7 +14,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import {
   CloudBridgeError,
   CloudUnavailableError,
-  ElizaCloudClient,
+  TokagentCloudClient,
   NonceReplayError,
   SessionExpiredError,
   SignatureInvalidError,
@@ -73,8 +73,8 @@ beforeEach(() => {
   lastRequest = null;
 });
 
-function client(): ElizaCloudClient {
-  return new ElizaCloudClient(`http://127.0.0.1:${serverPort}`, "test-api-key");
+function client(): TokagentCloudClient {
+  return new TokagentCloudClient(`http://127.0.0.1:${serverPort}`, "test-api-key");
 }
 
 function envelope(
@@ -290,17 +290,17 @@ describe("provisionWallet", () => {
   });
 
   it("normalizes canonical cloud URLs in the constructor", () => {
-    const withLegacyHost = new ElizaCloudClient(
-      "https://elizacloud.ai/api/v1",
+    const withLegacyHost = new TokagentCloudClient(
+      "https://tokagentcloud.ai/api/v1",
       "test-api-key",
     ) as unknown as { baseUrl: string };
-    const withCanonicalHost = new ElizaCloudClient(
-      "https://www.elizacloud.ai/api/v1",
+    const withCanonicalHost = new TokagentCloudClient(
+      "https://www.tokagentcloud.ai/api/v1",
       "test-api-key",
     ) as unknown as { baseUrl: string };
 
-    expect(withLegacyHost.baseUrl).toBe("https://www.elizacloud.ai");
-    expect(withCanonicalHost.baseUrl).toBe("https://www.elizacloud.ai");
+    expect(withLegacyHost.baseUrl).toBe("https://www.tokagentcloud.ai");
+    expect(withCanonicalHost.baseUrl).toBe("https://www.tokagentcloud.ai");
   });
 });
 

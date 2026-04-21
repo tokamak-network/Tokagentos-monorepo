@@ -1,5 +1,5 @@
 /**
- * Session key utilities for elizaOS.
+ * Session key utilities for tokagentOS.
  *
  * Provides functions for building, parsing, and normalizing session keys
  * used to identify agent sessions, threads, and peer connections.

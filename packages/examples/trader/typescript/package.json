@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-auto-trader": "alpha",
     "@elizaos/plugin-solana": "alpha",
     "@elizaos/plugin-anthropic": "alpha",

@@ -1,4 +1,4 @@
-import type { Action, IAgentRuntime, Memory, State, HandlerCallback } from "@elizaos/core";
+import type { Action, IAgentRuntime, Memory, State, HandlerCallback } from "@tokagentos/core";
 
 export const openBank: Action = {
   name: "OPEN_BANK",

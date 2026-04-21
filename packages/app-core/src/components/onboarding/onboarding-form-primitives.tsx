@@ -4,7 +4,7 @@ import {
   FieldDescription,
   FieldLabel,
   FieldMessage,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import * as React from "react";
 
 export const onboardingDetailStackClassName =

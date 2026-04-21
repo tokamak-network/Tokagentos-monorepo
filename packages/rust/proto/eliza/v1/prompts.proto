@@ -1,7 +1,7 @@
-// prompts.proto - Prompt-related data structures for elizaOS
+// prompts.proto - Prompt-related data structures for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
 import "google/protobuf/struct.proto";
 

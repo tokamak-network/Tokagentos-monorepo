@@ -1,4 +1,4 @@
-//! Event types for elizaOS
+//! Event types for tokagentOS
 //!
 //! Contains event types, payloads, and handlers for the event system.
 

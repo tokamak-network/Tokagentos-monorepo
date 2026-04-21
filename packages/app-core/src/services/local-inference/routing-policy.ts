@@ -68,7 +68,7 @@ const COST_PER_MILLION_TOKENS: Partial<
   mistral: { input: 2, output: 6 },
   // Cloud is billed by the user's subscription — treat as free at the
   // resolver level; actual billing happens upstream.
-  elizacloud: { input: 0, output: 0 },
+  tokagentcloud: { input: 0, output: 0 },
 };
 
 interface ProviderStats {

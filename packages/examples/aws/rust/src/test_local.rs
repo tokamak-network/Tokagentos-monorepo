@@ -2,7 +2,7 @@
 //!
 //! Run with: cargo run --bin test_local
 
-use eliza_lambda::function_handler;
+use tokagent_lambda::function_handler;
 use lambda_http::{http::Method, Body, Request};
 use std::env;
 use std::time::Instant;
@@ -46,7 +46,7 @@ async fn main() {
         std::process::exit(1);
     }
 
-    println!("🧪 Testing elizaOS AWS Lambda Handler (Rust)\n");
+    println!("🧪 Testing tokagentOS AWS Lambda Handler (Rust)\n");
 
     // Test 1: Health check
     println!("1️⃣  Testing health check...");

@@ -5,11 +5,11 @@ Realistic handles, noise, type accuracy, full traces.
 
 Usage:
     python -m benchmarks.rolodex.python_bench.run              # perfect + rolodex
-    python -m benchmarks.rolodex.python_bench.run --eliza       # + eliza (LLM)
+    python -m benchmarks.rolodex.python_bench.run --tokagent       # + tokagent (LLM)
 
 Or from the workspace root:
     python benchmarks/rolodex/python_bench/run.py
-    python benchmarks/rolodex/python_bench/run.py --eliza
+    python benchmarks/rolodex/python_bench/run.py --tokagent
 """
 
 from __future__ import annotations
@@ -133,10 +133,10 @@ async def run(handler: object) -> RunResult:
 async def main() -> None:
     """Entry point."""
     parser = argparse.ArgumentParser(description="Run Rolodex benchmark")
-    parser.add_argument("--eliza", action="store_true", help="Include Eliza LLM handler")
+    parser.add_argument("--tokagent", action="store_true", help="Include Tokagent LLM handler")
     parser.add_argument("--output", type=str, default=None, help="Optional output directory for JSON results")
     args = parser.parse_args()
-    use_eliza = args.eliza
+    use_tokagent = args.tokagent
 
     header("ROLODEX BENCHMARK v2 (Python)")
     noise_count = sum(
@@ -204,30 +204,30 @@ async def main() -> None:
         },
     ]
 
-    # ── Eliza handler (optional, LLM-based) ──
-    eliza_result: RunResult | None = None
-    if use_eliza:
-        from .handlers.eliza import eliza_handler
+    # ── Tokagent handler (optional, LLM-based) ──
+    tokagent_result: RunResult | None = None
+    if use_tokagent:
+        from .handlers.tokagent import tokagent_handler
 
-        header("ELIZA HANDLER (LLM via AgentRuntime)")
-        eliza_result = await run(eliza_handler)
+        header("TOKAGENT HANDLER (LLM via AgentRuntime)")
+        tokagent_result = await run(tokagent_handler)
         comparison_entries.append({
-            "name": "Eliza (LLM)",
-            "id_f1": eliza_result.identity_m.f1,
-            "rel_f1": eliza_result.rel_m.f1,
-            "tr_f1": eliza_result.trust_m.f1,
-            "res_f1": eliza_result.res_m.f1,
-            "fmr": eliza_result.fmr,
-            "type_acc": eliza_result.rel_m.type_accuracy,
-            "ms": eliza_result.total_time,
+            "name": "Tokagent (LLM)",
+            "id_f1": tokagent_result.identity_m.f1,
+            "rel_f1": tokagent_result.rel_m.f1,
+            "tr_f1": tokagent_result.trust_m.f1,
+            "res_f1": tokagent_result.res_m.f1,
+            "fmr": tokagent_result.fmr,
+            "type_acc": tokagent_result.rel_m.type_accuracy,
+            "ms": tokagent_result.total_time,
         })
 
     # ── Comparison ──
     print_comparison(comparison_entries)
 
     # ── Verdict ──
-    sut_result = eliza_result if eliza_result else rolodex
-    sut_name = "Eliza" if eliza_result else "Rolodex"
+    sut_result = tokagent_result if tokagent_result else rolodex
+    sut_name = "Tokagent" if tokagent_result else "Rolodex"
 
     all_perfect = (
         sut_result.identity_m.f1 == 1.0

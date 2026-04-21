@@ -71,7 +71,7 @@ export function useNavigationState(deps: NavigationStateDeps) {
           window.history.pushState(null, "", path);
         }
       } catch (err) {
-        console.warn("[eliza][nav] failed to update browser location", err);
+        console.warn("[tokagent][nav] failed to update browser location", err);
       }
     },
     [hasActiveGameRun, setTabRaw, setAppsSubTab],
@@ -170,7 +170,7 @@ export function useNavigationState(deps: NavigationStateDeps) {
         task();
       } catch (err) {
         console.warn(
-          "[eliza][navigation] scheduleAfterTabCommit task failed",
+          "[tokagent][navigation] scheduleAfterTabCommit task failed",
           err,
         );
       }

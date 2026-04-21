@@ -180,9 +180,9 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
         // evaluation primitive there (new Function, node:vm with host objects,
         // etc.) is reachable via the prototype chain of the injected DOM
         // globals, allowing prompt-injected scripts to escape to `process`
-        // and execute arbitrary OS commands. See issue elizaOS/eliza#6767.
+        // and execute arbitrary OS commands. See issue tokagentOS/tokagent#6767.
         const error = new Error(
-          "Eliza browser workspace eval requires the desktop browser bridge; the JSDOM web fallback does not execute scripts.",
+          "Tokagent browser workspace eval requires the desktop browser bridge; the JSDOM web fallback does not execute scripts.",
         );
         runtime.errors.push({
           message: error.message,
@@ -321,11 +321,11 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
           : null;
         if (!source || !target) {
           throw new Error(
-            "Eliza browser workspace drag requires source selector and target selector in value.",
+            "Tokagent browser workspace drag requires source selector and target selector in value.",
           );
         }
-        source.setAttribute("data-eliza-dragging", "true");
-        target.setAttribute("data-eliza-drop-target", "true");
+        source.setAttribute("data-tokagent-dragging", "true");
+        target.setAttribute("data-tokagent-drop-target", "true");
         return {
           mode: "web",
           subaction: command.subaction,
@@ -339,13 +339,13 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
         const target = resolveTarget();
         if (!target || target.tagName !== "INPUT") {
           throw new Error(
-            "Eliza browser workspace upload requires a file input target.",
+            "Tokagent browser workspace upload requires a file input target.",
           );
         }
         const files = (command.files ?? []).map((entry) =>
           path.basename(entry),
         );
-        target.setAttribute("data-eliza-uploaded-files", files.join(","));
+        target.setAttribute("data-tokagent-uploaded-files", files.join(","));
         return {
           mode: "web",
           subaction: command.subaction,
@@ -413,7 +413,7 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
           const cookieName = command.name?.trim() || command.entryKey?.trim();
           if (!cookieName) {
             throw new Error(
-              "Eliza browser workspace cookies set requires name.",
+              "Tokagent browser workspace cookies set requires name.",
             );
           }
           document.cookie = `${cookieName}=${command.value ?? ""}; path=/`;
@@ -442,7 +442,7 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
           const key = command.entryKey?.trim() || command.name?.trim();
           if (!key) {
             throw new Error(
-              "Eliza browser workspace storage set requires entryKey.",
+              "Tokagent browser workspace storage set requires entryKey.",
             );
           }
           area.setItem(key, command.value ?? "");
@@ -467,7 +467,7 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
           const pattern = command.url?.trim();
           if (!pattern) {
             throw new Error(
-              "Eliza browser workspace network route requires url pattern.",
+              "Tokagent browser workspace network route requires url pattern.",
             );
           }
           runtime.networkRoutes.push({
@@ -618,7 +618,7 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
         if (!target) {
           throw new Error("Target element was not found.");
         }
-        target.setAttribute("data-eliza-highlight", "true");
+        target.setAttribute("data-tokagent-highlight", "true");
         runtime.highlightedSelector =
           buildBrowserWorkspaceElementSelector(target);
         return {
@@ -643,7 +643,7 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
         );
         if (!frame || frame.tagName !== "IFRAME") {
           throw new Error(
-            "Eliza browser workspace frame select requires an iframe selector.",
+            "Tokagent browser workspace frame select requires an iframe selector.",
           );
         }
         runtime.currentFrame = buildBrowserWorkspaceElementSelector(frame);
@@ -664,7 +664,7 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
           const rightUrl = command.secondaryUrl?.trim();
           if (!rightUrl) {
             throw new Error(
-              "Eliza browser workspace diff url requires secondaryUrl.",
+              "Tokagent browser workspace diff url requires secondaryUrl.",
             );
           }
           const left = await fetchBrowserWorkspaceTrackedResponse(
@@ -811,7 +811,7 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
             command.filePath?.trim() || command.outputPath?.trim();
           if (!filePath) {
             throw new Error(
-              "Eliza browser workspace state load requires filePath.",
+              "Tokagent browser workspace state load requires filePath.",
             );
           }
           const payload = JSON.parse(
@@ -863,7 +863,7 @@ export async function executeWebBrowserWorkspaceUtilityCommand(
       case "pdf": {
         const filePath = command.filePath?.trim() || command.outputPath?.trim();
         if (!filePath) {
-          throw new Error("Eliza browser workspace pdf requires filePath.");
+          throw new Error("Tokagent browser workspace pdf requires filePath.");
         }
         const pdf = createBrowserWorkspacePdfBuffer(
           tab.title,
@@ -954,7 +954,7 @@ export async function executeWebBrowserWorkspaceDomCommand(
         if (command.getMode === "count") {
           if (!command.selector?.trim()) {
             throw new Error(
-              "Eliza browser workspace get count requires selector.",
+              "Tokagent browser workspace get count requires selector.",
             );
           }
           const semanticCommand = mergeBrowserWorkspaceSelectorCommand(
@@ -988,7 +988,7 @@ export async function executeWebBrowserWorkspaceDomCommand(
           case "attr":
             if (!command.attribute?.trim()) {
               throw new Error(
-                "Eliza browser workspace attr lookups require attribute.",
+                "Tokagent browser workspace attr lookups require attribute.",
               );
             }
             value = element.getAttribute(command.attribute);
@@ -1097,7 +1097,7 @@ export async function executeWebBrowserWorkspaceDomCommand(
               },
             };
           case "hover":
-            element.setAttribute("data-eliza-hover", "true");
+            element.setAttribute("data-tokagent-hover", "true");
             return {
               mode: "web",
               subaction: command.subaction,
@@ -1217,7 +1217,7 @@ export async function executeWebBrowserWorkspaceDomCommand(
         if (!element) {
           throw new Error("Target element was not found.");
         }
-        element.setAttribute("data-eliza-hover", "true");
+        element.setAttribute("data-tokagent-hover", "true");
         return {
           mode: "web",
           subaction: command.subaction,
@@ -1239,7 +1239,7 @@ export async function executeWebBrowserWorkspaceDomCommand(
           )
         ) {
           throw new Error(
-            "Eliza browser workspace keyboard text input requires a focused input target.",
+            "Tokagent browser workspace keyboard text input requires a focused input target.",
           );
         }
         const control = ensureBrowserWorkspaceFormControlElement(
@@ -1341,7 +1341,7 @@ export async function executeWebBrowserWorkspaceDomCommand(
         }
         if (element.tagName !== "SELECT") {
           throw new Error(
-            "Eliza browser workspace select requires a select target.",
+            "Tokagent browser workspace select requires a select target.",
           );
         }
         const select = ensureBrowserWorkspaceFormControlElement(

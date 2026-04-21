@@ -9,11 +9,11 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
-  elizaClassicPlugin,
-  getElizaGreeting,
-} from "@elizaos/plugin-eliza-classic";
+  tokagentClassicPlugin,
+  getTokagentGreeting,
+} from "@elizaos/plugin-tokagent-classic";
 import localdbPlugin from "@elizaos/plugin-localdb";
 import { v4 as uuidv4 } from "uuid";
 import type { AppConfig, ChatMessage, ProviderMode } from "./types";
@@ -27,7 +27,7 @@ type RuntimeBundle = {
 };
 
 const CHAT_CHARACTER = createCharacter({
-  name: "Eliza",
+  name: "Tokagent",
   bio: "A helpful assistant for simple back-and-forth chat.",
 });
 
@@ -99,8 +99,8 @@ function applySettings(
 async function buildPlugins(mode: ProviderMode): Promise<Plugin[]> {
   const base: Plugin[] = [localdbPlugin];
   switch (mode) {
-    case "elizaClassic":
-      return [...base, elizaClassicPlugin];
+    case "tokagentClassic":
+      return [...base, tokagentClassicPlugin];
     case "openai":
       return [...base, (await import("@elizaos/plugin-openai")).default];
     case "anthropic":
@@ -116,7 +116,7 @@ async function buildPlugins(mode: ProviderMode): Promise<Plugin[]> {
     case "ollama":
       return [...base, (await import("@elizaos/plugin-ollama")).default];
     default:
-      return [...base, elizaClassicPlugin];
+      return [...base, tokagentClassicPlugin];
   }
 }
 
@@ -174,8 +174,8 @@ export async function getOrCreateRuntime(
 
 export function getGreetingText(config: AppConfig): string {
   const effectiveMode = getEffectiveMode(config);
-  return effectiveMode === "elizaClassic"
-    ? getElizaGreeting()
+  return effectiveMode === "tokagentClassic"
+    ? getTokagentGreeting()
     : "Hello! What would you like to chat about?";
 }
 

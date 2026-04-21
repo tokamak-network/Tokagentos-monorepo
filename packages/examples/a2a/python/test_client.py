@@ -1,5 +1,5 @@
 """
-Test client for elizaOS A2A Server
+Test client for tokagentOS A2A Server
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ BASE_URL = os.environ.get("A2A_URL", "http://localhost:3000")
 
 
 async def run_a2a_test_client(base_url: str) -> None:
-    print("🧪 Testing elizaOS A2A Server\n")
+    print("🧪 Testing tokagentOS A2A Server\n")
     print(f"   URL: {base_url}\n")
 
     async with httpx.AsyncClient() as client:

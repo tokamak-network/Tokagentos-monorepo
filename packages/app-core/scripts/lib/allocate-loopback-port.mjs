@@ -9,8 +9,8 @@
  * once; its `/api` proxy target must equal the API listen port **at Vite
  * startup**. If only `dev-server.ts` shifted ports internally, the UI would
  * proxy to a stale default until Vite restarted. Resolving here keeps
- * `ELIZA_API_PORT`, `ELIZA_DESKTOP_API_BASE`, `ELIZA_RENDERER_URL`, and
- * `ELIZA_PORT` (Vite) consistent across all children.
+ * `TOKAGENT_API_PORT`, `TOKAGENT_DESKTOP_API_BASE`, `TOKAGENT_RENDERER_URL`, and
+ * `TOKAGENT_PORT` (Vite) consistent across all children.
  */
 
 import { createServer } from "node:net";

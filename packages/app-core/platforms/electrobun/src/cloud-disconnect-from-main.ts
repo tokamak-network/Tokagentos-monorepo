@@ -4,7 +4,7 @@
  * so disconnect appeared to do nothing.
  */
 
-import { resolveApiToken } from "@elizaos/shared/runtime-env";
+import { resolveApiToken } from "@tokagentos/shared/runtime-env";
 import { getBrandConfig } from "./brand-config";
 import {
   normalizeApiBase,
@@ -57,7 +57,7 @@ export async function postCloudDisconnectFromMain(options?: {
   disconnectTimeoutMs?: number;
   /** the appClient base URL from the renderer (e.g. Vite :2138 proxy vs direct :31337). */
   apiBaseOverride?: string | null;
-  /** Renderer bearer token when main `ELIZA_API_TOKEN` is unset (external desktop mode). */
+  /** Renderer bearer token when main `TOKAGENT_API_TOKEN` is unset (external desktop mode). */
   bearerTokenOverride?: string | null;
 }): Promise<CloudDisconnectMainResult> {
   const fetchImpl = options?.fetchImpl ?? fetch;

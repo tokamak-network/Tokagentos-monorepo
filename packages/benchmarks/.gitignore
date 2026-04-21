@@ -73,9 +73,9 @@ Thumbs.db
 **/post_b_*/
 **/post_delete_*/
 **/real_db/
-**/real_eliza_*/
-**/full_eliza_*/
-**/eliza_run_*/
+**/real_tokagent_*/
+**/full_tokagent_*/
+**/tokagent_run_*/
 **/ws_test*/
 **/lateral_test*/
 **/smart_smoke/

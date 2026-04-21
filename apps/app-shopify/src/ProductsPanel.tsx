@@ -12,7 +12,7 @@ import {
   DialogTitle,
   Input,
   Skeleton,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import {
   ChevronLeft,
   ChevronRight,

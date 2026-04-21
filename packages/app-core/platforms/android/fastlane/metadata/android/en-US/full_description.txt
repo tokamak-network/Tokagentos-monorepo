@@ -1,4 +1,4 @@
-elizaOS App is a personal AI assistant that runs on YOUR device. Built on elizaOS, it connects to your preferred AI provider while keeping your data local and private.
+tokagentOS App is a personal AI assistant that runs on YOUR device. Built on tokagentOS, it connects to your preferred AI provider while keeping your data local and private.
 
 <b>Features</b>
 • Interactive setup — pick a name, personality, and AI provider
@@ -19,6 +19,6 @@ Your conversations stay on your device. The app connects directly to AI provider
 
 Supports multiple AI providers including Anthropic Claude (recommended), OpenAI GPT, Google Gemini, Ollama (fully local), Groq, xAI Grok, and DeepSeek.
 
-For power users: elizaOS also runs as a CLI on desktop (macOS, Windows, Linux) with a terminal UI, headless mode, and full plugin extensibility.
+For power users: tokagentOS also runs as a CLI on desktop (macOS, Windows, Linux) with a terminal UI, headless mode, and full plugin extensibility.
 
 Open source under the Viral Public License.

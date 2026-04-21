@@ -14,9 +14,9 @@ The connection step had grown into one very large component with nested `if` tre
 | Component | Renders when `spec.screen` is |
 |-----------|------------------------------|
 | **`ConnectionUiRoot.tsx`** | Switches on `spec.screen` and mounts the matching screen. **Why a root:** one place to register a new screen when you add a `ConnectionScreen` variant. |
-| **`ConnectionHostingScreen.tsx`** | `hosting` — local / remote / Eliza Cloud hosting cards. |
+| **`ConnectionHostingScreen.tsx`** | `hosting` — local / remote / Tokagent Cloud hosting cards. |
 | **`ConnectionRemoteBackendScreen.tsx`** | `remoteBackend` — URL + token fields; back uses `backRemoteOrGrid` or `useLocalBackend` effect. |
-| **`ConnectionElizaCloudPreProviderScreen.tsx`** | `elizaCloud_preProvider` — Eliza Cloud **before** the neural link (distinct from picking Eliza Cloud **as** the provider). **Why two Eliza UIs:** different footers, back targets, and copy. |
+| **`ConnectionTokagentCloudPreProviderScreen.tsx`** | `tokagentCloud_preProvider` — Tokagent Cloud **before** the neural link (distinct from picking Tokagent Cloud **as** the provider). **Why two Tokagent UIs:** different footers, back targets, and copy. |
 | **`ConnectionProviderGridScreen.tsx`** | `providerGrid` — neural link provider list. |
 | **`ConnectionProviderDetailScreen.tsx`** | `providerDetail` — per-provider panels, API keys, subscription OAuth. |
 
@@ -30,11 +30,11 @@ OpenAI redirect and Anthropic code-entry **`useState`** live on **`ConnectionPro
 
 Parent passes `dispatch: (event: ConnectionEvent) => void` from `ConnectionStep`, which runs `applyConnectionTransition` and applies patches via `setState`. **Why not `useContext` for dispatch:** explicit props keep data flow obvious and avoid an extra provider for one step.
 
-## Eliza Cloud OAuth auto-advance
+## Tokagent Cloud OAuth auto-advance
 
-[`useAdvanceOnboardingWhenElizaCloudOAuthConnected.ts`](./useAdvanceOnboardingWhenElizaCloudOAuthConnected.ts) calls **`handleOnboardingNext()`** once **`elizaCloudConnected`** is true on the **Login** tab. **Why:** avoids a redundant Confirm after the UI already shows “connected,” matching **`CloudLoginStep`**. **Why scoped to Login tab:** API-key mode still needs an explicit Confirm so we never advance on half-entered keys.
+[`useAdvanceOnboardingWhenTokagentCloudOAuthConnected.ts`](./useAdvanceOnboardingWhenTokagentCloudOAuthConnected.ts) calls **`handleOnboardingNext()`** once **`tokagentCloudConnected`** is true on the **Login** tab. **Why:** avoids a redundant Confirm after the UI already shows “connected,” matching **`CloudLoginStep`**. **Why scoped to Login tab:** API-key mode still needs an explicit Confirm so we never advance on half-entered keys.
 
-Used by **`ConnectionElizaCloudPreProviderScreen`** and **`ConnectionProviderDetailScreen`** (when `onboardingProvider === "elizacloud"`).
+Used by **`ConnectionTokagentCloudPreProviderScreen`** and **`ConnectionProviderDetailScreen`** (when `onboardingProvider === "tokagentcloud"`).
 
 ## Related
 

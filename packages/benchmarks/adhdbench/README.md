@@ -1,6 +1,6 @@
 # ADHDBench
 
-Attention & context scaling benchmark for ElizaOS agents. Measures whether an agent selects the correct action and context as cognitive load increases.
+Attention & context scaling benchmark for TokagentOS agents. Measures whether an agent selects the correct action and context as cognitive load increases.
 
 **Signature output:** an attention scaling curve — accuracy plotted against context load.
 
@@ -61,7 +61,7 @@ Deterministic, binary. 7 outcome types:
 ## Files
 
 ```
-elizaos_adhdbench/
+tokagentos_adhdbench/
     types.py              196 lines — frozen scenario/result types
     config.py              89 lines — all tuneable axes
     scenarios.py          598 lines — 45 scenarios with outcome definitions

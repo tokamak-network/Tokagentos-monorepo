@@ -3,7 +3,7 @@
  * LP Manager Agent - Autonomous liquidity position management for DeFi
  */
 
-import { AgentRuntime, logger, type Plugin } from "@elizaos/core";
+import { AgentRuntime, logger, type Plugin } from "@tokagentos/core";
 import { character } from "./character";
 import { LpMonitoringService } from "./services/LpMonitoringService";
 import type {

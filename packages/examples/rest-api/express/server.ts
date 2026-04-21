@@ -1,9 +1,9 @@
 /**
- * elizaOS REST API Example - Express.js
+ * tokagentOS REST API Example - Express.js
  *
- * A REST API server demonstrating the canonical elizaOS implementation.
+ * A REST API server demonstrating the canonical tokagentOS implementation.
  * Uses AgentRuntime with runtime.messageService.handleMessage for proper
- * message processing through the full elizaOS pipeline.
+ * message processing through the full tokagentOS pipeline.
  */
 
 import {
@@ -16,10 +16,10 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
-import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
 import express, {
   type NextFunction,
   type Request,
@@ -40,8 +40,8 @@ const PORT = Number(process.env.PORT ?? 3000);
 // Pass environment variables via character.secrets so getSetting() can find them
 // Without POSTGRES_URL, plugin-sql will use PGLite automatically
 const character: Character = createCharacter({
-  name: "Eliza",
-  bio: "A helpful AI assistant powered by elizaOS.",
+  name: "Tokagent",
+  bio: "A helpful AI assistant powered by tokagentOS.",
   secrets: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY || "",
   },
@@ -68,15 +68,15 @@ async function getRuntime(): Promise<IAgentRuntime | null> {
 
   initPromise = (async () => {
     try {
-      console.log("🚀 Initializing elizaOS runtime...");
+      console.log("🚀 Initializing tokagentOS runtime...");
 
       // Choose plugins based on whether OpenAI key is available
       const plugins: Plugin[] = [typedSqlPlugin];
       if (process.env.OPENAI_API_KEY) {
         plugins.push(openaiPlugin);
       } else {
-        console.log("💡 No OPENAI_API_KEY found, using elizaClassicPlugin for responses");
-        plugins.push(elizaClassicPlugin);
+        console.log("💡 No OPENAI_API_KEY found, using tokagentClassicPlugin for responses");
+        plugins.push(tokagentClassicPlugin);
       }
 
       const newRuntime = new AgentRuntime({
@@ -86,17 +86,17 @@ async function getRuntime(): Promise<IAgentRuntime | null> {
 
       await newRuntime.initialize();
 
-      console.log("✅ elizaOS runtime initialized");
+      console.log("✅ tokagentOS runtime initialized");
       runtime = newRuntime;
       return newRuntime;
     } catch (error) {
       const message = error instanceof Error ? error.message : "Unknown error";
-      console.error("❌ Failed to initialize elizaOS runtime:", message);
+      console.error("❌ Failed to initialize tokagentOS runtime:", message);
 
       // Check if it's a recoverable error
       if (message.includes("Extension bundle not found") || message.includes("migrations")) {
         console.log("⚠️ Database initialization issue.");
-        console.log("💡 Falling back to classic ELIZA mode.");
+        console.log("💡 Falling back to classic TOKAGENT mode.");
         useClassicFallback = true;
         initError = "Database not compatible. Using classic mode.";
       } else {
@@ -142,9 +142,9 @@ app.get("/", async (_req: Request, res: Response) => {
     name: character.name,
     bio: character.bio,
     version: "2.0.0",
-    powered_by: "elizaOS",
+    powered_by: "tokagentOS",
     framework: "Express.js",
-    mode: rt ? "elizaos" : "classic",
+    mode: rt ? "tokagentos" : "classic",
     endpoints: {
       "POST /chat": "Send a message and receive a response",
       "GET /health": "Health check endpoint",
@@ -160,7 +160,7 @@ app.get("/health", async (_req: Request, res: Response) => {
   const rt = await getRuntime();
   res.json({
     status: rt ? "healthy" : "degraded",
-    mode: rt ? "elizaos" : "classic",
+    mode: rt ? "tokagentos" : "classic",
     character: character.name,
     error: initError,
     timestamp: new Date().toISOString(),
@@ -223,7 +223,7 @@ app.post(
       },
     });
 
-    // Process message through the canonical elizaOS pipeline
+    // Process message through the canonical tokagentOS pipeline
     let responseText = "";
 
     await rt.messageService?.handleMessage(
@@ -241,7 +241,7 @@ app.post(
       response: responseText || "I processed your message but have no response.",
       character: character.name,
       userId,
-      mode: "elizaos",
+      mode: "tokagentos",
     });
   },
 );
@@ -253,7 +253,7 @@ app.post(
 // Pre-initialize runtime then start server
 getRuntime().then((rt) => {
   app.listen(PORT, () => {
-    console.log(`\n🌐 elizaOS REST API (Express.js)`);
+    console.log(`\n🌐 tokagentOS REST API (Express.js)`);
     console.log(`   http://localhost:${PORT}\n`);
     console.log(`📚 Endpoints:`);
     console.log(`   GET  /       - Agent info`);

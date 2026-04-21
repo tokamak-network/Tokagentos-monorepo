@@ -7,7 +7,7 @@
  *                                      to show 'cloud' badges next to each
  *                                      feature row.
  *   POST /api/cloud/features/sync     → pull the user's Cloud package mapping
- *                                      from Eliza Cloud and upsert each
+ *                                      from Tokagent Cloud and upsert each
  *                                      result into `lifeops_features` with
  *                                      `source = 'cloud'`. Idempotent.
  *
@@ -20,8 +20,8 @@
  */
 
 import type http from "node:http";
-import type { AgentRuntime, IAgentRuntime, Service } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime, Service } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   ALL_FEATURE_KEYS,
   CLOUD_LINKED_DEFAULT_ON,
@@ -126,7 +126,7 @@ async function fetchCloudFeatures(
     return {
       status: 401,
       rows: [],
-      error: "Not connected to Eliza Cloud. Sign in to sync features.",
+      error: "Not connected to Tokagent Cloud. Sign in to sync features.",
     };
   }
   const baseUrl = normalizeCloudSiteUrl(state.config.cloud?.baseUrl);
@@ -209,7 +209,7 @@ async function handleSync(
     remoteByKey.set(row.featureKey, row);
   }
   // Cloud-default policy: a successful sync implies the user is signed
-  // into Eliza Cloud, so we upsert rows for every feature in
+  // into Tokagent Cloud, so we upsert rows for every feature in
   // CLOUD_LINKED_DEFAULT_ON that did not come back explicitly disabled
   // from upstream. This keeps `source = 'cloud'` audit-correct (the row
   // was created by a Cloud sync) and surfaces the 5% service-fee tag in
@@ -237,7 +237,7 @@ async function handleSync(
     }
   }
   logger.info(
-    `[cloud-features] synced ${remote.rows.length} feature(s) from Eliza Cloud (${promotedKeys.size} promoted by Cloud-default policy)`,
+    `[cloud-features] synced ${remote.rows.length} feature(s) from Tokagent Cloud (${promotedKeys.size} promoted by Cloud-default policy)`,
   );
   const list = await service.list();
   sendJson(

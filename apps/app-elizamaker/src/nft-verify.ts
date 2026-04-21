@@ -1,9 +1,9 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { ethers } from "ethers";
 import { isAddressWhitelisted, markAddressVerified } from "./twitter-verify.js";
 
-const ELIZA_NFT_CONTRACT_ADDRESS = "0x5Af0D9827E0c53E4799BB226655A1de152A425a5";
-const ELIZA_NFT_ABI = [
+const TOKAGENT_NFT_CONTRACT_ADDRESS = "0x5Af0D9827E0c53E4799BB226655A1de152A425a5";
+const TOKAGENT_NFT_ABI = [
   "function balanceOf(address owner) view returns (uint256)",
 ];
 const DEFAULT_RPC_URL = "https://mainnet.base.org";
@@ -16,7 +16,7 @@ export interface NftVerificationResult {
   handle: string | null;
 }
 
-export async function verifyElizaHolder(
+export async function verifyTokagentHolder(
   walletAddress: string,
   options?: { rpcUrl?: string },
 ): Promise<NftVerificationResult> {
@@ -25,7 +25,7 @@ export async function verifyElizaHolder(
     return {
       verified: false,
       balance: 0,
-      contractAddress: ELIZA_NFT_CONTRACT_ADDRESS,
+      contractAddress: TOKAGENT_NFT_CONTRACT_ADDRESS,
       error: "Ethereum address is required.",
       handle: null,
     };
@@ -35,18 +35,18 @@ export async function verifyElizaHolder(
     return {
       verified: false,
       balance: 0,
-      contractAddress: ELIZA_NFT_CONTRACT_ADDRESS,
+      contractAddress: TOKAGENT_NFT_CONTRACT_ADDRESS,
       error: "Invalid Ethereum address.",
       handle: null,
     };
   }
 
   const provider = new ethers.JsonRpcProvider(
-    options?.rpcUrl ?? process.env.ELIZA_NFT_RPC_URL ?? DEFAULT_RPC_URL,
+    options?.rpcUrl ?? process.env.TOKAGENT_NFT_RPC_URL ?? DEFAULT_RPC_URL,
   );
   const contract = new ethers.Contract(
-    ELIZA_NFT_CONTRACT_ADDRESS,
-    ELIZA_NFT_ABI,
+    TOKAGENT_NFT_CONTRACT_ADDRESS,
+    TOKAGENT_NFT_ABI,
     provider,
   );
 
@@ -56,7 +56,7 @@ export async function verifyElizaHolder(
       return {
         verified: true,
         balance,
-        contractAddress: ELIZA_NFT_CONTRACT_ADDRESS,
+        contractAddress: TOKAGENT_NFT_CONTRACT_ADDRESS,
         error: null,
         handle: null,
       };
@@ -65,8 +65,8 @@ export async function verifyElizaHolder(
     return {
       verified: false,
       balance,
-      contractAddress: ELIZA_NFT_CONTRACT_ADDRESS,
-      error: "Wallet does not hold an Eliza NFT.",
+      contractAddress: TOKAGENT_NFT_CONTRACT_ADDRESS,
+      error: "Wallet does not hold an Tokagent NFT.",
       handle: null,
     };
   } catch (error) {
@@ -75,7 +75,7 @@ export async function verifyElizaHolder(
     return {
       verified: false,
       balance: 0,
-      contractAddress: ELIZA_NFT_CONTRACT_ADDRESS,
+      contractAddress: TOKAGENT_NFT_CONTRACT_ADDRESS,
       error: message,
       handle: null,
     };
@@ -92,21 +92,21 @@ export async function verifyAndWhitelistHolder(
     return {
       verified: true,
       balance: -1,
-      contractAddress: ELIZA_NFT_CONTRACT_ADDRESS,
+      contractAddress: TOKAGENT_NFT_CONTRACT_ADDRESS,
       error: null,
       handle: null,
     };
   }
 
-  const result = await verifyElizaHolder(walletAddress, options);
+  const result = await verifyTokagentHolder(walletAddress, options);
   if (result.verified) {
     markAddressVerified(
       walletAddress,
-      `nft:eliza:${ELIZA_NFT_CONTRACT_ADDRESS}`,
-      `eliza-holder:${result.balance}`,
+      `nft:tokagent:${TOKAGENT_NFT_CONTRACT_ADDRESS}`,
+      `tokagent-holder:${result.balance}`,
     );
   }
   return result;
 }
 
-export { ELIZA_NFT_CONTRACT_ADDRESS };
+export { TOKAGENT_NFT_CONTRACT_ADDRESS };

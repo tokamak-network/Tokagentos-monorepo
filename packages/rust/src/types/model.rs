@@ -1,4 +1,4 @@
-//! Model types for elizaOS
+//! Model types for tokagentOS
 //!
 //! Contains model types, parameters, and results for AI model interactions.
 
@@ -15,8 +15,8 @@ use serde::{Deserialize, Serialize};
 ///
 /// # Example
 /// ```rust,ignore
-/// use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-/// use elizaos::types::LLMMode;
+/// use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+/// use tokagentos::types::LLMMode;
 ///
 /// fn main() -> Result<(), Box<dyn std::error::Error>> {
 ///     let rt = tokio::runtime::Runtime::new()?;

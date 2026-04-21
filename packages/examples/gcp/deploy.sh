@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Deploy elizaOS Cloud Run worker to GCP
+# Deploy tokagentOS Cloud Run worker to GCP
 #
 # Usage:
 #   ./deploy.sh [runtime] [options]
@@ -13,7 +13,7 @@
 # Options:
 #   --region REGION       GCP region (default: us-central1)
 #   --project PROJECT_ID  GCP project ID
-#   --name SERVICE_NAME   Service name (default: eliza-worker)
+#   --name SERVICE_NAME   Service name (default: tokagent-worker)
 #   --min-instances N     Minimum instances (default: 0)
 #   --max-instances N     Maximum instances (default: 100)
 #   --memory MEMORY       Memory allocation (default: 512Mi)
@@ -33,7 +33,7 @@ set -e
 RUNTIME="typescript"
 REGION="${GCP_REGION:-us-central1}"
 PROJECT_ID="${PROJECT_ID:-$(gcloud config get-value project 2>/dev/null)}"
-SERVICE_NAME="eliza-worker"
+SERVICE_NAME="tokagent-worker"
 MIN_INSTANCES="0"
 MAX_INSTANCES="100"
 MEMORY="512Mi"
@@ -111,7 +111,7 @@ if [ -z "$OPENAI_KEY" ] && [ "$USE_SECRET" = false ]; then
     exit 1
 fi
 
-echo "🚀 Deploying elizaOS Cloud Run worker"
+echo "🚀 Deploying tokagentOS Cloud Run worker"
 echo ""
 echo "  Runtime:       $RUNTIME"
 echo "  Region:        $REGION"
@@ -171,7 +171,7 @@ echo ""
 echo "   # Chat"
 echo "   curl -X POST $SERVICE_URL/chat \\"
 echo "     -H 'Content-Type: application/json' \\"
-echo "     -d '{\"message\": \"Hello, Eliza!\"}'"
+echo "     -d '{\"message\": \"Hello, Tokagent!\"}'"
 echo ""
 echo "   # Interactive client"
 echo "   cd $(dirname "$0")"

@@ -31,7 +31,7 @@ const MAX_NAME_LENGTH = 64;
 const MAX_DESCRIPTION_LENGTH = 1024;
 
 /** Default config directory name */
-const CONFIG_DIR_NAME = ".elizaos";
+const CONFIG_DIR_NAME = ".tokagentos";
 
 /** Default agent directory for user skills */
 const DEFAULT_AGENT_DIR = join(homedir(), CONFIG_DIR_NAME);
@@ -285,8 +285,8 @@ function isUnderPath(target: string, root: string): boolean {
  *
  * Sources are loaded in precedence order (later sources override earlier):
  * 1. Bundled skills (from this package)
- * 2. User/managed skills (~/.elizaos/skills)
- * 3. Project skills (<cwd>/.elizaos/skills)
+ * 2. User/managed skills (~/.tokagentos/skills)
+ * 3. Project skills (<cwd>/.tokagentos/skills)
  * 4. Explicit skill paths
  *
  * @param options - Loading options

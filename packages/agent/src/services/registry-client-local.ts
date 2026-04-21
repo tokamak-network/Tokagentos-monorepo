@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { resolveStateDir } from "../config/paths.js";
 import { packageNameToAppDisplayName } from "../contracts/apps.js";
 import {
@@ -38,7 +38,7 @@ interface LocalPackageAppMeta {
   session?: RegistryAppSessionMeta;
 }
 
-interface LocalPackageElizaConfig {
+interface LocalPackageTokagentConfig {
   kind?: string;
   app?: LocalPackageAppMeta;
   viewer?: RegistryAppViewerMeta;
@@ -52,7 +52,7 @@ interface LocalPackageJson {
   homepage?: string;
   keywords?: string[];
   repository?: string | { type?: string; url?: string };
-  elizaos?: LocalPackageElizaConfig;
+  tokagentos?: LocalPackageTokagentConfig;
 }
 
 interface LocalPluginManifest {
@@ -72,11 +72,11 @@ interface LocalPluginManifest {
 const LOCAL_PLUGIN_TAG_STOPWORDS = new Set([
   "plugin",
   "plugins",
-  "eliza",
-  "elizaos",
-  "eliza",
-  "elizaos-plugin",
-  "elizaos-plugins",
+  "tokagent",
+  "tokagentos",
+  "tokagent",
+  "tokagentos-plugin",
+  "tokagentos-plugins",
   "feature",
 ]);
 
@@ -94,7 +94,7 @@ function uniquePaths(paths: string[]): string[] {
 }
 
 function resolveWorkspaceRoots(): string[] {
-  const envRoot = process.env.ELIZA_WORKSPACE_ROOT?.trim();
+  const envRoot = process.env.TOKAGENT_WORKSPACE_ROOT?.trim();
   if (envRoot) return uniquePaths([envRoot]);
   const moduleDir = path.dirname(fileURLToPath(import.meta.url));
   const packageRoot = path.resolve(moduleDir, "..", "..");
@@ -106,7 +106,7 @@ function resolveWorkspaceRoots(): string[] {
     path.resolve(cwd, "..", ".."),
   ].filter((candidate): candidate is string => Boolean(candidate));
 
-  // Monorepos (e.g. Eliza) hoist `@elizaos/*` under the repo root, while this
+  // Monorepos (e.g. Tokagent) hoist `@elizaos/*` under the repo root, while this
   // module lives in `packages/agent`. When the process cwd is deep (`apps/...`,
   // Electrobun bundle, etc.), cwd-based roots never reach that `node_modules`.
   // Walk up from the agent package so `getPluginInfo` can resolve vendored
@@ -243,11 +243,11 @@ function isDiscoverableAppPackage(
   if (!packageJson.name) return false;
 
   return Boolean(
-    packageJson.elizaos?.kind === "app" ||
+    packageJson.tokagentos?.kind === "app" ||
       manifest?.kind === "app" ||
-      packageJson.elizaos?.app ||
-      packageJson.elizaos?.viewer ||
-      packageJson.elizaos?.session ||
+      packageJson.tokagentos?.app ||
+      packageJson.tokagentos?.viewer ||
+      packageJson.tokagentos?.session ||
       manifest?.app ||
       manifest?.viewer ||
       manifest?.session ||
@@ -308,11 +308,11 @@ function buildDiscoveredEntry(
   if (!packageJson?.name || packageJson.name.length === 0) return null;
 
   const packageAppMeta = toLocalAppMeta(
-    packageJson.elizaos?.app,
+    packageJson.tokagentos?.app,
     toDisplayNameFromDirName(dirName),
     {
-      viewer: packageJson.elizaos?.viewer,
-      session: packageJson.elizaos?.session,
+      viewer: packageJson.tokagentos?.viewer,
+      session: packageJson.tokagentos?.session,
     },
   );
   const manifestAppMeta = toLocalAppMeta(
@@ -327,7 +327,7 @@ function buildDiscoveredEntry(
   const overriddenMeta = resolveAppOverride(packageJson.name, mergedMeta);
 
   const kind =
-    packageJson.elizaos?.kind === "app" || manifest?.kind === "app"
+    packageJson.tokagentos?.kind === "app" || manifest?.kind === "app"
       ? "app"
       : overriddenMeta
         ? "app"
@@ -400,9 +400,9 @@ async function discoverLocalWorkspaceApps(): Promise<
     addDiscoveredRoot(path.join(workspaceRoot, "plugins"), true);
     addDiscoveredRoot(path.join(workspaceRoot, "packages"), false);
     addDiscoveredRoot(path.join(workspaceRoot, "apps"), false);
-    addDiscoveredRoot(path.join(workspaceRoot, "eliza", "packages"), false);
-    addDiscoveredRoot(path.join(workspaceRoot, "eliza", "plugins"), true);
-    addDiscoveredRoot(path.join(workspaceRoot, "eliza", "apps"), false);
+    addDiscoveredRoot(path.join(workspaceRoot, "tokagent", "packages"), false);
+    addDiscoveredRoot(path.join(workspaceRoot, "tokagent", "plugins"), true);
+    addDiscoveredRoot(path.join(workspaceRoot, "tokagent", "apps"), false);
 
     const workspaceEntries = await readDirectoryEntries(
       workspaceRoot,
@@ -417,9 +417,9 @@ async function discoverLocalWorkspaceApps(): Promise<
       addDiscoveredRoot(path.join(repoRoot, "plugins"), true);
       addDiscoveredRoot(path.join(repoRoot, "packages"), false);
       addDiscoveredRoot(path.join(repoRoot, "apps"), false);
-      addDiscoveredRoot(path.join(repoRoot, "eliza", "packages"), false);
-      addDiscoveredRoot(path.join(repoRoot, "eliza", "plugins"), true);
-      addDiscoveredRoot(path.join(repoRoot, "eliza", "apps"), false);
+      addDiscoveredRoot(path.join(repoRoot, "tokagent", "packages"), false);
+      addDiscoveredRoot(path.join(repoRoot, "tokagent", "plugins"), true);
+      addDiscoveredRoot(path.join(repoRoot, "tokagent", "apps"), false);
     }
 
     for (const [root, includeTypescriptChild] of discoveredRoots) {
@@ -440,7 +440,7 @@ async function discoverLocalWorkspaceApps(): Promise<
     if (!packageJson) continue;
 
     const manifest = await readJsonFile<LocalPluginManifest>(
-      path.join(packageDir, "elizaos.plugin.json"),
+      path.join(packageDir, "tokagentos.plugin.json"),
     );
     if (!isDiscoverableAppPackage(packageJson, manifest)) continue;
 
@@ -500,7 +500,7 @@ async function discoverLocalWorkspaceApps(): Promise<
         );
         if (!pkgJson?.name) continue;
         const manifest = await readJsonFile<LocalPluginManifest>(
-          path.join(pkgDir, "elizaos.plugin.json"),
+          path.join(pkgDir, "tokagentos.plugin.json"),
         );
         if (!isDiscoverableAppPackage(pkgJson, manifest)) continue;
         if (discovered.has(pkgJson.name)) continue;
@@ -525,8 +525,8 @@ async function discoverNodeModulePlugins(): Promise<
   const discovered = new Map<string, RegistryPluginInfo>();
 
   for (const workspaceRoot of resolveWorkspaceRoots()) {
-    const elizaosDir = path.join(workspaceRoot, "node_modules", "@elizaos");
-    const entries = await readDirectoryEntries(elizaosDir, "@elizaos dir", {
+    const tokagentosDir = path.join(workspaceRoot, "node_modules", "@elizaos");
+    const entries = await readDirectoryEntries(tokagentosDir, "@elizaos dir", {
       suppressMissing: true,
     });
 
@@ -534,7 +534,7 @@ async function discoverNodeModulePlugins(): Promise<
       if (!entry.name.startsWith("plugin-")) continue;
       if (!entry.isDirectory() && !entry.isSymbolicLink()) continue;
 
-      const packageDir = path.join(elizaosDir, entry.name);
+      const packageDir = path.join(tokagentosDir, entry.name);
       const packageJson = await readJsonFile<
         LocalPackageJson & {
           packageType?: string;
@@ -546,12 +546,12 @@ async function discoverNodeModulePlugins(): Promise<
 
       const isPlugin =
         packageJson.packageType === "plugin" ||
-        packageJson.keywords?.includes("elizaos") ||
-        packageJson.elizaos !== undefined ||
+        packageJson.keywords?.includes("tokagentos") ||
+        packageJson.tokagentos !== undefined ||
         packageJson.agentConfig !== undefined;
       if (!isPlugin) continue;
 
-      if (packageJson.elizaos?.kind === "app") continue;
+      if (packageJson.tokagentos?.kind === "app") continue;
 
       const repo = parseRepositoryMetadata(packageJson.repository);
       const version = packageJson.version ?? null;
@@ -621,11 +621,11 @@ async function discoverPackagesFolderPlugins(): Promise<
 
       const isPlugin =
         packageJson.packageType === "plugin" ||
-        packageJson.keywords?.includes("elizaos") ||
-        packageJson.elizaos !== undefined ||
+        packageJson.keywords?.includes("tokagentos") ||
+        packageJson.tokagentos !== undefined ||
         packageJson.agentConfig !== undefined;
       if (!isPlugin) continue;
-      if (packageJson.elizaos?.kind === "app") continue;
+      if (packageJson.tokagentos?.kind === "app") continue;
       if (!packageJson.name.startsWith("@elizaos/plugin-")) continue;
 
       const repo = parseRepositoryMetadata(packageJson.repository);

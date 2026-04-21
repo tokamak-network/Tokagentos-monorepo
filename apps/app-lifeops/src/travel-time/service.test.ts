@@ -1,8 +1,8 @@
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   LifeOpsCalendarEvent,
   LifeOpsCalendarFeed,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { describe, expect, it } from "vitest";
 import {
   FALLBACK_FIXED_BUFFER_MINUTES,

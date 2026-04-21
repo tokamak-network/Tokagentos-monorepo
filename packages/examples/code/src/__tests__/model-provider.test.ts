@@ -4,7 +4,7 @@ import { resolveModelProvider } from "../lib/model-provider.js";
 describe("resolveModelProvider", () => {
   test("prefers explicit provider setting", () => {
     const provider = resolveModelProvider({
-      ELIZA_CODE_PROVIDER: "openai",
+      TOKAGENT_CODE_PROVIDER: "openai",
       ANTHROPIC_API_KEY: "anthropic-key",
       OPENAI_API_KEY: "openai-key",
     });

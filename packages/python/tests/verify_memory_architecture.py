@@ -4,11 +4,11 @@ import unittest
 import uuid
 from unittest.mock import AsyncMock, MagicMock
 
-from elizaos.features.basic_capabilities.services.embedding import EmbeddingService
-from elizaos.types import ModelType
-from elizaos.types.events import EventType
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content
+from tokagentos.features.basic_capabilities.services.embedding import EmbeddingService
+from tokagentos.types import ModelType
+from tokagentos.types.events import EventType
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content
 
 # Mock vector for "hello world" - simple 384 dim vector
 MOCK_VECTOR_HELLO = [0.1] * 384

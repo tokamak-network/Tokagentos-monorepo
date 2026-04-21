@@ -11,7 +11,7 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { PageContent } from "../types";
 
 // Cache key for storing page content

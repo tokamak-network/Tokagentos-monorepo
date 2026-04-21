@@ -1,4 +1,4 @@
-"""EVM Benchmark Providers for ElizaOS."""
+"""EVM Benchmark Providers for TokagentOS."""
 
 from .evm_context import evm_context_provider
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Research benchmark evaluator for elizaOS app agent.
+Research benchmark evaluator for tokagentOS app agent.
 
 Scores a research response against a task definition from research-tasks.json.
 Checks for required elements (string matching), evaluates structural quality,
@@ -418,7 +418,7 @@ def print_summary(evaluations: list[dict[str, Any]]) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Evaluate elizaOS app research benchmark responses",
+        description="Evaluate tokagentOS app research benchmark responses",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )

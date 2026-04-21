@@ -1,11 +1,11 @@
 /**
- * Telegram bot using elizaOS with full message pipeline.
+ * Telegram bot using tokagentOS with full message pipeline.
  * 
  * Required env vars: TELEGRAM_BOT_TOKEN, OPENAI_API_KEY
  * Optional: POSTGRES_URL (defaults to PGLite)
  */
 
-import { AgentRuntime, createCharacter } from "@elizaos/core";
+import { AgentRuntime, createCharacter } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
 import telegramPlugin from "@elizaos/plugin-telegram";
@@ -20,9 +20,9 @@ async function main() {
   }
 
   const character = createCharacter({
-    name: "TelegramEliza",
+    name: "TelegramTokagent",
     bio: "A helpful AI assistant on Telegram.",
-    system: `You are TelegramEliza, a helpful AI assistant on Telegram.
+    system: `You are TelegramTokagent, a helpful AI assistant on Telegram.
 Be friendly, concise, and genuinely helpful.
 Keep responses short - suitable for mobile chat.`,
     settings: {
@@ -38,7 +38,7 @@ Keep responses short - suitable for mobile chat.`,
     },
   });
 
-  console.log("Starting TelegramEliza...");
+  console.log("Starting TelegramTokagent...");
 
   const runtime = new AgentRuntime({
     character,

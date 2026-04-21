@@ -1,5 +1,5 @@
 /**
- * MIME type detection and media utilities for Eliza.
+ * MIME type detection and media utilities for Tokagent.
  *
  * Provides robust MIME type detection from file buffers, headers, and extensions.
  */

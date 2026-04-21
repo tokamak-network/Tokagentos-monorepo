@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=elizaOS App
+Name=tokagentOS App
 GenericName=AI Assistant
-Comment=Personal AI assistant built on elizaOS
-Exec=elizaos-app start
-Icon=ai.elizaos.App
+Comment=Personal AI assistant built on tokagentOS
+Exec=tokagentos-app start
+Icon=ai.tokagentos.App
 Terminal=true
 Categories=Development;Utility;
-Keywords=ai;assistant;agent;elizaos;llm;chatbot;
+Keywords=ai;assistant;agent;tokagentos;llm;chatbot;
 StartupNotify=false

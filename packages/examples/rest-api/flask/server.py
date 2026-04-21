@@ -1,10 +1,10 @@
 """
-elizaOS REST API Example - Flask
+tokagentOS REST API Example - Flask
 
 A REST API server for chat with an AI agent.
-Uses the canonical elizaOS runtime with messageService.handleMessage pattern.
+Uses the canonical tokagentOS runtime with messageService.handleMessage pattern.
 
-Note: Flask is synchronous by default. For production use with async elizaOS,
+Note: Flask is synchronous by default. For production use with async tokagentOS,
 consider using FastAPI or Quart instead.
 """
 
@@ -19,7 +19,7 @@ from typing import TypedDict
 from flask import Flask, Response, jsonify, request, stream_with_context
 from flask_cors import CORS
 
-from elizaos import (
+from tokagentos import (
     AgentRuntime,
     Character,
     Content,
@@ -34,8 +34,8 @@ from elizaos import (
 
 PORT = int(os.environ.get("PORT", 3000))
 
-CHARACTER_NAME = os.environ.get("CHARACTER_NAME", "Eliza")
-CHARACTER_BIO = os.environ.get("CHARACTER_BIO", "A helpful AI assistant powered by elizaOS.")
+CHARACTER_NAME = os.environ.get("CHARACTER_NAME", "Tokagent")
+CHARACTER_BIO = os.environ.get("CHARACTER_BIO", "A helpful AI assistant powered by tokagentOS.")
 
 # Create character with settings
 character = Character(
@@ -77,19 +77,19 @@ def run_async(coro):
 
 
 async def _init_runtime() -> AgentRuntime:
-    """Initialize the elizaOS runtime."""
+    """Initialize the tokagentOS runtime."""
     global runtime, init_error
 
     if runtime is not None:
         return runtime
 
     try:
-        print("🚀 Initializing elizaOS runtime...")
+        print("🚀 Initializing tokagentOS runtime...")
 
         # Import plugins
         try:
-            from elizaos.plugins.openai import openai_plugin
-            from elizaos.plugins.sql import sql_plugin
+            from tokagentos.plugins.openai import openai_plugin
+            from tokagentos.plugins.sql import sql_plugin
 
             new_runtime = AgentRuntime(
                 character=character,
@@ -102,17 +102,17 @@ async def _init_runtime() -> AgentRuntime:
 
         await new_runtime.initialize()
 
-        print("✅ elizaOS runtime initialized")
+        print("✅ tokagentOS runtime initialized")
         runtime = new_runtime
         return new_runtime
     except Exception as e:
         init_error = str(e)
-        print(f"❌ Failed to initialize elizaOS runtime: {e}")
+        print(f"❌ Failed to initialize tokagentOS runtime: {e}")
         raise
 
 
 def get_runtime() -> AgentRuntime:
-    """Get or initialize the elizaOS runtime (sync wrapper)."""
+    """Get or initialize the tokagentOS runtime (sync wrapper)."""
     return run_async(_init_runtime())
 
 
@@ -147,9 +147,9 @@ def info() -> Response:
             "name": CHARACTER_NAME,
             "bio": CHARACTER_BIO,
             "version": "2.0.0",
-            "powered_by": "elizaOS",
+            "powered_by": "tokagentOS",
             "framework": "Flask",
-            "mode": "elizaos" if runtime else "initializing",
+            "mode": "tokagentos" if runtime else "initializing",
             "error": init_error,
             "endpoints": {
                 "POST /chat": "Send a message and receive a response",
@@ -312,7 +312,7 @@ def chat_stream() -> Response | tuple[Response, int]:
 
 def main() -> None:
     """Start the Flask server."""
-    print(f"\n🌐 elizaOS REST API (Flask)")
+    print(f"\n🌐 tokagentOS REST API (Flask)")
     print(f"   http://localhost:{PORT}\n")
     print("📚 Endpoints:")
     print("   GET  /            - Agent info")

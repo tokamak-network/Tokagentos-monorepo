@@ -6,7 +6,7 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.types.components import (
+from tokagentos.types.components import (
     Action,
     ActionParameter,
     ActionParameterSchema,
@@ -15,9 +15,9 @@ from elizaos.types.components import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types.memory import Memory
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State
 
 
 @dataclass
@@ -660,7 +660,7 @@ def _spec_to_parameters(spec: DistractorSpec) -> list[ActionParameter]:
 
 
 def spec_to_action(spec: DistractorSpec) -> Action:
-    """Convert a DistractorSpec into an Eliza Action with a no-op handler."""
+    """Convert a DistractorSpec into an Tokagent Action with a no-op handler."""
     return Action(
         name=spec.name,
         description=spec.description,

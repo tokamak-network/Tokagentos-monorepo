@@ -1,4 +1,4 @@
-import { Button, Input } from "@elizaos/ui";
+import { Button, Input } from "@tokagentos/ui";
 import { useCallback, useEffect, useState } from "react";
 import {
   invokeDesktopBridgeRequest,

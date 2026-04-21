@@ -1,5 +1,5 @@
-import type { AgentRuntime } from "@elizaos/core";
-import { ModelType } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
+import { ModelType } from "@tokagentos/core";
 import type { RouteRequestContext } from "./route-helpers.js";
 
 interface CharacterGenerateContext {

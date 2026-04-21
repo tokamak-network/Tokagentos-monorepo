@@ -1,4 +1,4 @@
-//! Plugin types for elizaOS
+//! Plugin types for tokagentOS
 //!
 //! Contains Plugin, Route, and related types for extending agent functionality.
 

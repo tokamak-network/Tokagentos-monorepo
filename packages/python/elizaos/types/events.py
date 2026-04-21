@@ -3,10 +3,10 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, TypeAlias
 
-from elizaos.types.generated.eliza.v1 import events_pb2
+from tokagentos.types.generated.tokagent.v1 import events_pb2
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 EventType = events_pb2.EventType
 PlatformPrefix = events_pb2.PlatformPrefix

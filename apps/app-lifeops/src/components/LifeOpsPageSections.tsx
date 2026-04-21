@@ -3,15 +3,15 @@ import type {
   LifeOpsCadence,
   LifeOpsGoalDefinition,
   LifeOpsOccurrenceView,
-} from "@elizaos/shared/contracts/lifeops";
-import { Badge, Button } from "@elizaos/app-core";
+} from "@tokagentos/shared/contracts/lifeops";
+import { Badge, Button } from "@tokagentos/app-core";
 import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
 import type {
   CloudCompatAgent,
   CloudCompatManagedGithubStatus,
   CloudOAuthConnection,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import { humanizeLifeOpsLabel } from "./lifeops-labels.js";
 
 export type ManagedAgentGithubEntry = {
@@ -137,7 +137,7 @@ function githubBindingSourceLabel(
 ): string | null {
   switch (source) {
     case "platform_credentials":
-      return "Eliza Cloud OAuth";
+      return "Tokagent Cloud OAuth";
     case "secrets":
       return "Cloud secret";
     default:
@@ -491,7 +491,7 @@ export function AgentGithubCard({
           </div>
           <div className="mt-1 text-xs-tight leading-5 text-muted">
             Link this agent to one of the owner’s LifeOps GitHub connections
-            through Eliza Cloud. Disconnecting the agent later leaves the owner
+            through Tokagent Cloud. Disconnecting the agent later leaves the owner
             connection intact.
           </div>
           <div className="mt-3 flex flex-wrap gap-2">

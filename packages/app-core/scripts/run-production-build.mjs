@@ -11,11 +11,11 @@ import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveElizaAssetBaseUrls } from "./lib/asset-cdn.mjs";
+import { resolveTokagentAssetBaseUrls } from "./lib/asset-cdn.mjs";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
-// When invoked from eliza root via `bun run build`, __dirname is
-// eliza/packages/app-core/scripts — walk up to the eliza repo root.
+// When invoked from tokagent root via `bun run build`, __dirname is
+// tokagent/packages/app-core/scripts — walk up to the tokagent repo root.
 const rootDir = path.resolve(scriptDir, "..", "..", "..", "..");
 const appDir = path.join(rootDir, "apps", "app");
 
@@ -57,7 +57,7 @@ function run(executable, args, cwd) {
       ? {
           VITE_ASSET_BASE_URL:
             process.env.VITE_ASSET_BASE_URL ??
-            process.env.ELIZA_ASSET_BASE_URL ??
+            process.env.TOKAGENT_ASSET_BASE_URL ??
             appAssetBaseUrl,
         }
       : {}),
@@ -114,7 +114,7 @@ const pruneCdnAssetsScript = path.join(
   scriptDir,
   "prune-cdn-local-assets.mjs",
 );
-const { appAssetBaseUrl } = resolveElizaAssetBaseUrls();
+const { appAssetBaseUrl } = resolveTokagentAssetBaseUrls();
 
 await Promise.all([
   run(node, [tsdownCli, "--fail-on-warn", "false"], rootDir),

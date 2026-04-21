@@ -1,12 +1,12 @@
 /**
  * Stream control actions — agents can go live or go offline.
  *
- * All actions hit the local Eliza API (127.0.0.1:API_PORT).
+ * All actions hit the local Tokagent API (127.0.0.1:API_PORT).
  *
  * @module actions/stream-control
  */
 
-import type { Action, ActionExample } from "@elizaos/core";
+import type { Action, ActionExample } from "@tokagentos/core";
 import { hasOwnerAccess } from "../security/access.js";
 import { hasContextSignalSyncForKey } from "./context-signal.js";
 

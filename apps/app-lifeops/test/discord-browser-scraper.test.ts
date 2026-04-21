@@ -154,26 +154,26 @@ async function startFakeBridge(): Promise<BridgeFixture> {
 
 describe("discord browser scraper (end-to-end vs fake bridge)", () => {
   let bridge: BridgeFixture;
-  const originalUrl = process.env.ELIZA_BROWSER_WORKSPACE_URL;
-  const originalToken = process.env.ELIZA_BROWSER_WORKSPACE_TOKEN;
+  const originalUrl = process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
+  const originalToken = process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN;
 
   beforeEach(async () => {
     bridge = await startFakeBridge();
-    process.env.ELIZA_BROWSER_WORKSPACE_URL = bridge.baseUrl;
-    process.env.ELIZA_BROWSER_WORKSPACE_TOKEN = bridge.token;
+    process.env.TOKAGENT_BROWSER_WORKSPACE_URL = bridge.baseUrl;
+    process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN = bridge.token;
   });
 
   afterEach(async () => {
     await bridge.close();
     if (originalUrl === undefined) {
-      delete process.env.ELIZA_BROWSER_WORKSPACE_URL;
+      delete process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
     } else {
-      process.env.ELIZA_BROWSER_WORKSPACE_URL = originalUrl;
+      process.env.TOKAGENT_BROWSER_WORKSPACE_URL = originalUrl;
     }
     if (originalToken === undefined) {
-      delete process.env.ELIZA_BROWSER_WORKSPACE_TOKEN;
+      delete process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN;
     } else {
-      process.env.ELIZA_BROWSER_WORKSPACE_TOKEN = originalToken;
+      process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN = originalToken;
     }
   });
 
@@ -393,26 +393,26 @@ describe("discord browser scraper (end-to-end vs fake bridge)", () => {
 
 describe("searchDiscordMessages (fake bridge)", () => {
   let bridge: BridgeFixture;
-  const originalUrl = process.env.ELIZA_BROWSER_WORKSPACE_URL;
-  const originalToken = process.env.ELIZA_BROWSER_WORKSPACE_TOKEN;
+  const originalUrl = process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
+  const originalToken = process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN;
 
   beforeEach(async () => {
     bridge = await startFakeBridge();
-    process.env.ELIZA_BROWSER_WORKSPACE_URL = bridge.baseUrl;
-    process.env.ELIZA_BROWSER_WORKSPACE_TOKEN = bridge.token;
+    process.env.TOKAGENT_BROWSER_WORKSPACE_URL = bridge.baseUrl;
+    process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN = bridge.token;
   });
 
   afterEach(async () => {
     await bridge.close();
     if (originalUrl === undefined) {
-      delete process.env.ELIZA_BROWSER_WORKSPACE_URL;
+      delete process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
     } else {
-      process.env.ELIZA_BROWSER_WORKSPACE_URL = originalUrl;
+      process.env.TOKAGENT_BROWSER_WORKSPACE_URL = originalUrl;
     }
     if (originalToken === undefined) {
-      delete process.env.ELIZA_BROWSER_WORKSPACE_TOKEN;
+      delete process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN;
     } else {
-      process.env.ELIZA_BROWSER_WORKSPACE_TOKEN = originalToken;
+      process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN = originalToken;
     }
   });
 
@@ -512,26 +512,26 @@ describe("searchDiscordMessages (fake bridge)", () => {
 
 describe("captureDiscordDeliveryStatus (fake bridge)", () => {
   let bridge: BridgeFixture;
-  const originalUrl = process.env.ELIZA_BROWSER_WORKSPACE_URL;
-  const originalToken = process.env.ELIZA_BROWSER_WORKSPACE_TOKEN;
+  const originalUrl = process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
+  const originalToken = process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN;
 
   beforeEach(async () => {
     bridge = await startFakeBridge();
-    process.env.ELIZA_BROWSER_WORKSPACE_URL = bridge.baseUrl;
-    process.env.ELIZA_BROWSER_WORKSPACE_TOKEN = bridge.token;
+    process.env.TOKAGENT_BROWSER_WORKSPACE_URL = bridge.baseUrl;
+    process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN = bridge.token;
   });
 
   afterEach(async () => {
     await bridge.close();
     if (originalUrl === undefined) {
-      delete process.env.ELIZA_BROWSER_WORKSPACE_URL;
+      delete process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
     } else {
-      process.env.ELIZA_BROWSER_WORKSPACE_URL = originalUrl;
+      process.env.TOKAGENT_BROWSER_WORKSPACE_URL = originalUrl;
     }
     if (originalToken === undefined) {
-      delete process.env.ELIZA_BROWSER_WORKSPACE_TOKEN;
+      delete process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN;
     } else {
-      process.env.ELIZA_BROWSER_WORKSPACE_TOKEN = originalToken;
+      process.env.TOKAGENT_BROWSER_WORKSPACE_TOKEN = originalToken;
     }
   });
 
@@ -602,16 +602,16 @@ describe("captureDiscordDeliveryStatus (fake bridge)", () => {
 });
 
 describe("discord browser scraper (bridge not configured)", () => {
-  const originalUrl = process.env.ELIZA_BROWSER_WORKSPACE_URL;
+  const originalUrl = process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
 
   beforeEach(() => {
-    delete process.env.ELIZA_BROWSER_WORKSPACE_URL;
+    delete process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
   });
   afterEach(() => {
     if (originalUrl === undefined) {
-      delete process.env.ELIZA_BROWSER_WORKSPACE_URL;
+      delete process.env.TOKAGENT_BROWSER_WORKSPACE_URL;
     } else {
-      process.env.ELIZA_BROWSER_WORKSPACE_URL = originalUrl;
+      process.env.TOKAGENT_BROWSER_WORKSPACE_URL = originalUrl;
     }
   });
 

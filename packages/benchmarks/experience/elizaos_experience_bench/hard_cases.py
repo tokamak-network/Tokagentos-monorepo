@@ -1389,7 +1389,7 @@ ZERO_OVERLAP_PARAPHRASE: list[HardCase] = [
         experiences=[
             HardCaseExperience(
                 context="CI pipeline taking 45 minutes per build",
-                action="added layer caching and test parallelization",
+                action="added layer caching and test paralltokagenttion",
                 result="build time reduced to 8 minutes",
                 learning="cache Docker layers and run test suites in parallel to dramatically reduce CI pipeline build time",
                 domain="devops",

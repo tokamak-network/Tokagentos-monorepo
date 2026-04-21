@@ -50,14 +50,14 @@ async def run_eval_mode(
     """Run evaluation mode."""
     _load_dotenv()
 
-    from elizaos_atropos_reasoning import (
+    from tokagentos_atropos_reasoning import (
         ReasoningEnvironment,
         ReasoningAgent,
         TaskType,
         Difficulty,
     )
 
-    print("\n🧠 ElizaOS Atropos - Reasoning Gym")
+    print("\n🧠 TokagentOS Atropos - Reasoning Gym")
     print("=" * 50)
     print(f"Mode: {'LLM-based' if use_llm else 'Heuristic'}")
     print(f"Task: {task_type}")
@@ -76,28 +76,28 @@ async def run_eval_mode(
     runtime = None
     if use_llm:
         try:
-            from elizaos.runtime import AgentRuntime
-            from elizaos.bootstrap import bootstrap_plugin
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos.runtime import AgentRuntime
+            from tokagentos.bootstrap import bootstrap_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             plugins = [bootstrap_plugin, get_openai_plugin()]
 
             # Optional: register trajectory logger plugin for end-to-end capture
             if log_trajectories:
                 try:
-                    from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+                    from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
                     plugins.append(get_trajectory_logger_plugin())
                 except ImportError:
                     print("⚠️ Trajectory logger plugin not installed; disabling trajectory logging")
                     log_trajectories = False
 
-            from elizaos_atropos_reasoning.eliza_plugin import (
+            from tokagentos_atropos_reasoning.tokagent_plugin import (
                 create_reasoning_character,
-                get_reasoning_eliza_plugin,
+                get_reasoning_tokagent_plugin,
             )
 
-            plugins.append(get_reasoning_eliza_plugin())
+            plugins.append(get_reasoning_tokagent_plugin())
             runtime = AgentRuntime(character=create_reasoning_character(), plugins=plugins)
             await runtime.initialize()
             print("✅ LLM initialized")
@@ -161,7 +161,7 @@ async def run_eval_mode(
             token = None
             if step_id is not None:
                 try:
-                    from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+                    from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
                     token = CURRENT_TRAJECTORY_STEP_ID.set(step_id)
                 except Exception:
@@ -172,7 +172,7 @@ async def run_eval_mode(
 
             if token is not None:
                 try:
-                    from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+                    from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
                     CURRENT_TRAJECTORY_STEP_ID.reset(token)
                 except Exception:
@@ -237,7 +237,7 @@ async def run_eval_mode(
     # Export trajectories if logging was enabled
     if log_trajectories and traj_svc is not None:
         try:
-            from elizaos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
+            from tokagentos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
 
             export_cfg = TrajectoryExportConfig(
                 dataset_name="atropos_reasoning_trajectories",
@@ -262,14 +262,14 @@ async def run_interactive_mode(
     difficulty: str = "medium",
 ) -> None:
     """Run interactive problem-solving mode."""
-    from elizaos_atropos_reasoning import (
+    from tokagentos_atropos_reasoning import (
         ReasoningEnvironment,
         Response,
         TaskType,
         Difficulty,
     )
 
-    print("\n🧠 ElizaOS Atropos - Reasoning Gym (Interactive)")
+    print("\n🧠 TokagentOS Atropos - Reasoning Gym (Interactive)")
     print("=" * 50)
     print("Commands: type answer, 'hint' for hint, 'skip' to skip, 'quit' to exit")
     print("=" * 50)
@@ -347,7 +347,7 @@ async def run_benchmark_mode(
     """Run full benchmark across all task types and difficulties."""
     _load_dotenv()
 
-    from elizaos_atropos_reasoning import (
+    from tokagentos_atropos_reasoning import (
         ReasoningEnvironment,
         ReasoningAgent,
         TaskType,
@@ -355,7 +355,7 @@ async def run_benchmark_mode(
         BenchmarkResult,
     )
 
-    print("\n🧠 ElizaOS Atropos - Reasoning Gym Benchmark")
+    print("\n🧠 TokagentOS Atropos - Reasoning Gym Benchmark")
     print("=" * 60)
     print(f"Problems per category: {num_problems}")
     print("=" * 60)
@@ -364,8 +364,8 @@ async def run_benchmark_mode(
     runtime = None
     if use_llm:
         try:
-            from elizaos.runtime import AgentRuntime
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos.runtime import AgentRuntime
+            from tokagentos_plugin_openai import get_openai_plugin
 
             runtime = AgentRuntime(plugins=[get_openai_plugin()])
             await runtime.initialize()
@@ -454,7 +454,7 @@ async def run_benchmark_mode(
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="ElizaOS Atropos Reasoning Gym Environment",
+        description="TokagentOS Atropos Reasoning Gym Environment",
     )
 
     parser.add_argument(

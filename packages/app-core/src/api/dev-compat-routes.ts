@@ -64,11 +64,11 @@ export async function handleDevCompatRoutes(
       sendJsonErrorResponse(res, 403, "loopback only");
       return true;
     }
-    const upstream = process.env.ELIZA_ELECTROBUN_SCREENSHOT_URL?.trim();
+    const upstream = process.env.TOKAGENT_ELECTROBUN_SCREENSHOT_URL?.trim();
     if (!upstream) {
       sendJsonResponse(res, 404, {
         error: "desktop screenshot server not enabled",
-        hint: "Desktop dev enables the screenshot server by default; use dev-platform or set ELIZA_ELECTROBUN_SCREENSHOT_URL. Disable with ELIZA_DESKTOP_SCREENSHOT_SERVER=0.",
+        hint: "Desktop dev enables the screenshot server by default; use dev-platform or set TOKAGENT_ELECTROBUN_SCREENSHOT_URL. Disable with TOKAGENT_DESKTOP_SCREENSHOT_SERVER=0.",
       });
       return true;
     }
@@ -89,7 +89,7 @@ export async function handleDevCompatRoutes(
       sendJsonErrorResponse(res, 400, "invalid screenshot upstream URL");
       return true;
     }
-    const token = process.env.ELIZA_SCREENSHOT_SERVER_TOKEN?.trim() ?? "";
+    const token = process.env.TOKAGENT_SCREENSHOT_SERVER_TOKEN?.trim() ?? "";
     const base = upstream.replace(/\/$/, "");
     const target = `${base}/cursor-screenshot.png`;
     try {
@@ -131,11 +131,11 @@ export async function handleDevCompatRoutes(
       sendJsonErrorResponse(res, 403, "loopback only");
       return true;
     }
-    const logPath = process.env.ELIZA_DESKTOP_DEV_LOG_PATH?.trim();
+    const logPath = process.env.TOKAGENT_DESKTOP_DEV_LOG_PATH?.trim();
     if (!logPath || !isAllowedDevConsoleLogPath(logPath)) {
       sendJsonResponse(res, 404, {
         error: "desktop dev log not configured",
-        hint: "Run via dev-platform (dev:desktop); disable file with ELIZA_DESKTOP_DEV_LOG=0.",
+        hint: "Run via dev-platform (dev:desktop); disable file with TOKAGENT_DESKTOP_DEV_LOG=0.",
       });
       return true;
     }

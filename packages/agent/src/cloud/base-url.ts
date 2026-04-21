@@ -1,8 +1,8 @@
-const DEFAULT_CLOUD_SITE_URL = "https://www.elizacloud.ai";
+const DEFAULT_CLOUD_SITE_URL = "https://www.tokagentcloud.ai";
 
 const LEGACY_CLOUD_HOST_ALIASES = new Set([
-  "elizacloud.ai",
-  "www.elizacloud.ai",
+  "tokagentcloud.ai",
+  "www.tokagentcloud.ai",
 ]);
 
 function isLoopbackHost(hostname: string): boolean {
@@ -27,7 +27,7 @@ function trimApiPath(pathname: string): string {
 
 export function normalizeCloudSiteUrl(rawUrl?: string): string {
   // Allow cloud-provisioned containers to override the base URL via env var
-  const envOverride = process.env.ELIZAOS_CLOUD_BASE_URL?.trim();
+  const envOverride = process.env.TOKAGENTOS_CLOUD_BASE_URL?.trim();
   const candidate = envOverride || rawUrl?.trim() || DEFAULT_CLOUD_SITE_URL;
 
   try {
@@ -45,7 +45,7 @@ export function normalizeCloudSiteUrl(rawUrl?: string): string {
     parsed.pathname = pathname;
 
     if (LEGACY_CLOUD_HOST_ALIASES.has(host)) {
-      parsed.hostname = "www.elizacloud.ai";
+      parsed.hostname = "www.tokagentcloud.ai";
       parsed.pathname = "";
     }
 

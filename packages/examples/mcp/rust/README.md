@@ -1,6 +1,6 @@
-# elizaOS MCP Agent Server - Rust
+# tokagentOS MCP Agent Server - Rust
 
-Exposes an elizaOS agent as an MCP (Model Context Protocol) server using Rust.
+Exposes an tokagentOS agent as an MCP (Model Context Protocol) server using Rust.
 
 ## Requirements
 

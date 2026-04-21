@@ -3,8 +3,8 @@
  * share ingest, workbench, trajectories, database.
  */
 
-import type { DatabaseProviderType } from "@elizaos/agent/contracts/config";
-import { ElizaClient } from "./client-base";
+import type { DatabaseProviderType } from "@tokagentos/agent/contracts/config";
+import { TokagentClient } from "./client-base";
 import type {
   ApiError,
   ChatTokenUsage,
@@ -60,7 +60,7 @@ import type {
 // ---------------------------------------------------------------------------
 
 declare module "./client-base" {
-  interface ElizaClient {
+  interface TokagentClient {
     sendChatRest(
       text: string,
       channelType?: ConversationChannelType,
@@ -406,14 +406,14 @@ declare module "./client-base" {
 const LEGACY_CHAT_COMPAT_TITLE = "Quick Chat";
 const LEGACY_CHAT_CONVERSATION_STORAGE_PREFIX = "legacy_chat_conversation";
 
-function getLegacyChatConversationStorageKey(client: ElizaClient): string {
+function getLegacyChatConversationStorageKey(client: TokagentClient): string {
   const base =
     client.getBaseUrl() ||
     (typeof window !== "undefined" ? window.location.origin : "same-origin");
   return `${LEGACY_CHAT_CONVERSATION_STORAGE_PREFIX}:${encodeURIComponent(base)}`;
 }
 
-function readLegacyChatConversationId(client: ElizaClient): string | null {
+function readLegacyChatConversationId(client: TokagentClient): string | null {
   if (typeof window === "undefined") {
     return null;
   }
@@ -424,7 +424,7 @@ function readLegacyChatConversationId(client: ElizaClient): string | null {
 }
 
 function writeLegacyChatConversationId(
-  client: ElizaClient,
+  client: TokagentClient,
   conversationId: string | null,
 ): void {
   if (typeof window === "undefined") {
@@ -439,7 +439,7 @@ function writeLegacyChatConversationId(
 }
 
 async function ensureLegacyChatConversationId(
-  client: ElizaClient,
+  client: TokagentClient,
 ): Promise<string> {
   const cached = readLegacyChatConversationId(client);
   if (cached) {
@@ -453,8 +453,8 @@ async function ensureLegacyChatConversationId(
   return conversation.id;
 }
 
-ElizaClient.prototype.sendChatRest = async function (
-  this: ElizaClient,
+TokagentClient.prototype.sendChatRest = async function (
+  this: TokagentClient,
   text,
   channelType = "DM",
   conversationMode?,
@@ -484,8 +484,8 @@ ElizaClient.prototype.sendChatRest = async function (
   }
 };
 
-ElizaClient.prototype.sendChatStream = async function (
-  this: ElizaClient,
+TokagentClient.prototype.sendChatStream = async function (
+  this: TokagentClient,
   text,
   onToken,
   channelType = "DM",
@@ -519,12 +519,12 @@ ElizaClient.prototype.sendChatStream = async function (
   }
 };
 
-ElizaClient.prototype.listConversations = async function (this: ElizaClient) {
+TokagentClient.prototype.listConversations = async function (this: TokagentClient) {
   return this.fetch("/api/conversations");
 };
 
-ElizaClient.prototype.createConversation = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createConversation = async function (
+  this: TokagentClient,
   title?,
   options?,
 ) {
@@ -557,8 +557,8 @@ ElizaClient.prototype.createConversation = async function (
   };
 };
 
-ElizaClient.prototype.getConversationMessages = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getConversationMessages = async function (
+  this: TokagentClient,
   id,
 ) {
   const response = await this.fetch<{ messages: ConversationMessage[] }>(
@@ -573,8 +573,8 @@ ElizaClient.prototype.getConversationMessages = async function (
   };
 };
 
-ElizaClient.prototype.getInboxMessages = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getInboxMessages = async function (
+  this: TokagentClient,
   options,
 ) {
   const params = new URLSearchParams();
@@ -601,12 +601,12 @@ ElizaClient.prototype.getInboxMessages = async function (
   }>(path);
 };
 
-ElizaClient.prototype.getInboxSources = async function (this: ElizaClient) {
+TokagentClient.prototype.getInboxSources = async function (this: TokagentClient) {
   return this.fetch<{ sources: string[] }>("/api/inbox/sources");
 };
 
-ElizaClient.prototype.getInboxChats = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getInboxChats = async function (
+  this: TokagentClient,
   options,
 ) {
   const params = new URLSearchParams();
@@ -635,8 +635,8 @@ ElizaClient.prototype.getInboxChats = async function (
   }>(path);
 };
 
-ElizaClient.prototype.sendInboxMessage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.sendInboxMessage = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch<{
@@ -648,8 +648,8 @@ ElizaClient.prototype.sendInboxMessage = async function (
   });
 };
 
-ElizaClient.prototype.truncateConversationMessages = async function (
-  this: ElizaClient,
+TokagentClient.prototype.truncateConversationMessages = async function (
+  this: TokagentClient,
   id,
   messageId,
   options?,
@@ -666,8 +666,8 @@ ElizaClient.prototype.truncateConversationMessages = async function (
   );
 };
 
-ElizaClient.prototype.sendConversationMessage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.sendConversationMessage = async function (
+  this: TokagentClient,
   id,
   text,
   channelType = "DM",
@@ -699,8 +699,8 @@ ElizaClient.prototype.sendConversationMessage = async function (
   };
 };
 
-ElizaClient.prototype.sendConversationMessageStream = async function (
-  this: ElizaClient,
+TokagentClient.prototype.sendConversationMessageStream = async function (
+  this: TokagentClient,
   id,
   text,
   onToken,
@@ -722,8 +722,8 @@ ElizaClient.prototype.sendConversationMessageStream = async function (
   );
 };
 
-ElizaClient.prototype.requestGreeting = async function (
-  this: ElizaClient,
+TokagentClient.prototype.requestGreeting = async function (
+  this: TokagentClient,
   id,
   lang?,
 ) {
@@ -742,8 +742,8 @@ ElizaClient.prototype.requestGreeting = async function (
   };
 };
 
-ElizaClient.prototype.renameConversation = async function (
-  this: ElizaClient,
+TokagentClient.prototype.renameConversation = async function (
+  this: TokagentClient,
   id,
   title,
   options?,
@@ -754,8 +754,8 @@ ElizaClient.prototype.renameConversation = async function (
   });
 };
 
-ElizaClient.prototype.updateConversation = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateConversation = async function (
+  this: TokagentClient,
   id,
   data,
 ) {
@@ -771,8 +771,8 @@ ElizaClient.prototype.updateConversation = async function (
   });
 };
 
-ElizaClient.prototype.deleteConversation = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteConversation = async function (
+  this: TokagentClient,
   id,
 ) {
   return this.fetch(`/api/conversations/${encodeURIComponent(id)}`, {
@@ -780,12 +780,12 @@ ElizaClient.prototype.deleteConversation = async function (
   });
 };
 
-ElizaClient.prototype.getKnowledgeStats = async function (this: ElizaClient) {
+TokagentClient.prototype.getKnowledgeStats = async function (this: TokagentClient) {
   return this.fetch("/api/knowledge/stats");
 };
 
-ElizaClient.prototype.listKnowledgeDocuments = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listKnowledgeDocuments = async function (
+  this: TokagentClient,
   options?,
 ) {
   const params = new URLSearchParams();
@@ -795,8 +795,8 @@ ElizaClient.prototype.listKnowledgeDocuments = async function (
   return this.fetch(`/api/knowledge/documents${query ? `?${query}` : ""}`);
 };
 
-ElizaClient.prototype.getKnowledgeDocument = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getKnowledgeDocument = async function (
+  this: TokagentClient,
   documentId,
 ) {
   return this.fetch(
@@ -804,8 +804,8 @@ ElizaClient.prototype.getKnowledgeDocument = async function (
   );
 };
 
-ElizaClient.prototype.deleteKnowledgeDocument = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteKnowledgeDocument = async function (
+  this: TokagentClient,
   documentId,
 ) {
   return this.fetch(
@@ -814,8 +814,8 @@ ElizaClient.prototype.deleteKnowledgeDocument = async function (
   );
 };
 
-ElizaClient.prototype.uploadKnowledgeDocument = async function (
-  this: ElizaClient,
+TokagentClient.prototype.uploadKnowledgeDocument = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/knowledge/documents", {
@@ -824,8 +824,8 @@ ElizaClient.prototype.uploadKnowledgeDocument = async function (
   });
 };
 
-ElizaClient.prototype.uploadKnowledgeDocumentsBulk = async function (
-  this: ElizaClient,
+TokagentClient.prototype.uploadKnowledgeDocumentsBulk = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/knowledge/documents/bulk", {
@@ -834,8 +834,8 @@ ElizaClient.prototype.uploadKnowledgeDocumentsBulk = async function (
   });
 };
 
-ElizaClient.prototype.uploadKnowledgeFromUrl = async function (
-  this: ElizaClient,
+TokagentClient.prototype.uploadKnowledgeFromUrl = async function (
+  this: TokagentClient,
   url,
   metadata?,
 ) {
@@ -845,8 +845,8 @@ ElizaClient.prototype.uploadKnowledgeFromUrl = async function (
   });
 };
 
-ElizaClient.prototype.searchKnowledge = async function (
-  this: ElizaClient,
+TokagentClient.prototype.searchKnowledge = async function (
+  this: TokagentClient,
   query,
   options?,
 ) {
@@ -857,8 +857,8 @@ ElizaClient.prototype.searchKnowledge = async function (
   return this.fetch(`/api/knowledge/search?${params}`);
 };
 
-ElizaClient.prototype.getKnowledgeFragments = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getKnowledgeFragments = async function (
+  this: TokagentClient,
   documentId,
 ) {
   return this.fetch(
@@ -866,8 +866,8 @@ ElizaClient.prototype.getKnowledgeFragments = async function (
   );
 };
 
-ElizaClient.prototype.rememberMemory = async function (
-  this: ElizaClient,
+TokagentClient.prototype.rememberMemory = async function (
+  this: TokagentClient,
   text,
 ) {
   return this.fetch("/api/memory/remember", {
@@ -876,8 +876,8 @@ ElizaClient.prototype.rememberMemory = async function (
   });
 };
 
-ElizaClient.prototype.searchMemory = async function (
-  this: ElizaClient,
+TokagentClient.prototype.searchMemory = async function (
+  this: TokagentClient,
   query,
   options?,
 ) {
@@ -886,8 +886,8 @@ ElizaClient.prototype.searchMemory = async function (
   return this.fetch(`/api/memory/search?${params}`);
 };
 
-ElizaClient.prototype.quickContext = async function (
-  this: ElizaClient,
+TokagentClient.prototype.quickContext = async function (
+  this: TokagentClient,
   query,
   options?,
 ) {
@@ -896,8 +896,8 @@ ElizaClient.prototype.quickContext = async function (
   return this.fetch(`/api/context/quick?${params}`);
 };
 
-ElizaClient.prototype.getMemoryFeed = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getMemoryFeed = async function (
+  this: TokagentClient,
   query?,
 ) {
   const params = new URLSearchParams();
@@ -910,8 +910,8 @@ ElizaClient.prototype.getMemoryFeed = async function (
   return this.fetch(`/api/memories/feed${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.browseMemories = async function (
-  this: ElizaClient,
+TokagentClient.prototype.browseMemories = async function (
+  this: TokagentClient,
   query?,
 ) {
   const params = new URLSearchParams();
@@ -927,8 +927,8 @@ ElizaClient.prototype.browseMemories = async function (
   return this.fetch(`/api/memories/browse${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.getMemoriesByEntity = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getMemoriesByEntity = async function (
+  this: TokagentClient,
   entityId,
   query?,
 ) {
@@ -946,20 +946,20 @@ ElizaClient.prototype.getMemoriesByEntity = async function (
   );
 };
 
-ElizaClient.prototype.getMemoryStats = async function (this: ElizaClient) {
+TokagentClient.prototype.getMemoryStats = async function (this: TokagentClient) {
   return this.fetch("/api/memories/stats");
 };
 
-ElizaClient.prototype.getMcpConfig = async function (this: ElizaClient) {
+TokagentClient.prototype.getMcpConfig = async function (this: TokagentClient) {
   return this.fetch("/api/mcp/config");
 };
 
-ElizaClient.prototype.getMcpStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getMcpStatus = async function (this: TokagentClient) {
   return this.fetch("/api/mcp/status");
 };
 
-ElizaClient.prototype.searchMcpMarketplace = async function (
-  this: ElizaClient,
+TokagentClient.prototype.searchMcpMarketplace = async function (
+  this: TokagentClient,
   query,
   limit,
 ) {
@@ -967,15 +967,15 @@ ElizaClient.prototype.searchMcpMarketplace = async function (
   return this.fetch(`/api/mcp/marketplace/search?${params}`);
 };
 
-ElizaClient.prototype.getMcpServerDetails = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getMcpServerDetails = async function (
+  this: TokagentClient,
   name,
 ) {
   return this.fetch(`/api/mcp/marketplace/${encodeURIComponent(name)}`);
 };
 
-ElizaClient.prototype.addMcpServer = async function (
-  this: ElizaClient,
+TokagentClient.prototype.addMcpServer = async function (
+  this: TokagentClient,
   name,
   config,
 ) {
@@ -985,8 +985,8 @@ ElizaClient.prototype.addMcpServer = async function (
   });
 };
 
-ElizaClient.prototype.removeMcpServer = async function (
-  this: ElizaClient,
+TokagentClient.prototype.removeMcpServer = async function (
+  this: TokagentClient,
   name,
 ) {
   await this.fetch(`/api/mcp/servers/${encodeURIComponent(name)}`, {
@@ -994,8 +994,8 @@ ElizaClient.prototype.removeMcpServer = async function (
   });
 };
 
-ElizaClient.prototype.ingestShare = async function (
-  this: ElizaClient,
+TokagentClient.prototype.ingestShare = async function (
+  this: TokagentClient,
   payload,
 ) {
   return this.fetch("/api/ingest/share", {
@@ -1004,29 +1004,29 @@ ElizaClient.prototype.ingestShare = async function (
   });
 };
 
-ElizaClient.prototype.consumeShareIngest = async function (this: ElizaClient) {
+TokagentClient.prototype.consumeShareIngest = async function (this: TokagentClient) {
   return this.fetch("/api/share/consume", { method: "POST" });
 };
 
-ElizaClient.prototype.getWorkbenchOverview = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getWorkbenchOverview = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/workbench/overview");
 };
 
-ElizaClient.prototype.listWorkbenchTasks = async function (this: ElizaClient) {
+TokagentClient.prototype.listWorkbenchTasks = async function (this: TokagentClient) {
   return this.fetch("/api/workbench/tasks");
 };
 
-ElizaClient.prototype.getWorkbenchTask = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getWorkbenchTask = async function (
+  this: TokagentClient,
   taskId,
 ) {
   return this.fetch(`/api/workbench/tasks/${encodeURIComponent(taskId)}`);
 };
 
-ElizaClient.prototype.createWorkbenchTask = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createWorkbenchTask = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/workbench/tasks", {
@@ -1035,8 +1035,8 @@ ElizaClient.prototype.createWorkbenchTask = async function (
   });
 };
 
-ElizaClient.prototype.updateWorkbenchTask = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateWorkbenchTask = async function (
+  this: TokagentClient,
   taskId,
   data,
 ) {
@@ -1046,8 +1046,8 @@ ElizaClient.prototype.updateWorkbenchTask = async function (
   });
 };
 
-ElizaClient.prototype.deleteWorkbenchTask = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteWorkbenchTask = async function (
+  this: TokagentClient,
   taskId,
 ) {
   return this.fetch(`/api/workbench/tasks/${encodeURIComponent(taskId)}`, {
@@ -1055,19 +1055,19 @@ ElizaClient.prototype.deleteWorkbenchTask = async function (
   });
 };
 
-ElizaClient.prototype.listWorkbenchTodos = async function (this: ElizaClient) {
+TokagentClient.prototype.listWorkbenchTodos = async function (this: TokagentClient) {
   return this.fetch("/api/workbench/todos");
 };
 
-ElizaClient.prototype.getWorkbenchTodo = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getWorkbenchTodo = async function (
+  this: TokagentClient,
   todoId,
 ) {
   return this.fetch(`/api/workbench/todos/${encodeURIComponent(todoId)}`);
 };
 
-ElizaClient.prototype.createWorkbenchTodo = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createWorkbenchTodo = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/workbench/todos", {
@@ -1076,8 +1076,8 @@ ElizaClient.prototype.createWorkbenchTodo = async function (
   });
 };
 
-ElizaClient.prototype.updateWorkbenchTodo = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateWorkbenchTodo = async function (
+  this: TokagentClient,
   todoId,
   data,
 ) {
@@ -1087,8 +1087,8 @@ ElizaClient.prototype.updateWorkbenchTodo = async function (
   });
 };
 
-ElizaClient.prototype.setWorkbenchTodoCompleted = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setWorkbenchTodoCompleted = async function (
+  this: TokagentClient,
   todoId,
   isCompleted,
 ) {
@@ -1101,8 +1101,8 @@ ElizaClient.prototype.setWorkbenchTodoCompleted = async function (
   );
 };
 
-ElizaClient.prototype.deleteWorkbenchTodo = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteWorkbenchTodo = async function (
+  this: TokagentClient,
   todoId,
 ) {
   return this.fetch(`/api/workbench/todos/${encodeURIComponent(todoId)}`, {
@@ -1110,12 +1110,12 @@ ElizaClient.prototype.deleteWorkbenchTodo = async function (
   });
 };
 
-ElizaClient.prototype.refreshRegistry = async function (this: ElizaClient) {
+TokagentClient.prototype.refreshRegistry = async function (this: TokagentClient) {
   await this.fetch("/api/apps/refresh", { method: "POST" });
 };
 
-ElizaClient.prototype.getTrajectories = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getTrajectories = async function (
+  this: TokagentClient,
   options?,
 ) {
   const params = new URLSearchParams();
@@ -1132,23 +1132,23 @@ ElizaClient.prototype.getTrajectories = async function (
   return this.fetch(`/api/trajectories${query ? `?${query}` : ""}`);
 };
 
-ElizaClient.prototype.getTrajectoryDetail = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getTrajectoryDetail = async function (
+  this: TokagentClient,
   trajectoryId,
 ) {
   return this.fetch(`/api/trajectories/${encodeURIComponent(trajectoryId)}`);
 };
 
-ElizaClient.prototype.getTrajectoryStats = async function (this: ElizaClient) {
+TokagentClient.prototype.getTrajectoryStats = async function (this: TokagentClient) {
   return this.fetch("/api/trajectories/stats");
 };
 
-ElizaClient.prototype.getTrajectoryConfig = async function (this: ElizaClient) {
+TokagentClient.prototype.getTrajectoryConfig = async function (this: TokagentClient) {
   return this.fetch("/api/trajectories/config");
 };
 
-ElizaClient.prototype.updateTrajectoryConfig = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateTrajectoryConfig = async function (
+  this: TokagentClient,
   config,
 ) {
   return this.fetch("/api/trajectories/config", {
@@ -1157,8 +1157,8 @@ ElizaClient.prototype.updateTrajectoryConfig = async function (
   });
 };
 
-ElizaClient.prototype.exportTrajectories = async function (
-  this: ElizaClient,
+TokagentClient.prototype.exportTrajectories = async function (
+  this: TokagentClient,
   options,
 ) {
   const res = await this.rawRequest("/api/trajectories/export", {
@@ -1171,8 +1171,8 @@ ElizaClient.prototype.exportTrajectories = async function (
   return res.blob();
 };
 
-ElizaClient.prototype.deleteTrajectories = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteTrajectories = async function (
+  this: TokagentClient,
   trajectoryIds,
 ) {
   return this.fetch("/api/trajectories", {
@@ -1181,8 +1181,8 @@ ElizaClient.prototype.deleteTrajectories = async function (
   });
 };
 
-ElizaClient.prototype.clearAllTrajectories = async function (
-  this: ElizaClient,
+TokagentClient.prototype.clearAllTrajectories = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/trajectories", {
     method: "DELETE",
@@ -1190,16 +1190,16 @@ ElizaClient.prototype.clearAllTrajectories = async function (
   });
 };
 
-ElizaClient.prototype.getDatabaseStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getDatabaseStatus = async function (this: TokagentClient) {
   return this.fetch("/api/database/status");
 };
 
-ElizaClient.prototype.getDatabaseConfig = async function (this: ElizaClient) {
+TokagentClient.prototype.getDatabaseConfig = async function (this: TokagentClient) {
   return this.fetch("/api/database/config");
 };
 
-ElizaClient.prototype.saveDatabaseConfig = async function (
-  this: ElizaClient,
+TokagentClient.prototype.saveDatabaseConfig = async function (
+  this: TokagentClient,
   config,
 ) {
   return this.fetch("/api/database/config", {
@@ -1208,8 +1208,8 @@ ElizaClient.prototype.saveDatabaseConfig = async function (
   });
 };
 
-ElizaClient.prototype.testDatabaseConnection = async function (
-  this: ElizaClient,
+TokagentClient.prototype.testDatabaseConnection = async function (
+  this: TokagentClient,
   creds,
 ) {
   return this.fetch("/api/database/test", {
@@ -1218,12 +1218,12 @@ ElizaClient.prototype.testDatabaseConnection = async function (
   });
 };
 
-ElizaClient.prototype.getDatabaseTables = async function (this: ElizaClient) {
+TokagentClient.prototype.getDatabaseTables = async function (this: TokagentClient) {
   return this.fetch("/api/database/tables");
 };
 
-ElizaClient.prototype.getDatabaseRows = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getDatabaseRows = async function (
+  this: TokagentClient,
   table,
   opts?,
 ) {
@@ -1239,8 +1239,8 @@ ElizaClient.prototype.getDatabaseRows = async function (
   );
 };
 
-ElizaClient.prototype.insertDatabaseRow = async function (
-  this: ElizaClient,
+TokagentClient.prototype.insertDatabaseRow = async function (
+  this: TokagentClient,
   table,
   data,
 ) {
@@ -1250,8 +1250,8 @@ ElizaClient.prototype.insertDatabaseRow = async function (
   });
 };
 
-ElizaClient.prototype.updateDatabaseRow = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateDatabaseRow = async function (
+  this: TokagentClient,
   table,
   where,
   data,
@@ -1262,8 +1262,8 @@ ElizaClient.prototype.updateDatabaseRow = async function (
   });
 };
 
-ElizaClient.prototype.deleteDatabaseRow = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteDatabaseRow = async function (
+  this: TokagentClient,
   table,
   where,
 ) {
@@ -1273,8 +1273,8 @@ ElizaClient.prototype.deleteDatabaseRow = async function (
   });
 };
 
-ElizaClient.prototype.executeDatabaseQuery = async function (
-  this: ElizaClient,
+TokagentClient.prototype.executeDatabaseQuery = async function (
+  this: TokagentClient,
   sql,
   readOnly = true,
 ) {

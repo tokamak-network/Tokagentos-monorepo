@@ -1,5 +1,5 @@
 """
-Canonical ElizaOS integration for Atropos Texas Hold'em.
+Canonical TokagentOS integration for Atropos Texas Hold'em.
 
 Provides:
 - ATROPOS_HOLDEM provider with the current table state + valid actions
@@ -12,14 +12,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from elizaos.types import ActionParameterSchema, Character, Plugin, ProviderResult
+from tokagentos.types import ActionParameterSchema, Character, Plugin, ProviderResult
 
-from elizaos_atropos_holdem.types import GameState
+from tokagentos_atropos_holdem.types import GameState
 
 if TYPE_CHECKING:
-    from elizaos.types import Action, Provider
+    from tokagentos.types import Action, Provider
 
-from elizaos_atropos_shared.canonical_eliza import (
+from tokagentos_atropos_shared.canonical_tokagent import (
     ContextStore,
     CaptureActionResponse,
     create_action_only_template,
@@ -116,7 +116,7 @@ def create_holdem_character(name: str = "HoldemAgent") -> Character:
     template = create_action_only_template(
         task="Choose the next Holdem action for {{agentName}}.",
         instructions=(
-            "Choose ONE action. Output ONLY one ElizaOS action: ATROPOS_HOLDEM_ACTION.\n"
+            "Choose ONE action. Output ONLY one TokagentOS action: ATROPOS_HOLDEM_ACTION.\n"
             "Put the choice in params.action as one of: FOLD, CHECK, CALL, RAISE, ALL_IN."
         ),
         action_name="ATROPOS_HOLDEM_ACTION",
@@ -132,7 +132,7 @@ def create_holdem_character(name: str = "HoldemAgent") -> Character:
     )
 
 
-def get_holdem_eliza_plugin() -> Plugin:
+def get_holdem_tokagent_plugin() -> Plugin:
     return create_simple_plugin(
         name="atropos-holdem",
         description="Atropos Holdem canonical provider/action integration.",

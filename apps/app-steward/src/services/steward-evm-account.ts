@@ -2,7 +2,7 @@
  * Steward EVM Account — a viem-compatible Account that routes all signing
  * through the Steward API. No private keys touch the container.
  *
- * Used when ELIZA_CLOUD_PROVISIONED=1 and STEWARD_AGENT_TOKEN is set.
+ * Used when TOKAGENT_CLOUD_PROVISIONED=1 and STEWARD_AGENT_TOKEN is set.
  *
  * Implements viem's CustomAccount interface:
  *   - address
@@ -355,7 +355,7 @@ export function createStewardEvmAccount(
  */
 export function isStewardCloudProvisioned(): boolean {
   return (
-    process.env.ELIZA_CLOUD_PROVISIONED === "1" &&
+    process.env.TOKAGENT_CLOUD_PROVISIONED === "1" &&
     !!process.env.STEWARD_AGENT_TOKEN &&
     !!process.env.STEWARD_API_URL
   );
@@ -375,7 +375,7 @@ export function resolveStewardEvmConfig(): StewardEvmAccountConfig | null {
   // Agent ID can come from the JWT payload or env var
   const agentId =
     process.env.STEWARD_AGENT_ID ||
-    process.env.ELIZA_STEWARD_AGENT_ID ||
+    process.env.TOKAGENT_STEWARD_AGENT_ID ||
     extractAgentIdFromJwt(agentToken) ||
     "";
 

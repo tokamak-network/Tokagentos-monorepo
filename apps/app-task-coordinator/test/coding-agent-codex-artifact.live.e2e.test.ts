@@ -21,7 +21,7 @@ function isCodexCliAvailable(): boolean {
 const CODEX_AVAILABLE = isCodexCliAvailable();
 const CODEX_AUTH_AVAILABLE = fs.existsSync(CODEX_AUTH_PATH);
 function createIsolatedCodexHome(): string {
-  const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), "eliza-codex-home-"));
+  const homeDir = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-codex-home-"));
   const codexDir = path.join(homeDir, ".codex");
   fs.mkdirSync(codexDir, { recursive: true });
   fs.copyFileSync(CODEX_AUTH_PATH, path.join(codexDir, "auth.json"));
@@ -114,7 +114,7 @@ describeIf(CODEX_AVAILABLE && CODEX_AUTH_AVAILABLE)(
     it("creates a browser Tetris game in the expected files", async () => {
       const homeDir = createIsolatedCodexHome();
       const workingDirectory = fs.mkdtempSync(
-        path.join(os.tmpdir(), "eliza-codex-tetris-"),
+        path.join(os.tmpdir(), "tokagent-codex-tetris-"),
       );
       cleanupDirs.push(homeDir, workingDirectory);
 

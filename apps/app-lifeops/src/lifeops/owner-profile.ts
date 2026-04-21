@@ -1,5 +1,5 @@
-import type { IAgentRuntime, Task } from "@elizaos/core";
-import { loadElizaConfig, saveElizaConfig } from "@elizaos/agent/config/config";
+import type { IAgentRuntime, Task } from "@tokagentos/core";
+import { loadTokagentConfig, saveTokagentConfig } from "@tokagentos/agent/config/config";
 import {
   ensureLifeOpsSchedulerTask,
   LIFEOPS_TASK_NAME,
@@ -95,7 +95,7 @@ function buildFallbackSchedulerMetadata(
 
 function readConfiguredOwnerNameFromConfig(): string | null {
   try {
-    const config = loadElizaConfig() as Record<string, unknown>;
+    const config = loadTokagentConfig() as Record<string, unknown>;
     const ui = isRecord(config.ui) ? config.ui : null;
     return normalizeProfileValue(ui?.ownerName, OWNER_NAME_MAX_LENGTH);
   } catch {
@@ -110,9 +110,9 @@ function writeConfiguredOwnerNameToConfig(name: string): boolean {
   }
 
   try {
-    const config = loadElizaConfig() as Record<string, unknown>;
+    const config = loadTokagentConfig() as Record<string, unknown>;
     const nextUi = isRecord(config.ui) ? config.ui : {};
-    saveElizaConfig({
+    saveTokagentConfig({
       ...config,
       ui: {
         ...nextUi,

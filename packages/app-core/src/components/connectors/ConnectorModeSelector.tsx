@@ -12,9 +12,9 @@ export type ConnectorMode = {
  */
 export function getConnectorModes(
   connectorId: string,
-  options?: { elizaCloudConnected?: boolean },
+  options?: { tokagentCloudConnected?: boolean },
 ): ConnectorMode[] {
-  const cloud = options?.elizaCloudConnected ?? false;
+  const cloud = options?.tokagentCloudConnected ?? false;
 
   switch (connectorId) {
     case "discord":
@@ -34,8 +34,8 @@ export function getConnectorModes(
           ? [
               {
                 id: "managed",
-                label: "Managed (Eliza Cloud)",
-                description: "Use a shared gateway bot via Eliza Cloud OAuth",
+                label: "Managed (Tokagent Cloud)",
+                description: "Use a shared gateway bot via Tokagent Cloud OAuth",
               },
             ]
           : []),
@@ -136,15 +136,15 @@ export function ConnectorModeSelector({
   connectorId,
   selectedMode,
   onModeChange,
-  elizaCloudConnected,
+  tokagentCloudConnected,
 }: {
   connectorId: string;
   selectedMode: string;
   onModeChange: (modeId: string) => void;
-  elizaCloudConnected?: boolean;
+  tokagentCloudConnected?: boolean;
 }) {
   const { t } = useApp();
-  const modes = getConnectorModes(connectorId, { elizaCloudConnected });
+  const modes = getConnectorModes(connectorId, { tokagentCloudConnected });
 
   if (modes.length <= 1) return null;
 
@@ -187,7 +187,7 @@ export function ConnectorModeSelector({
  */
 export function useConnectorMode(
   connectorId: string,
-  options?: { elizaCloudConnected?: boolean },
+  options?: { tokagentCloudConnected?: boolean },
 ) {
   const modes = getConnectorModes(connectorId, options);
   const defaultMode = modes[0]?.id ?? "";

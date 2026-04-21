@@ -1,4 +1,4 @@
-"""SWE-bench benchmark for ElizaOS Python."""
+"""SWE-bench benchmark for TokagentOS Python."""
 
 from .agent import ParsedResponse, SWEAgent, TRAJECTORY_LOGGER_AVAILABLE
 from .character import (

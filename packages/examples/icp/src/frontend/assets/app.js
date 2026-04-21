@@ -1,4 +1,4 @@
-// elizaOS ICP Chat App
+// tokagentOS ICP Chat App
 // ICP Agent setup
 import { Actor, HttpAgent } from 'https://esm.sh/@dfinity/agent@2.2.0';
 import { Principal } from 'https://esm.sh/@dfinity/principal@1.0.0';
@@ -57,7 +57,7 @@ const idlFactory = ({ IDL }) => {
   });
   
   const InferenceMode = IDL.Variant({
-    ElizaClassic: IDL.Null,
+    TokagentClassic: IDL.Null,
     OpenAI: IDL.Null,
     OnChainLLM: IDL.Null,
     DfinityLLM: IDL.Null,
@@ -65,7 +65,7 @@ const idlFactory = ({ IDL }) => {
   
   const InferenceStatus = IDL.Record({
     current_mode: InferenceMode,
-    eliza_classic_ready: IDL.Bool,
+    tokagent_classic_ready: IDL.Bool,
     openai_configured: IDL.Bool,
     onchain_llm_configured: IDL.Bool,
     onchain_llm_canister_id: IDL.Opt(IDL.Text),
@@ -82,8 +82,8 @@ const idlFactory = ({ IDL }) => {
     is_openai_ready: IDL.Func([], [IDL.Bool], ['query']),
     get_inference_status: IDL.Func([], [InferenceStatus], ['query']),
     set_inference_mode: IDL.Func([InferenceMode], [IDL.Variant({ Ok: IDL.Null, Err: CanisterError })], []),
-    get_eliza_greeting: IDL.Func([], [IDL.Text], ['query']),
-    eliza_classic_chat: IDL.Func([IDL.Text], [IDL.Text], ['query']),
+    get_tokagent_greeting: IDL.Func([], [IDL.Text], ['query']),
+    tokagent_classic_chat: IDL.Func([IDL.Text], [IDL.Text], ['query']),
   });
 };
 
@@ -92,8 +92,8 @@ let actor = null;
 let isInitialized = false;
 let isLoading = false;
 let roomId = null;
-let agentName = 'Eliza';
-let inferenceMode = 'ElizaClassic';
+let agentName = 'Tokagent';
+let inferenceMode = 'TokagentClassic';
 let inferenceStatus = null;
 let messageCounter = 0; // Unique counter to prevent ID collisions
 
@@ -206,14 +206,14 @@ async function initAgent() {
       } else if (inferenceStatus.current_mode.OnChainLLM !== undefined) {
         inferenceMode = 'OnChainLLM';
       } else {
-        inferenceMode = 'ElizaClassic';
+        inferenceMode = 'TokagentClassic';
       }
     } catch (e) {
-      inferenceMode = 'ElizaClassic';
+      inferenceMode = 'TokagentClassic';
     }
     
     // Get greeting
-    const greeting = await actor.get_eliza_greeting();
+    const greeting = await actor.get_tokagent_greeting();
     
     isInitialized = true;
     statusDot.className = 'status-dot online';
@@ -344,7 +344,7 @@ function updateModeSwitcher() {
 
   // Enable buttons based on what's available
   if (inferenceStatus) {
-    if (modeClassicBtn) modeClassicBtn.disabled = !inferenceStatus.eliza_classic_ready;
+    if (modeClassicBtn) modeClassicBtn.disabled = !inferenceStatus.tokagent_classic_ready;
     if (modeOpenAIBtn) modeOpenAIBtn.disabled = !inferenceStatus.openai_configured;
     if (modeOnChainBtn) modeOnChainBtn.disabled = !inferenceStatus.onchain_llm_configured;
     if (modeDfinityBtn) {
@@ -370,7 +370,7 @@ function updateModeSwitcher() {
 
   // Highlight active mode
   const modeMap = {
-    'ElizaClassic': modeClassicBtn,
+    'TokagentClassic': modeClassicBtn,
     'OpenAI': modeOpenAIBtn,
     'OnChainLLM': modeOnChainBtn,
     'DfinityLLM': modeDfinityBtn,
@@ -394,7 +394,7 @@ async function switchMode(newMode) {
 
   // Find the button and show switching state
   const modeMap = {
-    'ElizaClassic': modeClassicBtn,
+    'TokagentClassic': modeClassicBtn,
     'OpenAI': modeOpenAIBtn,
     'OnChainLLM': modeOnChainBtn,
     'DfinityLLM': modeDfinityBtn,
@@ -414,8 +414,8 @@ async function switchMode(newMode) {
 
     // Build the mode variant for Candid
     let modeVariant;
-    if (newMode === 'ElizaClassic') {
-      modeVariant = { ElizaClassic: null };
+    if (newMode === 'TokagentClassic') {
+      modeVariant = { TokagentClassic: null };
     } else if (newMode === 'OpenAI') {
       modeVariant = { OpenAI: null };
     } else if (newMode === 'OnChainLLM') {
@@ -442,7 +442,7 @@ async function switchMode(newMode) {
     
     // Add system message about mode change
     const modeNames = {
-      'ElizaClassic': 'ELIZA Classic (pattern matching)',
+      'TokagentClassic': 'TOKAGENT Classic (pattern matching)',
       'OpenAI': 'GPT-4o (OpenAI)',
       'OnChainLLM': `On-Chain LLM (${inferenceStatus?.onchain_llm_model?.[0] || 'local model'})`,
       'DfinityLLM': `DFINITY LLM (${inferenceStatus?.dfinity_llm_model?.[0] || 'Llama 3.1 8B'}) - FREE!`,
@@ -461,7 +461,7 @@ async function switchMode(newMode) {
 // Update status text based on current mode
 function updateStatusText() {
   const modeBadges = {
-    'ElizaClassic': '(Classic)',
+    'TokagentClassic': '(Classic)',
     'OpenAI': '(GPT-4o)',
     'OnChainLLM': `(On-Chain${inferenceStatus?.onchain_llm_model?.[0] ? ` ${inferenceStatus.onchain_llm_model[0]}` : ''})`,
     'DfinityLLM': `(DFINITY${inferenceStatus?.dfinity_llm_model?.[0] ? ` ${inferenceStatus.dfinity_llm_model[0]}` : ' Llama 3.1'})`
@@ -471,7 +471,7 @@ function updateStatusText() {
 }
 
 // Setup mode switcher event listeners
-modeClassicBtn.addEventListener('click', () => switchMode('ElizaClassic'));
+modeClassicBtn.addEventListener('click', () => switchMode('TokagentClassic'));
 modeOpenAIBtn.addEventListener('click', () => switchMode('OpenAI'));
 modeOnChainBtn.addEventListener('click', () => switchMode('OnChainLLM'));
 if (modeDfinityBtn) modeDfinityBtn.addEventListener('click', () => switchMode('DfinityLLM'));

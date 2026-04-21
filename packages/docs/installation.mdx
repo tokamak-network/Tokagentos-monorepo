@@ -1,9 +1,9 @@
 ---
 title: "Installation"
-description: "Install elizaOS in TypeScript, Python, or Rust on macOS, Linux, or Windows"
+description: "Install tokagentOS in TypeScript, Python, or Rust on macOS, Linux, or Windows"
 ---
 
-elizaOS is available in three languages with identical APIs. Choose your preferred language below.
+tokagentOS is available in three languages with identical APIs. Choose your preferred language below.
 
 ## Choose Your Language
 
@@ -29,19 +29,19 @@ elizaOS is available in three languages with identical APIs. Choose your preferr
     ### Verify Installation
 
     ```bash
-    elizaos --version
+    tokagentos --version
     ```
 
     ### Quick Start
 
     ```bash
-    elizaos create        # Create a new project
+    tokagentos create        # Create a new project
     cd my-project
-    elizaos start         # Start your agent
+    tokagentos start         # Start your agent
     ```
 
     <Tip>
-      You don't need to clone the elizaOS repository to build agents. The CLI handles everything. Only clone the monorepo if you're [contributing to core](/guides/contribute-to-core).
+      You don't need to clone the tokagentOS repository to build agents. The CLI handles everything. Only clone the monorepo if you're [contributing to core](/guides/contribute-to-core).
     </Tip>
 
   </Tab>
@@ -57,26 +57,26 @@ elizaOS is available in three languages with identical APIs. Choose your preferr
     ### Install the Package
 
     ```bash
-    pip install elizaos
+    pip install tokagentos
     ```
 
     Or with uv (faster):
 
     ```bash
-    uv pip install elizaos
+    uv pip install tokagentos
     ```
 
     ### Verify Installation
 
     ```python
-    python -c "from elizaos import AgentRuntime; print('elizaOS installed!')"
+    python -c "from tokagentos import AgentRuntime; print('tokagentOS installed!')"
     ```
 
     ### Install Plugin Dependencies
 
     ```bash
     # OpenAI plugin
-    pip install elizaos-plugin-openai
+    pip install tokagentos-plugin-openai
 
     # Or install from the monorepo for development
     pip install -e packages/typescript/python
@@ -86,11 +86,11 @@ elizaOS is available in three languages with identical APIs. Choose your preferr
     ### Quick Start
 
     ```python
-    from elizaos import AgentRuntime, Character
-    from elizaos_plugin_openai import get_openai_plugin
+    from tokagentos import AgentRuntime, Character
+    from tokagentos_plugin_openai import get_openai_plugin
 
     character = Character(
-        name="Eliza",
+        name="Tokagent",
         bio="A helpful AI assistant.",
     )
 
@@ -107,7 +107,7 @@ elizaOS is available in three languages with identical APIs. Choose your preferr
       ```bash
       python -m venv .venv
       source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-      pip install elizaos
+      pip install tokagentos
       ```
     </Tip>
 
@@ -124,15 +124,15 @@ elizaOS is available in three languages with identical APIs. Choose your preferr
     ### Add to Your Project
 
     ```bash
-    cargo add elizaos
+    cargo add tokagentos
     ```
 
     Or add to `Cargo.toml`:
 
     ```toml
     [dependencies]
-    elizaos = "1.0"
-    elizaos-plugin-openai = "1.0"
+    tokagentos = "1.0"
+    tokagentos-plugin-openai = "1.0"
     tokio = { version = "1", features = ["full"] }
     anyhow = "1"
     ```
@@ -146,13 +146,13 @@ elizaOS is available in three languages with identical APIs. Choose your preferr
     ### Quick Start
 
     ```rust
-    use elizaos::{AgentRuntime, RuntimeOptions, parse_character};
-    use elizaos_plugin_openai::create_openai_plugin;
+    use tokagentos::{AgentRuntime, RuntimeOptions, parse_character};
+    use tokagentos_plugin_openai::create_openai_plugin;
 
     #[tokio::main]
     async fn main() -> anyhow::Result<()> {
         let character = parse_character(r#"{
-            "name": "Eliza",
+            "name": "Tokagent",
             "bio": "A helpful AI assistant."
         }"#)?;
 
@@ -250,7 +250,7 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
 
     **Module not found:**
     ```bash
-    pip install --upgrade elizaos
+    pip install --upgrade tokagentos
     ```
 
     **Virtual environment issues:**
@@ -258,7 +258,7 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
     rm -rf .venv
     python -m venv .venv
     source .venv/bin/activate
-    pip install elizaos
+    pip install tokagentos
     ```
 
   </Accordion>
@@ -324,7 +324,7 @@ echo "OPENAI_API_KEY=your-api-key-here" > .env
     icon="puzzle-piece"
     href="/guides/create-a-plugin"
   >
-    Extend elizaOS with custom functionality
+    Extend tokagentOS with custom functionality
   </Card>
   <Card title="Deploy" icon="cloud" href="/guides/deploy-a-project">
     Ship your agent to production

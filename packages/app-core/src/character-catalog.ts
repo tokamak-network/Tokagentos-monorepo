@@ -32,9 +32,9 @@ export function getCharacterAssets(): ResolvedCharacterAsset[] {
   return getResolved().assets;
 }
 
-export const ELIZA_CHARACTER_ASSET_COUNT = 0;
+export const TOKAGENT_CHARACTER_ASSET_COUNT = 0;
 
-export const DEFAULT_ELIZA_CHARACTER_ASSET: ResolvedCharacterAsset | null =
+export const DEFAULT_TOKAGENT_CHARACTER_ASSET: ResolvedCharacterAsset | null =
   null;
 
 export function getCharacterAsset(id: number): ResolvedCharacterAsset | null {
@@ -46,7 +46,7 @@ export function getInjectedCharacters(): ResolvedInjectedCharacter[] {
   return getResolved().injectedCharacters;
 }
 
-export const ELIZA_INJECTED_CHARACTER_COUNT = 0;
+export const TOKAGENT_INJECTED_CHARACTER_COUNT = 0;
 
 export function getInjectedCharacter(
   catchphrase: string,

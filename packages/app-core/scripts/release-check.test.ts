@@ -23,7 +23,7 @@ describe("release-check pack dry-run guard", () => {
 
   it("honors the explicit exact-pack override", () => {
     expect(
-      shouldSkipExactPackDryRun(["dist"], { ELIZA_FORCE_PACK_DRY_RUN: "1" }),
+      shouldSkipExactPackDryRun(["dist"], { TOKAGENT_FORCE_PACK_DRY_RUN: "1" }),
     ).toBe(false);
   });
 });

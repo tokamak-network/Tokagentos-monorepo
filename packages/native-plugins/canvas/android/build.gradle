@@ -9,7 +9,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace "ai.eliza.plugins.canvas"
+    namespace "ai.tokagent.plugins.canvas"
     compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 34
 
     defaultConfig {

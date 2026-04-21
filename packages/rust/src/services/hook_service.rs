@@ -1,7 +1,7 @@
 //! HookService - Unified Hook Management Service for Rust
 //!
 //! This service provides a centralized hook management system that integrates
-//! with the Eliza event system. Hooks can be registered for specific event
+//! with the Tokagent event system. Hooks can be registered for specific event
 //! types and will be triggered when those events are emitted.
 //!
 //! Key Features:
@@ -321,7 +321,7 @@ pub fn map_legacy_events(legacy_events: &[String]) -> Vec<HookEventType> {
 /// Unified hook management service
 ///
 /// Provides centralized hook registration, discovery, eligibility checking,
-/// and dispatch integrated with the Eliza event system.
+/// and dispatch integrated with the Tokagent event system.
 pub struct HookService {
     registry: HashMap<String, HookRegistration>,
     event_index: HashMap<String, HashSet<String>>,

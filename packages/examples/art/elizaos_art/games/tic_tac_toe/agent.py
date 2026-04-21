@@ -6,8 +6,8 @@ LLM-based agent that learns to play Tic-Tac-Toe.
 
 import re
 
-from elizaos_art.base import BaseAgent
-from elizaos_art.games.tic_tac_toe.types import TicTacToeAction, TicTacToeState, Player
+from tokagentos_art.base import BaseAgent
+from tokagentos_art.games.tic_tac_toe.types import TicTacToeAction, TicTacToeState, Player
 
 
 class TicTacToeAgent(BaseAgent[TicTacToeState, TicTacToeAction]):

@@ -23,7 +23,7 @@
     {
       "mode": "simple",
       "sampleId": "single-audio",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/greeting_short.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/greeting_short.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": null,
@@ -132,7 +132,7 @@
     {
       "mode": "non-simple",
       "sampleId": "single-audio",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/greeting_short.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/greeting_short.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": null,

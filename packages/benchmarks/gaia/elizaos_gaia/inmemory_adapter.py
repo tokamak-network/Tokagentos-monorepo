@@ -1,5 +1,5 @@
 """
-Minimal in-memory database adapter for canonical Eliza runtime benchmarking.
+Minimal in-memory database adapter for canonical Tokagent runtime benchmarking.
 
 We intentionally keep this adapter small and dependency-free:
 - It persists *message* memories in-process so providers like RECENT_MESSAGES work.
@@ -15,8 +15,8 @@ import time
 import uuid
 from dataclasses import dataclass
 
-from elizaos.types.memory import Memory, MessageMetadata, MemoryType
-from elizaos.types.primitives import UUID, as_uuid
+from tokagentos.types.memory import Memory, MessageMetadata, MemoryType
+from tokagentos.types.primitives import UUID, as_uuid
 
 
 @dataclass
@@ -109,7 +109,7 @@ class InMemoryBenchmarkAdapter:
         memories: list[_StoredMemory] = list(self._memories.values())
 
         if isinstance(table_name, str) and table_name:
-            # In Eliza, "messages" is the common tableName
+            # In Tokagent, "messages" is the common tableName
             memories = [m for m in memories if m.table_name == table_name]
 
         if isinstance(room_id, str) and room_id:

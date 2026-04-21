@@ -1,5 +1,5 @@
 """
-Rust Plugin FFI Loader for elizaOS
+Rust Plugin FFI Loader for tokagentOS
 
 This module provides utilities for loading Rust plugins into the Python runtime
 via ctypes/cffi FFI bindings.
@@ -13,10 +13,10 @@ import platform
 from pathlib import Path
 from typing import Any, Callable, Awaitable
 
-from elizaos.types.plugin import Plugin
-from elizaos.types.memory import Memory
-from elizaos.types.state import State
-from elizaos.types.components import (
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.memory import Memory
+from tokagentos.types.state import State
+from tokagentos.types.components import (
     Action,
     ActionResult,
     Provider,
@@ -51,14 +51,14 @@ class RustPluginFFI:
     FFI wrapper for Rust plugins.
     
     The Rust plugin must export these functions:
-    - elizaos_get_manifest() -> *const c_char
-    - elizaos_init(config_json: *const c_char) -> c_int
-    - elizaos_validate_action(name: *const c_char, memory: *const c_char, state: *const c_char) -> c_int
-    - elizaos_invoke_action(name: *const c_char, memory: *const c_char, state: *const c_char, options: *const c_char) -> *const c_char
-    - elizaos_get_provider(name: *const c_char, memory: *const c_char, state: *const c_char) -> *const c_char
-    - elizaos_validate_evaluator(name: *const c_char, memory: *const c_char, state: *const c_char) -> c_int
-    - elizaos_invoke_evaluator(name: *const c_char, memory: *const c_char, state: *const c_char) -> *const c_char
-    - elizaos_free_string(ptr: *const c_char) -> void
+    - tokagentos_get_manifest() -> *const c_char
+    - tokagentos_init(config_json: *const c_char) -> c_int
+    - tokagentos_validate_action(name: *const c_char, memory: *const c_char, state: *const c_char) -> c_int
+    - tokagentos_invoke_action(name: *const c_char, memory: *const c_char, state: *const c_char, options: *const c_char) -> *const c_char
+    - tokagentos_get_provider(name: *const c_char, memory: *const c_char, state: *const c_char) -> *const c_char
+    - tokagentos_validate_evaluator(name: *const c_char, memory: *const c_char, state: *const c_char) -> c_int
+    - tokagentos_invoke_evaluator(name: *const c_char, memory: *const c_char, state: *const c_char) -> *const c_char
+    - tokagentos_free_string(ptr: *const c_char) -> void
     """
 
     def __init__(self, lib_path: str | Path) -> None:
@@ -79,58 +79,58 @@ class RustPluginFFI:
 
     def _setup_bindings(self) -> None:
         """Set up ctypes function bindings."""
-        # elizaos_get_manifest() -> *const c_char
-        self.lib.elizaos_get_manifest.argtypes = []
-        self.lib.elizaos_get_manifest.restype = ctypes.c_char_p
+        # tokagentos_get_manifest() -> *const c_char
+        self.lib.tokagentos_get_manifest.argtypes = []
+        self.lib.tokagentos_get_manifest.restype = ctypes.c_char_p
 
-        # elizaos_init(config_json: *const c_char) -> c_int
-        self.lib.elizaos_init.argtypes = [ctypes.c_char_p]
-        self.lib.elizaos_init.restype = ctypes.c_int
+        # tokagentos_init(config_json: *const c_char) -> c_int
+        self.lib.tokagentos_init.argtypes = [ctypes.c_char_p]
+        self.lib.tokagentos_init.restype = ctypes.c_int
 
-        # elizaos_validate_action(...)
-        self.lib.elizaos_validate_action.argtypes = [
+        # tokagentos_validate_action(...)
+        self.lib.tokagentos_validate_action.argtypes = [
             ctypes.c_char_p,  # action name
             ctypes.c_char_p,  # memory json
             ctypes.c_char_p,  # state json
         ]
-        self.lib.elizaos_validate_action.restype = ctypes.c_int
+        self.lib.tokagentos_validate_action.restype = ctypes.c_int
 
-        # elizaos_invoke_action(...)
-        self.lib.elizaos_invoke_action.argtypes = [
+        # tokagentos_invoke_action(...)
+        self.lib.tokagentos_invoke_action.argtypes = [
             ctypes.c_char_p,  # action name
             ctypes.c_char_p,  # memory json
             ctypes.c_char_p,  # state json
             ctypes.c_char_p,  # options json
         ]
-        self.lib.elizaos_invoke_action.restype = ctypes.c_char_p
+        self.lib.tokagentos_invoke_action.restype = ctypes.c_char_p
 
-        # elizaos_get_provider(...)
-        self.lib.elizaos_get_provider.argtypes = [
+        # tokagentos_get_provider(...)
+        self.lib.tokagentos_get_provider.argtypes = [
             ctypes.c_char_p,  # provider name
             ctypes.c_char_p,  # memory json
             ctypes.c_char_p,  # state json
         ]
-        self.lib.elizaos_get_provider.restype = ctypes.c_char_p
+        self.lib.tokagentos_get_provider.restype = ctypes.c_char_p
 
-        # elizaos_validate_evaluator(...)
-        self.lib.elizaos_validate_evaluator.argtypes = [
+        # tokagentos_validate_evaluator(...)
+        self.lib.tokagentos_validate_evaluator.argtypes = [
             ctypes.c_char_p,  # evaluator name
             ctypes.c_char_p,  # memory json
             ctypes.c_char_p,  # state json
         ]
-        self.lib.elizaos_validate_evaluator.restype = ctypes.c_int
+        self.lib.tokagentos_validate_evaluator.restype = ctypes.c_int
 
-        # elizaos_invoke_evaluator(...)
-        self.lib.elizaos_invoke_evaluator.argtypes = [
+        # tokagentos_invoke_evaluator(...)
+        self.lib.tokagentos_invoke_evaluator.argtypes = [
             ctypes.c_char_p,  # evaluator name
             ctypes.c_char_p,  # memory json
             ctypes.c_char_p,  # state json
         ]
-        self.lib.elizaos_invoke_evaluator.restype = ctypes.c_char_p
+        self.lib.tokagentos_invoke_evaluator.restype = ctypes.c_char_p
 
-        # elizaos_free_string(ptr: *const c_char)
-        self.lib.elizaos_free_string.argtypes = [ctypes.c_char_p]
-        self.lib.elizaos_free_string.restype = None
+        # tokagentos_free_string(ptr: *const c_char)
+        self.lib.tokagentos_free_string.argtypes = [ctypes.c_char_p]
+        self.lib.tokagentos_free_string.restype = None
 
     def _to_c_string(self, s: str | None) -> ctypes.c_char_p:
         """Convert Python string to C string."""
@@ -143,7 +143,7 @@ class RustPluginFFI:
         if not ptr:
             return None
         result = ptr.decode("utf-8")
-        self.lib.elizaos_free_string(ptr)
+        self.lib.tokagentos_free_string(ptr)
         return result
 
     def get_manifest(self) -> dict[str, Any]:
@@ -151,7 +151,7 @@ class RustPluginFFI:
         if self.manifest:
             return self.manifest
 
-        ptr = self.lib.elizaos_get_manifest()
+        ptr = self.lib.tokagentos_get_manifest()
         json_str = self._from_c_string(ptr)
         if not json_str:
             raise RuntimeError("Failed to get manifest from Rust plugin")
@@ -162,7 +162,7 @@ class RustPluginFFI:
     def init(self, config: dict[str, str]) -> None:
         """Initialize the plugin with configuration."""
         config_json = json.dumps(config)
-        result = self.lib.elizaos_init(self._to_c_string(config_json))
+        result = self.lib.tokagentos_init(self._to_c_string(config_json))
         if result != 0:
             raise RuntimeError(f"Plugin initialization failed with code {result}")
 
@@ -173,7 +173,7 @@ class RustPluginFFI:
             state.model_dump() if state and hasattr(state, "model_dump") else state
         )
 
-        result = self.lib.elizaos_validate_action(
+        result = self.lib.tokagentos_validate_action(
             self._to_c_string(name),
             self._to_c_string(memory_json),
             self._to_c_string(state_json),
@@ -190,7 +190,7 @@ class RustPluginFFI:
         )
         options_json = json.dumps(options or {})
 
-        result_ptr = self.lib.elizaos_invoke_action(
+        result_ptr = self.lib.tokagentos_invoke_action(
             self._to_c_string(name),
             self._to_c_string(memory_json),
             self._to_c_string(state_json),
@@ -208,7 +208,7 @@ class RustPluginFFI:
         memory_json = json.dumps(memory.model_dump() if hasattr(memory, "model_dump") else memory)
         state_json = json.dumps(state.model_dump() if hasattr(state, "model_dump") else state)
 
-        result_ptr = self.lib.elizaos_get_provider(
+        result_ptr = self.lib.tokagentos_get_provider(
             self._to_c_string(name),
             self._to_c_string(memory_json),
             self._to_c_string(state_json),
@@ -227,7 +227,7 @@ class RustPluginFFI:
             state.model_dump() if state and hasattr(state, "model_dump") else state
         )
 
-        result = self.lib.elizaos_validate_evaluator(
+        result = self.lib.tokagentos_validate_evaluator(
             self._to_c_string(name),
             self._to_c_string(memory_json),
             self._to_c_string(state_json),
@@ -241,7 +241,7 @@ class RustPluginFFI:
             state.model_dump() if state and hasattr(state, "model_dump") else state
         )
 
-        result_ptr = self.lib.elizaos_invoke_evaluator(
+        result_ptr = self.lib.tokagentos_invoke_evaluator(
             self._to_c_string(name),
             self._to_c_string(memory_json),
             self._to_c_string(state_json),
@@ -262,7 +262,7 @@ def load_rust_plugin(lib_path: str | Path) -> Plugin:
         lib_path: Path to the shared library
         
     Returns:
-        elizaOS Plugin instance
+        tokagentOS Plugin instance
     """
     ffi = RustPluginFFI(lib_path)
     manifest = ffi.get_manifest()
@@ -406,7 +406,7 @@ def find_rust_plugin(name: str, search_paths: list[str | Path] | None = None) ->
         Path.cwd() / "target" / "release",
         Path.cwd() / "target" / "debug",
         Path.cwd() / "dist",
-        Path.home() / ".elizaos" / "plugins",
+        Path.home() / ".tokagentos" / "plugins",
     ])
 
     for path in paths_to_search:

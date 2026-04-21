@@ -1,10 +1,10 @@
 
 
 import { useCallback, useMemo, useState } from "react";
-import { client } from "@elizaos/app-core/api";
-import { useApp } from "@elizaos/app-core/state";
-import type { AppOperatorSurfaceProps } from "@elizaos/app-core/components/apps/surfaces/types";
-import { Button, Input } from "@elizaos/ui";
+import { client } from "@tokagentos/app-core/api";
+import { useApp } from "@tokagentos/app-core/state";
+import type { AppOperatorSurfaceProps } from "@tokagentos/app-core/components/apps/surfaces/types";
+import { Button, Input } from "@tokagentos/ui";
 
 function DetailCard({ label, value }: { label: string; value: string }) {
   return (

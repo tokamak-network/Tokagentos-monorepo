@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const CORE_PACKAGE_NAME = "eliza";
+const CORE_PACKAGE_NAME = "tokagent";
 
 async function readPackageName(dir: string): Promise<string | null> {
   try {
@@ -75,13 +75,13 @@ function candidateDirsFromArgv1(argv1: string): string[] {
   return candidates;
 }
 
-type ResolveElizaRootOptions = {
+type ResolveTokagentRootOptions = {
   cwd?: string;
   argv1?: string;
   moduleUrl?: string;
 };
 
-function candidateDirsFromOptions(opts: ResolveElizaRootOptions): string[] {
+function candidateDirsFromOptions(opts: ResolveTokagentRootOptions): string[] {
   const candidates: string[] = [];
 
   if (opts.moduleUrl) {
@@ -97,8 +97,8 @@ function candidateDirsFromOptions(opts: ResolveElizaRootOptions): string[] {
   return candidates;
 }
 
-export async function resolveElizaPackageRoot(
-  opts: ResolveElizaRootOptions,
+export async function resolveTokagentPackageRoot(
+  opts: ResolveTokagentRootOptions,
 ): Promise<string | null> {
   const candidates = candidateDirsFromOptions(opts);
 
@@ -112,8 +112,8 @@ export async function resolveElizaPackageRoot(
   return null;
 }
 
-export function resolveElizaPackageRootSync(
-  opts: ResolveElizaRootOptions,
+export function resolveTokagentPackageRootSync(
+  opts: ResolveTokagentRootOptions,
 ): string | null {
   const candidates = candidateDirsFromOptions(opts);
 

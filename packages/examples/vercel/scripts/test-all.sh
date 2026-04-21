@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run all tests for elizaOS Vercel Edge Functions
+# Run all tests for tokagentOS Vercel Edge Functions
 #
 # Usage:
 #   ./scripts/test-all.sh                    # Test local dev server
@@ -14,7 +14,7 @@ cd "$PROJECT_DIR"
 
 ENDPOINT="${1:-http://localhost:3000}"
 
-echo "🧪 Running elizaOS Vercel Edge Function Tests"
+echo "🧪 Running tokagentOS Vercel Edge Function Tests"
 echo "📍 Endpoint: $ENDPOINT"
 echo ""
 

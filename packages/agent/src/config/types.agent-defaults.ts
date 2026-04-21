@@ -3,8 +3,8 @@ import type {
   BlockStreamingCoalesceConfig,
   HumanDelayConfig,
   TypingMode,
-} from "@elizaos/core";
-import type { InboxTriageConfig } from "@elizaos/shared/config";
+} from "@tokagentos/core";
+import type { InboxTriageConfig } from "@tokagentos/shared/config";
 import type { MemorySearchConfig } from "./types.tools.js";
 
 // --- Sandbox types (merged from types.sandbox.ts) ---

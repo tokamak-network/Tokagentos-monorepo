@@ -4,13 +4,13 @@ import type {
   IAgentRuntime,
   State,
   TestSuite,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 /**
  * E2E (End-to-End) Test Suite for Rust Plugin Starter
  * ====================================================
  *
- * This file contains end-to-end tests that run within a real elizaOS runtime environment.
+ * This file contains end-to-end tests that run within a real tokagentOS runtime environment.
  * These tests validate that the Rust plugin (loaded via WASM) works correctly with the agent.
  */
 

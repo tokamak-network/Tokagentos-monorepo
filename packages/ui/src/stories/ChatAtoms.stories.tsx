@@ -15,12 +15,12 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: { agentName: "Eliza" },
+  args: { agentName: "Tokagent" },
 };
 
 export const WithAvatar: Story = {
   args: {
-    agentName: "Eliza",
-    agentAvatarSrc: "https://api.dicebear.com/7.x/bottts/svg?seed=eliza",
+    agentName: "Tokagent",
+    agentAvatarSrc: "https://api.dicebear.com/7.x/bottts/svg?seed=tokagent",
   },
 };

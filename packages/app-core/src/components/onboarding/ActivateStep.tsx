@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 
 import { useBranding } from "../../config/branding";
 import { useApp } from "../../state/useApp";

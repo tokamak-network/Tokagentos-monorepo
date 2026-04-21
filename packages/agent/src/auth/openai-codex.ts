@@ -5,7 +5,7 @@
  * Handles local callback server + manual code paste fallback.
  */
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type { OAuthCredentials } from "./types.js";
 import {
   loginOpenAICodex,
@@ -63,7 +63,7 @@ export function startCodexLogin(): Promise<CodexFlow> {
         onPrompt: async () => manualPromise,
         onManualCodeInput: () => manualPromise,
         onProgress: () => {},
-        originator: "eliza",
+        originator: "tokagent",
       }).then((creds) => ({
         access: creds.access,
         refresh: creds.refresh,

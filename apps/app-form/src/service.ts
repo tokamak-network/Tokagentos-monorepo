@@ -102,7 +102,7 @@ import {
   Service,
   type Task,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 import { registerBuiltinTypes } from "./builtins";
 import {
@@ -148,7 +148,7 @@ import { formatValue, validateField } from "./validation";
  * - Accessible from actions, evaluators, providers
  *
  * WHY static `start` method:
- * - elizaOS service lifecycle pattern
+ * - tokagentOS service lifecycle pattern
  * - Async initialization support
  * - Returns Service interface
  */

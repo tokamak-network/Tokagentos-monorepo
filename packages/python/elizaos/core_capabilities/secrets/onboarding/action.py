@@ -12,13 +12,13 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import Action, ActionResult, Content, ModelType
+from tokagentos.types import Action, ActionResult, Content, ModelType
 
 from ..types import SecretContext, SecretLevel
 from .config import OnboardingSetting
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
     from ..service import SecretsService
 

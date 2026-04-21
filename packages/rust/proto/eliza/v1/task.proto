@@ -1,7 +1,7 @@
-// task.proto - Task types for elizaOS
+// task.proto - Task types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
 import "google/protobuf/struct.proto";
 

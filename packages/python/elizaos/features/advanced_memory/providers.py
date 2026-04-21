@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 
 async def long_term_memory_get(runtime, message, _state=None) -> ProviderResult:

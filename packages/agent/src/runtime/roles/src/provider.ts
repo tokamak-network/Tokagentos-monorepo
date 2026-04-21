@@ -11,7 +11,7 @@ import {
   type ProviderResult,
   type State,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { hasAdminAccess } from "../../../security/access.js";
 import type { RoleName, RolesWorldMetadata } from "./types";
 import {

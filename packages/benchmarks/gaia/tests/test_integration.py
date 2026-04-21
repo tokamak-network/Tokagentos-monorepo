@@ -2,7 +2,7 @@
 Integration tests for GAIA benchmark.
 
 These tests verify the complete flow of the benchmark, including:
-- Plugin registration with ElizaOS runtime
+- Plugin registration with TokagentOS runtime
 - Model handler functionality
 - Tool execution
 - End-to-end question solving
@@ -13,7 +13,7 @@ import os
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from elizaos_gaia import (
+from tokagentos_gaia import (
     GAIAConfig,
     GAIAQuestion,
     GAIALevel,
@@ -27,11 +27,11 @@ from elizaos_gaia import (
     PRESETS,
     get_available_providers,
 )
-from elizaos_gaia.plugin import multi_provider_model_handler
+from tokagentos_gaia.plugin import multi_provider_model_handler
 
 
 class TestPluginIntegration:
-    """Test plugin integration with ElizaOS runtime."""
+    """Test plugin integration with TokagentOS runtime."""
     
     def test_plugin_has_required_components(self):
         """Test that plugin has all required components."""
@@ -146,7 +146,7 @@ class TestProviders:
         """Test Groq llama-3.1-8b-instant is default."""
         # When GROQ_API_KEY is available, it should be default
         with patch.dict(os.environ, {"GROQ_API_KEY": "test-key"}):
-            from elizaos_gaia.providers import get_default_config
+            from tokagentos_gaia.providers import get_default_config
             config = get_default_config()
             assert config.provider == ModelProvider.GROQ
             assert "llama" in config.model_name.lower()
@@ -319,7 +319,7 @@ class TestEndToEnd:
     @pytest.mark.asyncio
     async def test_calculator_tool(self):
         """Test that the calculator tool works correctly."""
-        from elizaos_gaia.tools import Calculator
+        from tokagentos_gaia.tools import Calculator
         
         calc = Calculator()
         
@@ -346,7 +346,7 @@ class TestToolsIntegration:
     @pytest.mark.asyncio
     async def test_web_search_tool(self):
         """Test web search tool initialization and basic use."""
-        from elizaos_gaia.tools import WebSearchTool
+        from tokagentos_gaia.tools import WebSearchTool
         
         search = WebSearchTool(engine="duckduckgo")
         
@@ -364,7 +364,7 @@ class TestToolsIntegration:
     @pytest.mark.asyncio
     async def test_file_processor_missing_file(self):
         """Test file processor handles missing files."""
-        from elizaos_gaia.tools import FileProcessor
+        from tokagentos_gaia.tools import FileProcessor
         
         processor = FileProcessor()
         result = await processor.process("/nonexistent/file.txt")
@@ -375,7 +375,7 @@ class TestToolsIntegration:
     @pytest.mark.asyncio
     async def test_code_executor_basic(self):
         """Test code executor with simple code."""
-        from elizaos_gaia.tools import CodeExecutor
+        from tokagentos_gaia.tools import CodeExecutor
         
         executor = CodeExecutor(timeout_seconds=10, use_docker=False)
         

@@ -167,10 +167,10 @@ class GAIAConfig:
     max_iterations: int = 15  # Max agent iterations per question
     timeout_per_question_ms: int = 300000  # 5 minutes per question
 
-    # Canonical Eliza runtime execution
+    # Canonical Tokagent runtime execution
     # When enabled, the benchmark runs questions through AgentRuntime.message_service
     # (providers + action planning + action execution + evaluators).
-    use_eliza_runtime: bool = True
+    use_tokagent_runtime: bool = True
 
     # Tool settings
     enable_web_search: bool = True

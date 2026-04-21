@@ -16,29 +16,29 @@ _ORCH_PKG = _ROOT / "plugins" / "plugin-agent-orchestrator" / "python"
 if _ORCH_PKG.exists() and str(_ORCH_PKG) not in sys.path:
     sys.path.insert(0, str(_ORCH_PKG))
 
-from elizaos_plugin_agent_orchestrator import (
+from tokagentos_plugin_agent_orchestrator import (
     AgentOrchestratorPluginOptions,
     AgentOrchestratorService,
     TaskResult,
     configure_agent_orchestrator_plugin,
 )
 
-from elizaos_gaia.dataset import GAIADataset
-from elizaos_gaia.evaluator import GAIAEvaluator
-from elizaos_gaia.orchestrator.providers import (
+from tokagentos_gaia.dataset import GAIADataset
+from tokagentos_gaia.evaluator import GAIAEvaluator
+from tokagentos_gaia.orchestrator.providers import (
     BaseGAIAProvider,
     ClaudeCodeGAIAProvider,
     CodexGAIAProvider,
     SWEAgentGAIAProvider,
 )
-from elizaos_gaia.orchestrator.trace import GAIATraceRecorder
-from elizaos_gaia.orchestrator.types import (
+from tokagentos_gaia.orchestrator.trace import GAIATraceRecorder
+from tokagentos_gaia.orchestrator.types import (
     ExecutionMode,
     OrchestratedGAIAReport,
     ProviderQuestionResult,
     ProviderType,
 )
-from elizaos_gaia.types import GAIAConfig, GAIAQuestion, GAIAResult, GAIALevel
+from tokagentos_gaia.types import GAIAConfig, GAIAQuestion, GAIAResult, GAIALevel
 
 logger = logging.getLogger(__name__)
 

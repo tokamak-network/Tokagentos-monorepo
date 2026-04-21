@@ -309,7 +309,7 @@ export interface AgentRunSummaryResult
  * All create/read-by-ID/update/delete methods accept and return arrays.
  * This is intentional and non-negotiable for adapter implementations.
  *
- * WHY: elizaOS agents process events that frequently touch multiple DB rows
+ * WHY: tokagentOS agents process events that frequently touch multiple DB rows
  * in a single tick -- load entity + room, store memory + log, clean up tasks.
  * Under the old single-item API, each was a separate round-trip. At scale
  * (multiple agents, concurrent conversations), this saturated connection pools

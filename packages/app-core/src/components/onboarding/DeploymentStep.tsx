@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Input, Spinner } from "@elizaos/ui";
+import { Button, Card, CardContent, Input, Spinner } from "@tokagentos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { client } from "../../api";
 import type {
@@ -66,8 +66,8 @@ export function DeploymentStep() {
   const {
     setState,
     handleOnboardingNext,
-    elizaCloudConnected,
-    elizaCloudLoginBusy,
+    tokagentCloudConnected,
+    tokagentCloudLoginBusy,
     handleCloudLogin,
     startupCoordinator,
     t,
@@ -81,7 +81,7 @@ export function DeploymentStep() {
 
   // Cloud sub-view state
   const [cloudStage, setCloudStage] = useState<CloudStage>(
-    elizaCloudConnected ? "loading" : "login",
+    tokagentCloudConnected ? "loading" : "login",
   );
   const [agents, setAgents] = useState<CloudCompatAgent[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -127,10 +127,10 @@ export function DeploymentStep() {
 
   // ── Cloud: auto-advance from login when connected ──────────────────
   useEffect(() => {
-    if (elizaCloudConnected && cloudStage === "login") {
+    if (tokagentCloudConnected && cloudStage === "login") {
       setCloudStage("loading");
     }
-  }, [elizaCloudConnected, cloudStage]);
+  }, [tokagentCloudConnected, cloudStage]);
 
   // ── Cloud: fetch agents ────────────────────────────────────────────
   useEffect(() => {
@@ -223,7 +223,7 @@ export function DeploymentStep() {
       if (apiBase) {
         client.setBaseUrl(apiBase);
       }
-      setState("onboardingServerTarget", "elizacloud");
+      setState("onboardingServerTarget", "tokagentcloud");
       startupCoordinator.dispatch({ type: "SPLASH_CLOUD_SKIP" });
       handleOnboardingNext();
     },
@@ -437,8 +437,8 @@ export function DeploymentStep() {
               style={{ fontFamily: MONO_FONT }}
               className="text-3xs uppercase text-white/60"
             >
-              {t("startupshell.ElizaCloudAgent", {
-                defaultValue: "Eliza Cloud",
+              {t("startupshell.TokagentCloudAgent", {
+                defaultValue: "Tokagent Cloud",
               })}
             </span>
             <span className="text-sm font-bold text-white/95">
@@ -448,7 +448,7 @@ export function DeploymentStep() {
             </span>
             <span className="text-xs-tight leading-snug text-white/60">
               {t("startupshell.ManageCloudAgentsDesc", {
-                defaultValue: "Host agents on Eliza Cloud infrastructure",
+                defaultValue: "Host agents on Tokagent Cloud infrastructure",
               })}
             </span>
           </button>
@@ -497,7 +497,7 @@ export function DeploymentStep() {
               className="text-3xs uppercase text-white/60"
             >
               {t("startupshell.CloudLogin", {
-                defaultValue: "Sign in to Eliza Cloud",
+                defaultValue: "Sign in to Tokagent Cloud",
               })}
             </p>
             <Button
@@ -505,9 +505,9 @@ export function DeploymentStep() {
               variant="default"
               className="justify-center rounded-xl border border-[#f0b90b]/40 bg-[#f0b90b]/15 px-3 py-5 text-[#f0b90b] font-semibold shadow-lg hover:bg-[#f0b90b]/25 hover:border-[#f0b90b]/60"
               onClick={handleLogin}
-              disabled={elizaCloudLoginBusy}
+              disabled={tokagentCloudLoginBusy}
             >
-              {elizaCloudLoginBusy ? (
+              {tokagentCloudLoginBusy ? (
                 <span className="flex items-center gap-2">
                   <Spinner className="h-4 w-4" />
                   {t("startupshell.WaitingForAuth", {
@@ -515,8 +515,8 @@ export function DeploymentStep() {
                   })}
                 </span>
               ) : (
-                t("startupshell.SignInElizaCloud", {
-                  defaultValue: "Sign in with Eliza Cloud",
+                t("startupshell.SignInTokagentCloud", {
+                  defaultValue: "Sign in with Tokagent Cloud",
                 })
               )}
             </Button>

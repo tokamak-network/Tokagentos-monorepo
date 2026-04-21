@@ -1,13 +1,13 @@
 import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import type { UUID } from "@elizaos/core";
+import type { UUID } from "@tokagentos/core";
 import React from "react";
 
 const queryClient = new QueryClient();
 
-// Define the interface for the ELIZA_CONFIG
-interface ElizaConfig {
+// Define the interface for the TOKAGENT_CONFIG
+interface TokagentConfig {
   agentId: string;
   apiBase: string;
 }
@@ -77,10 +77,10 @@ function TimeDisplay({ apiBase }: { apiBase: string }) {
  * Main Example route component
  */
 function ExampleRoute() {
-  interface WindowWithElizaConfig extends Window {
-    ELIZA_CONFIG?: ElizaConfig;
+  interface WindowWithTokagentConfig extends Window {
+    TOKAGENT_CONFIG?: TokagentConfig;
   }
-  const config = (window as WindowWithElizaConfig).ELIZA_CONFIG;
+  const config = (window as WindowWithTokagentConfig).TOKAGENT_CONFIG;
   const agentId = config?.agentId;
   const apiBase = config?.apiBase || "http://localhost:3000";
 

@@ -7,15 +7,15 @@ import {
 } from "./managed-test-command.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-// Script lives at eliza/packages/app-core/test/scripts/ — repo root is 5 levels up
+// Script lives at tokagent/packages/app-core/test/scripts/ — repo root is 5 levels up
 const repoRoot = path.resolve(here, "..", "..", "..", "..", "..");
 const bunCmd = process.env.npm_execpath || process.env.BUN || "bun";
 const nodeCmd = resolveNodeCmd();
 const appRoot = path.join(repoRoot, "apps", "app");
-const appCoreRoot = path.join(repoRoot, "eliza", "packages", "app-core");
-const elizaRoot = path.join(repoRoot, "eliza");
-const cloudRoot = path.join(repoRoot, "eliza", "cloud");
-const stewardFiRoot = path.join(repoRoot, "eliza", "steward-fi");
+const appCoreRoot = path.join(repoRoot, "tokagent", "packages", "app-core");
+const tokagentRoot = path.join(repoRoot, "tokagent");
+const cloudRoot = path.join(repoRoot, "tokagent", "cloud");
+const stewardFiRoot = path.join(repoRoot, "tokagent", "steward-fi");
 const unitShardCount = 1;
 
 await runManagedTestCommand({
@@ -111,7 +111,7 @@ await runManagedTestCommand({
   env: {
     ...buildTestEnv(repoRoot),
     MILADY_LIVE_TEST: "1",
-    ELIZA_LIVE_TEST: "1",
+    TOKAGENT_LIVE_TEST: "1",
   },
 });
 
@@ -125,7 +125,7 @@ await runManagedTestCommand({
   env: {
     ...buildTestEnv(repoRoot),
     MILADY_LIVE_TEST: "1",
-    ELIZA_LIVE_TEST: "1",
+    TOKAGENT_LIVE_TEST: "1",
   },
 });
 
@@ -140,13 +140,13 @@ await runManagedTestCommand({
     "run",
     "--config",
     "test/vitest/real.config.ts",
-    "eliza/plugins/plugin-evm/typescript/__tests__/integration/transfer.live.test.ts",
+    "tokagent/plugins/plugin-evm/typescript/__tests__/integration/transfer.live.test.ts",
   ],
   cwd: repoRoot,
   env: {
     ...buildTestEnv(repoRoot),
     MILADY_LIVE_TEST: "1",
-    ELIZA_LIVE_TEST: "1",
+    TOKAGENT_LIVE_TEST: "1",
   },
 });
 
@@ -172,12 +172,12 @@ await runManagedTestCommand({
 
 await runManagedTestCommand({
   repoRoot,
-  lockName: "eliza-all",
-  label: "eliza-all",
+  lockName: "tokagent-all",
+  label: "tokagent-all",
   command: bunCmd,
   args: ["run", "test"],
-  cwd: elizaRoot,
-  env: buildTestEnv(elizaRoot),
+  cwd: tokagentRoot,
+  env: buildTestEnv(tokagentRoot),
 });
 
 await runManagedTestCommand({

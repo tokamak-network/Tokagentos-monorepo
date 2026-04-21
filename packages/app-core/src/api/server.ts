@@ -3,9 +3,9 @@ import fs from "node:fs";
 import http from "node:http";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { handleCloudBillingRoute } from "@elizaos/agent/api/cloud-billing-routes";
-import { handleCloudCompatRoute } from "@elizaos/agent/api/cloud-compat-routes";
-import { clearPersistedOnboardingConfig } from "@elizaos/agent/api/provider-switch-config";
+import { handleCloudBillingRoute } from "@tokagentos/agent/api/cloud-billing-routes";
+import { handleCloudCompatRoute } from "@tokagentos/agent/api/cloud-compat-routes";
+import { clearPersistedOnboardingConfig } from "@tokagentos/agent/api/provider-switch-config";
 // Override the wallet export rejection function with the hardened version
 // that adds rate limiting, audit logging, and a forced confirmation delay.
 import {
@@ -27,17 +27,17 @@ import {
   streamResponseBodyWithByteLimit,
   startApiServer as upstreamStartApiServer,
   validateMcpServerConfig,
-} from "@elizaos/agent/api/server";
-import { initStewardWalletCache } from "@elizaos/agent/api/wallet";
+} from "@tokagentos/agent/api/server";
+import { initStewardWalletCache } from "@tokagentos/agent/api/wallet";
 import {
-  type ElizaConfig,
-  loadElizaConfig,
-  saveElizaConfig,
-} from "@elizaos/agent/config/config";
-import { resolveUserPath } from "@elizaos/agent/config/paths";
-import { resolveDefaultAgentWorkspaceDir } from "@elizaos/agent/providers/workspace";
-import { type AgentRuntime, logger } from "@elizaos/core";
-import { resolveLinkedAccountsInConfig } from "@elizaos/shared/contracts/onboarding";
+  type TokagentConfig,
+  loadTokagentConfig,
+  saveTokagentConfig,
+} from "@tokagentos/agent/config/config";
+import { resolveUserPath } from "@tokagentos/agent/config/paths";
+import { resolveDefaultAgentWorkspaceDir } from "@tokagentos/agent/providers/workspace";
+import { type AgentRuntime, logger } from "@tokagentos/core";
+import { resolveLinkedAccountsInConfig } from "@tokagentos/shared/contracts/onboarding";
 import {
   ensureCompatApiAuthorized,
   ensureCompatSensitiveRouteAuthorized,
@@ -110,10 +110,10 @@ export {
 };
 
 import {
-  isElizaSettingsDebugEnabled,
+  isTokagentSettingsDebugEnabled,
   sanitizeForSettingsDebug,
   settingsDebugCloudSummary,
-} from "@elizaos/shared";
+} from "@tokagentos/shared";
 import { buildCharacterFromConfig } from "../runtime/build-character-from-config";
 import { deviceBridge } from "../services/local-inference/device-bridge";
 import {
@@ -141,9 +141,9 @@ import { handleWorkbenchCompatRoutes } from "./workbench-compat-routes";
 
 const _require = createRequire(import.meta.url);
 
-import { syncAppEnvToEliza, syncElizaEnvAliases } from "../utils/env.js";
+import { syncAppEnvToTokagent, syncTokagentEnvAliases } from "../utils/env.js";
 
-// Lazy-imported to avoid circular dependency with runtime/eliza.ts
+// Lazy-imported to avoid circular dependency with runtime/tokagent.ts
 const lazyEnsureTTS = () =>
   import("../runtime/ensure-text-to-speech-handler.js").then(
     (m) => m.ensureTextToSpeechHandler,
@@ -169,7 +169,7 @@ import { filterConfigEnvForResponse as _filterConfigEnvForResponse } from "./ser
 // Module-level constants and types that stay in server.ts
 // ---------------------------------------------------------------------------
 
-const _PACKAGE_ROOT_NAMES = new Set(["eliza", "elizaai", "elizaos"]);
+const _PACKAGE_ROOT_NAMES = new Set(["tokagent", "tokagentai", "tokagentos"]);
 
 // ---------------------------------------------------------------------------
 // Internal helpers used by the monkey-patch handler (stay in server.ts)
@@ -182,19 +182,19 @@ const _PACKAGE_ROOT_NAMES = new Set(["eliza", "elizaai", "elizaos"]);
 // ensureCompatSensitiveRouteAuthorized — now imported from ./auth
 
 function hydrateWalletOsStoreFlagFromConfig(): void {
-  if (process.env.ELIZA_WALLET_OS_STORE?.trim()) {
+  if (process.env.TOKAGENT_WALLET_OS_STORE?.trim()) {
     return;
   }
 
   try {
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const persistedEnv =
       config.env && typeof config.env === "object" && !Array.isArray(config.env)
         ? (config.env as Record<string, unknown>)
         : undefined;
-    const raw = persistedEnv?.ELIZA_WALLET_OS_STORE;
+    const raw = persistedEnv?.TOKAGENT_WALLET_OS_STORE;
     if (typeof raw === "string" && raw.trim()) {
-      process.env.ELIZA_WALLET_OS_STORE = raw.trim();
+      process.env.TOKAGENT_WALLET_OS_STORE = raw.trim();
     }
   } catch {
     // Best effort only; upstream startup will still load config normally.
@@ -202,51 +202,51 @@ function hydrateWalletOsStoreFlagFromConfig(): void {
 }
 
 function resolveCompatConfigPaths(): {
-  elizaConfigPath?: string;
+  tokagentConfigPath?: string;
   appConfigPath?: string;
 } {
   const sharedStateDir =
-    process.env.ELIZA_STATE_DIR?.trim() || process.env.ELIZA_STATE_DIR?.trim();
+    process.env.TOKAGENT_STATE_DIR?.trim() || process.env.TOKAGENT_STATE_DIR?.trim();
   const appConfigPath =
-    process.env.ELIZA_CONFIG_PATH?.trim() ||
-    (sharedStateDir ? path.join(sharedStateDir, "eliza.json") : undefined);
-  const elizaConfigPath =
-    process.env.ELIZA_CONFIG_PATH?.trim() ||
-    (sharedStateDir ? path.join(sharedStateDir, "eliza.json") : undefined);
+    process.env.TOKAGENT_CONFIG_PATH?.trim() ||
+    (sharedStateDir ? path.join(sharedStateDir, "tokagent.json") : undefined);
+  const tokagentConfigPath =
+    process.env.TOKAGENT_CONFIG_PATH?.trim() ||
+    (sharedStateDir ? path.join(sharedStateDir, "tokagent.json") : undefined);
 
-  return { elizaConfigPath, appConfigPath };
+  return { tokagentConfigPath, appConfigPath };
 }
 
 export function syncCompatConfigFiles(): void {
-  const { elizaConfigPath, appConfigPath } = resolveCompatConfigPaths();
-  if (!elizaConfigPath || !appConfigPath || elizaConfigPath === appConfigPath) {
+  const { tokagentConfigPath, appConfigPath } = resolveCompatConfigPaths();
+  if (!tokagentConfigPath || !appConfigPath || tokagentConfigPath === appConfigPath) {
     return;
   }
 
-  const elizaExists = fs.existsSync(elizaConfigPath);
+  const tokagentExists = fs.existsSync(tokagentConfigPath);
   const appExists = fs.existsSync(appConfigPath);
-  if (!elizaExists && !appExists) {
+  if (!tokagentExists && !appExists) {
     return;
   }
 
   let sourcePath: string;
   let targetPath: string;
 
-  if (elizaExists && !appExists) {
-    sourcePath = elizaConfigPath;
+  if (tokagentExists && !appExists) {
+    sourcePath = tokagentConfigPath;
     targetPath = appConfigPath;
-  } else if (!elizaExists && appExists) {
+  } else if (!tokagentExists && appExists) {
     sourcePath = appConfigPath;
-    targetPath = elizaConfigPath;
+    targetPath = tokagentConfigPath;
   } else {
-    const elizaStat = fs.statSync(elizaConfigPath);
+    const tokagentStat = fs.statSync(tokagentConfigPath);
     const appStat = fs.statSync(appConfigPath);
 
-    if (appStat.mtimeMs > elizaStat.mtimeMs) {
+    if (appStat.mtimeMs > tokagentStat.mtimeMs) {
       sourcePath = appConfigPath;
-      targetPath = elizaConfigPath;
-    } else if (elizaStat.mtimeMs > appStat.mtimeMs) {
-      sourcePath = elizaConfigPath;
+      targetPath = tokagentConfigPath;
+    } else if (tokagentStat.mtimeMs > appStat.mtimeMs) {
+      sourcePath = tokagentConfigPath;
       targetPath = appConfigPath;
     } else {
       return;
@@ -257,7 +257,7 @@ export function syncCompatConfigFiles(): void {
   fs.copyFileSync(sourcePath, targetPath);
 }
 
-function resolveCompatPgliteDataDir(config: ElizaConfig): string {
+function resolveCompatPgliteDataDir(config: TokagentConfig): string {
   const explicitDataDir = process.env.PGLITE_DATA_DIR?.trim();
   if (explicitDataDir) {
     return resolveUserPath(explicitDataDir);
@@ -270,7 +270,7 @@ function resolveCompatPgliteDataDir(config: ElizaConfig): string {
 
   const workspaceDir =
     config.agents?.defaults?.workspace ?? resolveDefaultAgentWorkspaceDir();
-  return path.join(resolveUserPath(workspaceDir), ".eliza", ".elizadb");
+  return path.join(resolveUserPath(workspaceDir), ".tokagent", ".tokagentdb");
 }
 
 /**
@@ -299,8 +299,8 @@ function resolveCompatLoopbackApiBase(
   const port =
     _resolvedLoopbackPort ??
     (Number(
-      process.env.ELIZA_API_PORT?.trim() ||
-        process.env.ELIZA_PORT?.trim() ||
+      process.env.TOKAGENT_API_PORT?.trim() ||
+        process.env.TOKAGENT_PORT?.trim() ||
         "31337",
     ) ||
       31337);
@@ -377,7 +377,7 @@ async function clearCompatRuntimeStateViaApi(
     }
   } catch (err) {
     logger.warn(
-      `[eliza][reset] Failed to clear conversations before reset: ${
+      `[tokagent][reset] Failed to clear conversations before reset: ${
         err instanceof Error ? err.message : String(err)
       }`,
     );
@@ -397,7 +397,7 @@ async function clearCompatRuntimeStateViaApi(
     }
   } catch (err) {
     logger.warn(
-      `[eliza][reset] Failed to clear knowledge documents before reset: ${
+      `[tokagent][reset] Failed to clear knowledge documents before reset: ${
         err instanceof Error ? err.message : String(err)
       }`,
     );
@@ -410,7 +410,7 @@ async function clearCompatRuntimeStateViaApi(
     });
   } catch (err) {
     logger.warn(
-      `[eliza][reset] Failed to clear trajectories before reset: ${
+      `[tokagent][reset] Failed to clear trajectories before reset: ${
         err instanceof Error ? err.message : String(err)
       }`,
     );
@@ -419,16 +419,16 @@ async function clearCompatRuntimeStateViaApi(
 
 async function clearCompatPgliteDataDir(
   runtime: AgentRuntime | null,
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): Promise<void> {
   if (typeof runtime?.stop === "function") {
     await runtime.stop();
   }
 
   const dataDir = resolveCompatPgliteDataDir(config);
-  if (path.basename(dataDir) !== ".elizadb") {
+  if (path.basename(dataDir) !== ".tokagentdb") {
     logger.warn(
-      `[eliza][reset] Refusing to delete unexpected PGlite dir: ${dataDir}`,
+      `[tokagent][reset] Refusing to delete unexpected PGlite dir: ${dataDir}`,
     );
     return;
   }
@@ -437,12 +437,12 @@ async function clearCompatPgliteDataDir(
     if (fs.existsSync(dataDir)) {
       fs.rmSync(dataDir, { recursive: true, force: true });
       logger.info(
-        `[eliza][reset] Deleted PGlite data dir (GGUF models preserved): ${dataDir}`,
+        `[tokagent][reset] Deleted PGlite data dir (GGUF models preserved): ${dataDir}`,
       );
     }
   } catch (err) {
     logger.warn(
-      `[eliza][reset] Failed to delete PGlite data dir: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent][reset] Failed to delete PGlite data dir: ${err instanceof Error ? err.message : String(err)}`,
     );
   }
 }
@@ -633,17 +633,17 @@ async function _getTableColumnNames(
 
 /**
  * Load config from disk and backfill `cloud.apiKey` from sealed secrets when the
- * user is still linked to Eliza Cloud but a stale write dropped the key.
+ * user is still linked to Tokagent Cloud but a stale write dropped the key.
  */
-function resolveCloudConfig(runtime?: unknown): ElizaConfig {
-  const config = loadElizaConfig();
+function resolveCloudConfig(runtime?: unknown): TokagentConfig {
+  const config = loadTokagentConfig();
   const cloudRec =
     config.cloud && typeof config.cloud === "object"
       ? (config.cloud as Record<string, unknown>)
       : undefined;
-  if (isElizaSettingsDebugEnabled()) {
+  if (isTokagentSettingsDebugEnabled()) {
     logger.debug(
-      `[eliza][settings][compat] resolveCloudConfig disk cloud=${JSON.stringify(settingsDebugCloudSummary(cloudRec))} topKeys=${Object.keys(
+      `[tokagent][settings][compat] resolveCloudConfig disk cloud=${JSON.stringify(settingsDebugCloudSummary(cloudRec))} topKeys=${Object.keys(
         config as object,
       )
         .sort()
@@ -653,12 +653,12 @@ function resolveCloudConfig(runtime?: unknown): ElizaConfig {
   const linkedAccounts = resolveLinkedAccountsInConfig(
     config as Record<string, unknown>,
   );
-  if (linkedAccounts?.elizacloud?.status === "unlinked") {
+  if (linkedAccounts?.tokagentcloud?.status === "unlinked") {
     // Respect explicit disconnect: never backfill a cloud key into config once
     // the canonical linked-account state says the account is disconnected.
-    if (isElizaSettingsDebugEnabled()) {
+    if (isTokagentSettingsDebugEnabled()) {
       logger.debug(
-        "[eliza][settings][compat] resolveCloudConfig skip backfill (linkedAccounts.elizacloud.status===unlinked)",
+        "[tokagent][settings][compat] resolveCloudConfig skip backfill (linkedAccounts.tokagentcloud.status===unlinked)",
       );
     }
     return config;
@@ -666,14 +666,14 @@ function resolveCloudConfig(runtime?: unknown): ElizaConfig {
   if (!config.cloud?.apiKey) {
     // Try multiple sources: sealed secrets → process.env → runtime character secrets
     const backfillKey =
-      getCloudSecret("ELIZAOS_CLOUD_API_KEY") ||
-      process.env.ELIZAOS_CLOUD_API_KEY ||
+      getCloudSecret("TOKAGENTOS_CLOUD_API_KEY") ||
+      process.env.TOKAGENTOS_CLOUD_API_KEY ||
       (runtime as { character?: { secrets?: Record<string, string> } } | null)
-        ?.character?.secrets?.ELIZAOS_CLOUD_API_KEY;
+        ?.character?.secrets?.TOKAGENTOS_CLOUD_API_KEY;
     if (backfillKey) {
-      if (isElizaSettingsDebugEnabled()) {
+      if (isTokagentSettingsDebugEnabled()) {
         logger.debug(
-          "[eliza][settings][compat] resolveCloudConfig backfilling cloud.apiKey from env/secrets/runtime",
+          "[tokagent][settings][compat] resolveCloudConfig backfilling cloud.apiKey from env/secrets/runtime",
         );
       }
       if (!config.cloud) {
@@ -682,17 +682,17 @@ function resolveCloudConfig(runtime?: unknown): ElizaConfig {
       (config.cloud as Record<string, unknown>).apiKey = backfillKey;
       // Persist the backfilled key so future reads find it on disk
       try {
-        saveElizaConfig(config);
+        saveTokagentConfig(config);
         logger.info("[cloud] Backfilled missing cloud.apiKey to config file");
       } catch {
         // Non-fatal: the key is still available for this request
       }
     }
   }
-  if (isElizaSettingsDebugEnabled()) {
+  if (isTokagentSettingsDebugEnabled()) {
     const outCloud = config.cloud as Record<string, unknown> | undefined;
     logger.debug(
-      `[eliza][settings][compat] resolveCloudConfig → return cloud=${JSON.stringify(settingsDebugCloudSummary(outCloud))}`,
+      `[tokagent][settings][compat] resolveCloudConfig → return cloud=${JSON.stringify(settingsDebugCloudSummary(outCloud))}`,
     );
   }
   return config;
@@ -706,7 +706,7 @@ async function handleCompatRoute(
   const method = (req.method ?? "GET").toUpperCase();
   const url = new URL(req.url ?? "/", "http://localhost");
 
-  // Eliza Cloud thin-client proxy (compat agents, jobs, …) — was missing from the
+  // Tokagent Cloud thin-client proxy (compat agents, jobs, …) — was missing from the
   // compat wrapper, so the dashboard saw 404 on `/api/cloud/compat/agents`.
   if (url.pathname.startsWith("/api/cloud/compat/")) {
     if (!ensureCompatApiAuthorized(req, res)) {
@@ -751,7 +751,7 @@ async function handleCompatRoute(
       res,
       method,
       pathname: url.pathname,
-      config: loadElizaConfig(),
+      config: loadTokagentConfig(),
       runtime: state.current,
       json: (_res, body, status = 200) => {
         sendJsonResponse(res, status, body);
@@ -766,7 +766,7 @@ async function handleCompatRoute(
 
   if (method === "POST" && url.pathname === "/api/tts/elevenlabs") {
     // Intentional passthrough: ElevenLabs TTS is handled by the upstream
-    // Eliza server handler, not by the app API layer. Returning false
+    // Tokagent server handler, not by the app API layer. Returning false
     // lets the request fall through to the next handler in the chain.
     return false;
   }
@@ -823,7 +823,7 @@ async function handleCompatRoute(
 
     // After disconnect, sync the cloud disable into the upstream's in-memory
     // state.config via a loopback PUT /api/config. Without this, the next
-    // upstream saveElizaConfig(state.config) (e.g. saving OpenRouter) reverts
+    // upstream saveTokagentConfig(state.config) (e.g. saving OpenRouter) reverts
     // the disconnect because state.config still has cloud.enabled=true + apiKey.
     if (
       handled &&
@@ -835,21 +835,21 @@ async function handleCompatRoute(
       // Include serviceRouting: { llmText: null } so the upstream's in-memory
       // serviceRouting (derived from legacy cloud.enabled=true at load time) is
       // cleared — without it, the loopback save re-persists the cloud-proxy route.
-      // Also include linkedAccounts.elizacloud.status="unlinked" so the
+      // Also include linkedAccounts.tokagentcloud.status="unlinked" so the
       // upstream's in-memory state.config (which still has the old "linked"
       // status from load time) does not overwrite the canonical unlinked
-      // state on the next saveElizaConfig — that overwrite was the source
+      // state on the next saveTokagentConfig — that overwrite was the source
       // of the auto-reconnect bug after restart.
       const disconnectPatch = {
         cloud: { enabled: false, apiKey: null },
         serviceRouting: { llmText: null },
         linkedAccounts: {
-          elizacloud: { status: "unlinked", source: "api-key" },
+          tokagentcloud: { status: "unlinked", source: "api-key" },
         },
       };
-      if (isElizaSettingsDebugEnabled()) {
+      if (isTokagentSettingsDebugEnabled()) {
         logger.debug(
-          `[eliza][settings][compat] POST /api/cloud/disconnect → loopback PUT /api/config patch=${JSON.stringify(sanitizeForSettingsDebug(disconnectPatch))}`,
+          `[tokagent][settings][compat] POST /api/cloud/disconnect → loopback PUT /api/config patch=${JSON.stringify(sanitizeForSettingsDebug(disconnectPatch))}`,
         );
       }
       try {
@@ -857,14 +857,14 @@ async function handleCompatRoute(
           method: "PUT",
           body: JSON.stringify(disconnectPatch),
         });
-        if (isElizaSettingsDebugEnabled()) {
+        if (isTokagentSettingsDebugEnabled()) {
           logger.debug(
-            "[eliza][settings][compat] POST /api/cloud/disconnect loopback sync OK",
+            "[tokagent][settings][compat] POST /api/cloud/disconnect loopback sync OK",
           );
         }
       } catch (err) {
         logger.warn(
-          `[eliza][cloud/disconnect] Failed to sync cloud disable to upstream state: ${
+          `[tokagent][cloud/disconnect] Failed to sync cloud disable to upstream state: ${
             err instanceof Error ? err.message : String(err)
           }`,
         );
@@ -885,36 +885,36 @@ async function handleCompatRoute(
   if (method === "POST" && url.pathname === "/api/agent/reset") {
     if (!ensureCompatSensitiveRouteAuthorized(req, res)) {
       logger.warn(
-        "[eliza][reset] POST /api/agent/reset rejected (sensitive route not authorized)",
+        "[tokagent][reset] POST /api/agent/reset rejected (sensitive route not authorized)",
       );
       return true;
     }
 
     try {
       logger.info(
-        "[eliza][reset] POST /api/agent/reset: loading config, will clear onboarding state, persisted provider config, and cloud keys (GGUF / MODELS_DIR untouched)",
+        "[tokagent][reset] POST /api/agent/reset: loading config, will clear onboarding state, persisted provider config, and cloud keys (GGUF / MODELS_DIR untouched)",
       );
-      const config = loadElizaConfig();
+      const config = loadTokagentConfig();
       await clearCompatRuntimeStateViaApi(req);
       await clearCompatPgliteDataDir(state.current, config);
       state.current = null;
       clearPersistedOnboardingConfig(config);
-      saveElizaConfig(config);
+      saveTokagentConfig(config);
       clearCloudSecrets();
       try {
         await deleteWalletSecretsFromOsStore();
       } catch (osErr) {
         logger.warn(
-          `[eliza][reset] OS wallet store cleanup: ${osErr instanceof Error ? osErr.message : String(osErr)}`,
+          `[tokagent][reset] OS wallet store cleanup: ${osErr instanceof Error ? osErr.message : String(osErr)}`,
         );
       }
       logger.info(
-        "[eliza][reset] POST /api/agent/reset: eliza.json saved — renderer should restart API process if embedded/external dev",
+        "[tokagent][reset] POST /api/agent/reset: tokagent.json saved — renderer should restart API process if embedded/external dev",
       );
       sendJsonResponse(res, 200, { ok: true });
     } catch (err) {
       logger.warn(
-        `[eliza][reset] POST /api/agent/reset failed: ${err instanceof Error ? err.message : String(err)}`,
+        `[tokagent][reset] POST /api/agent/reset failed: ${err instanceof Error ? err.message : String(err)}`,
       );
       sendJsonResponse(res, 500, {
         error: err instanceof Error ? err.message : "Reset failed",
@@ -965,7 +965,7 @@ async function handleCompatRoute(
     if (!ensureCompatApiAuthorized(req, res)) {
       return true;
     }
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const character = buildCharacterFromConfig(config);
     const agentId =
       state.current?.agentId ??
@@ -991,7 +991,7 @@ async function handleCompatRoute(
     sendJsonResponse(
       res,
       200,
-      _filterConfigEnvForResponse(loadElizaConfig() as Record<string, unknown>),
+      _filterConfigEnvForResponse(loadTokagentConfig() as Record<string, unknown>),
     );
     return true;
   }
@@ -1027,8 +1027,8 @@ export function patchHttpCreateServerForCompat(
     }
 
     const wrappedListener: http.RequestListener = async (req, res) => {
-      syncAppEnvToEliza();
-      syncElizaEnvAliases();
+      syncAppEnvToTokagent();
+      syncTokagentEnvAliases();
       // Re-check cloud TTS key alias on each request so sign-in mid-session
       // is picked up without a restart.
       ensureCloudTtsApiKeyAlias();
@@ -1067,7 +1067,7 @@ export function patchHttpCreateServerForCompat(
         );
         res.setHeader(
           "Access-Control-Allow-Headers",
-          "Content-Type, Authorization, X-API-Token, X-Api-Key, X-ElizaOS-Client-Id, X-ElizaOS-UI-Language, X-ElizaOS-Token, X-Eliza-Export-Token, X-Eliza-Terminal-Token",
+          "Content-Type, Authorization, X-API-Token, X-Api-Key, X-TokagentOS-Client-Id, X-TokagentOS-UI-Language, X-TokagentOS-Token, X-Tokagent-Export-Token, X-Tokagent-Terminal-Token",
         );
         res.setHeader("Access-Control-Allow-Credentials", "true");
       }
@@ -1079,7 +1079,7 @@ export function patchHttpCreateServerForCompat(
       }
 
       res.on("finish", () => {
-        syncElizaEnvAliases();
+        syncTokagentEnvAliases();
         syncCompatConfigFiles();
       });
 
@@ -1144,10 +1144,10 @@ export function patchHttpCreateServerForCompat(
 export async function startApiServer(
   ...args: Parameters<typeof upstreamStartApiServer>
 ): Promise<Awaited<ReturnType<typeof upstreamStartApiServer>>> {
-  syncAppEnvToEliza();
-  syncElizaEnvAliases();
+  syncAppEnvToTokagent();
+  syncTokagentEnvAliases();
   // Ensure cloud-backed ElevenLabs key is available as ELEVENLABS_API_KEY so
-  // the upstream Eliza TTS handler can use it (the `/api/tts/elevenlabs` route
+  // the upstream Tokagent TTS handler can use it (the `/api/tts/elevenlabs` route
   // passes through to upstream which checks this env var).
   ensureCloudTtsApiKeyAlias();
   hydrateWalletOsStoreFlagFromConfig();
@@ -1197,7 +1197,7 @@ export async function startApiServer(
           await ensureRuntimeSqlCompatibility(runtime);
         } catch (err) {
           logger.error(
-            `[eliza][runtime] SQL compatibility init failed: ${
+            `[tokagent][runtime] SQL compatibility init failed: ${
               err instanceof Error ? err.message : String(err)
             }`,
           );
@@ -1207,7 +1207,7 @@ export async function startApiServer(
           await (await lazyEnsureTTS())(runtime);
         } catch (err) {
           logger.warn(
-            `[eliza][runtime] TTS init failed (non-critical): ${
+            `[tokagent][runtime] TTS init failed (non-critical): ${
               err instanceof Error ? err.message : String(err)
             }`,
           );
@@ -1215,7 +1215,7 @@ export async function startApiServer(
       })();
     };
 
-    syncElizaEnvAliases();
+    syncTokagentEnvAliases();
     syncCompatConfigFiles();
     return server;
   } finally {

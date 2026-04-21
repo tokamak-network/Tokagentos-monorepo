@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from elizaos_plugin_starter.plugin import (
+from tokagentos_plugin_starter.plugin import (
     StarterService,
     hello_python_action,
     hello_python_handler,

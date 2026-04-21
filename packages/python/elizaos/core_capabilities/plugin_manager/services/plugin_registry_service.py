@@ -1,6 +1,6 @@
 """Plugin registry service.
 
-Fetches, caches, and searches plugin metadata from the elizaOS
+Fetches, caches, and searches plugin metadata from the tokagentOS
 remote registry (``generated-registry.json`` on the ``next`` branch).
 
 Ported from plugin-manager/services/pluginRegistryService.ts.
@@ -19,23 +19,23 @@ import time
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from elizaos.types import Service
+from tokagentos.types import Service
 
 from ..types import PluginMetadata, PluginSearchResult, RegistryPlugin
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
-logger = logging.getLogger("elizaos.plugin_manager.registry")
+logger = logging.getLogger("tokagentos.plugin_manager.registry")
 
 # ---------------------------------------------------------------------------
 # Registry URLs — next branch
 # ---------------------------------------------------------------------------
 
 _GENERATED_REGISTRY_URL = (
-    "https://raw.githubusercontent.com/elizaos-plugins/registry/next/generated-registry.json"
+    "https://raw.githubusercontent.com/tokagentos-plugins/registry/next/generated-registry.json"
 )
-_INDEX_REGISTRY_URL = "https://raw.githubusercontent.com/elizaos-plugins/registry/next/index.json"
+_INDEX_REGISTRY_URL = "https://raw.githubusercontent.com/tokagentos-plugins/registry/next/index.json"
 
 _CACHE_DURATION = 3_600  # 1 hour in seconds
 
@@ -162,7 +162,7 @@ async def _fetch_index_registry() -> dict[str, RegistryPlugin]:
 
 
 def _scan_local_plugins() -> dict[str, RegistryPlugin]:
-    """Scan the local ``plugins/`` directory for ``elizaos.plugin.json`` files."""
+    """Scan the local ``plugins/`` directory for ``tokagentos.plugin.json`` files."""
     plugins: dict[str, RegistryPlugin] = {}
     plugins_dir = Path.cwd() / _LOCAL_PLUGINS_DIR
     if not plugins_dir.is_dir():
@@ -171,7 +171,7 @@ def _scan_local_plugins() -> dict[str, RegistryPlugin]:
     for entry in plugins_dir.iterdir():
         if not entry.is_dir():
             continue
-        manifest = entry / "elizaos.plugin.json"
+        manifest = entry / "tokagentos.plugin.json"
         if not manifest.exists():
             continue
         try:
@@ -184,7 +184,7 @@ def _scan_local_plugins() -> dict[str, RegistryPlugin]:
                 .replace(".git", "")
             )
             if not repo:
-                repo = f"elizaos/{entry.name}"
+                repo = f"tokagentos/{entry.name}"
             plugin = RegistryPlugin(
                 name=name,
                 git_repo=repo,
@@ -323,13 +323,13 @@ def _compute_search_score(plugin: RegistryPlugin, query: str) -> int:
 
 
 class PluginRegistryService(Service):
-    """Fetches, caches, and searches the elizaOS plugin registry."""
+    """Fetches, caches, and searches the tokagentOS plugin registry."""
 
     service_type: ClassVar[str] = "plugin_registry"
 
     @property
     def capability_description(self) -> str:
-        return "Fetches, caches, and searches the elizaOS plugin registry"
+        return "Fetches, caches, and searches the tokagentOS plugin registry"
 
     @classmethod
     async def start(cls, runtime: IAgentRuntime) -> PluginRegistryService:

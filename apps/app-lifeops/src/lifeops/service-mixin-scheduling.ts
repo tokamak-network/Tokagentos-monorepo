@@ -3,8 +3,8 @@ import crypto from "node:crypto";
 import type {
   LifeOpsSchedulingNegotiation,
   LifeOpsSchedulingProposal,
-} from "@elizaos/shared/contracts/lifeops";
-import { LIFEOPS_NEGOTIATION_STATES } from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
+import { LIFEOPS_NEGOTIATION_STATES } from "@tokagentos/shared/contracts/lifeops";
 import { fail } from "./service-normalize.js";
 import type { Constructor, LifeOpsServiceBase } from "./service-mixin-core.js";
 

@@ -5,7 +5,7 @@ import type {
   LifeOpsXFeedItem,
   LifeOpsXFeedType,
   LifeOpsXSyncState,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import type { Constructor, LifeOpsServiceBase } from "./service-mixin-core.js";
 import { fail } from "./service-normalize.js";
 import { readXPosterCredentialsFromEnv } from "./x-poster.js";

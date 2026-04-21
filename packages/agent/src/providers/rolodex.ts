@@ -4,9 +4,9 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
-import { getValidationKeywordTerms } from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
+import { getValidationKeywordTerms } from "@tokagentos/shared/validation-keywords";
 import { hasAdminAccess } from "../security/access.js";
 import type {
   RelationshipsGraphService,

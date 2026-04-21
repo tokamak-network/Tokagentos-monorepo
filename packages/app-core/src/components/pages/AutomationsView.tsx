@@ -21,7 +21,7 @@ import {
   StatusBadge,
   Textarea,
   TooltipHint,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   Calendar,
   CheckCircle2,
@@ -1288,7 +1288,7 @@ function WorkflowRuntimeNotice({
             </div>
             <p className="text-sm text-muted">
               Coordinator automations stay usable without n8n. Workflow
-              automations become deployable once Eliza Cloud or local n8n is
+              automations become deployable once Tokagent Cloud or local n8n is
               available.
             </p>
           </div>
@@ -1393,7 +1393,7 @@ function WorkflowRuntimeNotice({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
             <div className="text-sm font-semibold text-warning">
-              Eliza Cloud workflow gateway is degraded.
+              Tokagent Cloud workflow gateway is degraded.
             </div>
             <p className="text-sm text-muted">
               Chat rooms remain usable while workflow execution and sync may be

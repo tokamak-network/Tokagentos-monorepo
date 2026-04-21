@@ -70,21 +70,21 @@ describe("local-inference-compat-routes e2e", () => {
 
   beforeEach(async () => {
     tmpState = await fs.mkdtemp(path.join(os.tmpdir(), "milady-api-e2e-"));
-    origStateDir = process.env.ELIZA_STATE_DIR;
-    origToken = process.env.ELIZA_API_TOKEN;
-    process.env.ELIZA_STATE_DIR = tmpState;
+    origStateDir = process.env.TOKAGENT_STATE_DIR;
+    origToken = process.env.TOKAGENT_API_TOKEN;
+    process.env.TOKAGENT_STATE_DIR = tmpState;
     // No auth token set so loopback requests don't need one — matches the
     // dev default we verified earlier against the real running server.
-    delete process.env.ELIZA_API_TOKEN;
+    delete process.env.TOKAGENT_API_TOKEN;
     harness = await startApiHarness(emptyState());
   });
 
   afterEach(async () => {
     await harness.dispose();
-    if (origStateDir === undefined) delete process.env.ELIZA_STATE_DIR;
-    else process.env.ELIZA_STATE_DIR = origStateDir;
-    if (origToken === undefined) delete process.env.ELIZA_API_TOKEN;
-    else process.env.ELIZA_API_TOKEN = origToken;
+    if (origStateDir === undefined) delete process.env.TOKAGENT_STATE_DIR;
+    else process.env.TOKAGENT_STATE_DIR = origStateDir;
+    if (origToken === undefined) delete process.env.TOKAGENT_API_TOKEN;
+    else process.env.TOKAGENT_API_TOKEN = origToken;
     await fs.rm(tmpState, { recursive: true, force: true });
   });
 

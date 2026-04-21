@@ -1,4 +1,4 @@
-import { cn } from "@elizaos/ui";
+import { cn } from "@tokagentos/ui";
 import type { ButtonHTMLAttributes, CSSProperties } from "react";
 import { useId } from "react";
 import {

@@ -11,7 +11,7 @@
  * filter === "workflows".
  */
 
-import { Button, FieldLabel, StatusBadge } from "@elizaos/ui";
+import { Button, FieldLabel, StatusBadge } from "@tokagentos/ui";
 import {
   RefreshCw,
   Workflow,

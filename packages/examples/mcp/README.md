@@ -1,8 +1,8 @@
-# elizaOS MCP Agent Server Examples
+# tokagentOS MCP Agent Server Examples
 
-This directory contains MCP (Model Context Protocol) server implementations that expose an elizaOS agent as an MCP server. This allows any MCP-compatible client (like Claude Desktop, VS Code, etc.) to interact with your AI agent.
+This directory contains MCP (Model Context Protocol) server implementations that expose an tokagentOS agent as an MCP server. This allows any MCP-compatible client (like Claude Desktop, VS Code, etc.) to interact with your AI agent.
 
-**Uses real elizaOS runtime with OpenAI and SQL plugins!**
+**Uses real tokagentOS runtime with OpenAI and SQL plugins!**
 
 ## Available Examples
 
@@ -14,7 +14,7 @@ This directory contains MCP (Model Context Protocol) server implementations that
 
 ## What is MCP?
 
-The Model Context Protocol (MCP) is an open protocol that standardizes how AI applications communicate with external tools and data sources. By exposing your elizaOS agent as an MCP server, any MCP client can:
+The Model Context Protocol (MCP) is an open protocol that standardizes how AI applications communicate with external tools and data sources. By exposing your tokagentOS agent as an MCP server, any MCP client can:
 
 - Send messages to your agent
 - Receive responses
@@ -104,10 +104,10 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "eliza": {
+    "tokagent": {
       "command": "bun",
       "args": ["run", "start"],
-      "cwd": "/path/to/eliza/examples/mcp/typescript",
+      "cwd": "/path/to/tokagent/examples/mcp/typescript",
       "env": {
         "OPENAI_API_KEY": "your-key"
       }

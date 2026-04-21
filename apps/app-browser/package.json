@@ -3,34 +3,34 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Eliza app-browser: desktop browser workspace control, Steward wallet actions, and (eventually) browser UI exported for the dashboard.",
+  "description": "Tokagent app-browser: desktop browser workspace control, Steward wallet actions, and (eventually) browser UI exported for the dashboard.",
   "main": "./src/index.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@elizaos/core": "workspace:*",
-    "@elizaos/agent": "workspace:*"
+    "@tokagentos/core": "workspace:*",
+    "@tokagentos/agent": "workspace:*"
   },
   "agentConfig": {
-    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginType": "tokagentos:plugin:1.0.0",
     "pluginParameters": {
-      "ELIZA_BROWSER_WORKSPACE_URL": {
+      "TOKAGENT_BROWSER_WORKSPACE_URL": {
         "type": "string",
-        "description": "Loopback bridge URL for the Eliza desktop browser workspace.",
+        "description": "Loopback bridge URL for the Tokagent desktop browser workspace.",
         "required": false,
         "sensitive": false
       },
-      "ELIZA_BROWSER_WORKSPACE_TOKEN": {
+      "TOKAGENT_BROWSER_WORKSPACE_TOKEN": {
         "type": "string",
-        "description": "Bearer token for the Eliza desktop browser workspace bridge.",
+        "description": "Bearer token for the Tokagent desktop browser workspace bridge.",
         "required": false,
         "sensitive": true
       },
       "STEWARD_API_URL": {
         "type": "string",
-        "description": "Base URL for the Steward wallet API used by Eliza wallet actions.",
+        "description": "Base URL for the Steward wallet API used by Tokagent wallet actions.",
         "required": false,
         "sensitive": false
       },
@@ -52,9 +52,9 @@
         "required": false,
         "sensitive": false
       },
-      "ELIZA_STEWARD_AGENT_ID": {
+      "TOKAGENT_STEWARD_AGENT_ID": {
         "type": "string",
-        "description": "Optional Steward agent ID override for Eliza wallet requests.",
+        "description": "Optional Steward agent ID override for Tokagent wallet requests.",
         "required": false,
         "sensitive": false
       }

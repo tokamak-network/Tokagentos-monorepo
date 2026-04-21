@@ -178,17 +178,17 @@ describe("DeviceBridge e2e", () => {
   let origStateDir: string | undefined;
 
   beforeEach(async () => {
-    origStateDir = process.env.ELIZA_STATE_DIR;
-    process.env.ELIZA_STATE_DIR = `/tmp/milady-bridge-e2e-${Date.now()}-${Math.random()}`;
+    origStateDir = process.env.TOKAGENT_STATE_DIR;
+    process.env.TOKAGENT_STATE_DIR = `/tmp/milady-bridge-e2e-${Date.now()}-${Math.random()}`;
     harness = await startHarness();
   });
 
   afterEach(async () => {
     await harness.dispose();
     if (origStateDir === undefined) {
-      delete process.env.ELIZA_STATE_DIR;
+      delete process.env.TOKAGENT_STATE_DIR;
     } else {
-      process.env.ELIZA_STATE_DIR = origStateDir;
+      process.env.TOKAGENT_STATE_DIR = origStateDir;
     }
   });
 
@@ -319,16 +319,16 @@ describe("DeviceBridge e2e", () => {
   });
 
   it("times out a generate when no device ever responds", async () => {
-    const savedTimeout = process.env.ELIZA_DEVICE_GENERATE_TIMEOUT_MS;
-    process.env.ELIZA_DEVICE_GENERATE_TIMEOUT_MS = "75";
+    const savedTimeout = process.env.TOKAGENT_DEVICE_GENERATE_TIMEOUT_MS;
+    process.env.TOKAGENT_DEVICE_GENERATE_TIMEOUT_MS = "75";
     try {
       const pending = harness.bridge.generate({ prompt: "will-time-out" });
       await expect(pending).rejects.toThrow(/DEVICE_TIMEOUT/);
     } finally {
       if (savedTimeout === undefined) {
-        delete process.env.ELIZA_DEVICE_GENERATE_TIMEOUT_MS;
+        delete process.env.TOKAGENT_DEVICE_GENERATE_TIMEOUT_MS;
       } else {
-        process.env.ELIZA_DEVICE_GENERATE_TIMEOUT_MS = savedTimeout;
+        process.env.TOKAGENT_DEVICE_GENERATE_TIMEOUT_MS = savedTimeout;
       }
     }
   });
@@ -368,7 +368,7 @@ describe("DeviceBridge e2e", () => {
   });
 
   it("rejects registration with an invalid pairing token", async () => {
-    process.env.ELIZA_DEVICE_PAIRING_TOKEN = "shhhh";
+    process.env.TOKAGENT_DEVICE_PAIRING_TOKEN = "shhhh";
     // Fresh bridge since the token is read in the constructor.
     const tokenHarness = await startHarness();
     try {
@@ -407,7 +407,7 @@ describe("DeviceBridge e2e", () => {
       expect(tokenHarness.bridge.status().devices).toHaveLength(0);
     } finally {
       await tokenHarness.dispose();
-      delete process.env.ELIZA_DEVICE_PAIRING_TOKEN;
+      delete process.env.TOKAGENT_DEVICE_PAIRING_TOKEN;
     }
   });
 

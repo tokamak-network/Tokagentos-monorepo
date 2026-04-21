@@ -2,7 +2,7 @@
  * PR 4 end-to-end loop test — boots a standalone `ScapeGameService`
  * against a live xRSPS bot-SDK, with a hand-rolled runtime stub that
  * fakes `useModel` so we can watch the full loop execute ONE step
- * without spinning up the eliza LLM runtime.
+ * without spinning up the tokagent LLM runtime.
  *
  * Success condition:
  *   - Agent spawns in the world
@@ -14,10 +14,10 @@
  *
  * Usage:
  *   1. Start xrsps with BOT_SDK_TOKEN=dev-secret
- *   2. BOT_SDK_TOKEN=dev-secret bun eliza/apps/app-scape/scripts/verify-pr4-live-loop.ts
+ *   2. BOT_SDK_TOKEN=dev-secret bun tokagent/apps/app-scape/scripts/verify-pr4-live-loop.ts
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 import { ScapeGameService } from "../src/services/game-service.js";
 import type { PerceptionSnapshot } from "../src/sdk/types.js";

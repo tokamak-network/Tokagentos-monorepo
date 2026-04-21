@@ -5,7 +5,7 @@
  * that are not currently running. Clicking an app launches / focuses it.
  */
 
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { LayoutGrid, SquareArrowOutUpRight } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { type AppRunSummary, client, type RegistryAppInfo } from "../../api";

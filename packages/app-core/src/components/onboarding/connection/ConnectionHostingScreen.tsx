@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { appNameInterpolationVars, useBranding } from "../../../config";
 import type { ConnectionEvent } from "../../../onboarding/connection-flow";
 import { useApp } from "../../../state";
@@ -76,7 +76,7 @@ export function ConnectionHostingScreen({
         <Button
           type="button"
           className={getOnboardingChoiceCardClassName({})}
-          onClick={() => dispatch({ type: "selectElizaCloudHosting" })}
+          onClick={() => dispatch({ type: "selectTokagentCloudHosting" })}
         >
           <div className="min-w-0 flex-1">
             <div className={onboardingChoiceCardTitleClassName}>
@@ -85,7 +85,7 @@ export function ConnectionHostingScreen({
             <div
               className={`${onboardingChoiceCardDescriptionClassName} line-clamp-2`}
             >
-              {t("onboarding.hostingElizaCloudDesc")}
+              {t("onboarding.hostingTokagentCloudDesc")}
             </div>
           </div>
         </Button>

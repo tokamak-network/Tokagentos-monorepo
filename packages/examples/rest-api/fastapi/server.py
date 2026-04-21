@@ -1,8 +1,8 @@
 """
-elizaOS REST API Example - FastAPI
+tokagentOS REST API Example - FastAPI
 
 A REST API server for chat with an AI agent.
-Uses the canonical elizaOS runtime with messageService.handleMessage pattern.
+Uses the canonical tokagentOS runtime with messageService.handleMessage pattern.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from elizaos import (
+from tokagentos import (
     AgentRuntime,
     Character,
     Content,
@@ -35,8 +35,8 @@ from elizaos import (
 
 PORT = int(os.environ.get("PORT", 3000))
 
-CHARACTER_NAME = os.environ.get("CHARACTER_NAME", "Eliza")
-CHARACTER_BIO = os.environ.get("CHARACTER_BIO", "A helpful AI assistant powered by elizaOS.")
+CHARACTER_NAME = os.environ.get("CHARACTER_NAME", "Tokagent")
+CHARACTER_BIO = os.environ.get("CHARACTER_BIO", "A helpful AI assistant powered by tokagentOS.")
 
 # Create character with settings
 character = Character(
@@ -62,18 +62,18 @@ world_id = string_to_uuid("rest-api-world")
 
 
 async def get_runtime() -> AgentRuntime:
-    """Get or initialize the elizaOS runtime."""
+    """Get or initialize the tokagentOS runtime."""
     global runtime, init_error
 
     if runtime is not None:
         return runtime
 
     try:
-        print("🚀 Initializing elizaOS runtime...")
+        print("🚀 Initializing tokagentOS runtime...")
 
         # Import plugins
-        from elizaos.plugins.openai import openai_plugin
-        from elizaos.plugins.sql import sql_plugin
+        from tokagentos.plugins.openai import openai_plugin
+        from tokagentos.plugins.sql import sql_plugin
 
         new_runtime = AgentRuntime(
             character=character,
@@ -82,7 +82,7 @@ async def get_runtime() -> AgentRuntime:
 
         await new_runtime.initialize()
 
-        print("✅ elizaOS runtime initialized")
+        print("✅ tokagentOS runtime initialized")
         runtime = new_runtime
         return new_runtime
     except ImportError as e:
@@ -93,12 +93,12 @@ async def get_runtime() -> AgentRuntime:
         new_runtime = AgentRuntime(character=character)
         await new_runtime.initialize()
 
-        print("✅ elizaOS runtime initialized (basic mode)")
+        print("✅ tokagentOS runtime initialized (basic mode)")
         runtime = new_runtime
         return new_runtime
     except Exception as e:
         init_error = str(e)
-        print(f"❌ Failed to initialize elizaOS runtime: {e}")
+        print(f"❌ Failed to initialize tokagentOS runtime: {e}")
         raise
 
 
@@ -155,8 +155,8 @@ class ErrorResponse(BaseModel):
 # ============================================================================
 
 app = FastAPI(
-    title="elizaOS REST API",
-    description="Chat with an elizaOS agent using FastAPI",
+    title="tokagentOS REST API",
+    description="Chat with an tokagentOS agent using FastAPI",
     version="2.0.0",
 )
 
@@ -182,9 +182,9 @@ async def info() -> InfoResponse:
         name=CHARACTER_NAME,
         bio=CHARACTER_BIO,
         version="2.0.0",
-        powered_by="elizaOS",
+        powered_by="tokagentOS",
         framework="FastAPI",
-        mode="elizaos" if runtime else "initializing",
+        mode="tokagentos" if runtime else "initializing",
         error=init_error,
         endpoints={
             "POST /chat": "Send a message and receive a response",
@@ -340,7 +340,7 @@ async def chat_stream(request: ChatRequest) -> StreamingResponse:
 @app.on_event("startup")
 async def startup_event() -> None:
     """Initialize the application."""
-    print(f"\n🌐 elizaOS REST API (FastAPI)")
+    print(f"\n🌐 tokagentOS REST API (FastAPI)")
     print(f"   http://localhost:{PORT}\n")
     print("📚 Endpoints:")
     print("   GET  /            - Agent info")

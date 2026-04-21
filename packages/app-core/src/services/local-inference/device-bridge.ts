@@ -24,7 +24,7 @@
  * Durability
  * ----------
  * Pending requests are best-effort persisted to a JSON log under
- * `$ELIZA_STATE_DIR/local-inference/pending-requests.json` so a brief
+ * `$TOKAGENT_STATE_DIR/local-inference/pending-requests.json` so a brief
  * agent restart doesn't lose the queue. Persistence is async and
  * non-blocking — failures fall back to in-memory only.
  */
@@ -34,8 +34,8 @@ import fs from "node:fs/promises";
 import type { Server as HttpServer, IncomingMessage } from "node:http";
 import path from "node:path";
 import type { Duplex } from "node:stream";
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type { LocalInferenceLoader } from "./active-model";
 import { localInferenceRoot } from "./paths";
 
@@ -251,7 +251,7 @@ export class DeviceBridge {
   >();
 
   private readonly expectedPairingToken: string | null =
-    process.env.ELIZA_DEVICE_PAIRING_TOKEN?.trim() || null;
+    process.env.TOKAGENT_DEVICE_PAIRING_TOKEN?.trim() || null;
 
   status(): DeviceBridgeStatus {
     const summaries: DeviceSummary[] = [];
@@ -721,7 +721,7 @@ export class DeviceBridge {
     temperature?: number;
   }): Promise<string> {
     const envTimeout = Number.parseInt(
-      process.env.ELIZA_DEVICE_GENERATE_TIMEOUT_MS?.trim() ?? "",
+      process.env.TOKAGENT_DEVICE_GENERATE_TIMEOUT_MS?.trim() ?? "",
       10,
     );
     const timeoutMs =

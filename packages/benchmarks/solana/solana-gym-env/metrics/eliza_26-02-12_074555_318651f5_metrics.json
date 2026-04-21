@@ -1,7 +1,7 @@
 {
   "model": "qwen/qwen3-32b",
   "run_index": 0,
-  "run_id": "eliza_26-02-12_074555_318651f5",
+  "run_id": "tokagent_26-02-12_074555_318651f5",
   "start_time": "2026-02-12T07:45:55.496614",
   "environment_config": "voyager/environments/basic_env.json",
   "messages": [

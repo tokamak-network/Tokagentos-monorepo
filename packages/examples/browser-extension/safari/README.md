@@ -34,7 +34,7 @@ cd /path/to/examples/browser-extension
 xcrun safari-web-extension-converter chrome \
   --project-location safari \
   --app-name "Chat with Webpage" \
-  --bundle-identifier com.elizaos.chatwithwebpage \
+  --bundle-identifier com.tokagentos.chatwithwebpage \
   --swift
 ```
 

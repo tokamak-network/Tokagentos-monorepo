@@ -7,8 +7,8 @@
  * routing, not billing.
  */
 
-import { resolveServiceRoutingInConfig } from "@elizaos/shared/contracts/onboarding";
-import { buildElizaCloudServiceRoute } from "@elizaos/shared/contracts/service-routing";
+import { resolveServiceRoutingInConfig } from "@tokagentos/shared/contracts/onboarding";
+import { buildTokagentCloudServiceRoute } from "@tokagentos/shared/contracts/service-routing";
 import {
   Button,
   Select,
@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
   useTimeout,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { client, type OnboardingOptions, type PluginParamDef } from "../../api";
 import { ConfigRenderer, defaultRegistry } from "../../config";
@@ -65,9 +65,9 @@ function normalizeAiProviderPluginId(value: string): string {
 }
 
 interface ProviderSwitcherProps {
-  elizaCloudConnected?: boolean;
-  elizaCloudLoginBusy?: boolean;
-  elizaCloudLoginError?: string | null;
+  tokagentCloudConnected?: boolean;
+  tokagentCloudLoginBusy?: boolean;
+  tokagentCloudLoginError?: string | null;
   plugins?: PluginInfo[];
   pluginSaving?: Set<string>;
   pluginSaveSuccess?: Set<string>;
@@ -93,14 +93,14 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
   const app = useApp();
   const branding = useBranding();
   const t = app.t;
-  const elizaCloudConnected =
-    props.elizaCloudConnected ?? Boolean(app.elizaCloudConnected);
-  const elizaCloudLoginBusy =
-    props.elizaCloudLoginBusy ?? Boolean(app.elizaCloudLoginBusy);
-  const elizaCloudLoginError =
-    props.elizaCloudLoginError ??
-    (typeof app.elizaCloudLoginError === "string"
-      ? app.elizaCloudLoginError
+  const tokagentCloudConnected =
+    props.tokagentCloudConnected ?? Boolean(app.tokagentCloudConnected);
+  const tokagentCloudLoginBusy =
+    props.tokagentCloudLoginBusy ?? Boolean(app.tokagentCloudLoginBusy);
+  const tokagentCloudLoginError =
+    props.tokagentCloudLoginError ??
+    (typeof app.tokagentCloudLoginError === "string"
+      ? app.tokagentCloudLoginError
       : null);
   const plugins = Array.isArray(props.plugins)
     ? props.plugins
@@ -170,7 +170,7 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
               .defaults?.subscriptionProvider ?? null)
           : null;
       const nextSelectedId =
-        llmText?.transport === "cloud-proxy" && providerId === "elizacloud"
+        llmText?.transport === "cloud-proxy" && providerId === "tokagentcloud"
           ? "__cloud__"
           : llmText?.transport === "direct"
             ? (providerId ?? null)
@@ -190,7 +190,7 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
       const res = await client.getSubscriptionStatus();
       setSubscriptionStatus(res.providers ?? []);
     } catch (err) {
-      console.warn("[eliza] Failed to load subscription status", err);
+      console.warn("[tokagent] Failed to load subscription status", err);
     }
   }, []);
 
@@ -207,7 +207,7 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
           mega: opts.models?.mega ?? [],
         });
       } catch (err) {
-        console.warn("[eliza] Failed to load onboarding options", err);
+        console.warn("[tokagent] Failed to load onboarding options", err);
       }
       try {
         const cfg = await client.getConfig();
@@ -216,8 +216,8 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
           cfg as Record<string, unknown>,
         )?.llmText;
         const providerId = getOnboardingProviderOption(llmText?.backend)?.id;
-        const elizaCloudEnabledCfg =
-          llmText?.transport === "cloud-proxy" && providerId === "elizacloud";
+        const tokagentCloudEnabledCfg =
+          llmText?.transport === "cloud-proxy" && providerId === "tokagentcloud";
         const defaults = {
           nano: "openai/gpt-5.4-nano",
           small: "minimax/minimax-m2.7",
@@ -237,31 +237,31 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
           models?.nano ||
             llmText?.nanoModel ||
             envFor("NANO_MODEL") ||
-            (elizaCloudEnabledCfg ? defaults.nano : ""),
+            (tokagentCloudEnabledCfg ? defaults.nano : ""),
         );
         setCurrentSmallModel(
           models?.small ||
             llmText?.smallModel ||
             envFor("SMALL_MODEL") ||
-            (elizaCloudEnabledCfg ? defaults.small : ""),
+            (tokagentCloudEnabledCfg ? defaults.small : ""),
         );
         setCurrentMediumModel(
           models?.medium ||
             llmText?.mediumModel ||
             envFor("MEDIUM_MODEL") ||
-            (elizaCloudEnabledCfg ? defaults.medium : ""),
+            (tokagentCloudEnabledCfg ? defaults.medium : ""),
         );
         setCurrentLargeModel(
           models?.large ||
             llmText?.largeModel ||
             envFor("LARGE_MODEL") ||
-            (elizaCloudEnabledCfg ? defaults.large : ""),
+            (tokagentCloudEnabledCfg ? defaults.large : ""),
         );
         setCurrentMegaModel(
           models?.mega ||
             llmText?.megaModel ||
             envFor("MEGA_MODEL") ||
-            (elizaCloudEnabledCfg ? defaults.mega : ""),
+            (tokagentCloudEnabledCfg ? defaults.mega : ""),
         );
         setCurrentResponseHandlerModel(
           llmText?.responseHandlerModel || DEFAULT_RESPONSE_HANDLER_MODEL,
@@ -271,7 +271,7 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
         );
         syncSelectionFromConfig(cfg as Record<string, unknown>);
       } catch (err) {
-        console.warn("[eliza] Failed to load config", err);
+        console.warn("[tokagent] Failed to load config", err);
       }
     })();
   }, [loadSubscriptionStatus, syncSelectionFromConfig]);
@@ -431,10 +431,10 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
     hasManualSelection.current = true;
     setSelectedProviderId("__cloud__");
     try {
-      await client.switchProvider("elizacloud");
+      await client.switchProvider("tokagentcloud");
     } catch (err) {
       restoreSelection(previousSelectedId, previousManualSelection);
-      notifySelectionFailure("Failed to select Eliza Cloud", err);
+      notifySelectionFailure("Failed to select Tokagent Cloud", err);
     }
   }, [notifySelectionFailure, resolvedSelectedId, restoreSelection]);
 
@@ -446,7 +446,7 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
   const providerChoices = [
     {
       id: "__cloud__",
-      label: t("providerswitcher.elizaCloud"),
+      label: t("providerswitcher.tokagentCloud"),
       disabled: false,
     },
     ...SUBSCRIPTION_PROVIDER_SELECTIONS.map((provider) => ({
@@ -526,7 +526,7 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
         try {
           const cfg = (await client.getConfig()) as Record<string, unknown>;
           const existingRouting = resolveServiceRoutingInConfig(cfg)?.llmText;
-          const llmText = buildElizaCloudServiceRoute({
+          const llmText = buildTokagentCloudServiceRoute({
             nanoModel: next.nano,
             smallModel: next.small,
             mediumModel: next.medium,
@@ -647,17 +647,17 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
       {/* Cloud model tiers (when Cloud is selected) */}
       {isCloudSelected && (
         <>
-          {!elizaCloudConnected ? (
+          {!tokagentCloudConnected ? (
             <div className="border-t border-border/40 pt-4">
-              {elizaCloudLoginBusy ? (
+              {tokagentCloudLoginBusy ? (
                 <div className="text-xs text-muted">
                   {t("providerswitcher.waitingForBrowser")}
                 </div>
               ) : (
                 <>
-                  {elizaCloudLoginError && (
+                  {tokagentCloudLoginError && (
                     <div className="mb-2 text-xs text-danger">
-                      {elizaCloudLoginError}
+                      {tokagentCloudLoginError}
                     </div>
                   )}
                   <div className="flex items-center gap-3">
@@ -667,9 +667,9 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
                       className="rounded-lg font-semibold"
                       onClick={() => void handleCloudLogin()}
                     >
-                      {t("providerswitcher.logInToElizaCloud")}
+                      {t("providerswitcher.logInToTokagentCloud")}
                     </Button>
-                    {elizaCloudLoginError && (
+                    {tokagentCloudLoginError && (
                       <Button
                         variant="link"
                         size="sm"

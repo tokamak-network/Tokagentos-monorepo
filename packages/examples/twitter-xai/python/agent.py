@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-X (Twitter) Agent - Grok (xAI) + X API v2 using the full elizaOS pipeline.
+X (Twitter) Agent - Grok (xAI) + X API v2 using the full tokagentOS pipeline.
 
 This example:
-- Uses Grok for TEXT_SMALL/TEXT_LARGE/TEXT_EMBEDDING via elizaos-plugin-xai
+- Uses Grok for TEXT_SMALL/TEXT_LARGE/TEXT_EMBEDDING via tokagentos-plugin-xai
 - Polls X mentions (search @me) and replies via the callback pattern
-- Persists memories via elizaos-plugin-sql
+- Persists memories via tokagentos-plugin-sql
 
 Safety:
 - Set X_DRY_RUN=true to avoid posting.
@@ -25,13 +25,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from elizaos import Content, Memory, MentionContext, string_to_uuid
-from elizaos.runtime import AgentRuntime
-from elizaos.types.environment import ChannelType, Entity, Room, World
-from elizaos.types.primitives import UUID
-from elizaos_plugin_sql import sql_plugin
-from elizaos_plugin_xai import TwitterClient, TwitterConfig, XClientError
-from elizaos_plugin_xai.plugin import get_xai_elizaos_plugin
+from tokagentos import Content, Memory, MentionContext, string_to_uuid
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.environment import ChannelType, Entity, Room, World
+from tokagentos.types.primitives import UUID
+from tokagentos_plugin_sql import sql_plugin
+from tokagentos_plugin_xai import TwitterClient, TwitterConfig, XClientError
+from tokagentos_plugin_xai.plugin import get_xai_tokagentos_plugin
 
 from character import character
 
@@ -249,7 +249,7 @@ async def main() -> None:
 
     runtime = AgentRuntime(
         character=character,
-        plugins=[sql_plugin, get_xai_elizaos_plugin()],
+        plugins=[sql_plugin, get_xai_tokagentos_plugin()],
         log_level="INFO",
     )
     await runtime.initialize()

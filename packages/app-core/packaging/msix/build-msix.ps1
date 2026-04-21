@@ -101,7 +101,7 @@ Set-Content -Path $manifestDest -Value $manifestContent
 Write-Host "Manifest version set to: $winVersion"
 
 # Build MSIX package
-$msixOutput = Join-Path $OutputDir "ElizaOSApp-$Version-x64.msix"
+$msixOutput = Join-Path $OutputDir "TokagentOSApp-$Version-x64.msix"
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 
 & $makeappx pack /d $msixStaging /p $msixOutput /o

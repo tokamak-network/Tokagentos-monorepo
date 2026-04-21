@@ -11,7 +11,7 @@
  */
 import { expect, test } from "@playwright/test";
 
-const isPlaywrightE2E = process.env.ELIZA_PLAYWRIGHT_E2E === "1";
+const isPlaywrightE2E = process.env.TOKAGENT_PLAYWRIGHT_E2E === "1";
 
 if (isPlaywrightE2E) {
 	// Skip the entire suite when no provider is available (set by global-setup).

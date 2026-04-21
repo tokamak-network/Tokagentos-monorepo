@@ -66,7 +66,7 @@ function getNextSteps(options: {
 }): string[] {
   const steps = [`cd ${options.projectDir}`];
   if (options.templateId === "fullstack-app" && options.skipUpstream) {
-    steps.push("npx elizaos upgrade");
+    steps.push("npx tokagentos upgrade");
   }
   steps.push("bun install");
   steps.push(options.templateId === "plugin" ? "bun run build" : "bun run dev");
@@ -162,10 +162,10 @@ async function promptPluginValues(
   const pluginDescription = options.description?.trim()
     ? options.description.trim()
     : options.yes
-      ? `${defaultRepoName} plugin for elizaOS`
+      ? `${defaultRepoName} plugin for tokagentOS`
       : (unwrapPromptResult(
           await clack.text({
-            defaultValue: `${defaultRepoName} plugin for elizaOS`,
+            defaultValue: `${defaultRepoName} plugin for tokagentOS`,
             message: "Plugin description:",
           }),
         ) as string);
@@ -174,7 +174,7 @@ async function promptPluginValues(
     `https://github.com/${githubUsername}/${defaultRepoName}`;
 
   return buildPluginTemplateValues({
-    elizaVersion: getCliVersion(),
+    tokagentVersion: getCliVersion(),
     githubUsername,
     pluginDescription,
     projectName: defaultRepoName,
@@ -186,7 +186,7 @@ export async function create(
   projectName: string | undefined,
   options: CreateOptions,
 ): Promise<void> {
-  clack.intro(pc.bgCyan(pc.black(" elizaOS ")));
+  clack.intro(pc.bgCyan(pc.black(" tokagentOS ")));
 
   const templateId = await promptTemplateId(options.template);
   const template = getTemplateById(templateId);
@@ -250,7 +250,7 @@ export async function create(
 
   if (template.upstream && !options.skipUpstream) {
     const upstream = resolveTemplateUpstream(template.upstream);
-    spinner.message("Initializing upstream eliza checkout...");
+    spinner.message("Initializing upstream tokagent checkout...");
     initializeGitSubmodule({
       branch: upstream.branch,
       projectRoot: destinationDir,

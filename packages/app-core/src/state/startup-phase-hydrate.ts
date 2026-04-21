@@ -97,8 +97,8 @@ export interface ReadyPhaseDeps {
   loadWalletConfig: () => Promise<void>;
   pollCloudCredits: () => void;
   activeConversationIdRef: React.RefObject<string | null>;
-  elizaCloudPollInterval: React.MutableRefObject<number | null>;
-  elizaCloudLoginPollTimer: React.MutableRefObject<number | null>;
+  tokagentCloudPollInterval: React.MutableRefObject<number | null>;
+  tokagentCloudLoginPollTimer: React.MutableRefObject<number | null>;
 }
 
 function normalizeAppEmoteEvent(
@@ -161,7 +161,7 @@ export async function runHydrating(
   cancelled: { current: boolean },
 ): Promise<void> {
   const warn = (scope: string, err: unknown) =>
-    console.warn(`[eliza][startup:init] ${scope}`, err);
+    console.warn(`[tokagent][startup:init] ${scope}`, err);
 
   deps.setStartupError(null);
   // Start the WS bridge before history hydration finishes so restored-session
@@ -648,13 +648,13 @@ export function bindReadyPhase(
   return () => {
     if (typeof window !== "undefined")
       window.removeEventListener(navEvt, handleNav);
-    if (depsRef.current?.elizaCloudPollInterval.current) {
-      clearInterval(depsRef.current.elizaCloudPollInterval.current);
-      depsRef.current.elizaCloudPollInterval.current = null;
+    if (depsRef.current?.tokagentCloudPollInterval.current) {
+      clearInterval(depsRef.current.tokagentCloudPollInterval.current);
+      depsRef.current.tokagentCloudPollInterval.current = null;
     }
-    if (depsRef.current?.elizaCloudLoginPollTimer.current) {
-      clearInterval(depsRef.current.elizaCloudLoginPollTimer.current);
-      depsRef.current.elizaCloudLoginPollTimer.current = null;
+    if (depsRef.current?.tokagentCloudLoginPollTimer.current) {
+      clearInterval(depsRef.current.tokagentCloudLoginPollTimer.current);
+      depsRef.current.tokagentCloudLoginPollTimer.current = null;
     }
     unbindStatus();
     unbindAgent();

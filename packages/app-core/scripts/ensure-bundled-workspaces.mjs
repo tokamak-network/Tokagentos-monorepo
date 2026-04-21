@@ -36,10 +36,10 @@ export const BUNDLED_WORKSPACE_BUILDS = [
   // plugin-openai, plugin-personality, plugin-plugin-manager,
   // plugin-shell, plugin-sql, plugin-trust — so that their `dist/`
   // declarations would be available for TypeScript resolution when
-  // `ELIZA_SKIP_LOCAL_UPSTREAMS=1`. In practice at least one of
+  // `TOKAGENT_SKIP_LOCAL_UPSTREAMS=1`. In practice at least one of
   // those plugins (plugin-anthropic) has a pre-existing
   // `ModelType.TEXT_MEDIUM` compat bug against the current
-  // `@elizaos/core`, which makes the postinstall fail as soon as
+  // `@tokagentos/core`, which makes the postinstall fail as soon as
   // the anthropic build is attempted:
   //
   //   Error: index.ts(170,43): error TS2339: Property 'TEXT_MEDIUM'

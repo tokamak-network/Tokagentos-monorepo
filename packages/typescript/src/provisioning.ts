@@ -77,7 +77,7 @@ export async function runPluginMigrations(
 		typeof process !== "undefined" && process.env?.NODE_ENV === "production";
 	const forceDestructive =
 		typeof process !== "undefined" &&
-		process.env?.ELIZA_ALLOW_DESTRUCTIVE_MIGRATIONS === "true";
+		process.env?.TOKAGENT_ALLOW_DESTRUCTIVE_MIGRATIONS === "true";
 
 	await adapter.runPluginMigrations(pluginsWithSchemas, {
 		verbose: !isProduction,
@@ -141,7 +141,7 @@ export async function ensureAgentInfrastructure(
 			{
 				id: agentId,
 				name: character.name ?? "Agent",
-				source: "elizaos",
+				source: "tokagentos",
 				type: ChannelType.SELF,
 				channelId: agentId,
 				messageServerId: agentId,

@@ -3,9 +3,9 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { Plugin } from "@elizaos/core";
-import { AgentRuntime, createCharacter, logger } from "@elizaos/core";
-import { configureLocalEmbeddingPlugin } from "../../../agent/src/runtime/eliza";
+import type { Plugin } from "@tokagentos/core";
+import { AgentRuntime, createCharacter, logger } from "@tokagentos/core";
+import { configureLocalEmbeddingPlugin } from "../../../agent/src/runtime/tokagent";
 import {
   type LiveProviderConfig,
   type LiveProviderName,
@@ -163,7 +163,7 @@ export async function createRealTestRuntime(
 ): Promise<RealTestRuntimeResult> {
   const pgliteDir =
     options?.pgliteDir ??
-    fs.mkdtempSync(path.join(os.tmpdir(), "eliza-real-test-"));
+    fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-real-test-"));
   const removePgliteDirOnCleanup =
     options?.removePgliteDirOnCleanup ?? options?.pgliteDir === undefined;
   const restoreWindow = suppressWindowDuringNodeRuntime();
@@ -230,7 +230,7 @@ export async function createRealTestRuntime(
           const pluginModule = await import(providerConfig.pluginPackage);
           const plugin = extractPlugin(pluginModule, [
             "default",
-            "elizaPlugin",
+            "tokagentPlugin",
           ]);
           if (plugin) {
             await runtime.registerPlugin(plugin);

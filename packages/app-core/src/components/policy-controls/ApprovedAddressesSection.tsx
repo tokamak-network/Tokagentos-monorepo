@@ -1,4 +1,4 @@
-import { Button, Input } from "@elizaos/ui";
+import { Button, Input } from "@tokagentos/ui";
 import { Plus, Trash2 } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { chainTypeLabel, isValidAddress } from "./helpers";

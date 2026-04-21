@@ -3,8 +3,8 @@
 from datetime import date
 from decimal import Decimal
 
-from elizaos_vending_bench.environment import EconomicModel, VendingEnvironment
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.environment import EconomicModel, VendingEnvironment
+from tokagentos_vending_bench.types import (
     OrderStatus,
     Season,
     WeatherCondition,

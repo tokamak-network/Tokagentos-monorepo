@@ -3,12 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.generated.spec_helpers import require_action_spec
-from elizaos.types import Action, ActionExample, ActionResult
-from elizaos.utils.spec_examples import convert_spec_examples
+from tokagentos.generated.spec_helpers import require_action_spec
+from tokagentos.types import Action, ActionExample, ActionResult
+from tokagentos.utils.spec_examples import convert_spec_examples
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
 # Get text content from centralized specs
 _spec = require_action_spec("IGNORE")

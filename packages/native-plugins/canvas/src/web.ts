@@ -40,7 +40,7 @@ type CanvasEventData =
   | DeepLinkEvent
   | A2UIActionEvent;
 
-interface ElizaA2UIBridge {
+interface TokagentA2UIBridge {
   push(
     messages: A2UIMessage[],
     jsonl: string,
@@ -50,7 +50,7 @@ interface ElizaA2UIBridge {
 }
 
 interface WebViewIncomingMessage {
-  type: "eliza:deepLink" | "eliza:a2uiAction" | "eliza:evalResult";
+  type: "tokagent:deepLink" | "tokagent:a2uiAction" | "tokagent:evalResult";
   url?: string;
   path?: string;
   params?: Record<string, string>;
@@ -752,8 +752,8 @@ export class CanvasWeb extends WebPlugin {
     // Clean up any existing web view
     this.destroyWebView();
 
-    // Intercept eliza:// deep links immediately
-    if (options.url.startsWith("eliza://")) {
+    // Intercept tokagent:// deep links immediately
+    if (options.url.startsWith("tokagent://")) {
       const parsed = new URL(options.url);
       const params: Record<string, string> = {};
       parsed.searchParams.forEach((value, key) => {
@@ -954,9 +954,9 @@ export class CanvasWeb extends WebPlugin {
   }
 
   async a2uiPush(options: A2UIPushOptions): Promise<void> {
-    // Try window.elizaA2UI bridge first (set up by the A2UI runtime)
-    const bridge = (window as Window & { elizaA2UI?: ElizaA2UIBridge })
-      .elizaA2UI;
+    // Try window.tokagentA2UI bridge first (set up by the A2UI runtime)
+    const bridge = (window as Window & { tokagentA2UI?: TokagentA2UIBridge })
+      .tokagentA2UI;
     if (bridge?.push) {
       bridge.push(
         options.messages || [],
@@ -976,7 +976,7 @@ export class CanvasWeb extends WebPlugin {
     if (target) {
       target.postMessage(
         {
-          type: "eliza:a2uiPush",
+          type: "tokagent:a2uiPush",
           messages: options.messages || [],
           jsonl: options.jsonl || "",
           payload: options.payload || null,
@@ -990,9 +990,9 @@ export class CanvasWeb extends WebPlugin {
   }
 
   async a2uiReset(): Promise<void> {
-    // Try window.elizaA2UI bridge first
-    const bridge = (window as Window & { elizaA2UI?: ElizaA2UIBridge })
-      .elizaA2UI;
+    // Try window.tokagentA2UI bridge first
+    const bridge = (window as Window & { tokagentA2UI?: TokagentA2UIBridge })
+      .tokagentA2UI;
     if (bridge?.reset) {
       bridge.reset();
       return;
@@ -1006,7 +1006,7 @@ export class CanvasWeb extends WebPlugin {
         : null);
 
     if (target) {
-      target.postMessage({ type: "eliza:a2uiReset" }, "*");
+      target.postMessage({ type: "tokagent:a2uiReset" }, "*");
       return;
     }
 
@@ -1039,7 +1039,7 @@ export class CanvasWeb extends WebPlugin {
 
       const handler = (event: MessageEvent) => {
         const msg = event.data as WebViewIncomingMessage;
-        if (msg?.type === "eliza:evalResult" && msg.result !== undefined) {
+        if (msg?.type === "tokagent:evalResult" && msg.result !== undefined) {
           clearTimeout(timeout);
           window.removeEventListener("message", handler);
           resolve({ result: String(msg.result) });
@@ -1047,7 +1047,7 @@ export class CanvasWeb extends WebPlugin {
       };
 
       window.addEventListener("message", handler);
-      target.postMessage({ type: "eliza:eval", script }, "*");
+      target.postMessage({ type: "tokagent:eval", script }, "*");
     });
   }
 
@@ -1064,7 +1064,7 @@ export class CanvasWeb extends WebPlugin {
       const msg = event.data as WebViewIncomingMessage;
       if (!msg || typeof msg.type !== "string") return;
 
-      if (msg.type === "eliza:deepLink" && msg.url && msg.path) {
+      if (msg.type === "tokagent:deepLink" && msg.url && msg.path) {
         this.notifyListeners("deepLink", {
           url: msg.url,
           path: msg.path,
@@ -1072,7 +1072,7 @@ export class CanvasWeb extends WebPlugin {
         });
       }
 
-      if (msg.type === "eliza:a2uiAction" && msg.action) {
+      if (msg.type === "tokagent:a2uiAction" && msg.action) {
         this.notifyListeners("a2uiAction", {
           action: msg.action,
           data: msg.data || {},

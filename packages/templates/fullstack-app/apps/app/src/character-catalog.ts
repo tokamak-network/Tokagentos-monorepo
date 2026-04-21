@@ -1,8 +1,8 @@
 /**
- * Eliza character catalog derived from the shared character preset source.
+ * Tokagent character catalog derived from the shared character preset source.
  */
-import type { CharacterCatalogData } from "@elizaos/app-core";
-import { buildElizaCharacterCatalog } from "@elizaos/shared/onboarding-presets";
+import type { CharacterCatalogData } from "@tokagentos/app-core";
+import { buildTokagentCharacterCatalog } from "@tokagentos/shared/onboarding-presets";
 
-export const ELIZA_CHARACTER_CATALOG: CharacterCatalogData =
-  buildElizaCharacterCatalog() as CharacterCatalogData;
+export const TOKAGENT_CHARACTER_CATALOG: CharacterCatalogData =
+  buildTokagentCharacterCatalog() as CharacterCatalogData;

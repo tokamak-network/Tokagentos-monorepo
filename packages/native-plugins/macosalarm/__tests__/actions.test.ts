@@ -13,7 +13,7 @@ import type {
   HandlerCallback,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 class FakeProc extends EventEmitter {
   stdin = new PassThrough();

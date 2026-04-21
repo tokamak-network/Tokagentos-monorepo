@@ -1,10 +1,10 @@
-# @elizaos/prompts
+# @tokagentos/prompts
 
-Shared prompt templates for elizaOS across TypeScript, Python, and Rust runtimes.
+Shared prompt templates for tokagentOS across TypeScript, Python, and Rust runtimes.
 
 ## Overview
 
-This package provides a single source of truth for all prompt templates used by elizaOS agents. Prompts are stored as `.txt` files and generated into native formats for each language.
+This package provides a single source of truth for all prompt templates used by tokagentOS agents. Prompts are stored as `.txt` files and generated into native formats for each language.
 
 ## Structure
 
@@ -57,7 +57,7 @@ npm run build:rust
 ### TypeScript
 
 ```typescript
-import { REPLY_TEMPLATE, CHOOSE_OPTION_TEMPLATE } from "@elizaos/prompts";
+import { REPLY_TEMPLATE, CHOOSE_OPTION_TEMPLATE } from "@tokagentos/prompts";
 
 const prompt = composePrompt({
   state: { agentName: "Alice" },
@@ -68,7 +68,7 @@ const prompt = composePrompt({
 ### Python
 
 ```python
-from elizaos.prompts import REPLY_TEMPLATE, CHOOSE_OPTION_TEMPLATE
+from tokagentos.prompts import REPLY_TEMPLATE, CHOOSE_OPTION_TEMPLATE
 
 prompt = compose_prompt(state={'agentName': 'Alice'}, template=REPLY_TEMPLATE)
 ```
@@ -76,7 +76,7 @@ prompt = compose_prompt(state={'agentName': 'Alice'}, template=REPLY_TEMPLATE)
 ### Rust
 
 ```rust
-use elizaos_prompts::{REPLY_TEMPLATE, CHOOSE_OPTION_TEMPLATE};
+use tokagentos_prompts::{REPLY_TEMPLATE, CHOOSE_OPTION_TEMPLATE};
 
 let prompt = compose_prompt(&state, REPLY_TEMPLATE);
 ```

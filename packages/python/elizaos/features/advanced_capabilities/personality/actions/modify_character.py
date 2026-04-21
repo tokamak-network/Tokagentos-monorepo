@@ -16,14 +16,14 @@ import re
 import time
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import Action, ActionExample, ActionResult, Content, MemoryType, ModelType
-from elizaos.utils.xml import parse_key_value_xml
+from tokagentos.types import Action, ActionExample, ActionResult, Content, MemoryType, ModelType
+from tokagentos.utils.xml import parse_key_value_xml
 
 from ..services.character_file_manager import CharacterFileManager
 from ..types import MAX_PREFS_PER_USER, PERSONALITY_SERVICE_TYPE, USER_PREFS_TABLE
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
 logger = logging.getLogger(__name__)
 
@@ -483,8 +483,8 @@ async def _check_admin(runtime: IAgentRuntime, message: Memory) -> bool:
     if message.entity_id == runtime.agent_id:
         return True
     try:
-        # Use the elizaOS role system
-        from elizaos.types import check_sender_role  # type: ignore[attr-defined]
+        # Use the tokagentOS role system
+        from tokagentos.types import check_sender_role  # type: ignore[attr-defined]
 
         role_result = await check_sender_role(runtime, message)
         if not role_result:

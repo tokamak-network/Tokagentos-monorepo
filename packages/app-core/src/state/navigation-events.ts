@@ -21,7 +21,7 @@ export class NavigationEventHub {
       try {
         listener(detail);
       } catch (err) {
-        console.warn("[eliza][navigation] tabCommitted listener failed", err);
+        console.warn("[tokagent][navigation] tabCommitted listener failed", err);
       }
     }
   }

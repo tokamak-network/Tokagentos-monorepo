@@ -191,7 +191,7 @@ export interface LoadSkillsOptions {
   includeDefaults?: boolean;
   /** Path to bundled skills directory. Default: package's skills/ */
   bundledSkillsDir?: string;
-  /** Path to managed skills directory. Default: ~/.elizaos/skills */
+  /** Path to managed skills directory. Default: ~/.tokagentos/skills */
   managedSkillsDir?: string;
 }
 

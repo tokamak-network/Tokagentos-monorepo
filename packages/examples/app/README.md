@@ -1,4 +1,4 @@
-# ElizaOS App Examples
+# TokagentOS App Examples
 
 This folder contains **simple chat** examples for different desktop/mobile shells.
 
@@ -8,7 +8,7 @@ From the repo root:
 
 ```bash
 bun install
-bunx turbo run build --filter=@elizaos/core --filter=@elizaos/plugin-*
+bunx turbo run build --filter=@tokagentos/core --filter=@elizaos/plugin-*
 ```
 
 ## Capacitor
@@ -36,7 +36,7 @@ See `examples/app/electron/README.md`.
 Path: `examples/app/tauri/`
 
 - Frontend: Vite + React
-- Backend agent: Rust `elizaos::AgentRuntime` in native layer (Tauri commands)
+- Backend agent: Rust `tokagentos::AgentRuntime` in native layer (Tauri commands)
 - Storage: simple app-level `chat_history.json` in app data dir
 
 See `examples/app/tauri/README.md`.

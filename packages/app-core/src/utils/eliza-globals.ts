@@ -1,14 +1,14 @@
-export type ElizaWindow = Window & {
-  __ELIZA_API_BASE__?: string;
-  __ELIZA_API_TOKEN__?: string;
-  __ELIZAOS_API_BASE__?: string;
-  __ELIZAOS_API_TOKEN__?: string;
+export type TokagentWindow = Window & {
+  __TOKAGENT_API_BASE__?: string;
+  __TOKAGENT_API_TOKEN__?: string;
+  __TOKAGENTOS_API_BASE__?: string;
+  __TOKAGENTOS_API_TOKEN__?: string;
   __MILADY_API_BASE__?: string;
   __MILADY_API_TOKEN__?: string;
 };
 
-function getElizaWindow(): ElizaWindow | null {
-  return typeof window === "undefined" ? null : (window as ElizaWindow);
+function getTokagentWindow(): TokagentWindow | null {
+  return typeof window === "undefined" ? null : (window as TokagentWindow);
 }
 
 function readTrimmedString(value: unknown): string | undefined {
@@ -19,52 +19,52 @@ function readTrimmedString(value: unknown): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-export function getElizaApiBase(): string | undefined {
-  const elizaWindow = getElizaWindow();
+export function getTokagentApiBase(): string | undefined {
+  const tokagentWindow = getTokagentWindow();
   return (
-    readTrimmedString(elizaWindow?.__MILADY_API_BASE__) ??
-    readTrimmedString(elizaWindow?.__ELIZAOS_API_BASE__) ??
-    readTrimmedString(elizaWindow?.__ELIZA_API_BASE__)
+    readTrimmedString(tokagentWindow?.__MILADY_API_BASE__) ??
+    readTrimmedString(tokagentWindow?.__TOKAGENTOS_API_BASE__) ??
+    readTrimmedString(tokagentWindow?.__TOKAGENT_API_BASE__)
   );
 }
 
-export function getElizaApiToken(): string | undefined {
-  const elizaWindow = getElizaWindow();
+export function getTokagentApiToken(): string | undefined {
+  const tokagentWindow = getTokagentWindow();
   return (
-    readTrimmedString(elizaWindow?.__MILADY_API_TOKEN__) ??
-    readTrimmedString(elizaWindow?.__ELIZAOS_API_TOKEN__) ??
-    readTrimmedString(elizaWindow?.__ELIZA_API_TOKEN__)
+    readTrimmedString(tokagentWindow?.__MILADY_API_TOKEN__) ??
+    readTrimmedString(tokagentWindow?.__TOKAGENTOS_API_TOKEN__) ??
+    readTrimmedString(tokagentWindow?.__TOKAGENT_API_TOKEN__)
   );
 }
 
-export function setElizaApiBase(value: string): void {
-  const elizaWindow = getElizaWindow();
-  if (elizaWindow) {
-    elizaWindow.__ELIZAOS_API_BASE__ = value;
-    elizaWindow.__ELIZA_API_BASE__ = value;
+export function setTokagentApiBase(value: string): void {
+  const tokagentWindow = getTokagentWindow();
+  if (tokagentWindow) {
+    tokagentWindow.__TOKAGENTOS_API_BASE__ = value;
+    tokagentWindow.__TOKAGENT_API_BASE__ = value;
   }
 }
 
-export function clearElizaApiBase(): void {
-  const elizaWindow = getElizaWindow();
-  if (elizaWindow) {
-    delete elizaWindow.__ELIZAOS_API_BASE__;
-    delete elizaWindow.__ELIZA_API_BASE__;
+export function clearTokagentApiBase(): void {
+  const tokagentWindow = getTokagentWindow();
+  if (tokagentWindow) {
+    delete tokagentWindow.__TOKAGENTOS_API_BASE__;
+    delete tokagentWindow.__TOKAGENT_API_BASE__;
   }
 }
 
-export function setElizaApiToken(value: string): void {
-  const elizaWindow = getElizaWindow();
-  if (elizaWindow) {
-    elizaWindow.__ELIZAOS_API_TOKEN__ = value;
-    elizaWindow.__ELIZA_API_TOKEN__ = value;
+export function setTokagentApiToken(value: string): void {
+  const tokagentWindow = getTokagentWindow();
+  if (tokagentWindow) {
+    tokagentWindow.__TOKAGENTOS_API_TOKEN__ = value;
+    tokagentWindow.__TOKAGENT_API_TOKEN__ = value;
   }
 }
 
-export function clearElizaApiToken(): void {
-  const elizaWindow = getElizaWindow();
-  if (elizaWindow) {
-    delete elizaWindow.__ELIZAOS_API_TOKEN__;
-    delete elizaWindow.__ELIZA_API_TOKEN__;
+export function clearTokagentApiToken(): void {
+  const tokagentWindow = getTokagentWindow();
+  if (tokagentWindow) {
+    delete tokagentWindow.__TOKAGENTOS_API_TOKEN__;
+    delete tokagentWindow.__TOKAGENT_API_TOKEN__;
   }
 }

@@ -1,5 +1,5 @@
 import type http from "node:http";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { readRequestBodyBuffer } from "./http-helpers.js";
 import type { RouteRequestContext } from "./route-helpers.js";
 
@@ -103,7 +103,7 @@ export async function handleAgentTransferRoutes(
         .toISOString()
         .replace(/[:.]/g, "-")
         .slice(0, 19);
-      const filename = `${agentName}-${timestamp}.eliza-agent`;
+      const filename = `${agentName}-${timestamp}.tokagent-agent`;
 
       res.statusCode = 200;
       res.setHeader("Content-Type", "application/octet-stream");

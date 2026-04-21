@@ -9,4 +9,4 @@ export OPENAI_API_KEY="your-key"
 bun run start
 ```
 
-The telegram plugin auto-handles message routing through the full Eliza pipeline.
+The telegram plugin auto-handles message routing through the full Tokagent pipeline.

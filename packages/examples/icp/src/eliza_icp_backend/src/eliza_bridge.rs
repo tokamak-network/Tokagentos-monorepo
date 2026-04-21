@@ -1,17 +1,17 @@
-//! Bridge between ICP storage and elizaOS unified runtime
+//! Bridge between ICP storage and tokagentOS unified runtime
 //!
-//! This module implements the `UnifiedDatabaseAdapter` trait from elizaOS
+//! This module implements the `UnifiedDatabaseAdapter` trait from tokagentOS
 //! using ICP's stable memory storage. This enables the ICP canister to
-//! use the canonical elizaOS runtime patterns in both sync and async modes.
+//! use the canonical tokagentOS runtime patterns in both sync and async modes.
 //!
 //! # Usage
 //!
 //! ```rust,ignore
-//! use crate::eliza_bridge::IcpElizaAdapter;
-//! use elizaos::{UnifiedRuntime, UnifiedRuntimeOptions, Character};
+//! use crate::tokagent_bridge::IcpTokagentAdapter;
+//! use tokagentos::{UnifiedRuntime, UnifiedRuntimeOptions, Character};
 //!
 //! let character = Character { name: "MyAgent".to_string(), ..Default::default() };
-//! let adapter = IcpElizaAdapter::new("agent-id".to_string());
+//! let adapter = IcpTokagentAdapter::new("agent-id".to_string());
 //! let runtime = UnifiedRuntime::new(UnifiedRuntimeOptions {
 //!     character: Some(character),
 //!     adapter: Some(Arc::new(adapter)),
@@ -24,7 +24,7 @@
 //!     generate_openai_response(params)
 //! }));
 //!
-//! // Handle messages using the canonical elizaOS pattern
+//! // Handle messages using the canonical tokagentOS pattern
 //! let result = runtime.message_service().handle_message(&runtime, &mut message, None)?;
 //! ```
 //!
@@ -44,13 +44,13 @@ use std::cell::RefCell;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 /// Re-export for backward compatibility
-pub type IcpElizaAdapterStandalone = IcpElizaAdapter;
+pub type IcpTokagentAdapterStandalone = IcpTokagentAdapter;
 
 // ============================================================================
 // ICP UNIFIED ADAPTER
 // ============================================================================
 
-/// ICP implementation of elizaOS's UnifiedDatabaseAdapter trait.
+/// ICP implementation of tokagentOS's UnifiedDatabaseAdapter trait.
 ///
 /// This adapter uses ICP's stable memory for persistence across canister
 /// upgrades, providing the same interface as the in-memory adapter but
@@ -60,19 +60,19 @@ pub type IcpElizaAdapterStandalone = IcpElizaAdapter;
 ///
 /// - Stable memory persistence
 /// - Vector search for semantic memory retrieval
-/// - Full compatibility with elizaOS types (Agent, Memory, Room, etc.)
+/// - Full compatibility with tokagentOS types (Agent, Memory, Room, etc.)
 /// - Works with the unified sync/async runtime
-pub struct IcpElizaAdapter {
+pub struct IcpTokagentAdapter {
     inner: RefCell<IcpDatabaseAdapter>,
     ready: AtomicBool,
 }
 
 // Manual Send + Sync implementation for ICP's single-threaded environment
 // ICP canisters are single-threaded, so this is safe
-unsafe impl Send for IcpElizaAdapter {}
-unsafe impl Sync for IcpElizaAdapter {}
+unsafe impl Send for IcpTokagentAdapter {}
+unsafe impl Sync for IcpTokagentAdapter {}
 
-impl IcpElizaAdapter {
+impl IcpTokagentAdapter {
     /// Create a new ICP adapter
     pub fn new(agent_id: String) -> Self {
         Self {
@@ -225,22 +225,22 @@ impl IcpElizaAdapter {
 }
 
 // ============================================================================
-// EXAMPLE: How to use with elizaOS UnifiedRuntime
+// EXAMPLE: How to use with tokagentOS UnifiedRuntime
 // ============================================================================
 //
-// When the elizaos crate is available with the `sync` feature, you can use
-// the IcpElizaAdapter like this:
+// When the tokagentos crate is available with the `sync` feature, you can use
+// the IcpTokagentAdapter like this:
 //
 // ```rust
-// use elizaos::{
+// use tokagentos::{
 //     UnifiedRuntime, UnifiedRuntimeOptions, UnifiedDatabaseAdapter,
 //     Character, Bio, Memory, UUID,
 // };
 // use std::sync::Arc;
 //
-// // Implement UnifiedDatabaseAdapter for IcpElizaAdapter
+// // Implement UnifiedDatabaseAdapter for IcpTokagentAdapter
 // #[maybe_async::maybe_async(?Send)]
-// impl UnifiedDatabaseAdapter for IcpElizaAdapter {
+// impl UnifiedDatabaseAdapter for IcpTokagentAdapter {
 //     async fn init(&self) -> Result<()> {
 //         self.init()
 //     }
@@ -265,7 +265,7 @@ impl IcpElizaAdapter {
 //         ..Default::default()
 //     };
 //
-//     let adapter = Arc::new(IcpElizaAdapter::new("agent-1".to_string()));
+//     let adapter = Arc::new(IcpTokagentAdapter::new("agent-1".to_string()));
 //
 //     let runtime = UnifiedRuntime::new(UnifiedRuntimeOptions {
 //         character: Some(character),

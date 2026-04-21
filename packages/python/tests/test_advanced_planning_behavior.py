@@ -5,14 +5,14 @@ from uuid import uuid4
 
 import pytest
 
-from elizaos.features.advanced_planning.planning_service import ActionPlan, ActionStep
-from elizaos.runtime import AgentRuntime
-from elizaos.types import IAgentRuntime, State
-from elizaos.types.agent import Character
-from elizaos.types.components import ActionDefinition, ActionResult
-from elizaos.types.memory import Memory
-from elizaos.types.model import ModelType
-from elizaos.types.primitives import Content, as_uuid
+from tokagentos.features.advanced_planning.planning_service import ActionPlan, ActionStep
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types import IAgentRuntime, State
+from tokagentos.types.agent import Character
+from tokagentos.types.components import ActionDefinition, ActionResult
+from tokagentos.types.memory import Memory
+from tokagentos.types.model import ModelType
+from tokagentos.types.primitives import Content, as_uuid
 
 
 @pytest.mark.skip(reason="State.values.extra access issue with protobuf")

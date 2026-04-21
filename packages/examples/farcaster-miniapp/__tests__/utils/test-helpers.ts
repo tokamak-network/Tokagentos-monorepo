@@ -5,7 +5,7 @@ import type { WalletAddresses } from '../../src/types'
 
 // Mock API responses
 export const mockApiResponses = {
-    elizaChat: {
+    tokagentChat: {
         message: 'Hello! How can I help you today?',
         confidence: 0.95,
         suggestions: [],
@@ -43,9 +43,9 @@ export function setupFetchMock() {
             )
         }
 
-        // Eliza chat
-        if (urlStr.includes('/api/chat/eliza')) {
-            return new Response(JSON.stringify(mockApiResponses.elizaChat), {
+        // Tokagent chat
+        if (urlStr.includes('/api/chat/tokagent')) {
+            return new Response(JSON.stringify(mockApiResponses.tokagentChat), {
                 status: 200,
                 headers: { 'Content-Type': 'application/json' },
             })

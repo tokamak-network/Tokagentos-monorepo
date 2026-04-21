@@ -30,12 +30,12 @@ export function getLogPrefix(): string {
       if (pkg.name) {
         let name = pkg.name;
         if (name.startsWith("@")) name = name.split("/")[1];
-        if (name === "elizaos" || name.includes("eliza")) {
-          cachedPrefix = "[eliza]";
+        if (name === "tokagentos" || name.includes("tokagent")) {
+          cachedPrefix = "[tokagent]";
           return cachedPrefix;
         }
-        if (name === "elizaos" || name.includes("eliza")) {
-          cachedPrefix = "[eliza]";
+        if (name === "tokagentos" || name.includes("tokagent")) {
+          cachedPrefix = "[tokagent]";
           return cachedPrefix;
         }
 
@@ -49,13 +49,13 @@ export function getLogPrefix(): string {
 
   // Fallbacks based on directory structure
   if (
-    process.cwd().includes("eliza-workspace") ||
-    process.cwd().includes("eliza")
+    process.cwd().includes("tokagent-workspace") ||
+    process.cwd().includes("tokagent")
   ) {
-    cachedPrefix = "[eliza]";
+    cachedPrefix = "[tokagent]";
     return cachedPrefix;
   }
 
-  cachedPrefix = "[eliza]";
+  cachedPrefix = "[tokagent]";
   return cachedPrefix;
 }

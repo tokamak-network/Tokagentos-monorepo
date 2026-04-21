@@ -19,15 +19,15 @@ _ROBLOX_PLUGIN_ROOT = (_HERE.parent / "../../../plugins/plugin-roblox/python").r
 if _ROBLOX_PLUGIN_ROOT.exists():
     sys.path.insert(0, str(_ROBLOX_PLUGIN_ROOT))
 
-from elizaos import Character, ChannelType, Content, Memory  # noqa: E402
-from elizaos.runtime import AgentRuntime  # noqa: E402
-from elizaos_plugin_openai import get_openai_plugin  # noqa: E402
-from elizaos_plugin_roblox import get_roblox_plugin  # noqa: E402
+from tokagentos import Character, ChannelType, Content, Memory  # noqa: E402
+from tokagentos.runtime import AgentRuntime  # noqa: E402
+from tokagentos_plugin_openai import get_openai_plugin  # noqa: E402
+from tokagentos_plugin_roblox import get_roblox_plugin  # noqa: E402
 
 try:
-    from elizaos_plugin_eliza_classic import get_eliza_classic_plugin
+    from tokagentos_plugin_tokagent_classic import get_tokagent_classic_plugin
 except ModuleNotFoundError:  # pragma: no cover
-    get_eliza_classic_plugin = None  # type: ignore[assignment]
+    get_tokagent_classic_plugin = None  # type: ignore[assignment]
 
 
 PORT = int(os.environ.get("PORT", "3041"))
@@ -54,8 +54,8 @@ class RuntimeHolder:
 
 def create_runtime() -> RuntimeHolder:
     character = Character(
-        name="Eliza",
-        username="eliza",
+        name="Tokagent",
+        username="tokagent",
         bio="A helpful Roblox guide NPC.",
         system=(
             "You are a helpful Roblox guide. Be concise. "
@@ -69,8 +69,8 @@ def create_runtime() -> RuntimeHolder:
         runtime = AgentRuntime(character=character, plugins=[get_openai_plugin(), roblox_plugin])
         return RuntimeHolder(runtime=runtime, character=character)
 
-    if get_eliza_classic_plugin is not None:
-        runtime = AgentRuntime(character=character, plugins=[get_eliza_classic_plugin(), roblox_plugin])
+    if get_tokagent_classic_plugin is not None:
+        runtime = AgentRuntime(character=character, plugins=[get_tokagent_classic_plugin(), roblox_plugin])
         return RuntimeHolder(runtime=runtime, character=character)
 
     # Minimal fallback: runnable without extra plugin packages.
@@ -92,7 +92,7 @@ async def lifespan(app: FastAPI):  # noqa: ARG001
         await holder.runtime.stop()
 
 
-app = FastAPI(title="elizaOS Roblox bridge", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="tokagentOS Roblox bridge", version="1.0.0", lifespan=lifespan)
 
 
 @app.get("/health")
@@ -102,9 +102,9 @@ async def health() -> dict[str, str]:
 
 @app.post("/roblox/chat", response_model=RobloxChatResponse)
 async def roblox_chat(request: Request, body: RobloxChatRequest) -> RobloxChatResponse:
-    shared_secret = os.environ.get("ELIZA_ROBLOX_SHARED_SECRET", "")
+    shared_secret = os.environ.get("TOKAGENT_ROBLOX_SHARED_SECRET", "")
     if shared_secret:
-        header_secret = request.headers.get("x-eliza-secret", "")
+        header_secret = request.headers.get("x-tokagent-secret", "")
         if header_secret != shared_secret:
             raise HTTPException(status_code=401, detail="Unauthorized")
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env -S deno run --allow-net --allow-env
 
 /**
- * Test client for elizaOS Supabase Edge Functions
+ * Test client for tokagentOS Supabase Edge Functions
  *
  * Usage:
  *   # Test local function
  *   deno run --allow-net --allow-env test-client.ts
  *
  *   # Test deployed function
- *   deno run --allow-net --allow-env test-client.ts --endpoint https://your-project.supabase.co/functions/v1/eliza-chat
+ *   deno run --allow-net --allow-env test-client.ts --endpoint https://your-project.supabase.co/functions/v1/tokagent-chat
  *
  *   # Interactive mode
  *   deno run --allow-net --allow-env test-client.ts --interactive
@@ -29,7 +29,7 @@ function parseArgs(): Config {
 
   let endpoint =
     Deno.env.get("SUPABASE_FUNCTION_URL") ??
-    "http://localhost:54321/functions/v1/eliza-chat";
+    "http://localhost:54321/functions/v1/tokagent-chat";
   let authToken = Deno.env.get("SUPABASE_ANON_KEY") ?? "";
   let interactive = false;
 
@@ -53,13 +53,13 @@ function parseArgs(): Config {
 
 function printHelp(): void {
   console.log(`
-elizaOS Supabase Edge Function Test Client
+tokagentOS Supabase Edge Function Test Client
 
 Usage:
   deno run --allow-net --allow-env test-client.ts [options]
 
 Options:
-  --endpoint <url>    Function endpoint URL (default: http://localhost:54321/functions/v1/eliza-chat)
+  --endpoint <url>    Function endpoint URL (default: http://localhost:54321/functions/v1/tokagent-chat)
   --token <key>       Supabase anon key for authorization
   --interactive, -i   Start interactive chat mode
   --help, -h          Show this help message
@@ -74,7 +74,7 @@ Examples:
 
   # Test deployed function
   deno run --allow-net --allow-env test-client.ts \\
-    --endpoint https://your-project.supabase.co/functions/v1/eliza-chat \\
+    --endpoint https://your-project.supabase.co/functions/v1/tokagent-chat \\
     --token your-anon-key
 
   # Interactive mode
@@ -172,7 +172,7 @@ async function sendMessage(
 // ============================================================================
 
 async function runTests(config: Config): Promise<void> {
-  console.log("🧪 Testing elizaOS Supabase Edge Function\n");
+  console.log("🧪 Testing tokagentOS Supabase Edge Function\n");
   console.log(`   Endpoint: ${config.endpoint}`);
   console.log(
     `   Auth: ${config.authToken ? "✓ Token provided" : "✗ No token"}\n`,
@@ -276,7 +276,7 @@ async function runTests(config: Config): Promise<void> {
 // ============================================================================
 
 async function interactiveMode(config: Config): Promise<void> {
-  console.log("🤖 elizaOS Supabase Edge Function - Interactive Mode\n");
+  console.log("🤖 tokagentOS Supabase Edge Function - Interactive Mode\n");
   console.log(`   Endpoint: ${config.endpoint}`);
   console.log("   Type 'exit' or 'quit' to end the session.\n");
 
@@ -309,7 +309,7 @@ async function interactiveMode(config: Config): Promise<void> {
       });
 
       conversationId = response.conversationId;
-      console.log(`\nEliza: ${response.response}\n`);
+      console.log(`\nTokagent: ${response.response}\n`);
     } catch (error) {
       console.error(`\nError: ${error}\n`);
     }

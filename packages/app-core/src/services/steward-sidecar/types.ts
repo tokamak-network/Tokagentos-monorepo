@@ -7,7 +7,7 @@
 // ---------------------------------------------------------------------------
 
 export interface StewardSidecarConfig {
-  /** Directory for Steward data (PGLite storage, config, secrets). Default: ~/.eliza/steward/ */
+  /** Directory for Steward data (PGLite storage, config, secrets). Default: ~/.tokagent/steward/ */
   dataDir: string;
   /** Port for the local Steward API. Default: 3200 */
   port?: number;
@@ -65,8 +65,8 @@ export const HEALTH_CHECK_INTERVAL_MS = 500;
 export const HEALTH_CHECK_TIMEOUT_MS = 30_000;
 export const INITIAL_BACKOFF_MS = 1_000;
 export const MAX_BACKOFF_MS = 30_000;
-export const DEFAULT_TENANT_ID = "elizaos-desktop";
+export const DEFAULT_TENANT_ID = "tokagentos-desktop";
 export const DEFAULT_TENANT_NAME = "Desktop";
-export const DEFAULT_AGENT_ID = "eliza-wallet";
-export const DEFAULT_AGENT_NAME = "eliza-wallet";
+export const DEFAULT_AGENT_ID = "tokagent-wallet";
+export const DEFAULT_AGENT_NAME = "tokagent-wallet";
 export const CREDENTIALS_FILE = "credentials.json";

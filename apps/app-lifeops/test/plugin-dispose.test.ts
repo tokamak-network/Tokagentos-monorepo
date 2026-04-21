@@ -10,7 +10,7 @@
  *      the others
  */
 
-import type { IAgentRuntime, Task } from "@elizaos/core";
+import type { IAgentRuntime, Task } from "@tokagentos/core";
 import { describe, expect, test, vi } from "vitest";
 import { appLifeOpsPlugin } from "../src/plugin.js";
 

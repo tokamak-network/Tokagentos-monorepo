@@ -1,5 +1,5 @@
 /**
- * Database management API handlers for the Eliza Control UI.
+ * Database management API handlers for the Tokagent Control UI.
  *
  * Provides endpoints for:
  * - Database provider configuration (PGLite vs Postgres)
@@ -17,14 +17,14 @@ import dns from "node:dns";
 import type http from "node:http";
 import net from "node:net";
 import { promisify } from "node:util";
-import { type AgentRuntime, logger } from "@elizaos/core";
-import { resolveApiBindHost } from "@elizaos/shared/runtime-env";
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
+import { type AgentRuntime, logger } from "@tokagentos/core";
+import { resolveApiBindHost } from "@tokagentos/shared/runtime-env";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
 import type {
   DatabaseConfig,
   DatabaseProviderType,
   PostgresCredentials,
-} from "../config/types.eliza.js";
+} from "../config/types.tokagent.js";
 import {
   isLoopbackHost,
   normalizeHostLike,
@@ -524,13 +524,13 @@ async function handleGetStatus(
 
 /**
  * GET /api/database/config
- * Returns the persisted database configuration from eliza.json.
+ * Returns the persisted database configuration from tokagent.json.
  */
 function handleGetConfig(
   _req: http.IncomingMessage,
   res: http.ServerResponse,
 ): void {
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const dbConfig: DatabaseConfig = config.database ?? { provider: "pglite" };
   // Mask the password in the response
   const sanitized = { ...dbConfig };
@@ -583,7 +583,7 @@ async function handlePutConfig(
   }
 
   // Load current config so validation can account for unchanged provider.
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const existingDb = config.database ?? {};
   const effectiveProvider =
     body.provider ?? existingDb.provider ?? ("pglite" as DatabaseProviderType);
@@ -630,7 +630,7 @@ async function handlePutConfig(
   }
 
   config.database = merged;
-  saveElizaConfig(config);
+  saveTokagentConfig(config);
 
   logger.info(
     { src: "database-api", provider: merged.provider },

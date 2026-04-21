@@ -9,23 +9,23 @@ export interface IsolatedConfigEnv {
 }
 
 export function useIsolatedConfigEnv(
-  prefix = "eliza-test-config-",
+  prefix = "tokagent-test-config-",
 ): IsolatedConfigEnv {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
-  const configPath = path.join(tempDir, "eliza.json");
-  const previousElizaConfigPath = process.env.ELIZA_CONFIG_PATH;
+  const configPath = path.join(tempDir, "tokagent.json");
+  const previousTokagentConfigPath = process.env.TOKAGENT_CONFIG_PATH;
   const previousMiladyConfigPath = process.env.MILADY_CONFIG_PATH;
 
-  process.env.ELIZA_CONFIG_PATH = configPath;
+  process.env.TOKAGENT_CONFIG_PATH = configPath;
   process.env.MILADY_CONFIG_PATH = configPath;
 
   return {
     configPath,
     restore: async () => {
-      if (previousElizaConfigPath === undefined) {
-        delete process.env.ELIZA_CONFIG_PATH;
+      if (previousTokagentConfigPath === undefined) {
+        delete process.env.TOKAGENT_CONFIG_PATH;
       } else {
-        process.env.ELIZA_CONFIG_PATH = previousElizaConfigPath;
+        process.env.TOKAGENT_CONFIG_PATH = previousTokagentConfigPath;
       }
 
       if (previousMiladyConfigPath === undefined) {

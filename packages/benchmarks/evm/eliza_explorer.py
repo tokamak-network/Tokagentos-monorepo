@@ -1,5 +1,5 @@
 """
-Eliza-powered EVM benchmark explorer.
+Tokagent-powered EVM benchmark explorer.
 
 Two-phase exploration:
   Phase 1 (Deterministic): pre-built TypeScript templates using viem, no LLM needed.
@@ -10,11 +10,11 @@ Usage:
     anvil --port 8545 --chain-id 31337
 
     # Run benchmark:
-    USE_EXTERNAL_NODE=true python -m benchmarks.evm.eliza_explorer
+    USE_EXTERNAL_NODE=true python -m benchmarks.evm.tokagent_explorer
 
     # For Hyperliquid EVM:
     CHAIN=hyperliquid RPC_URL=https://api.hyperliquid-testnet.xyz/evm \
-      python -m benchmarks.evm.eliza_explorer
+      python -m benchmarks.evm.tokagent_explorer
 """
 
 import asyncio
@@ -34,10 +34,10 @@ from benchmarks.evm.anvil_env import AnvilEnv, anvil_node
 from benchmarks.evm.exploration_strategy import ExplorationStrategy
 
 load_dotenv()
-# Also load keys from eliza/.env if it exists
-_eliza_env = Path(__file__).parent.parent.parent / "eliza" / ".env"
-if _eliza_env.exists():
-    load_dotenv(_eliza_env, override=False)
+# Also load keys from tokagent/.env if it exists
+_tokagent_env = Path(__file__).parent.parent.parent / "tokagent" / ".env"
+if _tokagent_env.exists():
+    load_dotenv(_tokagent_env, override=False)
 
 logger = logging.getLogger(__name__)
 
@@ -139,7 +139,7 @@ class LLM:
         return str(result.content)
 
 
-class ElizaExplorer:
+class TokagentExplorer:
     """
     EVM benchmark explorer.
 
@@ -485,7 +485,7 @@ async def main() -> None:
         model_name, max_messages, chain, use_external,
     )
 
-    explorer = ElizaExplorer(
+    explorer = TokagentExplorer(
         model_name=model_name,
         max_messages=max_messages,
         run_index=run_index,

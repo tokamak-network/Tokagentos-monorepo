@@ -6,7 +6,7 @@ import urllib.parse
 import uuid as uuid_module
 from enum import StrEnum
 
-from elizaos.types.generated.eliza.v1 import primitives_pb2
+from tokagentos.types.generated.tokagent.v1 import primitives_pb2
 
 # UUID validation pattern
 UUID_PATTERN = re.compile(

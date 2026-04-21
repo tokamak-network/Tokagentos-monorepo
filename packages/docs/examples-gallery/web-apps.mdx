@@ -1,15 +1,15 @@
 ---
 title: "Web Applications"
-description: "Browser-based elizaOS examples with React, Next.js, and vanilla HTML"
+description: "Browser-based tokagentOS examples with React, Next.js, and vanilla HTML"
 ---
 
-Build web applications powered by elizaOS agents.
+Build web applications powered by tokagentOS agents.
 
 ## Available Examples
 
 | Example    | Framework    | Location               | Features                  |
 | ---------- | ------------ | ---------------------- | ------------------------- |
-| HTML ELIZA | Vanilla JS   | `examples/html/`       | Zero dependencies, CRT UI |
+| HTML TOKAGENT | Vanilla JS   | `examples/html/`       | Zero dependencies, CRT UI |
 | React      | React + Vite | `examples/react/`      | Full React app            |
 | React WASM | React + Rust | `examples/react-wasm/` | Rust WASM core            |
 | Next.js    | Next.js 14   | `examples/next/`       | SSR + API routes          |
@@ -29,7 +29,7 @@ open index.html  # Or use a local server
 
 - Pure HTML, CSS, JavaScript
 - ES modules via import maps
-- Classic ELIZA pattern matching (no API keys)
+- Classic TOKAGENT pattern matching (no API keys)
 - localStorage persistence
 - Retro CRT terminal aesthetic
 
@@ -39,19 +39,19 @@ open index.html  # Or use a local server
 <script type="importmap">
   {
     "imports": {
-      "@elizaos/core": "../../packages/typescript/dist/browser/index.browser.js",
-      "@elizaos/plugin-eliza-classic": "../../plugins/plugin-eliza-classic/dist/browser/index.browser.js"
+      "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
+      "@elizaos/plugin-tokagent-classic": "../../plugins/plugin-tokagent-classic/dist/browser/index.browser.js"
     }
   }
 </script>
 
 <script type="module">
-  import { AgentRuntime, ModelType } from "@elizaos/core";
-  import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+  import { AgentRuntime, ModelType } from "@tokagentos/core";
+  import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
 
   const runtime = new AgentRuntime({
-    character: { name: "Eliza", bio: "A psychotherapist simulation." },
-    plugins: [elizaClassicPlugin],
+    character: { name: "Tokagent", bio: "A psychotherapist simulation." },
+    plugins: [tokagentClassicPlugin],
   });
 
   await runtime.initialize();
@@ -89,7 +89,7 @@ bun dev
 examples/react/
 ├── src/
 │   ├── App.tsx              # Main chat component
-│   ├── eliza-runtime.ts     # Runtime singleton
+│   ├── tokagent-runtime.ts     # Runtime singleton
 │   ├── main.tsx             # React entry point
 │   └── App.css              # Terminal styling
 ├── index.html
@@ -100,9 +100,9 @@ examples/react/
 **Key code:**
 
 ```tsx
-// eliza-runtime.ts
-import { AgentRuntime } from "@elizaos/core";
-import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+// tokagent-runtime.ts
+import { AgentRuntime } from "@tokagentos/core";
+import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
 import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
 let runtime: AgentRuntime | null = null;
@@ -111,8 +111,8 @@ export async function getRuntime(): Promise<AgentRuntime> {
   if (runtime) return runtime;
 
   runtime = new AgentRuntime({
-    character: { name: "Eliza", bio: "A helpful AI assistant." },
-    plugins: [sqlPlugin, elizaClassicPlugin],
+    character: { name: "Tokagent", bio: "A helpful AI assistant." },
+    plugins: [sqlPlugin, tokagentClassicPlugin],
   });
 
   await runtime.initialize();
@@ -123,8 +123,8 @@ export async function getRuntime(): Promise<AgentRuntime> {
 ```tsx
 // App.tsx
 import { useState, useEffect } from "react";
-import { getRuntime } from "./eliza-runtime";
-import { ModelType } from "@elizaos/core";
+import { getRuntime } from "./tokagent-runtime";
+import { ModelType } from "@tokagentos/core";
 
 function App() {
   const [runtime, setRuntime] = useState(null);
@@ -179,7 +179,7 @@ bun dev
 **Key code:**
 
 ```typescript
-import init, { WasmAgentRuntime } from "@elizaos/core/rust";
+import init, { WasmAgentRuntime } from "@tokagentos/core/rust";
 
 // Initialize WASM module
 await init();
@@ -187,7 +187,7 @@ await init();
 // Create runtime
 const runtime = await new WasmAgentRuntime(
   JSON.stringify({
-    name: "Eliza",
+    name: "Tokagent",
     bio: "A helpful AI assistant.",
   }),
 );
@@ -230,7 +230,7 @@ examples/next/
 │   ├── layout.tsx
 │   └── globals.css
 ├── lib/
-│   └── eliza-runtime.ts    # Server-side runtime
+│   └── tokagent-runtime.ts    # Server-side runtime
 ├── next.config.js
 └── package.json
 ```
@@ -240,7 +240,7 @@ examples/next/
 ```typescript
 // app/api/chat/route.ts
 import { NextResponse } from "next/server";
-import { AgentRuntime } from "@elizaos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
@@ -251,7 +251,7 @@ async function getRuntime() {
 
   runtime = new AgentRuntime({
     character: {
-      name: "Eliza",
+      name: "Tokagent",
       bio: "A helpful AI assistant.",
       secrets: { OPENAI_API_KEY: process.env.OPENAI_API_KEY },
     },

@@ -1,7 +1,7 @@
-// tee.proto - Trusted Execution Environment types for elizaOS
+// tee.proto - Trusted Execution Environment types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
 import "google/protobuf/struct.proto";
 

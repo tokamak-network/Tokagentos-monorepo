@@ -10,7 +10,7 @@ describe("cloud-connection", () => {
     serviceRouting: {
       llmText: {
         transport: "cloud-proxy" as const,
-        backend: "elizacloud",
+        backend: "tokagentcloud",
       },
     },
   };
@@ -18,11 +18,11 @@ describe("cloud-connection", () => {
     serviceRouting: {
       rpc: {
         transport: "cloud-proxy" as const,
-        backend: "elizacloud",
+        backend: "tokagentcloud",
       },
     },
     linkedAccounts: {
-      elizacloud: {
+      tokagentcloud: {
         status: "unlinked" as const,
       },
     },
@@ -31,7 +31,7 @@ describe("cloud-connection", () => {
   it("resolves the cloud api key from runtime settings", () => {
     const runtime = {
       getSetting: (key: string) =>
-        key === "ELIZAOS_CLOUD_API_KEY" ? "runtime-setting-key" : undefined,
+        key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-setting-key" : undefined,
     };
 
     expect(resolveCloudApiKey(cloudInferenceConfig, runtime)).toBe(
@@ -42,7 +42,7 @@ describe("cloud-connection", () => {
   it("marks hasApiKey when the runtime exposes a saved cloud api key", () => {
     const runtime = {
       getSetting: (key: string) =>
-        key === "ELIZAOS_CLOUD_API_KEY" ? "runtime-setting-key" : undefined,
+        key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-setting-key" : undefined,
       getService: () => null,
     };
 
@@ -58,7 +58,7 @@ describe("cloud-connection", () => {
   it("does not revive runtime credentials when only rpc cloud routing is selected", () => {
     const runtime = {
       getSetting: (key: string) =>
-        key === "ELIZAOS_CLOUD_API_KEY" ? "runtime-setting-key" : undefined,
+        key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-setting-key" : undefined,
     };
 
     expect(resolveCloudApiKey(cloudRpcConfig, runtime)).toBeUndefined();

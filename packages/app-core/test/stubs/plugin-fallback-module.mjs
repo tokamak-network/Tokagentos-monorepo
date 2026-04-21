@@ -2,4 +2,4 @@
 // Exports a minimal plugin shape so plugin registration logic can still load.
 const plugin = { name: "fallback-plugin", description: "test fallback" };
 export default plugin;
-export const elizaPlugin = plugin;
+export const tokagentPlugin = plugin;

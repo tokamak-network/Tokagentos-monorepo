@@ -1,6 +1,6 @@
-# elizaOS Cross-Language Plugin Interoperability
+# tokagentOS Cross-Language Plugin Interoperability
 
-This module provides seamless interoperability between elizaOS runtimes written in different languages (Rust, TypeScript, Python). **Any runtime can load any plugin**, regardless of the language it was written in.
+This module provides seamless interoperability between tokagentOS runtimes written in different languages (Rust, TypeScript, Python). **Any runtime can load any plugin**, regardless of the language it was written in.
 
 ## Architecture Overview
 
@@ -27,7 +27,7 @@ This module provides seamless interoperability between elizaOS runtimes written 
                           ┌─────────────┐   ┌─────────────────┐
                           │   PLUGINS   │   │  TEST PLUGINS   │
                           │             │   │                 │
-                          │ • Rust      │   │ • eliza-classic │
+                          │ • Rust      │   │ • tokagent-classic │
                           │ • TypeScript│   │ • inmemorydb    │
                           │ • Python    │   │                 │
                           └─────────────┘   └─────────────────┘
@@ -81,7 +81,7 @@ Every combination is supported:
 ### Loading a Rust Plugin in TypeScript
 
 ```typescript
-import { loadWasmPlugin } from "@elizaos/interop";
+import { loadWasmPlugin } from "@tokagentos/interop";
 
 const plugin = await loadWasmPlugin("./my-rust-plugin.wasm");
 runtime.registerPlugin(plugin);
@@ -90,7 +90,7 @@ runtime.registerPlugin(plugin);
 ### Loading a TypeScript Plugin in Rust
 
 ```rust
-use elizaos::interop::WasmPluginLoader;
+use tokagentos::interop::WasmPluginLoader;
 
 let plugin = WasmPluginLoader::load("./my-ts-plugin.wasm").await?;
 runtime.register_plugin(plugin);
@@ -99,7 +99,7 @@ runtime.register_plugin(plugin);
 ### Loading a Python Plugin in TypeScript
 
 ```typescript
-import { loadPythonPlugin } from "@elizaos/interop";
+import { loadPythonPlugin } from "@tokagentos/interop";
 
 const plugin = await loadPythonPlugin("my_python_plugin");
 runtime.registerPlugin(plugin);
@@ -108,7 +108,7 @@ runtime.registerPlugin(plugin);
 ### Loading a Rust Plugin in Python
 
 ```python
-from elizaos.interop import load_rust_plugin
+from tokagentos.interop import load_rust_plugin
 
 plugin = load_rust_plugin("./my_rust_plugin.so")
 await runtime.register_plugin(plugin)
@@ -225,7 +225,7 @@ All interop communication uses JSON-serialized messages:
 ### TypeScript Loading Any Plugin
 
 ```typescript
-import { loadPlugin, loadWasmPlugin, loadPythonPlugin } from "@elizaos/interop";
+import { loadPlugin, loadWasmPlugin, loadPythonPlugin } from "@tokagentos/interop";
 
 // Universal loader (auto-detects from manifest)
 const plugin = await loadPlugin("./path/to/plugin");
@@ -241,7 +241,7 @@ runtime.registerPlugin(plugin);
 ### Python Loading Any Plugin
 
 ```python
-from elizaos.interop import load_plugin, load_rust_plugin, load_ts_plugin, load_wasm_plugin
+from tokagentos.interop import load_plugin, load_rust_plugin, load_ts_plugin, load_wasm_plugin
 
 # Universal loader
 plugin = load_plugin('./path/to/plugin')
@@ -258,7 +258,7 @@ await runtime.register_plugin(plugin)
 ### Rust Loading Any Plugin
 
 ```rust
-use elizaos::interop::{load_plugin, TypeScriptPluginLoader, PythonPluginLoader};
+use tokagentos::interop::{load_plugin, TypeScriptPluginLoader, PythonPluginLoader};
 
 // Via IPC subprocess
 let ts_plugin = TypeScriptPluginLoader::new().load("./ts-plugin")?;
@@ -273,21 +273,21 @@ runtime.register_plugin(plugin);
 
 Two reference plugins demonstrate all interop paths:
 
-### plugin-eliza-classic
+### plugin-tokagent-classic
 
-Classic ELIZA pattern matching chatbot, implemented in all three languages:
+Classic TOKAGENT pattern matching chatbot, implemented in all three languages:
 
 ```bash
 # Rust (with WASM + FFI + IPC support)
-cd plugins/plugin-eliza-classic/rust
+cd plugins/plugin-tokagent-classic/rust
 cargo build --features wasm,ffi,ipc
 
 # Python
-cd plugins/plugin-eliza-classic/python
+cd plugins/plugin-tokagent-classic/python
 pip install -e .
 
 # TypeScript
-cd plugins/plugin-eliza-classic/typescript
+cd plugins/plugin-tokagent-classic/typescript
 pnpm build
 ```
 
@@ -333,7 +333,7 @@ cargo build --features ipc --bin my-plugin-ipc
 
 ```python
 # my_plugin/__init__.py
-from elizaos import Plugin
+from tokagentos import Plugin
 
 plugin = Plugin(
     name="my-plugin",
@@ -342,7 +342,7 @@ plugin = Plugin(
 )
 
 # Can be loaded via:
-# python -m elizaos.interop.bridge_server my_plugin
+# python -m tokagentos.interop.bridge_server my_plugin
 ```
 
 ### TypeScript Plugin (IPC)
@@ -432,5 +432,5 @@ Interop subprocess/WASM output is routed through the core logger (when used from
 
 - [Examples README](./examples/README.md) - Complete working examples
 - [Protocol Buffers Schemas](../@schemas/README.md) - Type definitions
-- [plugin-eliza-classic](../../plugins/plugin-eliza-classic/) - Reference implementation
+- [plugin-tokagent-classic](../../plugins/plugin-tokagent-classic/) - Reference implementation
 - [plugin-inmemorydb](../../plugins/plugin-inmemorydb/) - Database adapter example

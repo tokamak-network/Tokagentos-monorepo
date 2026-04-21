@@ -1,16 +1,16 @@
 import fs from "node:fs";
 import type http from "node:http";
-import type { ReadJsonBodyOptions } from "@elizaos/agent/api/http-helpers";
+import type { ReadJsonBodyOptions } from "@tokagentos/agent/api/http-helpers";
 import {
   checkRateLimit,
   type RateLimitConfig,
-} from "@elizaos/agent/api";
-import { createIntegrationTelemetrySpan } from "@elizaos/agent/diagnostics";
-import { type AgentRuntime, logger, type UUID } from "@elizaos/core";
+} from "@tokagentos/agent/api";
+import { createIntegrationTelemetrySpan } from "@tokagentos/agent/diagnostics";
+import { type AgentRuntime, logger, type UUID } from "@tokagentos/core";
 import {
   LIFEOPS_ACTIVITY_SIGNAL_STATES,
   LIFEOPS_BROWSER_PACKAGE_PATH_TARGETS,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import type {
   AcknowledgeLifeOpsReminderRequest,
   CaptureLifeOpsActivitySignalRequest,
@@ -58,7 +58,7 @@ import type {
   UpsertLifeOpsChannelPolicyRequest,
   UpsertLifeOpsXConnectorRequest,
   VerifyLifeOpsTelegramConnectorRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   loadLifeOpsAppState,
   saveLifeOpsAppState,
@@ -115,7 +115,7 @@ function getBrowserCompanionAuth(
 ): { companionId: string; pairingToken: string } | null {
   const companionHeader =
     ctx.req.headers["x-lifeops-browser-companion-id"] ??
-    ctx.req.headers["x-eliza-browser-companion-id"];
+    ctx.req.headers["x-tokagent-browser-companion-id"];
   const companionId =
     typeof companionHeader === "string" ? companionHeader.trim() : "";
   if (!companionId) {
@@ -454,19 +454,19 @@ function writeHtml(
           window.opener.postMessage(payload, "*");
         }
         if (typeof BroadcastChannel === "function") {
-          const channel = new BroadcastChannel("eliza:lifeops:google-connector");
+          const channel = new BroadcastChannel("tokagent:lifeops:google-connector");
           channel.postMessage(payload);
           channel.close();
         }
         if (typeof localStorage !== "undefined") {
           localStorage.setItem(
-            "eliza:lifeops:google-connector-refresh",
+            "tokagent:lifeops:google-connector-refresh",
             JSON.stringify({
               ...payload,
               at: Date.now(),
             }),
           );
-          localStorage.removeItem("eliza:lifeops:google-connector-refresh");
+          localStorage.removeItem("tokagent:lifeops:google-connector-refresh");
         }
       })();
     </script>`
@@ -1047,7 +1047,7 @@ export async function handleLifeOpsRoutes(
         res,
         200,
         "Google Connected",
-        "Google access is now available in Eliza. You can close this window.",
+        "Google access is now available in Tokagent. You can close this window.",
         {
           side: connectorStatus.side,
           mode: connectorStatus.mode,
@@ -1086,7 +1086,7 @@ export async function handleLifeOpsRoutes(
       res,
       200,
       "Google Connected",
-      "Google access is now available in Eliza. You can close this window.",
+      "Google access is now available in Tokagent. You can close this window.",
       {
         side: (rawSide ?? "owner") as LifeOpsConnectorSide,
         mode: (rawMode ?? "cloud_managed") as LifeOpsConnectorMode,

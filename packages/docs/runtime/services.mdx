@@ -29,9 +29,9 @@ Services fill this gap. They start with your agent and run continuously.
 | `REMOTE_FILES`    | AWS S3, cloud storage | `@elizaos/plugin-s3`         |
 | `WEB_SEARCH`      | Search queries        | `@elizaos/plugin-web-search` |
 | `EMAIL`           | Email sending         | `@elizaos/plugin-email`      |
-| `TASK`            | Background tasks      | `@elizaos/core`              |
+| `TASK`            | Background tasks      | `@tokagentos/core`              |
 | `WALLET`          | Crypto wallets        | `@elizaos/plugin-evm`        |
-| `MESSAGE_SERVICE` | Real-time messaging   | `@elizaos/core`              |
+| `MESSAGE_SERVICE` | Real-time messaging   | `@tokagentos/core`              |
 
 ---
 
@@ -76,7 +76,7 @@ The core package defines base service types:
 
 ```typescript
 const ServiceType = {
-  // Core services defined in @elizaos/core
+  // Core services defined in @tokagentos/core
   TASK: "task",
   DATABASE: "database",
   // ... other core types
@@ -89,7 +89,7 @@ Plugins extend service types through module augmentation:
 
 ```typescript
 // Plugin extends ServiceType through module augmentation
-declare module "@elizaos/core" {
+declare module "@tokagentos/core" {
   interface ServiceTypeRegistry {
     DISCORD: "discord";
     TELEGRAM: "telegram";
@@ -435,7 +435,7 @@ const discord = runtime.getService("discord");
 
 // Type-safe service access
 const searchService = runtime.getService<SearchService>("search");
-const results = await searchService.search("elizaOS");
+const results = await searchService.search("tokagentOS");
 ```
 
 ### Service Communication
@@ -597,7 +597,7 @@ async stop() {
 
 ## Model Context Protocol (MCP) Services
 
-MCP (Model Context Protocol) allows your ElizaOS agent to use external tools and services. Think of it as giving your agent abilities like web search, file access, or API connections.
+MCP (Model Context Protocol) allows your TokagentOS agent to use external tools and services. Think of it as giving your agent abilities like web search, file access, or API connections.
 
 ### MCP Plugin Setup
 
@@ -689,10 +689,10 @@ export const character: Character = {
 ### Complete MCP Configuration Example
 
 ```typescript
-import { type Character } from "@elizaos/core";
+import { type Character } from "@tokagentos/core";
 
 export const character: Character = {
-  name: "Eliza",
+  name: "Tokagent",
   plugins: [
     "@elizaos/plugin-sql",
     ...(process.env.ANTHROPIC_API_KEY ? ["@elizaos/plugin-anthropic"] : []),

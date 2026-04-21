@@ -7,9 +7,9 @@ export function buildVisionDepsFailureMessage(
 
   return [
     "",
-    "  [eliza] Vision dependency auto-install failed.",
-    "  [eliza] Camera and vision features will be unavailable in this session until the native tools are installed.",
-    `  [eliza] Retry manually: ${command}`,
-    `  [eliza] Failure detail: ${detail}`,
+    "  [tokagent] Vision dependency auto-install failed.",
+    "  [tokagent] Camera and vision features will be unavailable in this session until the native tools are installed.",
+    `  [tokagent] Retry manually: ${command}`,
+    `  [tokagent] Failure detail: ${detail}`,
   ].join("\n");
 }

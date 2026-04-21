@@ -96,7 +96,7 @@ export function StartupShell() {
           return;
         }
         console.log(
-          "[eliza][startup] Cloud-provisioned container detected at onboarding — skipping wizard",
+          "[tokagent][startup] Cloud-provisioned container detected at onboarding — skipping wizard",
         );
         setState("onboardingComplete", true);
         coordinatorDispatchRef.current({ type: "ONBOARDING_COMPLETE" });

@@ -14,12 +14,12 @@ import {
   OWNER_NAME_MAX_LENGTH,
   persistConfiguredOwnerName,
 } from "../services/owner-name.js";
-import type { Action, ActionExample, HandlerOptions, State } from "@elizaos/core";
-import { getRecentMessagesData } from "@elizaos/shared/recent-messages-state";
+import type { Action, ActionExample, HandlerOptions, State } from "@tokagentos/core";
+import { getRecentMessagesData } from "@tokagentos/shared/recent-messages-state";
 import {
   getValidationKeywordTerms,
   textIncludesKeywordTerm,
-} from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/shared/validation-keywords";
 import { hasOwnerAccess } from "../security/access.js";
 
 const SET_USER_NAME_CONTEXT_TERMS = getValidationKeywordTerms(

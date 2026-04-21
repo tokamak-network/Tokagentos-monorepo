@@ -2,7 +2,7 @@
 /**
  * fix-workspace-deps.mjs
  *
- * Same idea as eliza's scripts/fix-workspace-deps.mjs:
+ * Same idea as tokagent's scripts/fix-workspace-deps.mjs:
  *
  * LOCAL (default): rewrite dependencies on in-repo workspace packages to "workspace:*"
  * CHECK (--check): exit 1 if any such dep is not "workspace:*" (CI)
@@ -14,7 +14,7 @@
  *   bun scripts/fix-workspace-deps.mjs --restore
  *   bun scripts/fix-workspace-deps.mjs --restore --ref origin/main
  *
- * Why this exists: Eliza often uses repo-local ./eliza and plugins/* checkouts.
+ * Why this exists: Tokagent often uses repo-local ./tokagent and plugins/* checkouts.
  * Running upstream tooling or hand-editing package.json leaves semver pins where
  * workspace:* is required (or the reverse). Normalizing in one place avoids
  * "Cannot find module" and review-noise from inconsistent edges across 50+ packages.

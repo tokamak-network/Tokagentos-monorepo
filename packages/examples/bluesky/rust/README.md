@@ -1,6 +1,6 @@
 # Bluesky Agent - Rust Implementation
 
-A full-featured AI agent running on Bluesky, using the complete elizaOS pipeline.
+A full-featured AI agent running on Bluesky, using the complete tokagentOS pipeline.
 
 ## Building
 
@@ -31,7 +31,7 @@ cargo test --features live
 
 ## Architecture
 
-The Rust implementation follows the same canonical elizaOS patterns:
+The Rust implementation follows the same canonical tokagentOS patterns:
 
 1. **Full Pipeline Processing**: All messages go through `message_service.handle_message()`
 2. **State Composition**: Providers (CHARACTER, RECENT_MESSAGES, ACTIONS) compose the state

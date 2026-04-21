@@ -81,7 +81,7 @@ async def run_game_baseline(
     draws = 0
 
     if game_name == "game_2048":
-        from elizaos_art.games.game_2048 import Game2048Environment, Game2048HeuristicAgent
+        from tokagentos_art.games.game_2048 import Game2048Environment, Game2048HeuristicAgent
 
         env = Game2048Environment()
         agent = Game2048HeuristicAgent()
@@ -108,8 +108,8 @@ async def run_game_baseline(
                 losses += 1
 
     elif game_name == "tic_tac_toe":
-        from elizaos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
-        from elizaos_art.games.tic_tac_toe.types import TicTacToeConfig
+        from tokagentos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
+        from tokagentos_art.games.tic_tac_toe.types import TicTacToeConfig
 
         config = TicTacToeConfig(opponent="random")
         env = TicTacToeEnvironment(config)
@@ -137,8 +137,8 @@ async def run_game_baseline(
                 draws += 1
 
     elif game_name == "codenames":
-        from elizaos_art.games.codenames import CodenamesEnvironment, CodenamesGuesserAgent
-        from elizaos_art.games.codenames.types import CardColor, CodenamesConfig, Role
+        from tokagentos_art.games.codenames import CodenamesEnvironment, CodenamesGuesserAgent
+        from tokagentos_art.games.codenames.types import CardColor, CodenamesConfig, Role
 
         config = CodenamesConfig(ai_role=Role.GUESSER, ai_team=CardColor.RED)
         env = CodenamesEnvironment(config)
@@ -165,7 +165,7 @@ async def run_game_baseline(
                             state, _, _ = await env.step(a)
                             break
                     else:
-                        from elizaos_art.games.codenames.types import CodenamesAction
+                        from tokagentos_art.games.codenames.types import CodenamesAction
 
                         state, _, _ = await env.step(CodenamesAction.PASS)
 
@@ -176,7 +176,7 @@ async def run_game_baseline(
                 losses += 1
 
     elif game_name == "temporal_clue":
-        from elizaos_art.games.temporal_clue import (
+        from tokagentos_art.games.temporal_clue import (
             TemporalClueEnvironment,
             TemporalClueHeuristicAgent,
         )
@@ -285,8 +285,8 @@ async def run_pipelines(
     output_dir: str = "./benchmark_results/art",
 ) -> dict[str, PipelineResult]:
     """Run full training pipelines for all games."""
-    from elizaos_art.base import TrainingConfig
-    from elizaos_art.trainer import GRPOTrainer
+    from tokagentos_art.base import TrainingConfig
+    from tokagentos_art.trainer import GRPOTrainer
 
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -311,25 +311,25 @@ async def run_pipelines(
         try:
             # Get environment and agent
             if game_name == "game_2048":
-                from elizaos_art.games.game_2048 import Game2048Agent, Game2048Environment
+                from tokagentos_art.games.game_2048 import Game2048Agent, Game2048Environment
 
                 env = Game2048Environment()
                 agent = Game2048Agent(model_name=model)
 
             elif game_name == "tic_tac_toe":
-                from elizaos_art.games.tic_tac_toe import TicTacToeAgent, TicTacToeEnvironment
+                from tokagentos_art.games.tic_tac_toe import TicTacToeAgent, TicTacToeEnvironment
 
                 env = TicTacToeEnvironment()
                 agent = TicTacToeAgent(model_name=model)
 
             elif game_name == "codenames":
-                from elizaos_art.games.codenames import CodenamesAgent, CodenamesEnvironment
+                from tokagentos_art.games.codenames import CodenamesAgent, CodenamesEnvironment
 
                 env = CodenamesEnvironment()
                 agent = CodenamesAgent(model_name=model)
 
             elif game_name == "temporal_clue":
-                from elizaos_art.games.temporal_clue import (
+                from tokagentos_art.games.temporal_clue import (
                     TemporalClueAgent,
                     TemporalClueEnvironment,
                 )

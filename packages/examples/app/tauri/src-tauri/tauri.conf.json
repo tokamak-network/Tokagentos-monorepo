@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "ElizaOS Chat",
+  "productName": "TokagentOS Chat",
   "version": "2.0.0-alpha",
-  "identifier": "com.elizaos.example.tauri.chat",
+  "identifier": "com.tokagentos.example.tauri.chat",
   "build": {
     "beforeDevCommand": "",
     "beforeBuildCommand": "",

@@ -1,10 +1,10 @@
-# ElizaOS Atropos Environments
+# TokagentOS Atropos Environments
 
-This directory contains ElizaOS integrations with the [Atropos](https://github.com/NousResearch/atropos) reinforcement learning framework by Nous Research.
+This directory contains TokagentOS integrations with the [Atropos](https://github.com/NousResearch/atropos) reinforcement learning framework by Nous Research.
 
 ## Overview
 
-Atropos is a scalable RL framework for training large language models. These environments allow ElizaOS agents to learn through interaction across diverse tasks.
+Atropos is a scalable RL framework for training large language models. These environments allow TokagentOS agents to learn through interaction across diverse tasks.
 
 ## Available Environments
 
@@ -36,43 +36,43 @@ pip install -e examples/atropos/blackjack
 
 ### Blackjack
 ```bash
-python -m elizaos_atropos_blackjack --mode auto
+python -m tokagentos_atropos_blackjack --mode auto
 ```
 
 ### Diplomacy
 ```bash
-python -m elizaos_atropos_diplomacy --mode auto
+python -m tokagentos_atropos_diplomacy --mode auto
 ```
 
 ### TextWorld
 ```bash
-python -m elizaos_atropos_textworld --mode auto
+python -m tokagentos_atropos_textworld --mode auto
 ```
 
 ### Poker Hold'em
 ```bash
-python -m elizaos_atropos_holdem --mode auto
+python -m tokagentos_atropos_holdem --mode auto
 ```
 
 ### Reasoning Gym
 ```bash
-python -m elizaos_atropos_reasoning --mode eval --task math
+python -m tokagentos_atropos_reasoning --mode eval --task math
 ```
 
-## Using with ElizaOS Agents
+## Using with TokagentOS Agents
 
-All environments follow a consistent pattern for integration with ElizaOS:
+All environments follow a consistent pattern for integration with TokagentOS:
 
 ```python
-from elizaos import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
 
-# Create an ElizaOS runtime
+# Create an TokagentOS runtime
 runtime = AgentRuntime(plugins=[get_openai_plugin()])
 await runtime.initialize()
 
 # Import and use any environment
-from elizaos_atropos_blackjack import BlackjackEnvironment, BlackjackAgent
+from tokagentos_atropos_blackjack import BlackjackEnvironment, BlackjackAgent
 
 env = BlackjackEnvironment()
 await env.initialize()
@@ -141,26 +141,26 @@ Each environment follows a consistent structure:
 environment_name/
 ├── README.md                    # Documentation
 ├── pyproject.toml               # Package configuration
-└── elizaos_atropos_{name}/
+└── tokagentos_atropos_{name}/
     ├── __init__.py              # Package exports
     ├── types.py                 # Type definitions
     ├── environment.py           # Main environment class
-    ├── agent.py                 # ElizaOS agent integration
+    ├── agent.py                 # TokagentOS agent integration
     └── cli.py                   # Command-line interface
 ```
 
 ## Requirements
 
 - Python 3.11+
-- elizaos>=1.0.0
-- Optional: elizaos-plugin-openai for LLM-based agents
+- tokagentos>=1.0.0
+- Optional: tokagentos-plugin-openai for LLM-based agents
 
 ## License
 
-MIT License - Part of the ElizaOS project.
+MIT License - Part of the TokagentOS project.
 
 ## References
 
 - [Atropos Framework](https://github.com/NousResearch/atropos)
 - [Nous Research](https://nousresearch.com/)
-- [ElizaOS](https://elizaos.ai/)
+- [TokagentOS](https://tokagentos.ai/)

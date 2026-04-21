@@ -122,7 +122,7 @@ export const ALWAYS_ON_PLUGIN_IDS = new Set([
   "goals",
   "scheduling",
   // Internal / infrastructure
-  "elizacloud",
+  "tokagentcloud",
   "evm",
   "memory",
   "relationships",
@@ -605,7 +605,7 @@ export const DEFAULT_ICONS: Record<string, LucideIcon> = {
   "copilot-proxy": Handshake,
   directives: ClipboardList,
   goals: Target,
-  "eliza-classic": Bot,
+  "tokagent-classic": Bot,
   // Features — media & content
   vision: Eye,
   rss: Rss,
@@ -631,7 +631,7 @@ export const DEFAULT_ICONS: Record<string, LucideIcon> = {
   tee: LockKeyhole,
   blooio: Circle,
   acp: Construction,
-  elizacloud: Cloud,
+  tokagentcloud: Cloud,
   twilio: Phone,
 };
 
@@ -795,7 +795,7 @@ export const FEATURE_SUBGROUP: Record<string, string> = {
   "copilot-proxy": "agents",
   directives: "agents",
   goals: "agents",
-  "eliza-classic": "agents",
+  "tokagent-classic": "agents",
   // Media & Content
   vision: "media",
   rss: "media",

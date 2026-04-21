@@ -7,7 +7,7 @@
  * @license MIT
  */
 
-import type { IAgentRuntime, Plugin, ServiceClass } from "@elizaos/core";
+import type { IAgentRuntime, Plugin, ServiceClass } from "@tokagentos/core";
 
 // ============================================================================
 // TYPE EXPORTS

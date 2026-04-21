@@ -1,6 +1,6 @@
-"""Eliza Benchmark Plugin for Context Bench.
+"""Tokagent Benchmark Plugin for Context Bench.
 
-This plugin provides canonical Eliza integration for benchmarking:
+This plugin provides canonical Tokagent integration for benchmarking:
 - ContextBenchProvider: Injects benchmark context into agent state
 - BenchmarkEvaluator: Assesses answer quality after agent responds
 
@@ -12,9 +12,9 @@ using the canonical agent flow:
 4. BenchmarkEvaluator captures and scores the response
 
 Usage:
-    from elizaos.runtime import AgentRuntime
-    from elizaos_plugin_openai import get_openai_plugin
-    from elizaos_context_bench.eliza_plugin import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_plugin_openai import get_openai_plugin
+    from tokagentos_context_bench.tokagent_plugin import (
         get_context_bench_plugin,
         BenchmarkSession,
         run_benchmark_task_through_agent,
@@ -47,24 +47,24 @@ import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.types.components import (
+from tokagentos.types.components import (
     Evaluator,
     HandlerOptions,
     Provider,
     ProviderResult,
 )
-from elizaos.types.memory import Memory
-from elizaos.types.plugin import Plugin
-from elizaos.types.primitives import UUID, Content, string_to_uuid
-from elizaos.types.state import State
+from tokagentos.types.memory import Memory
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.primitives import UUID, Content, string_to_uuid
+from tokagentos.types.state import State
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable
 
-    from elizaos.types.components import HandlerCallback
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos_plugin_trajectory_logger.service import TrajectoryLoggerService
-    from elizaos_plugin_trajectory_logger.types import Trajectory
+    from tokagentos.types.components import HandlerCallback
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos_plugin_trajectory_logger.service import TrajectoryLoggerService
+    from tokagentos_plugin_trajectory_logger.types import Trajectory
 
 
 # ============================================================================
@@ -102,7 +102,7 @@ class BenchmarkEvaluation:
 class BenchmarkSession:
     """Session manager for benchmark tasks.
 
-    This class coordinates between the benchmark runner and the Eliza plugin,
+    This class coordinates between the benchmark runner and the Tokagent plugin,
     storing task context and collecting evaluation results.
     """
 
@@ -253,7 +253,7 @@ async def context_bench_provider_get(
     RECENT_MESSAGES, etc.) in the canonical flow.
 
     Args:
-        runtime: The Eliza runtime.
+        runtime: The Tokagent runtime.
         message: The incoming message.
         state: Current agent state.
 
@@ -328,7 +328,7 @@ async def benchmark_evaluator_validate(
     """Validate if the benchmark evaluator should run.
 
     Args:
-        runtime: The Eliza runtime.
+        runtime: The Tokagent runtime.
         message: The incoming message.
         state: Current agent state.
 
@@ -359,7 +359,7 @@ async def benchmark_evaluator_handler(
     the evaluation results in the session.
 
     Args:
-        runtime: The Eliza runtime.
+        runtime: The Tokagent runtime.
         message: The incoming message.
         state: Current agent state.
         options: Handler options.
@@ -407,7 +407,7 @@ async def benchmark_evaluator_handler(
         return
 
     # Evaluate using the retrieval evaluator
-    from elizaos_context_bench.evaluators.retrieval import RetrievalEvaluator
+    from tokagentos_context_bench.evaluators.retrieval import RetrievalEvaluator
 
     evaluator = RetrievalEvaluator()
     eval_results = evaluator.evaluate(
@@ -489,9 +489,9 @@ async def run_benchmark_task_through_agent(
     trajectory_logger: "TrajectoryLoggerService | None" = None,
     trajectory_collector: "list[Trajectory] | None" = None,
 ) -> BenchmarkEvaluation:
-    """Run a single benchmark task through the full Eliza agent loop.
+    """Run a single benchmark task through the full Tokagent agent loop.
 
-    This function exercises the CANONICAL Eliza flow:
+    This function exercises the CANONICAL Tokagent flow:
     1. Sets up the benchmark session with task context
     2. Creates a message with the question
     3. Processes through message_service.handle_message() which:
@@ -503,7 +503,7 @@ async def run_benchmark_task_through_agent(
     4. Returns evaluation results
 
     Args:
-        runtime: Initialized Eliza runtime with context bench plugin.
+        runtime: Initialized Tokagent runtime with context bench plugin.
         session: BenchmarkSession to use for this task.
         task_id: Unique task identifier.
         context: The haystack context text.
@@ -589,7 +589,7 @@ async def run_benchmark_task_through_agent(
                 )
 
                 # Attach step id to message metadata so runtime/message service can log.
-                from elizaos.types.memory import CustomMetadata, MemoryType
+                from tokagentos.types.memory import CustomMetadata, MemoryType
 
                 message.metadata = CustomMetadata(type=MemoryType.MESSAGE.value, trajectoryStepId=step_id)
             except Exception:
@@ -622,7 +622,7 @@ async def run_benchmark_task_through_agent(
                 response_text = result.response_content.text
 
             # Import evaluator and evaluate manually
-            from elizaos_context_bench.evaluators.retrieval import RetrievalEvaluator
+            from tokagentos_context_bench.evaluators.retrieval import RetrievalEvaluator
 
             evaluator = RetrievalEvaluator()
             eval_results = evaluator.evaluate(
@@ -696,7 +696,7 @@ async def run_benchmark_task_through_agent(
 async def setup_benchmark_runtime(
     model_plugin: Plugin | None = None,
 ) -> "IAgentRuntime":
-    """Set up an Eliza runtime configured for benchmarking.
+    """Set up an Tokagent runtime configured for benchmarking.
 
     This creates a runtime with:
     - basicCapabilities enabled (default) - loads bootstrap plugin
@@ -712,8 +712,8 @@ async def setup_benchmark_runtime(
         Configured runtime ready for benchmarking.
 
     """
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
 
     # Custom message handler template optimized for benchmark Q&A
     # This focuses on answering questions from context rather than conversation
@@ -793,7 +793,7 @@ IMPORTANT: Your response must ONLY contain the <response></response> XML block a
         plugins.append(model_plugin)
     # Trajectory logger plugin (for end-to-end capture + ART export)
     try:
-        from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+        from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
         plugins.append(get_trajectory_logger_plugin())
     except Exception:

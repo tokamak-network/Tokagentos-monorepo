@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { parseKeyValueXml } from "@elizaos/core";
+import { parseKeyValueXml } from "@tokagentos/core";
 import { config } from "dotenv";
 
 const testDir = dirname(fileURLToPath(import.meta.url));

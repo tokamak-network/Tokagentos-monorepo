@@ -74,7 +74,7 @@ export class CharacterFileManager extends Service {
 
 	constructor(runtime?: IAgentRuntime) {
 		super(runtime);
-		this.backupDir = path.join(process.cwd(), ".eliza", "character-backups");
+		this.backupDir = path.join(process.cwd(), ".tokagent", "character-backups");
 		this.setupValidationRules();
 	}
 

@@ -13,7 +13,7 @@ const CONFIG: ResolvedManagedGoogleCloudConfig = {
 
 /**
  * The cloud Managed Google routes live at /api/v1/milady/google/*. Historically
- * this client used an `eliza/google/*` prefix that 404s in production and was
+ * this client used an `tokagent/google/*` prefix that 404s in production and was
  * swallowed by the Milady backend as "disconnected", making live connections
  * invisible in the LifeOps UI. These tests pin the URL prefix so that regression
  * cannot happen again.
@@ -145,7 +145,7 @@ describe("GoogleManagedClient URL prefixes", () => {
       expect(url.startsWith("https://cloud.example.test/api/v1/milady/google/")).toBe(
         true,
       );
-      expect(url).not.toContain("/eliza/google/");
+      expect(url).not.toContain("/tokagent/google/");
     }
 
     expect(capturedUrls).toEqual([

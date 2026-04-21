@@ -3,7 +3,7 @@
  * selects and executes actions in response to natural language input.
  *
  * NO MOCKS. Uses a real PGlite database and a real LLM provider.
- * All tests are gated on MILADY_LIVE_TEST=1 / ELIZA_LIVE_TEST=1 plus
+ * All tests are gated on MILADY_LIVE_TEST=1 / TOKAGENT_LIVE_TEST=1 plus
  * a configured LLM API key.
  *
  * Dogfoods the ActionSpy / ConversationHarness helpers (which were previously
@@ -25,7 +25,7 @@ import {
   logger,
   type Memory,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect } from "vitest";
 import { itIf } from "../../../../../test/helpers/conditional-tests.ts";
 import { selectLiveProvider } from "../../../../../test/helpers/live-provider";
@@ -41,7 +41,7 @@ import { createRealTestRuntime } from "../helpers/real-runtime.ts";
 // ---------------------------------------------------------------------------
 
 const liveModelTestsEnabled =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const selectedLiveProvider = liveModelTestsEnabled
   ? selectLiveProvider()
   : null;
@@ -181,10 +181,10 @@ describe("Action Invocation E2E", () => {
   beforeAll(async () => {
     if (!canRunLiveTests) return;
 
-    process.env.LOG_LEVEL = process.env.ELIZA_E2E_LOG_LEVEL ?? "error";
+    process.env.LOG_LEVEL = process.env.TOKAGENT_E2E_LOG_LEVEL ?? "error";
     process.env.ENABLE_TRAJECTORIES = "false";
-    process.env.ELIZA_TRAJECTORY_LOGGING = "false";
-    process.env.ELIZA_DISABLE_PROACTIVE_AGENT = "1";
+    process.env.TOKAGENT_TRAJECTORY_LOGGING = "false";
+    process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = "1";
 
     const result = await createRealTestRuntime({
       withLLM: true,

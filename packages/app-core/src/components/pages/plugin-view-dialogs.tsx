@@ -4,7 +4,7 @@ import {
   Dialog,
   DialogDescription,
   DialogTitle,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import type { PluginInfo } from "../../api";
 import { ConnectorSetupPanel } from "../connectors/ConnectorSetupPanel";
 import { PluginConfigForm, TelegramPluginConfig } from "./PluginConfigForm";

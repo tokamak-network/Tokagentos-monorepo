@@ -26,7 +26,7 @@ import {
   Input,
   Label,
   Switch,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { client } from "../../api";
 

@@ -7,8 +7,8 @@ import type {
   LifeOpsBrowserCompanionReleaseManifest,
   LifeOpsBrowserKind,
   LifeOpsBrowserPackagePathTarget,
-} from "@elizaos/shared/contracts/lifeops";
-import { VERSION } from "@elizaos/agent/runtime/version";
+} from "@tokagentos/shared/contracts/lifeops";
+import { VERSION } from "@tokagentos/agent/runtime/version";
 
 const repoRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -21,7 +21,7 @@ const extensionRootCandidates = [
 const repoPackageJsonPath = path.join(repoRoot, "package.json");
 const repoBuildInfoPath = path.join(repoRoot, "dist", "build-info.json");
 const NIGHTLY_EPOCH_UTC_MS = Date.UTC(2020, 0, 1);
-const DEFAULT_REPOSITORY = "eliza-ai/eliza";
+const DEFAULT_REPOSITORY = "tokagent-ai/tokagent";
 
 function existingPath(candidate: string): string | null {
   return fs.existsSync(candidate) ? candidate : null;
@@ -39,7 +39,7 @@ function readVersionField(filePath: string): string | null {
     : null;
 }
 
-function resolveElizaReleaseVersion(): string {
+function resolveTokagentReleaseVersion(): string {
   return (
     readVersionField(repoPackageJsonPath) ||
     readVersionField(repoBuildInfoPath) ||
@@ -222,14 +222,14 @@ function resolveLifeOpsBrowserStoreUrls(env = process.env): {
   safariAppStoreUrl: string | null;
 } {
   const chromeWebStoreUrl =
-    typeof env.ELIZA_LIFEOPS_BROWSER_CHROME_STORE_URL === "string" &&
-    env.ELIZA_LIFEOPS_BROWSER_CHROME_STORE_URL.trim()
-      ? env.ELIZA_LIFEOPS_BROWSER_CHROME_STORE_URL.trim()
+    typeof env.TOKAGENT_LIFEOPS_BROWSER_CHROME_STORE_URL === "string" &&
+    env.TOKAGENT_LIFEOPS_BROWSER_CHROME_STORE_URL.trim()
+      ? env.TOKAGENT_LIFEOPS_BROWSER_CHROME_STORE_URL.trim()
       : null;
   const safariAppStoreUrl =
-    typeof env.ELIZA_LIFEOPS_BROWSER_SAFARI_STORE_URL === "string" &&
-    env.ELIZA_LIFEOPS_BROWSER_SAFARI_STORE_URL.trim()
-      ? env.ELIZA_LIFEOPS_BROWSER_SAFARI_STORE_URL.trim()
+    typeof env.TOKAGENT_LIFEOPS_BROWSER_SAFARI_STORE_URL === "string" &&
+    env.TOKAGENT_LIFEOPS_BROWSER_SAFARI_STORE_URL.trim()
+      ? env.TOKAGENT_LIFEOPS_BROWSER_SAFARI_STORE_URL.trim()
       : null;
   return {
     chromeWebStoreUrl,
@@ -354,7 +354,7 @@ export function resolveLifeOpsBrowserReleaseManifest(
     return null;
   }
   return buildLifeOpsBrowserReleaseManifestForVersion(
-    options.version ?? resolveElizaReleaseVersion(),
+    options.version ?? resolveTokagentReleaseVersion(),
     options.env,
   );
 }

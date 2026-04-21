@@ -6,7 +6,7 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { LifeOpsService, LifeOpsServiceError } from "../lifeops/service.js";
 import { hasLifeOpsAccess, INTERNAL_URL } from "./lifeops-google-helpers.js";
 

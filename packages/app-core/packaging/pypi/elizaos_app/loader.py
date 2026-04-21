@@ -1,9 +1,9 @@
 """
-Dynamic loader for the elizaOS App Node.js runtime.
+Dynamic loader for the tokagentOS App Node.js runtime.
 
 Responsibilities:
   1. Detect a suitable Node.js installation (>= 22.12.0)
-  2. Detect or install the elizaos-app npm package
+  2. Detect or install the tokagentos-app npm package
   3. Delegate CLI invocations to the Node.js process
   4. Provide a Python API for programmatic use
 """
@@ -21,23 +21,23 @@ from typing import Optional, Sequence, Tuple
 # ── Constants ────────────────────────────────────────────────────────────────
 
 REQUIRED_NODE_VERSION: Tuple[int, int, int] = (22, 12, 0)
-NPM_PACKAGE = "elizaos"
+NPM_PACKAGE = "tokagentos"
 _VERSION_RE = re.compile(r"v?(\d+)\.(\d+)\.(\d+)")
 
 
 # ── Exceptions ───────────────────────────────────────────────────────────────
 
 
-class ElizaOSAppError(Exception):
-    """Base exception for elizaos-app loader errors."""
+class TokagentOSAppError(Exception):
+    """Base exception for tokagentos-app loader errors."""
 
 
-class NodeNotFoundError(ElizaOSAppError):
+class NodeNotFoundError(TokagentOSAppError):
     """Raised when a suitable Node.js installation cannot be found."""
 
 
-class RuntimeInstallError(ElizaOSAppError):
-    """Raised when the elizaos-app npm package cannot be installed."""
+class RuntimeInstallError(TokagentOSAppError):
+    """Raised when the tokagentos-app npm package cannot be installed."""
 
 
 # ── Node.js Detection ────────────────────────────────────────────────────────
@@ -83,7 +83,7 @@ def _check_node() -> str:
     if not node_bin:
         req = ".".join(str(v) for v in REQUIRED_NODE_VERSION)
         raise NodeNotFoundError(
-            f"Node.js not found. elizaOS App requires Node.js >= {req}.\n"
+            f"Node.js not found. tokagentOS App requires Node.js >= {req}.\n"
             "Install it from https://nodejs.org or via your package manager:\n"
             "  macOS:   brew install node@22\n"
             "  Linux:   curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -\n"
@@ -120,8 +120,8 @@ def _find_npm() -> Optional[str]:
     return shutil.which("npm")
 
 
-def _is_elizaos_app_installed_globally() -> bool:
-    """Check if elizaos-app is installed as a global npm package."""
+def _is_tokagentos_app_installed_globally() -> bool:
+    """Check if tokagentos-app is installed as a global npm package."""
     npm_bin = _find_npm()
     if not npm_bin:
         return False
@@ -141,22 +141,22 @@ def _is_elizaos_app_installed_globally() -> bool:
     return False
 
 
-def _find_elizaos_app_bin() -> Optional[str]:
-    """Find the elizaos-app CLI binary on PATH (from a global npm install)."""
-    return shutil.which("elizaos-app")
+def _find_tokagentos_app_bin() -> Optional[str]:
+    """Find the tokagentos-app CLI binary on PATH (from a global npm install)."""
+    return shutil.which("tokagentos-app")
 
 
-def _install_elizaos_app_global() -> None:
-    """Install elizaos-app globally via npm."""
+def _install_tokagentos_app_global() -> None:
+    """Install tokagentos-app globally via npm."""
     npm_bin = _find_npm()
     if not npm_bin:
         raise RuntimeInstallError(
-            "npm not found. Cannot install elizaos-app runtime.\n"
+            "npm not found. Cannot install tokagentos-app runtime.\n"
             "Install Node.js (which includes npm) from https://nodejs.org"
         )
 
     print(
-        "elizaos-app: installing elizaos-app runtime (npm install -g elizaos)...",
+        "tokagentos-app: installing tokagentos-app runtime (npm install -g tokagentos)...",
         file=sys.stderr,
     )
     try:
@@ -167,9 +167,9 @@ def _install_elizaos_app_global() -> None:
         if result.returncode != 0:
             raise RuntimeInstallError(
                 f"Failed to install {NPM_PACKAGE} via npm (exit code {result.returncode}).\n"
-                "Try running manually: npm install -g elizaos"
+                "Try running manually: npm install -g tokagentos"
             )
-        print("elizaos-app: elizaos-app runtime installed successfully.", file=sys.stderr)
+        print("tokagentos-app: tokagentos-app runtime installed successfully.", file=sys.stderr)
     except subprocess.TimeoutExpired:
         raise RuntimeInstallError(
             f"Timed out installing {NPM_PACKAGE}. Check your network connection."
@@ -181,54 +181,54 @@ def _install_elizaos_app_global() -> None:
 
 def ensure_runtime() -> str:
     """
-    Ensure the elizaOS App Node.js runtime is available.
+    Ensure the tokagentOS App Node.js runtime is available.
 
-    Checks for Node.js, then checks for the elizaos-app npm package.
-    Installs elizaos-app globally if not found.
+    Checks for Node.js, then checks for the tokagentos-app npm package.
+    Installs tokagentos-app globally if not found.
 
     Returns:
-        Path to the elizaos-app CLI binary or npx fallback.
+        Path to the tokagentos-app CLI binary or npx fallback.
 
     Raises:
         NodeNotFoundError: If Node.js is not installed or too old.
-        RuntimeInstallError: If elizaos-app cannot be installed.
+        RuntimeInstallError: If tokagentos-app cannot be installed.
     """
     _check_node()
 
-    elizaos_app_bin = _find_elizaos_app_bin()
-    if elizaos_app_bin:
-        return elizaos_app_bin
+    tokagentos_app_bin = _find_tokagentos_app_bin()
+    if tokagentos_app_bin:
+        return tokagentos_app_bin
 
     # Not found on PATH — try installing globally
-    _install_elizaos_app_global()
+    _install_tokagentos_app_global()
 
-    elizaos_app_bin = _find_elizaos_app_bin()
-    if not elizaos_app_bin:
+    tokagentos_app_bin = _find_tokagentos_app_bin()
+    if not tokagentos_app_bin:
         # Fall back to npx
         npx_bin = _find_npx()
         if npx_bin:
             return npx_bin
         raise RuntimeInstallError(
-            "elizaos-app was installed but the binary was not found on PATH.\n"
+            "tokagentos-app was installed but the binary was not found on PATH.\n"
             "Try: export PATH=\"$(npm config get prefix)/bin:$PATH\""
         )
 
-    return elizaos_app_bin
+    return tokagentos_app_bin
 
 
 def run(args: Optional[Sequence[str]] = None) -> int:
     """
-    Run an elizaos-app CLI command.
+    Run an tokagentos-app CLI command.
 
     Args:
-        args: CLI arguments to pass to elizaos-app (e.g. ["start", "--verbose"]).
+        args: CLI arguments to pass to tokagentos-app (e.g. ["start", "--verbose"]).
               If None, defaults to empty list.
 
     Returns:
-        The exit code from the elizaos-app process.
+        The exit code from the tokagentos-app process.
 
     Raises:
-        ElizaOSAppError: If the runtime cannot be found or started.
+        TokagentOSAppError: If the runtime cannot be found or started.
     """
     if args is None:
         args = []
@@ -245,25 +245,25 @@ def run(args: Optional[Sequence[str]] = None) -> int:
         result = subprocess.run(cmd)
         return result.returncode
     except FileNotFoundError:
-        raise ElizaOSAppError(f"Could not execute: {bin_path}")
+        raise TokagentOSAppError(f"Could not execute: {bin_path}")
     except OSError as exc:
-        raise ElizaOSAppError(f"Failed to run elizaos-app: {exc}")
+        raise TokagentOSAppError(f"Failed to run tokagentos-app: {exc}")
 
 
 def get_version() -> Optional[str]:
     """
-    Get the installed elizaos-app version.
+    Get the installed tokagentos-app version.
 
     Returns:
         Version string (e.g. "2.0.0-alpha.7") or None if not installed.
     """
-    elizaos_app_bin = _find_elizaos_app_bin()
-    if not elizaos_app_bin:
+    tokagentos_app_bin = _find_tokagentos_app_bin()
+    if not tokagentos_app_bin:
         return None
 
     try:
         result = subprocess.run(
-            [elizaos_app_bin, "--version"],
+            [tokagentos_app_bin, "--version"],
             capture_output=True,
             text=True,
             timeout=10,

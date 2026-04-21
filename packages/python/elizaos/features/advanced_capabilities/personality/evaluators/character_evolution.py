@@ -12,11 +12,11 @@ import logging
 import time
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import ActionResult, Evaluator, MemoryType, ModelType
-from elizaos.utils.xml import parse_key_value_xml
+from tokagentos.types import ActionResult, Evaluator, MemoryType, ModelType
+from tokagentos.utils.xml import parse_key_value_xml
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 logger = logging.getLogger(__name__)
 

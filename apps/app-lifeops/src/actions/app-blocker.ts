@@ -4,12 +4,12 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   getAppBlockerAccess,
   APP_BLOCKER_ACCESS_ERROR,

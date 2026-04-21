@@ -18,7 +18,7 @@ const api = {
   },
 };
 
-contextBridge.exposeInMainWorld("elizaChat", api);
+contextBridge.exposeInMainWorld("tokagentChat", api);
 
-export type ElizaChatBridge = typeof api;
+export type TokagentChatBridge = typeof api;
 

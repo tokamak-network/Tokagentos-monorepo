@@ -3,7 +3,7 @@
  * export/import, direct cloud auth, bug reports.
  */
 
-import { ElizaClient } from "./client-base";
+import { TokagentClient } from "./client-base";
 import type {
   ApiError,
   CloudBillingCheckoutRequest,
@@ -57,7 +57,7 @@ function isCloudRouteNotFound(error: unknown): error is ApiError {
 // ---------------------------------------------------------------------------
 
 declare module "./client-base" {
-  interface ElizaClient {
+  interface TokagentClient {
     getCloudStatus(): Promise<CloudStatus>;
     getCloudCredits(): Promise<CloudCredits>;
     getCloudBillingSummary(): Promise<CloudBillingSummary>;
@@ -342,28 +342,28 @@ declare module "./client-base" {
 // Prototype augmentation
 // ---------------------------------------------------------------------------
 
-ElizaClient.prototype.getCloudStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getCloudStatus = async function (this: TokagentClient) {
   return this.fetch("/api/cloud/status");
 };
 
-ElizaClient.prototype.getCloudCredits = async function (this: ElizaClient) {
+TokagentClient.prototype.getCloudCredits = async function (this: TokagentClient) {
   return this.fetch("/api/cloud/credits");
 };
 
-ElizaClient.prototype.getCloudBillingSummary = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudBillingSummary = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/cloud/billing/summary");
 };
 
-ElizaClient.prototype.getCloudBillingSettings = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudBillingSettings = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/cloud/billing/settings");
 };
 
-ElizaClient.prototype.updateCloudBillingSettings = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateCloudBillingSettings = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/cloud/billing/settings", {
@@ -372,20 +372,20 @@ ElizaClient.prototype.updateCloudBillingSettings = async function (
   });
 };
 
-ElizaClient.prototype.getCloudBillingPaymentMethods = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudBillingPaymentMethods = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/cloud/billing/payment-methods");
 };
 
-ElizaClient.prototype.getCloudBillingHistory = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudBillingHistory = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/cloud/billing/history");
 };
 
-ElizaClient.prototype.createCloudBillingCheckout = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createCloudBillingCheckout = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/cloud/billing/checkout", {
@@ -394,8 +394,8 @@ ElizaClient.prototype.createCloudBillingCheckout = async function (
   });
 };
 
-ElizaClient.prototype.createCloudBillingCryptoQuote = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createCloudBillingCryptoQuote = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/cloud/billing/crypto/quote", {
@@ -404,12 +404,12 @@ ElizaClient.prototype.createCloudBillingCryptoQuote = async function (
   });
 };
 
-ElizaClient.prototype.cloudLogin = async function (this: ElizaClient) {
+TokagentClient.prototype.cloudLogin = async function (this: TokagentClient) {
   return this.fetch("/api/cloud/login", { method: "POST" });
 };
 
-ElizaClient.prototype.cloudLoginPoll = async function (
-  this: ElizaClient,
+TokagentClient.prototype.cloudLoginPoll = async function (
+  this: TokagentClient,
   sessionId,
 ) {
   return this.fetch(
@@ -417,18 +417,18 @@ ElizaClient.prototype.cloudLoginPoll = async function (
   );
 };
 
-ElizaClient.prototype.cloudDisconnect = async function (this: ElizaClient) {
+TokagentClient.prototype.cloudDisconnect = async function (this: TokagentClient) {
   return this.fetch("/api/cloud/disconnect", { method: "POST" });
 };
 
-ElizaClient.prototype.getCloudCompatAgents = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAgents = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/cloud/compat/agents");
 };
 
-ElizaClient.prototype.createCloudCompatAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createCloudCompatAgent = async function (
+  this: TokagentClient,
   opts,
 ) {
   return this.fetch("/api/cloud/compat/agents", {
@@ -437,16 +437,16 @@ ElizaClient.prototype.createCloudCompatAgent = async function (
   });
 };
 
-ElizaClient.prototype.ensureCloudCompatManagedDiscordAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.ensureCloudCompatManagedDiscordAgent = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/cloud/v1/app/discord/gateway-agent", {
     method: "POST",
   });
 };
 
-ElizaClient.prototype.provisionCloudCompatAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.provisionCloudCompatAgent = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -456,15 +456,15 @@ ElizaClient.prototype.provisionCloudCompatAgent = async function (
   );
 };
 
-ElizaClient.prototype.getCloudCompatAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAgent = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(`/api/cloud/compat/agents/${encodeURIComponent(agentId)}`);
 };
 
-ElizaClient.prototype.getCloudCompatAgentManagedDiscord = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAgentManagedDiscord = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -472,8 +472,8 @@ ElizaClient.prototype.getCloudCompatAgentManagedDiscord = async function (
   );
 };
 
-ElizaClient.prototype.createCloudCompatAgentManagedDiscordOauth =
-  async function (this: ElizaClient, agentId, request = {}) {
+TokagentClient.prototype.createCloudCompatAgentManagedDiscordOauth =
+  async function (this: TokagentClient, agentId, request = {}) {
     return this.fetch(
       `/api/cloud/v1/app/agents/${encodeURIComponent(agentId)}/discord/oauth`,
       {
@@ -483,8 +483,8 @@ ElizaClient.prototype.createCloudCompatAgentManagedDiscordOauth =
     );
   };
 
-ElizaClient.prototype.disconnectCloudCompatAgentManagedDiscord =
-  async function (this: ElizaClient, agentId) {
+TokagentClient.prototype.disconnectCloudCompatAgentManagedDiscord =
+  async function (this: TokagentClient, agentId) {
     return this.fetch(
       `/api/cloud/v1/app/agents/${encodeURIComponent(agentId)}/discord`,
       {
@@ -493,8 +493,8 @@ ElizaClient.prototype.disconnectCloudCompatAgentManagedDiscord =
     );
   };
 
-ElizaClient.prototype.getCloudCompatAgentDiscordConfig = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAgentDiscordConfig = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -502,8 +502,8 @@ ElizaClient.prototype.getCloudCompatAgentDiscordConfig = async function (
   );
 };
 
-ElizaClient.prototype.updateCloudCompatAgentDiscordConfig = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateCloudCompatAgentDiscordConfig = async function (
+  this: TokagentClient,
   agentId,
   config,
 ) {
@@ -516,8 +516,8 @@ ElizaClient.prototype.updateCloudCompatAgentDiscordConfig = async function (
   );
 };
 
-ElizaClient.prototype.getCloudCompatAgentManagedGithub = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAgentManagedGithub = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -525,8 +525,8 @@ ElizaClient.prototype.getCloudCompatAgentManagedGithub = async function (
   );
 };
 
-ElizaClient.prototype.createCloudCompatAgentManagedGithubOauth =
-  async function (this: ElizaClient, agentId, request = {}) {
+TokagentClient.prototype.createCloudCompatAgentManagedGithubOauth =
+  async function (this: TokagentClient, agentId, request = {}) {
     try {
       return await this.fetch(
         `/api/cloud/v1/app/agents/${encodeURIComponent(agentId)}/github/oauth`,
@@ -566,8 +566,8 @@ ElizaClient.prototype.createCloudCompatAgentManagedGithubOauth =
     }
   };
 
-ElizaClient.prototype.linkCloudCompatAgentManagedGithub = async function (
-  this: ElizaClient,
+TokagentClient.prototype.linkCloudCompatAgentManagedGithub = async function (
+  this: TokagentClient,
   agentId,
   connectionId,
 ) {
@@ -580,8 +580,8 @@ ElizaClient.prototype.linkCloudCompatAgentManagedGithub = async function (
   );
 };
 
-ElizaClient.prototype.disconnectCloudCompatAgentManagedGithub = async function (
-  this: ElizaClient,
+TokagentClient.prototype.disconnectCloudCompatAgentManagedGithub = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -592,8 +592,8 @@ ElizaClient.prototype.disconnectCloudCompatAgentManagedGithub = async function (
   );
 };
 
-ElizaClient.prototype.listCloudOauthConnections = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listCloudOauthConnections = async function (
+  this: TokagentClient,
   args,
 ) {
   const params = new URLSearchParams();
@@ -609,8 +609,8 @@ ElizaClient.prototype.listCloudOauthConnections = async function (
   );
 };
 
-ElizaClient.prototype.initiateCloudOauth = async function (
-  this: ElizaClient,
+TokagentClient.prototype.initiateCloudOauth = async function (
+  this: TokagentClient,
   platform,
   request,
 ) {
@@ -637,8 +637,8 @@ ElizaClient.prototype.initiateCloudOauth = async function (
   }
 };
 
-ElizaClient.prototype.disconnectCloudOauthConnection = async function (
-  this: ElizaClient,
+TokagentClient.prototype.disconnectCloudOauthConnection = async function (
+  this: TokagentClient,
   connectionId,
 ) {
   return this.fetch(
@@ -649,8 +649,8 @@ ElizaClient.prototype.disconnectCloudOauthConnection = async function (
   );
 };
 
-ElizaClient.prototype.getCloudCompatAgentGithubToken = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAgentGithubToken = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -658,8 +658,8 @@ ElizaClient.prototype.getCloudCompatAgentGithubToken = async function (
   );
 };
 
-ElizaClient.prototype.deleteCloudCompatAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.deleteCloudCompatAgent = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(`/api/cloud/compat/agents/${encodeURIComponent(agentId)}`, {
@@ -667,8 +667,8 @@ ElizaClient.prototype.deleteCloudCompatAgent = async function (
   });
 };
 
-ElizaClient.prototype.getCloudCompatAgentStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAgentStatus = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -676,8 +676,8 @@ ElizaClient.prototype.getCloudCompatAgentStatus = async function (
   );
 };
 
-ElizaClient.prototype.getCloudCompatAgentLogs = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAgentLogs = async function (
+  this: TokagentClient,
   agentId,
   tail = 100,
 ) {
@@ -686,8 +686,8 @@ ElizaClient.prototype.getCloudCompatAgentLogs = async function (
   );
 };
 
-ElizaClient.prototype.restartCloudCompatAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.restartCloudCompatAgent = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -696,8 +696,8 @@ ElizaClient.prototype.restartCloudCompatAgent = async function (
   );
 };
 
-ElizaClient.prototype.suspendCloudCompatAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.suspendCloudCompatAgent = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -706,8 +706,8 @@ ElizaClient.prototype.suspendCloudCompatAgent = async function (
   );
 };
 
-ElizaClient.prototype.resumeCloudCompatAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.resumeCloudCompatAgent = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -716,8 +716,8 @@ ElizaClient.prototype.resumeCloudCompatAgent = async function (
   );
 };
 
-ElizaClient.prototype.launchCloudCompatAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.launchCloudCompatAgent = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -726,8 +726,8 @@ ElizaClient.prototype.launchCloudCompatAgent = async function (
   );
 };
 
-ElizaClient.prototype.getCloudCompatPairingToken = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatPairingToken = async function (
+  this: TokagentClient,
   agentId,
 ) {
   return this.fetch(
@@ -736,21 +736,21 @@ ElizaClient.prototype.getCloudCompatPairingToken = async function (
   );
 };
 
-ElizaClient.prototype.getCloudCompatAvailability = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatAvailability = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/cloud/compat/availability");
 };
 
-ElizaClient.prototype.getCloudCompatJobStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getCloudCompatJobStatus = async function (
+  this: TokagentClient,
   jobId,
 ) {
   return this.fetch(`/api/cloud/compat/jobs/${encodeURIComponent(jobId)}`);
 };
 
-ElizaClient.prototype.exportAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.exportAgent = async function (
+  this: TokagentClient,
   password,
   includeLogs = false,
 ) {
@@ -768,12 +768,12 @@ ElizaClient.prototype.exportAgent = async function (
   });
 };
 
-ElizaClient.prototype.getExportEstimate = async function (this: ElizaClient) {
+TokagentClient.prototype.getExportEstimate = async function (this: TokagentClient) {
   return this.fetch("/api/agent/export/estimate");
 };
 
-ElizaClient.prototype.importAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.importAgent = async function (
+  this: TokagentClient,
   password,
   fileBuffer,
 ) {
@@ -817,16 +817,16 @@ ElizaClient.prototype.importAgent = async function (
   };
 };
 
-ElizaClient.prototype.getSandboxPlatform = async function (this: ElizaClient) {
+TokagentClient.prototype.getSandboxPlatform = async function (this: TokagentClient) {
   return this.fetch("/api/sandbox/platform");
 };
 
-ElizaClient.prototype.getSandboxBrowser = async function (this: ElizaClient) {
+TokagentClient.prototype.getSandboxBrowser = async function (this: TokagentClient) {
   return this.fetch("/api/sandbox/browser");
 };
 
-ElizaClient.prototype.getSandboxScreenshot = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getSandboxScreenshot = async function (
+  this: TokagentClient,
   region?,
 ) {
   if (!region) {
@@ -841,16 +841,16 @@ ElizaClient.prototype.getSandboxScreenshot = async function (
   });
 };
 
-ElizaClient.prototype.getSandboxWindows = async function (this: ElizaClient) {
+TokagentClient.prototype.getSandboxWindows = async function (this: TokagentClient) {
   return this.fetch("/api/sandbox/screen/windows");
 };
 
-ElizaClient.prototype.startDocker = async function (this: ElizaClient) {
+TokagentClient.prototype.startDocker = async function (this: TokagentClient) {
   return this.fetch("/api/sandbox/docker/start", { method: "POST" });
 };
 
-ElizaClient.prototype.cloudLoginDirect = async function (
-  this: ElizaClient,
+TokagentClient.prototype.cloudLoginDirect = async function (
+  this: TokagentClient,
   cloudApiBase,
 ) {
   const sessionId = globalThis.crypto.randomUUID();
@@ -871,13 +871,13 @@ ElizaClient.prototype.cloudLoginDirect = async function (
   } catch (err) {
     return {
       ok: false,
-      error: `Failed to reach Eliza Cloud: ${err instanceof Error ? err.message : String(err)}`,
+      error: `Failed to reach Tokagent Cloud: ${err instanceof Error ? err.message : String(err)}`,
     };
   }
 };
 
-ElizaClient.prototype.cloudLoginPollDirect = async function (
-  this: ElizaClient,
+TokagentClient.prototype.cloudLoginPollDirect = async function (
+  this: TokagentClient,
   cloudApiBase,
   sessionId,
 ) {
@@ -911,8 +911,8 @@ ElizaClient.prototype.cloudLoginPollDirect = async function (
   }
 };
 
-ElizaClient.prototype.provisionCloudSandbox = async function (
-  this: ElizaClient,
+TokagentClient.prototype.provisionCloudSandbox = async function (
+  this: TokagentClient,
   options,
 ) {
   const { cloudApiBase, authToken, name, bio, onProgress } = options;
@@ -983,12 +983,12 @@ ElizaClient.prototype.provisionCloudSandbox = async function (
   throw new Error("Provisioning timed out after 2 minutes");
 };
 
-ElizaClient.prototype.checkBugReportInfo = async function (this: ElizaClient) {
+TokagentClient.prototype.checkBugReportInfo = async function (this: TokagentClient) {
   return this.fetch("/api/bug-report/info");
 };
 
-ElizaClient.prototype.submitBugReport = async function (
-  this: ElizaClient,
+TokagentClient.prototype.submitBugReport = async function (
+  this: TokagentClient,
   report,
 ) {
   return this.fetch("/api/bug-report", {

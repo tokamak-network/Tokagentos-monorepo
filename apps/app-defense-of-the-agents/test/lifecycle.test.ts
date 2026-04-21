@@ -52,13 +52,13 @@ afterEach(() => {
 describe("sessionCacheKey", () => {
   it("isolates two runtimes that share a character name", () => {
     const ctxA = resolveSessionContext(
-      makeRuntime("agent-a", "Eliza") as unknown as Parameters<
+      makeRuntime("agent-a", "Tokagent") as unknown as Parameters<
         typeof resolveSessionContext
       >[0],
       null,
     );
     const ctxB = resolveSessionContext(
-      makeRuntime("agent-b", "Eliza") as unknown as Parameters<
+      makeRuntime("agent-b", "Tokagent") as unknown as Parameters<
         typeof resolveSessionContext
       >[0],
       null,
@@ -77,7 +77,7 @@ describe("sessionCacheKey", () => {
 
 describe("stopRun", () => {
   it("clears the active game loop, recent activity, session cache and launch failure for the agent", async () => {
-    const runtime = makeRuntime("agent-stop-1", "ElizaStop1");
+    const runtime = makeRuntime("agent-stop-1", "TokagentStop1");
     const ctx = resolveSessionContext(
       runtime as unknown as Parameters<typeof resolveSessionContext>[0],
       null,
@@ -108,7 +108,7 @@ describe("stopRun", () => {
   });
 
   it("is idempotent — calling twice does not throw", async () => {
-    const runtime = makeRuntime("agent-stop-2", "ElizaStop2");
+    const runtime = makeRuntime("agent-stop-2", "TokagentStop2");
     await stopRun({ runtime });
     await stopRun({ runtime });
   });
@@ -120,8 +120,8 @@ describe("stopRun", () => {
 
 describe("clearAgentRunState", () => {
   it("does not touch other agents' state", () => {
-    const runtimeA = makeRuntime("agent-a", "ElizaA");
-    const runtimeB = makeRuntime("agent-b", "ElizaB");
+    const runtimeA = makeRuntime("agent-a", "TokagentA");
+    const runtimeB = makeRuntime("agent-b", "TokagentB");
     const ctxA = resolveSessionContext(
       runtimeA as unknown as Parameters<typeof resolveSessionContext>[0],
       null,

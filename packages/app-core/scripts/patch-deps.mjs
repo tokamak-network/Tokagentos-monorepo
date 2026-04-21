@@ -15,12 +15,12 @@
  * Many former patches have been retired because the upstream submodule source
  * (workspace:*) now includes the fixes. The following patches were removed
  * because the workspace source already resolves them:
- *   - patchElizaCoreMemoryStorageStub (requireStorage refactored out)
- *   - patchElizaCoreStreamingTtsHandlerGuard (already guarded in source)
- *   - patchElizaCoreStreamingRetryPlaceholder (removed from source)
+ *   - patchTokagentCoreMemoryStorageStub (requireStorage refactored out)
+ *   - patchTokagentCoreStreamingTtsHandlerGuard (already guarded in source)
+ *   - patchTokagentCoreStreamingRetryPlaceholder (removed from source)
  *   - patchPluginSqlCountMemoriesSignature (countMemories supports both forms)
  *   - patchGroqSdkVersion (plugin-groq uses workspace:*)
- *   - patchElizaCoreNodeTypes (workspace builds include types)
+ *   - patchTokagentCoreNodeTypes (workspace builds include types)
  */
 import {
   existsSync,
@@ -35,16 +35,16 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { resolveRepoRootFromImportMeta } from "./lib/repo-root.mjs";
 import {
-  patchAutonomousElizaOnboardingPresets,
-  patchBrokenElizaCoreRuntimeDists,
+  patchAutonomousTokagentOnboardingPresets,
+  patchBrokenTokagentCoreRuntimeDists,
   patchCodexFolderApprovalPromptCompat,
-  patchElizaCoreRolesSubpath,
+  patchTokagentCoreRolesSubpath,
   patchExtensionlessJsExports,
   patchNobleHashesCompat,
   patchPtyManagerCursorPositionCompat,
   patchPtyManagerEsmDirnameCompat,
   patchTsTsxJsGlobs,
-  pruneNestedElizaPluginCoreCopies,
+  pruneNestedTokagentPluginCoreCopies,
   warnStaleBunCache,
 } from "./lib/patch-bun-exports.mjs";
 
@@ -68,7 +68,7 @@ warnStaleBunCache(root);
   let removedCount = 0;
   for (const nmDir of [
     resolve(root, "node_modules/.bun"),
-    resolve(root, "eliza/node_modules/.bun"),
+    resolve(root, "tokagent/node_modules/.bun"),
   ]) {
     if (existsSync(nmDir)) {
       try {
@@ -84,7 +84,7 @@ warnStaleBunCache(root);
   // Also remove @types directories from node_modules root
   for (const nmDir of [
     resolve(root, "node_modules/@types"),
-    resolve(root, "eliza/node_modules/@types"),
+    resolve(root, "tokagent/node_modules/@types"),
   ]) {
     if (existsSync(nmDir)) {
       rmSync(nmDir, { recursive: true, force: true });
@@ -102,22 +102,22 @@ warnStaleBunCache(root);
 patchExtensionlessJsExports(root, "@noble/hashes");
 patchNobleHashesCompat(root);
 patchCodexFolderApprovalPromptCompat(root);
-patchBrokenElizaCoreRuntimeDists(root);
-patchElizaCoreRolesSubpath(root);
+patchBrokenTokagentCoreRuntimeDists(root);
+patchTokagentCoreRolesSubpath(root);
 patchPtyManagerEsmDirnameCompat(root);
 patchPtyManagerCursorPositionCompat(root);
-// @elizaos/agent and @elizaos/ui ship exports maps where glob targets still
+// @tokagentos/agent and @tokagentos/ui ship exports maps where glob targets still
 // carry the source extension (e.g. "./packages/agent/src/runtime/*.ts.js").
 // Bun fails to resolve those because the actual emitted dist files are *.js.
-// Rewrite the broken globs until eliza/scripts/prepare-package-dist.mjs is fixed
-// upstream and we bump the @elizaos/agent and @elizaos/ui tarballs.
-patchTsTsxJsGlobs(root, "@elizaos/agent");
-patchTsTsxJsGlobs(root, "@elizaos/ui");
-pruneNestedElizaPluginCoreCopies(root);
+// Rewrite the broken globs until tokagent/scripts/prepare-package-dist.mjs is fixed
+// upstream and we bump the @tokagentos/agent and @tokagentos/ui tarballs.
+patchTsTsxJsGlobs(root, "@tokagentos/agent");
+patchTsTsxJsGlobs(root, "@tokagentos/ui");
+pruneNestedTokagentPluginCoreCopies(root);
 try {
-  patchAutonomousElizaOnboardingPresets(root);
+  patchAutonomousTokagentOnboardingPresets(root);
 } catch {
-  // Source file may not exist (moved to @elizaos/shared).
+  // Source file may not exist (moved to @tokagentos/shared).
 }
 
 function uniqueResolvedPaths(paths) {
@@ -240,7 +240,7 @@ function patchBigintBufferNativeFallbackNoise() {
   const oldSnippet =
     "console.warn('bigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)');";
   const newSnippet =
-    "if (process.env.ELIZA_DEBUG_BIGINT_BINDINGS === \"1\") {\n        console.warn('bigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)');\n    }";
+    "if (process.env.TOKAGENT_DEBUG_BIGINT_BINDINGS === \"1\") {\n        console.warn('bigint: Failed to load bindings, pure JS will be used (try npm run rebuild?)');\n    }";
 
   let patched = 0;
   for (const dir of uniqueResolvedPaths(searchDirs)) {
@@ -365,7 +365,7 @@ patchLegacySharpStoreAliases();
 /**
  * Keep jsdom from eagerly requiring node-canvas on startup.
  *
- * Browser-workspace code uses jsdom for DOM parsing, but Eliza does not need
+ * Browser-workspace code uses jsdom for DOM parsing, but Tokagent does not need
  * canvas-backed rendering in normal runtime boot. jsdom's eager `require("canvas")`
  * pulls in a second libvips/gio stack on macOS, which collides with sharp.
  * Make canvas opt-in for the rare cases that genuinely need it.
@@ -380,7 +380,7 @@ function patchJsdomCanvasAutoload() {
 } catch {
   exports.Canvas = null;
 }`;
-  const newSnippet = `if (process.env.ELIZA_ENABLE_JSDOM_CANVAS === "1") {
+  const newSnippet = `if (process.env.TOKAGENT_ENABLE_JSDOM_CANVAS === "1") {
   try {
     exports.Canvas = require("canvas");
   } catch {
@@ -517,7 +517,7 @@ if (threeVrmNodeTargets.length === 0) {
   );
 }
 
-// Action parsing patch removed — fix shipped in @elizaos/core@2.0.0-alpha.106
+// Action parsing patch removed — fix shipped in @tokagentos/core@2.0.0-alpha.106
 // (PR #6661: parseKeyValueXml preserves raw XML string for <actions> content).
 
 /**
@@ -575,13 +575,13 @@ patchCssstyleColorCompat();
 // RETIRED FORK PATCHES
 //
 // The following patches have been retired because the workspace submodule
-// source (@elizaos/core, @elizaos/plugin-sql) already includes these fixes
+// source (@tokagentos/core, @elizaos/plugin-sql) already includes these fixes
 // and they resolve via workspace:* rather than npm tarballs:
 //
 // - patchPluginSqlCountMemoriesSignature (plugin-sql supports both signatures)
-// - patchElizaCoreMemoryStorageStub (requireStorage refactored out of core)
-// - patchElizaCoreStreamingTtsHandlerGuard (TTS guard already in source)
-// - patchElizaCoreStreamingRetryPlaceholder (retry placeholder removed)
-// - patchElizaCoreNodeTypes (workspace builds include types)
+// - patchTokagentCoreMemoryStorageStub (requireStorage refactored out of core)
+// - patchTokagentCoreStreamingTtsHandlerGuard (TTS guard already in source)
+// - patchTokagentCoreStreamingRetryPlaceholder (retry placeholder removed)
+// - patchTokagentCoreNodeTypes (workspace builds include types)
 // - patchGroqSdkVersion (plugin-groq uses workspace:*, no nested @ai-sdk/groq)
 // ---------------------------------------------------------------------------

@@ -22,7 +22,7 @@ const useMocks = process.env.USE_REAL_API !== 'true'
 beforeAll(() => {
     // Mock environment variables
     process.env.NODE_ENV = 'test'
-    process.env.ELIZA_API_URL = process.env.ELIZA_API_URL || 'http://localhost:3000'
+    process.env.TOKAGENT_API_URL = process.env.TOKAGENT_API_URL || 'http://localhost:3000'
     process.env.PORT = process.env.PORT || '3001'
 })
 

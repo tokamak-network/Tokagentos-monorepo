@@ -1,11 +1,11 @@
 """
-ElizaOS Actions for AgentBench Environments.
+TokagentOS Actions for AgentBench Environments.
 
-This module defines proper ElizaOS Actions for each benchmark environment,
+This module defines proper TokagentOS Actions for each benchmark environment,
 enabling the agent to interact with benchmark tasks through the canonical
 action system rather than just text parsing.
 
-These actions can be registered with the ElizaOS runtime to provide
+These actions can be registered with the TokagentOS runtime to provide
 structured tool-use capabilities for benchmark execution.
 """
 
@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         Action,
         ActionExample,
         ActionResult,
@@ -62,7 +62,7 @@ class ExecuteBashAction:
         responses: "list[Memory] | None" = None,
     ) -> "ActionResult":
         """Execute a bash command."""
-        from elizaos.types import ActionResult
+        from tokagentos.types import ActionResult
 
         command = ""
         if options and options.parameters:
@@ -78,7 +78,7 @@ class ExecuteBashAction:
     @property
     def examples(self) -> "list[list[ActionExample]]":
         """Example usages of this action."""
-        from elizaos.types import ActionExample, Content
+        from tokagentos.types import ActionExample, Content
 
         return [
             [
@@ -143,7 +143,7 @@ class ExecuteSQLAction:
         responses: "list[Memory] | None" = None,
     ) -> "ActionResult":
         """Execute a SQL query."""
-        from elizaos.types import ActionResult
+        from tokagentos.types import ActionResult
 
         query = ""
         if options and options.parameters:
@@ -159,7 +159,7 @@ class ExecuteSQLAction:
     @property
     def examples(self) -> "list[list[ActionExample]]":
         """Example usages of this action."""
-        from elizaos.types import ActionExample, Content
+        from tokagentos.types import ActionExample, Content
 
         return [
             [
@@ -211,7 +211,7 @@ class QueryKnowledgeGraphAction:
         responses: "list[Memory] | None" = None,
     ) -> "ActionResult":
         """Execute a knowledge graph query."""
-        from elizaos.types import ActionResult
+        from tokagentos.types import ActionResult
 
         operation = ""
         if options and options.parameters:
@@ -227,7 +227,7 @@ class QueryKnowledgeGraphAction:
     @property
     def examples(self) -> "list[list[ActionExample]]":
         """Example usages of this action."""
-        from elizaos.types import ActionExample, Content
+        from tokagentos.types import ActionExample, Content
 
         return [
             [
@@ -279,7 +279,7 @@ class WebShopAction:
         responses: "list[Memory] | None" = None,
     ) -> "ActionResult":
         """Execute a web shopping action."""
-        from elizaos.types import ActionResult
+        from tokagentos.types import ActionResult
 
         action = ""
         if options and options.parameters:
@@ -295,7 +295,7 @@ class WebShopAction:
     @property
     def examples(self) -> "list[list[ActionExample]]":
         """Example usages of this action."""
-        from elizaos.types import ActionExample, Content
+        from tokagentos.types import ActionExample, Content
 
         return [
             [
@@ -347,7 +347,7 @@ class LateralThinkingAction:
         responses: "list[Memory] | None" = None,
     ) -> "ActionResult":
         """Execute a lateral thinking action."""
-        from elizaos.types import ActionResult
+        from tokagentos.types import ActionResult
 
         action = ""
         if options and options.parameters:
@@ -363,7 +363,7 @@ class LateralThinkingAction:
     @property
     def examples(self) -> "list[list[ActionExample]]":
         """Example usages of this action."""
-        from elizaos.types import ActionExample, Content
+        from tokagentos.types import ActionExample, Content
 
         return [
             [
@@ -387,8 +387,8 @@ class LateralThinkingAction:
 # =============================================================================
 
 def create_benchmark_actions() -> "list[Action]":
-    """Create all benchmark actions as proper ElizaOS Action objects."""
-    from elizaos.types import Action
+    """Create all benchmark actions as proper TokagentOS Action objects."""
+    from tokagentos.types import Action
 
     actions = []
 
@@ -462,7 +462,7 @@ def create_benchmark_actions() -> "list[Action]":
 
 def create_benchmark_plugin() -> "Plugin":
     """Create a plugin that registers all benchmark actions."""
-    from elizaos.types import Plugin
+    from tokagentos.types import Plugin
 
     async def init_plugin(
         config: dict,
@@ -477,7 +477,7 @@ def create_benchmark_plugin() -> "Plugin":
 
     return Plugin(
         name="agentbench",
-        description="AgentBench benchmark actions for ElizaOS",
+        description="AgentBench benchmark actions for TokagentOS",
         init=init_plugin,
         config={},
         actions=create_benchmark_actions(),

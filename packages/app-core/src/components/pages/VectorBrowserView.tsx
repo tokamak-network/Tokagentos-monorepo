@@ -17,7 +17,7 @@ import {
   SidebarContent,
   SidebarPanel,
   SidebarScrollRegion,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import type { ReactNode } from "react";
 import {
   useCallback,
@@ -854,7 +854,7 @@ export function VectorBrowserView({
       const available = vectorTables.length > 0 ? vectorTables : allTables;
       setTables(available);
 
-      // Check for separate embeddings table (elizaOS stores vectors there)
+      // Check for separate embeddings table (tokagentOS stores vectors there)
       const embTbl = allTables.find((t) => t.name === "embeddings");
       setHasEmbeddingsTable(!!embTbl);
 

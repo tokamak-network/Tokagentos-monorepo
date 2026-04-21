@@ -2,13 +2,13 @@
  * Media Provider Abstraction Layer
  *
  * Provides a unified interface for media generation across multiple providers:
- * - Image Generation: FAL.ai, OpenAI (DALL-E), Google (Imagen), xAI, Eliza Cloud
- * - Video Generation: FAL.ai, OpenAI (Sora), Google (Veo), Eliza Cloud
- * - Audio Generation: Suno, ElevenLabs (SFX), Eliza Cloud
- * - Vision (Analysis): OpenAI, Google, Anthropic, xAI, Eliza Cloud
+ * - Image Generation: FAL.ai, OpenAI (DALL-E), Google (Imagen), xAI, Tokagent Cloud
+ * - Video Generation: FAL.ai, OpenAI (Sora), Google (Veo), Tokagent Cloud
+ * - Audio Generation: Suno, ElevenLabs (SFX), Tokagent Cloud
+ * - Vision (Analysis): OpenAI, Google, Anthropic, xAI, Tokagent Cloud
  *
  * Follows the same pattern as TTS provider selection:
- * - "cloud" mode uses Eliza Cloud (no API key needed)
+ * - "cloud" mode uses Tokagent Cloud (no API key needed)
  * - "own-key" mode uses the user's own API keys
  */
 
@@ -18,7 +18,7 @@ import type {
   MediaConfig,
   VideoConfig,
   VisionConfig,
-} from "@elizaos/agent/config";
+} from "@tokagentos/agent/config";
 
 // ============================================================================
 // Fetch Utilities
@@ -153,11 +153,11 @@ export interface VisionAnalysisProvider {
 }
 
 // ============================================================================
-// Eliza Cloud Provider Implementations
+// Tokagent Cloud Provider Implementations
 // ============================================================================
 
-class ElizaCloudImageProvider implements ImageGenerationProvider {
-  name = "eliza-cloud";
+class TokagentCloudImageProvider implements ImageGenerationProvider {
+  name = "tokagent-cloud";
   private baseUrl: string;
   private apiKey?: string;
 
@@ -188,7 +188,7 @@ class ElizaCloudImageProvider implements ImageGenerationProvider {
 
     if (!response.ok) {
       const text = await response.text();
-      return { success: false, error: `Eliza Cloud error: ${text}` };
+      return { success: false, error: `Tokagent Cloud error: ${text}` };
     }
 
     const data = (await response.json()) as {
@@ -207,8 +207,8 @@ class ElizaCloudImageProvider implements ImageGenerationProvider {
   }
 }
 
-class ElizaCloudVideoProvider implements VideoGenerationProvider {
-  name = "eliza-cloud";
+class TokagentCloudVideoProvider implements VideoGenerationProvider {
+  name = "tokagent-cloud";
   private baseUrl: string;
   private apiKey?: string;
 
@@ -239,7 +239,7 @@ class ElizaCloudVideoProvider implements VideoGenerationProvider {
 
     if (!response.ok) {
       const text = await response.text();
-      return { success: false, error: `Eliza Cloud error: ${text}` };
+      return { success: false, error: `Tokagent Cloud error: ${text}` };
     }
 
     const data = (await response.json()) as {
@@ -258,8 +258,8 @@ class ElizaCloudVideoProvider implements VideoGenerationProvider {
   }
 }
 
-class ElizaCloudAudioProvider implements AudioGenerationProvider {
-  name = "eliza-cloud";
+class TokagentCloudAudioProvider implements AudioGenerationProvider {
+  name = "tokagent-cloud";
   private baseUrl: string;
   private apiKey?: string;
 
@@ -290,7 +290,7 @@ class ElizaCloudAudioProvider implements AudioGenerationProvider {
 
     if (!response.ok) {
       const text = await response.text();
-      return { success: false, error: `Eliza Cloud error: ${text}` };
+      return { success: false, error: `Tokagent Cloud error: ${text}` };
     }
 
     const data = (await response.json()) as {
@@ -309,8 +309,8 @@ class ElizaCloudAudioProvider implements AudioGenerationProvider {
   }
 }
 
-class ElizaCloudVisionProvider implements VisionAnalysisProvider {
-  name = "eliza-cloud";
+class TokagentCloudVisionProvider implements VisionAnalysisProvider {
+  name = "tokagent-cloud";
   private baseUrl: string;
   private apiKey?: string;
 
@@ -341,7 +341,7 @@ class ElizaCloudVisionProvider implements VisionAnalysisProvider {
 
     if (!response.ok) {
       const text = await response.text();
-      return { success: false, error: `Eliza Cloud error: ${text}` };
+      return { success: false, error: `Tokagent Cloud error: ${text}` };
     }
 
     const data = (await response.json()) as {
@@ -1369,9 +1369,9 @@ export class SunoAudioProvider implements AudioGenerationProvider {
 // ============================================================================
 
 export interface MediaProviderFactoryOptions {
-  elizaCloudBaseUrl?: string;
-  elizaCloudApiKey?: string;
-  /** When true, factories will NOT fall back to ElizaCloud providers. */
+  tokagentCloudBaseUrl?: string;
+  tokagentCloudApiKey?: string;
+  /** When true, factories will NOT fall back to TokagentCloud providers. */
   cloudMediaDisabled?: boolean;
 }
 
@@ -1411,9 +1411,9 @@ export function createImageProvider(
         "Configure a direct provider (fal, openai, google, xai) or enable cloud media.",
     );
   }
-  return new ElizaCloudImageProvider(
-    options.elizaCloudBaseUrl ?? "https://elizacloud.ai/api/v1",
-    options.elizaCloudApiKey,
+  return new TokagentCloudImageProvider(
+    options.tokagentCloudBaseUrl ?? "https://tokagentcloud.ai/api/v1",
+    options.tokagentCloudApiKey,
   );
 }
 
@@ -1448,9 +1448,9 @@ export function createVideoProvider(
         "Configure a direct provider (fal, openai, google) or enable cloud media.",
     );
   }
-  return new ElizaCloudVideoProvider(
-    options.elizaCloudBaseUrl ?? "https://elizacloud.ai/api/v1",
-    options.elizaCloudApiKey,
+  return new TokagentCloudVideoProvider(
+    options.tokagentCloudBaseUrl ?? "https://tokagentcloud.ai/api/v1",
+    options.tokagentCloudApiKey,
   );
 }
 
@@ -1471,9 +1471,9 @@ export function createAudioProvider(
         "Configure a direct provider (suno) or enable cloud media.",
     );
   }
-  return new ElizaCloudAudioProvider(
-    options.elizaCloudBaseUrl ?? "https://elizacloud.ai/api/v1",
-    options.elizaCloudApiKey,
+  return new TokagentCloudAudioProvider(
+    options.tokagentCloudBaseUrl ?? "https://tokagentcloud.ai/api/v1",
+    options.tokagentCloudApiKey,
   );
 }
 
@@ -1516,9 +1516,9 @@ export function createVisionProvider(
         "Configure a direct provider (openai, google, anthropic, xai, ollama) or enable cloud media.",
     );
   }
-  return new ElizaCloudVisionProvider(
-    options.elizaCloudBaseUrl ?? "https://elizacloud.ai/api/v1",
-    options.elizaCloudApiKey,
+  return new TokagentCloudVisionProvider(
+    options.tokagentCloudBaseUrl ?? "https://tokagentcloud.ai/api/v1",
+    options.tokagentCloudApiKey,
   );
 }
 

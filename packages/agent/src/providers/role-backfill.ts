@@ -26,7 +26,7 @@ import {
   type RoleName,
   resolveCanonicalOwnerId,
   type State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 type RolesWorldMetadata = {
   ownership?: { ownerId?: string };

@@ -18,8 +18,8 @@ import {
   parseJSONObjectFromText,
   parseKeyValueXml,
   type UUID,
-} from "@elizaos/core";
-import { normalizeCharacterLanguage } from "@elizaos/shared/onboarding-presets";
+} from "@tokagentos/core";
+import { normalizeCharacterLanguage } from "@tokagentos/shared/onboarding-presets";
 import { detectRuntimeModel, resolveProviderFromModel } from "./agent-model.js";
 import { isCloudProvisionedContainer } from "./cloud-provisioning.js";
 import { extractCompatTextContent } from "./compat-utils.js";
@@ -156,7 +156,7 @@ export async function buildAgentAwarenessContextPrompt(
 ): Promise<string> {
   const addrs = getWalletAddresses();
   const walletNetwork =
-    process.env.ELIZA_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
+    process.env.TOKAGENT_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
       ? "testnet"
       : "mainnet";
   const localSignerAvailable = Boolean(process.env.EVM_PRIVATE_KEY?.trim());
@@ -494,7 +494,7 @@ export function validateChatImages(images: unknown): string | null {
  * action handlers (e.g. POST_TWEET) while the message is in-memory. The
  * extra fields are intentionally stripped before the message is persisted.
  *
- * Note: `_data`/`_mimeType` survive only because elizaOS passes the
+ * Note: `_data`/`_mimeType` survive only because tokagentOS passes the
  * `userMessage` object reference directly to action handlers without
  * deep-cloning or serializing it. If that ever changes, action handlers
  * that read these fields will silently receive `undefined`.

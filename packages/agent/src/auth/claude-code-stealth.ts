@@ -1,4 +1,4 @@
-const STEALTH_GUARD = Symbol.for("eliza.claudeCodeStealthInstalled");
+const STEALTH_GUARD = Symbol.for("tokagent.claudeCodeStealthInstalled");
 const CLAUDE_CODE_VERSION = "2.1.92";
 const CLAUDE_CODE_SYSTEM_PREFIX =
   "You are Claude Code, Anthropic's official CLI for Claude.";
@@ -129,7 +129,7 @@ export function installClaudeCodeStealthFetchInterceptor(): void {
       return originalFetch(nextRequest);
     }
 
-    if (process.env.ELIZA_STEALTH_DEBUG && typeof body === "string") {
+    if (process.env.TOKAGENT_STEALTH_DEBUG && typeof body === "string") {
       const modelMatch = body.match(/"model":"([^"]+)"/);
       if (modelMatch) {
         console.log(`[stealth] →anthropic model=${modelMatch[1]}`);

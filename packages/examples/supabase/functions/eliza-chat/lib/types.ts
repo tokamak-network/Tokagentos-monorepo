@@ -1,5 +1,5 @@
 /**
- * Type definitions for elizaOS Supabase Edge Function
+ * Type definitions for tokagentOS Supabase Edge Function
  */
 
 export interface ChatResponse {

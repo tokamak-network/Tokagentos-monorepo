@@ -65,7 +65,7 @@ export const createConversation = mutation({
   handler: async (ctx, args) => {
     return await ctx.db.insert("conversations", {
       title: args.title,
-      agentName: args.agentName ?? "Eliza",
+      agentName: args.agentName ?? "Tokagent",
       lastMessageAt: Date.now(),
     });
   },

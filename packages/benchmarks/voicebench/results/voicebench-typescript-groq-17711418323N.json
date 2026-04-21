@@ -23,7 +23,7 @@
     {
       "mode": "simple",
       "sampleId": "single-audio",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/examples/town/public/assets/background.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/examples/town/public/assets/background.mp3",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": null,
@@ -71,7 +71,7 @@
     {
       "mode": "non-simple",
       "sampleId": "single-audio",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/examples/town/public/assets/background.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/examples/town/public/assets/background.mp3",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": null,

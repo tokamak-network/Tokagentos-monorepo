@@ -11,7 +11,7 @@ import {
   SidebarPanel,
   SidebarScrollRegion,
   StatusBadge,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { Plus } from "lucide-react";
 import {
   createContext,

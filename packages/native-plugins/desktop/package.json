@@ -24,14 +24,14 @@
     "dist/",
     "electrobun/"
   ],
-  "author": "elizaOS",
+  "author": "tokagentOS",
   "license": "MIT",
   "dependencies": {
-    "@elizaos/app-core": "workspace:*"
+    "@tokagentos/app-core": "workspace:*"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaOS/eliza"
+    "url": "https://github.com/tokagentOS/tokagent"
   },
   "scripts": {
     "build": "npm run clean && tsc && rollup -c rollup.config.mjs",
@@ -51,7 +51,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "elizaos": {
+  "tokagentos": {
     "platforms": [
       "browser",
       "node"

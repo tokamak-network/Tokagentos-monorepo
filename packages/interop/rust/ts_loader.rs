@@ -1,4 +1,4 @@
-//! TypeScript Plugin Loader for elizaOS Rust Runtime
+//! TypeScript Plugin Loader for tokagentOS Rust Runtime
 //!
 //! This module provides utilities for loading TypeScript plugins into the Rust runtime
 //! via subprocess IPC communication.
@@ -292,7 +292,7 @@ const pluginPath = process.argv[2];
 })();
 "#;
         // Write to temp file
-        let temp_path = std::env::temp_dir().join("elizaos_ts_bridge.js");
+        let temp_path = std::env::temp_dir().join("tokagentos_ts_bridge.js");
         std::fs::write(&temp_path, script)?;
         Ok(temp_path.to_string_lossy().to_string())
     }

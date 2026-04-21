@@ -1,10 +1,10 @@
 ---
 title: "Customize an Agent"
-description: "As a jumping-off point, we will create a custom Shakespeare elizaOS agent with a custom personality and Discord integration"
+description: "As a jumping-off point, we will create a custom Shakespeare tokagentOS agent with a custom personality and Discord integration"
 ---
 
 <Note>
-  This guide assumes you have an elizaOS project set up. If you don't, follow
+  This guide assumes you have an tokagentOS project set up. If you don't, follow
   the [quickstart guide](/quickstart)
 </Note>
 
@@ -16,7 +16,7 @@ Let's start by updating the basic identity. Replace the name.
 
 ```typescript src/character.ts
 export const character: Character = {
-  name: 'Eliza',  // [!code --]
+  name: 'Tokagent',  // [!code --]
   name: 'Shakespeare',  // [!code ++]
   plugins: [
     // ... plugins array
@@ -102,7 +102,7 @@ Message examples teach your agent how to respond. These are crucial for maintain
         },
       },
       {
-        name: 'Eliza',  // [!code --]
+        name: 'Tokagent',  // [!code --]
         name: 'Shakespeare',  // [!code ++]
         content: {
           text: 'DM them. Sounds like they need to talk about something else.',  // [!code --]
@@ -119,7 +119,7 @@ Message examples teach your agent how to respond. These are crucial for maintain
         },
       },
       {
-        name: 'Eliza',  // [!code --]
+        name: 'Tokagent',  // [!code --]
         name: 'Shakespeare',  // [!code ++]
         content: {
           text: 'Drop the channels. You come first.',  // [!code --]
@@ -147,7 +147,7 @@ The style object determines how your agent communicates. For Shakespeare, we wan
       'Adapt tone to the conversation',  // [!code --]
       'Use knowledge resources when needed',  // [!code --]
       'Respond to all types of questions',  // [!code --]
-      'Speak in Elizabethan style with thou, thee, thy, and thine',  // [!code ++]
+      'Speak in Tokagentbethan style with thou, thee, thy, and thine',  // [!code ++]
       'Use metaphors drawn from nature, mythology, and Renaissance life',  // [!code ++]
       'Occasionally quote or reference your own plays when fitting',  // [!code ++]
       'Mix humor with wisdom, jest with profundity',  // [!code ++]
@@ -165,7 +165,7 @@ The style object determines how your agent communicates. For Shakespeare, we wan
       'Show personality and warmth',  // [!code --]
       'Greet with "Well met!" or "Good morrow!"',  // [!code ++]
       'Use theatrical asides and observations',  // [!code ++]
-      'Reference the Globe Theatre and Elizabethan London',  // [!code ++]
+      'Reference the Globe Theatre and Tokagentbethan London',  // [!code ++]
       'Show wit and wordplay in responses',  // [!code ++]
       'Express emotions dramatically yet sincerely',  // [!code ++]
     ],
@@ -179,7 +179,7 @@ Let's give Shakespeare a proper avatar.
 ```typescript src/character.ts
   settings: {
     secrets: {},
-    avatar: 'https://elizaos.github.io/eliza-avatars/Eliza/portrait.png',  // [!code --]
+    avatar: 'https://tokagentos.github.io/tokagent-avatars/Tokagent/portrait.png',  // [!code --]
     avatar: 'https://example.com/shakespeare-portrait.png', // Add your Shakespeare image URL  // [!code ++]
   },
 ```
@@ -187,23 +187,23 @@ Let's give Shakespeare a proper avatar.
 Test your agent's personality customization by running it in development mode.
 
 ```bash Terminal
-elizaos dev
+tokagentos dev
 ```
 
 <Note>
-  `elizaos dev` is like `elizaos start` but with enhanced logging and hot
+  `tokagentos dev` is like `tokagentos start` but with enhanced logging and hot
   reload, perfect for debugging and testing changes in real-time.
 </Note>
 
-Go to `http://localhost:3000` in your browser and start chatting with Shakespeare. You should now get eloquent, Shakespearean responses instead of the default Eliza personality.
+Go to `http://localhost:3000` in your browser and start chatting with Shakespeare. You should now get eloquent, Shakespearean responses instead of the default Tokagent personality.
 
 <Note>
-  To use a different port, run `elizaos dev --port 8080` (or any port number).
+  To use a different port, run `tokagentos dev --port 8080` (or any port number).
 </Note>
 
 <img
   src="/images/shakespeare-screenshot.jpeg"
-  alt="Shakespeare agent responding in Shakespearean style in the elizaOS web interface"
+  alt="Shakespeare agent responding in Shakespearean style in the tokagentOS web interface"
 />
 
 <Note>
@@ -267,7 +267,7 @@ Need Discord credentials? Follow these steps:
 Restart your agent to load all the changes.
 
 ```bash Terminal
-elizaos start
+tokagentos start
 ```
 
 Your Shakespeare bot is now live! Invite it to your Discord server and try chatting.
@@ -293,13 +293,13 @@ Here are some logical next-steps to continue your agent dev journey:
     Learn how to write comprehensive tests for your project and agents
   </Card>
   <Card title="Deploy a Project" icon="rocket" href="/guides/deploy-a-project">
-    Ready to go live? Deploy your elizaOS agent to production environments
+    Ready to go live? Deploy your tokagentOS agent to production environments
   </Card>
   <Card title="Create a Plugin" icon="code" href="/guides/create-a-plugin">
     Build custom plugins to extend your agent's capabilities
   </Card>
   <Card title="CLI Reference" icon="terminal" href="/cli-reference/overview">
-    Master all elizaOS CLI commands for efficient agent development
+    Master all tokagentOS CLI commands for efficient agent development
   </Card>
   <Card
     title="Plugin Registry"

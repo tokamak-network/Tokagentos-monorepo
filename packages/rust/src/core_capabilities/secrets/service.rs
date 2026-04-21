@@ -38,7 +38,7 @@ impl SecretsService {
                 .encryption_salt
                 .as_deref()
                 .unwrap_or("default-salt");
-            Some(crypto::derive_key("elizaos-secrets", salt.as_bytes(), 10000))
+            Some(crypto::derive_key("tokagentos-secrets", salt.as_bytes(), 10000))
         } else {
             None
         };

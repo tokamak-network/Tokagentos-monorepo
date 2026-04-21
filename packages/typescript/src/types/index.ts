@@ -30,7 +30,7 @@ export * from "./prompt-optimization-score-card";
 export * from "./prompt-optimization-trace";
 export * from "./prompts";
 // Proto-generated types (single source of truth)
-// These types are generated from /schemas/eliza/v1/*.proto
+// These types are generated from /schemas/tokagent/v1/*.proto
 // Use these for new code and cross-language interoperability
 export * as proto from "./proto.js";
 // Re-export proto utilities for JSON conversion

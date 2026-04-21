@@ -1,9 +1,9 @@
 ---
 title: "Serverless Examples"
-description: "Deploy elizaOS to AWS, GCP, Vercel, Cloudflare, and Supabase"
+description: "Deploy tokagentOS to AWS, GCP, Vercel, Cloudflare, and Supabase"
 ---
 
-Deploy elizaOS agents as serverless functions with automatic scaling.
+Deploy tokagentOS agents as serverless functions with automatic scaling.
 
 ## Platforms
 
@@ -33,7 +33,7 @@ sam deploy --guided
 
 ```typescript
 import { APIGatewayProxyHandler } from "aws-lambda";
-import { AgentRuntime } from "@elizaos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
@@ -41,7 +41,7 @@ let runtime: AgentRuntime | null = null;
 const getRuntime = async () => {
   if (runtime) return runtime;
   runtime = new AgentRuntime({
-    character: { name: "Eliza", bio: "A helpful AI." },
+    character: { name: "Tokagent", bio: "A helpful AI." },
     plugins: [openaiPlugin],
   });
   await runtime.initialize();
@@ -71,7 +71,7 @@ Deploy to Google Cloud Functions.
 
 ```bash
 cd examples/gcp
-gcloud functions deploy eliza-chat \
+gcloud functions deploy tokagent-chat \
   --runtime nodejs20 \
   --trigger-http \
   --set-env-vars OPENAI_API_KEY=$OPENAI_API_KEY
@@ -81,15 +81,15 @@ gcloud functions deploy eliza-chat \
 
 ```typescript
 import { HttpFunction } from "@google-cloud/functions-framework";
-import { AgentRuntime } from "@elizaos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
 
-export const elizaChat: HttpFunction = async (req, res) => {
+export const tokagentChat: HttpFunction = async (req, res) => {
   if (!runtime) {
     runtime = new AgentRuntime({
-      character: { name: "Eliza", bio: "A helpful AI." },
+      character: { name: "Tokagent", bio: "A helpful AI." },
       plugins: [openaiPlugin],
     });
     await runtime.initialize();
@@ -119,7 +119,7 @@ vercel
 
 ```typescript
 // api/chat.ts
-import { AgentRuntime, ModelType } from "@elizaos/core";
+import { AgentRuntime, ModelType } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 export const config = { runtime: "edge" };
@@ -129,7 +129,7 @@ let runtime: AgentRuntime | null = null;
 export default async function handler(request: Request) {
   if (!runtime) {
     runtime = new AgentRuntime({
-      character: { name: "Eliza", bio: "A helpful AI." },
+      character: { name: "Tokagent", bio: "A helpful AI." },
       plugins: [openaiPlugin],
     });
     await runtime.initialize();
@@ -160,7 +160,7 @@ wrangler deploy
 ### Worker
 
 ```typescript
-import { AgentRuntime, ModelType } from "@elizaos/core";
+import { AgentRuntime, ModelType } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 interface Env {
@@ -174,7 +174,7 @@ export default {
     if (!runtime) {
       runtime = new AgentRuntime({
         character: {
-          name: "Eliza",
+          name: "Tokagent",
           bio: "A helpful AI.",
           secrets: { OPENAI_API_KEY: env.OPENAI_API_KEY },
         },
@@ -203,14 +203,14 @@ Deploy to Supabase Edge Functions (Deno).
 
 ```bash
 cd examples/supabase
-supabase functions deploy eliza-chat
+supabase functions deploy tokagent-chat
 ```
 
 ### Edge Function
 
 ```typescript
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { AgentRuntime, ModelType } from "@elizaos/core";
+import { AgentRuntime, ModelType } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 let runtime: AgentRuntime | null = null;
@@ -218,7 +218,7 @@ let runtime: AgentRuntime | null = null;
 serve(async (req) => {
   if (!runtime) {
     runtime = new AgentRuntime({
-      character: { name: "Eliza", bio: "A helpful AI." },
+      character: { name: "Tokagent", bio: "A helpful AI." },
       plugins: [openaiPlugin],
     });
     await runtime.initialize();

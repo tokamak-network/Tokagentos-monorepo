@@ -1,5 +1,5 @@
 """
-Canonical ElizaOS integration for Atropos TextWorld.
+Canonical TokagentOS integration for Atropos TextWorld.
 
 Provides:
 - ATROPOS_TEXTWORLD provider with current observation + admissible commands
@@ -12,15 +12,15 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from elizaos.types import ActionParameterSchema, Character, Plugin, ProviderResult
+from tokagentos.types import ActionParameterSchema, Character, Plugin, ProviderResult
 
-from elizaos_atropos_textworld.types import GameState
+from tokagentos_atropos_textworld.types import GameState
 
 if TYPE_CHECKING:
-    from elizaos.types import Action, Provider
+    from tokagentos.types import Action, Provider
 
 
-from elizaos_atropos_shared.canonical_eliza import (
+from tokagentos_atropos_shared.canonical_tokagent import (
     ContextStore,
     CaptureActionResponse,
     create_action_only_template,
@@ -112,7 +112,7 @@ def create_textworld_character(name: str = "TextWorldAgent") -> Character:
         task="Choose the next TextWorld command for {{agentName}}.",
         instructions=(
             "Choose exactly ONE admissible command from the list.\n"
-            "Output ONLY one ElizaOS action: ATROPOS_TEXTWORLD_ACTION with params.command."
+            "Output ONLY one TokagentOS action: ATROPOS_TEXTWORLD_ACTION with params.command."
         ),
         action_name="ATROPOS_TEXTWORLD_ACTION",
         param_name="command",
@@ -130,7 +130,7 @@ def create_textworld_character(name: str = "TextWorldAgent") -> Character:
     )
 
 
-def get_textworld_eliza_plugin() -> Plugin:
+def get_textworld_tokagent_plugin() -> Plugin:
     return create_simple_plugin(
         name="atropos-textworld",
         description="Atropos TextWorld canonical provider/action integration.",

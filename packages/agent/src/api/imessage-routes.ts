@@ -1,7 +1,7 @@
 /**
  * iMessage connector HTTP routes.
  *
- * Exposes the @elizaos/plugin-imessage service state through Eliza's
+ * Exposes the @elizaos/plugin-imessage service state through Tokagent's
  * HTTP API so downstream UI layers (the dashboard, a future CLI, third-
  * party integrations) can read and write against the macOS Messages.app
  * world without each client having to go straight to chat.db or to
@@ -20,14 +20,14 @@
  * Each handler pulls the IMessageService instance off the runtime via
  * `runtime.getService("imessage")` and calls the public methods added
  * in the plugin's patched branch. If the service isn't registered (the
- * plugin isn't enabled, Eliza booted before it was loaded, etc.) we
+ * plugin isn't enabled, Tokagent booted before it was loaded, etc.) we
  * return 503 with a structured reason so the UI can render an
  * informative empty state.
  *
  * Write endpoints (POST/PATCH/DELETE on contacts) touch the real macOS
  * Contacts.app and will trigger a one-time TCC permission prompt the
  * first time they fire. That prompt targets whichever process ran the
- * osascript child; in Eliza's case that's `bun`/`node`. Once granted
+ * osascript child; in Tokagent's case that's `bun`/`node`. Once granted
  * the permission is persistent across restarts.
  */
 
@@ -37,7 +37,7 @@ import type { RouteHelpers, RouteRequestMeta } from "./route-helpers.js";
 /**
  * Narrow structural type for the IMessageService methods we call from
  * this route file. Declared here rather than imported from the plugin
- * package so Eliza doesn't take a direct build-time dependency on
+ * package so Tokagent doesn't take a direct build-time dependency on
  * @elizaos/plugin-imessage — the plugin is loaded dynamically at
  * runtime via NODE_PATH and this file stays compile-safe even when the
  * plugin is absent.

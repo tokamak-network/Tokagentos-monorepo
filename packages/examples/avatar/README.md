@@ -1,6 +1,6 @@
 # VRM Voice Chat Demo (Browser)
 
-This is a simple, browser-only demo that renders a VRM avatar and chats with an ElizaOS agent.
+This is a simple, browser-only demo that renders a VRM avatar and chats with an TokagentOS agent.
 
 ## Run
 
@@ -17,7 +17,7 @@ From repo root:
 
 ## Modes
 
-- **ELIZA classic (default)**: works offline (no API keys)
+- **TOKAGENT classic (default)**: works offline (no API keys)
 - **OpenAI / Anthropic / xAI / Gemini**: enter API keys in Settings to enable LLM responses
 
 ## Notes

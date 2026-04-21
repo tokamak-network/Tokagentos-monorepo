@@ -17,7 +17,7 @@ export interface AppIdentitySource {
   icon?: string | null;
   /**
    * URL to a full-card hero image for this app. Declared by the app
-   * itself in `package.json` → `elizaos.app.heroImage` and surfaced via
+   * itself in `package.json` → `tokagentos.app.heroImage` and surfaced via
    * `RegistryAppInfo.heroImage`; falls back to procedural art when absent.
    */
   heroImage?: string | null;

@@ -1,17 +1,17 @@
-//! elizaOS Tic-Tac-Toe Demo - Rust Version
+//! tokagentOS Tic-Tac-Toe Demo - Rust Version
 //!
 //! A tic-tac-toe game where an AI agent plays perfectly WITHOUT using an LLM.
 //! Demonstrates:
-//! - elizaOS AgentRuntime (anonymous character)
+//! - tokagentOS AgentRuntime (anonymous character)
 //! - Full message processing via runtime.message_service().handle_message(...)
 //! - Custom model handlers that implement perfect play via minimax (NO LLM calls)
 
 use anyhow::Result;
-use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-use elizaos::types::{Content, Memory, UUID};
-use elizaos::types::string_to_uuid;
-use elizaos::services::IMessageService;
-use elizaos::types::plugin::Plugin;
+use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+use tokagentos::types::{Content, Memory, UUID};
+use tokagentos::types::string_to_uuid;
+use tokagentos::services::IMessageService;
+use tokagentos::types::plugin::Plugin;
 use serde_json::Value;
 use std::future::Future;
 use std::io::{self, Write};
@@ -373,7 +373,7 @@ fn parse_args() -> (Option<&'static str>, bool) {
 #[tokio::main]
 async fn main() -> Result<()> {
     let _ = dotenvy::dotenv();
-    println!("🎮 elizaOS Tic-Tac-Toe Demo (Rust)\n");
+    println!("🎮 tokagentOS Tic-Tac-Toe Demo (Rust)\n");
 
     let (cli_mode, no_prompt) = parse_args();
 

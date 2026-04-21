@@ -1,12 +1,12 @@
 """
-Eliza-powered Solana benchmark explorer.
+Tokagent-powered Solana benchmark explorer.
 
 Routes LLM calls through runtime.message_service.handle_message() — the real
-Eliza agent processing pipeline (state composition, model call, action execution).
+Tokagent agent processing pipeline (state composition, model call, action execution).
 
 Usage:
     surfpool start -u https://api.mainnet-beta.solana.com --no-tui
-    USE_EXTERNAL_SURFPOOL=true python -m benchmarks.solana.eliza_explorer
+    USE_EXTERNAL_SURFPOOL=true python -m benchmarks.solana.tokagent_explorer
 """
 
 import asyncio
@@ -33,8 +33,8 @@ from benchmarks.solana.exploration_strategy import ExplorationStrategy
 
 load_dotenv()
 load_dotenv(GYM_ENV_DIR / ".env", override=False)
-# Load Eliza .env for API keys
-load_dotenv(Path(__file__).parent.parent.parent / "eliza" / ".env", override=False)
+# Load Tokagent .env for API keys
+load_dotenv(Path(__file__).parent.parent.parent / "tokagent" / ".env", override=False)
 
 logger = logging.getLogger(__name__)
 
@@ -69,11 +69,11 @@ def run_typescript_skill(code: str, agent_pubkey: str, blockhash: str,
             "stderr": (completed.stderr or "")[:2000]}
 
 
-async def _create_eliza_runtime():
-    """Create and initialize an Eliza AgentRuntime with Anthropic model handler."""
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
-    from benchmarks.solana.eliza_model_plugin import anthropic_model_plugin
+async def _create_tokagent_runtime():
+    """Create and initialize an Tokagent AgentRuntime with Anthropic model handler."""
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
+    from benchmarks.solana.tokagent_model_plugin import anthropic_model_plugin
 
     character = Character(
         name="SolanaExplorer",
@@ -100,14 +100,14 @@ async def _create_eliza_runtime():
         check_should_respond=False,  # always respond (benchmark mode)
     )
     await runtime.initialize()
-    logger.info("Eliza runtime initialized: model=%s, character=%s", ANTHROPIC_MODEL, character.name)
+    logger.info("Tokagent runtime initialized: model=%s, character=%s", ANTHROPIC_MODEL, character.name)
     return runtime
 
 
-class ElizaExplorer:
+class TokagentExplorer:
     """
     Phase 1 (Deterministic): pre-built templates, no LLM needed.
-    Phase 2 (LLM via Eliza runtime): calls runtime.message_service.handle_message().
+    Phase 2 (LLM via Tokagent runtime): calls runtime.message_service.handle_message().
     """
 
     def __init__(self, model_name: str = "claude-opus-4-6", max_messages: int = 50,
@@ -116,8 +116,8 @@ class ElizaExplorer:
         self.model_name = model_name
         self.max_messages = max_messages
         self.run_index = run_index
-        self.code_file = code_file or str(GYM_ENV_DIR / "voyager" / "skill_runner" / "eliza_skill.ts")
-        self.run_id = f"eliza_{datetime.now().strftime('%y-%m-%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+        self.code_file = code_file or str(GYM_ENV_DIR / "voyager" / "skill_runner" / "tokagent_skill.ts")
+        self.run_id = f"tokagent_{datetime.now().strftime('%y-%m-%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
 
         self.env_config: dict | None = None
         if environment_config:
@@ -141,7 +141,7 @@ class ElizaExplorer:
 
     async def _ensure_runtime(self):
         if self._runtime is None:
-            self._runtime = await _create_eliza_runtime()
+            self._runtime = await _create_tokagent_runtime()
         return self._runtime
 
     async def _execute_deterministic(self, env: SurfpoolEnv, code: str, template_name: str) -> tuple[int, bool, dict]:
@@ -164,8 +164,8 @@ class ElizaExplorer:
     MAX_COMPILE_RETRIES = 4
 
     async def _generate_code(self, runtime, prompt: str) -> str:
-        """Call the LLM through runtime.use_model (Eliza model dispatch) for code generation."""
-        from elizaos.types.model import ModelType
+        """Call the LLM through runtime.use_model (Tokagent model dispatch) for code generation."""
+        from tokagentos.types.model import ModelType
         return await runtime.use_model(
             ModelType.TEXT_LARGE,
             {"prompt": prompt, "system": runtime.character.system, "temperature": 0.7, "max_tokens": 8192},
@@ -240,7 +240,7 @@ class ElizaExplorer:
         return reward, True, info
 
     async def run(self, env: SurfpoolEnv) -> dict:
-        logger.info("Eliza Explorer  model=%s  max=%d  id=%s", self.model_name, self.max_messages, self.run_id)
+        logger.info("Tokagent Explorer  model=%s  max=%d  id=%s", self.model_name, self.max_messages, self.run_id)
 
         for step_idx in range(self.max_messages):
             t0 = datetime.now()
@@ -314,7 +314,7 @@ async def main() -> None:
     logger.info("Model: %s  Messages: %d  Env: %s  External: %s",
                 model_name, max_messages, environment_config or "basic", use_external)
 
-    explorer = ElizaExplorer(model_name=model_name, max_messages=max_messages,
+    explorer = TokagentExplorer(model_name=model_name, max_messages=max_messages,
                              run_index=run_index, environment_config=environment_config,
                              code_file=os.getenv("CODE_FILE"))
 

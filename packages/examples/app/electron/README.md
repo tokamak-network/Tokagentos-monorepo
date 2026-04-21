@@ -1,9 +1,9 @@
-# ElizaOS Chat (Electron example)
+# TokagentOS Chat (Electron example)
 
-This example runs an elizaOS **AgentRuntime in the Electron main process** and exposes a tiny IPC bridge to a React renderer chat UI.
+This example runs an tokagentOS **AgentRuntime in the Electron main process** and exposes a tiny IPC bridge to a React renderer chat UI.
 
 - **Persistence**: `@elizaos/plugin-localdb` using a JSON data directory under Electron `userData/`
-- **LLM selection**: if the chosen provider has no credentials configured, it falls back to **ELIZA classic**
+- **LLM selection**: if the chosen provider has no credentials configured, it falls back to **TOKAGENT classic**
 
 ## Structure
 
@@ -18,7 +18,7 @@ From the repo root:
 
 ```bash
 bun install
-bunx turbo run build --filter=@elizaos/core --filter=@elizaos/plugin-*
+bunx turbo run build --filter=@tokagentos/core --filter=@elizaos/plugin-*
 ```
 
 Terminal A (renderer):

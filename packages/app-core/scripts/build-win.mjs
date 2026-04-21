@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Windows-compatible build script for Eliza.
+ * Windows-compatible build script for Tokagent.
  * Replaces the Unix-only "build" npm script.
  *
  * Steps:

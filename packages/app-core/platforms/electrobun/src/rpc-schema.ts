@@ -1,5 +1,5 @@
 /**
- * elizaOS Desktop RPC Schema for Electrobun
+ * tokagentOS Desktop RPC Schema for Electrobun
  *
  * Defines the typed RPC contract between the Bun main process and
  * the webview renderer. Replaces the stringly-typed legacy desktop channel surface
@@ -201,12 +201,12 @@ export type {
   PermissionState,
   PermissionStatus,
   SystemPermissionId,
-} from "@elizaos/shared/contracts/permissions";
+} from "@tokagentos/shared/contracts/permissions";
 
 import type {
   PermissionState,
   SystemPermissionId,
-} from "@elizaos/shared/contracts/permissions";
+} from "@tokagentos/shared/contracts/permissions";
 
 /** Local variant uses an index signature (the canonical contract uses explicit keys). */
 export interface AllPermissionsState {
@@ -426,7 +426,7 @@ export interface EmbeddedAgentStatus {
   error: string | null;
 }
 
-export interface ExistingElizaInstallInfo {
+export interface ExistingTokagentInstallInfo {
   detected: boolean;
   stateDir: string;
   configPath: string;
@@ -468,7 +468,7 @@ export interface DesktopBugReportBundleInfo {
 // RPC Schema
 // ============================================================================
 
-export type ElizaDesktopRPCSchema = {
+export type TokagentDesktopRPCSchema = {
   bun: RPCSchema<{
     requests: {
       // ---- Agent ----
@@ -482,7 +482,7 @@ export type ElizaDesktopRPCSchema = {
       agentStatus: { params: undefined; response: EmbeddedAgentStatus };
       agentInspectExistingInstall: {
         params: undefined;
-        response: ExistingElizaInstallInfo;
+        response: ExistingTokagentInstallInfo;
       };
       agentPostCloudDisconnect: {
         params: { apiBase?: string; bearerToken?: string } | undefined | null;
@@ -1016,7 +1016,7 @@ export type ElizaDesktopRPCSchema = {
       talkmodeUpdateConfig: { params: TalkModeConfig; response: undefined };
       talkmodeAudioChunk: { params: { data: string }; response: undefined };
 
-      // ---- Music player (elizaOS plugin-music-player HTTP routes on agent) ----
+      // ---- Music player (tokagentOS plugin-music-player HTTP routes on agent) ----
       musicPlayerGetDesktopPlaybackUrls: {
         params: { guildId?: string };
         response: MusicPlayerDesktopPlaybackUrls;

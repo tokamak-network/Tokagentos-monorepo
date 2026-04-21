@@ -2,7 +2,7 @@
 """
 Bluesky Agent - A full-featured AI agent running on Bluesky
 
-This agent uses the COMPLETE elizaOS runtime pipeline:
+This agent uses the COMPLETE tokagentOS runtime pipeline:
 - Full message processing through message_service.handle_message()
 - State composition with all registered providers
 - Action planning and execution
@@ -10,7 +10,7 @@ This agent uses the COMPLETE elizaOS runtime pipeline:
 - Evaluator execution
 - basicCapabilities enabled by default (REPLY, IGNORE, NONE actions)
 
-NO shortcuts, NO bypassing the pipeline - this is canonical elizaOS.
+NO shortcuts, NO bypassing the pipeline - this is canonical tokagentOS.
 """
 
 from __future__ import annotations
@@ -73,10 +73,10 @@ async def main() -> None:
     validate_environment()
 
     # Import after environment is loaded
-    from elizaos import string_to_uuid
-    from elizaos.runtime import AgentRuntime
-    from elizaos_plugin_bluesky import BlueSkyService
-    from elizaos_plugin_openai import get_openai_plugin
+    from tokagentos import string_to_uuid
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_plugin_bluesky import BlueSkyService
+    from tokagentos_plugin_openai import get_openai_plugin
 
     from character import character
     from handlers import register_bluesky_handlers
@@ -103,7 +103,7 @@ async def main() -> None:
     runtime.services["bluesky"].append(bluesky_service)
 
     # Register Bluesky event handlers
-    # These handlers process notifications through the FULL elizaOS pipeline
+    # These handlers process notifications through the FULL tokagentOS pipeline
     register_bluesky_handlers(runtime)
 
     # Initialize the runtime
@@ -121,7 +121,7 @@ async def main() -> None:
     print(f"   Automated posting: {os.getenv('BLUESKY_ENABLE_POSTING', 'true') != 'false'}")
     print(f"   DM processing: {os.getenv('BLUESKY_ENABLE_DMS', 'true') != 'false'}")
     print(f"   Dry run mode: {os.getenv('BLUESKY_DRY_RUN', 'false') == 'true'}")
-    print("\n   Using FULL elizaOS pipeline:")
+    print("\n   Using FULL tokagentOS pipeline:")
     print("   - State composition with providers")
     print("   - shouldRespond evaluation")
     print("   - Action planning & execution")

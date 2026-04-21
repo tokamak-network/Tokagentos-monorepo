@@ -24,23 +24,23 @@ import { buildOnboardingRuntimeConfig } from "../../src/onboarding-config";
 import { resolveNodeCmd } from "../scripts/managed-test-command.mjs";
 
 const DEFAULT_UI_URL = stripTrailingSlash(
-  process.env.ELIZA_LIVE_UI_URL ??
-    process.env.ELIZA_UI_URL ??
+  process.env.TOKAGENT_LIVE_UI_URL ??
+    process.env.TOKAGENT_UI_URL ??
     "http://127.0.0.1:2138",
 );
 const DEFAULT_API_URL = stripTrailingSlash(
-  process.env.ELIZA_LIVE_API_URL ??
-    process.env.ELIZA_API_URL ??
+  process.env.TOKAGENT_LIVE_API_URL ??
+    process.env.TOKAGENT_API_URL ??
     "http://127.0.0.1:31337",
 );
 const API_TOKEN =
-  process.env.ELIZA_API_TOKEN?.trim() ??
-  process.env.ELIZA_API_TOKEN?.trim() ??
+  process.env.TOKAGENT_API_TOKEN?.trim() ??
+  process.env.TOKAGENT_API_TOKEN?.trim() ??
   "";
 const LIVE_BROWSER = resolveLiveBrowserExecutable();
 const CHROME_PATH = LIVE_BROWSER.executablePath;
 const LIVE_TESTS_ENABLED =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const CHROME_AVAILABLE = CHROME_PATH !== null && existsSync(CHROME_PATH);
 const LIVE_PROVIDER =
   (LIVE_TESTS_ENABLED && selectLiveProvider("openai")) ||
@@ -117,7 +117,7 @@ const describeLive = describeIf(LIVE_TESTS_ENABLED && CHROME_AVAILABLE);
 
 if (LIVE_TESTS_ENABLED && !CHROME_AVAILABLE) {
   console.info(
-    `[live-memory-relationships] Browser executable unavailable via ${LIVE_BROWSER.source}; suite unavailable until a real browser is installed or ELIZA_CHROME_PATH is set.`,
+    `[live-memory-relationships] Browser executable unavailable via ${LIVE_BROWSER.source}; suite unavailable until a real browser is installed or TOKAGENT_CHROME_PATH is set.`,
   );
 }
 
@@ -137,7 +137,7 @@ describeLive("Live memory + relationships browser E2E", () => {
     await ensureHttpOk(`${uiUrl}/`);
     await ensureHttpOk(`${apiUrl}/api/status`);
     browserProfileDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), "eliza-memory-browser-"),
+      path.join(os.tmpdir(), "tokagent-memory-browser-"),
     );
     browser = await launchMemoryBrowser(browserProfileDir);
   }, 120_000);
@@ -345,11 +345,11 @@ async function configureLivePage(page: Page): Promise<void> {
     });
   }
   await page.evaluateOnNewDocument(() => {
-    localStorage.setItem("eliza:onboarding-complete", "1");
-    localStorage.setItem("eliza:onboarding:step", "activate");
-    localStorage.setItem("eliza:ui-shell-mode", "native");
+    localStorage.setItem("tokagent:onboarding-complete", "1");
+    localStorage.setItem("tokagent:onboarding:step", "activate");
+    localStorage.setItem("tokagent:ui-shell-mode", "native");
     localStorage.setItem(
-      "elizaos:active-server",
+      "tokagentos:active-server",
       JSON.stringify({
         id: "local:embedded",
         kind: "local",
@@ -867,7 +867,7 @@ async function startRealStack(): Promise<StartedStack> {
   }
 
   const stateDir = await fs.mkdtemp(
-    path.join(os.tmpdir(), "eliza-memory-live-"),
+    path.join(os.tmpdir(), "tokagent-memory-live-"),
   );
   const apiPort = await getFreePort();
   const uiPort = await getFreePort();
@@ -878,7 +878,7 @@ async function startRealStack(): Promise<StartedStack> {
     [
       "--import",
       "tsx",
-      path.join(REPO_ROOT, "eliza/packages/app-core/src/runtime/dev-server.ts"),
+      path.join(REPO_ROOT, "tokagent/packages/app-core/src/runtime/dev-server.ts"),
     ],
     {
       cwd: REPO_ROOT,
@@ -888,9 +888,9 @@ async function startRealStack(): Promise<StartedStack> {
         CHECK_SHOULD_RESPOND: "false",
         CONVERSATION_LENGTH: "20",
         FORCE_COLOR: "0",
-        ELIZA_API_PORT: String(apiPort),
-        ELIZA_PORT: String(apiPort),
-        ELIZA_STATE_DIR: stateDir,
+        TOKAGENT_API_PORT: String(apiPort),
+        TOKAGENT_PORT: String(apiPort),
+        TOKAGENT_STATE_DIR: stateDir,
       },
       stdio: ["ignore", "pipe", "pipe"],
     },
@@ -915,7 +915,7 @@ async function startRealStack(): Promise<StartedStack> {
     port: uiPort,
   });
 
-  process.env.ELIZA_API_PORT = String(apiPort);
+  process.env.TOKAGENT_API_PORT = String(apiPort);
 
   return {
     apiBase,

@@ -7,7 +7,7 @@ import {
 import { request as requestHttps } from "node:https";
 import net from "node:net";
 import { Readable } from "node:stream";
-import type { AgentRuntime, Memory, UUID } from "@elizaos/core";
+import type { AgentRuntime, Memory, UUID } from "@tokagentos/core";
 import {
   isBlockedPrivateOrLinkLocalIp,
   normalizeHostLike,
@@ -619,7 +619,7 @@ async function fetchUrlContent(
   const response = await fetchWithSafety(url, {
     redirect: "manual",
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; Eliza/1.0; +https://elizaos.ai)",
+      "User-Agent": "Mozilla/5.0 (compatible; Tokagent/1.0; +https://tokagentos.ai)",
     },
   });
 
@@ -891,7 +891,7 @@ export async function handleKnowledgeRoutes(
           ?.includeImageDescriptions === true;
       if (includeDescriptions && runtime) {
         try {
-          const { ModelType } = await import("@elizaos/core");
+          const { ModelType } = await import("@tokagentos/core");
           const dataUri = `data:${contentType};base64,${content}`;
           const description = await runtime.useModel(
             ModelType.IMAGE_DESCRIPTION,

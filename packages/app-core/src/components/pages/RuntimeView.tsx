@@ -9,7 +9,7 @@ import {
   SidebarHeader,
   SidebarPanel,
   SidebarScrollRegion,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
 import {
   client,

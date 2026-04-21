@@ -1,5 +1,5 @@
-"""Providers for ElizaOS integration."""
+"""Providers for TokagentOS integration."""
 
-from elizaos_context_bench.providers.context import BenchmarkContextProvider, LongContextProvider
+from tokagentos_context_bench.providers.context import BenchmarkContextProvider, LongContextProvider
 
 __all__ = ["BenchmarkContextProvider", "LongContextProvider"]

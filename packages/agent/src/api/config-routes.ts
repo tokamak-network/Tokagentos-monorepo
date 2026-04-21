@@ -1,12 +1,12 @@
 import type http from "node:http";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import {
-  isElizaSettingsDebugEnabled,
+  isTokagentSettingsDebugEnabled,
   sanitizeForSettingsDebug,
   settingsDebugCloudSummary,
-} from "@elizaos/shared";
-import type { ElizaConfig } from "../config/config.js";
-import { saveElizaConfig } from "../config/config.js";
+} from "@tokagentos/shared";
+import type { TokagentConfig } from "../config/config.js";
+import { saveTokagentConfig } from "../config/config.js";
 import {
   normalizeDeploymentTargetConfig,
   normalizeLinkedAccountsConfig,
@@ -25,7 +25,7 @@ export interface ConfigRouteContext {
   method: string;
   pathname: string;
   url: URL;
-  config: ElizaConfig;
+  config: TokagentConfig;
   // Helpers from server.ts
   json: (res: http.ServerResponse, data: unknown, status?: number) => void;
   error: (res: http.ServerResponse, message: string, status?: number) => void;
@@ -93,11 +93,11 @@ export async function handleConfigRoutes(
 
   // ── GET /api/config ──────────────────────────────────────────────────────
   if (method === "GET" && pathname === "/api/config") {
-    if (isElizaSettingsDebugEnabled()) {
+    if (isTokagentSettingsDebugEnabled()) {
       const cfg = config as Record<string, unknown>;
       const cloud = cfg.cloud as Record<string, unknown> | undefined;
       logger.debug(
-        `[eliza][settings][api] GET /api/config → respond (redacted) topKeys=${Object.keys(cfg).sort().join(",")} cloud=${JSON.stringify(settingsDebugCloudSummary(cloud))}`,
+        `[tokagent][settings][api] GET /api/config → respond (redacted) topKeys=${Object.keys(cfg).sort().join(",")} cloud=${JSON.stringify(settingsDebugCloudSummary(cloud))}`,
       );
     }
     json(
@@ -112,16 +112,16 @@ export async function handleConfigRoutes(
     const body = await readJsonBody(req, res);
     if (!body) return true;
 
-    if (isElizaSettingsDebugEnabled()) {
+    if (isTokagentSettingsDebugEnabled()) {
       const b = body as Record<string, unknown>;
       const cloudBefore = (config as Record<string, unknown>).cloud as
         | Record<string, unknown>
         | undefined;
       logger.debug(
-        `[eliza][settings][api] PUT /api/config ← body topKeys=${Object.keys(b).sort().join(",")} snapshot=${JSON.stringify(sanitizeForSettingsDebug(b))}`,
+        `[tokagent][settings][api] PUT /api/config ← body topKeys=${Object.keys(b).sort().join(",")} snapshot=${JSON.stringify(sanitizeForSettingsDebug(b))}`,
       );
       logger.debug(
-        `[eliza][settings][api] PUT /api/config state.config.cloud(before)=${JSON.stringify(settingsDebugCloudSummary(cloudBefore))}`,
+        `[tokagent][settings][api] PUT /api/config state.config.cloud(before)=${JSON.stringify(settingsDebugCloudSummary(cloudBefore))}`,
       );
     }
 
@@ -179,12 +179,12 @@ export async function handleConfigRoutes(
       // merge, even though BLOCKED_ENV_KEYS also blocks them during process.env
       // sync below. Keeping both guards prevents accidental persistence if one
       // path changes in future refactors.
-      delete envPatch.ELIZA_API_TOKEN;
-      delete envPatch.ELIZA_API_TOKEN;
-      delete envPatch.ELIZA_WALLET_EXPORT_TOKEN;
-      delete envPatch.ELIZA_WALLET_EXPORT_TOKEN;
-      delete envPatch.ELIZA_TERMINAL_RUN_TOKEN;
-      delete envPatch.ELIZA_TERMINAL_RUN_TOKEN;
+      delete envPatch.TOKAGENT_API_TOKEN;
+      delete envPatch.TOKAGENT_API_TOKEN;
+      delete envPatch.TOKAGENT_WALLET_EXPORT_TOKEN;
+      delete envPatch.TOKAGENT_WALLET_EXPORT_TOKEN;
+      delete envPatch.TOKAGENT_TERMINAL_RUN_TOKEN;
+      delete envPatch.TOKAGENT_TERMINAL_RUN_TOKEN;
       delete envPatch.HYPERSCAPE_AUTH_TOKEN;
       delete envPatch.EVM_PRIVATE_KEY;
       delete envPatch.SOLANA_PRIVATE_KEY;
@@ -195,12 +195,12 @@ export async function handleConfigRoutes(
         !Array.isArray(envPatch.vars)
       ) {
         const vars = envPatch.vars as Record<string, unknown>;
-        delete vars.ELIZA_API_TOKEN;
-        delete vars.ELIZA_API_TOKEN;
-        delete vars.ELIZA_WALLET_EXPORT_TOKEN;
-        delete vars.ELIZA_WALLET_EXPORT_TOKEN;
-        delete vars.ELIZA_TERMINAL_RUN_TOKEN;
-        delete vars.ELIZA_TERMINAL_RUN_TOKEN;
+        delete vars.TOKAGENT_API_TOKEN;
+        delete vars.TOKAGENT_API_TOKEN;
+        delete vars.TOKAGENT_WALLET_EXPORT_TOKEN;
+        delete vars.TOKAGENT_WALLET_EXPORT_TOKEN;
+        delete vars.TOKAGENT_TERMINAL_RUN_TOKEN;
+        delete vars.TOKAGENT_TERMINAL_RUN_TOKEN;
         delete vars.HYPERSCAPE_AUTH_TOKEN;
         delete vars.EVM_PRIVATE_KEY;
         delete vars.SOLANA_PRIVATE_KEY;
@@ -211,7 +211,7 @@ export async function handleConfigRoutes(
       // before safeMerge.  The explicit deletes above cover known step-up
       // secrets; this loop catches process-level injection keys
       // (NODE_OPTIONS, LD_PRELOAD, etc.) so they never reach
-      // saveElizaConfig() and the persistence→restart RCE chain is closed.
+      // saveTokagentConfig() and the persistence→restart RCE chain is closed.
       for (const key of Object.keys(envPatch)) {
         if (key === "vars" || key === "shellEnv") continue;
         if (BLOCKED_ENV_KEYS.has(key.toUpperCase())) {
@@ -307,16 +307,16 @@ export async function handleConfigRoutes(
       return true;
     }
 
-    if (isElizaSettingsDebugEnabled()) {
+    if (isTokagentSettingsDebugEnabled()) {
       logger.debug(
-        `[eliza][settings][api] PUT /api/config filtered topKeys=${Object.keys(filtered).sort().join(",")} snapshot=${JSON.stringify(sanitizeForSettingsDebug(filtered))}`,
+        `[tokagent][settings][api] PUT /api/config filtered topKeys=${Object.keys(filtered).sort().join(",")} snapshot=${JSON.stringify(sanitizeForSettingsDebug(filtered))}`,
       );
     }
 
     safeMerge(config as Record<string, unknown>, filtered);
 
     // If the client updated env vars, synchronise them into process.env so
-    // subsequent hot-restarts see the latest values (loadElizaConfig()
+    // subsequent hot-restarts see the latest values (loadTokagentConfig()
     // only fills missing env vars and does not override existing ones).
     if (
       filtered.env &&
@@ -378,12 +378,12 @@ export async function handleConfigRoutes(
     }
 
     try {
-      saveElizaConfig(config);
-      if (isElizaSettingsDebugEnabled()) {
+      saveTokagentConfig(config);
+      if (isTokagentSettingsDebugEnabled()) {
         const cfg = config as Record<string, unknown>;
         const cloud = cfg.cloud as Record<string, unknown> | undefined;
         logger.debug(
-          `[eliza][settings][api] PUT /api/config → saveElizaConfig OK cloud(after)=${JSON.stringify(settingsDebugCloudSummary(cloud))}`,
+          `[tokagent][settings][api] PUT /api/config → saveTokagentConfig OK cloud(after)=${JSON.stringify(settingsDebugCloudSummary(cloud))}`,
         );
       }
     } catch (err) {

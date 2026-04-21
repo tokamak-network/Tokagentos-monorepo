@@ -1,6 +1,6 @@
-# elizaOS packages
-elizaos>=2.0.0a4
-elizaos-plugin-openai>=2.0.0a4
+# tokagentOS packages
+tokagentos>=2.0.0a4
+tokagentos-plugin-openai>=2.0.0a4
 
 # UUID generation
 uuid6>=2024.1.12

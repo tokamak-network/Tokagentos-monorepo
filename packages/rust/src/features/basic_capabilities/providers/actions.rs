@@ -238,7 +238,7 @@ impl Provider for ActionsProvider {
             .map(|id| id.to_string())
             .unwrap_or_else(|| runtime.agent_id().to_string());
         let action_seed = build_deterministic_seed(&[
-            "eliza-prompt-cache-v1".to_string(),
+            "tokagent-prompt-cache-v1".to_string(),
             world_id,
             room_id,
             character_id,

@@ -5,8 +5,8 @@ import type {
   Relationship,
   Room,
   UUID,
-} from "@elizaos/core";
-import { asNonEmptyString, asRecord } from "@elizaos/shared/type-guards";
+} from "@tokagentos/core";
+import { asNonEmptyString, asRecord } from "@tokagentos/shared/type-guards";
 import { resolveOwnerEntityId } from "../runtime/owner-entity.js";
 
 export type RelationshipsGraphQuery = {
@@ -303,8 +303,8 @@ function normalizeProfileSource(source: string): string {
   if (normalized === "clientchat") {
     return "client_chat";
   }
-  if (normalized === "eliza-cloud") {
-    return "elizacloud";
+  if (normalized === "tokagent-cloud") {
+    return "tokagentcloud";
   }
   return normalizePlatform(normalized);
 }
@@ -1122,7 +1122,7 @@ function buildSummaries(
       if (ownerInfo.cloudUserId) {
         upsertProfile(profiles, {
           entityId: ownerInfo.ownerEntityId,
-          source: "elizacloud",
+          source: "tokagentcloud",
           userId: ownerInfo.cloudUserId,
           displayName,
           canonical: true,

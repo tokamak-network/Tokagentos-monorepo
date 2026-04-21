@@ -10,14 +10,14 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..");
 const pluginDir = path.join(
   repoRoot,
-  "eliza",
+  "tokagent",
   "plugins",
   "plugin-agent-orchestrator",
 );
 
 const externals = [
   "node:*",
-  "@elizaos/core",
+  "@tokagentos/core",
   "coding-agent-adapters",
   "git-workspace-service",
   "pty-manager",

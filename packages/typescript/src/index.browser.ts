@@ -1,5 +1,5 @@
 /**
- * Browser-specific entry point for @elizaos/core
+ * Browser-specific entry point for @tokagentos/core
  *
  * This file exports only browser-compatible modules and provides
  * stubs or alternatives for Node.js-specific functionality.
@@ -28,7 +28,7 @@ export * from "./services";
 export * from "./services/agentEvent";
 // Server/runtime entry points also register these; the browser bundle must
 // expose the same symbols so Vite/esbuild can statically resolve plugins that
-// list them in `services` (see @elizaos/agent runtime).
+// list them in `services` (see @tokagentos/agent runtime).
 export { AgentEventService } from "./services/agentEvent";
 export * from "./services/message";
 export * from "./services/trajectories";

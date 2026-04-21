@@ -4,13 +4,13 @@ import {
   createMessageMemory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   resolveRelationshipsGraphService,
   type RelationshipsGraphService,
   type RelationshipsPersonDetail,
   type RelationshipsPersonSummary,
-} from "@elizaos/agent/services/relationships-graph";
+} from "@tokagentos/agent/services/relationships-graph";
 
 type RelationshipsServiceLike = {
   addContact: (

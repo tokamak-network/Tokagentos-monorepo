@@ -634,7 +634,7 @@ function generatePython(actionsSpec, providersSpec, evaluatorsSpec) {
     REPO_ROOT,
     "packages",
     "python",
-    "elizaos",
+    "tokagentos",
     "generated",
   );
   ensureDir(outDir);

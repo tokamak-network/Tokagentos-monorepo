@@ -1,11 +1,11 @@
 /**
- * elizaOS A2A (Agent-to-Agent) Server - TypeScript
+ * tokagentOS A2A (Agent-to-Agent) Server - TypeScript
  *
- * An HTTP server that exposes an elizaOS agent for agent-to-agent communication.
- * Uses real elizaOS runtime.
+ * An HTTP server that exposes an tokagentOS agent for agent-to-agent communication.
+ * Uses real tokagentOS runtime.
  *
  * - With `OPENAI_API_KEY`: uses OpenAI + SQL plugins
- * - Without `OPENAI_API_KEY`: uses ELIZA classic + localdb plugins (no API keys required)
+ * - Without `OPENAI_API_KEY`: uses TOKAGENT classic + localdb plugins (no API keys required)
  */
 
 import {
@@ -16,8 +16,8 @@ import {
   createMessageMemory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
-import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+} from "@tokagentos/core";
+import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
 import inmemorydbPlugin from "@elizaos/plugin-inmemorydb";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
@@ -35,8 +35,8 @@ import { v4 as uuidv4 } from "uuid";
 const PORT = Number(process.env.PORT ?? 3000);
 
 const CHARACTER = createCharacter({
-  name: "Eliza",
-  bio: "A helpful AI assistant powered by elizaOS, available via A2A protocol.",
+  name: "Tokagent",
+  bio: "A helpful AI assistant powered by tokagentOS, available via A2A protocol.",
   system:
     "You are a helpful, friendly AI assistant participating in agent-to-agent communication. Be concise, informative, and cooperative.",
 });
@@ -60,18 +60,18 @@ function shouldUseOpenAi(): boolean {
 async function initializeRuntime(): Promise<AgentRuntime> {
   if (runtime) return runtime;
 
-  console.log("🚀 Initializing elizaOS runtime...");
+  console.log("🚀 Initializing tokagentOS runtime...");
 
   runtime = new AgentRuntime({
     character: CHARACTER,
     plugins: shouldUseOpenAi()
       ? [sqlPlugin, openaiPlugin]
-      : [inmemorydbPlugin, elizaClassicPlugin],
+      : [inmemorydbPlugin, tokagentClassicPlugin],
   });
 
   await runtime.initialize();
 
-  console.log("✅ elizaOS runtime initialized");
+  console.log("✅ tokagentOS runtime initialized");
   return runtime;
 }
 
@@ -190,8 +190,8 @@ export function createApp(): express.Express {
       agentId: rt.agentId,
       version: "1.0.0",
       capabilities: ["chat", "reasoning", "multi-turn"],
-      powered_by: "elizaOS",
-      mode: shouldUseOpenAi() ? "openai" : "eliza-classic",
+      powered_by: "tokagentOS",
+      mode: shouldUseOpenAi() ? "openai" : "tokagent-classic",
       endpoints: {
         "POST /chat": "Send a message and receive a response",
         "POST /chat/stream": "Stream a response (SSE)",
@@ -375,7 +375,7 @@ export async function startServer(opts?: {
       ? Number(address.port)
       : listenPort;
 
-  console.log(`\n🌐 elizaOS A2A Server (Express.js)`);
+  console.log(`\n🌐 tokagentOS A2A Server (Express.js)`);
   console.log(`   http://localhost:${actualPort}\n`);
   console.log(`📚 Endpoints:`);
   console.log(`   GET  /            - Agent info`);

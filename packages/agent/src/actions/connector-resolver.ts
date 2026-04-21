@@ -8,8 +8,8 @@
  * @module actions/connector-resolver
  */
 
-import type { IAgentRuntime, Memory, Room, UUID } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime, Memory, Room, UUID } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { formatSpeakerLabel } from "../providers/conversation-utils.js";
 import type {
   RelationshipsGraphService,

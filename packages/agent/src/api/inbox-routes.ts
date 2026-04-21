@@ -35,11 +35,11 @@
  */
 
 import type http from "node:http";
-import type { AgentRuntime, Memory, Room, UUID, World } from "@elizaos/core";
+import type { AgentRuntime, Memory, Room, UUID, World } from "@tokagentos/core";
 import {
   expandConnectorSourceFilter,
   normalizeConnectorSource,
-} from "@elizaos/shared/connectors";
+} from "@tokagentos/shared/connectors";
 import { cacheDiscordAvatarUrl } from "./discord-avatar-cache.js";
 import type { RouteHelpers } from "./route-helpers.js";
 
@@ -993,9 +993,9 @@ async function resolveDiscordRoomProfile(
  * Enumerate every room the agent currently has state for, up to
  * MAX_ROOMS_SCANNED. We do this by walking every world the runtime
  * knows about and collecting rooms under each. For a single-agent
- * Eliza install this is bounded by the number of connector chats the
+ * Tokagent install this is bounded by the number of connector chats the
  * agent participates in; for multi-tenant it would need a tenant scope
- * but Eliza's runtime is single-tenant per process.
+ * but Tokagent's runtime is single-tenant per process.
  */
 async function collectAgentRoomIds(runtime: AgentRuntime): Promise<UUID[]> {
   const worlds = await runtime.getAllWorlds();
@@ -1650,7 +1650,7 @@ type DiscordRoomProfile = {
  *
  * We over-fetch memories across all rooms in one bulk call (same
  * pattern loadInboxMessages uses) then group client-side. For the
- * single-agent single-process topology Eliza runs under, this is
+ * single-agent single-process topology Tokagent runs under, this is
  * cheap enough to call on a 5-second poll without special-casing.
  */
 async function loadInboxChats(

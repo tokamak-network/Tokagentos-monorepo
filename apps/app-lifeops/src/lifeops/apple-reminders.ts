@@ -95,15 +95,15 @@ function buildReminderNotes(args: {
   const parts = [
     args.notes?.trim() ?? "",
     args.originalIntent?.trim()
-      ? `Eliza request: ${args.originalIntent.trim()}`
+      ? `Tokagent request: ${args.originalIntent.trim()}`
       : "",
   ].filter((value) => value.length > 0);
   if (parts.length > 0) {
     return parts.join("\n\n");
   }
   return args.kind === "alarm"
-    ? "Created by Eliza as an alarm-like reminder."
-    : "Created by Eliza.";
+    ? "Created by Tokagent as an alarm-like reminder."
+    : "Created by Tokagent.";
 }
 
 function appleReminderPriority(kind: NativeAppleReminderLikeKind): number {

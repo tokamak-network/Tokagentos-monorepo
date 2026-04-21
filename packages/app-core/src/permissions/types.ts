@@ -14,4 +14,4 @@ export type {
   Platform,
   SystemPermissionDefinition,
   SystemPermissionId,
-} from "@elizaos/agent/contracts";
+} from "@tokagentos/agent/contracts";

@@ -1,5 +1,5 @@
 /**
- * Autonomy Providers for elizaOS
+ * Autonomy Providers for tokagentOS
  *
  * Providers that supply autonomous context information.
  */

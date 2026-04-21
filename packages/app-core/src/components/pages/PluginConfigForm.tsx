@@ -1,4 +1,4 @@
-import { Switch } from "@elizaos/ui";
+import { Switch } from "@tokagentos/ui";
 import { useCallback, useMemo, useRef, useState } from "react";
 import type { PluginInfo, PluginParamDef } from "../../api";
 import { ConfigRenderer, defaultRegistry } from "../../config";

@@ -8,28 +8,28 @@
     "tags": ["ai-provider", "llm", "anthropic", "chat"]
   },
   "blooio": {
-    "description": "Integrates Blooio iMessage/SMS messaging into elizaOS with signed webhooks and outbound message sending.",
+    "description": "Integrates Blooio iMessage/SMS messaging into tokagentOS with signed webhooks and outbound message sending.",
     "tags": ["connector", "social", "social-chat", "messaging", "blooio"]
   },
   "commands": {
-    "description": "Chat command system for Eliza agents (/help, /status, /reset, etc.)",
+    "description": "Chat command system for Tokagent agents (/help, /status, /reset, etc.)",
     "tags": ["commands"]
   },
   "directives": {
-    "description": "Inline directive parsing for Eliza agents (@think, @model, @verbose, etc.)",
+    "description": "Inline directive parsing for Tokagent agents (@think, @model, @verbose, etc.)",
     "tags": ["directives"]
   },
   "elevenlabs": {
     "description": "ElevenLabs voice plugin for text-to-speech generation and conversational audio output.",
     "tags": ["feature", "voice", "text-to-speech", "audio"]
   },
-  "eliza-classic": {
-    "description": "Compatibility plugin referencing the original ELIZA-style patterns alongside legacy elizaOS agent workflows.",
+  "tokagent-classic": {
+    "description": "Compatibility plugin referencing the original TOKAGENT-style patterns alongside legacy tokagentOS agent workflows.",
     "tags": ["feature", "compatibility", "legacy", "agents"]
   },
-  "elizacloud": {
-    "description": "elizaOS plugin to connect with elizaOS Cloud services",
-    "tags": ["elizacloud"]
+  "tokagentcloud": {
+    "description": "tokagentOS plugin to connect with tokagentOS Cloud services",
+    "tags": ["tokagentcloud"]
   },
   "farcaster": {
     "description": "Farcaster connector for publishing casts and responding to social conversations.",
@@ -52,11 +52,11 @@
     "tags": ["connector", "messaging", "imessage", "apple"]
   },
   "iq": {
-    "description": "IQ on-chain chat plugin for Eliza agents on Solana",
+    "description": "IQ on-chain chat plugin for Tokagent agents on Solana",
     "tags": ["connector", "integration", "iq"]
   },
   "knowledge": {
-    "description": "elizaOS RAG knowledge plugin",
+    "description": "tokagentOS RAG knowledge plugin",
     "tags": ["knowledge"]
   },
   "line": {
@@ -72,11 +72,11 @@
     "tags": ["connector", "messaging", "matrix", "chat"]
   },
   "minecraft": {
-    "description": "Minecraft automation app for driving Mineflayer bots from Eliza agents.",
+    "description": "Minecraft automation app for driving Mineflayer bots from Tokagent agents.",
     "tags": ["app", "games", "minecraft", "automation"]
   },
   "moltbook": {
-    "description": "Moltbook social plugin for Eliza agents - Reddit-style platform for AI agents",
+    "description": "Moltbook social plugin for Tokagent agents - Reddit-style platform for AI agents",
     "tags": ["moltbook", "social", "reddit", "agents", "autonomous"]
   },
   "nostr": {
@@ -92,7 +92,7 @@
     "tags": ["ai-provider", "llm", "openrouter", "routing"]
   },
   "pdf": {
-    "description": "Core Node.js plugin for elizaOS that provides essential services and actions for file operations.",
+    "description": "Core Node.js plugin for tokagentOS that provides essential services and actions for file operations.",
     "tags": ["pdf"]
   },
   "roblox": {
@@ -104,7 +104,7 @@
     "tags": ["feature", "storage", "files", "s3"]
   },
   "solana": {
-    "description": "Core Solana blockchain plugin for elizaOS, enabling token operations, trading, and DeFi integrations.",
+    "description": "Core Solana blockchain plugin for tokagentOS, enabling token operations, trading, and DeFi integrations.",
     "tags": ["crypto", "solana"]
   },
   "sql": {
@@ -140,7 +140,7 @@
     "tags": ["connector", "messaging", "wechat", "social"]
   },
   "music-library": {
-    "description": "Music metadata, library storage, playlists, user preferences, analytics, and YouTube search for elizaOS agents.",
+    "description": "Music metadata, library storage, playlists, user preferences, analytics, and YouTube search for tokagentOS agents.",
     "tags": ["feature", "music", "library", "playlists", "analytics", "audio"],
     "configKeys": [
       "MUSICBRAINZ_USER_AGENT",

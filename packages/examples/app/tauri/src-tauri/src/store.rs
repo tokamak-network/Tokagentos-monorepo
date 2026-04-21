@@ -36,7 +36,7 @@ mod tests {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        p.push(format!("eliza-tauri-{}-{}.json", name, unique));
+        p.push(format!("tokagent-tauri-{}-{}.json", name, unique));
         p
     }
 

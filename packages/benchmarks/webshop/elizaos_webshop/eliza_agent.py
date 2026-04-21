@@ -1,7 +1,7 @@
 """
-ElizaOS-integrated agent for WebShop.
+TokagentOS-integrated agent for WebShop.
 
-This follows the canonical ElizaOS flow (like tau-bench):
+This follows the canonical TokagentOS flow (like tau-bench):
 - Messages processed through runtime.message_service.handle_message()
 - Actions executed via process_actions()
 - Providers inject environment/task context into state
@@ -17,21 +17,21 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from elizaos_webshop.environment import StepOutcome, WebShopEnvironment
-from elizaos_webshop.trajectory_integration import WebShopTrajectoryIntegration
-from elizaos_webshop.types import EpisodeStep, PageObservation, WebShopTask
+from tokagentos_webshop.environment import StepOutcome, WebShopEnvironment
+from tokagentos_webshop.trajectory_integration import WebShopTrajectoryIntegration
+from tokagentos_webshop.types import EpisodeStep, PageObservation, WebShopTask
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, IAgentRuntime, State
-    from elizaos.types.components import ActionResult, HandlerOptions
+    from tokagentos.types import HandlerCallback, IAgentRuntime, State
+    from tokagentos.types.components import ActionResult, HandlerOptions
 
 logger = logging.getLogger(__name__)
 
 
 try:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
-    from elizaos.types.components import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
+    from tokagentos.types.components import (
         Action,
         ActionResult,
         ActionExample,
@@ -40,11 +40,11 @@ try:
         Provider,
         ProviderResult,
     )
-    from elizaos.types.memory import Memory
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.primitives import Content, as_uuid
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.primitives import Content, as_uuid
 
-    ELIZAOS_AVAILABLE = True
+    TOKAGENTOS_AVAILABLE = True
 except ImportError:
     AgentRuntime = None  # type: ignore[misc,assignment]
     Character = None  # type: ignore[misc,assignment]
@@ -59,7 +59,7 @@ except ImportError:
     ActionExample = None  # type: ignore[misc,assignment]
     ActionParameter = None  # type: ignore[misc,assignment]
     ActionParameterSchema = None  # type: ignore[misc,assignment]
-    ELIZAOS_AVAILABLE = False
+    TOKAGENTOS_AVAILABLE = False
 
 
 # ---------------------------------------------------------------------------
@@ -91,7 +91,7 @@ def _normalize_thought_tags(text: str) -> str:
 
 
 def get_model_provider_plugin(provider: str | None = None) -> "Plugin | None":
-    if not ELIZAOS_AVAILABLE:
+    if not TOKAGENTOS_AVAILABLE:
         return None
 
     requested = (provider or os.environ.get("BENCHMARK_MODEL_PROVIDER", "")).strip().lower()
@@ -121,7 +121,7 @@ def get_model_provider_plugin(provider: str | None = None) -> "Plugin | None":
 
     if requested == "openai" and os.environ.get("OPENAI_API_KEY"):
         try:
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             os.environ["OPENAI_SMALL_MODEL"] = clean_model
             os.environ["OPENAI_LARGE_MODEL"] = clean_model
@@ -132,7 +132,7 @@ def get_model_provider_plugin(provider: str | None = None) -> "Plugin | None":
 
     if requested in {"groq", "openrouter"} and os.environ.get(provider_key_var[requested]):
         import aiohttp
-        from elizaos.types.model import ModelType
+        from tokagentos.types.model import ModelType
 
         api_key = os.environ.get(provider_key_var[requested], "")
         base_url = provider_base_url[requested]
@@ -197,19 +197,19 @@ def get_model_provider_plugin(provider: str | None = None) -> "Plugin | None":
 
 def get_localdb_plugin() -> "Plugin | None":
     """
-    Return a proper ElizaOS Plugin for LocalDB.
+    Return a proper TokagentOS Plugin for LocalDB.
 
     The localdb package ships a dict-shaped plugin for JS parity, but AgentRuntime
     expects the Pydantic Plugin model. We wrap init_localdb to match that API.
     """
 
-    if not ELIZAOS_AVAILABLE:
+    if not TOKAGENTOS_AVAILABLE:
         return None
 
     try:
-        from elizaos.types.plugin import Plugin as ElizaPlugin
-        from elizaos.types.runtime import IAgentRuntime
-        from elizaos_plugin_localdb.plugin import init_localdb
+        from tokagentos.types.plugin import Plugin as TokagentPlugin
+        from tokagentos.types.runtime import IAgentRuntime
+        from tokagentos_plugin_localdb.plugin import init_localdb
     except Exception:
         return None
 
@@ -219,18 +219,18 @@ def get_localdb_plugin() -> "Plugin | None":
     ) -> None:
         await init_localdb(runtime)
 
-    return ElizaPlugin(
+    return TokagentPlugin(
         name="localdb",
-        description="Local JSON database adapter (elizaos-plugin-localdb)",
+        description="Local JSON database adapter (tokagentos-plugin-localdb)",
         init=_init_localdb,
     )
 
 
 def get_trajectory_logger_plugin() -> "Plugin | None":
-    if not ELIZAOS_AVAILABLE:
+    if not TOKAGENTOS_AVAILABLE:
         return None
     try:
-        from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+        from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
         return get_trajectory_logger_plugin()
     except Exception:
@@ -496,7 +496,7 @@ class WebShopAction:
 
     @property
     def examples(self) -> list[list["ActionExample"]]:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             [
@@ -513,7 +513,7 @@ class WebShopAction:
 
     @property
     def parameters(self) -> list["ActionParameter"]:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             ActionParameter(
@@ -526,8 +526,8 @@ class WebShopAction:
 
 
 def create_webshop_plugin() -> "Plugin":
-    if not ELIZAOS_AVAILABLE:
-        raise RuntimeError("ElizaOS is required for webshop plugin")
+    if not TOKAGENTOS_AVAILABLE:
+        raise RuntimeError("TokagentOS is required for webshop plugin")
 
     action_impl = WebShopAction()
     action = Action(
@@ -598,7 +598,7 @@ For final response (after buy):
 </output>"""
 
 
-class ElizaOSWebShopAgent:
+class TokagentOSWebShopAgent:
     def __init__(
         self,
         env: WebShopEnvironment,
@@ -627,9 +627,9 @@ class ElizaOSWebShopAgent:
     async def initialize(self) -> None:
         if self._initialized:
             return
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             if self._require_real_llm:
-                raise RuntimeError("ElizaOS is not installed/available (required for real-llm mode)")
+                raise RuntimeError("TokagentOS is not installed/available (required for real-llm mode)")
             self._initialized = True
             return
 
@@ -681,7 +681,7 @@ class ElizaOSWebShopAgent:
         await self.runtime.initialize()
         self._has_model_provider = self.runtime.has_model("TEXT_LARGE")
         if self._require_real_llm and not self._has_model_provider:
-            raise RuntimeError("ElizaOS runtime initialized but no TEXT_LARGE model is available")
+            raise RuntimeError("TokagentOS runtime initialized but no TEXT_LARGE model is available")
         self._initialized = True
 
     async def process_task(
@@ -696,7 +696,7 @@ class ElizaOSWebShopAgent:
         set_webshop_context(task, self.env, trajectory=self._trajectory, trial_number=trial_number)
         ctx = get_webshop_context()
 
-        if not ELIZAOS_AVAILABLE or self.runtime is None or not self._has_model_provider:
+        if not TOKAGENTOS_AVAILABLE or self.runtime is None or not self._has_model_provider:
             return await self._process_task_mock(task, ctx)
 
         return await self._process_task_canonical(task, ctx)
@@ -854,10 +854,10 @@ class MockWebShopAgent:
     async def process_task(
         self, task: WebShopTask
     ) -> tuple[list[EpisodeStep], str, PageObservation | None]:
-        # Run the same simple heuristic loop used by ElizaOSWebShopAgent mock mode.
+        # Run the same simple heuristic loop used by TokagentOSWebShopAgent mock mode.
         set_webshop_context(task, self.env, trajectory=None, trial_number=1)
         ctx = get_webshop_context()
-        return await ElizaOSWebShopAgent(self.env, max_turns=self.max_turns)._process_task_mock(
+        return await TokagentOSWebShopAgent(self.env, max_turns=self.max_turns)._process_task_mock(
             task, ctx
         )
 
@@ -873,10 +873,10 @@ def create_webshop_agent(
     model_provider: str | None = None,
     temperature: float = 0.0,
     trajectory: WebShopTrajectoryIntegration | None = None,
-) -> ElizaOSWebShopAgent | MockWebShopAgent:
-    if use_mock or not ELIZAOS_AVAILABLE:
+) -> TokagentOSWebShopAgent | MockWebShopAgent:
+    if use_mock or not TOKAGENTOS_AVAILABLE:
         return MockWebShopAgent(env=env, max_turns=max_turns)
-    return ElizaOSWebShopAgent(
+    return TokagentOSWebShopAgent(
         env=env,
         max_turns=max_turns,
         model_provider=model_provider,

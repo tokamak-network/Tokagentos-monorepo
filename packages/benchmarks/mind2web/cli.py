@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Mind2Web Benchmark CLI for ElizaOS.
+Mind2Web Benchmark CLI for TokagentOS.
 
 Examples:
   # Run with sample tasks (uses real LLM by default)
@@ -68,7 +68,7 @@ def _maybe_load_dotenv() -> None:
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Mind2Web Benchmark CLI for ElizaOS",
+        description="Mind2Web Benchmark CLI for TokagentOS",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
@@ -144,14 +144,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--real-llm",
         action="store_true",
-        help="(deprecated, now the default) Use real LLM via ElizaOS runtime",
+        help="(deprecated, now the default) Use real LLM via TokagentOS runtime",
     )
     parser.add_argument(
         "--provider",
         type=str,
-        choices=["groq", "openai", "anthropic", "auto", "eliza"],
+        choices=["groq", "openai", "anthropic", "auto", "tokagent"],
         default="auto",
-        help="Model provider to use (default: auto-detect from env; 'eliza' uses TS agent)",
+        help="Model provider to use (default: auto-detect from env; 'tokagent' uses TS agent)",
     )
     parser.add_argument(
         "--temperature",

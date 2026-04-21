@@ -1,5 +1,5 @@
 /**
- * Session provider for elizaOS runtime.
+ * Session provider for tokagentOS runtime.
  *
  * Exposes session context to agents during message processing.
  *

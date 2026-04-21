@@ -1,4 +1,4 @@
-import { type IAgentRuntime, logger, Service } from "@elizaos/core";
+import { type IAgentRuntime, logger, Service } from "@tokagentos/core";
 
 // =============================================================================
 // Type Definitions (mirrors @elizaos/plugin-lp-manager)

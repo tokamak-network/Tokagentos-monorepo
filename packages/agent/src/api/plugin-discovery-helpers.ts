@@ -10,8 +10,8 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { logger, type UUID } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import { logger, type UUID } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import {
   isConnectorConfigured,
   isStreamingDestinationConfigured,
@@ -39,7 +39,7 @@ function findPluginsManifestRoot(startDir: string): string {
   for (let i = 0; i < 16; i += 1) {
     if (fs.existsSync(path.join(dir, "plugins.json"))) {
       // Keep walking so wrapper wrapper repos can override the nested
-      // upstream eliza checkout's package root with the outer workspace manifest.
+      // upstream tokagent checkout's package root with the outer workspace manifest.
       manifestRoot = dir;
     }
 
@@ -108,7 +108,7 @@ export function getReleaseBundledPluginIds(): Set<string> {
     );
   } catch (err) {
     logger.warn(
-      `[eliza-api] Failed to resolve bundled release plugins from package.json: ${err instanceof Error ? err.message : err}`,
+      `[tokagent-api] Failed to resolve bundled release plugins from package.json: ${err instanceof Error ? err.message : err}`,
     );
     return new Set();
   }
@@ -161,7 +161,7 @@ type PackageJsonLike = {
   keywords?: unknown;
   logoUrl?: unknown;
   icon?: unknown;
-  elizaos?: {
+  tokagentos?: {
     logoUrl?: unknown;
     configKeys?: unknown;
     configUiHints?: unknown;
@@ -303,9 +303,9 @@ function extractPluginPackageMetadata(
     pkg.agentConfig?.pluginParameters,
   );
   const configKeys =
-    Array.isArray(pkg.elizaos?.configKeys) &&
-    pkg.elizaos.configKeys.every((value) => typeof value === "string")
-      ? [...pkg.elizaos.configKeys]
+    Array.isArray(pkg.tokagentos?.configKeys) &&
+    pkg.tokagentos.configKeys.every((value) => typeof value === "string")
+      ? [...pkg.tokagentos.configKeys]
       : pluginParameters
         ? Object.keys(pluginParameters)
         : undefined;
@@ -321,12 +321,12 @@ function extractPluginPackageMetadata(
         : undefined,
     repository:
       normalizeRepositoryUrl(pkg.repository) ??
-      deriveElizaRepositoryUrl(keyFallback.npmName, keyFallback.dirName),
+      deriveTokagentRepositoryUrl(keyFallback.npmName, keyFallback.dirName),
     icon:
       typeof pkg.logoUrl === "string"
         ? pkg.logoUrl
-        : typeof pkg.elizaos?.logoUrl === "string"
-          ? pkg.elizaos.logoUrl
+        : typeof pkg.tokagentos?.logoUrl === "string"
+          ? pkg.tokagentos.logoUrl
           : typeof pkg.icon === "string"
             ? pkg.icon
             : null,
@@ -335,7 +335,7 @@ function extractPluginPackageMetadata(
     pluginParameters,
     configUiHints:
       normalizeConfigUiHints(pkg.agentConfig?.configUiHints) ??
-      normalizeConfigUiHints(pkg.elizaos?.configUiHints),
+      normalizeConfigUiHints(pkg.tokagentos?.configUiHints),
   };
 }
 
@@ -474,12 +474,12 @@ export const BLOCKED_ENV_KEYS = new Set([
   "HOME",
   "SHELL",
   // Auth / step-up tokens — writable via API would grant privilege escalation
-  "ELIZA_API_TOKEN",
-  "ELIZA_API_TOKEN",
-  "ELIZA_WALLET_EXPORT_TOKEN",
-  "ELIZA_WALLET_EXPORT_TOKEN",
-  "ELIZA_TERMINAL_RUN_TOKEN",
-  "ELIZA_TERMINAL_RUN_TOKEN",
+  "TOKAGENT_API_TOKEN",
+  "TOKAGENT_API_TOKEN",
+  "TOKAGENT_WALLET_EXPORT_TOKEN",
+  "TOKAGENT_WALLET_EXPORT_TOKEN",
+  "TOKAGENT_TERMINAL_RUN_TOKEN",
+  "TOKAGENT_TERMINAL_RUN_TOKEN",
   "HYPERSCAPE_AUTH_TOKEN",
   // Wallet private keys — writable via API would enable key theft / replacement
   "EVM_PRIVATE_KEY",
@@ -496,7 +496,7 @@ export const BLOCKED_ENV_KEYS = new Set([
 
 /**
  * Top-level config keys accepted by `PUT /api/config`.
- * Keep this in sync with ElizaConfig root fields and include both modern and
+ * Keep this in sync with TokagentConfig root fields and include both modern and
  * legacy aliases (e.g. `connectors` + `channels`).
  */
 export const CONFIG_WRITE_ALLOWED_TOP_KEYS = new Set([
@@ -691,7 +691,7 @@ export function aggregateSecrets(plugins: PluginEntry[]): SecretEntry[] {
  * Reads from config.plugins.installs and tries to enrich with package.json metadata.
  */
 export function discoverInstalledPlugins(
-  config: ElizaConfig,
+  config: TokagentConfig,
   bundledIds: Set<string>,
 ): PluginEntry[] {
   const installs = config.plugins?.installs;
@@ -747,7 +747,7 @@ export function discoverInstalledPlugins(
               homepage?: string;
               repository?: string | { type?: string; url?: string };
               keywords?: string[];
-              elizaos?: {
+              tokagentos?: {
                 displayName?: string;
                 configKeys?: string[];
                 configDefaults?: Record<string, string>;
@@ -766,10 +766,10 @@ export function discoverInstalledPlugins(
               installedVersion = pkg.version;
             }
             pluginTags = normalizePluginMetadataTags(pkg.keywords);
-            if (pkg.elizaos?.displayName) name = pkg.elizaos.displayName;
-            if (pkg.elizaos?.configKeys) {
-              pluginConfigKeys = pkg.elizaos.configKeys;
-              const defaults = pkg.elizaos.configDefaults ?? {};
+            if (pkg.tokagentos?.displayName) name = pkg.tokagentos.displayName;
+            if (pkg.tokagentos?.configKeys) {
+              pluginConfigKeys = pkg.tokagentos.configKeys;
+              const defaults = pkg.tokagentos.configDefaults ?? {};
               pluginParameters = pluginConfigKeys.map((key) => ({
                 key,
                 label: key,
@@ -791,12 +791,12 @@ export function discoverInstalledPlugins(
             }
             // Map logoUrl or icon from package.json if available
             pluginIcon =
-              pkg.logoUrl ?? pkg.elizaos?.logoUrl ?? pkg.icon ?? null;
+              pkg.logoUrl ?? pkg.tokagentos?.logoUrl ?? pkg.icon ?? null;
             pluginHomepage =
               typeof pkg.homepage === "string" ? pkg.homepage : undefined;
             pluginRepository =
               normalizeRepositoryUrl(pkg.repository) ??
-              deriveElizaRepositoryUrl(packageName, `plugin-${id}`);
+              deriveTokagentRepositoryUrl(packageName, `plugin-${id}`);
             break;
           }
         } catch {
@@ -956,7 +956,7 @@ export function discoverPluginsFromManifest(): PluginEntry[] {
             repository:
               p.repository ??
               bundledMeta.repository ??
-              deriveElizaRepositoryUrl(p.npmName, p.dirName),
+              deriveTokagentRepositoryUrl(p.npmName, p.dirName),
             setupGuideUrl: p.setupGuideUrl ?? resolvePluginSetupGuideUrl(p.id),
           };
         })
@@ -972,14 +972,14 @@ export function discoverPluginsFromManifest(): PluginEntry[] {
       return entries;
     } catch (err) {
       logger.debug(
-        `[eliza-api] Failed to read plugins.json: ${err instanceof Error ? err.message : err}`,
+        `[tokagent-api] Failed to read plugins.json: ${err instanceof Error ? err.message : err}`,
       );
     }
   }
 
   // Fallback: no manifest found
   logger.debug(
-    "[eliza-api] plugins.json not found — run `npm run generate:plugins`",
+    "[tokagent-api] plugins.json not found — run `npm run generate:plugins`",
   );
   return [];
 }
@@ -1049,19 +1049,19 @@ export function categorizePlugin(
   return "feature";
 }
 
-const PLUGIN_SETUP_GUIDE_ROOT = "https://docs.eliza.ai/plugin-setup-guide";
+const PLUGIN_SETUP_GUIDE_ROOT = "https://docs.tokagent.ai/plugin-setup-guide";
 const PLUGIN_SETUP_GUIDE_URL_OVERRIDES: Record<string, string> = {
-  discord: "https://docs.elizaos.ai/plugin-registry/platform/discord",
+  discord: "https://docs.tokagentos.ai/plugin-registry/platform/discord",
 };
-const ELIZA_REPO_ROOT = "https://github.com/elizaos/eliza";
+const TOKAGENT_REPO_ROOT = "https://github.com/tokagentos/tokagent";
 const PLUGIN_METADATA_TAG_STOPWORDS = new Set([
   "plugin",
   "plugins",
-  "eliza",
-  "elizaos",
-  "eliza",
-  "elizaos-plugin",
-  "elizaos-plugins",
+  "tokagent",
+  "tokagentos",
+  "tokagent",
+  "tokagentos-plugin",
+  "tokagentos-plugins",
   "feature",
 ]);
 const SOCIAL_CHAT_CONNECTOR_IDS = new Set([
@@ -1192,13 +1192,13 @@ export function normalizeRepositoryUrl(
   return undefined;
 }
 
-export function deriveElizaRepositoryUrl(
+export function deriveTokagentRepositoryUrl(
   npmName: string | undefined,
   dirName: string | undefined,
 ): string | undefined {
   if (!npmName?.startsWith("@elizaos/")) return undefined;
   if (!dirName?.startsWith("plugin-")) return undefined;
-  return `${ELIZA_REPO_ROOT}/tree/main/packages/${dirName}`;
+  return `${TOKAGENT_REPO_ROOT}/tree/main/packages/${dirName}`;
 }
 
 export function normalizePluginMetadataTag(tag: string): string | null {
@@ -1266,7 +1266,7 @@ export function resolvePluginDescription(
   if (trimmed) return trimmed;
   if (PLUGIN_DESCRIPTION_OVERRIDES[id]) return PLUGIN_DESCRIPTION_OVERRIDES[id];
   if (category === "ai-provider") {
-    return `${displayName} AI provider for Eliza agents`;
+    return `${displayName} AI provider for Tokagent agents`;
   }
   if (category === "connector") {
     if (SOCIAL_CHAT_CONNECTOR_IDS.has(id)) {
@@ -1275,18 +1275,18 @@ export function resolvePluginDescription(
     if (SOCIAL_FEED_CONNECTOR_IDS.has(id)) {
       return `${displayName} social connector for connecting your agent to ${displayName}`;
     }
-    return `${displayName} connector plugin for Eliza agents`;
+    return `${displayName} connector plugin for Tokagent agents`;
   }
   if (category === "streaming") {
     return `${displayName} streaming destination for live agent broadcasts`;
   }
   if (category === "database") {
-    return `${displayName} storage plugin for Eliza agents`;
+    return `${displayName} storage plugin for Tokagent agents`;
   }
   if (category === "app") {
-    return `${displayName} interactive app for Eliza agents`;
+    return `${displayName} interactive app for Tokagent agents`;
   }
-  return `${displayName} plugin for Eliza agents`;
+  return `${displayName} plugin for Tokagent agents`;
 }
 
 export function resolvePluginTags(
@@ -1329,7 +1329,7 @@ export function readBundledPluginPackageMetadata(
   }
 
   const metadata: PluginPackageMetadata = {
-    repository: deriveElizaRepositoryUrl(npmName, dirName),
+    repository: deriveTokagentRepositoryUrl(npmName, dirName),
     tags: [],
   };
 
@@ -1354,7 +1354,7 @@ export function readBundledPluginPackageMetadata(
       }
       if (
         (!metadata.repository ||
-          metadata.repository === deriveElizaRepositoryUrl(npmName, dirName)) &&
+          metadata.repository === deriveTokagentRepositoryUrl(npmName, dirName)) &&
         extracted.repository
       ) {
         metadata.repository = extracted.repository;

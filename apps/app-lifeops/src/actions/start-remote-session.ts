@@ -17,8 +17,8 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import {
   RemoteSessionError,
   getRemoteSessionService,
@@ -138,7 +138,7 @@ export const startRemoteSessionAction: Action = {
 
       if (result.ingressUrl === null) {
         return {
-          text: `Remote session ${result.sessionId} is authorized but the data plane is not configured (${result.reason ?? "unknown"}). Configure Tailscale (T9b) or the Eliza Cloud tunnel to complete pixel transport.`,
+          text: `Remote session ${result.sessionId} is authorized but the data plane is not configured (${result.reason ?? "unknown"}). Configure Tailscale (T9b) or the Tokagent Cloud tunnel to complete pixel transport.`,
           success: false,
           values: {
             success: false,

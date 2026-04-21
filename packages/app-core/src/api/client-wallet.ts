@@ -3,8 +3,8 @@
  * trading profile, registry (ERC-8004), drop/mint, whitelist, twitter verify.
  */
 
-import type { DropStatus, MintResult } from "@elizaos/agent/contracts/drop";
-import type { VerificationResult } from "@elizaos/agent/contracts/verification";
+import type { DropStatus, MintResult } from "@tokagentos/agent/contracts/drop";
+import type { VerificationResult } from "@tokagentos/agent/contracts/verification";
 import type {
   BrowserWorkspaceSolanaMessageSignatureResult,
   BrowserWorkspaceWalletMessageSignatureResult,
@@ -40,8 +40,8 @@ import type {
   WalletTradingProfileResponse,
   WalletTradingProfileSourceFilter,
   WalletTradingProfileWindow,
-} from "@elizaos/shared/contracts";
-import { ElizaClient } from "./client-base";
+} from "@tokagentos/shared/contracts";
+import { TokagentClient } from "./client-base";
 import type {
   ApplyProductionWalletDefaultsResponse,
   RegistrationResult,
@@ -57,7 +57,7 @@ import type {
 // ---------------------------------------------------------------------------
 
 declare module "./client-base" {
-  interface ElizaClient {
+  interface TokagentClient {
     getWalletAddresses(): Promise<WalletAddresses>;
     getWalletBalances(): Promise<WalletBalancesResponse>;
     getWalletNfts(): Promise<WalletNftsResponse>;
@@ -188,24 +188,24 @@ declare module "./client-base" {
 // Prototype augmentation
 // ---------------------------------------------------------------------------
 
-ElizaClient.prototype.getWalletAddresses = async function (this: ElizaClient) {
+TokagentClient.prototype.getWalletAddresses = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/addresses");
 };
 
-ElizaClient.prototype.getWalletBalances = async function (this: ElizaClient) {
+TokagentClient.prototype.getWalletBalances = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/balances");
 };
 
-ElizaClient.prototype.getWalletNfts = async function (this: ElizaClient) {
+TokagentClient.prototype.getWalletNfts = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/nfts");
 };
 
-ElizaClient.prototype.getWalletConfig = async function (this: ElizaClient) {
+TokagentClient.prototype.getWalletConfig = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/config");
 };
 
-ElizaClient.prototype.updateWalletConfig = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateWalletConfig = async function (
+  this: TokagentClient,
   config,
 ) {
   return this.fetch("/api/wallet/config", {
@@ -214,14 +214,14 @@ ElizaClient.prototype.updateWalletConfig = async function (
   });
 };
 
-ElizaClient.prototype.refreshCloudWallets = async function (this: ElizaClient) {
+TokagentClient.prototype.refreshCloudWallets = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/refresh-cloud", {
     method: "POST",
   });
 };
 
-ElizaClient.prototype.setWalletPrimary = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setWalletPrimary = async function (
+  this: TokagentClient,
   params,
 ) {
   return this.fetch("/api/wallet/primary", {
@@ -230,8 +230,8 @@ ElizaClient.prototype.setWalletPrimary = async function (
   });
 };
 
-ElizaClient.prototype.generateWallet = async function (
-  this: ElizaClient,
+TokagentClient.prototype.generateWallet = async function (
+  this: TokagentClient,
   params = {},
 ) {
   return this.fetch("/api/wallet/generate", {
@@ -240,8 +240,8 @@ ElizaClient.prototype.generateWallet = async function (
   });
 };
 
-ElizaClient.prototype.exportWalletKeys = async function (
-  this: ElizaClient,
+TokagentClient.prototype.exportWalletKeys = async function (
+  this: TokagentClient,
   exportToken,
 ) {
   return this.fetch("/api/wallet/export", {
@@ -250,8 +250,8 @@ ElizaClient.prototype.exportWalletKeys = async function (
   });
 };
 
-ElizaClient.prototype.getBscTradePreflight = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getBscTradePreflight = async function (
+  this: TokagentClient,
   tokenAddress?,
 ) {
   return this.fetch("/api/wallet/trade/preflight", {
@@ -262,8 +262,8 @@ ElizaClient.prototype.getBscTradePreflight = async function (
   });
 };
 
-ElizaClient.prototype.getBscTradeQuote = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getBscTradeQuote = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/wallet/trade/quote", {
@@ -272,8 +272,8 @@ ElizaClient.prototype.getBscTradeQuote = async function (
   });
 };
 
-ElizaClient.prototype.executeBscTrade = async function (
-  this: ElizaClient,
+TokagentClient.prototype.executeBscTrade = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/wallet/trade/execute", {
@@ -282,8 +282,8 @@ ElizaClient.prototype.executeBscTrade = async function (
   });
 };
 
-ElizaClient.prototype.executeBscTransfer = async function (
-  this: ElizaClient,
+TokagentClient.prototype.executeBscTransfer = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/wallet/transfer/execute", {
@@ -292,8 +292,8 @@ ElizaClient.prototype.executeBscTransfer = async function (
   });
 };
 
-ElizaClient.prototype.getBscTradeTxStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getBscTradeTxStatus = async function (
+  this: TokagentClient,
   hash,
 ) {
   return this.fetch(
@@ -301,16 +301,16 @@ ElizaClient.prototype.getBscTradeTxStatus = async function (
   );
 };
 
-ElizaClient.prototype.getStewardStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getStewardStatus = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/steward-status");
 };
 
-ElizaClient.prototype.getStewardAddresses = async function (this: ElizaClient) {
+TokagentClient.prototype.getStewardAddresses = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/steward-addresses");
 };
 
-ElizaClient.prototype.getStewardBalance = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getStewardBalance = async function (
+  this: TokagentClient,
   chainId?,
 ) {
   const qs =
@@ -318,8 +318,8 @@ ElizaClient.prototype.getStewardBalance = async function (
   return this.fetch(`/api/wallet/steward-balances${qs}`);
 };
 
-ElizaClient.prototype.getStewardTokens = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getStewardTokens = async function (
+  this: TokagentClient,
   chainId?,
 ) {
   const qs =
@@ -327,8 +327,8 @@ ElizaClient.prototype.getStewardTokens = async function (
   return this.fetch(`/api/wallet/steward-tokens${qs}`);
 };
 
-ElizaClient.prototype.getStewardWebhookEvents = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getStewardWebhookEvents = async function (
+  this: TokagentClient,
   opts?,
 ) {
   const params = new URLSearchParams();
@@ -338,12 +338,12 @@ ElizaClient.prototype.getStewardWebhookEvents = async function (
   return this.fetch(`/api/wallet/steward-webhook-events${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.getStewardPolicies = async function (this: ElizaClient) {
+TokagentClient.prototype.getStewardPolicies = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/steward-policies");
 };
 
-ElizaClient.prototype.setStewardPolicies = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setStewardPolicies = async function (
+  this: TokagentClient,
   policies,
 ) {
   await this.fetch("/api/wallet/steward-policies", {
@@ -352,8 +352,8 @@ ElizaClient.prototype.setStewardPolicies = async function (
   });
 };
 
-ElizaClient.prototype.getStewardHistory = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getStewardHistory = async function (
+  this: TokagentClient,
   opts?,
 ) {
   const params = new URLSearchParams();
@@ -364,12 +364,12 @@ ElizaClient.prototype.getStewardHistory = async function (
   return this.fetch(`/api/wallet/steward-tx-records${qs ? `?${qs}` : ""}`);
 };
 
-ElizaClient.prototype.getStewardPending = async function (this: ElizaClient) {
+TokagentClient.prototype.getStewardPending = async function (this: TokagentClient) {
   return this.fetch("/api/wallet/steward-pending-approvals");
 };
 
-ElizaClient.prototype.approveStewardTx = async function (
-  this: ElizaClient,
+TokagentClient.prototype.approveStewardTx = async function (
+  this: TokagentClient,
   txId,
 ) {
   return this.fetch("/api/wallet/steward-approve-tx", {
@@ -378,8 +378,8 @@ ElizaClient.prototype.approveStewardTx = async function (
   });
 };
 
-ElizaClient.prototype.rejectStewardTx = async function (
-  this: ElizaClient,
+TokagentClient.prototype.rejectStewardTx = async function (
+  this: TokagentClient,
   txId,
   reason?,
 ) {
@@ -389,8 +389,8 @@ ElizaClient.prototype.rejectStewardTx = async function (
   });
 };
 
-ElizaClient.prototype.signViaSteward = async function (
-  this: ElizaClient,
+TokagentClient.prototype.signViaSteward = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/wallet/steward-sign", {
@@ -399,8 +399,8 @@ ElizaClient.prototype.signViaSteward = async function (
   });
 };
 
-ElizaClient.prototype.sendBrowserWalletTransaction = async function (
-  this: ElizaClient,
+TokagentClient.prototype.sendBrowserWalletTransaction = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/wallet/browser-transaction", {
@@ -409,8 +409,8 @@ ElizaClient.prototype.sendBrowserWalletTransaction = async function (
   });
 };
 
-ElizaClient.prototype.signBrowserWalletMessage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.signBrowserWalletMessage = async function (
+  this: TokagentClient,
   message,
 ) {
   return this.fetch("/api/wallet/browser-sign-message", {
@@ -419,8 +419,8 @@ ElizaClient.prototype.signBrowserWalletMessage = async function (
   });
 };
 
-ElizaClient.prototype.signBrowserSolanaMessage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.signBrowserSolanaMessage = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/wallet/browser-solana-sign-message", {
@@ -429,8 +429,8 @@ ElizaClient.prototype.signBrowserSolanaMessage = async function (
   });
 };
 
-ElizaClient.prototype.getWalletTradingProfile = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getWalletTradingProfile = async function (
+  this: TokagentClient,
   window = "30d",
   source = "all",
 ) {
@@ -438,8 +438,8 @@ ElizaClient.prototype.getWalletTradingProfile = async function (
   return this.fetch(`/api/wallet/trading/profile?${params.toString()}`);
 };
 
-ElizaClient.prototype.applyProductionWalletDefaults = async function (
-  this: ElizaClient,
+TokagentClient.prototype.applyProductionWalletDefaults = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/wallet/production-defaults", {
     method: "POST",
@@ -447,12 +447,12 @@ ElizaClient.prototype.applyProductionWalletDefaults = async function (
   });
 };
 
-ElizaClient.prototype.getRegistryStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getRegistryStatus = async function (this: TokagentClient) {
   return this.fetch("/api/registry/status");
 };
 
-ElizaClient.prototype.registerAgent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.registerAgent = async function (
+  this: TokagentClient,
   params?,
 ) {
   return this.fetch("/api/registry/register", {
@@ -461,8 +461,8 @@ ElizaClient.prototype.registerAgent = async function (
   });
 };
 
-ElizaClient.prototype.updateRegistryTokenURI = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateRegistryTokenURI = async function (
+  this: TokagentClient,
   tokenURI,
 ) {
   return this.fetch("/api/registry/update-uri", {
@@ -471,8 +471,8 @@ ElizaClient.prototype.updateRegistryTokenURI = async function (
   });
 };
 
-ElizaClient.prototype.syncRegistryProfile = async function (
-  this: ElizaClient,
+TokagentClient.prototype.syncRegistryProfile = async function (
+  this: TokagentClient,
   params?,
 ) {
   return this.fetch("/api/registry/sync", {
@@ -481,23 +481,23 @@ ElizaClient.prototype.syncRegistryProfile = async function (
   });
 };
 
-ElizaClient.prototype.getRegistryConfig = async function (this: ElizaClient) {
+TokagentClient.prototype.getRegistryConfig = async function (this: TokagentClient) {
   return this.fetch("/api/registry/config");
 };
 
-ElizaClient.prototype.getDropStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getDropStatus = async function (this: TokagentClient) {
   return this.fetch("/api/drop/status");
 };
 
-ElizaClient.prototype.mintAgent = async function (this: ElizaClient, params?) {
+TokagentClient.prototype.mintAgent = async function (this: TokagentClient, params?) {
   return this.fetch("/api/drop/mint", {
     method: "POST",
     body: JSON.stringify(params ?? {}),
   });
 };
 
-ElizaClient.prototype.mintAgentWhitelist = async function (
-  this: ElizaClient,
+TokagentClient.prototype.mintAgentWhitelist = async function (
+  this: TokagentClient,
   params,
 ) {
   return this.fetch("/api/drop/mint-whitelist", {
@@ -506,18 +506,18 @@ ElizaClient.prototype.mintAgentWhitelist = async function (
   });
 };
 
-ElizaClient.prototype.getWhitelistStatus = async function (this: ElizaClient) {
+TokagentClient.prototype.getWhitelistStatus = async function (this: TokagentClient) {
   return this.fetch("/api/whitelist/status");
 };
 
-ElizaClient.prototype.generateTwitterVerificationMessage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.generateTwitterVerificationMessage = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/whitelist/twitter/message", { method: "POST" });
 };
 
-ElizaClient.prototype.verifyTwitter = async function (
-  this: ElizaClient,
+TokagentClient.prototype.verifyTwitter = async function (
+  this: TokagentClient,
   tweetUrl,
 ) {
   return this.fetch("/api/whitelist/twitter/verify", {

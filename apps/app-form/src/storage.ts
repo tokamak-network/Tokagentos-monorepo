@@ -4,7 +4,7 @@
  *
  * ## Design Rationale
  *
- * Form data is stored using elizaOS's Component system because:
+ * Form data is stored using tokagentOS's Component system because:
  *
  * 1. **Entity-Scoped**: Components belong to entities (users).
  *    This naturally scopes form data per-user.
@@ -12,7 +12,7 @@
  * 2. **Typed Storage**: Component type field allows different kinds
  *    of form data (sessions, submissions, autofill).
  *
- * 3. **No Custom Schema**: Uses existing elizaOS infrastructure,
+ * 3. **No Custom Schema**: Uses existing tokagentOS infrastructure,
  *    no need to create database tables.
  *
  * 4. **Room Scoping**: Component type includes roomId for session
@@ -48,7 +48,7 @@
  * These are acceptable for v1 but noted for future improvement.
  */
 
-import type { Component, IAgentRuntime, JsonValue, UUID } from "@elizaos/core";
+import type { Component, IAgentRuntime, JsonValue, UUID } from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 import type { FormAutofillData, FormSession, FormSubmission } from "./types";
 import {
@@ -500,7 +500,7 @@ export async function saveAutofillData(
  * Get all stale sessions (for nudge system).
  *
  * LIMITATION: This requires iterating over all entities, which is not
- * efficient with current elizaOS component system. In production,
+ * efficient with current tokagentOS component system. In production,
  * this would need a database-level query.
  *
  * WHY this is here:

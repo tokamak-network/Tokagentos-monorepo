@@ -6,12 +6,12 @@ import type {
   LifeOpsGoogleConnectorReason,
   SendLifeOpsGmailMessageRequest,
   StartLifeOpsGoogleConnectorResponse,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   normalizeCloudSiteUrl,
   resolveCloudApiBaseUrl,
-} from "@elizaos/agent/cloud/base-url";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+} from "@tokagentos/agent/cloud/base-url";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import type { SyncedGoogleCalendarEvent } from "./google-calendar.js";
 import type { SyncedGoogleGmailMessageSummary } from "./google-gmail.js";
 import { formatInstantAsRfc3339InTimeZone } from "./time.js";
@@ -188,7 +188,7 @@ function readConfigCloudSettings(): {
   baseUrl: string | null;
 } {
   try {
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const cloud =
       config.cloud && typeof config.cloud === "object"
         ? (config.cloud as Record<string, unknown>)
@@ -249,8 +249,8 @@ async function readJsonResponse<T>(response: Response): Promise<T> {
 export function resolveManagedGoogleCloudConfig(): ResolvedManagedGoogleCloudConfig {
   const configCloud = readConfigCloudSettings();
   const apiKey =
-    configCloud.apiKey ?? normalizeApiKey(process.env.ELIZAOS_CLOUD_API_KEY);
-  const baseUrl = configCloud.baseUrl ?? process.env.ELIZAOS_CLOUD_BASE_URL;
+    configCloud.apiKey ?? normalizeApiKey(process.env.TOKAGENTOS_CLOUD_API_KEY);
+  const baseUrl = configCloud.baseUrl ?? process.env.TOKAGENTOS_CLOUD_BASE_URL;
   const siteUrl = normalizeCloudSiteUrl(baseUrl);
   const apiBaseUrl = resolveCloudApiBaseUrl(baseUrl);
 
@@ -284,7 +284,7 @@ export class GoogleManagedClient {
   } {
     const config = this.getConfig();
     if (!config.apiKey) {
-      throw new ManagedGoogleClientError(409, "Eliza Cloud is not connected.");
+      throw new ManagedGoogleClientError(409, "Tokagent Cloud is not connected.");
     }
     return {
       ...config,

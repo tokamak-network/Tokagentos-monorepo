@@ -1,6 +1,6 @@
 # Python Examples
 
-Interactive examples using elizaOS Python implementation.
+Interactive examples using tokagentOS Python implementation.
 
 ## Examples
 
@@ -50,12 +50,12 @@ LOG_LEVEL=fatal OPENAI_API_KEY=your_key ./examples/python/.venv/bin/python examp
 ### Chat Example
 
 ```python
-from elizaos import Character, ChannelType, Content, Memory
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import Character, ChannelType, Content, Memory
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
 
 # Create character and runtime
-character = Character(name="Eliza", bio="A helpful AI assistant.")
+character = Character(name="Tokagent", bio="A helpful AI assistant.")
 runtime = AgentRuntime(character=character, plugins=[get_openai_plugin()])
 await runtime.initialize()
 
@@ -77,9 +77,9 @@ await runtime.stop()
 ```python
 import uuid
 
-from elizaos import ChannelType, Character, Content, Memory, string_to_uuid
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import ChannelType, Character, Content, Memory, string_to_uuid
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
 
 # Create runtime
 runtime = AgentRuntime(character=character, plugins=[get_openai_plugin()])

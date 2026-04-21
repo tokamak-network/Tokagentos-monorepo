@@ -1,5 +1,5 @@
 /**
- * Autonomy Types for elizaOS
+ * Autonomy Types for tokagentOS
  *
  * Defines types for autonomous agent operation.
  */

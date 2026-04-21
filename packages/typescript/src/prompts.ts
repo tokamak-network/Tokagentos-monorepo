@@ -1,5 +1,5 @@
 /**
- * Auto-generated prompt templates for elizaOS
+ * Auto-generated prompt templates for tokagentOS
  * DO NOT EDIT - Generated from packages/prompts/prompts/*.txt
  *
  * These prompts use Handlebars-style template syntax:

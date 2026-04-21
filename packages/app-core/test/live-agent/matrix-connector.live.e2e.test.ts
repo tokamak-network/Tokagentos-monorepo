@@ -16,12 +16,12 @@
  *   MATRIX_ACCESS_TOKEN   — Matrix access token
  *   MATRIX_HOMESERVER     — Matrix homeserver URL (e.g., https://matrix.org)
  *   MATRIX_USER_ID        — Matrix user ID (e.g., @agent:example.com)
- *   ELIZA_LIVE_TEST=1    — Enable live tests
+ *   TOKAGENT_LIVE_TEST=1    — Enable live tests
  *
  * Additional env vars for write tests:
  *   MATRIX_ROOMS          — Comma-separated room IDs to test in
  *
- * Or configure in ~/.eliza/eliza.json:
+ * Or configure in ~/.tokagent/tokagent.json:
  *   { "connectors": { "matrix": { "token": "...", "homeserver": "...", "userId": "..." } } }
  *
  * NO MOCKS for live tests — all tests use real Matrix Client-Server API.
@@ -33,8 +33,8 @@ import { fileURLToPath } from "node:url";
 import {
   extractPlugin,
   resolveMatrixPluginImportSpecifier,
-} from "@elizaos/app-core";
-import { logger, type Plugin } from "@elizaos/core";
+} from "@tokagentos/app-core";
+import { logger, type Plugin } from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { describeIf } from "../../../../../test/helpers/conditional-tests.ts";
@@ -55,7 +55,7 @@ const _MATRIX_DEVICE_ID = process.env.MATRIX_DEVICE_ID;
 const MATRIX_ROOMS = process.env.MATRIX_ROOMS;
 
 const hasMatrixCreds = Boolean(MATRIX_ACCESS_TOKEN && MATRIX_HOMESERVER);
-const liveTestsEnabled = process.env.ELIZA_LIVE_TEST === "1";
+const liveTestsEnabled = process.env.TOKAGENT_LIVE_TEST === "1";
 const runLiveTests = hasMatrixCreds && liveTestsEnabled;
 
 // Write tests require at least one target room
@@ -68,7 +68,7 @@ const hasPlugin = MATRIX_PLUGIN_IMPORT !== null;
 // Plugin-dependent tests (need @elizaos/plugin-matrix installed)
 const describeIfPluginAvailable = describeIf(hasPlugin);
 
-// API-level live tests (need creds + ELIZA_LIVE_TEST=1)
+// API-level live tests (need creds + TOKAGENT_LIVE_TEST=1)
 const describeIfLive = describeIf(runLiveTests);
 const describeIfLiveWrite = describeIf(runLiveWriteTests);
 
@@ -162,7 +162,7 @@ afterAll(async () => {
         await matrixPut(
           `rooms/${encodeURIComponent(testRoomId)}/redact/${encodeURIComponent(eventId)}/${crypto.randomUUID()}`,
           MATRIX_ACCESS_TOKEN,
-          { reason: "eliza test cleanup" },
+          { reason: "tokagent test cleanup" },
         );
         await sleep(RATE_LIMIT_DELAY_MS);
       } catch {
@@ -246,7 +246,7 @@ describeIfLiveWrite("Matrix Connector - Message Handling", () => {
         MATRIX_ACCESS_TOKEN!,
         {
           msgtype: "m.text",
-          body: `[eliza-test] text message at ${new Date().toISOString()}`,
+          body: `[tokagent-test] text message at ${new Date().toISOString()}`,
         },
       );
 
@@ -267,7 +267,7 @@ describeIfLiveWrite("Matrix Connector - Message Handling", () => {
         MATRIX_ACCESS_TOKEN!,
         {
           msgtype: "m.notice",
-          body: `[eliza-test] notice at ${new Date().toISOString()}`,
+          body: `[tokagent-test] notice at ${new Date().toISOString()}`,
         },
       );
 
@@ -437,7 +437,7 @@ describe("Matrix Connector - Integration", () => {
   it("Matrix is mapped in CONNECTOR_PLUGINS", async () => {
     const mod = await tryWorkspaceImport<{
       CONNECTOR_PLUGINS: Record<string, string>;
-    }>("@elizaos/app-core");
+    }>("@tokagentos/app-core");
     if (!mod) {
       logger.warn("[matrix-connector] Workspace not built — skipping");
       return;
@@ -450,7 +450,7 @@ describe("Matrix Connector - Integration", () => {
     try {
       mod = await tryWorkspaceImport<{
         CHANNEL_PLUGIN_MAP: Record<string, string>;
-      }>("@elizaos/app-core");
+      }>("@tokagentos/app-core");
     } catch {
       mod = null;
     }

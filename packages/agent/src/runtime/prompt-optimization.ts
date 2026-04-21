@@ -1,13 +1,13 @@
 /**
- * Prompt optimization layer for eliza.
+ * Prompt optimization layer for tokagent.
  *
  * Wraps `runtime.useModel()` to apply context-aware action compaction
- * and optional prompt tracing/capture. Controlled via ELIZA_* env vars.
+ * and optional prompt tracing/capture. Controlled via TOKAGENT_* env vars.
  */
 
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
-import { type AgentRuntime, getTrajectoryContext } from "@elizaos/core";
+import { type AgentRuntime, getTrajectoryContext } from "@tokagentos/core";
 import { detectRuntimeModel } from "../api/agent-model.js";
 
 import {
@@ -37,27 +37,27 @@ export {
 // Env-var driven configuration (evaluated once at import time)
 // ---------------------------------------------------------------------------
 
-const ELIZA_PROMPT_OPT_MODE = (
-  process.env.ELIZA_PROMPT_OPT_MODE ?? "baseline"
+const TOKAGENT_PROMPT_OPT_MODE = (
+  process.env.TOKAGENT_PROMPT_OPT_MODE ?? "baseline"
 ).toLowerCase();
 
-const ELIZA_PROMPT_TRACE =
-  process.env.ELIZA_PROMPT_TRACE === "1" ||
-  process.env.ELIZA_PROMPT_TRACE?.toLowerCase() === "true";
+const TOKAGENT_PROMPT_TRACE =
+  process.env.TOKAGENT_PROMPT_TRACE === "1" ||
+  process.env.TOKAGENT_PROMPT_TRACE?.toLowerCase() === "true";
 
 /**
  * Dump raw prompts to .tmp/prompt-captures/ for analysis. Dev-only.
  * WARNING: captures contain full conversation content including user messages.
  */
-const ELIZA_CAPTURE_PROMPTS =
-  process.env.ELIZA_CAPTURE_PROMPTS === "1" ||
-  process.env.ELIZA_CAPTURE_PROMPTS?.toLowerCase() === "true";
+const TOKAGENT_CAPTURE_PROMPTS =
+  process.env.TOKAGENT_CAPTURE_PROMPTS === "1" ||
+  process.env.TOKAGENT_CAPTURE_PROMPTS?.toLowerCase() === "true";
 
 let promptCaptureSeq = 0;
 
 /** When false, context-aware action compaction is skipped entirely. Default: enabled. */
-const ELIZA_ACTION_COMPACTION = (() => {
-  const raw = process.env.ELIZA_ACTION_COMPACTION?.toLowerCase();
+const TOKAGENT_ACTION_COMPACTION = (() => {
+  const raw = process.env.TOKAGENT_ACTION_COMPACTION?.toLowerCase();
   if (raw === "0" || raw === "false") return false;
   return true;
 })();
@@ -67,7 +67,7 @@ const installedRuntimes = new WeakSet<AgentRuntime>();
 const trackedTrajectoryLoggers = new WeakSet<object>();
 const trajectoryLlmLogCounts = new WeakMap<AgentRuntime, Map<string, number>>();
 const TRAJECTORY_CONTEXT_MANAGER_KEY = Symbol.for(
-  "elizaos.trajectoryContextManager",
+  "tokagentos.trajectoryContextManager",
 );
 
 type GlobalWithTrajectoryContextManager = typeof globalThis & {
@@ -441,7 +441,7 @@ export function installPromptOptimizations(runtime: AgentRuntime): void {
     const originalPrompt = String(promptRecord[promptKey] ?? "");
 
     // --- Prompt capture (dev debugging) ---
-    if (ELIZA_CAPTURE_PROMPTS) {
+    if (TOKAGENT_CAPTURE_PROMPTS) {
       const captureDir = path.resolve(".tmp", "prompt-captures");
       const seq = String(++promptCaptureSeq).padStart(4, "0");
       const filename = `${seq}-${modelType}.txt`;
@@ -461,30 +461,30 @@ export function installPromptOptimizations(runtime: AgentRuntime): void {
       // --- Context-aware action compaction (when enabled) ---
       // Strips <params> from actions not relevant to the user's intent.
       // All action names remain visible — only param detail is stripped.
-      let workingPrompt = ELIZA_ACTION_COMPACTION
+      let workingPrompt = TOKAGENT_ACTION_COMPACTION
         ? compactActionsForIntent(originalPrompt)
         : originalPrompt;
 
       // Strip coding agent examples when no coding intent is detected.
       // These are ~4k chars of provider-injected examples that are only
       // useful when the user is asking about code/repos/agents.
-      if (ELIZA_ACTION_COMPACTION) {
+      if (TOKAGENT_ACTION_COMPACTION) {
         workingPrompt = compactCodingExamplesForIntent(workingPrompt);
         workingPrompt = compactConversationHistory(workingPrompt);
       }
 
       // --- Full prompt compaction (compact mode only) ---
       let nextPrompt = workingPrompt;
-      if (ELIZA_PROMPT_OPT_MODE === "compact") {
+      if (TOKAGENT_PROMPT_OPT_MODE === "compact") {
         nextPrompt = compactModelPrompt(workingPrompt);
-        if (ELIZA_PROMPT_TRACE && nextPrompt.length !== originalPrompt.length) {
+        if (TOKAGENT_PROMPT_TRACE && nextPrompt.length !== originalPrompt.length) {
           runtime.logger?.info(
-            `[eliza] Compact prompt rewrite: ${originalPrompt.length} -> ${nextPrompt.length} chars`,
+            `[tokagent] Compact prompt rewrite: ${originalPrompt.length} -> ${nextPrompt.length} chars`,
           );
         }
-      } else if (workingPrompt !== originalPrompt && ELIZA_PROMPT_TRACE) {
+      } else if (workingPrompt !== originalPrompt && TOKAGENT_PROMPT_TRACE) {
         runtime.logger?.info(
-          `[eliza] Action compaction: ${originalPrompt.length} -> ${workingPrompt.length} chars (saved ${originalPrompt.length - workingPrompt.length})`,
+          `[tokagent] Action compaction: ${originalPrompt.length} -> ${workingPrompt.length} chars (saved ${originalPrompt.length - workingPrompt.length})`,
         );
       }
 
@@ -546,7 +546,7 @@ export function installPromptOptimizations(runtime: AgentRuntime): void {
       try {
         trajectoryLogger.logLlmCall(fallbackCall);
         runtime.logger?.warn?.(
-          `[eliza] Trajectory logger missed live LLM capture for ${normalizedTrajectoryStepId}; recorded fallback call from prompt optimization wrapper`,
+          `[tokagent] Trajectory logger missed live LLM capture for ${normalizedTrajectoryStepId}; recorded fallback call from prompt optimization wrapper`,
         );
       } catch {
         // Ignore fallback logging failures; the model call itself already succeeded.

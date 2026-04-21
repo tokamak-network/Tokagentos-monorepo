@@ -1,5 +1,5 @@
 use anyhow::Result;
-use elizaos::{
+use tokagentos::{
     parse_character,
     runtime::{AgentRuntime, RuntimeOptions},
     types::{
@@ -9,7 +9,7 @@ use elizaos::{
         Memory, State, UUID,
     },
 };
-use elizaos::services::IMessageService;
+use tokagentos::services::IMessageService;
 use serde_json::Value;
 use std::{
     collections::{HashMap, HashSet},
@@ -307,7 +307,7 @@ fn parse_env_kv(prompt: &str) -> HashMap<String, String> {
     out
 }
 
-fn decision_model_handler(world: Arc<Mutex<World>>) -> elizaos::types::plugin::ModelHandlerFn {
+fn decision_model_handler(world: Arc<Mutex<World>>) -> tokagentos::types::plugin::ModelHandlerFn {
     Box::new(move |params: Value| {
         let world = world.clone();
         Box::pin(async move {
@@ -398,7 +398,7 @@ async fn main() -> Result<()> {
 
     println!(
         "\n══════════════════════════════════════════════════════════════\n\
-         ELIZAOS AGENTIC GAME OF LIFE (RUST)\n\
+         TOKAGENTOS AGENTIC GAME OF LIFE (RUST)\n\
          - Each tick: runtime.message_service().handle_message(...)\n\
          - Decision: custom TEXT_LARGE handler returns deterministic XML\n\
          - Actions: EAT / MOVE_TOWARD_FOOD / WANDER\n\
@@ -443,7 +443,7 @@ async fn main() -> Result<()> {
         };
         let mut message = Memory::new(env_entity_id.clone(), room_id.clone(), content);
 
-        // Canonical elizaOS entrypoint (no bypassing)
+        // Canonical tokagentOS entrypoint (no bypassing)
         let _ = runtime
             .message_service()
             .handle_message(&runtime, &mut message, None, None)

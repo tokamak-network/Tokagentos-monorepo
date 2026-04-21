@@ -1,5 +1,5 @@
 import type http from "node:http";
-import { stringToUuid } from "@elizaos/core";
+import { stringToUuid } from "@tokagentos/core";
 import {
   type BenchmarkSession,
   type CuaServiceLike,
@@ -9,7 +9,7 @@ import {
 } from "./server-utils";
 
 const CUA_UNAVAILABLE_ERROR =
-  "CUA service is unavailable. Set ELIZA_ENABLE_CUA=1 and configure CUA_HOST (or CUA_API_KEY + CUA_SANDBOX_NAME).";
+  "CUA service is unavailable. Set TOKAGENT_ENABLE_CUA=1 and configure CUA_HOST (or CUA_API_KEY + CUA_SANDBOX_NAME).";
 
 function readBody(req: http.IncomingMessage): Promise<string> {
   return new Promise((resolve) => {

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Eliza app integration for Babylon prediction market game.",
+  "description": "Tokagent app integration for Babylon prediction market game.",
   "main": "./src/index.ts",
   "exports": {
     "./package.json": "./package.json",
@@ -13,22 +13,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaos/eliza.git"
+    "url": "https://github.com/tokagentos/tokagent.git"
   },
   "keywords": [
     "game",
     "prediction-market",
     "babylon",
-    "elizaos",
-    "eliza"
+    "tokagentos",
+    "tokagent"
   ],
   "dependencies": {
-    "@elizaos/app-core": "workspace:*",
-    "@elizaos/core": "workspace:*",
-    "@elizaos/shared": "workspace:*",
-    "@elizaos/ui": "workspace:*"
+    "@tokagentos/app-core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
+    "@tokagentos/shared": "workspace:*",
+    "@tokagentos/ui": "workspace:*"
   },
-  "elizaos": {
+  "tokagentos": {
     "app": {
       "heroImage": "assets/hero.png"
     }

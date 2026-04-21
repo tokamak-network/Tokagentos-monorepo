@@ -1,18 +1,18 @@
-# elizaOS Cloudflare Workers
+# tokagentOS Cloudflare Workers
 
-Deploy elizaOS agents as serverless functions on Cloudflare Workers.
+Deploy tokagentOS agents as serverless functions on Cloudflare Workers.
 
 ## Available Workers
 
 | Worker            | Language   | Full Runtime | Notes                                                  |
 | ----------------- | ---------- | ------------ | ------------------------------------------------------ |
-| TypeScript        | TypeScript | ✅ Yes       | Recommended - uses full elizaOS runtime                |
+| TypeScript        | TypeScript | ✅ Yes       | Recommended - uses full tokagentOS runtime                |
 | Python (Pyodide)  | Python     | ⚠️ Limited  | Uses direct API calls due to Pyodide constraints       |
 | Rust (WASM)       | Rust       | ⚠️ Limited  | Uses direct API calls due to WASM constraints          |
 
 ## TypeScript Worker (Recommended)
 
-The TypeScript worker uses the **canonical elizaOS implementation pattern**:
+The TypeScript worker uses the **canonical tokagentOS implementation pattern**:
 
 ```typescript
 // Create runtime with plugins
@@ -78,7 +78,7 @@ Configure these in your `wrangler.toml`:
 
 ```toml
 [vars]
-CHARACTER_NAME = "Eliza"
+CHARACTER_NAME = "Tokagent"
 CHARACTER_BIO = "A helpful AI assistant"
 
 [[secrets]]
@@ -93,7 +93,7 @@ OPENAI_API_KEY = "your-key"  # Use wrangler secret put OPENAI_API_KEY
 - For persistent state, use Cloudflare Durable Objects
 
 ### Python Worker (Pyodide)
-- Cannot import the full `elizaos` package
+- Cannot import the full `tokagentos` package
 - Uses direct OpenAI API calls
 - For full Python runtime, deploy to a traditional server
 
@@ -106,7 +106,7 @@ OPENAI_API_KEY = "your-key"  # Use wrangler secret put OPENAI_API_KEY
 
 For production deployments:
 
-1. **Use the TypeScript worker** for the best elizaOS integration
+1. **Use the TypeScript worker** for the best tokagentOS integration
 2. **Use Cloudflare KV or Durable Objects** for conversation state
 3. **Set proper rate limits** in your wrangler.toml
 4. **Monitor with Cloudflare Analytics**

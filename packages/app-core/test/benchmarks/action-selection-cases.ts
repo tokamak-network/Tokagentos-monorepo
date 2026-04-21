@@ -344,7 +344,7 @@ export const ACTION_BENCHMARK_CASES: ActionBenchmarkCase[] = [
   },
   {
     id: "x-search",
-    userMessage: "search twitter for posts about elizaOS",
+    userMessage: "search twitter for posts about tokagentOS",
     expectedAction: "X_READ",
     acceptableActions: ["SEARCH"],
     expectedParams: { intent: "search" },

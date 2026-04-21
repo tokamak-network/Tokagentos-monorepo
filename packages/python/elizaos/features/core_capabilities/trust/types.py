@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
 
-from elizaos.types.primitives import UUID
+from tokagentos.types.primitives import UUID
 
 # ---------------------------------------------------------------------------
 # Trust Dimensions

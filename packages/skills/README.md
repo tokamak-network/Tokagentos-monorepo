@@ -1,6 +1,6 @@
-# @elizaos/skills
+# @tokagentos/skills
 
-Bundled skills and skill loading utilities for elizaOS agents.
+Bundled skills and skill loading utilities for tokagentOS agents.
 
 ## Overview
 
@@ -12,9 +12,9 @@ Skills are markdown files that provide specialized instructions for AI agents to
 ## Installation
 
 ```bash
-npm install @elizaos/skills
+npm install @tokagentos/skills
 # or
-pnpm add @elizaos/skills
+pnpm add @tokagentos/skills
 ```
 
 ## Usage
@@ -22,7 +22,7 @@ pnpm add @elizaos/skills
 ### Get Bundled Skills Path
 
 ```typescript
-import { getSkillsDir } from "@elizaos/skills";
+import { getSkillsDir } from "@tokagentos/skills";
 
 const skillsPath = getSkillsDir();
 // Returns absolute path to bundled skills directory
@@ -31,7 +31,7 @@ const skillsPath = getSkillsDir();
 ### Load Skills
 
 ```typescript
-import { loadSkills, loadSkillsFromDir } from "@elizaos/skills";
+import { loadSkills, loadSkillsFromDir } from "@tokagentos/skills";
 
 // Load from all default locations (bundled + managed + project)
 const { skills, diagnostics } = loadSkills();
@@ -46,7 +46,7 @@ const result = loadSkillsFromDir({
 ### Format for LLM Prompt
 
 ```typescript
-import { formatSkillsForPrompt } from "@elizaos/skills";
+import { formatSkillsForPrompt } from "@tokagentos/skills";
 
 const prompt = formatSkillsForPrompt(skills);
 // Returns XML-formatted skills section for system prompt
@@ -55,7 +55,7 @@ const prompt = formatSkillsForPrompt(skills);
 ### Build Command Specs
 
 ```typescript
-import { loadSkillEntries, buildSkillCommandSpecs } from "@elizaos/skills";
+import { loadSkillEntries, buildSkillCommandSpecs } from "@tokagentos/skills";
 
 const entries = loadSkillEntries();
 const commands = buildSkillCommandSpecs(entries);
@@ -64,15 +64,15 @@ const commands = buildSkillCommandSpecs(entries);
 
 ## Bundled documentation skills
 
-Alongside community-oriented skills, this package ships **`elizaos`**, **`eliza-cloud`**, and **`eliza-app-development`** — concise references for elizaOS runtime concepts, Eliza Cloud as a backend, and building elizaOS-based applications (including the Eliza app repository layout).
+Alongside community-oriented skills, this package ships **`tokagentos`**, **`tokagent-cloud`**, and **`tokagent-app-development`** — concise references for tokagentOS runtime concepts, Tokagent Cloud as a backend, and building tokagentOS-based applications (including the Tokagent app repository layout).
 
 ## Skill Discovery
 
 Skills are loaded from multiple locations in precedence order (later overrides earlier):
 
 1. **Bundled skills** - Included in this package (`skills/`)
-2. **Managed skills** - User-installed skills (`~/.elizaos/skills/`)
-3. **Project skills** - Project-local skills (`<cwd>/.elizaos/skills/`)
+2. **Managed skills** - User-installed skills (`~/.tokagentos/skills/`)
+3. **Project skills** - Project-local skills (`<cwd>/.tokagentos/skills/`)
 4. **Explicit paths** - Via `skillPaths` option
 
 ## Skill Format

@@ -1,4 +1,4 @@
-//! Primitive types for elizaOS (proto-backed)
+//! Primitive types for tokagentOS (proto-backed)
 
 use lazy_static::lazy_static;
 use regex::Regex;
@@ -9,7 +9,7 @@ use std::fmt;
 use std::hash::{Hash, Hasher};
 use thiserror::Error;
 
-use super::generated::eliza::v1::Uuid;
+use super::generated::tokagent::v1::Uuid;
 
 lazy_static! {
     static ref UUID_REGEX: Regex =
@@ -163,7 +163,7 @@ fn encode_uri_component(input: &str) -> String {
     percent_encoding::utf8_percent_encode(input, URI_COMPONENT_ENCODE_SET).to_string()
 }
 
-pub use super::generated::eliza::v1::DefaultUuid;
+pub use super::generated::tokagent::v1::DefaultUuid;
 
 /// Channel types for messaging
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, Eq, Hash)]

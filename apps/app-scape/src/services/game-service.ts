@@ -1,5 +1,5 @@
 /**
- * ScapeGameService — the elizaOS Service that owns the agent's
+ * ScapeGameService — the tokagentOS Service that owns the agent's
  * connection lifecycle and (eventually) the LLM game loop.
  *
  * PR 3 scope: on `initialize()` the service reads env / runtime
@@ -19,7 +19,7 @@
  * unless `BOT_SDK_TOKEN` is set. Nothing happens silently.
  */
 
-import { type IAgentRuntime, ModelType, Service } from "@elizaos/core";
+import { type IAgentRuntime, ModelType, Service } from "@tokagentos/core";
 
 import { botStateProvider } from "../providers/bot-state.js";
 import { goalsProvider } from "../providers/goals.js";
@@ -119,7 +119,7 @@ const MODEL_SIZE_MAP: Record<string, ScapeModelSize> = {
   SMALL: ModelType.TEXT_SMALL,
   MEDIUM: ModelType.TEXT_MEDIUM,
   LARGE: ModelType.TEXT_LARGE,
-  // Back-compat: `@elizaos/core`'s ModelType has no MINI tier (the real
+  // Back-compat: `@tokagentos/core`'s ModelType has no MINI tier (the real
   // progression is NANO → SMALL → MEDIUM → LARGE → MEGA). Earlier docs
   // advertised a MINI option that silently fell through to TEXT_SMALL at
   // runtime; preserve that behavior so existing configs keep working.
@@ -150,10 +150,10 @@ function resolveSetting(
 }
 
 /**
- * The elizaOS Service contract allows either a class with
+ * The tokagentOS Service contract allows either a class with
  * `static async start(runtime)` or an already-instantiated object.
  * 2004scape uses the static-start pattern — we mirror it so the
- * eliza runtime loads us the same way.
+ * tokagent runtime loads us the same way.
  */
 export class ScapeGameService extends Service {
   static readonly serviceType = "scape_game";
@@ -218,7 +218,7 @@ export class ScapeGameService extends Service {
 
     // Resolve the agent's account credentials. Priority order:
     //   1. Explicit runtime settings (SCAPE_AGENT_NAME / _PASSWORD / _ID)
-    //   2. Persisted identity file at ~/.eliza/scape-agent-identity.json
+    //   2. Persisted identity file at ~/.tokagent/scape-agent-identity.json
     //   3. Freshly generated + persisted (zero-friction first-run UX)
     //
     // Self-generation is the important change here: the operator
@@ -363,7 +363,7 @@ export class ScapeGameService extends Service {
   /**
    * Apply an operator message coming through the session-scoped
    * route `/api/apps/scape/session/:id/message`. This is the path
-   * the eliza Apps UI uses for run-steering. We recognize a couple
+   * the tokagent Apps UI uses for run-steering. We recognize a couple
    * of inline control verbs (`pause` / `resume`) and otherwise
    * treat the whole text as an operator goal.
    */
@@ -481,7 +481,7 @@ export class ScapeGameService extends Service {
    *   2. Gather provider context (TOON blocks).
    *   3. Ask the LLM what to do next.
    *   4. Parse the chosen action + params.
-   *   5. Dispatch through the elizaOS Action handler (which calls
+   *   5. Dispatch through the tokagentOS Action handler (which calls
    *      `executeAction` back into this service).
    */
   private async autonomousStep(): Promise<void> {
@@ -555,16 +555,16 @@ export class ScapeGameService extends Service {
   private async gatherProviderContext(): Promise<string> {
     // Providers expect Memory + State shaped args. None of them
     // actually inspect the shape so a stub works; the cast keeps
-    // the call site aligned with the elizaOS Provider contract
+    // the call site aligned with the tokagentOS Provider contract
     // (runtime, message, state → ProviderResult).
     const dummyMemory = {
       content: { text: "" },
-    } as unknown as import("@elizaos/core").Memory;
+    } as unknown as import("@tokagentos/core").Memory;
     const dummyState = {
       values: {},
       data: {},
       text: "",
-    } as unknown as import("@elizaos/core").State;
+    } as unknown as import("@tokagentos/core").State;
     const sections: string[] = [];
     // Order matters for prompt readability: self / inventory
     // come first (short), nearby next (variable), then the

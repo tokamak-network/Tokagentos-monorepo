@@ -4,7 +4,7 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   type BrowserWorkspaceCommand,
   type BrowserWorkspaceCommandResult,
@@ -15,7 +15,7 @@ import {
   type BrowserWorkspaceSubaction,
   type BrowserWorkspaceWaitState,
   executeBrowserWorkspaceCommand,
-} from "@elizaos/agent/services/browser-workspace";
+} from "@tokagentos/agent/services/browser-workspace";
 
 type BrowserWorkspaceActionRequest = BrowserWorkspaceCommand;
 
@@ -881,10 +881,10 @@ function formatSingleCommandResult(
   switch (result.subaction) {
     case "list": {
       if (!result.tabs?.length) {
-        return "Eliza browser workspace has no open tabs.";
+        return "Tokagent browser workspace has no open tabs.";
       }
       return [
-        `Eliza browser workspace has ${result.tabs.length} tab${result.tabs.length === 1 ? "" : "s"} open:`,
+        `Tokagent browser workspace has ${result.tabs.length} tab${result.tabs.length === 1 ? "" : "s"} open:`,
         ...result.tabs.map(
           (tab) =>
             `- ${tab.id} [${tab.visible ? "visible" : "background"}] ${tab.url}`,
@@ -1057,10 +1057,10 @@ function formatBrowserWorkspaceCommandResult(
   ].join("\n");
 }
 
-export const manageElizaBrowserWorkspaceAction: Action = {
-  name: "MANAGE_ELIZA_BROWSER_WORKSPACE",
+export const manageTokagentBrowserWorkspaceAction: Action = {
+  name: "MANAGE_TOKAGENT_BROWSER_WORKSPACE",
   description:
-    "Use the Eliza browser workspace through one main action. Pass a subaction such as list, open, navigate, show, hide, close, inspect, snapshot, screenshot, find, click, dblclick, fill, type, keyboardtype, keyboardinserttext, focus, hover, select, check, uncheck, press, keydown, keyup, scroll, scrollinto, wait, get, back, forward, reload, eval, batch, clipboard, mouse, drag, upload, set, cookies, storage, network, dialog, console, errors, highlight, diff, trace, profiler, state, frame, tab, window, or pdf. Use batch with stepsJson to run a series of browser subactions in order. Snapshot and inspect return reusable element refs like @e1 that can be passed back as selector values.",
+    "Use the Tokagent browser workspace through one main action. Pass a subaction such as list, open, navigate, show, hide, close, inspect, snapshot, screenshot, find, click, dblclick, fill, type, keyboardtype, keyboardinserttext, focus, hover, select, check, uncheck, press, keydown, keyup, scroll, scrollinto, wait, get, back, forward, reload, eval, batch, clipboard, mouse, drag, upload, set, cookies, storage, network, dialog, console, errors, highlight, diff, trace, profiler, state, frame, tab, window, or pdf. Use batch with stepsJson to run a series of browser subactions in order. Snapshot and inspect return reusable element refs like @e1 that can be passed back as selector values.",
   descriptionCompressed: "Browser workspace: navigate, click, fill, type, screenshot, DOM, eval, tabs, cookies, network, console.",
   similes: [
     "browser command",

@@ -7,6 +7,6 @@ export * from "./definitions";
 const loadWeb = () =>
   import("./web").then((module) => new module.AppBlockerWeb());
 
-export const AppBlocker = registerPlugin<AppBlockerPlugin>("ElizaAppBlocker", {
+export const AppBlocker = registerPlugin<AppBlockerPlugin>("TokagentAppBlocker", {
   web: loadWeb,
 });

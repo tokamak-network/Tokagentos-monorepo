@@ -10,7 +10,7 @@ import os
 import sys
 from pathlib import Path
 
-# Add workspace root, local elizaos python package, and plugin packages to sys.path.
+# Add workspace root, local tokagentos python package, and plugin packages to sys.path.
 _ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_ROOT))
 _PYTHON_PKG = _ROOT / "packages" / "python"
@@ -22,7 +22,7 @@ if _ORCH_PKG.exists():
     sys.path.insert(0, str(_ORCH_PKG))
 
 # SWE-agent package
-_SWEAGENT_PKG = _ROOT / "eliza" / "packages" / "sweagent" / "python"
+_SWEAGENT_PKG = _ROOT / "tokagent" / "packages" / "sweagent" / "python"
 if _SWEAGENT_PKG.exists():
     sys.path.insert(0, str(_SWEAGENT_PKG))
 
@@ -161,7 +161,7 @@ def _pick_runtime_model(
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Run SWE-bench benchmark on ElizaOS Python",
+        description="Run SWE-bench benchmark on TokagentOS Python",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -320,7 +320,7 @@ Examples:
         "--providers",
         type=str,
         nargs="+",
-        choices=["claude-code", "swe-agent", "codex", "eliza-code"],
+        choices=["claude-code", "swe-agent", "codex", "tokagent-code"],
         default=None,
         help="Provider(s) to benchmark in orchestrated mode (default: claude-code, swe-agent, codex)",
     )
@@ -355,7 +355,7 @@ Examples:
     parser.add_argument(
         "--verify-provider",
         type=str,
-        choices=["claude-code", "swe-agent", "codex", "eliza-code"],
+        choices=["claude-code", "swe-agent", "codex", "tokagent-code"],
         default=None,
         help="Run a single verification instance with specified provider",
     )
@@ -438,12 +438,12 @@ async def show_stats(args: argparse.Namespace) -> None:
 
 async def run_benchmark(args: argparse.Namespace) -> None:
     """Run the benchmark."""
-    # Import here to avoid import errors if elizaos not installed
+    # Import here to avoid import errors if tokagentos not installed
     try:
-        from elizaos.runtime import AgentRuntime
+        from tokagentos.runtime import AgentRuntime
     except ImportError:
-        print("Error: elizaos package not found. Please install it first.")
-        print("  pip install elizaos")
+        print("Error: tokagentos package not found. Please install it first.")
+        print("  pip install tokagentos")
         sys.exit(1)
 
     # Create configuration
@@ -517,7 +517,7 @@ async def run_benchmark(args: argparse.Namespace) -> None:
     if args.gold:
         pass
     else:
-        from elizaos.types.model import ModelType
+        from tokagentos.types.model import ModelType
 
         if backend == "mock":
             # Counter to track mock calls for varied responses
@@ -732,13 +732,13 @@ async def run_orchestrated_benchmark(args: argparse.Namespace) -> None:
     """Run the orchestrated benchmark."""
     if not _ORCHESTRATOR_AVAILABLE:
         print("Error: orchestrator dependencies not available.")
-        print("  pip install elizaos_plugin_agent_orchestrator")
+        print("  pip install tokagentos_plugin_agent_orchestrator")
         sys.exit(1)
 
     try:
-        from elizaos.runtime import AgentRuntime
+        from tokagentos.runtime import AgentRuntime
     except ImportError:
-        print("Error: elizaos package not found. Please install it first.")
+        print("Error: tokagentos package not found. Please install it first.")
         sys.exit(1)
 
     variant = SWEBenchVariant(args.variant)
@@ -791,7 +791,7 @@ async def run_orchestrated_benchmark(args: argparse.Namespace) -> None:
     provider_models: dict[str, str] = {
         "swe-agent": runtime_model_name,
         "codex": runtime_model_name,
-        "eliza-code": runtime_model_name,
+        "tokagent-code": runtime_model_name,
     }
     if _is_anthropic_model(runtime_model_name):
         provider_models["claude-code"] = runtime_model_name
@@ -839,7 +839,7 @@ async def run_orchestrated_benchmark(args: argparse.Namespace) -> None:
     await runtime.initialize()
 
     # Register model handler
-    from elizaos.types.model import ModelType
+    from tokagentos.types.model import ModelType
 
     if backend == "mock":
         _mock_counter = [0]

@@ -18,7 +18,7 @@ const prepareIosCocoapodsScript =
   firstExisting([
     path.join(
       repoRoot,
-      "eliza",
+      "tokagent",
       "packages",
       "app-core",
       "scripts",
@@ -28,7 +28,7 @@ const prepareIosCocoapodsScript =
   ]) ??
   path.join(
     repoRoot,
-    "eliza",
+    "tokagent",
     "packages",
     "app-core",
     "scripts",
@@ -70,7 +70,7 @@ export function resolvePlatformTemplateRoot(
   return firstExisting([
     path.join(
       repoRootValue,
-      "eliza",
+      "tokagent",
       "packages",
       "app-core",
       "platforms",
@@ -84,7 +84,7 @@ const androidPlatformSrc =
   resolvePlatformTemplateRoot("android") ??
   path.join(
     repoRoot,
-    "eliza",
+    "tokagent",
     "packages",
     "app-core",
     "platforms",
@@ -94,7 +94,7 @@ const iosPlatformSrc =
   resolvePlatformTemplateRoot("ios") ??
   path.join(
     repoRoot,
-    "eliza",
+    "tokagent",
     "packages",
     "app-core",
     "platforms",
@@ -111,7 +111,7 @@ const androidBuildGradleTemplate = path.join(
 // manifest service names, notification strings, etc.
 
 function readAppIdentity() {
-  const defaults = { appId: "ai.elizaos.app", appName: "Eliza" };
+  const defaults = { appId: "ai.tokagentos.app", appName: "Tokagent" };
   for (const file of ["app.config.ts", "capacitor.config.ts"]) {
     const fp = path.join(appDir, file);
     if (!fs.existsSync(fp)) continue;
@@ -190,8 +190,8 @@ function withPrependedPath(env, entries) {
 }
 
 async function buildSharedApp() {
-  if (process.env.ELIZA_SKIP_WEB_BUILD === "1") {
-    console.log("[mobile-build] Skipping web build (ELIZA_SKIP_WEB_BUILD=1).");
+  if (process.env.TOKAGENT_SKIP_WEB_BUILD === "1") {
+    console.log("[mobile-build] Skipping web build (TOKAGENT_SKIP_WEB_BUILD=1).");
     return;
   }
   await run("bun", ["scripts/build.mjs"], { cwd: appDir });
@@ -302,7 +302,7 @@ const ANDROID_REQUIRED_PERMISSIONS = [
 
 const ANDROID_SERVICE_BLOCK = `
         <service
-            android:name="ai.elizaos.app.GatewayConnectionService"
+            android:name="ai.tokagentos.app.GatewayConnectionService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />`;
 
@@ -318,14 +318,14 @@ const ANDROID_QUERIES_BLOCK = `
  */
 function overlayAndroidNativeFiles() {
   const srcJavaDir = path.join(
-    androidPlatformSrc, "app", "src", "main", "java", "ai", "elizaos", "app",
+    androidPlatformSrc, "app", "src", "main", "java", "ai", "tokagentos", "app",
   );
   const targetJavaDir = path.join(
-    androidDir, "app", "src", "main", "java", "ai", "elizaos", "app",
+    androidDir, "app", "src", "main", "java", "ai", "tokagentos", "app",
   );
 
   // Detect the host app's namespace so we can add an R import.
-  // The source files live under ai.elizaos.app but R is generated under
+  // The source files live under ai.tokagentos.app but R is generated under
   // the app's own namespace (e.g. com.miladyai.milady).
   const appBuildGradlePath = path.join(androidDir, "app", "build.gradle");
   let appNamespace = null;
@@ -346,10 +346,10 @@ function overlayAndroidNativeFiles() {
 
       let content = fs.readFileSync(src, "utf8");
 
-      // If the host app namespace differs from ai.elizaos.app, the R class
+      // If the host app namespace differs from ai.tokagentos.app, the R class
       // lives in the host namespace. Add an explicit import so unqualified
       // R references compile.
-      if (appNamespace && appNamespace !== "ai.elizaos.app") {
+      if (appNamespace && appNamespace !== "ai.tokagentos.app") {
         const rImport = `import ${appNamespace}.R;`;
         if (!content.includes(rImport)) {
           // Insert right after the package declaration line
@@ -469,12 +469,12 @@ const IOS_PLIST_ENTRIES = [
   { key: "NSHealthShareUsageDescription", value: "<string>This app reads your HealthKit sleep and biometric data to infer when you are asleep, awake, and ready for reminders.</string>" },
   { key: "NSHealthUpdateUsageDescription", value: "<string>This app does not write to HealthKit, but iOS requires this key when HealthKit capability is enabled.</string>" },
   { key: "NSSpeechRecognitionUsageDescription", value: "<string>This app uses on-device speech recognition to listen for voice commands and wake words.</string>" },
-  { key: "NSLocalNetworkUsageDescription", value: "<string>This app discovers and connects to your elizaOS gateway on the local network.</string>" },
+  { key: "NSLocalNetworkUsageDescription", value: "<string>This app discovers and connects to your tokagentOS gateway on the local network.</string>" },
 ];
 
 const IOS_BONJOUR_BLOCK = `\t<key>NSBonjourServices</key>
 \t<array>
-\t\t<string>_elizaos-gw._tcp</string>
+\t\t<string>_tokagentos-gw._tcp</string>
 \t</array>`;
 
 /**
@@ -522,7 +522,7 @@ function overlayIosNativeFiles() {
     let entitlements = fs.readFileSync(srcEntitlements, "utf8");
     // Replace the generic app group with the Milady-specific one
     entitlements = entitlements.replace(
-      "group.ai.elizaos.app",
+      "group.ai.tokagentos.app",
       APP.appGroup,
     );
     fs.writeFileSync(targetEntitlements, entitlements, "utf8");
@@ -589,16 +589,16 @@ function generateIosPodfile() {
   ];
 
   const nativePluginPods = [
-    ["ElizaosCapacitorAgent", "agent"],
-    ["ElizaosCapacitorCamera", "camera"],
-    ["ElizaosCapacitorCanvas", "canvas"],
-    ["ElizaosCapacitorGateway", "gateway"],
-    ["ElizaosCapacitorLocation", "location"],
-    ["ElizaosCapacitorMobileSignals", "mobile-signals"],
-    ["ElizaosCapacitorScreencapture", "screencapture"],
-    ["ElizaosCapacitorSwabble", "swabble"],
-    ["ElizaosCapacitorTalkmode", "talkmode"],
-    ["ElizaosCapacitorWebsiteblocker", "websiteblocker"],
+    ["TokagentosCapacitorAgent", "agent"],
+    ["TokagentosCapacitorCamera", "camera"],
+    ["TokagentosCapacitorCanvas", "canvas"],
+    ["TokagentosCapacitorGateway", "gateway"],
+    ["TokagentosCapacitorLocation", "location"],
+    ["TokagentosCapacitorMobileSignals", "mobile-signals"],
+    ["TokagentosCapacitorScreencapture", "screencapture"],
+    ["TokagentosCapacitorSwabble", "swabble"],
+    ["TokagentosCapacitorTalkmode", "talkmode"],
+    ["TokagentosCapacitorWebsiteblocker", "websiteblocker"],
   ];
 
   let podLines = [];
@@ -612,10 +612,10 @@ function generateIosPodfile() {
 
   const nativePluginsBase = path.relative(
     podfileDir,
-    path.join(repoRoot, "eliza", "packages", "native-plugins"),
+    path.join(repoRoot, "tokagent", "packages", "native-plugins"),
   );
   for (const [podName, dirName] of nativePluginPods) {
-    const pluginDir = path.join(repoRoot, "eliza", "packages", "native-plugins", dirName);
+    const pluginDir = path.join(repoRoot, "tokagent", "packages", "native-plugins", dirName);
     if (fs.existsSync(pluginDir)) {
       podLines.push(`  pod '${podName}', :path => '${nativePluginsBase}/${dirName}'`);
     }
@@ -787,7 +787,7 @@ async function buildAndroid() {
   await run(
     "./gradlew",
     [
-      ":elizaos-capacitor-websiteblocker:testDebugUnitTest",
+      ":tokagentos-capacitor-websiteblocker:testDebugUnitTest",
       ":app:assembleDebug",
     ],
     {

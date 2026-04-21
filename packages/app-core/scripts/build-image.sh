@@ -1,40 +1,40 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# build-image.sh — Reproducible build pipeline for eliza/agent Docker image
+# build-image.sh — Reproducible build pipeline for tokagent/agent Docker image
 #
 # Usage:
-#   bash eliza/packages/app-core/scripts/build-image.sh [OPTIONS]
+#   bash tokagent/packages/app-core/scripts/build-image.sh [OPTIONS]
 #
 # Options:
 #   --version VER    Override version string (default: read from package.json)
 #   --tag TAG        Docker image tag (default: v{version})
-#   --remote         Build on eliza-core-1 (${BUILD_SERVER:-"root@your-server"}) instead of locally
-#   --push           After local build, push/load image to eliza-core-1
+#   --remote         Build on tokagent-core-1 (${BUILD_SERVER:-"root@your-server"}) instead of locally
+#   --push           After local build, push/load image to tokagent-core-1
 #   --no-install     Skip bun install (if deps are already up to date)
 #   --no-tsdown      Skip tsdown build (if dist/ is already built)
 #   --dry-run        Show what would be done without executing
 #   -h, --help       Show this help
 #
 # Examples:
-#   bash eliza/packages/app-core/scripts/build-image.sh                             # Build alpha.89 locally
-#   bash eliza/packages/app-core/scripts/build-image.sh --tag latest --push         # Build + push to server
-#   bash eliza/packages/app-core/scripts/build-image.sh --remote                    # Build on eliza-core-1
-#   bash eliza/packages/app-core/scripts/build-image.sh --version 2.0.0-alpha.54    # Build specific version
+#   bash tokagent/packages/app-core/scripts/build-image.sh                             # Build alpha.89 locally
+#   bash tokagent/packages/app-core/scripts/build-image.sh --tag latest --push         # Build + push to server
+#   bash tokagent/packages/app-core/scripts/build-image.sh --remote                    # Build on tokagent-core-1
+#   bash tokagent/packages/app-core/scripts/build-image.sh --version 2.0.0-alpha.54    # Build specific version
 #
 # Context:
 #   - Repo:         $(git rev-parse --show-toplevel)
-#   - Build server: ${BUILD_SERVER:-"root@your-server"} (eliza-core-1)
-#   - Image name:   eliza/agent:{tag}
+#   - Build server: ${BUILD_SERVER:-"root@your-server"} (tokagent-core-1)
+#   - Image name:   tokagent/agent:{tag}
 #
 # What this does:
 #   1. Patches apps/app/vite.config.ts to resolve @elizaos/* from node_modules
-#      (the committed config points to Shaw's local ../eliza/ submodule)
+#      (the committed config points to Shaw's local ../tokagent/ submodule)
 #   2. Runs bun install --ignore-scripts
 #   3. Runs npx tsdown to compile TypeScript → dist/
 #   4. Builds the Vite UI → apps/app/dist/
 #   5. Reverts the vite.config.ts patch (temp backup restore)
 #   6. Runs docker build with the canonical container Dockerfile
-#   7. Tags the image as eliza/agent:{tag}
+#   7. Tags the image as tokagent/agent:{tag}
 # ─────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
@@ -98,10 +98,10 @@ sedi() {
   fi
 }
 
-# ── Verify we're in the eliza repo root ─────────────────────────────────
-# Look for canonical markers: package.json with "elizaos" name and apps/app/vite.config.ts
-if [[ ! -f "package.json" ]] || ! grep -q '"elizaos"' package.json 2>/dev/null; then
-  die "Not in eliza repo root. Run from $(git rev-parse --show-toplevel)"
+# ── Verify we're in the tokagent repo root ─────────────────────────────────
+# Look for canonical markers: package.json with "tokagentos" name and apps/app/vite.config.ts
+if [[ ! -f "package.json" ]] || ! grep -q '"tokagentos"' package.json 2>/dev/null; then
+  die "Not in tokagent repo root. Run from $(git rev-parse --show-toplevel)"
 fi
 if [[ ! -f "apps/app/vite.config.ts" ]]; then
   die "apps/app/vite.config.ts not found. Are you in the right directory?"
@@ -110,17 +110,17 @@ fi
 REPO_ROOT="$(pwd)"
 log "Repo root: ${YELLOW}${REPO_ROOT}${NC}"
 
-load_env_file "eliza/packages/app-core/deploy/deploy.defaults.env"
+load_env_file "tokagent/packages/app-core/deploy/deploy.defaults.env"
 load_env_file "deploy/deploy.env"
 
-APP_IMAGE="${APP_IMAGE:-eliza/agent}"
+APP_IMAGE="${APP_IMAGE:-tokagent/agent}"
 APP_ENTRYPOINT="${APP_ENTRYPOINT:-app.mjs}"
 APP_CMD_START="${APP_CMD_START:-node --import ./node_modules/tsx/dist/loader.mjs ${APP_ENTRYPOINT} start}"
 APP_PORT="${APP_PORT:-2138}"
 APP_API_BIND="${APP_API_BIND:-127.0.0.1}"
 OCI_SOURCE="${OCI_SOURCE:-}"
-OCI_TITLE="${OCI_TITLE:-elizaOS Agent}"
-OCI_DESCRIPTION="${OCI_DESCRIPTION:-elizaOS agent runtime}"
+OCI_TITLE="${OCI_TITLE:-tokagentOS Agent}"
+OCI_DESCRIPTION="${OCI_DESCRIPTION:-tokagentOS agent runtime}"
 OCI_LICENSES="${OCI_LICENSES:-MIT}"
 SOURCE_SHA="$(git rev-parse HEAD)"
 
@@ -142,11 +142,11 @@ log "Tag:     ${YELLOW}${IMAGE_NAME}${NC}"
 $DRY_RUN && warn "DRY RUN mode — commands will be shown but not executed"
 
 # ── Select Dockerfile ─────────────────────────────────────────────────────────
-if [[ -f "eliza/packages/app-core/deploy/Dockerfile.ci" ]]; then
-  DOCKERFILE="eliza/packages/app-core/deploy/Dockerfile.ci"
+if [[ -f "tokagent/packages/app-core/deploy/Dockerfile.ci" ]]; then
+  DOCKERFILE="tokagent/packages/app-core/deploy/Dockerfile.ci"
   log "Dockerfile: ${YELLOW}${DOCKERFILE}${NC} (canonical production image)"
 else
-  die "No Dockerfile found. Expected eliza/packages/app-core/deploy/Dockerfile.ci."
+  die "No Dockerfile found. Expected tokagent/packages/app-core/deploy/Dockerfile.ci."
 fi
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -162,17 +162,17 @@ run() {
 # Step 1: Patch apps/app/vite.config.ts
 #
 # The committed config has:
-#   elizaRoot = path.resolve(appRoot, "../eliza")  ← Shaw's local submodule
+#   tokagentRoot = path.resolve(appRoot, "../tokagent")  ← Shaw's local submodule
 #   "packages/agent/src/index.ts"               ← monorepo path
 #   "packages/app-core/src/index.ts"                 ← monorepo path
 #   "packages/ui/src/index.ts"                       ← monorepo path
 #
 # We patch to:
-#   elizaRoot = path.resolve(appRoot, "node_modules/@elizaos")
+#   tokagentRoot = path.resolve(appRoot, "node_modules/@elizaos")
 #   "agent/src/index.ts"   (packages/ prefix removed)
 #   "app-core/src/index.ts"     (packages/ prefix removed)
-#   "ui/dist/index.js"          (elizaos/ui ships compiled — use dist, not src)
-#   "ui/src/index.ts"           (elizaos/ui is local source — keep src)
+#   "ui/dist/index.js"          (tokagentos/ui ships compiled — use dist, not src)
+#   "ui/src/index.ts"           (tokagentos/ui is local source — keep src)
 # ─────────────────────────────────────────────────────────────────────────────
 hdr "Step 1: Patch vite.config.ts"
 
@@ -186,40 +186,40 @@ fi
 patch_vite() {
   local file="apps/app/vite.config.ts"
 
-  # 1. elizaRoot: "../eliza" → "node_modules/@elizaos"
-  #    This is the root cause — Shaw's local eliza checkout path → npm installed path
-  sedi 's|path\.resolve(appRoot, "\.\./eliza")|path.resolve(appRoot, "node_modules/@elizaos")|g' "$file"
+  # 1. tokagentRoot: "../tokagent" → "node_modules/@elizaos"
+  #    This is the root cause — Shaw's local tokagent checkout path → npm installed path
+  sedi 's|path\.resolve(appRoot, "\.\./tokagent")|path.resolve(appRoot, "node_modules/@elizaos")|g' "$file"
 
-  # 2. Remove "packages/" prefix from elizaos/agent paths
+  # 2. Remove "packages/" prefix from tokagentos/agent paths
   #    Both the index and wildcard variants (multi-line and single-line)
   sedi 's|"packages/agent/src/index\.ts"|"agent/src/index.ts"|g' "$file"
   sedi 's|"packages/agent/src/\$1"|"agent/src/$1"|g' "$file"
   # Also handle if $1 appears without backslash (sed single-quotes make $ literal)
   sedi 's|packages/agent/src/\$1|agent/src/$1|g' "$file"
 
-  # 3. Remove "packages/" prefix from elizaos/app-core paths
+  # 3. Remove "packages/" prefix from tokagentos/app-core paths
   sedi 's|"packages/app-core/src/index\.ts"|"app-core/src/index.ts"|g' "$file"
   sedi 's|packages/app-core/src/\$1|app-core/src/$1|g' "$file"
 
-  # 4. @elizaos/app-core → use dist/ (npm package ships compiled output, no src/)
-  #    Target only lines that reference elizaRoot (not appRoot)
-  sedi 's|path\.resolve(elizaRoot, "packages/ui/src/index\.ts")|path.resolve(elizaRoot, "ui/dist/index.js")|g' "$file"
-  sedi 's|path\.resolve(elizaRoot, "packages/ui/src/\$1")|path.resolve(elizaRoot, "ui/dist/$1")|g' "$file"
-  sedi 's|path\.resolve(elizaRoot, "packages/ui/src/\\\$1")|path.resolve(elizaRoot, "ui/dist/$1")|g' "$file"
+  # 4. @tokagentos/app-core → use dist/ (npm package ships compiled output, no src/)
+  #    Target only lines that reference tokagentRoot (not appRoot)
+  sedi 's|path\.resolve(tokagentRoot, "packages/ui/src/index\.ts")|path.resolve(tokagentRoot, "ui/dist/index.js")|g' "$file"
+  sedi 's|path\.resolve(tokagentRoot, "packages/ui/src/\$1")|path.resolve(tokagentRoot, "ui/dist/$1")|g' "$file"
+  sedi 's|path\.resolve(tokagentRoot, "packages/ui/src/\\\$1")|path.resolve(tokagentRoot, "ui/dist/$1")|g' "$file"
 
-  # 5. @elizaos/app-core → keep src/ (local repo source), just remove packages/ prefix
+  # 5. @tokagentos/app-core → keep src/ (local repo source), just remove packages/ prefix
   sedi 's|path\.resolve(appRoot, "packages/ui/src/index\.ts")|path.resolve(appRoot, "ui/src/index.ts")|g' "$file"
   sedi 's|path\.resolve(appRoot, "packages/ui/src/\$1")|path.resolve(appRoot, "ui/src/$1")|g' "$file"
   sedi 's|path\.resolve(appRoot, "packages/ui/src/\\\$1")|path.resolve(appRoot, "ui/src/$1")|g' "$file"
 }
 
 if $DRY_RUN; then
-  warn "[dry-run] Would patch apps/app/vite.config.ts (elizaRoot → node_modules, packages/ prefix removal)"
+  warn "[dry-run] Would patch apps/app/vite.config.ts (tokagentRoot → node_modules, packages/ prefix removal)"
 else
   patch_vite
-  # Quick sanity check: make sure "../eliza" is gone
-  if grep -q '"../eliza"' apps/app/vite.config.ts; then
-    die "vite config patch failed — '../eliza' still present in vite.config.ts"
+  # Quick sanity check: make sure "../tokagent" is gone
+  if grep -q '"../tokagent"' apps/app/vite.config.ts; then
+    die "vite config patch failed — '../tokagent' still present in vite.config.ts"
   fi
   ok "vite.config.ts patched"
   # Show what changed
@@ -267,7 +267,7 @@ else
 fi
 
 hdr "Step 2b: Run postinstall patches"
-run "SKIP_AVATAR_CLONE=1 ELIZA_NO_VISION_DEPS=1 bun run postinstall 2>&1 | tail -10"
+run "SKIP_AVATAR_CLONE=1 TOKAGENT_NO_VISION_DEPS=1 bun run postinstall 2>&1 | tail -10"
 ok "Postinstall patches complete"
 
 hdr "Step 2c: Build Capacitor plugins"
@@ -275,13 +275,13 @@ run "cd apps/app && bun scripts/plugin-build.mjs && cd ${REPO_ROOT}"
 ok "Capacitor plugins built"
 
 hdr "Step 2d: Build workspace packages"
-run "cd eliza/packages/agent && bun run build:docker-dist && cd ${REPO_ROOT}"
-run "cd eliza/packages/typescript && bun run build:node && cd ${REPO_ROOT}"
+run "cd tokagent/packages/agent && bun run build:docker-dist && cd ${REPO_ROOT}"
+run "cd tokagent/packages/typescript && bun run build:node && cd ${REPO_ROOT}"
 ok "Workspace packages built"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Step 3: Build TypeScript with tsdown
-# Compiles src/ → dist/ (entry.js, eliza.js, server.js, cli/*.js, etc.)
+# Compiles src/ → dist/ (entry.js, tokagent.js, server.js, cli/*.js, etc.)
 # ─────────────────────────────────────────────────────────────────────────────
 hdr "Step 3: Build TypeScript (tsdown)"
 
@@ -343,10 +343,10 @@ BUILD_ARGS=(
   "--build-arg" "OCI_LICENSES=${OCI_LICENSES}"
 )
 
-if [[ "$DOCKERFILE" == "eliza/packages/app-core/deploy/Dockerfile.ci" ]]; then
-  [[ -f "eliza/packages/app-core/deploy/.dockerignore.ci" ]] || die "eliza/packages/app-core/deploy/.dockerignore.ci is required for Dockerfile.ci builds"
+if [[ "$DOCKERFILE" == "tokagent/packages/app-core/deploy/Dockerfile.ci" ]]; then
+  [[ -f "tokagent/packages/app-core/deploy/.dockerignore.ci" ]] || die "tokagent/packages/app-core/deploy/.dockerignore.ci is required for Dockerfile.ci builds"
   if $DRY_RUN; then
-    warn "[dry-run] Would copy eliza/packages/app-core/deploy/.dockerignore.ci → .dockerignore for Dockerfile.ci"
+    warn "[dry-run] Would copy tokagent/packages/app-core/deploy/.dockerignore.ci → .dockerignore for Dockerfile.ci"
   else
     DOCKERIGNORE_BACKUP="$(mktemp)"
     if [[ -f .dockerignore ]]; then
@@ -355,17 +355,17 @@ if [[ "$DOCKERFILE" == "eliza/packages/app-core/deploy/Dockerfile.ci" ]]; then
     else
       : >"$DOCKERIGNORE_BACKUP"
     fi
-    cp eliza/packages/app-core/deploy/.dockerignore.ci .dockerignore
-    ok "Using eliza/packages/app-core/deploy/.dockerignore.ci for canonical image build"
+    cp tokagent/packages/app-core/deploy/.dockerignore.ci .dockerignore
+    ok "Using tokagent/packages/app-core/deploy/.dockerignore.ci for canonical image build"
   fi
 fi
 
 if $REMOTE; then
-  # ── Remote build on eliza-core-1 ───────────────────────────────────────
+  # ── Remote build on tokagent-core-1 ───────────────────────────────────────
   log "Remote build on ${BUILD_SERVER}..."
 
-  REMOTE_BUILD_DIR="/tmp/eliza-build-$(date +%s)"
-  TARBALL="/tmp/eliza-image-build-$$.tar.gz"
+  REMOTE_BUILD_DIR="/tmp/tokagent-build-$(date +%s)"
+  TARBALL="/tmp/tokagent-image-build-$$.tar.gz"
 
   log "Creating build context tarball (excluding node_modules, .git)..."
   run "tar \
@@ -428,7 +428,7 @@ else
     ok "Image built: ${IMAGE_NAME} (${FINAL_SIZE})"
   fi
 
-  # ── Optionally push to eliza-core-1 ─────────────────────────────────────
+  # ── Optionally push to tokagent-core-1 ─────────────────────────────────────
   if $DO_PUSH && ! $DRY_RUN; then
     hdr "Pushing image to ${BUILD_SERVER}"
     log "docker save | ssh docker load (this may take a minute)..."
@@ -449,13 +449,13 @@ echo -e "  Version: ${YELLOW}${VERSION}${NC}"
 if $REMOTE; then
   echo -e "  Built on: ${CYAN}${BUILD_SERVER}${NC}"
   echo ""
-  echo -e "  To deploy:  ${YELLOW}bash eliza/packages/app-core/scripts/deploy-image.sh --all --image ${IMAGE_NAME}${NC}"
+  echo -e "  To deploy:  ${YELLOW}bash tokagent/packages/app-core/scripts/deploy-image.sh --all --image ${IMAGE_NAME}${NC}"
 elif $DO_PUSH; then
   echo -e "  Pushed to: ${CYAN}${BUILD_SERVER}${NC}"
   echo ""
-  echo -e "  To deploy:  ${YELLOW}bash eliza/packages/app-core/scripts/deploy-image.sh --all --image ${IMAGE_NAME}${NC}"
+  echo -e "  To deploy:  ${YELLOW}bash tokagent/packages/app-core/scripts/deploy-image.sh --all --image ${IMAGE_NAME}${NC}"
 else
   echo ""
-  echo -e "  To push:    ${YELLOW}bash eliza/packages/app-core/scripts/build-image.sh --tag ${TAG} --push${NC}"
-  echo -e "  To deploy:  ${YELLOW}bash eliza/packages/app-core/scripts/deploy-image.sh --all --image ${IMAGE_NAME}${NC}"
+  echo -e "  To push:    ${YELLOW}bash tokagent/packages/app-core/scripts/build-image.sh --tag ${TAG} --push${NC}"
+  echo -e "  To deploy:  ${YELLOW}bash tokagent/packages/app-core/scripts/deploy-image.sh --all --image ${IMAGE_NAME}${NC}"
 fi

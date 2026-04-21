@@ -6,10 +6,10 @@ from enum import StrEnum
 from typing import TYPE_CHECKING
 from uuid import UUID, uuid4
 
-from elizaos.types import Service, ServiceType
+from tokagentos.types import Service, ServiceType
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 
 class TaskStatus(StrEnum):

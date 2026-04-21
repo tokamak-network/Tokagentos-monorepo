@@ -6,7 +6,7 @@ import { startLiveRuntimeServer } from "../../../packages/app-core/test/helpers/
 import type { RuntimeHarness } from "../../../packages/app-core/test/live-agent/helpers/runtime-harness.ts";
 
 const LIVE =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 
 async function waitForShopifyRoute(runtime: RuntimeHarness): Promise<void> {
   const deadline = Date.now() + 30_000;
@@ -31,7 +31,7 @@ describeIf(LIVE)("Shopify API live route coverage", () => {
 
   beforeAll(async () => {
     runtime = await startLiveRuntimeServer({
-      tempPrefix: "eliza-shopify-api-",
+      tempPrefix: "tokagent-shopify-api-",
       loggingLevel: "warn",
       env: {
         SHOPIFY_STORE_DOMAIN: undefined,

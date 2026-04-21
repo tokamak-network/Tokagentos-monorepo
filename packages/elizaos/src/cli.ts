@@ -34,8 +34,8 @@ async function defaultAction(): Promise<void> {
 }
 
 program
-  .name("elizaos")
-  .description("Create and upgrade elizaOS project templates")
+  .name("tokagentos")
+  .description("Create and upgrade tokagentOS project templates")
   .version(getCliVersion(), "-v, --version");
 
 program
@@ -53,7 +53,7 @@ program
 
 program
   .command("create")
-  .description("Create a new elizaOS project from a template")
+  .description("Create a new tokagentOS project from a template")
   .argument("[name]", "Name for the new project directory")
   .option("-t, --template <template>", "Template to create")
   .option("-l, --language <lang>", "Template language")
@@ -61,7 +61,7 @@ program
   .option("--description <description>", "Plugin description override")
   .option("--github-username <username>", "Plugin GitHub username override")
   .option("--repo-url <url>", "Plugin repository URL override")
-  .option("--skip-upstream", "Skip initializing the upstream eliza checkout")
+  .option("--skip-upstream", "Skip initializing the upstream tokagent checkout")
   .action(create);
 
 program
@@ -69,7 +69,7 @@ program
   .description("Upgrade the current generated project to the latest template")
   .option("--check", "Check what would change without writing files")
   .option("--dry-run", "Preview the upgrade without writing files")
-  .option("--skip-upstream", "Skip updating the upstream eliza checkout")
+  .option("--skip-upstream", "Skip updating the upstream tokagent checkout")
   .action(upgrade);
 
 program.action(defaultAction);

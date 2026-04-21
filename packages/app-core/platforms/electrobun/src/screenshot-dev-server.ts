@@ -10,8 +10,8 @@
  * **Why loopback + optional token:** reduces accidental exposure on shared machines; dev-platform
  * generates a session token and the API proxy adds a single URL on the familiar API port.
  *
- * Enable with ELIZA_DESKTOP_SCREENSHOT_SERVER=`1` / `true` / `yes` (dev-platform sets `1` by default
- * for `dev:desktop:*`). Port: ELIZA_SCREENSHOT_SERVER_PORT (default 31339). Auth: ELIZA_SCREENSHOT_SERVER_TOKEN
+ * Enable with TOKAGENT_DESKTOP_SCREENSHOT_SERVER=`1` / `true` / `yes` (dev-platform sets `1` by default
+ * for `dev:desktop:*`). Port: TOKAGENT_SCREENSHOT_SERVER_PORT (default 31339). Auth: TOKAGENT_SCREENSHOT_SERVER_TOKEN
  * as Bearer header only (query params not supported to avoid token leakage in logs/Referer).
  */
 
@@ -27,14 +27,14 @@ function isLoopback(addr: string | undefined): boolean {
  */
 export function startScreenshotDevServer(): (() => void) | undefined {
   const raw =
-    process.env.ELIZA_DESKTOP_SCREENSHOT_SERVER?.trim().toLowerCase();
+    process.env.TOKAGENT_DESKTOP_SCREENSHOT_SERVER?.trim().toLowerCase();
   const enabled = raw === "1" || raw === "true" || raw === "yes";
   if (!enabled) {
     return undefined;
   }
 
-  const port = Number(process.env.ELIZA_SCREENSHOT_SERVER_PORT) || 31339;
-  const token = process.env.ELIZA_SCREENSHOT_SERVER_TOKEN?.trim() ?? "";
+  const port = Number(process.env.TOKAGENT_SCREENSHOT_SERVER_PORT) || 31339;
+  const token = process.env.TOKAGENT_SCREENSHOT_SERVER_TOKEN?.trim() ?? "";
 
   const server = http.createServer(async (req, res) => {
     try {
@@ -98,7 +98,7 @@ export function startScreenshotDevServer(): (() => void) | undefined {
 
   if (!token) {
     console.warn(
-      "[ScreenshotDev] No ELIZA_SCREENSHOT_SERVER_TOKEN set — screenshot endpoint is unprotected on loopback",
+      "[ScreenshotDev] No TOKAGENT_SCREENSHOT_SERVER_TOKEN set — screenshot endpoint is unprotected on loopback",
     );
   }
 
@@ -107,7 +107,7 @@ export function startScreenshotDevServer(): (() => void) | undefined {
     console.warn(
       `[ScreenshotDev] Failed to start loopback server on 127.0.0.1:${port}: ${err.message}` +
         (inUse
-          ? " (port in use — set ELIZA_SCREENSHOT_SERVER_PORT to a free port or stop the other process)"
+          ? " (port in use — set TOKAGENT_SCREENSHOT_SERVER_PORT to a free port or stop the other process)"
           : ""),
     );
   });

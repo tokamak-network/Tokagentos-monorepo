@@ -3,7 +3,7 @@
 /**
  * Bluesky Agent - A full-featured AI agent running on Bluesky
  *
- * This agent uses the COMPLETE elizaOS runtime pipeline:
+ * This agent uses the COMPLETE tokagentOS runtime pipeline:
  * - Full message processing through messageService.handleMessage()
  * - State composition with all registered providers
  * - Action planning and execution
@@ -11,10 +11,10 @@
  * - Evaluator execution
  * - basicCapabilities enabled by default (REPLY, IGNORE, NONE actions)
  *
- * NO shortcuts, NO bypassing the pipeline - this is canonical elizaOS.
+ * NO shortcuts, NO bypassing the pipeline - this is canonical tokagentOS.
  */
 
-import { AgentRuntime, type Plugin, stringToUuid } from "@elizaos/core";
+import { AgentRuntime, type Plugin, stringToUuid } from "@tokagentos/core";
 import { config } from "dotenv";
 
 import { character } from "./character";
@@ -90,7 +90,7 @@ async function main(): Promise<void> {
   });
 
   // Register Bluesky-specific event handlers
-  // These handlers process notifications through the FULL elizaOS pipeline
+  // These handlers process notifications through the FULL tokagentOS pipeline
   registerBlueskyHandlers(runtime);
 
   // Initialize the runtime
@@ -130,7 +130,7 @@ async function main(): Promise<void> {
     `   DM processing: ${process.env.BLUESKY_ENABLE_DMS !== "false"}`,
   );
   console.log(`   Dry run mode: ${process.env.BLUESKY_DRY_RUN === "true"}`);
-  console.log("\n   Using FULL elizaOS pipeline:");
+  console.log("\n   Using FULL tokagentOS pipeline:");
   console.log("   - State composition with providers");
   console.log("   - shouldRespond evaluation");
   console.log("   - Action planning & execution");

@@ -18,7 +18,7 @@ import type {
   Memory,
   Task,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { describe, expect, test } from "vitest";
 import {
   executeProactiveTask,

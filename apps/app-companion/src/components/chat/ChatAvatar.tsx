@@ -6,7 +6,7 @@ import {
   resolveAppAssetUrl,
   STOP_EMOTE_EVENT,
   useApp,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import type { VrmEngine, VrmEngineState } from "../avatar/VrmEngine";

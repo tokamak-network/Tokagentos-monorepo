@@ -1,4 +1,4 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 
 const repairedRuntimes = new WeakSet<AgentRuntime>();
 const repairPromises = new WeakMap<AgentRuntime, Promise<void>>();

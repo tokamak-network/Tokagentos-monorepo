@@ -1,4 +1,4 @@
-import { createCharacter } from "@elizaos/core";
+import { createCharacter } from "@tokagentos/core";
 
 export const character = createCharacter({
   name: "LPManager",

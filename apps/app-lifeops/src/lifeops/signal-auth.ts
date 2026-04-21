@@ -4,13 +4,13 @@ import path from "node:path";
 import type {
   LifeOpsConnectorSide,
   LifeOpsSignalPairingStatus,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   SignalPairingSession,
   type SignalPairingEvent,
   type SignalPairingSnapshot,
-} from "@elizaos/agent/services/signal-pairing";
-import { resolveOAuthDir } from "@elizaos/agent/config/paths";
+} from "@tokagentos/agent/services/signal-pairing";
+import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
 
 export interface PendingSignalPairingSession {
   sessionId: string;
@@ -294,7 +294,7 @@ function writeDeviceInfo(session: ManagedSignalPairingSession): void {
     authDir: session.authDir,
     phoneNumber: session.phoneNumber,
     uuid: session.uuid ?? "",
-    deviceName: "Eliza Mac",
+    deviceName: "Tokagent Mac",
   };
   fs.mkdirSync(session.authDir, { recursive: true });
   fs.writeFileSync(credentialFilePath(session.authDir), JSON.stringify(info, null, 2), {
@@ -442,7 +442,7 @@ export function readSignalLinkedDeviceInfo(
     authDir: parsed.authDir,
     phoneNumber: parsed.phoneNumber,
     uuid: parsed.uuid ?? "",
-    deviceName: parsed.deviceName ?? "Eliza Mac",
+    deviceName: parsed.deviceName ?? "Tokagent Mac",
   };
 }
 

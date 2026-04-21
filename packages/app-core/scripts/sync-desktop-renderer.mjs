@@ -19,14 +19,14 @@ const ARGS = process.argv.slice(2);
 const APP_DIR = path.join(ROOT, "apps", "app");
 const DIST_DIR = path.join(APP_DIR, "dist");
 const APP_PATH_ARG =
-  getArgValue("app-path") || process.env.ELIZA_DESKTOP_APP_PATH || null;
+  getArgValue("app-path") || process.env.TOKAGENT_DESKTOP_APP_PATH || null;
 const RENDERER_PATH_ARG =
   getArgValue("renderer-path") ||
-  process.env.ELIZA_DESKTOP_RENDERER_PATH ||
+  process.env.TOKAGENT_DESKTOP_RENDERER_PATH ||
   null;
 const SKIP_BUILD = getBooleanArg("skip-build") || getBooleanArg("no-build");
 const WATCH = getBooleanArg("watch");
-const DEFAULT_APP_PATH = "/Applications/Eliza-canary.app";
+const DEFAULT_APP_PATH = "/Applications/Tokagent-canary.app";
 const DEFAULT_RENDERER_DIR = path.join(
   resolveAppPath(APP_PATH_ARG || DEFAULT_APP_PATH),
   "Contents",
@@ -46,7 +46,7 @@ let activeBuildProcess = null;
 const WATCH_SYNC_DEBOUNCE_MS = 250;
 
 function fail(message, code = 1) {
-  console.error(`[eliza-ui-sync] ${message}`);
+  console.error(`[tokagent-ui-sync] ${message}`);
   process.exit(code);
 }
 
@@ -90,7 +90,7 @@ function scheduleSync() {
       syncRendererBundle();
     } catch (error) {
       console.error(
-        `[eliza-ui-sync] sync failed: ${error instanceof Error ? error.message : String(error)}`,
+        `[tokagent-ui-sync] sync failed: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }, WATCH_SYNC_DEBOUNCE_MS);
@@ -225,7 +225,7 @@ function runBuildWatch() {
 
   proc.on("exit", (code) => {
     if (code !== 0) {
-      console.error(`[eliza-ui-sync] vite watch exited with code ${code}`);
+      console.error(`[tokagent-ui-sync] vite watch exited with code ${code}`);
       cleanup(code ?? 1);
     }
   });
@@ -250,7 +250,7 @@ function syncRendererBundle() {
   rmSync(TARGET_RENDERER, { recursive: true, force: true });
   mkdirSync(TARGET_RENDERER, { recursive: true });
   cpSync(DIST_DIR, TARGET_RENDERER, { recursive: true, force: true });
-  console.log(`[eliza-ui-sync] Synced ${DIST_DIR} -> ${TARGET_RENDERER}`);
+  console.log(`[tokagent-ui-sync] Synced ${DIST_DIR} -> ${TARGET_RENDERER}`);
 }
 
 function printUsage() {
@@ -259,15 +259,15 @@ function printUsage() {
   );
   console.log("Environment:");
   console.log(
-    "  ELIZA_DESKTOP_APP_PATH      Override /Applications/Eliza-canary.app",
+    "  TOKAGENT_DESKTOP_APP_PATH      Override /Applications/Tokagent-canary.app",
   );
   console.log(
-    "  ELIZA_DESKTOP_RENDERER_PATH  Override renderer folder directly",
+    "  TOKAGENT_DESKTOP_RENDERER_PATH  Override renderer folder directly",
   );
   console.log("\nExamples:");
   console.log("  node scripts/sync-desktop-renderer.mjs");
   console.log(
-    "  node scripts/sync-desktop-renderer.mjs --app-path ~/Applications/Eliza.app --skip-build",
+    "  node scripts/sync-desktop-renderer.mjs --app-path ~/Applications/Tokagent.app --skip-build",
   );
   console.log("  node scripts/sync-desktop-renderer.mjs --watch");
 }
@@ -275,7 +275,7 @@ function printUsage() {
 function main() {
   if (process.platform !== "darwin") {
     console.log(
-      "[eliza-ui-sync] Warning: this script targets macOS app bundles by default.",
+      "[tokagent-ui-sync] Warning: this script targets macOS app bundles by default.",
     );
   }
 
@@ -291,7 +291,7 @@ function main() {
   if (WATCH) {
     if (SKIP_BUILD) {
       console.log(
-        "[eliza-ui-sync] --skip-build set: watching built dist folder only",
+        "[tokagent-ui-sync] --skip-build set: watching built dist folder only",
       );
       waitForDistAndWatch();
       return;

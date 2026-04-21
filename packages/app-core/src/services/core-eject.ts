@@ -3,9 +3,9 @@ import fs from "node:fs/promises";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { promisify } from "node:util";
-import { resolveStateDir } from "@elizaos/agent/config/paths";
-import { getPluginInfo } from "@elizaos/agent/services/registry-client";
-import { logger } from "@elizaos/core";
+import { resolveStateDir } from "@tokagentos/agent/config/paths";
+import { getPluginInfo } from "@tokagentos/agent/services/registry-client";
+import { logger } from "@tokagentos/core";
 import { createSerialise } from "../utils/serialise";
 import {
   assertValidGitUrl,
@@ -15,12 +15,12 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-const CORE_GIT_URL = "https://github.com/elizaos/eliza.git";
+const CORE_GIT_URL = "https://github.com/tokagentos/tokagent.git";
 const CORE_BRANCH = "develop";
-const CORE_PACKAGE_NAME = "@elizaos/core";
+const CORE_PACKAGE_NAME = "@tokagentos/core";
 const DEFAULT_CORE_PATHS = ["../packages/typescript/src/index.node.ts"];
 const DEFAULT_CORE_SUBPATHS = ["../packages/typescript/src/*"];
-const UPSTREAM_SCHEMA = "eliza-upstream-v1";
+const UPSTREAM_SCHEMA = "tokagent-upstream-v1";
 
 function isSupportedUpstreamSchema(value: string): boolean {
   return value === UPSTREAM_SCHEMA;
@@ -88,7 +88,7 @@ function coreBaseDir(): string {
 }
 
 function coreMonorepoDir(): string {
-  return path.join(coreBaseDir(), "eliza");
+  return path.join(coreBaseDir(), "tokagent");
 }
 
 function corePackageDir(): string {
@@ -206,7 +206,7 @@ async function readUpstreamMetadata(): Promise<UpstreamMetadata | null> {
       source:
         typeof parsed.source === "string"
           ? parsed.source
-          : "github:elizaos/eliza",
+          : "github:tokagentos/tokagent",
       gitUrl: parsed.gitUrl,
       branch: parsed.branch,
       commitHash: parsed.commitHash,
@@ -375,7 +375,7 @@ export function ejectCore(): Promise<CoreEjectResult> {
       const commitHash = await gitStdout(["rev-parse", "HEAD"], monorepoDir);
       const metadata: UpstreamMetadata = {
         $schema: UPSTREAM_SCHEMA,
-        source: "github:elizaos/eliza",
+        source: "github:tokagentos/tokagent",
         gitUrl: CORE_GIT_URL,
         branch: CORE_BRANCH,
         commitHash,

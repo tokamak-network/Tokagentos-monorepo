@@ -76,7 +76,7 @@ export function useMiscUiState() {
   const [appRuns, setAppRuns] = useState<AppRunSummary[]>([]);
   const [activeGameRunId, setActiveGameRunIdRaw] = useState(() => {
     try {
-      return sessionStorage.getItem("eliza:activeGameRunId") ?? "";
+      return sessionStorage.getItem("tokagent:activeGameRunId") ?? "";
     } catch {
       return "";
     }
@@ -84,8 +84,8 @@ export function useMiscUiState() {
   const setActiveGameRunId = useCallback((id: string) => {
     setActiveGameRunIdRaw(id);
     try {
-      if (id) sessionStorage.setItem("eliza:activeGameRunId", id);
-      else sessionStorage.removeItem("eliza:activeGameRunId");
+      if (id) sessionStorage.setItem("tokagent:activeGameRunId", id);
+      else sessionStorage.removeItem("tokagent:activeGameRunId");
     } catch {
       /* ignore */
     }

@@ -6,7 +6,7 @@ import type {
   Service,
   State,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { starterPlugin } from "../index";
 import { cleanupTestRuntime, createTestRuntime, setupLoggerSpies } from "./test-utils";

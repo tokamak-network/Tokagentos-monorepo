@@ -71,8 +71,8 @@ app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
-// Chat with Eliza (in-memory demo)
-app.post('/api/chat/eliza', async (req, res) => {
+// Chat with Tokagent (in-memory demo)
+app.post('/api/chat/tokagent', async (req, res) => {
     try {
         const { message, sessionId, userId } = req.body ?? {}
         const session = getOrCreateSession(sessionId, userId)
@@ -86,13 +86,13 @@ app.post('/api/chat/eliza', async (req, res) => {
 
         res.json({ ...reply, sessionId: session.id })
     } catch (error) {
-        console.error('Error chatting with Eliza:', error)
+        console.error('Error chatting with Tokagent:', error)
         res.status(500).json({ error: error.message })
     }
 })
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`🤖 Eliza Classic Chat API running on port ${PORT}`)
+    console.log(`🤖 Tokagent Classic Chat API running on port ${PORT}`)
 })
 

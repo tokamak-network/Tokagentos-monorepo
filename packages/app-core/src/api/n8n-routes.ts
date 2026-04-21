@@ -25,9 +25,9 @@
  * services/n8n-sidecar.ts rather than being threaded through state.
  */
 
-import type { RouteHelpers, RouteRequestMeta } from "@elizaos/agent/api";
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { RouteHelpers, RouteRequestMeta } from "@tokagentos/agent/api";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { isNativeServerPlatform } from "../platform/is-native-server";
 import { type N8nMode, resolveN8nMode } from "../services/n8n-mode";
 import type { N8nSidecar, N8nSidecarStatus } from "../services/n8n-sidecar";
@@ -93,7 +93,7 @@ export interface N8nWorkflow {
 
 /**
  * Minimal shape of the relevant config slice. Narrow read-only view so this
- * route does not take a hard dependency on the full ElizaConfig type landing
+ * route does not take a hard dependency on the full TokagentConfig type landing
  * here. `n8n` maps 1:1 to the canonical N8nConfig fields used by the sidecar.
  */
 export interface N8nRoutesConfigLike {
@@ -228,7 +228,7 @@ async function loadSidecarModule(): Promise<
 
 // Cloud base URL default — mirrors `resolveCloudApiBaseUrl()` without
 // pulling the validator in (avoids an async-validation dep on a hot path).
-const DEFAULT_CLOUD_API_BASE_URL = "https://api.eliza.how";
+const DEFAULT_CLOUD_API_BASE_URL = "https://api.tokagent.how";
 
 function normalizeBaseUrl(raw: string | undefined | null): string {
   const trimmed = (raw ?? "").trim();
@@ -607,7 +607,7 @@ export async function handleN8nRoutes(ctx: N8nRouteContext): Promise<boolean> {
   if (method === "POST" && pathname === "/api/n8n/sidecar/start") {
     if (native) {
       sendJson(ctx, 409, {
-        error: "Local n8n not supported on mobile. Use Eliza Cloud.",
+        error: "Local n8n not supported on mobile. Use Tokagent Cloud.",
         platform: "mobile" satisfies N8nHostPlatform,
       });
       return true;

@@ -8,9 +8,9 @@ import {
   LLMMode,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import anthropicPlugin from "@elizaos/plugin-anthropic";
-import { elizaClassicPlugin, getElizaGreeting } from "@elizaos/plugin-eliza-classic";
+import { tokagentClassicPlugin, getTokagentGreeting } from "@elizaos/plugin-tokagent-classic";
 import elevenLabsPlugin from "@elizaos/plugin-elevenlabs";
 import googleGenAIPlugin from "@elizaos/plugin-google-genai";
 import groqPlugin from "@elizaos/plugin-groq";
@@ -33,10 +33,10 @@ type RuntimeBundle = {
 const DEMO_CHARACTER: Character = createCharacter({
   name: "Cool Robot",
   system: "Cool Robot is very concise, to the point and brief robot who keeps responses very brief. No emojis or punctuation. Cool Robot responds very concisely, and never more than a sentence. He doens't use any punction, always all lower case",
-  bio: "A nice and friendly robot built on the elizaOS agent framework.",
+  bio: "A nice and friendly robot built on the tokagentOS agent framework.",
 });
 
-const STORAGE_KEYS = { userId: "eliza-vrm-demo:userId" } as const;
+const STORAGE_KEYS = { userId: "tokagent-vrm-demo:userId" } as const;
 
 function getOrCreateUserId(): UUID {
   try {
@@ -52,10 +52,10 @@ function getOrCreateUserId(): UUID {
 
 function getOrCreateRoomId(): UUID {
   try {
-    const existing = localStorage.getItem("eliza-vrm-demo:roomId");
+    const existing = localStorage.getItem("tokagent-vrm-demo:roomId");
     if (existing) return existing as UUID;
     const created = uuidv4() as UUID;
-    localStorage.setItem("eliza-vrm-demo:roomId", created);
+    localStorage.setItem("tokagent-vrm-demo:roomId", created);
     return created;
   } catch {
     return uuidv4() as UUID;
@@ -65,7 +65,7 @@ function getOrCreateRoomId(): UUID {
 export async function resetConversation(): Promise<void> {
   // Rotate the room id so localdb history is effectively reset.
   try {
-    localStorage.setItem("eliza-vrm-demo:roomId", uuidv4());
+    localStorage.setItem("tokagent-vrm-demo:roomId", uuidv4());
   } catch {
     // ignore
   }
@@ -80,19 +80,19 @@ export async function resetConversation(): Promise<void> {
 function resolveEffectiveMode(config: DemoConfig): DemoMode {
   switch (config.mode) {
     case "openai":
-      return (config.provider.openaiApiKey ?? "").trim() ? "openai" : "elizaClassic";
+      return (config.provider.openaiApiKey ?? "").trim() ? "openai" : "tokagentClassic";
     case "anthropic":
-      return (config.provider.anthropicApiKey ?? "").trim() ? "anthropic" : "elizaClassic";
+      return (config.provider.anthropicApiKey ?? "").trim() ? "anthropic" : "tokagentClassic";
     case "xai":
-      return (config.provider.xaiApiKey ?? "").trim() ? "xai" : "elizaClassic";
+      return (config.provider.xaiApiKey ?? "").trim() ? "xai" : "tokagentClassic";
     case "gemini":
-      return (config.provider.googleGenaiApiKey ?? "").trim() ? "gemini" : "elizaClassic";
+      return (config.provider.googleGenaiApiKey ?? "").trim() ? "gemini" : "tokagentClassic";
     case "groq":
-      return (config.provider.groqApiKey ?? "").trim() ? "groq" : "elizaClassic";
-    case "elizaClassic":
-      return "elizaClassic";
+      return (config.provider.groqApiKey ?? "").trim() ? "groq" : "tokagentClassic";
+    case "tokagentClassic":
+      return "tokagentClassic";
     default:
-      return "elizaClassic";
+      return "tokagentClassic";
   }
 }
 
@@ -151,13 +151,13 @@ function applySettings(runtime: AgentRuntime, config: DemoConfig, effectiveMode:
 
 function buildPlugins(effectiveMode: DemoMode) {
   const base = [localdbPlugin, simpleVoicePlugin, elevenLabsPlugin];
-  if (effectiveMode === "elizaClassic") return [...base, elizaClassicPlugin];
+  if (effectiveMode === "tokagentClassic") return [...base, tokagentClassicPlugin];
   if (effectiveMode === "openai") return [...base, openaiPlugin];
   if (effectiveMode === "anthropic") return [...base, anthropicPlugin];
   if (effectiveMode === "xai") return [...base, openaiPlugin];
   if (effectiveMode === "gemini") return [...base, googleGenAIPlugin];
   if (effectiveMode === "groq") return [...base, groqPlugin];
-  return [...base, elizaClassicPlugin];
+  return [...base, tokagentClassicPlugin];
 }
 
 let currentBundle: RuntimeBundle | null = null;
@@ -183,7 +183,7 @@ export async function getOrCreateRuntime(config: DemoConfig): Promise<RuntimeBun
 
     const userId = getOrCreateUserId();
     const roomId = getOrCreateRoomId();
-    const worldId = stringToUuid("eliza-vrm-demo-world");
+    const worldId = stringToUuid("tokagent-vrm-demo-world");
 
     const runtime = new AgentRuntime({
       character: DEMO_CHARACTER,
@@ -218,7 +218,7 @@ export async function getOrCreateRuntime(config: DemoConfig): Promise<RuntimeBun
 }
 
 export function getGreetingText(effectiveMode: DemoMode): string {
-  return effectiveMode === "elizaClassic" ? getElizaGreeting() : "Hello. I’m ready. What would you like to talk about?";
+  return effectiveMode === "tokagentClassic" ? getTokagentGreeting() : "Hello. I’m ready. What would you like to talk about?";
 }
 
 export function getEffectiveMode(config: DemoConfig): DemoMode {

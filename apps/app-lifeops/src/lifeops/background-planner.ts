@@ -14,7 +14,7 @@
  * --------------------------------------------------------------------------
  * Background-job inventory (search results for brief|followup|reminder|
  * escalation|digest|watchdog|nudge|sweep|cron|schedule under
- * `eliza/apps/app-lifeops/src/lifeops/` and adjacent job dirs).
+ * `tokagent/apps/app-lifeops/src/lifeops/` and adjacent job dirs).
  *
  * Real registered task workers (runtime.registerTaskWorker callsites):
  *
@@ -79,8 +79,8 @@
  * --------------------------------------------------------------------------
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
-import { ModelType, logger, parseJSONObjectFromText } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { ModelType, logger, parseJSONObjectFromText } from "@tokagentos/core";
 import type {
   ApprovalAction,
   ApprovalChannel,

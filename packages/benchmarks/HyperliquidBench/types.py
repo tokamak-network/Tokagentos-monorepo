@@ -1,7 +1,7 @@
 """
 HyperliquidBench Type Definitions
 
-Defines all data classes and enums used by the Eliza agent wrapper
+Defines all data classes and enums used by the Tokagent agent wrapper
 for the HyperliquidBench benchmark.  These types mirror the Rust plan
 schema from ``crates/hl-common/src/plan.rs`` so that the Python agent
 can generate plans in the exact JSON format the Rust runner expects.
@@ -241,7 +241,7 @@ class BenchmarkResult:
 
 @dataclass
 class HLBenchConfig:
-    """Configuration for the Eliza HyperliquidBench agent."""
+    """Configuration for the Tokagent HyperliquidBench agent."""
     # Paths (relative to the HyperliquidBench root)
     bench_root: Path = field(default_factory=lambda: Path(__file__).resolve().parent)
     dataset_dir: str = "dataset"

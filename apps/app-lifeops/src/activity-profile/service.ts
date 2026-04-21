@@ -1,6 +1,6 @@
-import type { IAgentRuntime, UUID } from "@elizaos/core";
-import { logger } from "@elizaos/core";
-import type { LifeOpsActivitySignal } from "@elizaos/shared/contracts/lifeops";
+import type { IAgentRuntime, UUID } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
+import type { LifeOpsActivitySignal } from "@tokagentos/shared/contracts/lifeops";
 import { resolveDefaultTimeZone } from "../lifeops/defaults.js";
 import {
   LifeOpsScreenContextSampler,
@@ -8,7 +8,7 @@ import {
 } from "../lifeops/screen-context.js";
 import { LifeOpsService } from "../lifeops/service.js";
 
-export { resolveOwnerEntityId } from "@elizaos/agent/runtime/owner-entity";
+export { resolveOwnerEntityId } from "@tokagentos/agent/runtime/owner-entity";
 
 import {
   analyzeMessages,

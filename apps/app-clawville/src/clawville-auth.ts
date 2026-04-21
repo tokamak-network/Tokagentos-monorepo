@@ -1,12 +1,12 @@
 /**
- * Config + fetch helpers for the ClawVille Eliza app plugin.
+ * Config + fetch helpers for the ClawVille Tokagent app plugin.
  *
  * ClawVille uses a "runtime-trust" identity model: the plugin passes the
- * Eliza runtime's agentId + character name directly to ClawVille's
+ * Tokagent runtime's agentId + character name directly to ClawVille's
  * /api/agent/connect endpoint, and ClawVille derives a stable key of the
- * form `eliza:<elizaAgentId>`. No token exchange, no external identity
+ * form `tokagent:<tokagentAgentId>`. No token exchange, no external identity
  * provider, no OAuth flow. The @clawville/app-clawville plugin itself
- * is the trust boundary — if it's running inside a curated Eliza build,
+ * is the trust boundary — if it's running inside a curated Tokagent build,
  * ClawVille accepts its claims at face value.
  *
  * This mirrors the simplicity of app-babylon's auth module but is even
@@ -14,7 +14,7 @@
  * /auth endpoint to call.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 const FETCH_TIMEOUT_MS = 8_000;
 const DEFAULT_API_BASE = "https://api.clawville.world";
@@ -64,10 +64,10 @@ export interface ClawvilleConfig {
   apiBaseUrl: string;
   /** Base URL of ClawVille's web viewer (default: https://clawville.world/game) */
   viewerUrl: string;
-  /** Eliza runtime agent ID — becomes the stable `eliza:<id>` key in ClawVille */
-  elizaAgentId: string | undefined;
-  /** Eliza character display name — used as the in-game pet name on first spawn */
-  elizaCharacterName: string | undefined;
+  /** Tokagent runtime agent ID — becomes the stable `tokagent:<id>` key in ClawVille */
+  tokagentAgentId: string | undefined;
+  /** Tokagent character display name — used as the in-game pet name on first spawn */
+  tokagentCharacterName: string | undefined;
   /** Previously-stored ClawVille sessionId (populated after first connect) */
   storedSessionId: string | undefined;
   /** Previously-stored ClawVille bot UUID (opaque primary key from openclaw_bots) */
@@ -88,8 +88,8 @@ export function resolveClawvilleConfig(
     viewerUrl: (
       resolveSettingLike(runtime, "CLAWVILLE_VIEWER_URL") ?? DEFAULT_VIEWER_URL
     ).replace(/\/+$/, ""),
-    elizaAgentId: rt?.agentId,
-    elizaCharacterName: rt?.character?.name,
+    tokagentAgentId: rt?.agentId,
+    tokagentCharacterName: rt?.character?.name,
     storedSessionId: resolveSettingLike(runtime, "CLAWVILLE_SESSION_ID"),
     storedUuid: resolveSettingLike(runtime, "CLAWVILLE_BOT_UUID"),
     storedWalletAddress: resolveSettingLike(runtime, "CLAWVILLE_WALLET_ADDRESS"),
@@ -137,18 +137,18 @@ export interface ClawvilleConnectResponse {
 export async function clawvilleConnect(
   config: ClawvilleConfig,
 ): Promise<ClawvilleConnectResponse> {
-  if (!config.elizaAgentId) {
+  if (!config.tokagentAgentId) {
     throw new Error(
-      "ClawVille plugin: runtime.agentId is missing — can't derive a eliza identity",
+      "ClawVille plugin: runtime.agentId is missing — can't derive a tokagent identity",
     );
   }
 
   const url = new URL("/api/agent/connect", config.apiBaseUrl);
   const body = {
-    elizaAgentId: config.elizaAgentId,
-    elizaCharacterName: config.elizaCharacterName ?? "ElizaAgent",
+    tokagentAgentId: config.tokagentAgentId,
+    tokagentCharacterName: config.tokagentCharacterName ?? "TokagentAgent",
     // Give the plugin a sensible default avatar; ClawVille auto-picks if omitted.
-    name: config.elizaCharacterName ?? "ElizaAgent",
+    name: config.tokagentCharacterName ?? "TokagentAgent",
     species: "cat",
     color: 0x66bbff,
     homeX: 640,
@@ -176,7 +176,7 @@ export async function clawvilleConnect(
 
 /**
  * GET /api/agent/:sessionId/perception — current world state for an
- * established session. Used by refreshRunSession to keep the Eliza side
+ * established session. Used by refreshRunSession to keep the Tokagent side
  * panel fresh without triggering another /connect round-trip.
  */
 export async function clawvillePerception(

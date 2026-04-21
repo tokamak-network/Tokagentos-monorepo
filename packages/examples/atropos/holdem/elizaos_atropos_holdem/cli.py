@@ -49,9 +49,9 @@ async def run_auto_mode(
     """Run automatic play mode."""
     _load_dotenv()
 
-    from elizaos_atropos_holdem import HoldemEnvironment, HoldemAgent
+    from tokagentos_atropos_holdem import HoldemEnvironment, HoldemAgent
 
-    print("\n🃏 ElizaOS Atropos - Texas Hold'em")
+    print("\n🃏 TokagentOS Atropos - Texas Hold'em")
     print("=" * 50)
     print(f"Mode: {'LLM-based' if use_llm else 'Heuristic'}")
     print(f"Players: {num_players}")
@@ -71,16 +71,16 @@ async def run_auto_mode(
     runtime = None
     if use_llm:
         try:
-            from elizaos.runtime import AgentRuntime
-            from elizaos.bootstrap import bootstrap_plugin
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos.runtime import AgentRuntime
+            from tokagentos.bootstrap import bootstrap_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             plugins = [bootstrap_plugin, get_openai_plugin()]
 
             # Optional: register trajectory logger plugin for end-to-end capture
             if log_trajectories:
                 try:
-                    from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+                    from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
                     plugins.append(get_trajectory_logger_plugin())
                 except ImportError:
@@ -88,12 +88,12 @@ async def run_auto_mode(
                     log_trajectories = False
 
             runtime = AgentRuntime(plugins=plugins)
-            from elizaos_atropos_holdem.eliza_plugin import (
+            from tokagentos_atropos_holdem.tokagent_plugin import (
                 create_holdem_character,
-                get_holdem_eliza_plugin,
+                get_holdem_tokagent_plugin,
             )
 
-            plugins.append(get_holdem_eliza_plugin())
+            plugins.append(get_holdem_tokagent_plugin())
             runtime = AgentRuntime(character=create_holdem_character(), plugins=plugins)
             await runtime.initialize()
             print("✅ LLM initialized")
@@ -161,7 +161,7 @@ async def run_auto_mode(
             token = None
             if step_id is not None:
                 try:
-                    from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+                    from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
                     token = CURRENT_TRAJECTORY_STEP_ID.set(step_id)
                 except Exception:
@@ -172,7 +172,7 @@ async def run_auto_mode(
 
             if token is not None:
                 try:
-                    from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+                    from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
                     CURRENT_TRAJECTORY_STEP_ID.reset(token)
                 except Exception:
@@ -239,7 +239,7 @@ async def run_auto_mode(
     # Export trajectories if logging was enabled
     if log_trajectories and traj_svc is not None:
         try:
-            from elizaos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
+            from tokagentos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
 
             export_cfg = TrajectoryExportConfig(
                 dataset_name="atropos_holdem_trajectories",
@@ -261,14 +261,14 @@ async def run_auto_mode(
 
 async def run_interactive_mode(num_players: int = 2) -> None:
     """Run interactive play mode."""
-    from elizaos_atropos_holdem import (
+    from tokagentos_atropos_holdem import (
         HoldemEnvironment,
         HoldemAgent,
         Action,
         ActionType,
     )
 
-    print("\n🃏 ElizaOS Atropos - Texas Hold'em (Interactive)")
+    print("\n🃏 TokagentOS Atropos - Texas Hold'em (Interactive)")
     print("=" * 50)
     print("You are Player 0")
     print("Commands: f=fold, c=check/call, r=raise, a=all-in, q=quit")
@@ -381,9 +381,9 @@ async def run_tournament_mode(
     num_hands: int = 500,
 ) -> None:
     """Run tournament simulation."""
-    from elizaos_atropos_holdem import HoldemEnvironment, HoldemAgent
+    from tokagentos_atropos_holdem import HoldemEnvironment, HoldemAgent
 
-    print("\n🃏 ElizaOS Atropos - Hold'em Tournament")
+    print("\n🃏 TokagentOS Atropos - Hold'em Tournament")
     print("=" * 50)
     print(f"Players: {num_players}")
     print(f"Hands: {num_hands}")
@@ -449,7 +449,7 @@ async def run_tournament_mode(
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="ElizaOS Atropos Texas Hold'em Environment",
+        description="TokagentOS Atropos Texas Hold'em Environment",
     )
 
     parser.add_argument(

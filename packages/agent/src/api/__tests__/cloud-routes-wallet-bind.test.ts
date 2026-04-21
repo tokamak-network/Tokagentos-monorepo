@@ -119,7 +119,7 @@ describe("handleCloudRoute cloud wallet binding", () => {
     const state: CloudRouteState = {
       config: {
         cloud: {
-          baseUrl: "https://www.elizacloud.ai",
+          baseUrl: "https://www.tokagentcloud.ai",
         },
       },
       cloudManager: {
@@ -250,7 +250,7 @@ describe("handleCloudRoute cloud wallet binding", () => {
     const state: CloudRouteState = {
       config: {
         cloud: {
-          baseUrl: "https://www.elizacloud.ai",
+          baseUrl: "https://www.tokagentcloud.ai",
         },
       },
       cloudManager: {
@@ -331,7 +331,7 @@ describe("handleCloudRoute cloud wallet binding", () => {
     });
     // Simulate a provisioning failure after the client key has been minted.
     vi.mocked(provisionCloudWallets).mockRejectedValue(
-      new Error("Eliza Cloud provisioning unavailable"),
+      new Error("Tokagent Cloud provisioning unavailable"),
     );
 
     const savedConfigs: unknown[] = [];

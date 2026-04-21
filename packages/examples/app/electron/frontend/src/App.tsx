@@ -30,7 +30,7 @@ export function App(): React.JSX.Element {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
   const [busy, setBusy] = useState<boolean>(false);
-  const [effectiveMode, setEffectiveMode] = useState<ProviderMode>("elizaClassic");
+  const [effectiveMode, setEffectiveMode] = useState<ProviderMode>("tokagentClassic");
 
   useEffect(() => {
     saveConfig(config);
@@ -39,13 +39,13 @@ export function App(): React.JSX.Element {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const history = await window.elizaChat.getHistory(config);
+      const history = await window.tokagentChat.getHistory(config);
       if (cancelled) return;
       if (history.length > 0) {
         setMessages(history);
         return;
       }
-      const greeting = await window.elizaChat.getGreeting(config);
+      const greeting = await window.tokagentChat.getGreeting(config);
       if (cancelled) return;
       setMessages([{ id: newId(), role: "system", text: greeting, timestamp: now() }]);
     })().catch((e) => {
@@ -65,7 +65,7 @@ export function App(): React.JSX.Element {
     setInput("");
     setMessages((m) => [...m, { id: newId(), role: "user", text, timestamp: now() }]);
     try {
-      const res = await window.elizaChat.sendMessage(config, text);
+      const res = await window.tokagentChat.sendMessage(config, text);
       setEffectiveMode(res.effectiveMode);
       setMessages((m) => [
         ...m,
@@ -80,8 +80,8 @@ export function App(): React.JSX.Element {
     if (busy) return;
     setBusy(true);
     try {
-      await window.elizaChat.reset(config);
-      const greeting = await window.elizaChat.getGreeting(config);
+      await window.tokagentChat.reset(config);
+      const greeting = await window.tokagentChat.getGreeting(config);
       setMessages([{ id: newId(), role: "system", text: greeting, timestamp: now() }]);
     } finally {
       setBusy(false);
@@ -94,7 +94,7 @@ export function App(): React.JSX.Element {
     <div className="page">
       <header className="header">
         <div>
-          <div className="title">ElizaOS Chat (Electron example)</div>
+          <div className="title">TokagentOS Chat (Electron example)</div>
           <div className="subtitle">Main-process agent via IPC</div>
         </div>
         <button className="btn" onClick={onReset} disabled={busy}>
@@ -117,7 +117,7 @@ export function App(): React.JSX.Element {
             >
               {(
                 [
-                  "elizaClassic",
+                  "tokagentClassic",
                   "openai",
                   "anthropic",
                   "gemini",

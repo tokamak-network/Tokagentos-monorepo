@@ -62,7 +62,7 @@ export const Prompt: Story = {
       title="Rename Agent"
       message="Enter a new name for the agent."
       placeholder="Agent name"
-      defaultValue="Eliza"
+      defaultValue="Tokagent"
       onConfirm={fn()}
       onCancel={fn()}
     />

@@ -4,9 +4,9 @@
 //! Documentation warnings are suppressed for generated code.
 
 #[allow(missing_docs)]
-pub mod eliza {
+pub mod tokagent {
     #[allow(missing_docs)]
     pub mod v1 {
-        include!(concat!(env!("OUT_DIR"), "/eliza.v1.rs"));
+        include!(concat!(env!("OUT_DIR"), "/tokagent.v1.rs"));
     }
 }

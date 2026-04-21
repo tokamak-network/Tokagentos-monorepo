@@ -6,10 +6,10 @@ import type {
 } from "../../api";
 import { pathForTab } from "../../navigation";
 
-export const ELIZA_CLOUD_INSTANCES_URL =
-  "https://www.elizacloud.ai/dashboard/app";
+export const TOKAGENT_CLOUD_INSTANCES_URL =
+  "https://www.tokagentcloud.ai/dashboard/app";
 /** Marketing / docs site — "Learn more" when not connected (in-app browser on desktop). */
-export const ELIZA_CLOUD_WEB_URL = "https://elizacloud.ai";
+export const TOKAGENT_CLOUD_WEB_URL = "https://tokagentcloud.ai";
 export const BILLING_PRESET_AMOUNTS = [10, 25, 100];
 export const MANAGED_DISCORD_GATEWAY_AGENT_NAME = "Discord Gateway";
 export const CLOUD_STATUS_API_KEY_ONLY_REASONS: ReadonlySet<string> = new Set([
@@ -22,23 +22,23 @@ export const STATUS_BADGE: Record<
   { i18nKey: string; className: string }
 > = {
   running: {
-    i18nKey: "elizaclouddashboard.statusRunning",
+    i18nKey: "tokagentclouddashboard.statusRunning",
     className: "bg-ok/10 text-ok border-ok/20",
   },
   queued: {
-    i18nKey: "elizaclouddashboard.statusQueued",
+    i18nKey: "tokagentclouddashboard.statusQueued",
     className: "bg-warn/10 text-warn border-warn/20",
   },
   provisioning: {
-    i18nKey: "elizaclouddashboard.statusProvisioning",
+    i18nKey: "tokagentclouddashboard.statusProvisioning",
     className: "bg-accent/10 text-txt border-accent/20",
   },
   stopped: {
-    i18nKey: "elizaclouddashboard.statusStopped",
+    i18nKey: "tokagentclouddashboard.statusStopped",
     className: "bg-muted/10 text-muted border-border/40",
   },
   failed: {
-    i18nKey: "elizaclouddashboard.statusFailed",
+    i18nKey: "tokagentclouddashboard.statusFailed",
     className: "bg-danger/10 text-danger border-danger/20",
   },
 };
@@ -47,7 +47,7 @@ export function getCloudAuthToken(): string {
   if (typeof window === "undefined") return "";
   return (
     ((globalThis as Record<string, unknown>)
-      .__ELIZA_CLOUD_AUTH_TOKEN__ as string) || ""
+      .__TOKAGENT_CLOUD_AUTH_TOKEN__ as string) || ""
   );
 }
 
@@ -72,11 +72,11 @@ export function resolveCloudAccountIdDisplay(
     return { mono: true, text: userId };
   }
   if (isCloudStatusReasonApiKeyOnly(statusReason)) {
-    return { mono: false, text: t("elizaclouddashboard.AccountIdApiKeyOnly") };
+    return { mono: false, text: t("tokagentclouddashboard.AccountIdApiKeyOnly") };
   }
   return {
     mono: false,
-    text: t("elizaclouddashboard.AccountIdSessionNoUserId"),
+    text: t("tokagentclouddashboard.AccountIdSessionNoUserId"),
   };
 }
 

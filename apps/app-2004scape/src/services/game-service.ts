@@ -1,4 +1,4 @@
-import { Service, ModelType, type IAgentRuntime } from "@elizaos/core";
+import { Service, ModelType, type IAgentRuntime } from "@tokagentos/core";
 import { BotManager } from "./bot-manager.js";
 import { BotActions } from "../sdk/actions.js";
 import type { BotState, ActionResult, EventLogEntry } from "../sdk/types.js";
@@ -206,7 +206,7 @@ export class RsSdkGameService extends Service {
   }
 
   /**
-   * Execute a game action by name. Called by elizaOS action handlers.
+   * Execute a game action by name. Called by tokagentOS action handlers.
    */
   async executeAction(
     actionType: string,

@@ -18,7 +18,7 @@ import { resolveRepoRootFromImportMeta } from "./lib/repo-root.mjs";
 const __filename = fileURLToPath(import.meta.url);
 const REPO_ROOT = resolveRepoRootFromImportMeta(import.meta.url);
 const ROOT_NODE_MODULES = path.join(REPO_ROOT, "node_modules");
-const ELIZA_NODE_MODULES = path.join(REPO_ROOT, "eliza", "node_modules");
+const TOKAGENT_NODE_MODULES = path.join(REPO_ROOT, "tokagent", "node_modules");
 const GLOBAL_TYPES_CACHE_DIR = path.join(
   process.env.HOME || "",
   ".bun",
@@ -28,11 +28,11 @@ const GLOBAL_TYPES_CACHE_DIR = path.join(
 );
 const TYPE_ROOTS = [
   path.join(ROOT_NODE_MODULES, "@types"),
-  path.join(ELIZA_NODE_MODULES, "@types"),
+  path.join(TOKAGENT_NODE_MODULES, "@types"),
 ];
 const BUN_TYPES_LINK_ROOTS = [
   path.join(ROOT_NODE_MODULES, ".bun", "node_modules", "@types"),
-  path.join(ELIZA_NODE_MODULES, ".bun", "node_modules", "@types"),
+  path.join(TOKAGENT_NODE_MODULES, ".bun", "node_modules", "@types"),
 ];
 const MATERIALIZED_TYPE_PACKAGES = [
   "chai",

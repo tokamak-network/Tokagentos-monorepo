@@ -11,8 +11,8 @@ from __future__ import annotations
 import uuid
 from typing import Any
 
-from elizaos.types.database import AgentRunSummaryResult, IDatabaseAdapter, Log
-from elizaos.types.primitives import UUID, as_uuid
+from tokagentos.types.database import AgentRunSummaryResult, IDatabaseAdapter, Log
+from tokagentos.types.primitives import UUID, as_uuid
 
 
 class InMemoryDatabaseAdapter(IDatabaseAdapter):

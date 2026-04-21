@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * dev:desktop — orchestrates Eliza desktop local development (Vite, API, Electrobun).
+ * dev:desktop — orchestrates Tokagent desktop local development (Vite, API, Electrobun).
  *
  * ## Why orchestrate instead of "just run electrbun"?
  * Electrobun needs a renderer URL, usually the dashboard API, and (in dev) repo-root `dist/`
@@ -10,21 +10,21 @@
  * ## Startup phases
  * 1. **Renderer production build** — Runs `vite build` only when `viteRendererBuildNeeded()`
  *    says `apps/app/dist` is missing or older than sources (cheap mtime heuristic). Override:
- *    `--force-renderer` or `ELIZA_DESKTOP_RENDERER_BUILD=always`. **Why skip:** redundant
+ *    `--force-renderer` or `TOKAGENT_DESKTOP_RENDERER_BUILD=always`. **Why skip:** redundant
  *    production builds on every restart are slow; watch mode users get HMR from `vite dev`.
- * 2. **Root bundle** — `tsdown` at repo root if `dist/entry.js` missing (Electrobun eliza-dist).
+ * 2. **Root bundle** — `tsdown` at repo root if `dist/entry.js` missing (Electrobun tokagent-dist).
  * 3. **Long-lived children** (see `launch()`):
  *    - **API** — `bun --watch dev-server` unless `--no-api`.
- *    - **Watch + default** — Vite **dev** server + `ELIZA_RENDERER_URL` for Electrobun (HMR).
- *      Stale dep chunks: `--vite-force` or `ELIZA_VITE_FORCE=1` / `ELIZA_VITE_FORCE=1` (passes `vite --force`).
- *    - **Watch + Rollup** — `--rollup-watch` or `ELIZA_DESKTOP_VITE_BUILD_WATCH=1` with
- *      `ELIZA_DESKTOP_VITE_WATCH=1`: legacy `vite build --watch` (slow on large graphs).
+ *    - **Watch + default** — Vite **dev** server + `TOKAGENT_RENDERER_URL` for Electrobun (HMR).
+ *      Stale dep chunks: `--vite-force` or `TOKAGENT_VITE_FORCE=1` / `TOKAGENT_VITE_FORCE=1` (passes `vite --force`).
+ *    - **Watch + Rollup** — `--rollup-watch` or `TOKAGENT_DESKTOP_VITE_BUILD_WATCH=1` with
+ *      `TOKAGENT_DESKTOP_VITE_WATCH=1`: legacy `vite build --watch` (slow on large graphs).
  *    - **Electrobun** — `bun run dev` in `apps/app/electrobun`.
  *
  * ## Port allocation (`launch()`) — WHY
  * Before spawning API / Vite / Electrobun, `allocateFirstFreeLoopbackPort()` from
- * `eliza/packages/app-core/scripts/lib/allocate-loopback-port.mjs` resolves **ELIZA_API_PORT** (default
- * 31337) and, in Vite dev mode, **ELIZA_PORT** (default 2138) if something else
+ * `tokagent/packages/app-core/scripts/lib/allocate-loopback-port.mjs` resolves **TOKAGENT_API_PORT** (default
+ * 31337) and, in Vite dev mode, **TOKAGENT_PORT** (default 2138) if something else
  * already listens. **Why:** every child must agree on the same numbers; Vite's
  * proxy is fixed at config load time, so "API picks a port later" desyncs the UI.
  *
@@ -43,13 +43,13 @@
  *
  * ## Observability (IDEs / agents) — WHY
  *
- * This script sets env so the Eliza API and Electrobun expose **machine-readable** hooks:
- * - Aggregated child log file + `ELIZA_DESKTOP_DEV_LOG_PATH` → `GET /api/dev/console-log` (loopback tail).
+ * This script sets env so the Tokagent API and Electrobun expose **machine-readable** hooks:
+ * - Aggregated child log file + `TOKAGENT_DESKTOP_DEV_LOG_PATH` → `GET /api/dev/console-log` (loopback tail).
  * - Screenshot token + upstream URL → `GET /api/dev/cursor-screenshot` on the API (proxies Electrobun).
  * **Why:** multiple processes (Vite, API, Electrobun) are opaque to tools that cannot see the native
  *   window; loopback + optional token bounds exposure vs. convenience. Defaults are **on** so agents
- *   and humans debugging together get signal; opt-out via `ELIZA_DESKTOP_DEV_LOG=0` and
- *   `ELIZA_DESKTOP_SCREENSHOT_SERVER=0`.
+ *   and humans debugging together get signal; opt-out via `TOKAGENT_DESKTOP_DEV_LOG=0` and
+ *   `TOKAGENT_DESKTOP_SCREENSHOT_SERVER=0`.
  */
 
 import { execSync, spawn } from "node:child_process";
@@ -67,11 +67,11 @@ import { createConnection } from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import chalk from "chalk";
-import { colorizeDevSettingsStartupBanner } from "@elizaos/shared/dev-settings-banner-style";
+import { colorizeDevSettingsStartupBanner } from "@tokagentos/shared/dev-settings-banner-style";
 import {
   resolveDesktopApiPort,
   resolveDesktopUiPort,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import { allocateFirstFreeLoopbackPort } from "./lib/allocate-loopback-port.mjs";
 import { signalSpawnedProcessTree } from "./lib/kill-process-tree.mjs";
 import { killUiListenPort } from "./lib/kill-ui-listen-port.mjs";
@@ -93,14 +93,14 @@ if (existsSync(_worktreeEnvPath)) {
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`Usage: bun run dev:desktop [options]
-       ELIZA_DESKTOP_VITE_WATCH=1 bun eliza/packages/app-core/scripts/dev-platform.mjs   # same as bun run dev
+       TOKAGENT_DESKTOP_VITE_WATCH=1 bun tokagent/packages/app-core/scripts/dev-platform.mjs   # same as bun run dev
 
 Starts Vite (optional), API (optional), and Electrobun with aligned ports and env.
 
 Options:
   --no-api           Skip the API server (Electrobun + renderer only)
   --force-renderer   Force vite build before starting (even if dist is fresh)
-  --rollup-watch     Use vite build --watch instead of vite dev (requires ELIZA_DESKTOP_VITE_WATCH=1)
+  --rollup-watch     Use vite build --watch instead of vite dev (requires TOKAGENT_DESKTOP_VITE_WATCH=1)
   --vite-force       Pass --force to Vite (clear dep optimization cache on dev server start)
   -h, --help         Show this help
 
@@ -109,13 +109,13 @@ columns Setting / Effective / Source / Change — Source shows default vs explic
 Secrets are redacted. Run without --help to see them.
 
 Environment (CI / automation; flags override where noted):
-  ELIZA_DESKTOP_RENDERER_BUILD=always   Same as --force-renderer
-  ELIZA_DESKTOP_VITE_BUILD_WATCH=1      Same as --rollup-watch (with ELIZA_DESKTOP_VITE_WATCH=1)
-  ELIZA_VITE_FORCE=1 / ELIZA_VITE_FORCE=1   Same as --vite-force
-  ELIZA_DESKTOP_SCREENSHOT_SERVER=0     Disable screenshot dev server
-  ELIZA_DESKTOP_DEV_LOG=0               Disable aggregated log file
-  ELIZA_API_PORT / ELIZA_API_PORT / ELIZA_PORT   API port (first non-empty wins)
-  ELIZA_PORT                            UI port (Vite dev)
+  TOKAGENT_DESKTOP_RENDERER_BUILD=always   Same as --force-renderer
+  TOKAGENT_DESKTOP_VITE_BUILD_WATCH=1      Same as --rollup-watch (with TOKAGENT_DESKTOP_VITE_WATCH=1)
+  TOKAGENT_VITE_FORCE=1 / TOKAGENT_VITE_FORCE=1   Same as --vite-force
+  TOKAGENT_DESKTOP_SCREENSHOT_SERVER=0     Disable screenshot dev server
+  TOKAGENT_DESKTOP_DEV_LOG=0               Disable aggregated log file
+  TOKAGENT_API_PORT / TOKAGENT_API_PORT / TOKAGENT_PORT   API port (first non-empty wins)
+  TOKAGENT_PORT                            UI port (Vite dev)
 
 Docs: docs/apps/desktop-local-development.md
 `);
@@ -125,63 +125,63 @@ Docs: docs/apps/desktop-local-development.md
 const appDir = path.join(repoRoot, "apps/app");
 const electrobunDir = path.join(
   repoRoot,
-  "eliza/packages/app-core/platforms/electrobun",
+  "tokagent/packages/app-core/platforms/electrobun",
 );
 const skipApi = process.argv.includes("--no-api");
 const forceRendererCli = process.argv.includes("--force-renderer");
 const forceRenderer =
   forceRendererCli ||
-  process.env.ELIZA_DESKTOP_RENDERER_BUILD === "always" ||
-  process.env.ELIZA_DESKTOP_RENDERER_BUILD === "1";
+  process.env.TOKAGENT_DESKTOP_RENDERER_BUILD === "always" ||
+  process.env.TOKAGENT_DESKTOP_RENDERER_BUILD === "1";
 const viteWatch =
-  process.env.ELIZA_DESKTOP_VITE_WATCH === "1" ||
+  process.env.TOKAGENT_DESKTOP_VITE_WATCH === "1" ||
   process.env.MILADY_DESKTOP_VITE_WATCH === "1";
 const viteDepForceCli = process.argv.includes("--vite-force");
 const viteDepForce =
   viteDepForceCli ||
-  process.env.ELIZA_VITE_FORCE === "1" ||
+  process.env.TOKAGENT_VITE_FORCE === "1" ||
   process.env.MILADY_VITE_FORCE === "1";
 const viteRollupWatchCli = process.argv.includes("--rollup-watch");
 /** Legacy: Rollup `vite build --watch` (tens of seconds per edit on large graphs). */
 const viteRollupWatch =
   viteWatch &&
   (viteRollupWatchCli ||
-    process.env.ELIZA_DESKTOP_VITE_BUILD_WATCH === "1" ||
+    process.env.TOKAGENT_DESKTOP_VITE_BUILD_WATCH === "1" ||
     process.env.MILADY_DESKTOP_VITE_BUILD_WATCH === "1");
-/** Default when VITE_WATCH: Vite dev server + Electrobun ELIZA_RENDERER_URL (fast HMR). */
+/** Default when VITE_WATCH: Vite dev server + Electrobun TOKAGENT_RENDERER_URL (fast HMR). */
 const viteDevServer = viteWatch && !viteRollupWatch;
 /** On by default for `dev:desktop` / `dev:desktop:watch`; set to 0/false/no/off to disable. */
 const screenshotServerOptOut = (() => {
-  const v = process.env.ELIZA_DESKTOP_SCREENSHOT_SERVER?.trim().toLowerCase();
+  const v = process.env.TOKAGENT_DESKTOP_SCREENSHOT_SERVER?.trim().toLowerCase();
   return v === "0" || v === "false" || v === "no" || v === "off";
 })();
 const screenshotServerEnabled = !screenshotServerOptOut;
 const preferredScreenshotPort = Number.parseInt(
-  process.env.ELIZA_SCREENSHOT_SERVER_PORT || "31339",
+  process.env.TOKAGENT_SCREENSHOT_SERVER_PORT || "31339",
   10,
 );
 const preferredBrowserWorkspacePort = Number.parseInt(
-  process.env.ELIZA_BROWSER_WORKSPACE_PORT || "31340",
+  process.env.TOKAGENT_BROWSER_WORKSPACE_PORT || "31340",
   10,
 );
 const screenshotToken = screenshotServerEnabled
   ? randomBytes(24).toString("hex")
   : "";
 
-/** On by default for dev-platform; set ELIZA_DESKTOP_DEV_LOG=0 to disable file + API tail. */
+/** On by default for dev-platform; set TOKAGENT_DESKTOP_DEV_LOG=0 to disable file + API tail. */
 const desktopDevLogOptOut = (() => {
-  const v = process.env.ELIZA_DESKTOP_DEV_LOG?.trim().toLowerCase();
+  const v = process.env.TOKAGENT_DESKTOP_DEV_LOG?.trim().toLowerCase();
   return v === "0" || v === "false" || v === "no" || v === "off";
 })();
 const desktopDevLogPath = desktopDevLogOptOut
   ? null
-  : path.resolve(repoRoot, ".eliza", "desktop-dev-console.log");
+  : path.resolve(repoRoot, ".tokagent", "desktop-dev-console.log");
 const desktopCefWorkaroundEnv = (() => {
   if (process.platform !== "darwin") {
     return null;
   }
 
-  const explicit = process.env.ELIZA_DESKTOP_FORCE_CEF?.trim();
+  const explicit = process.env.TOKAGENT_DESKTOP_FORCE_CEF?.trim();
   if (explicit) {
     return explicit;
   }
@@ -193,7 +193,7 @@ const desktopUnsafeDevtoolsEnv = (() => {
     return null;
   }
 
-  const explicit = process.env.ELIZA_ALLOW_UNSAFE_NATIVE_DEVTOOLS?.trim();
+  const explicit = process.env.TOKAGENT_ALLOW_UNSAFE_NATIVE_DEVTOOLS?.trim();
   if (explicit) {
     return explicit;
   }
@@ -201,7 +201,7 @@ const desktopUnsafeDevtoolsEnv = (() => {
   return "1";
 })();
 const desktopWhisperOptOut = (() => {
-  const v = process.env.ELIZA_DESKTOP_ENSURE_WHISPER?.trim().toLowerCase();
+  const v = process.env.TOKAGENT_DESKTOP_ENSURE_WHISPER?.trim().toLowerCase();
   return v === "0" || v === "false" || v === "no" || v === "off";
 })();
 
@@ -233,14 +233,14 @@ function ensureBunRootPackageLink(packageName) {
   try {
     symlinkSync(path.relative(rootNodeModules, target), packageLink, "dir");
     console.log(
-      `[eliza] Restored missing Bun package link: node_modules/${packageName}`,
+      `[tokagent] Restored missing Bun package link: node_modules/${packageName}`,
     );
   } catch (error) {
     if (existsSync(packageLink) && lstatSync(packageLink).isSymbolicLink()) {
       return;
     }
     console.warn(
-      `[eliza] Warning: failed to restore node_modules/${packageName}: ${error instanceof Error ? error.message : String(error)}`,
+      `[tokagent] Warning: failed to restore node_modules/${packageName}: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }
@@ -270,7 +270,7 @@ function ensureDesktopWhisperAssets() {
   }
 
   console.log(
-    "\n[eliza] Desktop voice input needs whisper.cpp assets — building them once for Electrobun dev…\n",
+    "\n[tokagent] Desktop voice input needs whisper.cpp assets — building them once for Electrobun dev…\n",
   );
   try {
     execSync("bun run build:whisper", {
@@ -279,11 +279,11 @@ function ensureDesktopWhisperAssets() {
     });
   } catch (_error) {
     console.warn(
-      "[eliza] Warning: failed to build whisper.cpp for desktop voice input. " +
+      "[tokagent] Warning: failed to build whisper.cpp for desktop voice input. " +
         "Electrobun mic/STT may stay unavailable until this succeeds.",
     );
     console.warn(
-      "[eliza] Retry manually with: (cd apps/app/electrobun && bun run build:whisper)",
+      "[tokagent] Retry manually with: (cd apps/app/electrobun && bun run build:whisper)",
     );
   }
 }
@@ -294,20 +294,20 @@ let ranInitialViteBuild = false;
 
 if (needRendererBuild) {
   ranInitialViteBuild = true;
-  console.log("\n[eliza] Building renderer (vite build)…");
+  console.log("\n[tokagent] Building renderer (vite build)…");
   execSync("bun run vite build", { cwd: appDir, stdio: "inherit" });
-  console.log("[eliza] Renderer ready.\n");
+  console.log("[tokagent] Renderer ready.\n");
 } else {
   console.log(
-    "\n[eliza] Skipping vite build — apps/app/dist is up to date.\n" +
-      "  Force: --force-renderer or ELIZA_DESKTOP_RENDERER_BUILD=always\n",
+    "\n[tokagent] Skipping vite build — apps/app/dist is up to date.\n" +
+      "  Force: --force-renderer or TOKAGENT_DESKTOP_RENDERER_BUILD=always\n",
   );
 }
 
 const rootDistEntry = path.join(repoRoot, "dist", "entry.js");
 if (!existsSync(rootDistEntry)) {
   console.log(
-    "\n[eliza] Building root bundle (tsdown) for Electrobun eliza-dist…\n",
+    "\n[tokagent] Building root bundle (tsdown) for Electrobun tokagent-dist…\n",
   );
   execSync("bunx tsdown", { cwd: repoRoot, stdio: "inherit" });
   const distPkg = path.join(repoRoot, "dist", "package.json");
@@ -450,7 +450,7 @@ function pushChild(name, cmd, args, cwd, extraEnv = {}) {
       shutdownDesktopDev({
         exitCode,
         message:
-          "\n[eliza] Electrobun exited — stopping Vite/API and closing dev session.",
+          "\n[tokagent] Electrobun exited — stopping Vite/API and closing dev session.",
       });
     }
   });
@@ -463,7 +463,7 @@ async function launch() {
   const resolvedApiPort = await allocateFirstFreeLoopbackPort(preferredApi);
   if (resolvedApiPort !== preferredApi) {
     console.log(
-      `[eliza] API port ${preferredApi} in use — using ${resolvedApiPort} (Vite proxy + Electrobun env updated)`,
+      `[tokagent] API port ${preferredApi} in use — using ${resolvedApiPort} (Vite proxy + Electrobun env updated)`,
     );
   }
   const apiPort = String(resolvedApiPort);
@@ -474,7 +474,7 @@ async function launch() {
     uiDevPort = await allocateFirstFreeLoopbackPort(preferredUi);
     if (uiDevPort !== preferredUi) {
       console.log(
-        `[eliza] UI port ${preferredUi} in use — Vite dev server using ${uiDevPort}`,
+        `[tokagent] UI port ${preferredUi} in use — Vite dev server using ${uiDevPort}`,
       );
     }
   }
@@ -488,7 +488,7 @@ async function launch() {
   );
   if (browserWorkspacePort !== preferredBrowserWorkspacePort) {
     console.log(
-      `[eliza] Browser workspace port ${preferredBrowserWorkspacePort} in use — using ${browserWorkspacePort}`,
+      `[tokagent] Browser workspace port ${preferredBrowserWorkspacePort} in use — using ${browserWorkspacePort}`,
     );
   }
   const screenshotPort = screenshotServerEnabled
@@ -499,20 +499,20 @@ async function launch() {
     : preferredScreenshotPort;
   if (screenshotServerEnabled && screenshotPort !== preferredScreenshotPort) {
     console.log(
-      `[eliza] Screenshot port ${preferredScreenshotPort} in use — using ${screenshotPort}`,
+      `[tokagent] Screenshot port ${preferredScreenshotPort} in use — using ${screenshotPort}`,
     );
   }
   const screenshotEnvElectrobun = screenshotServerEnabled
     ? {
-        ELIZA_DESKTOP_SCREENSHOT_SERVER: "1",
-        ELIZA_SCREENSHOT_SERVER_PORT: String(screenshotPort),
-        ELIZA_SCREENSHOT_SERVER_TOKEN: screenshotToken,
+        TOKAGENT_DESKTOP_SCREENSHOT_SERVER: "1",
+        TOKAGENT_SCREENSHOT_SERVER_PORT: String(screenshotPort),
+        TOKAGENT_SCREENSHOT_SERVER_TOKEN: screenshotToken,
       }
     : {};
   const screenshotEnvApi = screenshotServerEnabled
     ? {
-        ELIZA_ELECTROBUN_SCREENSHOT_URL: `http://127.0.0.1:${screenshotPort}`,
-        ELIZA_SCREENSHOT_SERVER_TOKEN: screenshotToken,
+        TOKAGENT_ELECTROBUN_SCREENSHOT_URL: `http://127.0.0.1:${screenshotPort}`,
+        TOKAGENT_SCREENSHOT_SERVER_TOKEN: screenshotToken,
       }
     : {};
 
@@ -520,7 +520,7 @@ async function launch() {
     mkdirSync(path.dirname(desktopDevLogPath), { recursive: true });
     writeFileSync(
       desktopDevLogPath,
-      `--- eliza desktop dev ${new Date().toISOString()} ---\n`,
+      `--- tokagent desktop dev ${new Date().toISOString()} ---\n`,
       "utf8",
     );
   }
@@ -553,30 +553,30 @@ async function launch() {
     desktopDevLogPath,
     desktopDevLogOptOut,
     childrenList: serviceLine,
-    elizaNamespace: process.env.ELIZA_NAMESPACE?.trim() || "eliza",
-    elizaNamespaceUnset: !process.env.ELIZA_NAMESPACE?.trim(),
+    tokagentNamespace: process.env.TOKAGENT_NAMESPACE?.trim() || "tokagent",
+    tokagentNamespaceUnset: !process.env.TOKAGENT_NAMESPACE?.trim(),
   });
   console.log(
-    `${chalk.bold(`Eliza desktop dev${skipApi ? " (no API)" : ""}`)}\n`,
+    `${chalk.bold(`Tokagent desktop dev${skipApi ? " (no API)" : ""}`)}\n`,
   );
   console.log(colorizeDevSettingsStartupBanner(orchestratorBanner));
   if (screenshotServerEnabled && !skipApi) {
     console.log(
       chalk.dim(
-        `[eliza] Screenshot: GET http://127.0.0.1:${apiPort}/api/dev/cursor-screenshot → Electrobun :${screenshotPort}`,
+        `[tokagent] Screenshot: GET http://127.0.0.1:${apiPort}/api/dev/cursor-screenshot → Electrobun :${screenshotPort}`,
       ),
     );
   }
   if (desktopDevLogPath && !skipApi) {
     console.log(
       chalk.dim(
-        `[eliza] Console log tail: GET http://127.0.0.1:${apiPort}/api/dev/console-log  | file: ${desktopDevLogPath}`,
+        `[tokagent] Console log tail: GET http://127.0.0.1:${apiPort}/api/dev/console-log  | file: ${desktopDevLogPath}`,
       ),
     );
   } else if (desktopDevLogPath && skipApi) {
     console.log(
       chalk.dim(
-        `[eliza] Dev console log file: ${desktopDevLogPath} (no API proxy — --no-api)`,
+        `[tokagent] Dev console log file: ${desktopDevLogPath} (no API proxy — --no-api)`,
       ),
     );
   }
@@ -586,22 +586,22 @@ async function launch() {
     pushChild(
       "api",
       "bun",
-      ["--watch", "eliza/packages/app-core/src/runtime/dev-server.ts"],
+      ["--watch", "tokagent/packages/app-core/src/runtime/dev-server.ts"],
       repoRoot,
       {
         NODE_ENV: "development",
-        ELIZA_API_PORT: apiPort,
-        ELIZA_HEADLESS: "1",
-        ELIZA_PORT: String(uiDevPort),
-        ELIZA_UI_PORT: String(uiDevPort),
-        ELIZA_NAMESPACE: process.env.ELIZA_NAMESPACE ?? "eliza",
+        TOKAGENT_API_PORT: apiPort,
+        TOKAGENT_HEADLESS: "1",
+        TOKAGENT_PORT: String(uiDevPort),
+        TOKAGENT_UI_PORT: String(uiDevPort),
+        TOKAGENT_NAMESPACE: process.env.TOKAGENT_NAMESPACE ?? "tokagent",
         ...(rendererUrlForShell
-          ? { ELIZA_RENDERER_URL: rendererUrlForShell }
+          ? { TOKAGENT_RENDERER_URL: rendererUrlForShell }
           : {}),
-        ELIZA_DESKTOP_API_BASE: `http://127.0.0.1:${apiPort}`,
+        TOKAGENT_DESKTOP_API_BASE: `http://127.0.0.1:${apiPort}`,
         ...screenshotEnvApi,
         ...(desktopDevLogPath
-          ? { ELIZA_DESKTOP_DEV_LOG_PATH: desktopDevLogPath }
+          ? { TOKAGENT_DESKTOP_DEV_LOG_PATH: desktopDevLogPath }
           : {}),
       },
     );
@@ -612,12 +612,12 @@ async function launch() {
   if (viteDevServer) {
     killUiListenPort(uiDevPort);
     console.log(
-      "\n[eliza] Vite dev server (HMR) for desktop — Electrobun loads ELIZA_RENDERER_URL.\n" +
-        `    (Slow Rollup watch: ELIZA_DESKTOP_VITE_BUILD_WATCH=1 with ELIZA_DESKTOP_VITE_WATCH=1)\n`,
+      "\n[tokagent] Vite dev server (HMR) for desktop — Electrobun loads TOKAGENT_RENDERER_URL.\n" +
+        `    (Slow Rollup watch: TOKAGENT_DESKTOP_VITE_BUILD_WATCH=1 with TOKAGENT_DESKTOP_VITE_WATCH=1)\n`,
     );
     if (viteDepForce) {
       console.log(
-        "[eliza] Vite --force (ELIZA_VITE_FORCE=1): re-optimizing dependencies.\n",
+        "[tokagent] Vite --force (TOKAGENT_VITE_FORCE=1): re-optimizing dependencies.\n",
       );
     }
     pushChild(
@@ -627,20 +627,20 @@ async function launch() {
       appDir,
       {
         NODE_ENV: "development",
-        ELIZA_VITE_LOOPBACK_ORIGIN: "1",
-        ELIZA_PORT: String(uiDevPort),
-        ELIZA_UI_PORT: String(uiDevPort),
-        ELIZA_API_PORT: apiPort,
-        ELIZA_NAMESPACE: process.env.ELIZA_NAMESPACE ?? "eliza",
+        TOKAGENT_VITE_LOOPBACK_ORIGIN: "1",
+        TOKAGENT_PORT: String(uiDevPort),
+        TOKAGENT_UI_PORT: String(uiDevPort),
+        TOKAGENT_API_PORT: apiPort,
+        TOKAGENT_NAMESPACE: process.env.TOKAGENT_NAMESPACE ?? "tokagent",
       },
     );
     await waitForPort(uiDevPort);
-    console.log(`[eliza] Vite ready on ${rendererUrlForShell}\n`);
+    console.log(`[tokagent] Vite ready on ${rendererUrlForShell}\n`);
   }
 
   if (viteRollupWatch) {
     pushChild("vite", "bun", ["run", "vite", "build", "--watch"], appDir, {
-      ELIZA_DESKTOP_VITE_FAST_DIST: "1",
+      TOKAGENT_DESKTOP_VITE_FAST_DIST: "1",
     });
   }
 
@@ -648,25 +648,25 @@ async function launch() {
     NODE_ENV: "development",
     ELECTROBUN_SKIP_CODESIGN: "1",
     ...(desktopCefWorkaroundEnv
-      ? { ELIZA_DESKTOP_FORCE_CEF: desktopCefWorkaroundEnv }
+      ? { TOKAGENT_DESKTOP_FORCE_CEF: desktopCefWorkaroundEnv }
       : {}),
     ...(desktopUnsafeDevtoolsEnv
       ? {
-          ELIZA_ALLOW_UNSAFE_NATIVE_DEVTOOLS: desktopUnsafeDevtoolsEnv,
+          TOKAGENT_ALLOW_UNSAFE_NATIVE_DEVTOOLS: desktopUnsafeDevtoolsEnv,
         }
       : {}),
     ...(rendererUrlForShell
-      ? { ELIZA_RENDERER_URL: rendererUrlForShell }
+      ? { TOKAGENT_RENDERER_URL: rendererUrlForShell }
       : {}),
     ...(skipApi
       ? {}
         : {
-            ELIZA_API_PORT: apiPort,
-            ELIZA_UI_PORT: String(uiDevPort),
-            ELIZA_NAMESPACE: process.env.ELIZA_NAMESPACE ?? "eliza",
-            ELIZA_DESKTOP_API_BASE: `http://127.0.0.1:${apiPort}`,
+            TOKAGENT_API_PORT: apiPort,
+            TOKAGENT_UI_PORT: String(uiDevPort),
+            TOKAGENT_NAMESPACE: process.env.TOKAGENT_NAMESPACE ?? "tokagent",
+            TOKAGENT_DESKTOP_API_BASE: `http://127.0.0.1:${apiPort}`,
           }),
-    ELIZA_BROWSER_WORKSPACE_PORT: String(browserWorkspacePort),
+    TOKAGENT_BROWSER_WORKSPACE_PORT: String(browserWorkspacePort),
     ...screenshotEnvElectrobun,
   });
 }
@@ -680,7 +680,7 @@ async function launch() {
  */
 function shutdownDesktopDev({
   exitCode = 0,
-  message = "\n[eliza] Shutting down desktop dev environment...",
+  message = "\n[tokagent] Shutting down desktop dev environment...",
 } = {}) {
   if (shuttingDown) return;
   shuttingDown = true;
@@ -724,13 +724,13 @@ function shutdownDesktopDev({
 
 function cleanup() {
   if (shuttingDown) {
-    console.log("\n[eliza] Force exit.");
+    console.log("\n[tokagent] Force exit.");
     process.exit(1);
     return;
   }
   shutdownDesktopDev({
     exitCode: 0,
-    message: "\n[eliza] Shutting down desktop dev environment...",
+    message: "\n[tokagent] Shutting down desktop dev environment...",
   });
 }
 
@@ -741,7 +741,7 @@ if (process.platform !== "win32") {
 }
 
 launch().catch((err) => {
-  console.error("[eliza] dev-platform failed:", err);
+  console.error("[tokagent] dev-platform failed:", err);
   for (const child of children) {
     signalSpawnedProcessTree(child, "SIGKILL");
   }

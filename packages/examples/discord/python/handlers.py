@@ -4,7 +4,7 @@ Discord Event Handlers
 These handlers demonstrate custom event handling for Discord-specific features
 like slash commands, reactions, and member events.
 
-Note: Message handling is done through the elizaOS pipeline in agent.py via
+Note: Message handling is done through the tokagentOS pipeline in agent.py via
 message_service.handle_message() - this file is for auxiliary Discord features.
 """
 
@@ -14,8 +14,8 @@ import logging
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos_plugin_discord import DiscordService
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_plugin_discord import DiscordService
 
 from character import character
 
@@ -43,13 +43,13 @@ async def handle_slash_command(
         )
     elif command_name == "about":
         await interaction.reply(
-            content=f"""👋 Hi! I'm **{character.name}**, an AI assistant powered by elizaOS.
+            content=f"""👋 Hi! I'm **{character.name}**, an AI assistant powered by tokagentOS.
 
 I use:
-• `elizaos` runtime for intelligent message processing
-• `elizaos_plugin_discord` for Discord integration  
-• `elizaos_plugin_openai` for language understanding
-• `elizaos_plugin_sql` for memory persistence
+• `tokagentos` runtime for intelligent message processing
+• `tokagentos_plugin_discord` for Discord integration  
+• `tokagentos_plugin_openai` for language understanding
+• `tokagentos_plugin_sql` for memory persistence
 
 Mention me or reply to my messages to chat!""",
             ephemeral=True,
@@ -118,7 +118,7 @@ def register_discord_handlers(runtime: "AgentRuntime", service: "DiscordService"
     """
     Register Discord event handlers.
     
-    Note: Main message handling is done through the elizaOS pipeline
+    Note: Main message handling is done through the tokagentOS pipeline
     in agent.py. This function registers auxiliary handlers for
     slash commands and other Discord-specific features.
     """

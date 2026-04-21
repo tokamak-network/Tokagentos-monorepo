@@ -18,8 +18,8 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
-import { getRecentMessagesData } from "@elizaos/shared/recent-messages-state";
+} from "@tokagentos/core";
+import { getRecentMessagesData } from "@tokagentos/shared/recent-messages-state";
 import { hasAdminAccess } from "../security/access.js";
 
 // ── Stopwords ────────────────────────────────────────────────────────────────
@@ -314,7 +314,7 @@ export function createDynamicSkillProvider(): Provider {
   let indexCache: BM25Index | null = null;
 
   return {
-    name: "elizaDynamicSkills",
+    name: "tokagentDynamicSkills",
     description:
       "Lightweight dynamic skill matching — injects only relevant skills per turn",
     dynamic: true,

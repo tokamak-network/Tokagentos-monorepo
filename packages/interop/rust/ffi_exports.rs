@@ -1,4 +1,4 @@
-//! FFI Exports for elizaOS Rust Plugins
+//! FFI Exports for tokagentOS Rust Plugins
 //!
 //! This module provides macros and utilities for exposing Rust plugins
 //! to Python and other FFI-capable languages.
@@ -6,14 +6,14 @@
 //! # Example
 //!
 //! ```rust
-//! use elizaos::interop::ffi_exports::*;
-//! use elizaos::types::Plugin;
+//! use tokagentos::interop::ffi_exports::*;
+//! use tokagentos::types::Plugin;
 //!
 //! // Create your plugin
 //! let plugin = Plugin::new("my-plugin", "A cool plugin");
 //!
 //! // Export it for FFI
-//! elizaos_export_plugin!(plugin);
+//! tokagentos_export_plugin!(plugin);
 //! ```
 
 use std::ffi::{CStr, CString};
@@ -87,9 +87,9 @@ fn string_to_cstr(s: String) -> *mut c_char {
 /// Get the plugin manifest as JSON
 ///
 /// # Safety
-/// The returned string must be freed with `elizaos_free_string`
+/// The returned string must be freed with `tokagentos_free_string`
 #[no_mangle]
-pub extern "C" fn elizaos_get_manifest() -> *mut c_char {
+pub extern "C" fn tokagentos_get_manifest() -> *mut c_char {
     let instance = PLUGIN_INSTANCE.lock().unwrap();
     match &*instance {
         Some(plugin) => string_to_cstr(plugin.get_manifest()),
@@ -102,7 +102,7 @@ pub extern "C" fn elizaos_get_manifest() -> *mut c_char {
 /// # Safety
 /// `config_json` must be a valid null-terminated C string
 #[no_mangle]
-pub extern "C" fn elizaos_init(config_json: *const c_char) -> c_int {
+pub extern "C" fn tokagentos_init(config_json: *const c_char) -> c_int {
     let config = match cstr_to_string(config_json) {
         Some(s) => s,
         None => return -1,
@@ -123,7 +123,7 @@ pub extern "C" fn elizaos_init(config_json: *const c_char) -> c_int {
 /// # Safety
 /// All string parameters must be valid null-terminated C strings
 #[no_mangle]
-pub extern "C" fn elizaos_validate_action(
+pub extern "C" fn tokagentos_validate_action(
     name: *const c_char,
     memory_json: *const c_char,
     state_json: *const c_char,
@@ -152,9 +152,9 @@ pub extern "C" fn elizaos_validate_action(
 ///
 /// # Safety
 /// All string parameters must be valid null-terminated C strings.
-/// The returned string must be freed with `elizaos_free_string`
+/// The returned string must be freed with `tokagentos_free_string`
 #[no_mangle]
-pub extern "C" fn elizaos_invoke_action(
+pub extern "C" fn tokagentos_invoke_action(
     name: *const c_char,
     memory_json: *const c_char,
     state_json: *const c_char,
@@ -179,9 +179,9 @@ pub extern "C" fn elizaos_invoke_action(
 ///
 /// # Safety
 /// All string parameters must be valid null-terminated C strings.
-/// The returned string must be freed with `elizaos_free_string`
+/// The returned string must be freed with `tokagentos_free_string`
 #[no_mangle]
-pub extern "C" fn elizaos_get_provider(
+pub extern "C" fn tokagentos_get_provider(
     name: *const c_char,
     memory_json: *const c_char,
     state_json: *const c_char,
@@ -205,7 +205,7 @@ pub extern "C" fn elizaos_get_provider(
 /// # Safety
 /// All string parameters must be valid null-terminated C strings
 #[no_mangle]
-pub extern "C" fn elizaos_validate_evaluator(
+pub extern "C" fn tokagentos_validate_evaluator(
     name: *const c_char,
     memory_json: *const c_char,
     state_json: *const c_char,
@@ -234,9 +234,9 @@ pub extern "C" fn elizaos_validate_evaluator(
 ///
 /// # Safety
 /// All string parameters must be valid null-terminated C strings.
-/// The returned string must be freed with `elizaos_free_string`
+/// The returned string must be freed with `tokagentos_free_string`
 #[no_mangle]
-pub extern "C" fn elizaos_invoke_evaluator(
+pub extern "C" fn tokagentos_invoke_evaluator(
     name: *const c_char,
     memory_json: *const c_char,
     state_json: *const c_char,
@@ -260,7 +260,7 @@ pub extern "C" fn elizaos_invoke_evaluator(
 /// # Safety
 /// `ptr` must be a string allocated by this library
 #[no_mangle]
-pub extern "C" fn elizaos_free_string(ptr: *mut c_char) {
+pub extern "C" fn tokagentos_free_string(ptr: *mut c_char) {
     if !ptr.is_null() {
         unsafe {
             let _ = CString::from_raw(ptr);
@@ -280,7 +280,7 @@ pub extern "C" fn elizaos_free_string(ptr: *mut c_char) {
 /// # Example
 ///
 /// ```rust,ignore
-/// use elizaos::interop::ffi_exports::*;
+/// use tokagentos::interop::ffi_exports::*;
 ///
 /// struct MyPlugin { /* ... */ }
 ///
@@ -289,16 +289,16 @@ pub extern "C" fn elizaos_free_string(ptr: *mut c_char) {
 /// }
 ///
 /// #[no_mangle]
-/// pub extern "C" fn elizaos_plugin_init() {
+/// pub extern "C" fn tokagentos_plugin_init() {
 ///     let plugin = MyPlugin::new();
 ///     register_plugin(plugin);
 /// }
 /// ```
 #[macro_export]
-macro_rules! elizaos_export_plugin {
+macro_rules! tokagentos_export_plugin {
     ($plugin:expr) => {
         #[no_mangle]
-        pub extern "C" fn elizaos_plugin_init() {
+        pub extern "C" fn tokagentos_plugin_init() {
             $crate::interop::ffi_exports::register_plugin($plugin);
         }
     };
@@ -349,13 +349,13 @@ mod tests {
         };
         register_plugin(plugin);
 
-        let manifest_ptr = elizaos_get_manifest();
+        let manifest_ptr = tokagentos_get_manifest();
         assert!(!manifest_ptr.is_null());
 
         unsafe {
             let manifest = CStr::from_ptr(manifest_ptr).to_str().unwrap();
             assert!(manifest.contains("test"));
-            elizaos_free_string(manifest_ptr);
+            tokagentos_free_string(manifest_ptr);
         }
     }
 }

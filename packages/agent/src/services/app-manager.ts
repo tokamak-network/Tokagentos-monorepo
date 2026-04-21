@@ -12,8 +12,8 @@
 import crypto from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { IAgentRuntime, Plugin } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime, Plugin } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   type AppLaunchDiagnostic,
   type AppLaunchPreparation,
@@ -27,11 +27,11 @@ import {
   type AppSessionState,
   type AppStopResult,
   type AppViewerAuthMessage,
-  getElizaCuratedAppCatalogOrder,
-  getElizaCuratedAppLookupNames,
+  getTokagentCuratedAppCatalogOrder,
+  getTokagentCuratedAppLookupNames,
   hasAppInterface,
   type InstalledAppInfo,
-  normalizeElizaCuratedAppName,
+  normalizeTokagentCuratedAppName,
   packageNameToAppDisplayName,
   packageNameToAppRouteSlug,
 } from "../contracts/apps.js";
@@ -313,14 +313,14 @@ function compareCuratedCatalogCandidates(
   right: RegistryPluginInfo,
 ): number {
   const orderDiff =
-    getElizaCuratedAppCatalogOrder(left.name) -
-    getElizaCuratedAppCatalogOrder(right.name);
+    getTokagentCuratedAppCatalogOrder(left.name) -
+    getTokagentCuratedAppCatalogOrder(right.name);
   if (orderDiff !== 0) {
     return orderDiff;
   }
 
-  const leftCanonicalName = normalizeElizaCuratedAppName(left.name);
-  const rightCanonicalName = normalizeElizaCuratedAppName(right.name);
+  const leftCanonicalName = normalizeTokagentCuratedAppName(left.name);
+  const rightCanonicalName = normalizeTokagentCuratedAppName(right.name);
   const leftCanonicalPenalty = left.name === leftCanonicalName ? 0 : 1;
   const rightCanonicalPenalty = right.name === rightCanonicalName ? 0 : 1;
   if (leftCanonicalPenalty !== rightCanonicalPenalty) {
@@ -343,7 +343,7 @@ function curateCatalogApps(
   const candidates = Array.from(apps).sort(compareCuratedCatalogCandidates);
 
   for (const app of candidates) {
-    const canonicalName = normalizeElizaCuratedAppName(app.name);
+    const canonicalName = normalizeTokagentCuratedAppName(app.name);
     if (!canonicalName) {
       continue;
     }
@@ -368,12 +368,12 @@ async function resolveCuratedAppInfo(
   pluginManager: PluginManagerLike,
   name: string,
 ): Promise<RegistryAppPlugin | null> {
-  const canonicalName = normalizeElizaCuratedAppName(name);
+  const canonicalName = normalizeTokagentCuratedAppName(name);
   if (!canonicalName) {
     return null;
   }
 
-  const lookupNames = getElizaCuratedAppLookupNames(name);
+  const lookupNames = getTokagentCuratedAppLookupNames(name);
   let appInfo: RegistryAppPlugin | null = null;
 
   for (const candidateName of lookupNames) {
@@ -566,7 +566,7 @@ function isLocalPlugin(appInfo: RegistryPluginInfo): boolean {
 
   for (const dirName of possibleDirs) {
     const pluginPath = path.join(pluginsDir, dirName);
-    const pluginJsonPath = path.join(pluginPath, "elizaos.plugin.json");
+    const pluginJsonPath = path.join(pluginPath, "tokagentos.plugin.json");
     if (fs.existsSync(pluginJsonPath)) {
       return true;
     }
@@ -2714,10 +2714,10 @@ export class AppManager {
             !_runtime)
         ) {
           // Runtime plugin manager unavailable — fall back to the app-core
-          // installer which writes to ~/.eliza/plugins/installed and can be
+          // installer which writes to ~/.tokagent/plugins/installed and can be
           // picked up by the app-package-modules resolver without restart.
           const { installPlugin: installPluginDirect } = (await import(
-            /* webpackIgnore: true */ "@elizaos/app-core/services/plugin-installer"
+            /* webpackIgnore: true */ "@tokagentos/app-core/services/plugin-installer"
           )) as {
             installPlugin: (
               name: string,

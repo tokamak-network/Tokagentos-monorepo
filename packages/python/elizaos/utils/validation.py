@@ -1,6 +1,6 @@
 import re
 
-from elizaos.types.memory import Memory
+from tokagentos.types.memory import Memory
 
 
 def validate_action_keywords(

@@ -12,33 +12,33 @@ import { resolveRuntimeBootstrapFailure } from "./runtime-bootstrap-policy.js";
 console.log(`${getLogPrefix()} Script starting...`);
 
 /**
- * Combined dev server — starts the elizaOS runtime in headless mode and
+ * Combined dev server — starts the tokagentOS runtime in headless mode and
  * wires it into the API server so the Control UI has a live agent to talk to.
  *
- * The ELIZA_HEADLESS env var tells startEliza() to skip the interactive
+ * The TOKAGENT_HEADLESS env var tells startTokagent() to skip the interactive
  * CLI chat loop and return the AgentRuntime instance.
  *
- * Usage: bun src/runtime/dev-server.ts   (with ELIZA_HEADLESS=1)
+ * Usage: bun src/runtime/dev-server.ts   (with TOKAGENT_HEADLESS=1)
  *        (or via the dev script: bun run dev)
  */
 import process from "node:process";
-import { setRestartHandler } from "@elizaos/agent/runtime/restart";
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
-import { colorizeDevSettingsStartupBanner } from "@elizaos/shared/dev-settings-banner-style";
+import { setRestartHandler } from "@tokagentos/agent/runtime/restart";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
+import { colorizeDevSettingsStartupBanner } from "@tokagentos/shared/dev-settings-banner-style";
 import {
   resolveApiToken,
   resolveDesktopApiPort,
   syncResolvedApiPort,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import { startApiServer } from "../api/server";
 import { formatApiDevSettingsBannerText } from "./api-dev-settings-banner.js";
 import {
   attemptPgliteAutoReset,
   getPgliteRecoveryRetrySkipPlugins,
   shutdownRuntime,
-  startEliza,
-} from "./eliza";
+  startTokagent,
+} from "./tokagent";
 
 console.log(
   `${getLogPrefix()} Imports complete (${Date.now() - SCRIPT_START}ms)`,
@@ -56,7 +56,7 @@ console.log(`${getLogPrefix()} dotenv loaded (${Date.now() - SCRIPT_START}ms)`);
 
 const port = resolveDesktopApiPort(process.env);
 const hadUserApiTokenInEnv = !!(
-  process.env.ELIZA_API_TOKEN?.trim() || process.env.ELIZA_API_TOKEN?.trim()
+  process.env.TOKAGENT_API_TOKEN?.trim() || process.env.TOKAGENT_API_TOKEN?.trim()
 );
 
 /** The currently active runtime — swapped on restart. */
@@ -136,7 +136,7 @@ async function bootstrapRuntime(reason: string): Promise<void> {
     logger.info(
       `${getLogPrefix()} Runtime created in ${Date.now() - bootstrapStart}ms`,
     );
-    const agentName = rt.character.name ?? "Eliza";
+    const agentName = rt.character.name ?? "Tokagent";
 
     if (isShuttingDown) {
       try {
@@ -154,7 +154,7 @@ async function bootstrapRuntime(reason: string): Promise<void> {
     runtimeBootFirstFailureAt = null;
     runtimeBootPgliteAutoResetAttempted = false;
     runtimeBootPgliteRecoverySkipPlugins = [];
-    delete process.env.ELIZA_SKIP_PLUGINS;
+    delete process.env.TOKAGENT_SKIP_PLUGINS;
     apiUpdateStartup?.({
       phase: "running",
       attempt: 0,
@@ -177,7 +177,7 @@ async function bootstrapRuntime(reason: string): Promise<void> {
           runtimeBootPgliteRecoverySkipPlugins =
             getPgliteRecoveryRetrySkipPlugins();
           if (runtimeBootPgliteRecoverySkipPlugins.length > 0) {
-            process.env.ELIZA_SKIP_PLUGINS =
+            process.env.TOKAGENT_SKIP_PLUGINS =
               runtimeBootPgliteRecoverySkipPlugins.join(",");
             logger.warn(
               `${getLogPrefix()} Skipping previously failed plugins on the recovery retry: ${runtimeBootPgliteRecoverySkipPlugins.join(", ")}.`,
@@ -239,7 +239,7 @@ async function bootstrapRuntime(reason: string): Promise<void> {
 }
 
 /**
- * Create a fresh runtime via startEliza (headless).
+ * Create a fresh runtime via startTokagent (headless).
  * If a runtime is already running, stop it first.
  */
 async function createRuntime(): Promise<AgentRuntime> {
@@ -254,9 +254,9 @@ async function createRuntime(): Promise<AgentRuntime> {
     currentRuntime = null;
   }
 
-  const result = await startEliza({ headless: true });
+  const result = await startTokagent({ headless: true });
   if (!result) {
-    throw new Error("startEliza returned null — runtime failed to initialize");
+    throw new Error("startTokagent returned null — runtime failed to initialize");
   }
 
   currentRuntime = result as AgentRuntime;
@@ -300,7 +300,7 @@ async function handleRestart(reason?: string): Promise<void> {
       });
 
       const rt = await createRuntime();
-      const agentName = rt.character.name ?? "Eliza";
+      const agentName = rt.character.name ?? "Tokagent";
       logger.info(`${getLogPrefix()} Runtime restarted — agent: ${agentName}`);
 
       // Hot-swap the API server's runtime reference.
@@ -319,7 +319,7 @@ async function handleRestart(reason?: string): Promise<void> {
 /**
  * Graceful shutdown for the dev-server process.
  *
- * Since we told startEliza to run in headless mode (which now skips
+ * Since we told startTokagent to run in headless mode (which now skips
  * registering its own SIGINT/SIGTERM handlers), we own the shutdown
  * lifecycle here.
  */
@@ -359,7 +359,7 @@ async function main() {
   const startupStart = Date.now();
 
   // Register the in-process restart handler so the RESTART_AGENT action
-  // (and the POST /api@elizaos/agent/restart endpoint) work without killing the
+  // (and the POST /api@tokagentos/agent/restart endpoint) work without killing the
   // process.
   setRestartHandler(handleRestart);
 
@@ -389,15 +389,15 @@ async function main() {
     state: "starting",
   });
   const apiReady = Date.now();
-  // WHY sync API vars only: under `dev:desktop`, dev-platform sets ELIZA_PORT to
+  // WHY sync API vars only: under `dev:desktop`, dev-platform sets TOKAGENT_PORT to
   // the **Vite** listen port for `/api/dev/stack` + static HTML hints, while
-  // ELIZA_API_PORT is the app API. Overwriting ELIZA_PORT here would
+  // TOKAGENT_API_PORT is the app API. Overwriting TOKAGENT_PORT here would
   // collapse UI vs API in observability JSON and confuse tools that read env.
   if (actualPort !== port) {
     console.error(
       `${getLogPrefix()} [CRITICAL] API bound to port ${actualPort} but orchestrator expected ${port}. ` +
-        `Electrobun renderer has ELIZA_DESKTOP_API_BASE pointing at the wrong port. ` +
-        `Kill the process using port ${port} or set ELIZA_API_PORT to a free port.`,
+        `Electrobun renderer has TOKAGENT_DESKTOP_API_BASE pointing at the wrong port. ` +
+        `Kill the process using port ${port} or set TOKAGENT_API_PORT to a free port.`,
     );
   }
   syncResolvedApiPort(process.env, actualPort);
@@ -438,7 +438,7 @@ async function main() {
     ),
   );
 
-  // 2. Boot the elizaOS agent runtime without blocking server readiness.
+  // 2. Boot the tokagentOS agent runtime without blocking server readiness.
   scheduleRuntimeBootstrap(0, "startup");
 
   console.log(

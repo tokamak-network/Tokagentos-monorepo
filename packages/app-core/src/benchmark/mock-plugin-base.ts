@@ -3,7 +3,7 @@ import {
   type IAgentRuntime,
   ModelType,
   type Plugin,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 const DEFAULT_CODE = "00000000-0000-0000-0000-000000000000";
 
@@ -48,7 +48,7 @@ function createBenchmarkActionXml(prompt: string): string {
  * but this base implementation keeps CI and unit tests deterministic.
  */
 export const mockPlugin: Plugin = {
-  name: "eliza-benchmark-mock",
+  name: "tokagent-benchmark-mock",
   description:
     "Deterministic benchmark mock plugin used by tests and local benchmark smoke runs.",
   models: {

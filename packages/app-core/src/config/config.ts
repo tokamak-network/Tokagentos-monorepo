@@ -1,8 +1,8 @@
-export type { ElizaConfig } from "@elizaos/agent/config";
+export type { TokagentConfig } from "@tokagentos/agent/config";
 export {
-  loadElizaConfig,
-  saveElizaConfig,
-} from "@elizaos/agent/config/config";
+  loadTokagentConfig,
+  saveTokagentConfig,
+} from "@tokagentos/agent/config/config";
 
 export interface LegacyCloudConfig {
   cloud?: { enabled?: boolean } | null;
@@ -17,7 +17,7 @@ export function isCloudActiveFromProviders(
     return false;
   }
 
-  return providers.includes("elizacloud");
+  return providers.includes("tokagentcloud");
 }
 
 export function migrateCloudEnabledToProviders(
@@ -32,12 +32,12 @@ export function migrateCloudEnabledToProviders(
     ? config.providers
     : [];
 
-  if (existingProviders.includes("elizacloud")) {
+  if (existingProviders.includes("tokagentcloud")) {
     return config;
   }
 
   return {
     ...config,
-    providers: [...existingProviders, "elizacloud"],
+    providers: [...existingProviders, "tokagentcloud"],
   };
 }

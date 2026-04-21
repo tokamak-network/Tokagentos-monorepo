@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import type { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
 import { PTYService } from "@elizaos/plugin-agent-orchestrator";
 import { createTestRuntime } from "../helpers/pglite-runtime.ts";
@@ -87,10 +87,10 @@ async function startRuntime(): Promise<SwarmCoordinator> {
 
 async function main(): Promise<void> {
 	pgliteDir = fs.mkdtempSync(
-		path.join(os.tmpdir(), "eliza-task-thread-restart-db-"),
+		path.join(os.tmpdir(), "tokagent-task-thread-restart-db-"),
 	);
 	workdir = fs.mkdtempSync(
-		path.join(os.tmpdir(), "eliza-task-thread-restart-workdir-"),
+		path.join(os.tmpdir(), "tokagent-task-thread-restart-workdir-"),
 	);
 
 	const outputFile = path.join(workdir, "restart-output.txt");
@@ -102,7 +102,7 @@ async function main(): Promise<void> {
 		originalRequest:
 			"Create a local artifact and make sure the task still exists after restart.",
 		metadata: {
-			repo: "https://github.com/example/eliza",
+			repo: "https://github.com/example/tokagent",
 			source: "task-thread-restart-script",
 		},
 	});

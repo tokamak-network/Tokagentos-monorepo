@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.types import ModelType, Service, ServiceType
+from tokagentos.types import ModelType, Service, ServiceType
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 
 class EmbeddingService(Service):

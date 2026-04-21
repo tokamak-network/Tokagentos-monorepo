@@ -1,9 +1,9 @@
-// memory.proto - Memory types for elizaOS
+// memory.proto - Memory types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
-import "eliza/v1/primitives.proto";
+import "tokagent/v1/primitives.proto";
 import "google/protobuf/struct.proto";
 
 // Base memory metadata

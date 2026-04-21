@@ -2,7 +2,7 @@
  * Tests for Python Plugin Bridge
  */
 
-import type { Memory, State, UUID } from "@elizaos/core";
+import type { Memory, State, UUID } from "@tokagentos/core";
 import { describe, expect, test } from "vitest";
 import type {
   ActionInvokeRequest,

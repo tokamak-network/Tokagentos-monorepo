@@ -4,9 +4,9 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   UUID,
-} from "@elizaos/core";
-import { asUUID, logger } from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { asUUID, logger } from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import {
   type ContactInfo,
   getRelationshipsServiceLike,

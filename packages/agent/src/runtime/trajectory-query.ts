@@ -4,7 +4,7 @@
  * Handles listing, loading, searching, and filtering trajectories.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 import {
   asRecord,

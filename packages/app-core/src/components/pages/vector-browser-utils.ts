@@ -10,7 +10,7 @@ export const MAX_THREE_PIXEL_RATIO = 2;
 
 export type ViewMode = "list" | "graph" | "3d";
 
-/** The dimension columns in the elizaOS `embeddings` table. */
+/** The dimension columns in the tokagentOS `embeddings` table. */
 export const DIM_COLUMNS = [
   "dim_384",
   "dim_512",
@@ -123,7 +123,7 @@ export function parseEmbedding(val: unknown): number[] | null {
 }
 
 export function rowToMemory(row: Record<string, unknown>): MemoryRecord {
-  // Try explicit embedding/vector column first, then check elizaOS dim_* columns
+  // Try explicit embedding/vector column first, then check tokagentOS dim_* columns
   let embeddingVal = row.embedding ?? row.vector ?? row.embeddings;
   if (!embeddingVal) {
     for (const dim of DIM_COLUMNS) {

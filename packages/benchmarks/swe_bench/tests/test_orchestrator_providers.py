@@ -20,7 +20,7 @@ if _PYTHON_PKG.exists():
 if _ORCH_PKG.exists():
     sys.path.insert(0, str(_ORCH_PKG))
 
-from elizaos_plugin_agent_orchestrator import (
+from tokagentos_plugin_agent_orchestrator import (
     OrchestratedTask,
     OrchestratedTaskMetadata,
     ProviderTaskExecutionContext,
@@ -28,7 +28,7 @@ from elizaos_plugin_agent_orchestrator import (
     TaskUserStatus,
 )
 from benchmarks.swe_bench.orchestrator.providers import (
-    ElizaCodeProvider,
+    TokagentCodeProvider,
     SWEAgentProvider,
     SWEBenchTraceHook,
 )
@@ -40,17 +40,17 @@ class _RuntimeStub:
 
 
 @pytest.fixture
-def eliza_provider(tmp_path):
-    """Create an ElizaCodeProvider with a temporary repo manager."""
+def tokagent_provider(tmp_path):
+    """Create an TokagentCodeProvider with a temporary repo manager."""
     manager = RepositoryManager(str(tmp_path / "workspace"))
-    return ElizaCodeProvider(
+    return TokagentCodeProvider(
         runtime=_RuntimeStub(),
         repo_manager=manager,
         max_steps=5,
     )
 
 
-def test_parse_fallback_action_response_accepts_json_params(eliza_provider) -> None:
+def test_parse_fallback_action_response_accepts_json_params(tokagent_provider) -> None:
     """Fallback parser should accept JSON PARAMS blocks."""
     text = (
         "DISCUSSION: apply fix\n\n"
@@ -62,14 +62,14 @@ def test_parse_fallback_action_response_accepts_json_params(eliza_provider) -> N
         '  "new_str": "bar"\n'
         "}"
     )
-    action, params = eliza_provider._parse_fallback_action_response(text)
+    action, params = tokagent_provider._parse_fallback_action_response(text)
     assert action == "EDIT_FILE"
     assert params["file_path"] == "astropy/modeling/separable.py"
     assert params["old_str"] == "foo"
     assert params["new_str"] == "bar"
 
 
-def test_parse_fallback_action_response_trims_clipped_noise(eliza_provider) -> None:
+def test_parse_fallback_action_response_trims_clipped_noise(tokagent_provider) -> None:
     """Parser should not include clipped transcript noise in scalar params."""
     text = (
         "DISCUSSION: inspect file\n\n"
@@ -80,14 +80,14 @@ def test_parse_fallback_action_response_trims_clipped_noise(eliza_provider) -> N
         "Step 21: ACTION=READ_FILE\n"
         "PARAMS={'file_path': 'astropy/modeling/separable.py'}"
     )
-    action, params = eliza_provider._parse_fallback_action_response(text)
+    action, params = tokagent_provider._parse_fallback_action_response(text)
     assert action == "READ_FILE"
     assert params == {"file_path": "astropy/modeling/separable.py"}
 
 
 @pytest.mark.asyncio
 async def test_edit_file_fallback_replaces_symbol_when_old_str_misses(
-    eliza_provider,
+    tokagent_provider,
     tmp_path,
 ) -> None:
     """EDIT_FILE should fall back to replacing a top-level symbol block."""
@@ -103,11 +103,11 @@ async def test_edit_file_fallback_replaces_symbol_when_old_str_misses(
         encoding="utf-8",
     )
 
-    manager = eliza_provider.repo_manager
+    manager = tokagent_provider.repo_manager
     manager.current_repo = repo_root
     manager._current_repo_resolved = repo_root.resolve()
 
-    ok, message = await eliza_provider._execute_tool(
+    ok, message = await tokagent_provider._execute_tool(
         "EDIT_FILE",
         {
             "file_path": "sample.py",

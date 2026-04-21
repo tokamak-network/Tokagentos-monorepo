@@ -9,7 +9,7 @@ export default [
       {
         file: "dist/plugin.js",
         format: "iife",
-        name: "capacitorElizaCanvas",
+        name: "capacitorTokagentCanvas",
         globals: {
           "@capacitor/core": "capacitorExports",
         },

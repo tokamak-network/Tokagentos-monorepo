@@ -11,7 +11,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type {
   KeyValidationResult,
   SolanaTokenBalance,
@@ -20,7 +20,7 @@ import type {
   WalletGenerateResult,
   WalletImportResult,
   WalletKeys,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import { secp256k1 } from "@noble/curves/secp256k1.js";
 import { ethers } from "ethers";
 
@@ -60,7 +60,7 @@ export type {
   WalletTradingProfileResponse,
   WalletTradingProfileSourceFilter,
   WalletTradingProfileWindow,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 
 // ── Re-exports from extracted modules ─────────────────────────────────
 
@@ -88,8 +88,8 @@ export {
 // ── Constants ─────────────────────────────────────────────────────────
 
 const FETCH_TIMEOUT_MS = 15_000;
-export const MANAGED_EVM_ADDRESS_ENV_KEY = "ELIZA_MANAGED_EVM_ADDRESS";
-export const MANAGED_SOLANA_ADDRESS_ENV_KEY = "ELIZA_MANAGED_SOLANA_ADDRESS";
+export const MANAGED_EVM_ADDRESS_ENV_KEY = "TOKAGENT_MANAGED_EVM_ADDRESS";
+export const MANAGED_SOLANA_ADDRESS_ENV_KEY = "TOKAGENT_MANAGED_SOLANA_ADDRESS";
 
 /** Module-level cache for steward wallet addresses (avoids process.env mutation). */
 let stewardAddressCache: { evm: string | null; solana: string | null } | null =
@@ -377,7 +377,7 @@ export const STEWARD_EVM_ADDRESS_ENV_KEY = "STEWARD_EVM_ADDRESS";
 export const STEWARD_SOLANA_ADDRESS_ENV_KEY = "STEWARD_SOLANA_ADDRESS";
 const STEWARD_CREDENTIALS_PATH = path.join(
   os.homedir(),
-  ".eliza",
+  ".tokagent",
   "steward-credentials.json",
 );
 
@@ -439,8 +439,8 @@ export async function initStewardWalletCache(): Promise<void> {
 
   const agentId =
     normalizeOptionalString(process.env.STEWARD_AGENT_ID) ||
-    normalizeOptionalString(process.env.ELIZA_STEWARD_AGENT_ID) ||
-    normalizeOptionalString(process.env.ELIZA_STEWARD_AGENT_ID) ||
+    normalizeOptionalString(process.env.TOKAGENT_STEWARD_AGENT_ID) ||
+    normalizeOptionalString(process.env.TOKAGENT_STEWARD_AGENT_ID) ||
     persisted?.agentId ||
     null;
 
@@ -528,7 +528,7 @@ export async function initStewardWalletCache(): Promise<void> {
  * Resolution order (steward-first):
  *   1. Steward cached addresses  (`STEWARD_EVM_ADDRESS` / `STEWARD_SOLANA_ADDRESS`)
  *   2. Local private key derivation  (`EVM_PRIVATE_KEY` / `SOLANA_PRIVATE_KEY`)
- *   3. Managed address env vars  (`ELIZA_MANAGED_EVM_ADDRESS` / `ELIZA_MANAGED_SOLANA_ADDRESS`)
+ *   3. Managed address env vars  (`TOKAGENT_MANAGED_EVM_ADDRESS` / `TOKAGENT_MANAGED_SOLANA_ADDRESS`)
  */
 export function getWalletAddresses(): WalletAddresses {
   let evmAddress: string | null = null;
@@ -633,8 +633,8 @@ export async function getWalletAddressesWithSteward(): Promise<
 
   const agentId =
     process.env.STEWARD_AGENT_ID?.trim() ||
-    process.env.ELIZA_STEWARD_AGENT_ID?.trim() ||
-    process.env.ELIZA_STEWARD_AGENT_ID?.trim() ||
+    process.env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
+    process.env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
     base.evmAddress?.trim() ||
     null;
 

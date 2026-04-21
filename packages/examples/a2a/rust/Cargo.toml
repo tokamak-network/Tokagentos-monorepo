@@ -1,15 +1,15 @@
 [package]
-name = "eliza-a2a-server"
+name = "tokagent-a2a-server"
 version = "1.0.0"
 edition = "2021"
-description = "elizaOS A2A (Agent-to-Agent) Server - HTTP API for agent communication"
+description = "tokagentOS A2A (Agent-to-Agent) Server - HTTP API for agent communication"
 license = "MIT"
 
 [dependencies]
-elizaos = "2.0.0"
-elizaos_plugin_openai = { package = "elizaos-plugin-openai", version = "2.0.0" }
-elizaos_plugin_eliza_classic = { package = "elizaos-plugin-eliza-classic", version = "2.0.0" }
-elizaos_plugin_inmemorydb = { package = "elizaos-plugin-inmemorydb", version = "2.0.0" }
+tokagentos = "2.0.0"
+tokagentos_plugin_openai = { package = "tokagentos-plugin-openai", version = "2.0.0" }
+tokagentos_plugin_tokagent_classic = { package = "tokagentos-plugin-tokagent-classic", version = "2.0.0" }
+tokagentos_plugin_inmemorydb = { package = "tokagentos-plugin-inmemorydb", version = "2.0.0" }
 tokio = { version = "1.0", features = ["full"] }
 axum = { version = "0.7", features = ["macros"] }
 tower-http = { version = "0.5", features = ["cors"] }

@@ -12,7 +12,7 @@ import argparse
 import re
 from pathlib import Path
 
-# Default minimum version constraint for elizaos packages
+# Default minimum version constraint for tokagentos packages
 DEFAULT_MIN_VERSION = ">=1.0.0"
 
 
@@ -36,8 +36,8 @@ def discover_package_dirs(workspace_root: Path) -> list[Path]:
     return dirs
 
 
-def get_elizaos_package_names(workspace_root: Path) -> set[str]:
-    """Get all elizaos package names from pyproject.toml files."""
+def get_tokagentos_package_names(workspace_root: Path) -> set[str]:
+    """Get all tokagentos package names from pyproject.toml files."""
     names = set()
     for pkg_dir in discover_package_dirs(workspace_root):
         pyproject = pkg_dir / "pyproject.toml"
@@ -46,13 +46,13 @@ def get_elizaos_package_names(workspace_root: Path) -> set[str]:
             match = re.search(r'^name\s*=\s*"([^"]+)"', content, re.MULTILINE)
             if match:
                 name = match.group(1)
-                if name.startswith("elizaos"):
+                if name.startswith("tokagentos"):
                     names.add(name)
     return names
 
 
 def restore_pyproject_dependencies(
-    pyproject_path: Path, elizaos_packages: set[str], dry_run: bool
+    pyproject_path: Path, tokagentos_packages: set[str], dry_run: bool
 ) -> int:
     """Restore flexible dependency constraints in pyproject.toml."""
     if not pyproject_path.exists():
@@ -63,8 +63,8 @@ def restore_pyproject_dependencies(
     changes = 0
 
     # Restore dependencies to default constraints
-    for pkg in elizaos_packages:
-        # Match patterns like "elizaos>=2.0.0a1" or "elizaos==2.0.0"
+    for pkg in tokagentos_packages:
+        # Match patterns like "tokagentos>=2.0.0a1" or "tokagentos==2.0.0"
         pattern = rf'("{pkg})([><=!~]+)([^"]+)"'
 
         def restore_constraint(m: re.Match) -> str:
@@ -109,10 +109,10 @@ def main():
 
     # Auto-discover packages
     package_dirs = discover_package_dirs(workspace_root)
-    elizaos_packages = get_elizaos_package_names(workspace_root)
+    tokagentos_packages = get_tokagentos_package_names(workspace_root)
 
     print(f"📂 Found {len(package_dirs)} Python packages")
-    print(f"🏷️  Found {len(elizaos_packages)} elizaos package names\n")
+    print(f"🏷️  Found {len(tokagentos_packages)} tokagentos package names\n")
 
     total_deps = 0
 
@@ -121,7 +121,7 @@ def main():
         pkg_dir_rel = pkg_dir.relative_to(workspace_root)
 
         deps_restored = restore_pyproject_dependencies(
-            pyproject, elizaos_packages, args.dry_run
+            pyproject, tokagentos_packages, args.dry_run
         )
         if deps_restored > 0:
             print(f"📦 {pkg_dir_rel}")

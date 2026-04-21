@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from elizaos_webshop.cli import main
+from tokagentos_webshop.cli import main
 
 
 if __name__ == "__main__":

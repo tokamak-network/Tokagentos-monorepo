@@ -10,30 +10,30 @@ import time
 import uuid
 from pathlib import Path
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid
 
-from elizaos_adhdbench.baselines import (
+from tokagentos_adhdbench.baselines import (
     BOOTSTRAP_ACTION_NAMES,
     compute_always_reply_baseline,
     compute_random_baseline,
 )
-from elizaos_adhdbench.config import ADHDBenchConfig
-from elizaos_adhdbench.distractor_plugin import get_distractor_plugin_actions_for_scale
-from elizaos_adhdbench.evaluator import (
+from tokagentos_adhdbench.config import ADHDBenchConfig
+from tokagentos_adhdbench.distractor_plugin import get_distractor_plugin_actions_for_scale
+from tokagentos_adhdbench.evaluator import (
     compute_scenario_score,
     evaluate_outcome,
 )
-from elizaos_adhdbench.reporting import ADHDBenchReporter
-from elizaos_adhdbench.runtime_wrapper import (
+from tokagentos_adhdbench.reporting import ADHDBenchReporter
+from tokagentos_adhdbench.runtime_wrapper import (
     InstrumentedCapture,
     create_benchmark_runtime,
     initialize_benchmark_runtime,
     prefill_conversation,
 )
-from elizaos_adhdbench.scenarios import get_scenarios
-from elizaos_adhdbench.types import (
+from tokagentos_adhdbench.scenarios import get_scenarios
+from tokagentos_adhdbench.types import (
     BenchmarkResults,
     ScalingCurvePoint,
     Scenario,
@@ -228,7 +228,7 @@ class ADHDBenchRunner:
                 )
                 # All remaining outcomes fail
                 if turn.expected_outcomes:
-                    from elizaos_adhdbench.types import OutcomeResult
+                    from tokagentos_adhdbench.types import OutcomeResult
                     turn_result.outcome_results = [
                         OutcomeResult(outcome=o, passed=False, actual_value="",
                                       detail=f"Turn failed: {exc}")
@@ -286,7 +286,7 @@ class ADHDBenchRunner:
         """Execute a single turn and capture the results."""
 
         # Create the message Memory with trajectory step ID for instrumentation.
-        # Following the canonical pattern from elizaos_atropos_shared:
+        # Following the canonical pattern from tokagentos_atropos_shared:
         # assign a MessageMetadata with trajectory_step_id directly to
         # Memory.metadata.  The runtime reads it via
         # getattr(message.metadata, "trajectoryStepId", None).

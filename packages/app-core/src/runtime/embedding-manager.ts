@@ -1,5 +1,5 @@
 /**
- * ElizaEmbeddingManager — wraps node-llama-cpp to provide:
+ * TokagentEmbeddingManager — wraps node-llama-cpp to provide:
  *   • Metal GPU acceleration on Apple Silicon (gpuLayers: "auto")
  *   • Configurable embedding model with hardware-adaptive defaults
  *   • Idle timeout unloading (default: 30 min) with transparent lazy re-init
@@ -57,7 +57,7 @@ async function importNodeLlamaCpp(): Promise<any> {
  */
 const SAFE_CHARS_PER_TOKEN = 2;
 
-export class ElizaEmbeddingManager {
+export class TokagentEmbeddingManager {
   private readonly model: string;
   private readonly modelRepo: string;
   private readonly dimensions: number;

@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { useApp } from "../../state";
 

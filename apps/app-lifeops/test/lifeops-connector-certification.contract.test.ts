@@ -22,7 +22,7 @@ import { pathToFileURL } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock(
-  "@elizaos/scenario-schema",
+  "@tokagentos/scenario-schema",
   () => ({
     scenario: <T>(value: T) => value,
   }),
@@ -107,7 +107,7 @@ const CONNECTOR_CATALOG_PATH = path.join(
 );
 const SHARED_LIFEOPS_CONTRACT_PATH = path.join(
   REPO_ROOT,
-  "eliza",
+  "tokagent",
   "packages",
   "shared",
   "src",
@@ -116,7 +116,7 @@ const SHARED_LIFEOPS_CONTRACT_PATH = path.join(
 );
 const SHARED_LIFEOPS_EXTENSIONS_CONTRACT_PATH = path.join(
   REPO_ROOT,
-  "eliza",
+  "tokagent",
   "packages",
   "shared",
   "src",
@@ -125,7 +125,7 @@ const SHARED_LIFEOPS_EXTENSIONS_CONTRACT_PATH = path.join(
 );
 const NOTIFICATIONS_STATUS_PATH = path.join(
   REPO_ROOT,
-  "eliza",
+  "tokagent",
   "apps",
   "app-lifeops",
   "src",

@@ -1,6 +1,6 @@
 /**
  * Steward plugin — registers all Steward wallet compat routes with the
- * elizaOS runtime plugin route system.
+ * tokagentOS runtime plugin route system.
  *
  * All routes use `rawPath: true` to preserve the legacy `/api/wallet/*`
  * and `/api/steward/*` paths without a plugin-name prefix.
@@ -18,8 +18,8 @@
  */
 
 import type http from "node:http";
-import type { CompatRuntimeState } from "@elizaos/app-core/api/compat-route-shared";
-import type { Plugin, Route } from "@elizaos/core";
+import type { CompatRuntimeState } from "@tokagentos/app-core/api/compat-route-shared";
+import type { Plugin, Route } from "@tokagentos/core";
 import { handleStewardCompatRoutes } from "./routes/steward-compat-routes";
 import { handleWalletBrowserCompatRoutes } from "./routes/wallet-browser-compat-routes";
 import { handleWalletBscCoreRoutes } from "./routes/wallet-bsc-core-routes";

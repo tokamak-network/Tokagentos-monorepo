@@ -3,13 +3,13 @@ from __future__ import annotations
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING
 
-from elizaos.generated.spec_helpers import require_evaluator_spec
-from elizaos.prompts import REFLECTION_TEMPLATE
-from elizaos.types import ActionResult, Evaluator, EvaluatorResult, HandlerOptions, ModelType
-from elizaos.utils.xml import parse_key_value_xml
+from tokagentos.generated.spec_helpers import require_evaluator_spec
+from tokagentos.prompts import REFLECTION_TEMPLATE
+from tokagentos.types import ActionResult, Evaluator, EvaluatorResult, HandlerOptions, ModelType
+from tokagentos.utils.xml import parse_key_value_xml
 
 if TYPE_CHECKING:
-    from elizaos.types import Content, IAgentRuntime, Memory, State
+    from tokagentos.types import Content, IAgentRuntime, Memory, State
 
 # Get text content from centralized specs
 _spec = require_evaluator_spec("REFLECTION")

@@ -1,4 +1,4 @@
-//! Python Plugin Loader for elizaOS Rust Runtime
+//! Python Plugin Loader for tokagentOS Rust Runtime
 //!
 //! This module provides utilities for loading Python plugins into the Rust runtime
 //! via subprocess IPC communication.
@@ -192,7 +192,7 @@ impl PythonPluginBridge {
             "packages/interop/python/bridge_server.py",
             "../interop/python/bridge_server.py",
             // In Python package
-            "packages/python/elizaos/interop/bridge_server.py",
+            "packages/python/tokagentos/interop/bridge_server.py",
         ];
 
         for path in possible_paths {

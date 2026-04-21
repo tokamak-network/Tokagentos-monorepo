@@ -3,8 +3,8 @@ Tests for data validation in Tau-bench.
 """
 
 import pytest
-from elizaos_tau_bench.dataset import TauBenchDataset, DataValidationError
-from elizaos_tau_bench.types import TauDomain
+from tokagentos_tau_bench.dataset import TauBenchDataset, DataValidationError
+from tokagentos_tau_bench.types import TauDomain
 
 
 class TestDataValidation:

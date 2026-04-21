@@ -14,7 +14,7 @@ import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from elizaos.types import Service
+from tokagentos.types import Service
 
 from ..types import SecretContext, SecretLevel
 from .config import (
@@ -27,7 +27,7 @@ from .config import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory
+    from tokagentos.types import IAgentRuntime, Memory
 
     from ..service import SecretsService
 

@@ -1,8 +1,8 @@
-//! Character loading tests for elizaOS Core
+//! Character loading tests for tokagentOS Core
 //!
 //! These tests verify that character files can be loaded and parsed correctly.
 
-use elizaos::{
+use tokagentos::{
     build_character_plugins, merge_character_defaults, parse_character,
     types::{Bio, Character},
     validate_character,
@@ -170,18 +170,18 @@ fn test_build_plugins_with_discord() {
     assert!(plugins.contains(&"@elizaos/plugin-discord".to_string()));
 }
 
-/// Test building plugins with elizaOS Cloud
+/// Test building plugins with tokagentOS Cloud
 #[test]
 fn test_build_plugins_with_cloud() {
     let mut env = HashMap::new();
-    env.insert("ELIZAOS_CLOUD_API_KEY".to_string(), "test-key".to_string());
+    env.insert("TOKAGENTOS_CLOUD_API_KEY".to_string(), "test-key".to_string());
 
     let plugins = build_character_plugins(&env);
 
     // Cloud settings are not part of the core TypeScript/Python plugin builder.
     // Rust should ignore these keys and follow the standard ordering.
     assert!(plugins.contains(&"@elizaos/plugin-sql".to_string()));
-    assert!(!plugins.contains(&"@elizaos/plugin-elizacloud".to_string()));
+    assert!(!plugins.contains(&"@elizaos/plugin-tokagentcloud".to_string()));
 }
 
 /// Test character bio_string method

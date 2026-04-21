@@ -688,7 +688,7 @@ function AdvancedSectionToggle({
 
 // ── Default registry ───────────────────────────────────────────────────
 
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 // Import actual field renderers
 import { defaultRenderers } from "./config-field";
 

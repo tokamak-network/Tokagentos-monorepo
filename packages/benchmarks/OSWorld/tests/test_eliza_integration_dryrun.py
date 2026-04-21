@@ -1,8 +1,8 @@
 """
-Dry-run integration test for the Eliza OSWorld agent.
+Dry-run integration test for the Tokagent OSWorld agent.
 
 This test validates the FULL pipeline end-to-end without a real VM:
-1. Agent initialization (Eliza runtime, actions, providers)
+1. Agent initialization (Tokagent runtime, actions, providers)
 2. Observation injection (screenshot + a11y tree)
 3. Message creation and handle_message call
 4. LLM response (via Groq API - REAL API call)
@@ -30,8 +30,8 @@ if OSWORLD_ROOT not in sys.path:
     sys.path.insert(0, OSWORLD_ROOT)
 
 _generated_dir = os.path.normpath(os.path.join(
-    OSWORLD_ROOT, "..", "..", "eliza", "packages", "python",
-    "elizaos", "types", "generated",
+    OSWORLD_ROOT, "..", "..", "tokagent", "packages", "python",
+    "tokagentos", "types", "generated",
 ))
 if os.path.isdir(_generated_dir) and _generated_dir not in sys.path:
     sys.path.insert(0, _generated_dir)
@@ -73,8 +73,8 @@ SAMPLE_SCREENSHOT_BYTES = base64.b64decode(
 def test_full_pipeline_dryrun():
     """
     Full dry-run integration test:
-    1. Create ElizaOSWorldAgent
-    2. Initialize it (creates Eliza runtime)
+    1. Create TokagentOSWorldAgent
+    2. Initialize it (creates Tokagent runtime)
     3. Call predict() with mock observations
     4. Verify actions were generated
     """
@@ -83,13 +83,13 @@ def test_full_pipeline_dryrun():
         import pytest
         pytest.skip("GROQ_API_KEY not set -- cannot run real LLM integration test")
 
-    from mm_agents.eliza_agent import ElizaOSWorldAgent
-    from mm_agents.eliza_desktop_actions import ActionCollector
-    from mm_agents.eliza_observation import ObservationStore
+    from mm_agents.tokagent_agent import TokagentOSWorldAgent
+    from mm_agents.tokagent_desktop_actions import ActionCollector
+    from mm_agents.tokagent_observation import ObservationStore
 
     # ---- 1. Create agent ----
-    logger.info("Creating ElizaOSWorldAgent...")
-    agent = ElizaOSWorldAgent(
+    logger.info("Creating TokagentOSWorldAgent...")
+    agent = TokagentOSWorldAgent(
         model="qwen/qwen3-32b",
         observation_type="screenshot_a11y_tree",
         action_space="pyautogui",
@@ -97,8 +97,8 @@ def test_full_pipeline_dryrun():
         groq_api_key=groq_key,
     )
 
-    # ---- 2. Initialize (creates Eliza runtime) ----
-    logger.info("Initializing agent (Eliza runtime)...")
+    # ---- 2. Initialize (creates Tokagent runtime) ----
+    logger.info("Initializing agent (Tokagent runtime)...")
     asyncio.run(agent.async_init())
     logger.info("Agent initialized successfully!")
 
@@ -145,8 +145,8 @@ def test_full_pipeline_dryrun():
 
     logger.info("=" * 60)
     logger.info("DRY-RUN TEST PASSED!")
-    logger.info("The Eliza agent successfully:")
-    logger.info("  1. Initialized Eliza runtime with desktop actions")
+    logger.info("The Tokagent agent successfully:")
+    logger.info("  1. Initialized Tokagent runtime with desktop actions")
     logger.info("  2. Received mock observation (screenshot + a11y tree)")
     logger.info("  3. Routed through message_service.handle_message()")
     logger.info("  4. Called Groq/Qwen3 LLM for decision")

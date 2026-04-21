@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_diplomacy.types import (
+from tokagentos_atropos_diplomacy.types import (
     Power,
     Province,
     UnitType,
@@ -21,7 +21,7 @@ from elizaos_atropos_diplomacy.types import (
     StepResult,
     EpisodeResult,
 )
-from elizaos_atropos_diplomacy.map_data import (
+from tokagentos_atropos_diplomacy.map_data import (
     SUPPLY_CENTERS,
     HOME_CENTERS,
     STARTING_UNITS,
@@ -214,7 +214,7 @@ class DiplomacyEnvironment:
                                 target=center,
                             ))
                             # Can build fleet if coastal
-                            from elizaos_atropos_diplomacy.map_data import get_province_type, ProvinceType
+                            from tokagentos_atropos_diplomacy.map_data import get_province_type, ProvinceType
                             if get_province_type(center) == ProvinceType.COASTAL:
                                 orders.append(Order(
                                     unit=Unit(UnitType.FLEET, center, power),

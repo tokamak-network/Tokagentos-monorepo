@@ -11,7 +11,7 @@ function ensureSecretSalt(env: ProcessEnv): void {
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
     env.SECRET_SALT = hex;
-    writeLocalStorageString("eliza-vrm-demo:SECRET_SALT", hex);
+    writeLocalStorageString("tokagent-vrm-demo:SECRET_SALT", hex);
   } catch {
     env.SECRET_SALT = "secretsalt";
   }

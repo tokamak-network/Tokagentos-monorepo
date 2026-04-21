@@ -5,13 +5,13 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from elizaos.generated.spec_helpers import require_action_spec
-from elizaos.types import Action, ActionExample, ActionResult, Content
-from elizaos.types.memory import Memory as MemoryType
-from elizaos.types.runtime import TargetInfo
+from tokagentos.generated.spec_helpers import require_action_spec
+from tokagentos.types import Action, ActionExample, ActionResult, Content
+from tokagentos.types.memory import Memory as MemoryType
+from tokagentos.types.runtime import TargetInfo
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
 # Get text content from centralized specs
 _spec = require_action_spec("SEND_MESSAGE")
@@ -75,7 +75,7 @@ class SendMessageAction:
         import time
         import uuid as uuid_module
 
-        from elizaos.types.primitives import as_uuid
+        from tokagentos.types.primitives import as_uuid
 
         # Extract parameters from options
         params: dict[str, object] = {}

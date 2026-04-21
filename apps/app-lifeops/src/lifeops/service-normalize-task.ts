@@ -10,10 +10,10 @@ import type {
   LifeOpsWindowPolicy,
   LifeOpsWorkflowAction,
   LifeOpsWorkflowActionPlan,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_BROWSER_ACTION_KINDS,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   fail,
   normalizeEnumValue,

@@ -124,7 +124,7 @@ class SWEBenchEvaluator:
     def _safe_run_id(self, instance_id: str) -> str:
         """Create a filesystem-safe run id for the harness."""
         ts = int(time.time())
-        base = f"elizaos_{ts}_{instance_id}"
+        base = f"tokagentos_{ts}_{instance_id}"
         # Keep it conservative: letters, digits, underscore, dash, dot.
         safe = re.sub(r"[^A-Za-z0-9_.-]+", "_", base)
         return safe[:200]
@@ -201,7 +201,7 @@ class SWEBenchEvaluator:
         We run the harness in an isolated temp directory to avoid polluting the repo with
         `logs/run_evaluation/**` and report JSON files.
         """
-        model_name_or_path = "elizaos"
+        model_name_or_path = "tokagentos"
         run_id = self._safe_run_id(instance.instance_id)
 
         # Best-effort speedup: use Epoch's prebuilt images when configured.

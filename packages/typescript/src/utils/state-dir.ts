@@ -1,7 +1,7 @@
 /**
  * Milady state-dir resolution.
  *
- * Canonical rule: `MILADY_STATE_DIR` wins, then `ELIZA_STATE_DIR` (historical
+ * Canonical rule: `MILADY_STATE_DIR` wins, then `TOKAGENT_STATE_DIR` (historical
  * alias), then `<homedir>/.milady`. Every caller that wants to touch the
  * persisted user state (skills, training, optimized prompts, counters) must
  * go through `resolveStateDir()` so we have one place that enforces this
@@ -17,12 +17,12 @@ import { join } from "node:path";
 
 /**
  * Resolve the Milady per-user state directory, honoring the documented
- * `MILADY_STATE_DIR` → `ELIZA_STATE_DIR` → `~/.milady` precedence.
+ * `MILADY_STATE_DIR` → `TOKAGENT_STATE_DIR` → `~/.milady` precedence.
  */
 export function resolveStateDir(): string {
 	return (
 		process.env.MILADY_STATE_DIR?.trim() ||
-		process.env.ELIZA_STATE_DIR?.trim() ||
+		process.env.TOKAGENT_STATE_DIR?.trim() ||
 		join(homedir(), ".milady")
 	);
 }

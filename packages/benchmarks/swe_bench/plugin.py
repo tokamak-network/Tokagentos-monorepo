@@ -1,12 +1,12 @@
-"""ElizaOS plugin for SWE-bench benchmark."""
+"""TokagentOS plugin for SWE-bench benchmark."""
 
 from __future__ import annotations
 
 from typing import ClassVar
 
-from elizaos.types.plugin import Plugin
-from elizaos.types.runtime import IAgentRuntime
-from elizaos.types.service import Service
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.runtime import IAgentRuntime
+from tokagentos.types.service import Service
 
 from .providers import SWE_BENCH_PROVIDERS
 from .repo_manager import RepositoryManager

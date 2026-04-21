@@ -543,7 +543,7 @@ export interface CanvasPlugin {
   ): Promise<PluginListenerHandle>;
 
   /**
-   * Add listener for deep link events (eliza:// URL intercepts)
+   * Add listener for deep link events (tokagent:// URL intercepts)
    */
   addListener(
     eventName: "deepLink",

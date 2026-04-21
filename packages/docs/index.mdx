@@ -4,7 +4,7 @@ description: "Build autonomous AI agents in TypeScript, Python, or Rust"
 ---
 
 <Card
-  title="$elizaOS Token Information"
+  title="$tokagentOS Token Information"
   icon="coins"
   href="/tokenomics"
   color="#0B35F1"
@@ -14,11 +14,11 @@ description: "Build autonomous AI agents in TypeScript, Python, or Rust"
 
 ## Build AI Agents in Your Language
 
-elizaOS is available in **TypeScript**, **Python**, and **Rust** with identical APIs. Choose your preferred language and get started in minutes.
+tokagentOS is available in **TypeScript**, **Python**, and **Rust** with identical APIs. Choose your preferred language and get started in minutes.
 
 <CardGroup cols={3}>
   <Card title="TypeScript" icon="js" href="/quickstart#typescript">
-    The original elizaOS experience. Full Node.js ecosystem.
+    The original tokagentOS experience. Full Node.js ecosystem.
   </Card>
   <Card title="Python" icon="python" href="/quickstart#python">
     Pythonic APIs with Pydantic models and async/await.
@@ -34,15 +34,15 @@ elizaOS is available in **TypeScript**, **Python**, and **Rust** with identical 
 
 <Tabs>
   <Tab title="TypeScript">
-    ```bash bun i -g elizaos # Install the CLI elizaos create # Create your
-    project elizaos start # Your agent is live ```
+    ```bash bun i -g tokagentos # Install the CLI tokagentos create # Create your
+    project tokagentos start # Your agent is live ```
   </Tab>
   <Tab title="Python">
-    ```bash pip install elizaos # Install the package python -c "from elizaos
+    ```bash pip install tokagentos # Install the package python -c "from tokagentos
     import *" # Verify installation python your_agent.py # Run your agent ```
   </Tab>
   <Tab title="Rust">
-    ```bash cargo add elizaos # Add to Cargo.toml cargo build # Build your
+    ```bash cargo add tokagentos # Add to Cargo.toml cargo build # Build your
     project cargo run # Run your agent ```
   </Tab>
 </Tabs>
@@ -71,7 +71,7 @@ elizaOS is available in **TypeScript**, **Python**, and **Rust** with identical 
 
 ---
 
-## Why elizaOS?
+## Why tokagentOS?
 
 <CardGroup cols={3}>
   <Card title="Multi-Language" icon="code">
@@ -117,13 +117,13 @@ All three implementations share identical interfaces:
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import { AgentRuntime } from '@elizaos/core';
+import { AgentRuntime } from '@tokagentos/core';
 import { openaiPlugin } from '@elizaos/plugin-openai';
 import { plugin as sqlPlugin } from '@elizaos/plugin-sql';
 
 const runtime = new AgentRuntime({
 character: {
-name: 'Eliza',
+name: 'Tokagent',
 bio: 'A helpful AI assistant.',
 },
 plugins: [sqlPlugin, openaiPlugin],
@@ -136,11 +136,11 @@ console.log('Agent is ready!');
   </Tab>
   <Tab title="Python">
 ```python
-from elizaos import AgentRuntime, Character
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import AgentRuntime, Character
+from tokagentos_plugin_openai import get_openai_plugin
 
 character = Character(
-    name="Eliza",
+    name="Tokagent",
     bio="A helpful AI assistant.",
 )
 
@@ -156,13 +156,13 @@ print("Agent is ready!")
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos::{AgentRuntime, RuntimeOptions, parse_character};
-use elizaos_plugin_openai::create_openai_plugin;
+use tokagentos::{AgentRuntime, RuntimeOptions, parse_character};
+use tokagentos_plugin_openai::create_openai_plugin;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
 let character = parse_character(r#"{
-"name": "Eliza",
+"name": "Tokagent",
 "bio": "A helpful AI assistant."
 }"#)?;
 

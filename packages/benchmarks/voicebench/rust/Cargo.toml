@@ -10,6 +10,6 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = { version = "1.48", features = ["macros", "rt-multi-thread"] }
 
-elizaos = { path = "../../../eliza/packages/rust" }
-elizaos-plugin-groq = { path = "../../../plugins/plugin-groq/rust" }
-elizaos-plugin-elevenlabs = { path = "../../../plugins/plugin-elevenlabs/rust" }
+tokagentos = { path = "../../../tokagent/packages/rust" }
+tokagentos-plugin-groq = { path = "../../../plugins/plugin-groq/rust" }
+tokagentos-plugin-elevenlabs = { path = "../../../plugins/plugin-elevenlabs/rust" }

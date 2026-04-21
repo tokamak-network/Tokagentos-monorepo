@@ -6,12 +6,12 @@ import os from "node:os";
 import path from "node:path";
 import { domainToASCII } from "node:url";
 import { promisify } from "node:util";
-import type { HandlerOptions } from "@elizaos/core";
+import type { HandlerOptions } from "@tokagentos/core";
 import type { PermissionState, PermissionStatus } from "./permissions.ts";
 
-const BLOCK_START_MARKER = "# >>> eliza-selfcontrol >>>";
-const BLOCK_END_MARKER = "# <<< eliza-selfcontrol <<<";
-const BLOCK_METADATA_PREFIX = "# eliza-selfcontrol ";
+const BLOCK_START_MARKER = "# >>> tokagent-selfcontrol >>>";
+const BLOCK_END_MARKER = "# <<< tokagent-selfcontrol <<<";
+const BLOCK_METADATA_PREFIX = "# tokagent-selfcontrol ";
 const DEFAULT_STATUS_CACHE_TTL_MS = 5_000;
 
 // ---------------------------------------------------------------------------
@@ -54,7 +54,7 @@ export function getNativeWebsiteBlockerBackend(): NativeWebsiteBlockerBackend | 
   return nativeBackend;
 }
 const MAX_BLOCK_MINUTES = 7 * 24 * 60;
-const PRIVILEGED_WRITE_TMP_PREFIX = "eliza-selfcontrol-write-";
+const PRIVILEGED_WRITE_TMP_PREFIX = "tokagent-selfcontrol-write-";
 const WINDOWS_WORKER_SCRIPT_NAME = "write-hosts.ps1";
 
 const execFileAsync = promisify(execFile);
@@ -174,7 +174,7 @@ export function resetSelfControlStatusCache(): void {
 }
 
 export function cancelSelfControlExpiryTimer(): void {
-  // Timed website unblocks are scheduled through Eliza tasks now.
+  // Timed website unblocks are scheduled through Tokagent tasks now.
 }
 
 export async function resolveSelfControlHostsFilePath(
@@ -240,7 +240,7 @@ export async function reconcileSelfControlBlockState(
       elevationPromptMethod,
       reason: formatFileError(
         error,
-        "Eliza could not read the system hosts file.",
+        "Tokagent could not read the system hosts file.",
       ),
     };
   }
@@ -302,7 +302,7 @@ export async function reconcileSelfControlBlockState(
           supportsElevationPrompt,
           elevationPromptMethod,
           reason:
-            "Eliza removed a stale website block because these websites were " +
+            "Tokagent removed a stale website block because these websites were " +
             `still resolving outside loopback on this machine: ${ineffectiveTargets.join(", ")}.`,
         };
       }
@@ -325,8 +325,8 @@ export async function reconcileSelfControlBlockState(
         supportsElevationPrompt,
         elevationPromptMethod,
         reason: supportsElevationPrompt
-          ? "Eliza found stale website-block entries that are not actually blocking traffic on this machine, and it still needs administrator/root approval to remove them."
-          : "Eliza found stale website-block entries that are not actually blocking traffic on this machine, but it cannot remove them without administrator/root access.",
+          ? "Tokagent found stale website-block entries that are not actually blocking traffic on this machine, and it still needs administrator/root approval to remove them."
+          : "Tokagent found stale website-block entries that are not actually blocking traffic on this machine, but it cannot remove them without administrator/root access.",
       };
     }
   }
@@ -376,8 +376,8 @@ export async function reconcileSelfControlBlockState(
         supportsElevationPrompt,
         elevationPromptMethod,
         reason: supportsElevationPrompt
-          ? "The website block has expired, but Eliza still needs administrator/root approval to remove it."
-          : "The website block has expired, but Eliza cannot remove it without administrator/root access.",
+          ? "The website block has expired, but Tokagent still needs administrator/root approval to remove it."
+          : "The website block has expired, but Tokagent cannot remove it without administrator/root access.",
       };
     }
   }
@@ -496,7 +496,7 @@ export async function requestSelfControlPermission(
       ...(await getSelfControlPermissionState(config)),
       reason: formatFileError(
         error,
-        "Eliza could not get administrator/root approval for website blocking.",
+        "Tokagent could not get administrator/root approval for website blocking.",
       ),
       promptAttempted: true,
       promptSucceeded: false,
@@ -581,7 +581,7 @@ export async function startSelfControlBlock(
       success: false,
       error:
         status.reason ??
-        "Eliza needs administrator/root access to edit the system hosts file.",
+        "Tokagent needs administrator/root access to edit the system hosts file.",
       status,
     };
   }
@@ -636,7 +636,7 @@ export async function startSelfControlBlock(
       success: false,
       error: formatFileError(
         error,
-        "Eliza failed to update the system hosts file.",
+        "Tokagent failed to update the system hosts file.",
       ),
       status,
     };
@@ -668,7 +668,7 @@ export async function startSelfControlBlock(
       return {
         success: false,
         error:
-          "Eliza updated the system hosts file, but these websites still " +
+          "Tokagent updated the system hosts file, but these websites still " +
           `resolved outside loopback on this machine: ${ineffectiveTargets.join(", ")}. ` +
           "The website block was rolled back because it would not be effective.",
       };
@@ -724,7 +724,7 @@ export async function stopSelfControlBlock(
       success: false,
       error:
         status.reason ??
-        "Eliza needs administrator/root access to edit the system hosts file.",
+        "Tokagent needs administrator/root access to edit the system hosts file.",
       status,
     };
   }
@@ -739,7 +739,7 @@ export async function stopSelfControlBlock(
       success: false,
       error: formatFileError(
         error,
-        "Eliza failed to remove the website block from the system hosts file.",
+        "Tokagent failed to remove the website block from the system hosts file.",
       ),
       status,
     };
@@ -917,7 +917,7 @@ function buildSelfControlPermissionReason(
   if (status.available && !status.requiresElevation) {
     return (
       status.reason ??
-      "Eliza can edit the system hosts file directly on this machine."
+      "Tokagent can edit the system hosts file directly on this machine."
     );
   }
 
@@ -925,15 +925,15 @@ function buildSelfControlPermissionReason(
     if (options.prompted && options.promptSucceeded) {
       return (
         "The approval prompt completed successfully. " +
-        "Eliza can ask the OS for administrator/root approval whenever it needs to edit the system hosts file. " +
+        "Tokagent can ask the OS for administrator/root approval whenever it needs to edit the system hosts file. " +
         "That approval is per operation, so you may see the prompt again when starting or stopping a block."
       );
     }
 
-    return "Eliza can ask the OS for administrator/root approval whenever it needs to edit the system hosts file.";
+    return "Tokagent can ask the OS for administrator/root approval whenever it needs to edit the system hosts file.";
   }
 
-  return "Eliza cannot raise an administrator/root prompt for website blocking on this machine. Open the hosts file location and change ownership or run Eliza with elevated access.";
+  return "Tokagent cannot raise an administrator/root prompt for website blocking on this machine. Open the hosts file location and change ownership or run Tokagent with elevated access.";
 }
 
 function normalizeSelfControlBlockRequest(
@@ -1045,7 +1045,7 @@ function extractManagedSelfControlBlock(content: string): {
 function parseManagedBlockMetadata(
   block: string,
 ): SelfControlBlockMetadata | null {
-  const metadataLine = block.match(/^# eliza-selfcontrol (.+)$/m);
+  const metadataLine = block.match(/^# tokagent-selfcontrol (.+)$/m);
   if (!metadataLine?.[1]) return null;
 
   try {
@@ -1358,8 +1358,8 @@ export function isWebsiteBlockSinkholeAddress(address: string): boolean {
 
 function buildElevationReason(supportsElevationPrompt: boolean): string {
   return supportsElevationPrompt
-    ? "Eliza needs administrator/root access to edit the system hosts file, and can ask the OS for approval when you start or stop a block."
-    : "Eliza needs administrator/root access to edit the system hosts file.";
+    ? "Tokagent needs administrator/root access to edit the system hosts file, and can ask the OS for approval when you start or stop a block."
+    : "Tokagent needs administrator/root access to edit the system hosts file.";
 }
 
 function hasCommandOnPath(
@@ -1453,7 +1453,7 @@ async function writeHostsFileContentWithElevation(
   } catch (error) {
     if (
       error instanceof Error &&
-      /^Eliza needs administrator\/root access/i.test(error.message)
+      /^Tokagent needs administrator\/root access/i.test(error.message)
     ) {
       throw error;
     }
@@ -1564,12 +1564,12 @@ function escapeRegExp(value: string): string {
 
 function formatFileError(error: unknown, fallback: string): string {
   if (isPermissionError(error)) {
-    return "Eliza needs administrator/root access to edit the system hosts file.";
+    return "Tokagent needs administrator/root access to edit the system hosts file.";
   }
 
   if (
     error instanceof Error &&
-    /^Eliza needs administrator\/root access/i.test(error.message)
+    /^Tokagent needs administrator\/root access/i.test(error.message)
   ) {
     return error.message;
   }

@@ -77,18 +77,18 @@ jobs:
           python -m pip install -r packages/python/requirements-dev.lock
           python -m pip install -e packages/python --no-deps
 
-      - name: Run Python tests (@elizaos/python)
+      - name: Run Python tests (@tokagentos/python)
         timeout-minutes: 10
         run: cd packages/python && python -m pytest -q
 
-      - name: Run Python tests (@elizaos/interop python)
+      - name: Run Python tests (@tokagentos/interop python)
         timeout-minutes: 10
         run: cd packages/interop/python && python -m pytest -q
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Run Rust tests (@elizaos/rust)
+      - name: Run Rust tests (@tokagentos/rust)
         timeout-minutes: 10
         run: cd packages/rust && cargo test -q --locked
 

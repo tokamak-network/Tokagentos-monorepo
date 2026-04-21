@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Eliza Framework Benchmark Orchestrator
+# Tokagent Framework Benchmark Orchestrator
 #
 # Builds and runs all three runtime benchmarks sequentially,
 # then generates a comparison report.
@@ -64,8 +64,8 @@ if $RUN_TS && ! $COMPARE_ONLY; then
   REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
   # Ensure root workspace deps are installed (required for workspace:* resolution)
-  if ! bun run -e "require('@elizaos/core')" 2>/dev/null; then
-    info "Installing root workspace dependencies (required for @elizaos/core)..."
+  if ! bun run -e "require('@tokagentos/core')" 2>/dev/null; then
+    info "Installing root workspace dependencies (required for @tokagentos/core)..."
     cd "${REPO_ROOT}" && bun install
     cd "${SCRIPT_DIR}"
   fi
@@ -108,7 +108,7 @@ if $RUN_PY && ! $COMPARE_ONLY; then
 
   if $RUN_PY; then
     # Install dependencies if needed
-    if ! $PYTHON -c "import elizaos" 2>/dev/null; then
+    if ! $PYTHON -c "import tokagentos" 2>/dev/null; then
       info "Installing Python dependencies..."
       cd "${PY_DIR}"
       $PYTHON -m pip install -e "${SCRIPT_DIR}/../../packages/python" 2>/dev/null || true

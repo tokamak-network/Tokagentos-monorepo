@@ -28,7 +28,7 @@ describe("TemplatesManifest", () => {
   test("supports template collections", () => {
     const manifest: TemplatesManifest = {
       generatedAt: "2026-04-14T00:00:00.000Z",
-      repoUrl: "https://github.com/elizaos/eliza",
+      repoUrl: "https://github.com/tokagentos/tokagent",
       templates: [
         {
           description: "Fullstack workspace",
@@ -51,10 +51,10 @@ describe("Template value types", () => {
   test("plugin values capture scaffold substitutions", () => {
     const values: PluginTemplateValues = {
       displayName: "Foo",
-      elizaVersion: "2.0.0-alpha.139",
+      tokagentVersion: "2.0.0-alpha.139",
       githubUsername: "octocat",
       pluginBaseName: "plugin-foo",
-      pluginDescription: "plugin-foo plugin for elizaOS",
+      pluginDescription: "plugin-foo plugin for tokagentOS",
       pluginSnake: "plugin_foo",
       repoUrl: "https://github.com/octocat/plugin-foo",
     };

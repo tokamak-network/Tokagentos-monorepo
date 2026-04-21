@@ -1,4 +1,4 @@
-//! Media utilities for Eliza.
+//! Media utilities for Tokagent.
 //!
 //! Provides MIME type detection, media parsing, format utilities, and hybrid search.
 

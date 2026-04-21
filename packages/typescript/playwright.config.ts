@@ -1,6 +1,6 @@
 import { defineConfig } from "@playwright/test";
 
-process.env.ELIZA_PLAYWRIGHT_E2E = "1";
+process.env.TOKAGENT_PLAYWRIGHT_E2E = "1";
 
 export default defineConfig({
 	testDir: "./e2e",

@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/example-bluesky",
   "version": "2.0.0-alpha",
-  "description": "Full-featured Bluesky AI agent using elizaOS",
+  "description": "Full-featured Bluesky AI agent using tokagentOS",
   "type": "module",
   "private": true,
   "scripts": {
@@ -15,7 +15,7 @@
     "lint:check": "bunx @biomejs/biome check ."
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-bluesky": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",

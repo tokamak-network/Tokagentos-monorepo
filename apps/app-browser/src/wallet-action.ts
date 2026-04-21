@@ -4,13 +4,13 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   approveStewardWalletRequest,
   getStewardWalletUnavailableMessage,
   rejectStewardWalletRequest,
   signWithStewardWallet,
-} from "@elizaos/agent/services/steward-wallet";
+} from "@tokagentos/agent/services/steward-wallet";
 import type { StewardSignResponse } from "@elizaos/app-steward/types/steward";
 
 type StewardSignActionRequest = {
@@ -145,11 +145,11 @@ function parseApprovalRequest(
   };
 }
 
-export const signWithElizaWalletAction: Action = {
-  name: "SIGN_WITH_ELIZA_WALLET",
+export const signWithTokagentWalletAction: Action = {
+  name: "SIGN_WITH_TOKAGENT_WALLET",
   description:
-    "Send a transaction through the Eliza Steward-managed wallet while browsing. Use this when the user or agent needs the Eliza wallet to sign and optionally broadcast a transaction.",
-  descriptionCompressed: "Send transaction through Eliza Steward wallet while browsing.",
+    "Send a transaction through the Tokagent Steward-managed wallet while browsing. Use this when the user or agent needs the Tokagent wallet to sign and optionally broadcast a transaction.",
+  descriptionCompressed: "Send transaction through Tokagent Steward wallet while browsing.",
   similes: [
     "sign transaction with wallet",
     "send with steward wallet",
@@ -239,7 +239,7 @@ export const signWithElizaWalletAction: Action = {
       {
         name: "user",
         content: {
-          text: "Use the Eliza wallet to send 1000000000000000 wei to 0xabc0000000000000000000000000000000000000 on chain 8453",
+          text: "Use the Tokagent wallet to send 1000000000000000 wei to 0xabc0000000000000000000000000000000000000 on chain 8453",
         },
       },
       {
@@ -252,10 +252,10 @@ export const signWithElizaWalletAction: Action = {
   ] as ActionExample[][],
 };
 
-export const approveElizaWalletRequestAction: Action = {
-  name: "APPROVE_ELIZA_WALLET_REQUEST",
+export const approveTokagentWalletRequestAction: Action = {
+  name: "APPROVE_TOKAGENT_WALLET_REQUEST",
   description:
-    "Approve a pending Eliza Steward wallet request by transaction/request ID.",
+    "Approve a pending Tokagent Steward wallet request by transaction/request ID.",
   similes: ["approve wallet request", "approve steward request"],
   parameters: [
     {
@@ -303,10 +303,10 @@ export const approveElizaWalletRequestAction: Action = {
   },
 };
 
-export const rejectElizaWalletRequestAction: Action = {
-  name: "REJECT_ELIZA_WALLET_REQUEST",
+export const rejectTokagentWalletRequestAction: Action = {
+  name: "REJECT_TOKAGENT_WALLET_REQUEST",
   description:
-    "Reject a pending Eliza Steward wallet request by transaction/request ID.",
+    "Reject a pending Tokagent Steward wallet request by transaction/request ID.",
   similes: ["reject wallet request", "deny steward request"],
   parameters: [
     {
@@ -360,5 +360,5 @@ export const rejectElizaWalletRequestAction: Action = {
   },
 };
 
-export const elizaWalletUnavailableMessage =
+export const tokagentWalletUnavailableMessage =
   getStewardWalletUnavailableMessage();

@@ -4,18 +4,18 @@ from __future__ import annotations
 
 import pytest
 
-from elizaos_rlm_bench.types import (
+from tokagentos_rlm_bench.types import (
     RLMBenchConfig,
     RLMBenchTask,
     RLMBenchType,
     RLMStrategy,
 )
-from elizaos_rlm_bench.generator import (
+from tokagentos_rlm_bench.generator import (
     RLMBenchGenerator,
     generate_random_value,
     estimate_tokens,
 )
-from elizaos_rlm_bench.evaluator import (
+from tokagentos_rlm_bench.evaluator import (
     RLMBenchEvaluator,
     compute_exact_match,
     compute_partial_match,
@@ -221,7 +221,7 @@ class TestEvaluator:
         """Test evaluator computes aggregate metrics."""
         evaluator = RLMBenchEvaluator()
 
-        from elizaos_rlm_bench.types import RLMBenchResult
+        from tokagentos_rlm_bench.types import RLMBenchResult
 
         results = [
             RLMBenchResult(
@@ -279,7 +279,7 @@ class TestRunner:
     @pytest.mark.asyncio
     async def test_runner_stub_mode(self) -> None:
         """Test runner works in stub mode."""
-        from elizaos_rlm_bench.runner import RLMBenchRunner
+        from tokagentos_rlm_bench.runner import RLMBenchRunner
 
         config = RLMBenchConfig(
             context_lengths=[1000],
@@ -299,7 +299,7 @@ class TestRunner:
     @pytest.mark.asyncio
     async def test_runner_single_task(self) -> None:
         """Test running a single task."""
-        from elizaos_rlm_bench.runner import RLMBenchRunner
+        from tokagentos_rlm_bench.runner import RLMBenchRunner
 
         config = RLMBenchConfig(context_lengths=[1000])
         runner = RLMBenchRunner(config)
@@ -311,23 +311,23 @@ class TestRunner:
         assert result.context_length_tokens == task.context_length_tokens
 
     @pytest.mark.asyncio
-    async def test_runner_eliza_mode_requires_runtime(self) -> None:
-        """Test eliza mode raises without runtime."""
-        from elizaos_rlm_bench.runner import RLMBenchRunner
+    async def test_runner_tokagent_mode_requires_runtime(self) -> None:
+        """Test tokagent mode raises without runtime."""
+        from tokagentos_rlm_bench.runner import RLMBenchRunner
 
         config = RLMBenchConfig(context_lengths=[1000])
         runner = RLMBenchRunner(config)
 
         task = runner.generator.generate_s_niah_task(1000, 0.5)
 
-        # Eliza mode without runtime should raise
-        with pytest.raises(RuntimeError, match="No Eliza runtime configured"):
-            await runner.run_task(task, mode="eliza")
+        # Tokagent mode without runtime should raise
+        with pytest.raises(RuntimeError, match="No Tokagent runtime configured"):
+            await runner.run_task(task, mode="tokagent")
 
     @pytest.mark.asyncio
     async def test_runner_unknown_mode_raises(self) -> None:
         """Test unknown mode raises ValueError."""
-        from elizaos_rlm_bench.runner import RLMBenchRunner
+        from tokagentos_rlm_bench.runner import RLMBenchRunner
 
         config = RLMBenchConfig(context_lengths=[1000])
         runner = RLMBenchRunner(config)
@@ -338,12 +338,12 @@ class TestRunner:
             await runner.run_task(task, mode="nonexistent")
 
 
-class TestElizaPlugin:
-    """Tests for the Eliza benchmark plugin."""
+class TestTokagentPlugin:
+    """Tests for the Tokagent benchmark plugin."""
 
     def test_session_lifecycle(self) -> None:
         """Test RLMBenchSession set/get/clear lifecycle."""
-        from elizaos_rlm_bench.eliza_plugin import RLMBenchSession
+        from tokagentos_rlm_bench.tokagent_plugin import RLMBenchSession
 
         session = RLMBenchSession()
 
@@ -385,7 +385,7 @@ class TestElizaPlugin:
 
     def test_session_evaluation_recording(self) -> None:
         """Test evaluation recording in session."""
-        from elizaos_rlm_bench.eliza_plugin import (
+        from tokagentos_rlm_bench.tokagent_plugin import (
             RLMBenchEvaluation,
             RLMBenchSession,
         )
@@ -412,7 +412,7 @@ class TestElizaPlugin:
 
     def test_global_session_management(self) -> None:
         """Test get/set global benchmark session."""
-        from elizaos_rlm_bench.eliza_plugin import (
+        from tokagentos_rlm_bench.tokagent_plugin import (
             RLMBenchSession,
             get_benchmark_session,
             set_benchmark_session,
@@ -432,7 +432,7 @@ class TestElizaPlugin:
 
     def test_plugin_creation(self) -> None:
         """Test get_rlm_bench_plugin returns valid plugin."""
-        from elizaos_rlm_bench.eliza_plugin import get_rlm_bench_plugin
+        from tokagentos_rlm_bench.tokagent_plugin import get_rlm_bench_plugin
 
         plugin = get_rlm_bench_plugin()
 
@@ -448,7 +448,7 @@ class TestElizaPlugin:
         """Test provider returns empty when no task is set."""
         from unittest.mock import MagicMock
 
-        from elizaos_rlm_bench.eliza_plugin import (
+        from tokagentos_rlm_bench.tokagent_plugin import (
             RLMBenchSession,
             rlm_bench_provider_get,
             set_benchmark_session,
@@ -471,7 +471,7 @@ class TestElizaPlugin:
         """Test provider injects context when task is active."""
         from unittest.mock import MagicMock
 
-        from elizaos_rlm_bench.eliza_plugin import (
+        from tokagentos_rlm_bench.tokagent_plugin import (
             RLMBenchSession,
             rlm_bench_provider_get,
             set_benchmark_session,
@@ -504,7 +504,7 @@ class TestElizaPlugin:
         """Test evaluator validate returns True when task is active."""
         from unittest.mock import MagicMock
 
-        from elizaos_rlm_bench.eliza_plugin import (
+        from tokagentos_rlm_bench.tokagent_plugin import (
             RLMBenchSession,
             rlm_bench_evaluator_validate,
             set_benchmark_session,
@@ -530,7 +530,7 @@ class TestElizaPlugin:
         """Test evaluator validate returns False when no task is active."""
         from unittest.mock import MagicMock
 
-        from elizaos_rlm_bench.eliza_plugin import (
+        from tokagentos_rlm_bench.tokagent_plugin import (
             RLMBenchSession,
             rlm_bench_evaluator_validate,
             set_benchmark_session,
@@ -551,8 +551,8 @@ class TestReporting:
 
     def test_reporter_generates_summary(self) -> None:
         """Test reporter generates summary string."""
-        from elizaos_rlm_bench.reporting import RLMBenchReporter
-        from elizaos_rlm_bench.types import (
+        from tokagentos_rlm_bench.reporting import RLMBenchReporter
+        from tokagentos_rlm_bench.types import (
             RLMBenchConfig,
             RLMBenchMetrics,
             RLMBenchResults,

@@ -17,7 +17,7 @@ describe("getSalt - production enforcement", () => {
 	it("should throw in production when SECRET_SALT is default and override not set", () => {
 		process.env.NODE_ENV = "production";
 		delete process.env.SECRET_SALT;
-		delete process.env.ELIZA_ALLOW_DEFAULT_SECRET_SALT;
+		delete process.env.TOKAGENT_ALLOW_DEFAULT_SECRET_SALT;
 
 		expect(() => getSalt()).toThrow(/SECRET_SALT must be set/);
 	});
@@ -25,7 +25,7 @@ describe("getSalt - production enforcement", () => {
 	it("should allow default in production when override is explicitly set", () => {
 		process.env.NODE_ENV = "production";
 		delete process.env.SECRET_SALT;
-		process.env.ELIZA_ALLOW_DEFAULT_SECRET_SALT = "true";
+		process.env.TOKAGENT_ALLOW_DEFAULT_SECRET_SALT = "true";
 
 		expect(getSalt()).toBe("secretsalt");
 	});

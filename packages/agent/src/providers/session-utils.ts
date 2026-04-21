@@ -1,12 +1,12 @@
 /**
- * Session utility functions for eliza plugin.
+ * Session utility functions for tokagent plugin.
  *
- * These are simplified versions for use until @elizaos/core exports them.
+ * These are simplified versions for use until @tokagentos/core exports them.
  */
 
 import * as os from "node:os";
 import * as path from "node:path";
-import type { Provider } from "@elizaos/core";
+import type { Provider } from "@tokagentos/core";
 
 const DEFAULT_AGENT_ID = "main";
 
@@ -16,7 +16,7 @@ const DEFAULT_AGENT_ID = "main";
 function resolveAgentSessionsDir(agentId?: string): string {
   const id = agentId ?? DEFAULT_AGENT_ID;
   const stateDir =
-    process.env.ELIZA_STATE_DIR ?? path.join(os.homedir(), ".eliza");
+    process.env.TOKAGENT_STATE_DIR ?? path.join(os.homedir(), ".tokagent");
   return path.join(stateDir, "agents", id, "sessions");
 }
 
@@ -31,7 +31,7 @@ export function resolveDefaultSessionStorePath(agentId?: string): string {
  * Get session providers.
  *
  * Returns an empty array for now - session providers will be added
- * when @elizaos/core exports them.
+ * when @tokagentos/core exports them.
  */
 export function getSessionProviders(_options?: {
   storePath?: string;

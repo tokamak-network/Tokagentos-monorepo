@@ -1,11 +1,11 @@
-// message_service.proto - Message processing types for elizaOS
+// message_service.proto - Message processing types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
-import "eliza/v1/memory.proto";
-import "eliza/v1/primitives.proto";
-import "eliza/v1/state.proto";
+import "tokagent/v1/memory.proto";
+import "tokagent/v1/primitives.proto";
+import "tokagent/v1/state.proto";
 
 // Model type configuration for shouldRespond evaluation.
 enum ShouldRespondModelType {

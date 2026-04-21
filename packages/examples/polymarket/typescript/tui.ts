@@ -19,7 +19,7 @@ import {
   type UUID,
   EventType,
   createMessageMemory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { POLYMARKET_SERVICE_NAME } from "../../../plugins/plugin-polymarket/typescript/constants";
 import type { PolymarketService } from "../../../plugins/plugin-polymarket/typescript/services/polymarket";
 import type {
@@ -302,7 +302,7 @@ class ChatPanel implements Component, Focusable {
         }
         continue;
       }
-      const speaker = msg.role === "user" ? "You" : "Eliza";
+      const speaker = msg.role === "user" ? "You" : "Tokagent";
       const color = msg.role === "user" ? "cyan" : "green";
       const header = `${speaker}: ${formatTime(msg.timestamp)}`;
       renderLines.push({ text: header, color, bold: true });
@@ -1232,10 +1232,10 @@ class PolymarketTuiApp {
       const finalText = (streamedText || callbackText).trim();
       if (!finalText) {
         this.updateMessage(assistantId, "(no response)");
-        this.appendLog("Eliza: (no response)");
+        this.appendLog("Tokagent: (no response)");
       } else {
         this.updateMessage(assistantId, finalText);
-        this.appendLog(`Eliza: ${finalText}`);
+        this.appendLog(`Tokagent: ${finalText}`);
       }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
@@ -1273,7 +1273,7 @@ class PolymarketTuiApp {
 
         // Header
         if (headerHeight > 0) {
-          const statusText = `Eliza Polymarket | ${this.balanceText} | ${this.isProcessing ? "..." : "Idle"} | Tab: Focus | Enter: View | Shift+Tab: Hide`;
+          const statusText = `Tokagent Polymarket | ${this.balanceText} | ${this.isProcessing ? "..." : "Idle"} | Tab: Focus | Enter: View | Shift+Tab: Hide`;
           const headerText = statusText.length > columns - 2
             ? statusText.slice(0, columns - 5) + "..."
             : statusText;

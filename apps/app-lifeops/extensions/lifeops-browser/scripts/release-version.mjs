@@ -9,7 +9,7 @@ const extensionRoot = path.resolve(
 );
 const extensionPackageJsonPath = path.join(extensionRoot, "package.json");
 const NIGHTLY_EPOCH_UTC_MS = Date.UTC(2020, 0, 1);
-const DEFAULT_REPOSITORY = "elizaos/eliza";
+const DEFAULT_REPOSITORY = "tokagentos/tokagent";
 
 function readExtensionPackageVersion() {
   const packageJson = JSON.parse(
@@ -69,7 +69,7 @@ export function parseReleaseVersion(raw) {
 
 export function resolveLifeOpsBrowserReleaseVersion(env = process.env) {
   const candidate =
-    normalizeReleaseVersionCandidate(env.ELIZA_RELEASE_TAG) ??
+    normalizeReleaseVersionCandidate(env.TOKAGENT_RELEASE_TAG) ??
     normalizeReleaseVersionCandidate(env.RELEASE_VERSION) ??
     normalizeReleaseVersionCandidate(env.npm_package_version) ??
     readExtensionPackageVersion();
@@ -221,14 +221,14 @@ export function buildGitHubReleaseAssetDownloadUrl(
 
 export function resolveLifeOpsBrowserStoreUrls(env = process.env) {
   const chromeWebStoreUrl =
-    typeof env.ELIZA_LIFEOPS_BROWSER_CHROME_STORE_URL === "string" &&
-    env.ELIZA_LIFEOPS_BROWSER_CHROME_STORE_URL.trim()
-      ? env.ELIZA_LIFEOPS_BROWSER_CHROME_STORE_URL.trim()
+    typeof env.TOKAGENT_LIFEOPS_BROWSER_CHROME_STORE_URL === "string" &&
+    env.TOKAGENT_LIFEOPS_BROWSER_CHROME_STORE_URL.trim()
+      ? env.TOKAGENT_LIFEOPS_BROWSER_CHROME_STORE_URL.trim()
       : null;
   const safariAppStoreUrl =
-    typeof env.ELIZA_LIFEOPS_BROWSER_SAFARI_STORE_URL === "string" &&
-    env.ELIZA_LIFEOPS_BROWSER_SAFARI_STORE_URL.trim()
-      ? env.ELIZA_LIFEOPS_BROWSER_SAFARI_STORE_URL.trim()
+    typeof env.TOKAGENT_LIFEOPS_BROWSER_SAFARI_STORE_URL === "string" &&
+    env.TOKAGENT_LIFEOPS_BROWSER_SAFARI_STORE_URL.trim()
+      ? env.TOKAGENT_LIFEOPS_BROWSER_SAFARI_STORE_URL.trim()
       : null;
   return {
     chromeWebStoreUrl,

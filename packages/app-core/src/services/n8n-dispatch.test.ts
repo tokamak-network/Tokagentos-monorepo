@@ -10,7 +10,7 @@
  * - Fetch throw → { ok: false, error: "n8n fetch failed: ..." }
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { describe, expect, it, vi } from "vitest";
 import {
   createN8nDispatchService,

@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import type { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
 import { PTYService } from "@elizaos/plugin-agent-orchestrator";
-import { elizaOSCloudPlugin } from "../../packages/plugin-elizacloud/typescript/index.ts";
+import { tokagentOSCloudPlugin } from "../../packages/plugin-tokagentcloud/typescript/index.ts";
 import { createTestRuntime } from "../helpers/pglite-runtime";
 
 async function waitFor(
@@ -41,7 +41,7 @@ type MiladyConfig = {
 };
 
 function loadCloudApiKey(): string {
-  const fromEnv = process.env.ELIZAOS_CLOUD_API_KEY?.trim();
+  const fromEnv = process.env.TOKAGENTOS_CLOUD_API_KEY?.trim();
   if (fromEnv) {
     return fromEnv;
   }
@@ -53,7 +53,7 @@ function loadCloudApiKey(): string {
   const fromConfig = parsed.cloud?.apiKey?.trim();
   if (!fromConfig) {
     throw new Error(
-      "ELIZAOS_CLOUD_API_KEY is not configured in the environment or ~/.milady/milady.json",
+      "TOKAGENTOS_CLOUD_API_KEY is not configured in the environment or ~/.milady/milady.json",
     );
   }
   return fromConfig;
@@ -95,9 +95,9 @@ async function cleanup(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  process.env.ELIZAOS_CLOUD_API_KEY = loadCloudApiKey();
+  process.env.TOKAGENTOS_CLOUD_API_KEY = loadCloudApiKey();
   ({ runtime, cleanup: cleanupRuntime } = await createTestRuntime({
-    plugins: [elizaOSCloudPlugin],
+    plugins: [tokagentOSCloudPlugin],
   }));
   service = await PTYService.start(runtime as unknown as IAgentRuntime);
   (runtime.services as Map<string, unknown[]>).set("PTY_SERVICE", [

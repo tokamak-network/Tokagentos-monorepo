@@ -7,7 +7,7 @@
  * It uses `Electroview.defineRPC()` + `new Electroview()` to connect to
  * the Bun main process via the Electrobun WebSocket RPC channel.
  *
- * `window.__ELIZA_ELECTROBUN_RPC__` is the only public desktop bridge exposed
+ * `window.__TOKAGENT_ELECTROBUN_RPC__` is the only public desktop bridge exposed
  * to renderer code. It mirrors the native Electrobun RPC surface directly:
  * `request.<method>(params)` plus `onMessage(<message>, listener)`.
  */
@@ -22,9 +22,9 @@ type RendererBridgeRpc = {
 };
 
 const listenersByRpcMessage: Record<string, Set<RpcMessageListener>> = {};
-const BOOT_CONFIG_STORE_KEY = Symbol.for("elizaos.app.boot-config");
-const BOOT_CONFIG_WINDOW_KEY = "__ELIZA_APP_BOOT_CONFIG__";
-const RENDERER_LOG_MIRROR_KEY = "__ELIZA_ELECTROBUN_LOG_MIRROR__";
+const BOOT_CONFIG_STORE_KEY = Symbol.for("tokagentos.app.boot-config");
+const BOOT_CONFIG_WINDOW_KEY = "__TOKAGENT_APP_BOOT_CONFIG__";
+const RENDERER_LOG_MIRROR_KEY = "__TOKAGENT_ELECTROBUN_LOG_MIRROR__";
 
 type BootConfig = {
   apiBase?: string;
@@ -64,9 +64,9 @@ function updateBootConfig(
 function dispatchMessage(messageName: string, payload: unknown): void {
   if (messageName === "apiBaseUpdate") {
     const apiBaseUpdate = payload as { base: string; token?: string };
-    window.__ELIZA_API_BASE__ = apiBaseUpdate.base;
+    window.__TOKAGENT_API_BASE__ = apiBaseUpdate.base;
     if (apiBaseUpdate.token) {
-      Object.defineProperty(window, "__ELIZA_API_TOKEN__", {
+      Object.defineProperty(window, "__TOKAGENT_API_TOKEN__", {
         value: apiBaseUpdate.token,
         configurable: true,
         writable: true,
@@ -74,7 +74,7 @@ function dispatchMessage(messageName: string, payload: unknown): void {
       });
     }
     // Propagate to boot config so the appClient picks up port changes.
-    // We modify it directly instead of importing @elizaos/app-core
+    // We modify it directly instead of importing @tokagentos/app-core
     // to prevent bundling React and the entire UI layer into the preload script.
     updateBootConfig({
       apiBase: apiBaseUpdate.base,
@@ -176,13 +176,13 @@ const electrobunRpc = {
 
 declare global {
   interface Window {
-    __ELIZA_API_BASE__: string;
-    __ELIZA_API_TOKEN__: string;
-    __ELIZA_ELECTROBUN_RPC__: typeof electrobunRpc;
+    __TOKAGENT_API_BASE__: string;
+    __TOKAGENT_API_TOKEN__: string;
+    __TOKAGENT_ELECTROBUN_RPC__: typeof electrobunRpc;
   }
 }
 
-window.__ELIZA_ELECTROBUN_RPC__ = electrobunRpc;
+window.__TOKAGENT_ELECTROBUN_RPC__ = electrobunRpc;
 
 function installRendererLogMirror(): void {
   const globalWindow = window as typeof window & {
@@ -327,9 +327,9 @@ function installRendererLogMirror(): void {
     ) {
       (
         this as XMLHttpRequest & {
-          __elizaDiag?: { method: string; url: string; startedAt: number };
+          __tokagentDiag?: { method: string; url: string; startedAt: number };
         }
-      ).__elizaDiag = {
+      ).__tokagentDiag = {
         method,
         url: String(url),
         startedAt: Date.now(),
@@ -344,10 +344,10 @@ function installRendererLogMirror(): void {
 
     XMLHttpRequest.prototype.send = function (...args: unknown[]) {
       const xhr = this as XMLHttpRequest & {
-        __elizaDiag?: { method: string; url: string; startedAt: number };
+        __tokagentDiag?: { method: string; url: string; startedAt: number };
       };
       const handleComplete = () => {
-        const diag = xhr.__elizaDiag;
+        const diag = xhr.__tokagentDiag;
         if (!diag) {
           return;
         }
@@ -366,7 +366,7 @@ function installRendererLogMirror(): void {
       };
 
       const handleError = () => {
-        const diag = xhr.__elizaDiag;
+        const diag = xhr.__tokagentDiag;
         reportDiagnostic("error", "xhr", "XMLHttpRequest failed", {
           url: diag?.url,
           method: diag?.method,

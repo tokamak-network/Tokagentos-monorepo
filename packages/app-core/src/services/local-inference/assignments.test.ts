@@ -14,15 +14,15 @@ describe("assignments", () => {
 
   beforeEach(async () => {
     tmpRoot = await fs.mkdtemp(path.join(os.tmpdir(), "milady-assign-"));
-    originalStateDir = process.env.ELIZA_STATE_DIR;
-    process.env.ELIZA_STATE_DIR = tmpRoot;
+    originalStateDir = process.env.TOKAGENT_STATE_DIR;
+    process.env.TOKAGENT_STATE_DIR = tmpRoot;
   });
 
   afterEach(async () => {
     if (originalStateDir === undefined) {
-      delete process.env.ELIZA_STATE_DIR;
+      delete process.env.TOKAGENT_STATE_DIR;
     } else {
-      process.env.ELIZA_STATE_DIR = originalStateDir;
+      process.env.TOKAGENT_STATE_DIR = originalStateDir;
     }
     await fs.rm(tmpRoot, { recursive: true, force: true });
   });

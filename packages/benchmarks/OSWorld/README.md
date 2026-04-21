@@ -33,7 +33,7 @@
 
 
 ## 📢 Updates
-- 2025-07-28: Introducing **OSWorld-Verified**! We have made major updates, fixed several issues reported by the community, with more support for AWS (can reduce evaluation time to within 1 hour through parallelization!), and making the benchmark signals more effective. Check out more in the [report](https://xlang.ai/blog/osworld-verified). We have run new model results in the latest version and updated them on the [official website](https://os-world.github.io/). Please compare your OSWorld results with the new benchmark results when running the latest version.
+- 2025-07-28: Introducing **OSWorld-Verified**! We have made major updates, fixed several issues reported by the community, with more support for AWS (can reduce evaluation time to within 1 hour through paralltokagenttion!), and making the benchmark signals more effective. Check out more in the [report](https://xlang.ai/blog/osworld-verified). We have run new model results in the latest version and updated them on the [official website](https://os-world.github.io/). Please compare your OSWorld results with the new benchmark results when running the latest version.
 - 2025-05-01: If you need pre-downloaded files for init state setup, we downloaded for you [here](https://drive.google.com/file/d/1XlEy49otYDyBlA3O9NbR0BpPfr2TXgaD/view?usp=drive_link).
 - 2024-10-22: We supported Docker🐳 for hosting virtual machines on virtualized platforms. Check below for detailed instructions!
 - 2024-06-15: We refactor the code of environment part to decompose VMware Integration, and start to support other platforms such as VirtualBox, AWS, Azure, etc. Hold tight!
@@ -95,7 +95,7 @@ Add the following arguments when initializing `DesktopEnv`:
 > **Note**: If the experiment is interrupted abnormally (e.g., by interrupting signals), there may be residual docker containers which could affect system performance over time. Please run `docker stop $(docker ps -q) && docker rm $(docker ps -a -q)` to clean up.
 
 ### AWS
-Using cloud services for parallel evaluation can significantly accelerate evaluation efficiency (can reduce evaluation time to within 1 hour through parallelization!) and can even be used as infrastructure for training.
+Using cloud services for parallel evaluation can significantly accelerate evaluation efficiency (can reduce evaluation time to within 1 hour through paralltokagenttion!) and can even be used as infrastructure for training.
 We provide comprehensive AWS support with a Host-Client architecture that enables large-scale parallel evaluation of OSWorld tasks.
 For detailed setup instructions, see [Setup Guideline](SETUP_GUIDELINE.md) and [AWS Configuration Guide](https://github.com/xlang-ai/OSWorld/blob/main/desktop_env/providers/aws/AWS_GUIDELINE.md). 
 

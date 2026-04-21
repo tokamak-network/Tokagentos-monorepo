@@ -9,30 +9,30 @@
  */
 import type http from "node:http";
 import {
-  type ElizaConfig,
-  loadElizaConfig,
-} from "@elizaos/agent/config/config";
+  type TokagentConfig,
+  loadTokagentConfig,
+} from "@tokagentos/agent/config/config";
 import {
   ensureCompatApiAuthorized,
   ensureCompatSensitiveRouteAuthorized,
   getCompatApiToken,
   isDevEnvironment,
-} from "@elizaos/app-core/api/auth";
+} from "@tokagentos/app-core/api/auth";
 import {
   type CompatRuntimeState,
   isLoopbackRemoteAddress,
   readCompatJsonBody,
-} from "@elizaos/app-core/api/compat-route-shared";
+} from "@tokagentos/app-core/api/compat-route-shared";
 import {
   sendJsonError as sendJsonErrorResponse,
   sendJson as sendJsonResponse,
-} from "@elizaos/app-core/api/response";
-import { deriveAgentVaultId } from "@elizaos/app-core/security/agent-vault-id";
+} from "@tokagentos/app-core/api/response";
+import { deriveAgentVaultId } from "@tokagentos/app-core/security/agent-vault-id";
 import {
   createNodePlatformSecureStore,
   isWalletOsStoreReadEnabled,
-} from "@elizaos/app-core/security/platform-secure-store-node";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/app-core/security/platform-secure-store-node";
+import { logger } from "@tokagentos/core";
 import { getWalletAddresses } from "../api/wallet";
 import { fetchEvmNfts } from "../api/wallet-evm-balance";
 import { resolveWalletRpcReadiness } from "../api/wallet-rpc";
@@ -159,7 +159,7 @@ export async function handleWalletCompatRoutes(
       return true;
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     if (config.meta?.onboardingComplete === true) {
       sendJsonResponse(res, 403, {
         error: "Wallet keys are only available during onboarding",
@@ -219,7 +219,7 @@ export async function handleWalletCompatRoutes(
       return true;
     }
 
-    const config: ElizaConfig = loadElizaConfig();
+    const config: TokagentConfig = loadTokagentConfig();
     const addresses = getWalletAddresses();
     const rpcReadiness = resolveWalletRpcReadiness(config);
     const alchemyKey = process.env.ALCHEMY_API_KEY?.trim() || null;

@@ -1,5 +1,5 @@
 """
-WASM Plugin Loader for elizaOS
+WASM Plugin Loader for tokagentOS
 
 This module provides utilities for loading WASM plugins into the Python runtime
 via wasmtime or similar WASM runtimes.
@@ -19,10 +19,10 @@ except ImportError:
     HAS_WASMTIME = False
     wasmtime = None  # type: ignore
 
-from elizaos.types.plugin import Plugin
-from elizaos.types.memory import Memory
-from elizaos.types.state import State
-from elizaos.types.components import (
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.memory import Memory
+from tokagentos.types.state import State
+from tokagentos.types.components import (
     Action,
     ActionResult,
     Provider,
@@ -34,7 +34,7 @@ from elizaos.types.components import (
 
 class WasmPluginLoader:
     """
-    WASM plugin loader for elizaOS.
+    WASM plugin loader for tokagentOS.
 
     Loads Rust or TypeScript plugins compiled to WASM and adapts them
     to the Python Plugin interface.
@@ -352,14 +352,14 @@ def load_wasm_plugin(
     fuel: int | None = None,
 ) -> Plugin:
     """
-    Load a WASM plugin and return an elizaOS Plugin interface.
+    Load a WASM plugin and return an tokagentOS Plugin interface.
 
     Args:
         wasm_path: Path to the WASM file.
         manifest_path: Optional path to external manifest JSON (uses embedded if not provided).
 
     Returns:
-        elizaOS Plugin instance.
+        tokagentOS Plugin instance.
     """
     loader = WasmPluginLoader(
         wasm_path,

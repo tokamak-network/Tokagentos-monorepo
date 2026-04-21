@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import type { PluginInfo, PluginParamDef } from "../../api";
 import { useApp } from "../../state";
 import {

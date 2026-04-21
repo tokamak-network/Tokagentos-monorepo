@@ -1,6 +1,6 @@
 import Capacitor
 
-/// Eliza Agent Plugin — iOS stub.
+/// Tokagent Agent Plugin — iOS stub.
 ///
 /// On iOS the agent runs on a server and the web implementation
 /// handles all communication via HTTP. This native shell is required

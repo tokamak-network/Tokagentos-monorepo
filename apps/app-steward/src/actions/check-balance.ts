@@ -13,11 +13,11 @@
  * @module actions/check-balance
  */
 
-import type { Action, HandlerCallback, HandlerOptions } from "@elizaos/core";
+import type { Action, HandlerCallback, HandlerOptions } from "@tokagentos/core";
 import type {
   EvmChainBalance,
   WalletBalancesResponse,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 import {
   buildAuthHeaders,
   getWalletActionApiPort,

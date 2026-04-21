@@ -7,7 +7,7 @@
 
 import crypto from "node:crypto";
 import type http from "node:http";
-import { resolveApiToken } from "@elizaos/shared/runtime-env";
+import { resolveApiToken } from "@tokagentos/shared/runtime-env";
 import { isLoopbackRemoteAddress } from "./compat-route-shared";
 import { sendJsonError } from "./response";
 
@@ -23,7 +23,7 @@ export function extractHeaderValue(
 }
 
 /**
- * Read the configured API token from env (`ELIZA_API_TOKEN` / `ELIZA_API_TOKEN`).
+ * Read the configured API token from env (`TOKAGENT_API_TOKEN` / `TOKAGENT_API_TOKEN`).
  * Returns `null` when no token is configured (open access).
  */
 export function getCompatApiToken(): string | null {
@@ -51,8 +51,8 @@ export function tokenMatches(expected: string, provided: string): boolean {
  *
  * Checks (in order):
  *   1. `Authorization: Bearer <token>`
- *   2. `x-eliza-token`
- *   3. `x-elizaos-token`
+ *   2. `x-tokagent-token`
+ *   3. `x-tokagentos-token`
  *   4. `x-api-key` / `x-api-token`
  */
 export function getProvidedApiToken(
@@ -65,8 +65,8 @@ export function getProvidedApiToken(
   }
 
   const headerToken =
-    extractHeaderValue(req.headers["x-eliza-token"]) ??
-    extractHeaderValue(req.headers["x-elizaos-token"]) ??
+    extractHeaderValue(req.headers["x-tokagent-token"]) ??
+    extractHeaderValue(req.headers["x-tokagentos-token"]) ??
     extractHeaderValue(req.headers["x-api-key"]) ??
     extractHeaderValue(req.headers["x-api-token"]);
 
@@ -152,7 +152,7 @@ export function isDevEnvironment(): boolean {
 
 /**
  * Gate a sensitive route. In dev mode the request is allowed through ONLY
- * when `ELIZA_DEV_AUTH_BYPASS=1` is explicitly set and no token is configured.
+ * when `TOKAGENT_DEV_AUTH_BYPASS=1` is explicitly set and no token is configured.
  * In all other cases an API token is required.
  */
 export function ensureCompatSensitiveRouteAuthorized(
@@ -166,7 +166,7 @@ export function ensureCompatSensitiveRouteAuthorized(
     // a security risk.
     if (
       isLoopbackRemoteAddress(req.socket?.remoteAddress) ||
-      (isDevEnvironment() && process.env.ELIZA_DEV_AUTH_BYPASS?.trim() === "1")
+      (isDevEnvironment() && process.env.TOKAGENT_DEV_AUTH_BYPASS?.trim() === "1")
     ) {
       return true;
     }

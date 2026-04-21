@@ -1,4 +1,4 @@
-import type { AgentRuntime, UUID } from "@elizaos/core";
+import type { AgentRuntime, UUID } from "@tokagentos/core";
 
 export interface TaskAgentChatRouting {
   sessionId?: string;

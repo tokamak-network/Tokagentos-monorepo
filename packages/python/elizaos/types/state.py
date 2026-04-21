@@ -4,7 +4,7 @@ import time
 from dataclasses import dataclass, field
 from enum import StrEnum
 
-from elizaos.types.generated.eliza.v1 import state_pb2
+from tokagentos.types.generated.tokagent.v1 import state_pb2
 
 ActionPlanStep = state_pb2.ActionPlanStep
 ActionPlan = state_pb2.ActionPlan

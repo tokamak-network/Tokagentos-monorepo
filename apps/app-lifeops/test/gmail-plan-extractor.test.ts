@@ -1,4 +1,4 @@
-import type { Memory } from "@elizaos/core";
+import type { Memory } from "@tokagentos/core";
 import { describe, expect, it, vi } from "vitest";
 
 import { extractGmailPlanWithLlm } from "../src/actions/gmail.js";

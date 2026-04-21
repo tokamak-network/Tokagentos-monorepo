@@ -5,7 +5,7 @@
  * in this list.
  */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { ElizaConfig } from "../config/types.js";
+import type { TokagentConfig } from "../config/types.js";
 import { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS } from "./core-plugins.js";
 import { collectPluginNames } from "./plugin-collector.js";
 
@@ -17,24 +17,24 @@ const SAMPLE_OPTIONAL = [
 ] as const;
 
 describe("optional core plugins (require explicit opt-in)", () => {
-  const prevCloudKey = process.env.ELIZAOS_CLOUD_API_KEY;
-  const prevCloudEnabled = process.env.ELIZAOS_CLOUD_ENABLED;
+  const prevCloudKey = process.env.TOKAGENTOS_CLOUD_API_KEY;
+  const prevCloudEnabled = process.env.TOKAGENTOS_CLOUD_ENABLED;
 
   beforeEach(() => {
-    delete process.env.ELIZAOS_CLOUD_API_KEY;
-    delete process.env.ELIZAOS_CLOUD_ENABLED;
+    delete process.env.TOKAGENTOS_CLOUD_API_KEY;
+    delete process.env.TOKAGENTOS_CLOUD_ENABLED;
   });
 
   afterEach(() => {
     if (prevCloudKey !== undefined) {
-      process.env.ELIZAOS_CLOUD_API_KEY = prevCloudKey;
+      process.env.TOKAGENTOS_CLOUD_API_KEY = prevCloudKey;
     } else {
-      delete process.env.ELIZAOS_CLOUD_API_KEY;
+      delete process.env.TOKAGENTOS_CLOUD_API_KEY;
     }
     if (prevCloudEnabled !== undefined) {
-      process.env.ELIZAOS_CLOUD_ENABLED = prevCloudEnabled;
+      process.env.TOKAGENTOS_CLOUD_ENABLED = prevCloudEnabled;
     } else {
-      delete process.env.ELIZAOS_CLOUD_ENABLED;
+      delete process.env.TOKAGENTOS_CLOUD_ENABLED;
     }
   });
 
@@ -51,7 +51,7 @@ describe("optional core plugins (require explicit opt-in)", () => {
     const names = collectPluginNames({
       cloud: { enabled: false },
       plugins: {},
-    } as ElizaConfig);
+    } as TokagentConfig);
     for (const pkg of SAMPLE_OPTIONAL) {
       expect(names.has(pkg)).toBe(false);
     }
@@ -63,7 +63,7 @@ describe("optional core plugins (require explicit opt-in)", () => {
       plugins: {
         allow: [...SAMPLE_OPTIONAL],
       },
-    } as ElizaConfig);
+    } as TokagentConfig);
     for (const pkg of SAMPLE_OPTIONAL) {
       expect(names.has(pkg)).toBe(true);
     }
@@ -79,7 +79,7 @@ describe("optional core plugins (require explicit opt-in)", () => {
           discord: { enabled: true },
         },
       },
-    } as ElizaConfig);
+    } as TokagentConfig);
     // Empty entry object should not enable
     expect(names.has("@elizaos/plugin-pdf")).toBe(false);
     // Explicitly disabled
@@ -97,7 +97,7 @@ describe("optional core plugins (require explicit opt-in)", () => {
           discord: { enabled: false },
         },
       },
-    } as ElizaConfig);
+    } as TokagentConfig);
     expect(names.has("@elizaos/plugin-discord")).toBe(false);
   });
 });

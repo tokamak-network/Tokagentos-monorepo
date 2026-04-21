@@ -3,8 +3,8 @@ Agent providers for orchestrated SWE-bench benchmark.
 
 Implements AgentProvider for:
 - Claude Code (Anthropic API with tool use)
-- SWE-Agent (ElizaOS agent loop methodology)
-- Eliza Code (full ElizaOS message pipeline)
+- SWE-Agent (TokagentOS agent loop methodology)
+- Tokagent Code (full TokagentOS message pipeline)
 
 Each provider receives an OrchestratedTask from the orchestrator and
 uses the SWE-bench repo tools to solve the issue.
@@ -24,7 +24,7 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
-from elizaos_plugin_agent_orchestrator import (
+from tokagentos_plugin_agent_orchestrator import (
     AgentProviderId,
     OrchestratedTask,
     ProviderTaskExecutionContext,
@@ -34,7 +34,7 @@ from elizaos_plugin_agent_orchestrator import (
 from ..repo_manager import RepositoryManager
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
+    from tokagentos.runtime import AgentRuntime
 
 logger = logging.getLogger(__name__)
 
@@ -1270,12 +1270,12 @@ class SWEAgentProvider(BaseSWEBenchProvider):
 
 
 # ============================================================================
-# Eliza Code Provider
+# Tokagent Code Provider
 # ============================================================================
 
 
-class ElizaCodeProvider(BaseSWEBenchProvider):
-    """Provider that uses the full ElizaOS message pipeline with code capabilities."""
+class TokagentCodeProvider(BaseSWEBenchProvider):
+    """Provider that uses the full TokagentOS message pipeline with code capabilities."""
 
     def __init__(
         self,
@@ -1301,11 +1301,11 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
 
     @property
     def id(self) -> AgentProviderId:
-        return "eliza-code"
+        return "tokagent-code"
 
     @property
     def label(self) -> str:
-        return "Eliza Code"
+        return "Tokagent Code"
 
     def _parse_fallback_action_response(
         self, text: str
@@ -1471,15 +1471,15 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
         task: OrchestratedTask,
         ctx: ProviderTaskExecutionContext,
     ) -> TaskResult:
-        """Execute task using the full ElizaOS canonical message handling pipeline."""
+        """Execute task using the full TokagentOS canonical message handling pipeline."""
         import uuid as uuid_mod
 
-        from elizaos.types.memory import Memory
-        from elizaos.types.primitives import Content, as_uuid, string_to_uuid
+        from tokagentos.types.memory import Memory
+        from tokagentos.types.primitives import Content, as_uuid, string_to_uuid
 
-        await ctx.append_output("Starting Eliza Code agent")
+        await ctx.append_output("Starting Tokagent Code agent")
         await self._trace(
-            "eliza-code",
+            "tokagent-code",
             "provider_start",
             {"max_steps": self.max_steps, "task_name": task.name, "model": self._model},
         )
@@ -1539,7 +1539,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
             await ctx.update_progress(int((step / self.max_steps) * 100))
 
             if fallback_mode:
-                from elizaos.types.model import ModelType
+                from tokagentos.types.model import ModelType
 
                 fallback_prompt_parts = [
                     f"Issue to fix:\n{task.description}",
@@ -1571,7 +1571,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                 token_estimate += len(fallback_prompt.split())
 
                 await self._trace(
-                    "eliza-code",
+                    "tokagent-code",
                     "fallback_model_request",
                     {"step": step + 1, "prompt": fallback_prompt},
                 )
@@ -1596,7 +1596,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                 except Exception as e:
                     fatal_error = f"Fallback model error: {e}"
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "provider_error",
                         {"step": step + 1, "error": fatal_error, "mode": "fallback"},
                     )
@@ -1605,7 +1605,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                 fallback_text = str(fallback_response) if fallback_response else ""
                 token_estimate += len(fallback_text.split())
                 await self._trace(
-                    "eliza-code",
+                    "tokagent-code",
                     "fallback_model_response",
                     {"step": step + 1, "response_text": fallback_text},
                 )
@@ -1653,7 +1653,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                     )
                     forced_prompt = "\n\n".join(forced_prompt_parts)
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "forced_edit_request",
                         {"step": step + 1, "prompt": forced_prompt},
                     )
@@ -1675,7 +1675,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                         )
                     except Exception as e:
                         await self._trace(
-                            "eliza-code",
+                            "tokagent-code",
                             "forced_edit_error",
                             {"step": step + 1, "error": str(e)},
                         )
@@ -1683,7 +1683,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
 
                     forced_text = str(forced_response) if forced_response else ""
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "forced_edit_response",
                         {"step": step + 1, "response_text": forced_text},
                     )
@@ -1692,7 +1692,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                     )
                     if forced_action and forced_action.upper() == "EDIT_FILE":
                         await self._trace(
-                            "eliza-code",
+                            "tokagent-code",
                             "action_overridden",
                             {
                                 "step": step + 1,
@@ -1706,7 +1706,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
 
                 if steps_remaining <= 3 and fallback_action.upper() not in {"EDIT_FILE", "SUBMIT"}:
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "action_overridden",
                         {
                             "step": step + 1,
@@ -1722,7 +1722,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                     f"Step {step + 1}: {fallback_action}({fallback_params}) [fallback]"
                 )
                 await self._trace(
-                    "eliza-code",
+                    "tokagent-code",
                     "tool_call",
                     {
                         "step": step + 1,
@@ -1739,7 +1739,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                 except Exception as e:
                     fatal_error = f"Fallback tool execution failed: {fallback_action}: {e}"
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "tool_exception",
                         {
                             "step": step + 1,
@@ -1754,7 +1754,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                 if not ok:
                     tool_error_count += 1
                 await self._trace(
-                    "eliza-code",
+                    "tokagent-code",
                     "tool_result",
                     {
                         "step": step + 1,
@@ -1810,7 +1810,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
 
             try:
                 await self._trace(
-                    "eliza-code",
+                    "tokagent-code",
                     "message_request",
                     {
                         "step": step + 1,
@@ -1825,7 +1825,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                 await ctx.append_output(f"Message handling error at step {step + 1}: {e}")
                 fatal_error = f"Message handling error: {e}"
                 await self._trace(
-                    "eliza-code",
+                    "tokagent-code",
                     "provider_error",
                     {"step": step + 1, "error": fatal_error},
                 )
@@ -1841,7 +1841,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                 response_thought = getattr(result.response_content, "thought", "") or ""
                 token_estimate += len(response_text.split()) + len(response_thought.split())
                 await self._trace(
-                    "eliza-code",
+                    "tokagent-code",
                     "message_response",
                     {
                         "step": step + 1,
@@ -1878,7 +1878,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                             f"Step {step + 1}: REPLY ignored (streak={reply_streak})"
                         )
                         await self._trace(
-                            "eliza-code",
+                            "tokagent-code",
                             "reply_action_ignored",
                             {
                                 "step": step + 1,
@@ -1897,7 +1897,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                                 "Switching to fallback action loop after repeated REPLY actions."
                             )
                             await self._trace(
-                                "eliza-code",
+                                "tokagent-code",
                                 "fallback_enabled",
                                 {"step": step + 1, "reason": fallback_reason},
                             )
@@ -1906,7 +1906,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                     reply_streak = 0
                     await ctx.append_output(f"Step {step + 1}: {action}({params})")
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "tool_call",
                         {"step": step + 1, "action": action, "params": params},
                     )
@@ -1915,7 +1915,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                     except Exception as e:
                         fatal_error = f"Tool execution failed: {action}: {e}"
                         await self._trace(
-                            "eliza-code",
+                            "tokagent-code",
                             "tool_exception",
                             {"step": step + 1, "action": action, "error": fatal_error},
                         )
@@ -1925,7 +1925,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                         tool_error_count += 1
                     last_observation = observation
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "tool_result",
                         {
                             "step": step + 1,
@@ -1962,7 +1962,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                             f"Step {step + 1}: REPLY ignored (streak={reply_streak})"
                         )
                         await self._trace(
-                            "eliza-code",
+                            "tokagent-code",
                             "reply_action_ignored",
                             {
                                 "step": step + 1,
@@ -1982,7 +1982,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                                 "Switching to fallback action loop after repeated REPLY actions."
                             )
                             await self._trace(
-                                "eliza-code",
+                                "tokagent-code",
                                 "fallback_enabled",
                                 {"step": step + 1, "reason": fallback_reason},
                             )
@@ -1991,7 +1991,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                     reply_streak = 0
                     await ctx.append_output(f"Step {step + 1}: {parsed.action}({parsed.params})")
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "tool_call",
                         {
                             "step": step + 1,
@@ -2005,7 +2005,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                     except Exception as e:
                         fatal_error = f"Tool execution failed: {parsed.action}: {e}"
                         await self._trace(
-                            "eliza-code",
+                            "tokagent-code",
                             "tool_exception",
                             {
                                 "step": step + 1,
@@ -2020,7 +2020,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                         tool_error_count += 1
                     last_observation = observation
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "tool_result",
                         {
                             "step": step + 1,
@@ -2042,7 +2042,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
                 else:
                     await ctx.append_output(f"Step {step + 1}: No action (text: {response_text[:100]})")
                     await self._trace(
-                        "eliza-code",
+                        "tokagent-code",
                         "no_action",
                         {"step": step + 1, "text": response_text},
                     )
@@ -2053,7 +2053,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
             submitted = True
             await ctx.append_output("Auto-submit: max steps reached with non-empty patch")
             await self._trace(
-                "eliza-code",
+                "tokagent-code",
                 "auto_submit",
                 {
                     "reason": "max_steps_reached_with_patch",
@@ -2062,7 +2062,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
             )
         success = fatal_error is None and submitted and has_patch
         summary = (
-            f"Eliza Code completed in {steps_executed} steps. "
+            f"Tokagent Code completed in {steps_executed} steps. "
             f"submitted={submitted} patch_bytes={len(diff)} tool_errors={tool_error_count}"
         )
         error = fatal_error
@@ -2072,7 +2072,7 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
             error = "SUBMIT called but no patch was generated"
 
         await self._trace(
-            "eliza-code",
+            "tokagent-code",
             "provider_end",
             {
                 "steps_executed": steps_executed,
@@ -2096,8 +2096,8 @@ class ElizaCodeProvider(BaseSWEBenchProvider):
         )
 
 
-class CodexProvider(ElizaCodeProvider):
-    """Codex provider shim built on the Eliza Code execution loop."""
+class CodexProvider(TokagentCodeProvider):
+    """Codex provider shim built on the Tokagent Code execution loop."""
 
     @property
     def id(self) -> AgentProviderId:

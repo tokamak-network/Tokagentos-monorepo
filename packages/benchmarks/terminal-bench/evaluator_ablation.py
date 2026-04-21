@@ -12,7 +12,7 @@ Usage:
 Requires:
     - Docker running (for the sandbox environment)
     - An LLM API key (OPENAI_API_KEY, GROQ_API_KEY, or OPENROUTER_API_KEY)
-    - elizaos + elizaos_terminal_bench installed
+    - tokagentos + tokagentos_terminal_bench installed
 """
 
 from __future__ import annotations
@@ -29,9 +29,9 @@ from pathlib import Path
 # terminal-bench lives alongside this script
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from elizaos_terminal_bench.eliza_agent import ElizaTerminalAgent
-from elizaos_terminal_bench.environment import TerminalEnvironment
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.tokagent_agent import TokagentTerminalAgent
+from tokagentos_terminal_bench.environment import TerminalEnvironment
+from tokagentos_terminal_bench.types import (
     TaskCategory,
     TaskDifficulty,
     TerminalBenchResult,
@@ -275,7 +275,7 @@ async def run_single(
     if task.setup_script:
         await env.execute(task.setup_script)
 
-    agent = ElizaTerminalAgent(
+    agent = TokagentTerminalAgent(
         environment=env,
         max_iterations=max_iterations,
         model_name=model,

@@ -26,7 +26,7 @@ The runtime handles configuration, plugin resolution, and message processing aut
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import { AgentRuntime } from '@elizaos/core';
+import { AgentRuntime } from '@tokagentos/core';
 import { openaiPlugin } from '@elizaos/plugin-openai';
 import { plugin as sqlPlugin } from '@elizaos/plugin-sql';
 
@@ -57,8 +57,8 @@ return [];
   </Tab>
   <Tab title="Python">
 ```python
-from elizaos import AgentRuntime, Character
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import AgentRuntime, Character
+from tokagentos_plugin_openai import get_openai_plugin
 
 # Create runtime with character and plugins
 runtime = AgentRuntime(
@@ -81,8 +81,8 @@ print(result.response_content.text)
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos::{AgentRuntime, RuntimeOptions, parse_character};
-use elizaos_plugin_openai::create_openai_plugin;
+use tokagentos::{AgentRuntime, RuntimeOptions, parse_character};
+use tokagentos_plugin_openai::create_openai_plugin;
 
 // Create runtime with character and plugins
 let character = parse_character(r#"{
@@ -144,7 +144,7 @@ For serverless environments, use ephemeral mode:
 
 ```typescript
 // Ephemeral mode - runtime not stored in registry
-const [runtime] = await elizaOS.addAgents([{
+const [runtime] = await tokagentOS.addAgents([{
   character,
   plugins,
   databaseAdapter: cachedAdapter, // Pre-initialized DB
@@ -156,7 +156,7 @@ const [runtime] = await elizaOS.addAgents([{
 });
 
 // Use runtime directly (no registry lookup)
-const result = await elizaOS.handleMessage(runtime, {
+const result = await tokagentOS.handleMessage(runtime, {
   entityId: userId,
   roomId: roomId,
   content: { text: 'Hello!', source: 'lambda' }
@@ -168,7 +168,7 @@ const result = await elizaOS.handleMessage(runtime, {
 For WebSocket or streaming scenarios:
 
 ```typescript
-await elizaOS.handleMessage(agentId, message, {
+await tokagentOS.handleMessage(agentId, message, {
   onResponse: async (content) => {
     await socket.emit("message", content.text);
   },
@@ -189,7 +189,7 @@ await elizaOS.handleMessage(agentId, message, {
 Send messages to multiple agents in parallel:
 
 ```typescript
-const results = await elizaOS.handleMessages([
+const results = await tokagentOS.handleMessages([
   {
     agentId: researchAgent,
     message: {
@@ -213,31 +213,31 @@ const results = await elizaOS.handleMessages([
 
 ```typescript
 // By ID
-const agent = elizaOS.getAgent(agentId);
+const agent = tokagentOS.getAgent(agentId);
 
 // By name
-const assistant = elizaOS.getAgentByName("Assistant");
+const assistant = tokagentOS.getAgentByName("Assistant");
 
 // All agents
-const allAgents = elizaOS.getAgents();
+const allAgents = tokagentOS.getAgents();
 
 // Multiple by IDs
-const selected = elizaOS.getAgentsByIds([id1, id2]);
+const selected = tokagentOS.getAgentsByIds([id1, id2]);
 
 // Multiple by names
-const team = elizaOS.getAgentsByNames(["Researcher", "Writer"]);
+const team = tokagentOS.getAgentsByNames(["Researcher", "Writer"]);
 ```
 
 ### Events
 
-ElizaOS extends `EventTarget` for lifecycle events:
+TokagentOS extends `EventTarget` for lifecycle events:
 
 ```typescript
-elizaOS.addEventListener("agent:started", (e) => {
+tokagentOS.addEventListener("agent:started", (e) => {
   console.log(`Agent ${e.detail.agentId} started`);
 });
 
-elizaOS.addEventListener("message:sent", (e) => {
+tokagentOS.addEventListener("message:sent", (e) => {
   console.log(`Message ${e.detail.messageId} sent in ${e.detail.mode} mode`);
 });
 
@@ -253,11 +253,11 @@ elizaOS.addEventListener("message:sent", (e) => {
 
 ```typescript
 // Check agent health
-const health = await elizaOS.healthCheck();
+const health = await tokagentOS.healthCheck();
 // Map<UUID, { alive: boolean, responsive: boolean, memoryUsage?: number, uptime?: number }>
 
 // Validate API keys
-const keyStatus = await elizaOS.validateApiKeys();
+const keyStatus = await tokagentOS.validateApiKeys();
 // Map<UUID, boolean>
 ```
 
@@ -265,7 +265,7 @@ const keyStatus = await elizaOS.validateApiKeys();
 
 ## What You Get
 
-| Feature                  | Without ElizaOS                   | With ElizaOS                        |
+| Feature                  | Without TokagentOS                   | With TokagentOS                        |
 | ------------------------ | --------------------------------- | ----------------------------------- |
 | **Plugin resolution**    | Manual imports, version conflicts | Auto-discovery, dependency ordering |
 | **Database setup**       | 50+ lines boilerplate             | Zero-config SQLite or Postgres      |
@@ -278,7 +278,7 @@ const keyStatus = await elizaOS.validateApiKeys();
 
 ## System Architecture
 
-The elizaOS runtime follows a modular, plugin-based architecture that orchestrates all agent functionality. For lifecycle details, see [Runtime and Lifecycle](/agents/runtime-and-lifecycle). For extension architecture, see [Plugin Architecture](/plugins/architecture).
+The tokagentOS runtime follows a modular, plugin-based architecture that orchestrates all agent functionality. For lifecycle details, see [Runtime and Lifecycle](/agents/runtime-and-lifecycle). For extension architecture, see [Plugin Architecture](/plugins/architecture).
 
 ```mermaid
 flowchart TD
@@ -817,7 +817,7 @@ addEmbeddingToMemory(memory: Memory): Promise<Memory>;
 - `normal` - Default priority (conversations)
 - `low` - Background processing (bulk imports)
 
-In `@elizaos/core`, the embedding-generation service drains that queue through a **shared batch-queue pipeline** (priority queue, bounded concurrency, retries, repeat `EMBEDDING_DRAIN` task) so this path does not diverge from other queue-and-drain workloads. **Why:** one composable subsystem instead of multiple bespoke queue implementations as features grow. See [Batch queue subsystem](/runtime/batch-queue) (also `packages/typescript/docs/BATCH_QUEUE.md` in the monorepo).
+In `@tokagentos/core`, the embedding-generation service drains that queue through a **shared batch-queue pipeline** (priority queue, bounded concurrency, retries, repeat `EMBEDDING_DRAIN` task) so this path does not diverge from other queue-and-drain workloads. **Why:** one composable subsystem instead of multiple bespoke queue implementations as features grow. See [Batch queue subsystem](/runtime/batch-queue) (also `packages/typescript/docs/BATCH_QUEUE.md` in the monorepo).
 
 ```typescript
 // Queue high-priority embedding for user query
@@ -874,23 +874,23 @@ const types = runtime.getRegisteredServiceTypes();
 // ['DATABASE', 'SPEECH', 'VIDEO', 'TRANSCRIPTION', ...]
 ```
 
-### ElizaOS Type Guard
+### TokagentOS Type Guard
 
-Check if the runtime has an ElizaOS instance attached:
+Check if the runtime has an TokagentOS instance attached:
 
 ```typescript
-hasElizaOS(): this is IAgentRuntime & { elizaOS: IElizaOS };
+hasTokagentOS(): this is IAgentRuntime & { tokagentOS: ITokagentOS };
 ```
 
 **Usage:**
 
 ```typescript
-if (runtime.hasElizaOS()) {
-  // TypeScript knows runtime.elizaOS is defined here
-  const elizaOS = runtime.elizaOS;
+if (runtime.hasTokagentOS()) {
+  // TypeScript knows runtime.tokagentOS is defined here
+  const tokagentOS = runtime.tokagentOS;
 
   // Send message to another agent
-  await elizaOS.handleMessage(otherAgentId, {
+  await tokagentOS.handleMessage(otherAgentId, {
     entityId: message.entityId,
     roomId: message.roomId,
     content: { text: "Forwarded message", source: "internal" },

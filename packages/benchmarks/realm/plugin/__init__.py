@@ -1,14 +1,14 @@
 """
-REALM Benchmark Plugin for ElizaOS.
+REALM Benchmark Plugin for TokagentOS.
 
 This plugin provides actions and providers for the REALM benchmark,
-enabling the agent to generate and execute plans using the full ElizaOS
+enabling the agent to generate and execute plans using the full TokagentOS
 message handling loop.
 """
 
 from __future__ import annotations
 
-from elizaos.types import Plugin
+from tokagentos.types import Plugin
 
 from .actions import REALM_ACTIONS
 from .providers import REALM_PROVIDERS

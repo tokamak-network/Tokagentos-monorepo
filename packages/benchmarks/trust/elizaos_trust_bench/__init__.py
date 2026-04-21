@@ -1,10 +1,10 @@
-"""Agent trust & security benchmark for ElizaOS."""
+"""Agent trust & security benchmark for TokagentOS."""
 
-from elizaos_trust_bench.baselines import PerfectHandler, RandomHandler
-from elizaos_trust_bench.corpus import TEST_CORPUS, get_corpus
-from elizaos_trust_bench.runner import TrustBenchmarkRunner
-from elizaos_trust_bench.scorer import score_results
-from elizaos_trust_bench.types import (
+from tokagentos_trust_bench.baselines import PerfectHandler, RandomHandler
+from tokagentos_trust_bench.corpus import TEST_CORPUS, get_corpus
+from tokagentos_trust_bench.runner import TrustBenchmarkRunner
+from tokagentos_trust_bench.scorer import score_results
+from tokagentos_trust_bench.types import (
     BenchmarkConfig,
     BenchmarkResult,
     CategoryScore,
@@ -15,11 +15,11 @@ from elizaos_trust_bench.types import (
     TrustTestCase,
 )
 
-# ElizaTrustHandler is optional — requires elizaos + elizaos-plugin-openai
+# TokagentTrustHandler is optional — requires tokagentos + tokagentos-plugin-openai
 try:
-    from elizaos_trust_bench.eliza_handler import ElizaTrustHandler
+    from tokagentos_trust_bench.tokagent_handler import TokagentTrustHandler
 except ImportError:
-    ElizaTrustHandler = None  # type: ignore[misc, assignment]
+    TokagentTrustHandler = None  # type: ignore[misc, assignment]
 
 __all__ = [
     "BenchmarkConfig",
@@ -27,7 +27,7 @@ __all__ = [
     "CategoryScore",
     "DetectionResult",
     "Difficulty",
-    "ElizaTrustHandler",
+    "TokagentTrustHandler",
     "PerfectHandler",
     "RandomHandler",
     "TEST_CORPUS",

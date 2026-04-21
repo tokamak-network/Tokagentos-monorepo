@@ -1,7 +1,7 @@
 """
-Full ElizaOS Agent Harness for AgentBench.
+Full TokagentOS Agent Harness for AgentBench.
 
-This module provides a CANONICAL ElizaOS integration that uses the FULL pipeline:
+This module provides a CANONICAL TokagentOS integration that uses the FULL pipeline:
 - message_service.handle_message() for processing (NO BYPASS)
 - Provider context gathering (compose_state)
 - Action selection via MESSAGE_HANDLER_TEMPLATE
@@ -9,7 +9,7 @@ This module provides a CANONICAL ElizaOS integration that uses the FULL pipeline
 - Evaluator execution via runtime.evaluate()
 - Proper Memory objects and conversation history
 
-This is the correct way to integrate with ElizaOS - no shortcuts or bypasses.
+This is the correct way to integrate with TokagentOS - no shortcuts or bypasses.
 """
 
 from __future__ import annotations
@@ -23,11 +23,11 @@ from typing import TYPE_CHECKING, Literal, Protocol, runtime_checkable
 from uuid6 import uuid7
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types import Action, Memory, Provider, ProviderResult
-    from elizaos.types.memory import MessageMetadata
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types import Action, Memory, Provider, ProviderResult
+    from tokagentos.types.memory import MessageMetadata
 
-from elizaos_agentbench.types import (
+from tokagentos_agentbench.types import (
     AgentBenchEnvironment,
     AgentBenchResult,
     AgentBenchTask,
@@ -115,7 +115,7 @@ def _build_agentbench_message_metadata(
     if not trajectory_id and not step_id:
         return None
 
-    from elizaos import MemoryType, MessageMetadata
+    from tokagentos import MemoryType, MessageMetadata
 
     meta = MessageMetadata(type=MemoryType.MESSAGE, source="agentbench")
     # MessageMetadata is pydantic(extra=allow) so these are safe
@@ -184,7 +184,7 @@ class BenchmarkDatabaseAdapter:
     # Memory operations
     async def create_memory(self, memory: "Memory", table_name: str, unique: bool = False) -> str:
         """Store a memory."""
-        from elizaos.types.primitives import as_uuid
+        from tokagentos.types.primitives import as_uuid
 
         if table_name not in self._memories:
             self._memories[table_name] = {}
@@ -384,7 +384,7 @@ def set_current_benchmark_context(ctx: BenchmarkContext | None) -> None:
 
 def create_benchmark_provider() -> "Provider":
     """Create a provider that gives benchmark context to the agent."""
-    from elizaos.types import Provider, ProviderResult
+    from tokagentos.types import Provider, ProviderResult
 
     async def get_benchmark_context(
         runtime: "AgentRuntime",
@@ -535,7 +535,7 @@ def get_action_callback() -> object | None:
 
 def create_benchmark_action() -> "Action":
     """Create the BENCHMARK_ACTION action that executes environment commands."""
-    from elizaos.types import Action, ActionParameterSchema, ActionParameter, ActionResult, HandlerOptions
+    from tokagentos.types import Action, ActionParameterSchema, ActionParameter, ActionResult, HandlerOptions
 
     async def validate(
         runtime: "AgentRuntime",
@@ -630,7 +630,7 @@ def create_benchmark_action() -> "Action":
 
 def create_benchmark_plugin() -> "Plugin":
     """Create the benchmark plugin with provider and action."""
-    from elizaos.types import Plugin
+    from tokagentos.types import Plugin
 
     benchmark_provider = create_benchmark_provider()
     benchmark_action = create_benchmark_action()
@@ -653,15 +653,15 @@ def create_benchmark_plugin() -> "Plugin":
 
 
 # =============================================================================
-# ElizaOS Agent Harness - Full Canonical Flow
+# TokagentOS Agent Harness - Full Canonical Flow
 # =============================================================================
 
 
-class ElizaAgentHarness:
+class TokagentAgentHarness:
     """
-    Full ElizaOS agent harness for running AgentBench evaluations.
+    Full TokagentOS agent harness for running AgentBench evaluations.
 
-    This harness uses the CANONICAL ElizaOS message processing pipeline:
+    This harness uses the CANONICAL TokagentOS message processing pipeline:
     1. Creates Memory objects for each turn
     2. Calls message_service.handle_message() for FULL processing
     3. Provider context is gathered via compose_state()
@@ -671,12 +671,12 @@ class ElizaAgentHarness:
     7. Message history is preserved
     8. (Optional) Trajectory logging for RL training
 
-    NO BYPASS - This is the real ElizaOS flow.
+    NO BYPASS - This is the real TokagentOS flow.
     """
 
     def __init__(self, runtime: "AgentRuntime") -> None:
         """
-        Initialize the harness with a fully configured ElizaOS runtime.
+        Initialize the harness with a fully configured TokagentOS runtime.
 
         Args:
             runtime: Initialized AgentRuntime with plugins loaded.
@@ -686,7 +686,7 @@ class ElizaAgentHarness:
 
     @property
     def runtime(self) -> "AgentRuntime":
-        """Get the ElizaOS runtime."""
+        """Get the TokagentOS runtime."""
         return self._runtime
 
     def _get_trajectory_logger(self) -> "SupportsTrajectoryLogger | None":
@@ -701,7 +701,7 @@ class ElizaAgentHarness:
         adapter: "EnvironmentAdapterProtocol",
     ) -> AgentBenchResult:
         """
-        Run a single benchmark task through the FULL ElizaOS pipeline.
+        Run a single benchmark task through the FULL TokagentOS pipeline.
 
         This method:
         1. Resets the environment to get initial observation
@@ -720,8 +720,8 @@ class ElizaAgentHarness:
         Returns:
             AgentBenchResult with success status, actions, metrics.
         """
-        from elizaos import ChannelType, Content, Memory
-        from elizaos.types.primitives import as_uuid
+        from tokagentos import ChannelType, Content, Memory
+        from tokagentos.types.primitives import as_uuid
 
         start_time = time.time()
 
@@ -821,7 +821,7 @@ class ElizaAgentHarness:
 
                 # =====================================================
                 # CANONICAL FLOW: Use message_service.handle_message()
-                # This runs the FULL ElizaOS pipeline:
+                # This runs the FULL TokagentOS pipeline:
                 # - Saves message to memory
                 # - Composes state from ALL providers (including BENCHMARK)
                 # - Uses MESSAGE_HANDLER_TEMPLATE for LLM response
@@ -1013,7 +1013,7 @@ def create_benchmark_character(name: str = "BenchmarkAgent") -> "Character":
     - A system prompt designed for agentic task execution
     - A custom messageHandlerTemplate that instructs using BENCHMARK_ACTION
     """
-    from elizaos import Character
+    from tokagentos import Character
 
     # Custom message handler template for benchmark execution
     # This guides the model to use BENCHMARK_ACTION instead of conversational actions
@@ -1080,7 +1080,7 @@ async def create_benchmark_runtime(
     plugins: "list | None" = None,
 ) -> "AgentRuntime":
     """
-    Create and initialize an ElizaOS runtime for benchmarking.
+    Create and initialize an TokagentOS runtime for benchmarking.
 
     This sets up the runtime with:
     - Bootstrap plugin for basic capabilities (providers, actions, evaluators)
@@ -1098,8 +1098,8 @@ async def create_benchmark_runtime(
     """
     import os
 
-    from elizaos.runtime import AgentRuntime
-    from elizaos.bootstrap import bootstrap_plugin
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.bootstrap import bootstrap_plugin
 
     if character is None:
         character = create_benchmark_character()
@@ -1110,7 +1110,7 @@ async def create_benchmark_runtime(
         # Add OpenAI plugin if API key is available
         if os.environ.get("OPENAI_API_KEY"):
             try:
-                from elizaos_plugin_openai import get_openai_plugin
+                from tokagentos_plugin_openai import get_openai_plugin
 
                 plugins.append(get_openai_plugin())
             except ImportError:

@@ -1,5 +1,5 @@
 """
-ElizaOS agent for Diplomacy environment.
+TokagentOS agent for Diplomacy environment.
 """
 
 from __future__ import annotations
@@ -7,7 +7,7 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_diplomacy.types import (
+from tokagentos_atropos_diplomacy.types import (
     Power,
     Phase,
     Order,
@@ -15,16 +15,16 @@ from elizaos_atropos_diplomacy.types import (
     GameState,
     Message,
 )
-from elizaos_atropos_diplomacy.map_data import get_adjacent_provinces
+from tokagentos_atropos_diplomacy.map_data import get_adjacent_provinces
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.primitives import UUID
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.primitives import UUID
 
 
 class DiplomacyAgent:
     """
-    ElizaOS-powered Diplomacy agent.
+    TokagentOS-powered Diplomacy agent.
     
     Represents one of the seven great powers and can:
     - Analyze the board position
@@ -49,7 +49,7 @@ class DiplomacyAgent:
         Initialize the Diplomacy agent.
         
         Args:
-            runtime: ElizaOS AgentRuntime
+            runtime: TokagentOS AgentRuntime
             power: The power this agent plays as
             use_llm: Whether to use LLM for decisions
             agent_id: Optional agent ID
@@ -88,7 +88,7 @@ class DiplomacyAgent:
             List of orders for this power's units
         """
         if self._use_llm and self._runtime is not None:
-            return await self._decide_with_eliza(state, trajectory_step_id=trajectory_step_id)
+            return await self._decide_with_tokagent(state, trajectory_step_id=trajectory_step_id)
         return self._decide_with_heuristics(state)
 
     def _decide_with_heuristics(self, state: GameState) -> list[Order]:
@@ -102,7 +102,7 @@ class DiplomacyAgent:
                 adjacent = get_adjacent_provinces(unit.location, unit.type)
 
                 # Find adjacent supply centers not owned by us
-                from elizaos_atropos_diplomacy.map_data import is_supply_center
+                from tokagentos_atropos_diplomacy.map_data import is_supply_center
 
                 best_target = None
                 for adj in adjacent:
@@ -130,7 +130,7 @@ class DiplomacyAgent:
 
             if adjustment > 0:
                 # Build in home centers
-                from elizaos_atropos_diplomacy.types import UnitType, Unit
+                from tokagentos_atropos_diplomacy.types import UnitType, Unit
                 built = 0
                 for center in power_state.home_centers:
                     if built >= adjustment:
@@ -155,14 +155,14 @@ class DiplomacyAgent:
 
         return orders
 
-    async def _decide_with_eliza(self, state: GameState, *, trajectory_step_id: str | None = None) -> list[Order]:
-        """Use canonical ElizaOS message pipeline for decision making."""
+    async def _decide_with_tokagent(self, state: GameState, *, trajectory_step_id: str | None = None) -> list[Order]:
+        """Use canonical TokagentOS message pipeline for decision making."""
         if self._runtime is None:
             return self._decide_with_heuristics(state)
 
         try:
-            from elizaos_atropos_shared.canonical_eliza import run_with_context
-            from elizaos_atropos_diplomacy.eliza_plugin import (
+            from tokagentos_atropos_shared.canonical_tokagent import run_with_context
+            from tokagentos_atropos_diplomacy.tokagent_plugin import (
                 DIPLOMACY_STORE,
                 DiplomacyDecisionContext,
             )
@@ -276,7 +276,7 @@ Keep messages brief and strategic.
 """
 
         try:
-            from elizaos import ChannelType, Content, Memory, string_to_uuid
+            from tokagentos import ChannelType, Content, Memory, string_to_uuid
 
             room_id = string_to_uuid(f"atropos:diplomacy:{state.phase_name}")
             entity_id = string_to_uuid(f"atropos:diplomacy:{self._power.value}")

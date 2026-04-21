@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 
 /**
- * Dual build script for @elizaos/core - generates both Node.js and browser builds
+ * Dual build script for @tokagentos/core - generates both Node.js and browser builds
  */
 
 import { existsSync, type FSWatcher, mkdirSync, watch } from "node:fs";
 import { join } from "node:path";
 import type { BuildConfig, BunPlugin } from "bun";
 
-export interface ElizaBuildOptions {
+export interface TokagentBuildOptions {
 	/** Package root directory */
 	root?: string;
 	/** Entry points - defaults to ['src/index.ts'] */
@@ -34,7 +34,7 @@ export interface ElizaBuildOptions {
 	/** Whether to generate TypeScript declarations (using tsc separately) */
 	generateDts?: boolean;
 	/**
-	 * The name of the package being built (e.g., "@elizaos/core").
+	 * The name of the package being built (e.g., "@tokagentos/core").
 	 * When set, this package will NOT be added to externals to avoid self-referential imports.
 	 */
 	selfPackageName?: string;
@@ -58,10 +58,10 @@ export function getTimer() {
 }
 
 /**
- * Creates a standardized Bun build configuration for elizaOS packages
+ * Creates a standardized Bun build configuration for tokagentOS packages
  */
-export async function createElizaBuildConfig(
-	options: ElizaBuildOptions,
+export async function createTokagentBuildConfig(
+	options: TokagentBuildOptions,
 ): Promise<BuildConfig> {
 	const {
 		root: _root = process.cwd(),
@@ -120,14 +120,14 @@ export async function createElizaBuildConfig(
 				]
 			: [];
 
-	// elizaOS workspace packages that should typically be external
+	// tokagentOS workspace packages that should typically be external
 	// Filter out the package being built to avoid self-referential imports
-	const elizaExternals = [
-		"@elizaos/core",
+	const tokagentExternals = [
+		"@tokagentos/core",
 		"@elizaos/server",
 		"@elizaos/client",
 		"@elizaos/api-client",
-		"@elizaos/shared",
+		"@tokagentos/shared",
 		"@elizaos/plugin-*",
 	].filter((pkg) => pkg !== selfPackageName);
 
@@ -145,7 +145,7 @@ export async function createElizaBuildConfig(
 		// splitting: format === 'esm' && entrypoints.length > 1,
 		sourcemap,
 		minify,
-		external: [...nodeExternals, ...elizaExternals, ...cleanExternals],
+		external: [...nodeExternals, ...tokagentExternals, ...cleanExternals],
 		plugins,
 		naming: {
 			entry: "[dir]/[name].[ext]",
@@ -451,7 +451,7 @@ export function watchFiles(
  */
 export interface BuildRunnerOptions {
 	packageName: string;
-	buildOptions: ElizaBuildOptions;
+	buildOptions: TokagentBuildOptions;
 	onBuildComplete?: (success: boolean) => void;
 }
 
@@ -483,7 +483,7 @@ export async function runBuild(
 
 	// Create build configuration
 	const configTimer = getTimer();
-	const config = await createElizaBuildConfig(buildOptions);
+	const config = await createTokagentBuildConfig(buildOptions);
 	console.log(`✓ Configuration prepared (${configTimer.elapsed()}ms)`);
 
 	// Build with Bun
@@ -632,7 +632,7 @@ const nodeExternals = ["dotenv", "sharp", "zod", "@hapi/shot"];
 
 // Shared configuration
 const sharedConfig = {
-	packageName: "@elizaos/core",
+	packageName: "@tokagentos/core",
 	sourcemap: true,
 	minify: false,
 	generateDts: true,
@@ -660,7 +660,7 @@ async function buildNode() {
 			sourcemap: true,
 			minify: false,
 			generateDts: false, // We'll generate declarations separately for all entry points
-			selfPackageName: "@elizaos/core", // Exclude self from externals to avoid self-referential imports
+			selfPackageName: "@tokagentos/core", // Exclude self from externals to avoid self-referential imports
 		},
 	});
 
@@ -691,7 +691,7 @@ async function buildBrowser() {
 			minify: true, // Minify for browser to reduce bundle size
 			generateDts: false, // Use the same .d.ts files from Node build
 			plugins: [],
-			selfPackageName: "@elizaos/core", // Exclude self from externals to avoid self-referential imports
+			selfPackageName: "@tokagentos/core", // Exclude self from externals to avoid self-referential imports
 		},
 	});
 
@@ -719,7 +719,7 @@ async function buildEdge() {
 			sourcemap: true,
 			minify: false,
 			generateDts: false,
-			selfPackageName: "@elizaos/core",
+			selfPackageName: "@tokagentos/core",
 		},
 	});
 
@@ -747,7 +747,7 @@ async function buildTesting() {
 			sourcemap: true,
 			minify: false,
 			generateDts: false,
-			selfPackageName: "@elizaos/core", // Exclude self from externals to avoid self-referential imports
+			selfPackageName: "@tokagentos/core", // Exclude self from externals to avoid self-referential imports
 		},
 	});
 
@@ -758,7 +758,7 @@ async function buildTesting() {
 }
 
 async function buildNodeOnly() {
-	console.log("🚀 Starting Node-only build process for @elizaos/core");
+	console.log("🚀 Starting Node-only build process for @tokagentos/core");
 	const totalStart = Date.now();
 
 	await Promise.all([buildNode(), buildTesting()]);
@@ -772,7 +772,7 @@ async function buildNodeOnly() {
  * Build for both targets
  */
 async function buildAll() {
-	console.log("🚀 Starting dual build process for @elizaos/core");
+	console.log("🚀 Starting dual build process for @tokagentos/core");
 	const totalStart = Date.now();
 
 	// Build JS in parallel first
@@ -797,7 +797,7 @@ async function buildAll() {
  * External consumers compiled under `moduleResolution: "nodenext"` (the
  * package's own `tsconfig.base.json` default) cannot resolve those — the
  * symbol set becomes invisible, which is why downstream packages such as
- * `@elizaos/skills` lost access to `resolveStateDir` and had to keep an inline
+ * `@tokagentos/skills` lost access to `resolveStateDir` and had to keep an inline
  * copy.
  *
  * This pass walks `dist/**\/*.d.ts`, finds relative `import`/`export`
@@ -941,25 +941,25 @@ async function generateTypeScriptDeclarations() {
 	// Note: Use .js extension for NodeNext module resolution compatibility
 	await fs.writeFile(
 		"dist/node/index.d.ts",
-		`// Type definitions for @elizaos/core (Node.js)\nexport * from '../index.node.js';\n`,
+		`// Type definitions for @tokagentos/core (Node.js)\nexport * from '../index.node.js';\n`,
 	);
 
 	// dist/browser/index.d.ts - points to the browser entry point
 	await fs.writeFile(
 		"dist/browser/index.d.ts",
-		`// Type definitions for @elizaos/core (Browser)\nexport * from '../index.browser.js';\n`,
+		`// Type definitions for @tokagentos/core (Browser)\nexport * from '../index.browser.js';\n`,
 	);
 
 	// dist/edge/index.d.ts - points to the edge entry point
 	await fs.writeFile(
 		"dist/edge/index.d.ts",
-		`// Type definitions for @elizaos/core (Edge)\nexport * from './index.edge.js';\n`,
+		`// Type definitions for @tokagentos/core (Edge)\nexport * from './index.edge.js';\n`,
 	);
 
 	// Create main index.js for runtime fallback (when conditional exports don't match)
 	await fs.writeFile(
 		"dist/index.js",
-		`// Main entry point fallback for @elizaos/core\nexport * from './node/index.node.js';\n`,
+		`// Main entry point fallback for @tokagentos/core\nexport * from './node/index.node.js';\n`,
 	);
 
 	// Some tooling (including Bun in certain situations) may attempt to follow the
@@ -983,7 +983,7 @@ async function generateTypeScriptDeclarations() {
 	// Note: Use .js extension for NodeNext module resolution compatibility
 	await fs.writeFile(
 		"dist/index.d.ts",
-		`// Type definitions for @elizaos/core\n// Re-exports all types from the Node.js entry point\nexport * from './index.node.js';\n`,
+		`// Type definitions for @tokagentos/core\n// Re-exports all types from the Node.js entry point\nexport * from './index.node.js';\n`,
 	);
 
 	// Ensure testing module directory and declarations exist

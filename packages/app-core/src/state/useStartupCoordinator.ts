@@ -138,7 +138,7 @@ export function useStartupCoordinator(
     const cancelled = { current: false };
 
     runRestoringSession(d, dispatch, _ctx, cancelled).catch((err) => {
-      console.error("[eliza][startup:restore] Unexpected error:", err);
+      console.error("[tokagent][startup:restore] Unexpected error:", err);
     });
 
     return () => {
@@ -171,7 +171,7 @@ export function useStartupCoordinator(
       cancelled,
       tidRef,
     ).catch((err) => {
-      console.error("[eliza][startup:poll] Unexpected error:", err);
+      console.error("[tokagent][startup:poll] Unexpected error:", err);
     });
 
     return () => {
@@ -197,7 +197,7 @@ export function useStartupCoordinator(
       cancelled,
       tidRef,
     ).catch((err) => {
-      console.error("[eliza][startup:runtime] Unexpected error:", err);
+      console.error("[tokagent][startup:runtime] Unexpected error:", err);
     });
 
     return () => {
@@ -213,7 +213,7 @@ export function useStartupCoordinator(
     const cancelled = { current: false };
 
     runHydrating(depsRef.current!, dispatch, cancelled).catch((err) => {
-      console.error("[eliza][startup:hydrate] Unexpected error:", err);
+      console.error("[tokagent][startup:hydrate] Unexpected error:", err);
     });
 
     return () => {

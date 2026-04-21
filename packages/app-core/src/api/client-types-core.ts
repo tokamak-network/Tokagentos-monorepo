@@ -3,17 +3,17 @@
 // Re-exports from external packages included here.
 // ---------------------------------------------------------------------------
 
-import type { DatabaseProviderType } from "@elizaos/agent/contracts/config";
+import type { DatabaseProviderType } from "@tokagentos/agent/contracts/config";
 
 // Use server-types / types only — do not re-export from api/server or
 // api/trajectory-routes (those modules pull the full API + app-training into Vite).
-export type { StreamEventType } from "@elizaos/agent/api/server-types";
+export type { StreamEventType } from "@tokagentos/agent/api/server-types";
 export type {
   TriggerLastStatus,
   TriggerType,
   TriggerWakeMode,
-} from "@elizaos/agent/triggers/types";
-export type { TrajectoryExportFormat } from "@elizaos/agent/types/trajectory";
+} from "@tokagentos/agent/triggers/types";
+export type { TrajectoryExportFormat } from "@tokagentos/agent/types/trajectory";
 
 export interface DatabaseStatus {
   provider: DatabaseProviderType;
@@ -115,7 +115,7 @@ export interface AgentStatus {
 
 export type AgentAutomationMode = "connectors-only" | "full";
 
-import type { TradePermissionMode as WalletTradePermissionMode } from "@elizaos/agent/contracts/wallet";
+import type { TradePermissionMode as WalletTradePermissionMode } from "@tokagentos/agent/contracts/wallet";
 export type TradePermissionMode = WalletTradePermissionMode;
 
 export interface AgentAutomationModeResponse {
@@ -322,7 +322,7 @@ export interface SandboxWindowInfo {
 }
 
 export interface StreamEventEnvelope {
-  type: import("@elizaos/agent/api/server-types").StreamEventType;
+  type: import("@tokagentos/agent/api/server-types").StreamEventType;
   version: 1;
   eventId: string;
   ts: number;
@@ -352,7 +352,7 @@ export interface ExtensionStatus {
   safariAppPath?: string | null;
   safariPackagePath?: string | null;
   releaseManifest?:
-    | import("@elizaos/shared/contracts/lifeops").LifeOpsBrowserCompanionReleaseManifest
+    | import("@tokagentos/shared/contracts/lifeops").LifeOpsBrowserCompanionReleaseManifest
     | null;
 }
 

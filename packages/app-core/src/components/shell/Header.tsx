@@ -1,1 +1,1 @@
-export { Header } from "@elizaos/ui/components/shell/Header";
+export { Header } from "@tokagentos/ui/components/shell/Header";

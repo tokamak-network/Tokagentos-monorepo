@@ -9,14 +9,14 @@ import {
   createMessageMemory,
   type Plugin,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { describeIf } from "../../../../test/helpers/conditional-tests.ts";
 import { saveEnv, withTimeout } from "../../../../test/helpers/test-utils";
-import { buildCharacterFromConfig } from "@elizaos/agent/runtime/eliza";
-import { configureLocalEmbeddingPlugin } from "@elizaos/agent/runtime/eliza";
-import { createElizaPlugin } from "@elizaos/agent/runtime/eliza-plugin";
+import { buildCharacterFromConfig } from "@tokagentos/agent/runtime/tokagent";
+import { configureLocalEmbeddingPlugin } from "@tokagentos/agent/runtime/tokagent";
+import { createTokagentPlugin } from "@tokagentos/agent/runtime/tokagent-plugin";
 import { createApprovalQueue } from "../src/lifeops/approval-queue.js";
 import { LifeOpsService } from "../src/lifeops/service.js";
 import { InboxTriageRepository } from "../src/inbox/repository.js";
@@ -147,7 +147,7 @@ async function seedRepairFixtures(args: {
       roomId: args.dmRoomId,
       metadata: {
         type: "assistant_message",
-        entityName: "Eliza",
+        entityName: "Tokagent",
       },
       content: {
         text:
@@ -196,28 +196,28 @@ describeIf(LIVE_SUITE_ENABLED)(
     let dispatches: Array<{ source: string; target: string; text: string }> = [];
 
     const workspaceDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-followup-repair-workspace-"),
+      path.join(os.tmpdir(), "tokagent-followup-repair-workspace-"),
     );
     const pgliteDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-followup-repair-pglite-"),
+      path.join(os.tmpdir(), "tokagent-followup-repair-pglite-"),
     );
     const stateDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-followup-repair-state-"),
+      path.join(os.tmpdir(), "tokagent-followup-repair-state-"),
     );
 
     beforeAll(async () => {
       envBackup = saveEnv(
         ...LIVE_PROVIDER_ENV_KEYS,
         "PGLITE_DATA_DIR",
-        "ELIZA_STATE_DIR",
+        "TOKAGENT_STATE_DIR",
         "ENABLE_TRAJECTORIES",
-        "ELIZA_TRAJECTORY_LOGGING",
+        "TOKAGENT_TRAJECTORY_LOGGING",
       );
       process.env.PGLITE_DATA_DIR = pgliteDir;
-      process.env.ELIZA_STATE_DIR = stateDir;
+      process.env.TOKAGENT_STATE_DIR = stateDir;
       process.env.ENABLE_TRAJECTORIES = "false";
-      process.env.ELIZA_TRAJECTORY_LOGGING = "false";
-      process.env.LOG_LEVEL = process.env.ELIZA_E2E_LOG_LEVEL ?? "error";
+      process.env.TOKAGENT_TRAJECTORY_LOGGING = "false";
+      process.env.LOG_LEVEL = process.env.TOKAGENT_E2E_LOG_LEVEL ?? "error";
 
       for (const key of LIVE_PROVIDER_ENV_KEYS) {
         delete process.env[key];
@@ -231,7 +231,7 @@ describeIf(LIVE_SUITE_ENABLED)(
       const character = buildCharacterFromConfig({});
       character.settings = {
         ...(character.settings ?? {}),
-        ELIZA_ADMIN_ENTITY_ID: ownerId,
+        TOKAGENT_ADMIN_ENTITY_ID: ownerId,
       };
       character.secrets = selectedProviderEnv;
 
@@ -250,7 +250,7 @@ describeIf(LIVE_SUITE_ENABLED)(
         character,
         plugins: [
           providerPlugin as Plugin,
-          createElizaPlugin({
+          createTokagentPlugin({
             agentId: "main",
             workspaceDir,
           }),

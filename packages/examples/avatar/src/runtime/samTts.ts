@@ -1,4 +1,4 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { SamTTSService } from "@elizaos/plugin-simple-voice";
 
 export type SamOptions = {

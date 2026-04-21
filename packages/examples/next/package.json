@@ -1,5 +1,5 @@
 {
-  "name": "eliza-next-example",
+  "name": "tokagent-next-example",
   "version": "2.0.0-alpha",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
     "next": "^15.1.0",

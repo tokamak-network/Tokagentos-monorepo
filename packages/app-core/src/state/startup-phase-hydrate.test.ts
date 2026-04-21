@@ -58,8 +58,8 @@ function createReadyDeps(
     loadWalletConfig: vi.fn(async () => undefined),
     pollCloudCredits: vi.fn(),
     activeConversationIdRef: { current: null },
-    elizaCloudPollInterval: { current: null },
-    elizaCloudLoginPollTimer: { current: null },
+    tokagentCloudPollInterval: { current: null },
+    tokagentCloudLoginPollTimer: { current: null },
     ...overrides,
   };
 }

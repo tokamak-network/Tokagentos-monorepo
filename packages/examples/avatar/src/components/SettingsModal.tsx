@@ -12,8 +12,8 @@ type SettingsModalProps = {
 
 function modeLabel(mode: DemoMode): string {
   switch (mode) {
-    case "elizaClassic":
-      return "ELIZA classic (offline)";
+    case "tokagentClassic":
+      return "TOKAGENT classic (offline)";
     case "openai":
       return "OpenAI";
     case "anthropic":
@@ -25,7 +25,7 @@ function modeLabel(mode: DemoMode): string {
     case "groq":
       return "Groq";
     default:
-      return "ELIZA classic (offline)";
+      return "TOKAGENT classic (offline)";
   }
 }
 
@@ -70,7 +70,7 @@ export function SettingsModal({
                   updateConfig((prev) => ({ ...prev, mode }));
                 }}
               >
-                <option value="elizaClassic">{modeLabel("elizaClassic")}</option>
+                <option value="tokagentClassic">{modeLabel("tokagentClassic")}</option>
                 <option value="openai">{modeLabel("openai")}</option>
                 <option value="anthropic">{modeLabel("anthropic")}</option>
                 <option value="xai">{modeLabel("xai")}</option>
@@ -79,7 +79,7 @@ export function SettingsModal({
               </select>
             </div>
             <div className="field-note">
-              <span className={`dot ${effectiveMode === "elizaClassic" ? "warn" : "good"}`} />
+              <span className={`dot ${effectiveMode === "tokagentClassic" ? "warn" : "good"}`} />
               Using: <strong>{modeLabel(effectiveMode)}</strong>
             </div>
           </div>

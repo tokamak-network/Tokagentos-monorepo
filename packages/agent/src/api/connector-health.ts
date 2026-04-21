@@ -6,7 +6,7 @@
  * "missing", broadcasts a system-warning via WebSocket.
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 
 export type ConnectorStatus = "ok" | "missing" | "unknown";
 

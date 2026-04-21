@@ -2,7 +2,7 @@
  * Core plugin package lists shared by runtime startup and the API server.
  *
  * Keeping this in a standalone module avoids a circular dependency between
- * `api/server.ts` and `runtime/eliza.ts`.
+ * `api/server.ts` and `runtime/tokagent.ts`.
  */
 
 /**
@@ -17,7 +17,7 @@ export const CORE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-local-embedding", // local embeddings — required for memory
   // @elizaos/app-form — now built-in as advanced capability (form); enabled when advancedCapabilities: true
   "@elizaos/app-companion", // VRM companion emotes; actions gated until app session is active
-  // @elizaos/plugin-agent-orchestrator — opt-in via ELIZA_AGENT_ORCHESTRATOR (Eliza app enables by default)
+  // @elizaos/plugin-agent-orchestrator — opt-in via TOKAGENT_AGENT_ORCHESTRATOR (Tokagent app enables by default)
   "@elizaos/plugin-cron", // scheduled jobs and automation
   "@elizaos/plugin-shell", // shell command execution
   "@elizaos/plugin-agent-skills", // skill execution and marketplace runtime

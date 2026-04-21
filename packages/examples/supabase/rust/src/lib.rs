@@ -1,10 +1,10 @@
-//! elizaOS chat handler compiled to WebAssembly for Supabase Edge Functions
+//! tokagentOS chat handler compiled to WebAssembly for Supabase Edge Functions
 //!
 //! This module provides a WASM-compatible chat handler that can be called from
 //! Deno/TypeScript edge functions. It handles message processing and response
 //! generation logic that can be offloaded to Rust for performance.
 //!
-//! Build with: wasm-pack build --target web --out-dir ../functions/eliza-chat-wasm/wasm
+//! Build with: wasm-pack build --target web --out-dir ../functions/tokagent-chat-wasm/wasm
 
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
@@ -73,7 +73,7 @@ pub struct OpenAIRequest {
 pub fn init() {
     // Set panic hook for better error messages
     console_error_panic_hook::set_once();
-    log("elizaOS WASM module initialized");
+    log("tokagentOS WASM module initialized");
 }
 
 /// Console logging helper
@@ -179,7 +179,7 @@ pub fn create_chat_response(
 pub fn create_health_response() -> Result<String, JsValue> {
     let response = HealthResponse {
         status: "healthy".to_string(),
-        runtime: "elizaos-rust-wasm".to_string(),
+        runtime: "tokagentos-rust-wasm".to_string(),
         version: "1.0.0".to_string(),
     };
 

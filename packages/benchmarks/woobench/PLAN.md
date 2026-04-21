@@ -40,7 +40,7 @@ benchmarks/woobench/
 ├── metrics.py                  # Aggregated metrics
 ├── reporting.py                # Report generation
 ├── dataset.py                  # Dataset loading
-├── plugin.py                   # ElizaOS plugin integration
+├── plugin.py                   # TokagentOS plugin integration
 ├── agent.py                    # Agent under test
 ├── tests/
 │   └── test_woobench.py
@@ -305,7 +305,7 @@ python -m benchmarks.woobench --model gpt-4o
 
 ## 9. Implementation Phases
 
-### Phase 1: Engines (no ElizaOS integration)
+### Phase 1: Engines (no TokagentOS integration)
 - Bundle all JSON data files
 - Implement TarotEngine (deck, shuffle, draw, spreads)
 - Implement IChingEngine (coin toss, hexagram lookup, changing lines)

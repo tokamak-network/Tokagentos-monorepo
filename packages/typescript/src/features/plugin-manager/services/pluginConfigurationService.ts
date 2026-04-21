@@ -1,5 +1,5 @@
 import { logger } from "../../../logger.ts";
-import type { Plugin as ElizaPlugin } from "../../../types/plugin.ts";
+import type { Plugin as TokagentPlugin } from "../../../types/plugin.ts";
 import type { IAgentRuntime } from "../../../types/runtime.ts";
 import { Service } from "../../../types/service.ts";
 import { PluginManagerServiceType } from "../types.ts";
@@ -28,7 +28,7 @@ export class PluginConfigurationService extends Service {
 	 * Check which env vars from a plugin's config schema are missing.
 	 * Uses the plugin's actual `config` field (if defined) to determine requirements.
 	 */
-	getMissingConfigKeys(plugin: ElizaPlugin): string[] {
+	getMissingConfigKeys(plugin: TokagentPlugin): string[] {
 		if (!plugin.config) {
 			return [];
 		}
@@ -50,7 +50,7 @@ export class PluginConfigurationService extends Service {
 	 * Get configuration status for a specific plugin.
 	 * Returns actual missing keys based on the plugin's config schema.
 	 */
-	getPluginConfigStatus(plugin: ElizaPlugin): {
+	getPluginConfigStatus(plugin: TokagentPlugin): {
 		configured: boolean;
 		missingKeys: string[];
 		totalKeys: number;

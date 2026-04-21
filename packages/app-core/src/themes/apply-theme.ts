@@ -10,13 +10,13 @@ import type {
   ThemeColorSet,
   ThemeDefinition,
   ThemeFonts,
-} from "@elizaos/shared/contracts/theme";
+} from "@tokagentos/shared/contracts/theme";
 import {
   THEME_CSS_VAR_MAP,
   THEME_FONT_CSS_VARS,
   THEME_FONT_LINK_ID,
-} from "@elizaos/shared/contracts/theme";
-import { BUILTIN_THEMES } from "@elizaos/shared/themes/presets";
+} from "@tokagentos/shared/contracts/theme";
+import { BUILTIN_THEMES } from "@tokagentos/shared/themes/presets";
 
 /**
  * Apply a theme's color set for the given mode to the document root.

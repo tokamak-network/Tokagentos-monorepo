@@ -3,16 +3,16 @@
 // Update*, Extension*, Workbench*, Character*, Voice*, Skill*
 // ---------------------------------------------------------------------------
 
-import type { ReleaseChannel } from "@elizaos/agent/contracts/config";
-import type { ConversationScope } from "@elizaos/agent/api/server-types";
+import type { ReleaseChannel } from "@tokagentos/agent/contracts/config";
+import type { ConversationScope } from "@tokagentos/agent/api/server-types";
 import type {
   CreateTriggerRequest as _CreateTriggerRequest,
   TriggerHealthSnapshot as _TriggerHealthSnapshot,
   TriggerRunRecord as _TriggerRunRecord,
   TriggerSummary as _TriggerSummary,
   UpdateTriggerRequest as _UpdateTriggerRequest,
-} from "@elizaos/agent/triggers/types";
-import type { MessageExampleContent } from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/agent/triggers/types";
+import type { MessageExampleContent } from "@tokagentos/shared/contracts/onboarding";
 import type { ConfigUiHint } from "../types";
 
 export type {
@@ -57,7 +57,7 @@ export type {
   UpdateLifeOpsBrowserSettingsRequest,
   UpdateLifeOpsDefinitionRequest,
   UpdateLifeOpsGoalRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 
 export interface SecretInfo {
   key: string;
@@ -536,7 +536,7 @@ export interface AutomationNodeCatalogResponse {
   };
 }
 
-export type { LifeOpsOccurrenceActionResult } from "@elizaos/shared/contracts/lifeops";
+export type { LifeOpsOccurrenceActionResult } from "@tokagentos/shared/contracts/lifeops";
 
 // Voice / TTS config
 export type VoiceProvider = "elevenlabs" | "simple-voice" | "edge";

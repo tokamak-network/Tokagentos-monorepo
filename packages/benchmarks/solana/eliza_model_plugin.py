@@ -1,5 +1,5 @@
 """
-Anthropic model plugin for the Eliza Python runtime.
+Anthropic model plugin for the Tokagent Python runtime.
 
 Registers TEXT_LARGE and TEXT_SMALL model handlers that call the Anthropic API
 via the anthropic SDK. Used by the benchmark to route LLM calls through
@@ -10,11 +10,11 @@ import os
 from collections.abc import AsyncIterator, Awaitable, Callable
 from typing import TYPE_CHECKING
 
-from elizaos.types.model import ModelType
-from elizaos.types.plugin import Plugin
+from tokagentos.types.model import ModelType
+from tokagentos.types.plugin import Plugin
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 ANTHROPIC_MODEL = os.getenv("ANTHROPIC_MODEL", "claude-opus-4-6")
 
@@ -96,6 +96,6 @@ async def _init_anthropic_plugin(
 
 anthropic_model_plugin = Plugin(
     name="anthropic-model",
-    description="Anthropic Claude model provider for Eliza runtime",
+    description="Anthropic Claude model provider for Tokagent runtime",
     init=_init_anthropic_plugin,
 )

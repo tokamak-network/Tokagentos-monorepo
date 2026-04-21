@@ -1,7 +1,7 @@
 import { logger } from "../../../logger.ts";
 import type {
 	ActionResult,
-	Action as ElizaAction,
+	Action as TokagentAction,
 	IAgentRuntime,
 	Memory,
 	UUID,
@@ -10,7 +10,7 @@ import { parseJSONObjectFromText } from "../../../utils.ts";
 import type { TrustProfile } from "../types/trust.ts";
 import { hasTrustEngine } from "./hasTrustEngine.ts";
 
-export const evaluateTrustAction: ElizaAction = {
+export const evaluateTrustAction: TokagentAction = {
 	name: "EVALUATE_TRUST",
 	description: "Evaluates the trust score and profile for a specified entity",
 

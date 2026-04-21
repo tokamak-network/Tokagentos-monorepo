@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const storybookPort = Number(process.env.ELIZA_UI_STORYBOOK_PORT || "6106");
+const storybookPort = Number(process.env.TOKAGENT_UI_STORYBOOK_PORT || "6106");
 
 export default defineConfig({
   testDir: "./e2e",

@@ -19,7 +19,7 @@
  * @see nft-verify.ts     — another source of whitelist addresses
  */
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { ethers } from "ethers";
 import { getVerifiedAddresses } from "./twitter-verify.js";
 

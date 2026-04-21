@@ -1,5 +1,5 @@
-import type { ElizaConfig } from "@elizaos/agent/config";
-import { isPlainObject } from "@elizaos/agent/config";
+import type { TokagentConfig } from "@tokagentos/agent/config";
+import { isPlainObject } from "@tokagentos/agent/config";
 import {
   parseConfigPath,
   setConfigValueAtPath,
@@ -64,9 +64,9 @@ export function unsetConfigOverride(pathRaw: string): {
   return { ok: true, removed };
 }
 
-export function applyConfigOverrides(cfg: ElizaConfig): ElizaConfig {
+export function applyConfigOverrides(cfg: TokagentConfig): TokagentConfig {
   if (!overrides || Object.keys(overrides).length === 0) {
     return cfg;
   }
-  return mergeOverrides(cfg, overrides) as ElizaConfig;
+  return mergeOverrides(cfg, overrides) as TokagentConfig;
 }

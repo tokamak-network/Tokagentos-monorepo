@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/capacitor-gateway",
   "version": "1.0.0",
-  "description": "Connects the app to an Eliza Gateway with discovery, RPC, and realtime events.",
+  "description": "Connects the app to an Tokagent Gateway with discovery, RPC, and realtime events.",
   "keywords": [
     "gateway",
     "realtime",
@@ -28,14 +28,14 @@
     "ios/Plugin.xcodeproj/",
     "*.podspec"
   ],
-  "author": "elizaOS",
+  "author": "tokagentOS",
   "license": "MIT",
   "dependencies": {
-    "@elizaos/app-core": "workspace:*"
+    "@tokagentos/app-core": "workspace:*"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaOS/eliza"
+    "url": "https://github.com/tokagentOS/tokagent"
   },
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
@@ -81,13 +81,13 @@
   "capacitor": {
     "ios": {
       "src": "ios",
-      "podName": "ElizaCapacitorGateway"
+      "podName": "TokagentCapacitorGateway"
     },
     "android": {
       "src": "android"
     }
   },
-  "elizaos": {
+  "tokagentos": {
     "platforms": [
       "browser",
       "node"

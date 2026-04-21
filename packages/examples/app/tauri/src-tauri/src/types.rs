@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
 pub enum ProviderMode {
-    ElizaClassic,
+    TokagentClassic,
     OpenAI,
     XAI,
 }
@@ -32,7 +32,7 @@ pub struct AppConfig {
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
-            mode: ProviderMode::ElizaClassic,
+            mode: ProviderMode::TokagentClassic,
             provider: ProviderSettings {
                 openai_api_key: String::new(),
                 openai_base_url: "https://api.openai.com/v1".to_string(),
@@ -59,17 +59,17 @@ pub struct ChatMessage {
 
 pub fn effective_mode(cfg: &AppConfig) -> ProviderMode {
     match cfg.mode {
-        ProviderMode::ElizaClassic => ProviderMode::ElizaClassic,
+        ProviderMode::TokagentClassic => ProviderMode::TokagentClassic,
         ProviderMode::OpenAI => {
             if cfg.provider.openai_api_key.trim().is_empty() {
-                ProviderMode::ElizaClassic
+                ProviderMode::TokagentClassic
             } else {
                 ProviderMode::OpenAI
             }
         }
         ProviderMode::XAI => {
             if cfg.provider.xai_api_key.trim().is_empty() {
-                ProviderMode::ElizaClassic
+                ProviderMode::TokagentClassic
             } else {
                 ProviderMode::XAI
             }
@@ -87,11 +87,11 @@ mod tests {
 
         cfg.mode = ProviderMode::OpenAI;
         cfg.provider.openai_api_key = "".to_string();
-        assert_eq!(effective_mode(&cfg), ProviderMode::ElizaClassic);
+        assert_eq!(effective_mode(&cfg), ProviderMode::TokagentClassic);
 
         cfg.mode = ProviderMode::XAI;
         cfg.provider.xai_api_key = "".to_string();
-        assert_eq!(effective_mode(&cfg), ProviderMode::ElizaClassic);
+        assert_eq!(effective_mode(&cfg), ProviderMode::TokagentClassic);
     }
 
     #[test]

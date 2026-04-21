@@ -2,8 +2,8 @@
  * Vincent domain methods — OAuth registration, token exchange, status, disconnect.
  */
 
-/** Declaration merging must target the module that declares `ElizaClient` (see `declare module` below). */
-import { ElizaClient } from "@elizaos/app-core/api/client-base";
+/** Declaration merging must target the module that declares `TokagentClient` (see `declare module` below). */
+import { TokagentClient } from "@tokagentos/app-core/api/client-base";
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -20,8 +20,8 @@ export interface VincentStartLoginResponse {
   redirectUri: string;
 }
 
-declare module "@elizaos/app-core/api/client-base" {
-  interface ElizaClient {
+declare module "@tokagentos/app-core/api/client-base" {
+  interface TokagentClient {
     vincentStartLogin(appName?: string): Promise<VincentStartLoginResponse>;
     vincentRegister(
       appName: string,
@@ -39,14 +39,14 @@ declare module "@elizaos/app-core/api/client-base" {
 
 // ── Implementation ────────────────────────────────────────────────────
 
-ElizaClient.prototype.vincentStartLogin = async function (appName?: string) {
+TokagentClient.prototype.vincentStartLogin = async function (appName?: string) {
   return this.fetch("/api/vincent/start-login", {
     method: "POST",
-    body: JSON.stringify({ appName: appName ?? "Eliza" }),
+    body: JSON.stringify({ appName: appName ?? "Tokagent" }),
   });
 };
 
-ElizaClient.prototype.vincentRegister = async function (
+TokagentClient.prototype.vincentRegister = async function (
   appName: string,
   redirectUris: string[],
 ) {
@@ -56,7 +56,7 @@ ElizaClient.prototype.vincentRegister = async function (
   });
 };
 
-ElizaClient.prototype.vincentExchangeToken = async function (
+TokagentClient.prototype.vincentExchangeToken = async function (
   code: string,
   clientId: string,
   codeVerifier: string,
@@ -67,10 +67,10 @@ ElizaClient.prototype.vincentExchangeToken = async function (
   });
 };
 
-ElizaClient.prototype.vincentStatus = async function () {
+TokagentClient.prototype.vincentStatus = async function () {
   return this.fetch("/api/vincent/status");
 };
 
-ElizaClient.prototype.vincentDisconnect = async function () {
+TokagentClient.prototype.vincentDisconnect = async function () {
   return this.fetch("/api/vincent/disconnect", { method: "POST" });
 };

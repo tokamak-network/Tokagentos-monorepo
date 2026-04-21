@@ -13,8 +13,8 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { isSupportedPlatform } from "@elizaos/native-activity-tracker";
 import {
   getActivityReport,

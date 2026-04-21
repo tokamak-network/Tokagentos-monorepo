@@ -1,6 +1,6 @@
 /**
  * Vincent plugin — registers all Vincent OAuth and dashboard routes
- * with the elizaOS runtime plugin route system.
+ * with the tokagentOS runtime plugin route system.
  *
  * All routes use `rawPath: true` so the legacy `/api/vincent/*` and
  * `/callback/vincent` paths are preserved without a plugin-name prefix.
@@ -11,8 +11,8 @@
  */
 
 import type http from "node:http";
-import type { Plugin, Route } from "@elizaos/core";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import type { Plugin, Route } from "@tokagentos/core";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import { handleVincentRoute } from "./routes";
 
 // ---------------------------------------------------------------------------
@@ -26,7 +26,7 @@ function vincentRouteHandler(pathname: string) {
     const httpReq = req as http.IncomingMessage;
     const httpRes = res as http.ServerResponse;
     const method = (httpReq.method ?? "GET").toUpperCase();
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     await handleVincentRoute(httpReq, httpRes, pathname, method, { config });
   };
 }

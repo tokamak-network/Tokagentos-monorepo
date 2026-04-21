@@ -8,8 +8,8 @@ import type {
   ActionResult,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import { getRemoteSessionService } from "../remote/remote-session-service.js";
 
 const ACTION_NAME = "LIST_REMOTE_SESSIONS";

@@ -9,11 +9,11 @@ import {
 } from "./managed-test-command.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-// Script lives at eliza/packages/app-core/test/scripts/ — repo root is 5 levels up.
+// Script lives at tokagent/packages/app-core/test/scripts/ — repo root is 5 levels up.
 const repoRoot = path.resolve(here, "..", "..", "..", "..", "..");
 const appCoreScriptsDir = path.join(
   repoRoot,
-  "eliza",
+  "tokagent",
   "packages",
   "app-core",
   "scripts",
@@ -25,7 +25,7 @@ const truthyValues = new Set(["1", "true", "yes", "on"]);
 function buildLiveTestEnv(cwd) {
   return {
     ...buildTestEnv(cwd),
-    ELIZA_LIVE_TEST: "1",
+    TOKAGENT_LIVE_TEST: "1",
     MILADY_LIVE_TEST: "1",
   };
 }
@@ -55,9 +55,9 @@ function workspaceHasScript(cwd, scriptName) {
 
 function resolvePluginPackageRoot(dirName) {
   const candidates = [
-    path.join(repoRoot, "eliza", "plugins", dirName, "typescript"),
-    path.join(repoRoot, "eliza", "plugins", dirName),
-    path.join(repoRoot, "eliza", "packages", dirName),
+    path.join(repoRoot, "tokagent", "plugins", dirName, "typescript"),
+    path.join(repoRoot, "tokagent", "plugins", dirName),
+    path.join(repoRoot, "tokagent", "packages", dirName),
     path.join(repoRoot, "plugins", dirName, "typescript"),
     path.join(repoRoot, "plugins", dirName),
     path.join(repoRoot, "packages", dirName),
@@ -148,7 +148,7 @@ const runs = [
     cwd: repoRoot,
     env: {
       ...process.env,
-      ELIZA_LIVE_TEST: "1",
+      TOKAGENT_LIVE_TEST: "1",
       MILADY_LIVE_TEST: "1",
     },
   },
@@ -157,7 +157,7 @@ const runs = [
     label: "ui-storybook-e2e",
     command: bunCmd,
     args: ["run", "test:e2e"],
-    cwd: path.join(repoRoot, "eliza", "apps", "app-companion"),
+    cwd: path.join(repoRoot, "tokagent", "apps", "app-companion"),
     scriptName: "test:e2e",
   },
   {
@@ -167,7 +167,7 @@ const runs = [
     args: ["run", "test:live:plugins"],
     cwd: repoRoot,
     scriptName: "test:live:plugins",
-    skipEnvVar: "ELIZA_SKIP_PLUGIN_LIVE_SMOKE",
+    skipEnvVar: "TOKAGENT_SKIP_PLUGIN_LIVE_SMOKE",
     getSkipReason() {
       if (countAvailableLocalPluginPackages() === 0) {
         return "no first-party plugin packages are available in this checkout";
@@ -180,31 +180,31 @@ const runs = [
     label: "cloud-e2e-smoke",
     command: bunCmd,
     args: ["run", "test:e2e:smoke"],
-    cwd: path.join(repoRoot, "eliza", "cloud"),
+    cwd: path.join(repoRoot, "tokagent", "cloud"),
     scriptName: "test:e2e:smoke",
-    skipEnvVar: "ELIZA_SKIP_CLOUD_LIVE_SMOKE",
+    skipEnvVar: "TOKAGENT_SKIP_CLOUD_LIVE_SMOKE",
     env: {
-      ...buildLiveTestEnv(path.join(repoRoot, "eliza", "cloud")),
+      ...buildLiveTestEnv(path.join(repoRoot, "tokagent", "cloud")),
       TEST_SERVER_PORT: "3104",
     },
   },
   {
-    lockName: "eliza-e2e-smoke",
-    label: "eliza-e2e-smoke",
+    lockName: "tokagent-e2e-smoke",
+    label: "tokagent-e2e-smoke",
     command: bunCmd,
     args: ["run", "test:e2e:smoke"],
-    cwd: path.join(repoRoot, "eliza", "packages", "typescript"),
+    cwd: path.join(repoRoot, "tokagent", "packages", "typescript"),
     scriptName: "test:e2e:smoke",
-    skipEnvVar: "ELIZA_SKIP_ELIZA_LIVE_SMOKE",
+    skipEnvVar: "TOKAGENT_SKIP_TOKAGENT_LIVE_SMOKE",
   },
   {
     lockName: "steward-fi-e2e-smoke",
     label: "steward-fi-e2e-smoke",
     command: bunCmd,
     args: ["run", "test:e2e:smoke"],
-    cwd: path.join(repoRoot, "eliza", "steward-fi"),
+    cwd: path.join(repoRoot, "tokagent", "steward-fi"),
     scriptName: "test:e2e:smoke",
-    skipEnvVar: "ELIZA_SKIP_STEWARD_FI_LIVE_SMOKE",
+    skipEnvVar: "TOKAGENT_SKIP_STEWARD_FI_LIVE_SMOKE",
   },
 ];
 

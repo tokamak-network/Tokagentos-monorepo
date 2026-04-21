@@ -4,8 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from elizaos.features.advanced_capabilities.services.relationships import RelationshipsService
-from elizaos.types import as_uuid
+from tokagentos.features.advanced_capabilities.services.relationships import RelationshipsService
+from tokagentos.types import as_uuid
 
 
 class FakeLogger:

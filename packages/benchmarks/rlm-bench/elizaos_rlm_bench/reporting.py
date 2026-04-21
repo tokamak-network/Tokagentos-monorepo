@@ -22,7 +22,7 @@ from .types import (
     RLMStrategy,
 )
 
-logger = logging.getLogger("elizaos.rlm-bench")
+logger = logging.getLogger("tokagentos.rlm-bench")
 
 
 def save_results(results: RLMBenchResults, output_dir: str) -> str:

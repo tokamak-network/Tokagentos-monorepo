@@ -1,5 +1,5 @@
-import type { IAgentRuntime, Task, TaskMetadata, UUID } from "@elizaos/core";
-import { logger, Service, stringToUuid } from "@elizaos/core";
+import type { IAgentRuntime, Task, TaskMetadata, UUID } from "@tokagentos/core";
+import { logger, Service, stringToUuid } from "@tokagentos/core";
 import {
   getSelfControlStatus,
   reconcileSelfControlBlockState,

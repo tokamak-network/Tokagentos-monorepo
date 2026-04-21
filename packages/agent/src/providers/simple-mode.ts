@@ -5,7 +5,7 @@ import {
   type Provider,
   type ProviderResult,
   type State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 export type ChannelExecutionProfile =
   | "voice_fast"
@@ -37,7 +37,7 @@ function resolveChannelProfile(message: Memory): ChannelExecutionProfile {
 
 export function createChannelProfileProvider(): Provider {
   return {
-    name: "elizaChannelProfile",
+    name: "tokagentChannelProfile",
     description:
       "Injects channel-derived execution profile guidance (voice/group/default).",
     position: -50,

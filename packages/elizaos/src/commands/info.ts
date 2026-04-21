@@ -23,7 +23,7 @@ export function info(options: InfoOptions): void {
   }
 
   console.log();
-  console.log(pc.bold(pc.cyan("elizaOS Templates")));
+  console.log(pc.bold(pc.cyan("tokagentOS Templates")));
   console.log(pc.dim(`Generated: ${manifest.generatedAt}`));
   console.log();
 

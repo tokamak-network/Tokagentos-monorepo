@@ -1,5 +1,5 @@
-import type { AgentRuntime } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import type { AgentRuntime } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import { isStewardEvmBridgeActive } from "../services/steward-evm-bridge.js";
 import { getWalletAddresses } from "./wallet.js";
 import { resolveWalletRpcReadiness } from "./wallet-rpc.js";
@@ -23,7 +23,7 @@ export interface WalletCapabilityStatus {
 }
 
 function readPrimaryWalletSource(
-  config: ElizaConfig,
+  config: TokagentConfig,
   chain: "evm" | "solana",
 ): "local" | "cloud" | null {
   const wallet =
@@ -83,7 +83,7 @@ export function isPluginLoadedByName(
 }
 
 export function resolveWalletAutomationMode(
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): "full" | "connectors-only" {
   const features =
     config.features && typeof config.features === "object"
@@ -109,7 +109,7 @@ export function resolvePluginEvmLoaded(runtime: AgentRuntime | null): boolean {
 }
 
 export function resolveWalletCapabilityStatus(state: {
-  config: ElizaConfig;
+  config: TokagentConfig;
   runtime: AgentRuntime | null;
   getWalletAddresses?: typeof getWalletAddresses;
 }): WalletCapabilityStatus {

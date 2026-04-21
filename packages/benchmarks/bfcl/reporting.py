@@ -364,7 +364,7 @@ class BFCLReporter:
         lines = [
             "# BFCL Leaderboard Comparison",
             "",
-            f"**ElizaOS Position:** #{position}",
+            f"**TokagentOS Position:** #{position}",
             f"**Closest Model:** {closest}",
             "",
             "## Score Comparison",
@@ -380,17 +380,17 @@ class BFCLReporter:
             reverse=True,
         )
 
-        elizaos_added = False
+        tokagentos_added = False
         for i, (model_name, baseline) in enumerate(sorted_baselines, 1):
-            # Insert ElizaOS in the right position
-            if not elizaos_added and metrics.overall_score > baseline.overall:
+            # Insert TokagentOS in the right position
+            if not tokagentos_added and metrics.overall_score > baseline.overall:
                 lines.append(
-                    f"| **{i}** | **ElizaOS** | "
+                    f"| **{i}** | **TokagentOS** | "
                     f"**{metrics.overall_score:.2%}** | "
                     f"**{metrics.ast_accuracy:.2%}** | "
                     f"**{metrics.exec_accuracy:.2%}** |"
                 )
-                elizaos_added = True
+                tokagentos_added = True
                 i += 1
 
             lines.append(
@@ -400,10 +400,10 @@ class BFCLReporter:
                 f"{baseline.exec:.2%} |"
             )
 
-        # Add ElizaOS at the end if not added
-        if not elizaos_added:
+        # Add TokagentOS at the end if not added
+        if not tokagentos_added:
             lines.append(
-                f"| **{len(sorted_baselines) + 1}** | **ElizaOS** | "
+                f"| **{len(sorted_baselines) + 1}** | **TokagentOS** | "
                 f"**{metrics.overall_score:.2%}** | "
                 f"**{metrics.ast_accuracy:.2%}** | "
                 f"**{metrics.exec_accuracy:.2%}** |"
@@ -421,7 +421,7 @@ class BFCLReporter:
             lines.extend([
                 "### vs GPT-4o",
                 "",
-                "| Category | ElizaOS | GPT-4o | Difference |",
+                "| Category | TokagentOS | GPT-4o | Difference |",
                 "|----------|---------|--------|------------|",
             ])
 
@@ -440,11 +440,11 @@ class BFCLReporter:
             for category, gpt_score in category_score_map.items():
                 cat_metrics = metrics.category_metrics.get(category)
                 if cat_metrics:
-                    eliza_score = cat_metrics.ast_accuracy
-                    diff = eliza_score - gpt_score
+                    tokagent_score = cat_metrics.ast_accuracy
+                    diff = tokagent_score - gpt_score
                     sign = "+" if diff > 0 else ""
                     lines.append(
-                        f"| {category.value} | {eliza_score:.2%} | "
+                        f"| {category.value} | {tokagent_score:.2%} | "
                         f"{gpt_score:.2%} | {sign}{diff:.2%} |"
                     )
 

@@ -21,15 +21,15 @@ import os
 import sys
 from pathlib import Path
 
-from elizaos_gaia.providers import (
+from tokagentos_gaia.providers import (
     PRESETS,
     ModelProvider,
     get_available_providers,
     list_models,
 )
-from elizaos_gaia.orchestrator.runner import OrchestratedGAIARunner
-from elizaos_gaia.runner import GAIARunner, run_quick_test
-from elizaos_gaia.types import GAIAConfig, GAIALevel
+from tokagentos_gaia.orchestrator.runner import OrchestratedGAIARunner
+from tokagentos_gaia.runner import GAIARunner, run_quick_test
+from tokagentos_gaia.types import GAIAConfig, GAIALevel
 
 
 def load_dotenv(
@@ -104,7 +104,7 @@ def parse_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(
         prog="gaia-benchmark",
-        description="GAIA Benchmark for ElizaOS - Evaluate AI assistants on real-world tasks",
+        description="GAIA Benchmark for TokagentOS - Evaluate AI assistants on real-world tasks",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

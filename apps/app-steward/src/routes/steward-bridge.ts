@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import type {
   StewardSignRequest,
   StewardSignResponse,
@@ -92,7 +92,7 @@ function resolveStewardConnection(
     null;
   const agentId =
     normalizeEnvValue(env.STEWARD_AGENT_ID) ??
-    normalizeEnvValue(env.ELIZA_STEWARD_AGENT_ID) ??
+    normalizeEnvValue(env.TOKAGENT_STEWARD_AGENT_ID) ??
     normalizeEnvValue(persisted?.agentId) ??
     null;
   const agentToken =
@@ -113,7 +113,7 @@ function resolveStewardRpcReadinessSafe(): ReturnType<
   typeof resolveWalletRpcReadiness
 > | null {
   try {
-    return resolveWalletRpcReadiness(loadElizaConfig());
+    return resolveWalletRpcReadiness(loadTokagentConfig());
   } catch {
     return null;
   }
@@ -874,7 +874,7 @@ export async function signViaSteward(
 
   const evmAddress =
     normalizeEnvValue(env.EVM_ADDRESS) ??
-    normalizeEnvValue(env.ELIZA_EVM_ADDRESS) ??
+    normalizeEnvValue(env.TOKAGENT_EVM_ADDRESS) ??
     null;
   const agentId = resolveStewardAgentId(env, evmAddress);
   if (!agentId) throw new Error("Steward agent ID not resolved");
@@ -1035,8 +1035,8 @@ export async function registerStewardWebhook(
  */
 export async function tryRegisterStewardWebhook(
   port = Number(
-    process.env.ELIZA_API_PORT?.trim() ||
-      process.env.ELIZA_PORT?.trim() ||
+    process.env.TOKAGENT_API_PORT?.trim() ||
+      process.env.TOKAGENT_PORT?.trim() ||
       "31337",
   ) || 31337,
   env: NodeJS.ProcessEnv = process.env,

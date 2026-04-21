@@ -1,4 +1,4 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 import { deriveAgentVaultId } from "./agent-vault-id";
 import type { SecureStoreSecretKind } from "./platform-secure-store";

@@ -1,8 +1,8 @@
 /**
- * elizaOS Polymarket Trading Agent Demo
+ * tokagentOS Polymarket Trading Agent Demo
  *
  * Entry point for the AI-powered Polymarket trading agent.
- * This demo showcases elizaOS capabilities:
+ * This demo showcases tokagentOS capabilities:
  * - AgentRuntime with plugins (SQL, OpenAI, EVM, Polymarket)
  * - Message service pipeline for AI decision making
  * - Memory persistence for trading history
@@ -35,7 +35,7 @@ type Command = "help" | "verify" | "chat" | "input-test";
 
 function usage(): void {
   const text = [
-    "elizaOS Polymarket Trading Agent",
+    "tokagentOS Polymarket Trading Agent",
     "",
     "An AI agent that analyzes prediction markets and makes trading decisions.",
     "",

@@ -3,15 +3,15 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
-from elizaos.features.advanced_capabilities.experience.service import EXPERIENCE_SERVICE_TYPE
-from elizaos.features.advanced_capabilities.experience.types import ExperienceQuery
+from tokagentos.features.advanced_capabilities.experience.service import EXPERIENCE_SERVICE_TYPE
+from tokagentos.features.advanced_capabilities.experience.types import ExperienceQuery
 
-logger = logging.getLogger("elizaos.experience")
+logger = logging.getLogger("tokagentos.experience")
 
 
 async def _get_experiences(
@@ -20,7 +20,7 @@ async def _get_experiences(
     _state: State | None = None,
 ) -> ProviderResult:
     """Provides relevant past experiences and learnings for the current context."""
-    from elizaos.features.advanced_capabilities.experience.service import ExperienceService
+    from tokagentos.features.advanced_capabilities.experience.service import ExperienceService
 
     experience_service = runtime.get_service(EXPERIENCE_SERVICE_TYPE)
 

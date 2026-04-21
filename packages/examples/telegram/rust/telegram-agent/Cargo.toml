@@ -2,7 +2,7 @@
 name = "telegram-agent"
 version = "0.1.0"
 edition = "2021"
-description = "elizaOS Rust Telegram Agent Example"
+description = "tokagentOS Rust Telegram Agent Example"
 license = "MIT"
 publish = false
 
@@ -11,13 +11,13 @@ name = "telegram-agent"
 path = "src/main.rs"
 
 [dependencies]
-# elizaOS Core
-elizaos = "2.0.0"
+# tokagentOS Core
+tokagentos = "2.0.0"
 
-# elizaOS Plugins
-elizaos-plugin-openai = "2.0.0"
-elizaos-plugin-sql = "2.0.0"
-elizaos-plugin-telegram = "2.0.0"
+# tokagentOS Plugins
+tokagentos-plugin-openai = "2.0.0"
+tokagentos-plugin-sql = "2.0.0"
+tokagentos-plugin-telegram = "2.0.0"
 
 # Async runtime
 tokio = { version = "1.42", features = ["rt-multi-thread", "macros", "signal", "sync"] }

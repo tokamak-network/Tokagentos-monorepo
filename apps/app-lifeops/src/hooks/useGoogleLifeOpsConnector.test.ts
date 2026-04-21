@@ -49,13 +49,13 @@ const {
   };
 });
 
-vi.mock("@elizaos/app-core/api", () => ({ client: clientMock }));
-vi.mock("@elizaos/app-core/state", () => ({ useApp: useAppMock }));
-vi.mock("@elizaos/app-core/utils", () => ({
+vi.mock("@tokagentos/app-core/api", () => ({ client: clientMock }));
+vi.mock("@tokagentos/app-core/state", () => ({ useApp: useAppMock }));
+vi.mock("@tokagentos/app-core/utils", () => ({
   openExternalUrl: openExternalUrlMock,
 }));
 vi.mock("react", async () => import(reactModuleUrl));
-vi.mock("@elizaos/app-core/events", () => ({
+vi.mock("@tokagentos/app-core/events", () => ({
   APP_RESUME_EVENT: "app-resume",
 }));
 vi.mock("../events/index.js", () => ({

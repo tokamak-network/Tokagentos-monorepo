@@ -1,28 +1,28 @@
-//! Telegram bot using elizaOS with full message pipeline.
+//! Telegram bot using tokagentOS with full message pipeline.
 //!
 //! Required env vars: TELEGRAM_BOT_TOKEN, OPENAI_API_KEY
 //! Optional: POSTGRES_URL (defaults to PGLite)
 
 use anyhow::{Context, Result};
-use elizaos::{
+use tokagentos::{
     parse_character,
     runtime::{AgentRuntime, RuntimeOptions},
     services::IMessageService,
     types::primitives::string_to_uuid,
     Content, Memory,
 };
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
-use elizaos_plugin_sql::plugin as sql_plugin;
-use elizaos_plugin_telegram::{TelegramConfig, TelegramEventType, TelegramService};
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
+use tokagentos_plugin_sql::plugin as sql_plugin;
+use tokagentos_plugin_telegram::{TelegramConfig, TelegramEventType, TelegramService};
 use std::sync::Arc;
 use tokio::signal;
 use tokio::sync::RwLock;
 use tracing::{error, info};
 
 const CHARACTER_JSON: &str = r#"{
-    "name": "TelegramEliza",
+    "name": "TelegramTokagent",
     "bio": "A helpful AI assistant on Telegram.",
-    "system": "You are TelegramEliza, a helpful AI assistant on Telegram. Be friendly, concise, and genuinely helpful. Keep responses short - suitable for mobile chat."
+    "system": "You are TelegramTokagent, a helpful AI assistant on Telegram. Be friendly, concise, and genuinely helpful. Keep responses short - suitable for mobile chat."
 }"#;
 
 struct State {
@@ -33,7 +33,7 @@ struct State {
 #[tokio::main]
 async fn main() -> Result<()> {
     tracing_subscriber::fmt()
-        .with_env_filter("elizaos=info,telegram_agent=info,teloxide=warn")
+        .with_env_filter("tokagentos=info,telegram_agent=info,teloxide=warn")
         .init();
 
     let _ = dotenvy::dotenv();
@@ -41,14 +41,14 @@ async fn main() -> Result<()> {
     std::env::var("TELEGRAM_BOT_TOKEN").context("Missing TELEGRAM_BOT_TOKEN")?;
     std::env::var("OPENAI_API_KEY").context("Missing OPENAI_API_KEY")?;
 
-    info!("Starting TelegramEliza...");
+    info!("Starting TelegramTokagent...");
 
     let character = parse_character(CHARACTER_JSON)?;
     let name = character.name.clone();
 
     let runtime = AgentRuntime::new(RuntimeOptions {
         character: Some(character),
-        plugins: vec![sql_plugin(), create_openai_elizaos_plugin()?],
+        plugins: vec![sql_plugin(), create_openai_tokagentos_plugin()?],
         ..Default::default()
     })
     .await?;

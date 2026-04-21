@@ -1,7 +1,7 @@
 """
 Trajectory logger integration for ART (Python).
 
-Goal: use the **elizaOS trajectory logger plugin** (`plugins/plugin-trajectory-logger`)
+Goal: use the **tokagentOS trajectory logger plugin** (`plugins/plugin-trajectory-logger`)
 as the canonical source of truth for training/benchmark trajectories.
 
 This module provides a small backend interface so ART examples can:
@@ -77,7 +77,7 @@ class TrajectoryBackend(Protocol):
 @dataclass
 class _PluginTrajectoryBackend:
     """
-    Backend that uses `elizaos_plugin_trajectory_logger` directly.
+    Backend that uses `tokagentos_plugin_trajectory_logger` directly.
 
     This is the preferred backend for training/benchmark capture.
     """
@@ -85,8 +85,8 @@ class _PluginTrajectoryBackend:
     output_dir: Path
 
     def __post_init__(self) -> None:
-        from elizaos_plugin_trajectory_logger.export import export_for_openpipe_art, export_grouped_for_grpo
-        from elizaos_plugin_trajectory_logger.service import TrajectoryLoggerService
+        from tokagentos_plugin_trajectory_logger.export import export_for_openpipe_art, export_grouped_for_grpo
+        from tokagentos_plugin_trajectory_logger.service import TrajectoryLoggerService
 
         self._export_for_openpipe_art = export_for_openpipe_art
         self._export_grouped_for_grpo = export_grouped_for_grpo
@@ -112,7 +112,7 @@ class _PluginTrajectoryBackend:
         )
 
     def start_step(self, trajectory_id: str, env_state: dict[str, object]) -> str:
-        from elizaos_plugin_trajectory_logger.types import EnvironmentState
+        from tokagentos_plugin_trajectory_logger.types import EnvironmentState
 
         now_ms = int(time.time() * 1000)
         ts = int(env_state.get("timestamp", now_ms)) if isinstance(env_state.get("timestamp"), int) else now_ms
@@ -138,7 +138,7 @@ class _PluginTrajectoryBackend:
         return self._logger.get_current_step_id(trajectory_id)
 
     def log_llm_call_by_trajectory_id(self, trajectory_id: str, llm_call: dict[str, object]) -> None:
-        from elizaos_plugin_trajectory_logger.types import LLMCall
+        from tokagentos_plugin_trajectory_logger.types import LLMCall
 
         now_ms = int(time.time() * 1000)
         call = LLMCall(
@@ -165,7 +165,7 @@ class _PluginTrajectoryBackend:
     def log_provider_access_by_trajectory_id(
         self, trajectory_id: str, provider_access: dict[str, object]
     ) -> None:
-        from elizaos_plugin_trajectory_logger.types import ProviderAccess
+        from tokagentos_plugin_trajectory_logger.types import ProviderAccess
 
         access = ProviderAccess(
             provider_id=str(uuid.uuid4()),
@@ -193,7 +193,7 @@ class _PluginTrajectoryBackend:
         reasoning: str | None = None,
         llm_call_id: str | None = None,
     ) -> None:
-        from elizaos_plugin_trajectory_logger.types import ActionAttempt
+        from tokagentos_plugin_trajectory_logger.types import ActionAttempt
 
         attempt = ActionAttempt(
             attempt_id=str(uuid.uuid4()),
@@ -229,7 +229,7 @@ class _PluginTrajectoryBackend:
         )
 
     def export_openpipe_art(self, *, dataset_name: str, output_path: str | None = None) -> str:
-        from elizaos_plugin_trajectory_logger.export import ExportOptions
+        from tokagentos_plugin_trajectory_logger.export import ExportOptions
 
         out = Path(output_path) if output_path else (self.output_dir / f"{dataset_name}.art.jsonl")
         result = self._export_for_openpipe_art(
@@ -238,7 +238,7 @@ class _PluginTrajectoryBackend:
         return result.dataset_url or str(out)
 
     def export_grpo_groups(self, *, dataset_name: str, output_path: str | None = None) -> str:
-        from elizaos_plugin_trajectory_logger.export import ExportOptions
+        from tokagentos_plugin_trajectory_logger.export import ExportOptions
 
         out = Path(output_path) if output_path else (self.output_dir / f"{dataset_name}.grpo.groups.json")
         result = self._export_grouped_for_grpo(
@@ -402,23 +402,23 @@ def create_trajectory_backend(*, output_dir: str | Path) -> TrajectoryBackend:
     """
     Create a trajectory backend.
 
-    Prefers the elizaOS trajectory logger plugin if importable.
+    Prefers the tokagentOS trajectory logger plugin if importable.
     """
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
 
     try:
         # Import to verify availability
-        import elizaos_plugin_trajectory_logger  # noqa: F401
+        import tokagentos_plugin_trajectory_logger  # noqa: F401
 
         return _PluginTrajectoryBackend(output_dir=out)
     except Exception:
-        # Fallback: local file-based adapter (still ElizaOS-compatible JSON)
-        from elizaos_art.eliza_integration.trajectory_adapter import ElizaTrajectoryLogger
+        # Fallback: local file-based adapter (still TokagentOS-compatible JSON)
+        from tokagentos_art.tokagent_integration.trajectory_adapter import TokagentTrajectoryLogger
 
         class _FallbackBackend:
             def __init__(self, data_dir: Path) -> None:
-                self._logger = ElizaTrajectoryLogger(agent_id="art-agent", data_dir=data_dir)
+                self._logger = TokagentTrajectoryLogger(agent_id="art-agent", data_dir=data_dir)
 
             def start_trajectory(
                 self,
@@ -485,7 +485,7 @@ def create_trajectory_backend(*, output_dir: str | Path) -> TrajectoryBackend:
 
             def export_openpipe_art(self, *, dataset_name: str, output_path: str | None = None) -> str:
                 # Fallback: export using local export module
-                from elizaos_art.eliza_integration.export import export_trajectories_art_format
+                from tokagentos_art.tokagent_integration.export import export_trajectories_art_format
 
                 trajectories = []
                 for tid in self._logger.list_trajectories():

@@ -1,15 +1,15 @@
-import { asNonEmptyString, asRecord } from "@elizaos/shared/type-guards";
+import { asNonEmptyString, asRecord } from "@tokagentos/shared/type-guards";
 import {
   dispatchLifeOpsGithubCallback,
   type LifeOpsGithubCallbackDetail,
 } from "../events/index.js";
 
 export const LIFEOPS_GITHUB_POST_MESSAGE_TYPE =
-  "elizaos-lifeops-github-complete";
+  "tokagentos-lifeops-github-complete";
 
 declare global {
   interface Window {
-    __ELIZAOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__?: LifeOpsGithubCallbackDetail[];
+    __TOKAGENTOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__?: LifeOpsGithubCallbackDetail[];
   }
 }
 
@@ -64,10 +64,10 @@ function getCallbackQueue(): LifeOpsGithubCallbackDetail[] {
   if (typeof window === "undefined") {
     return [];
   }
-  if (!Array.isArray(window.__ELIZAOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__)) {
-    window.__ELIZAOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__ = [];
+  if (!Array.isArray(window.__TOKAGENTOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__)) {
+    window.__TOKAGENTOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__ = [];
   }
-  return window.__ELIZAOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__;
+  return window.__TOKAGENTOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__;
 }
 
 function callbackKey(detail: LifeOpsGithubCallbackDetail): string {
@@ -106,7 +106,7 @@ export function readLifeOpsGithubCallbackFromUrl(
     return null;
   }
 
-  if (parsed.protocol !== "elizaos:") {
+  if (parsed.protocol !== "tokagentos:") {
     return null;
   }
 
@@ -143,7 +143,7 @@ export function consumeQueuedLifeOpsGithubCallback(
     return;
   }
   const targetKey = callbackKey(detail);
-  window.__ELIZAOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__ = getCallbackQueue().filter(
+  window.__TOKAGENTOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__ = getCallbackQueue().filter(
     (candidate) => callbackKey(candidate) !== targetKey,
   );
 }
@@ -153,7 +153,7 @@ export function drainLifeOpsGithubCallbacks(): LifeOpsGithubCallbackDetail[] {
     return [];
   }
   const queued = [...getCallbackQueue()];
-  window.__ELIZAOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__ = [];
+  window.__TOKAGENTOS_LIFEOPS_GITHUB_CALLBACK_QUEUE__ = [];
   return queued;
 }
 

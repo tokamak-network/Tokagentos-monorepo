@@ -12,7 +12,7 @@ param(
   [Parameter(Mandatory)][string]$OutputDir,
   [Parameter(Mandatory)][string]$Version,
   [Parameter(Mandatory)][string]$Channel,
-  [string]$CompilerPath = $env:ELIZAOS_APP_INNO_SETUP_COMPILER
+  [string]$CompilerPath = $env:TOKAGENTOS_APP_INNO_SETUP_COMPILER
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,9 +52,9 @@ function Get-ChannelLabel {
   param([string]$NormalizedChannel)
 
   switch ($NormalizedChannel) {
-    "stable" { return "elizaOS App" }
-    "canary" { return "elizaOS App Canary" }
-    default { return "elizaOS App $([char]::ToUpper($NormalizedChannel[0]))$($NormalizedChannel.Substring(1))" }
+    "stable" { return "tokagentOS App" }
+    "canary" { return "tokagentOS App Canary" }
+    default { return "tokagentOS App $([char]::ToUpper($NormalizedChannel[0]))$($NormalizedChannel.Substring(1))" }
   }
 }
 
@@ -62,10 +62,10 @@ function Get-ChannelInstallName {
   param([string]$NormalizedChannel)
 
   if ($NormalizedChannel -eq "stable") {
-    return "ElizaOSApp"
+    return "TokagentOSApp"
   }
 
-  return "ElizaOSApp-$NormalizedChannel"
+  return "TokagentOSApp-$NormalizedChannel"
 }
 
 function Get-InstallerSignSection {
@@ -95,7 +95,7 @@ function Get-InstallerSignSection {
     throw "signtool.exe not found. Ensure Windows SDK is installed."
   }
 
-  $pfxPath = Join-Path $env:RUNNER_TEMP "elizaos-app-inno-signing-cert.pfx"
+  $pfxPath = Join-Path $env:RUNNER_TEMP "tokagentos-app-inno-signing-cert.pfx"
   [System.IO.File]::WriteAllBytes($pfxPath, [System.Convert]::FromBase64String($certBase64))
 
   $escapedPfxPath = Escape-InnoValue $pfxPath
@@ -114,7 +114,7 @@ if ([string]::IsNullOrWhiteSpace($normalizedChannel)) {
 }
 
 $isccPath = Get-IsccPath -PreferredPath $CompilerPath
-$templatePath = Join-Path $PSScriptRoot "ElizaOSApp.iss"
+$templatePath = Join-Path $PSScriptRoot "TokagentOSApp.iss"
 $iconPath = Join-Path $PSScriptRoot "..\..\platforms\electrobun\assets\appIcon.ico"
 
 if (-not (Test-Path $templatePath)) {
@@ -140,9 +140,9 @@ $sourceDir = if ((Split-Path -Leaf $launcherParent) -eq "bin") {
 } else {
   $launcherParent
 }
-$elizaosDistEntry = Join-Path $sourceDir "Resources\app\eliza-dist\entry.js"
-if (-not (Test-Path $elizaosDistEntry)) {
-  throw "Packaged app directory does not contain Resources\app\eliza-dist\entry.js: $sourceDir"
+$tokagentosDistEntry = Join-Path $sourceDir "Resources\app\tokagent-dist\entry.js"
+if (-not (Test-Path $tokagentosDistEntry)) {
+  throw "Packaged app directory does not contain Resources\app\tokagent-dist\entry.js: $sourceDir"
 }
 
 New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
@@ -150,14 +150,14 @@ New-Item -ItemType Directory -Force -Path $OutputDir | Out-Null
 $channelInstallName = Get-ChannelInstallName -NormalizedChannel $normalizedChannel
 $appName = Get-ChannelLabel -NormalizedChannel $normalizedChannel
 $appId = if ($normalizedChannel -eq "stable") {
-  "ai.elizaos.app"
+  "ai.tokagentos.app"
 } else {
-  "ai.elizaos.app.$normalizedChannel"
+  "ai.tokagentos.app.$normalizedChannel"
 }
 # Keep install root short to avoid MAX_PATH (Error 206) when extracting deep
 # runtime dependency trees on systems where long paths are not fully enabled.
-$defaultDirName = "{localappdata}\ElizaOSApp\$normalizedChannel"
-$outputBaseFilename = "ElizaOSApp-Setup-$normalizedChannel"
+$defaultDirName = "{localappdata}\TokagentOSApp\$normalizedChannel"
+$outputBaseFilename = "TokagentOSApp-Setup-$normalizedChannel"
 
 $signSection = Get-InstallerSignSection
 $template = Get-Content $templatePath -Raw
@@ -173,7 +173,7 @@ $generated = $generated.Replace("__SOURCE_DIR__", (Escape-InnoValue (Resolve-Pat
 $generated = $generated.Replace("__ICON_FILE__", (Escape-InnoValue (Resolve-Path $iconPath).Path))
 $generated = $generated.Replace("__SIGN_SETUP_LINES__", $signSection)
 
-$generatedIssPath = Join-Path $env:RUNNER_TEMP "elizaos-app-$normalizedChannel-installer.iss"
+$generatedIssPath = Join-Path $env:RUNNER_TEMP "tokagentos-app-$normalizedChannel-installer.iss"
 Set-Content -Path $generatedIssPath -Value $generated -Encoding utf8
 
 try {
@@ -227,5 +227,5 @@ try {
   Write-Host "Installer size: $([math]::Round($installer.Length / 1MB, 1)) MB"
 } finally {
   Remove-Item $generatedIssPath -Force -ErrorAction SilentlyContinue
-  Remove-Item (Join-Path $env:RUNNER_TEMP "elizaos-app-inno-signing-cert.pfx") -Force -ErrorAction SilentlyContinue
+  Remove-Item (Join-Path $env:RUNNER_TEMP "tokagentos-app-inno-signing-cert.pfx") -Force -ErrorAction SilentlyContinue
 }

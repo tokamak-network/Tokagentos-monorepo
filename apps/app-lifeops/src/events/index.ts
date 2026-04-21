@@ -8,13 +8,13 @@
 import type {
   LifeOpsConnectorMode,
   LifeOpsConnectorSide,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 
 export const LIFEOPS_GOOGLE_CONNECTOR_REFRESH_EVENT =
-  "eliza:lifeops-google-connector-refresh" as const;
+  "tokagent:lifeops-google-connector-refresh" as const;
 
 export const LIFEOPS_GITHUB_CALLBACK_EVENT =
-  "eliza:lifeops-github-callback" as const;
+  "tokagent:lifeops-github-callback" as const;
 
 export interface LifeOpsGoogleConnectorRefreshDetail {
   origin?: string;

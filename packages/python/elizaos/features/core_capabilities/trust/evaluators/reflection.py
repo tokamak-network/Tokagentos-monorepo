@@ -11,10 +11,10 @@ import contextlib
 import json
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import Evaluator, EvaluatorResult, HandlerOptions
+from tokagentos.types import Evaluator, EvaluatorResult, HandlerOptions
 
 if TYPE_CHECKING:
-    from elizaos.types import ActionResult, IAgentRuntime, Memory, State
+    from tokagentos.types import ActionResult, IAgentRuntime, Memory, State
 
 
 REFLECTION_TEMPLATE = """# Task: Generate Agent Reflection, Extract Facts and Relationships

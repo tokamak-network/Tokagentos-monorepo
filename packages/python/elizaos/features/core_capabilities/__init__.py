@@ -2,7 +2,7 @@
 
 Provides trust, secrets manager, and plugin manager capabilities that can
 be conditionally enabled via ``CapabilityConfig`` in
-``elizaos.features.basic_capabilities_compat``.
+``tokagentos.features.basic_capabilities_compat``.
 
 Each sub-module is a self-contained Python port of the corresponding
 TypeScript plugin:

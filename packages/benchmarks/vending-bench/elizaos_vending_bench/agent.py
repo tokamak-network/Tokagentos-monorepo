@@ -1,7 +1,7 @@
 """
 Vending-Bench Agent
 
-ElizaOS agent integration for the Vending-Bench benchmark.
+TokagentOS agent integration for the Vending-Bench benchmark.
 Provides the interface between the LLM and the vending environment.
 """
 
@@ -10,8 +10,8 @@ import time
 from decimal import Decimal
 from typing import Protocol
 
-from elizaos_vending_bench.environment import VendingEnvironment
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.environment import VendingEnvironment
+from tokagentos_vending_bench.types import (
     ActionParameters,
     ActionType,
     AgentAction,

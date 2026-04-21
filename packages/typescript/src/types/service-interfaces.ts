@@ -1,5 +1,5 @@
 /**
- * Service Interface Definitions for elizaOS
+ * Service Interface Definitions for tokagentOS
  *
  * This module provides standardized service interface definitions that plugins implement.
  * Data types are proto-generated; runtime classes remain TypeScript.

@@ -21,7 +21,7 @@ This benchmark evaluates a system's ability to **identify who is trustworthy** f
 
 ## 2. Dataset: Trenches Chat
 
-**Source:** ElizaOS Discord `#price-talk-trenches` channel  
+**Source:** TokagentOS Discord `#price-talk-trenches` channel  
 **Period:** October 26, 2024 -- January 2, 2025  
 **Scale:**
 

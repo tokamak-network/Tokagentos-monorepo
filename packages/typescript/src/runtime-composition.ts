@@ -1,5 +1,5 @@
 /**
- * Runtime composition: building blocks for creating elizaOS runtimes.
+ * Runtime composition: building blocks for creating tokagentOS runtimes.
  *
  * This module provides a small, composable API so hosts (daemon, cloud, serverless,
  * milaidy, etc.) can set up runtimes without duplicating adapter creation, plugin
@@ -203,7 +203,7 @@ function loadOneCharacterFromObject(input: CharacterInput): Character {
 	let out = importSecretsFromEnv(character, COMMON_SECRET_KEYS);
 
 	if (!out.id) {
-		out = { ...out, id: stringToUuid(out.name ?? "eliza") as UUID };
+		out = { ...out, id: stringToUuid(out.name ?? "tokagent") as UUID };
 	}
 	return out;
 }
@@ -327,7 +327,7 @@ export async function createRuntimes(
 
 	const agentIds: UUID[] = [];
 	for (const c of characters) {
-		agentIds.push((c.id ?? stringToUuid(c.name ?? "eliza")) as UUID);
+		agentIds.push((c.id ?? stringToUuid(c.name ?? "tokagent")) as UUID);
 	}
 
 	let adapters: IDatabaseAdapter[];
@@ -347,7 +347,7 @@ export async function createRuntimes(
 		}
 		adapters = await Promise.all(
 			characters.map((c) => {
-				const agentId = (c.id ?? stringToUuid(c.name ?? "eliza")) as UUID;
+				const agentId = (c.id ?? stringToUuid(c.name ?? "tokagent")) as UUID;
 				const settings = getBasicCapabilitiesSettings(c);
 				return Promise.resolve(adapterPlugin.adapter(agentId, settings));
 			}),

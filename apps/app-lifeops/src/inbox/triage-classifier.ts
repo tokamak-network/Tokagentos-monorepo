@@ -1,5 +1,5 @@
-import type { IAgentRuntime } from "@elizaos/core";
-import { logger, ModelType } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { logger, ModelType } from "@tokagentos/core";
 import type {
   InboundMessage,
   InboxTriageConfig,

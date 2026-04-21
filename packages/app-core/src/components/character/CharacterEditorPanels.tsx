@@ -1,5 +1,5 @@
-import type { MessageExampleGroup } from "@elizaos/core";
-import { Button, Input, Textarea, ThemedSelect } from "@elizaos/ui";
+import type { MessageExampleGroup } from "@tokagentos/core";
+import { Button, Input, Textarea, ThemedSelect } from "@tokagentos/ui";
 import {
   type ChangeEvent,
   type DragEvent,

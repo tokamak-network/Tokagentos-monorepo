@@ -1,4 +1,4 @@
-import type { IAgentRuntime, UUID } from "@elizaos/core";
+import type { IAgentRuntime, UUID } from "@tokagentos/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../src/lifeops/app-state.js", () => ({

@@ -13,19 +13,19 @@
  */
 import type http from "node:http";
 import {
-  type ElizaConfig,
-  loadElizaConfig,
-  saveElizaConfig,
-} from "@elizaos/agent/config/config";
-import { readCompatJsonBody } from "@elizaos/app-core/api/compat-route-shared";
-import { sendJson, sendJsonError } from "@elizaos/app-core/api/response";
+  type TokagentConfig,
+  loadTokagentConfig,
+  saveTokagentConfig,
+} from "@tokagentos/agent/config/config";
+import { readCompatJsonBody } from "@tokagentos/app-core/api/compat-route-shared";
+import { sendJson, sendJsonError } from "@tokagentos/app-core/api/response";
 import {
   DEFAULT_WALLET_ROUTE_DEPENDENCIES,
   handleWalletRoutes,
 } from "../api/wallet-routes";
 import { resolveWalletExportRejection } from "./server-wallet-trade";
 
-function ensureWalletKeysInEnvAndConfig(_config: ElizaConfig): boolean {
+function ensureWalletKeysInEnvAndConfig(_config: TokagentConfig): boolean {
   // Stub — auto-provisioning is disabled by default; the wallet generate
   // route handles this explicitly.
   return false;
@@ -60,7 +60,7 @@ export async function handleWalletCoreRoutes(
     return false;
   }
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
 
   return handleWalletRoutes({
     req,
@@ -68,7 +68,7 @@ export async function handleWalletCoreRoutes(
     method,
     pathname,
     config,
-    saveConfig: saveElizaConfig,
+    saveConfig: saveTokagentConfig,
     ensureWalletKeysInEnvAndConfig,
     resolveWalletExportRejection: (r, body) =>
       resolveWalletExportRejection(r, body as never) as never,

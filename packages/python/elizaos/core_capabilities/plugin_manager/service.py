@@ -13,7 +13,7 @@ from __future__ import annotations
 import time
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from elizaos.types import Service
+from tokagentos.types import Service
 
 from .types import (
     PROTECTED_PLUGINS,
@@ -26,7 +26,7 @@ from .types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 
 class PluginManagerService(Service):
@@ -205,7 +205,7 @@ class PluginManagerService(Service):
             if status.ejected:
                 return [
                     EjectedPluginInfo(
-                        name="@elizaos/core",
+                        name="@tokagentos/core",
                         path=status.ejected_path,
                         version=status.version,
                         upstream=status.upstream,

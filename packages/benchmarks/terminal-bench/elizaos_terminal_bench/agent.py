@@ -1,7 +1,7 @@
 """
 Terminal-Bench Agent Implementation
 
-An agent specialized for solving Terminal-Bench tasks using ElizaOS runtime.
+An agent specialized for solving Terminal-Bench tasks using TokagentOS runtime.
 """
 
 import asyncio
@@ -11,8 +11,8 @@ import time
 from datetime import datetime
 from typing import TYPE_CHECKING, Optional
 
-from elizaos_terminal_bench.environment import TerminalEnvironment
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.environment import TerminalEnvironment
+from tokagentos_terminal_bench.types import (
     CommandStatus,
     TerminalBenchResult,
     TerminalCommand,
@@ -21,7 +21,7 @@ from elizaos_terminal_bench.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
+    from tokagentos.runtime import AgentRuntime
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ Think carefully and solve the task systematically."""
 
 
 class TerminalAgent:
-    """ElizaOS agent for Terminal-Bench tasks."""
+    """TokagentOS agent for Terminal-Bench tasks."""
 
     def __init__(
         self,
@@ -89,7 +89,7 @@ class TerminalAgent:
         Initialize the Terminal Agent.
 
         Args:
-            runtime: ElizaOS runtime for LLM access (optional for standalone use)
+            runtime: TokagentOS runtime for LLM access (optional for standalone use)
             environment: Terminal environment (created if not provided)
             max_iterations: Maximum agent iterations per task
             model_name: Model to use for generation
@@ -301,8 +301,8 @@ class TerminalAgent:
             return await self._get_response_via_api()
 
     async def _get_response_via_runtime(self) -> tuple[str, int]:
-        """Get response using ElizaOS runtime."""
-        from elizaos.types.model import GenerateTextOptions, ModelType
+        """Get response using TokagentOS runtime."""
+        from tokagentos.types.model import GenerateTextOptions, ModelType
 
         # Build prompt from conversation history (compatible with runtime.generate_text)
         prompt_parts: list[str] = []
@@ -592,7 +592,7 @@ class TerminalAgent:
             if not self.environment:
                 return "Error: Terminal environment not available"
 
-            heredoc = f"cat << 'ELIZAEOF' > {shlex.quote(path)}\n{content}\nELIZAEOF"
+            heredoc = f"cat << 'TOKAGENTEOF' > {shlex.quote(path)}\n{content}\nTOKAGENTEOF"
             cmd = await self.environment.execute(heredoc)
             self._record_command(cmd)
             if cmd.exit_code == 0:

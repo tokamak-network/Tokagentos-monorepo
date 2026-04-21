@@ -1,18 +1,18 @@
 import {
   type AgentRuntime,
   ChannelType,
-  elizaLogger,
+  tokagentLogger,
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { BenchmarkContext, CapturedAction } from "./plugin";
 
 export const DEFAULT_PORT = 3939;
 export const DEFAULT_HOST = "127.0.0.1";
-export const BENCHMARK_WORLD_ID = stringToUuid("eliza-benchmark-world");
+export const BENCHMARK_WORLD_ID = stringToUuid("tokagent-benchmark-world");
 export const BENCHMARK_MESSAGE_SERVER_ID = stringToUuid(
-  "eliza-benchmark-message-server",
+  "tokagent-benchmark-message-server",
 );
 
 export interface BenchmarkSession {
@@ -184,12 +184,12 @@ export function toPlugin(candidate: unknown, source: string): Plugin {
 }
 
 export function resolvePort(): number {
-  const raw = process.env.ELIZA_BENCH_PORT;
+  const raw = process.env.TOKAGENT_BENCH_PORT;
   if (!raw) return DEFAULT_PORT;
   const parsed = Number(raw);
   if (!Number.isFinite(parsed) || parsed < 1 || parsed > 65535) {
-    elizaLogger.warn(
-      `[bench] Invalid ELIZA_BENCH_PORT="${raw}"; using ${DEFAULT_PORT}`,
+    tokagentLogger.warn(
+      `[bench] Invalid TOKAGENT_BENCH_PORT="${raw}"; using ${DEFAULT_PORT}`,
     );
     return DEFAULT_PORT;
   }
@@ -197,12 +197,12 @@ export function resolvePort(): number {
 }
 
 export function resolveHost(): string {
-  const raw = process.env.ELIZA_BENCH_HOST?.trim();
+  const raw = process.env.TOKAGENT_BENCH_HOST?.trim();
   if (!raw) return DEFAULT_HOST;
 
   if (raw !== "127.0.0.1" && raw !== "::1" && raw !== "localhost") {
-    elizaLogger.warn(
-      `[bench] Ignoring non-loopback ELIZA_BENCH_HOST="${raw}"; using ${DEFAULT_HOST}`,
+    tokagentLogger.warn(
+      `[bench] Ignoring non-loopback TOKAGENT_BENCH_HOST="${raw}"; using ${DEFAULT_HOST}`,
     );
     return DEFAULT_HOST;
   }
@@ -262,7 +262,7 @@ export function composeBenchmarkPrompt(params: {
   }
 
   segments.push(
-    "Respond using normal Eliza action output so actions/params can be executed and evaluated.",
+    "Respond using normal Tokagent action output so actions/params can be executed and evaluated.",
   );
 
   return segments.join("\n\n");
@@ -374,7 +374,7 @@ export async function ensureBenchmarkSessionContext(
 ): Promise<void> {
   await runtime.ensureWorldExists({
     id: BENCHMARK_WORLD_ID,
-    name: "Eliza Benchmark World",
+    name: "Tokagent Benchmark World",
     agentId: runtime.agentId,
     messageServerId: BENCHMARK_MESSAGE_SERVER_ID,
     metadata: {

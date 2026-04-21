@@ -5,8 +5,8 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use elizaos_plugin_roblox::{RobloxClient, RobloxConfig};
-use elizaos_plugin_eliza_classic::ElizaClassicPlugin;
+use tokagentos_plugin_roblox::{RobloxClient, RobloxConfig};
+use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
 use serde::{Deserialize, Serialize};
 use std::{net::SocketAddr, sync::Arc};
 use tower_http::cors::{Any, CorsLayer};
@@ -36,7 +36,7 @@ struct RobloxChatResponse {
 struct AppState {
     shared_secret: String,
     agent_name: String,
-    eliza: Arc<ElizaClassicPlugin>,
+    tokagent: Arc<TokagentClassicPlugin>,
     roblox: Option<Arc<RobloxClient>>,
 }
 
@@ -45,7 +45,7 @@ fn is_authorized(headers: &HeaderMap, shared_secret: &str) -> bool {
         return true;
     }
     let provided = headers
-        .get("x-eliza-secret")
+        .get("x-tokagent-secret")
         .and_then(|v| v.to_str().ok())
         .unwrap_or("");
     provided == shared_secret
@@ -73,7 +73,7 @@ async fn roblox_chat(
             .into_response();
     }
 
-    let reply = state.eliza.generate_response(&body.text);
+    let reply = state.tokagent.generate_response(&body.text);
 
     // Optional: echo reply back into Roblox via Open Cloud publish (MessagingService).
     if std::env::var("ROBLOX_ECHO_TO_GAME")
@@ -114,7 +114,7 @@ async fn main() {
         .parse()
         .unwrap_or(3042);
 
-    let shared_secret = std::env::var("ELIZA_ROBLOX_SHARED_SECRET").unwrap_or_default();
+    let shared_secret = std::env::var("TOKAGENT_ROBLOX_SHARED_SECRET").unwrap_or_default();
 
     let roblox = if std::env::var("ROBLOX_ECHO_TO_GAME")
         .map(|v| v.to_lowercase() == "true")
@@ -131,8 +131,8 @@ async fn main() {
 
     let state = AppState {
         shared_secret,
-        agent_name: "Eliza".to_string(),
-        eliza: Arc::new(ElizaClassicPlugin::new()),
+        agent_name: "Tokagent".to_string(),
+        tokagent: Arc::new(TokagentClassicPlugin::new()),
         roblox,
     };
 
@@ -166,7 +166,7 @@ mod tests {
     #[test]
     fn test_is_authorized_with_secret() {
         let mut headers = HeaderMap::new();
-        headers.insert("x-eliza-secret", "s3cr3t".parse().unwrap());
+        headers.insert("x-tokagent-secret", "s3cr3t".parse().unwrap());
         assert!(is_authorized(&headers, "s3cr3t"));
         assert!(!is_authorized(&headers, "wrong"));
     }
@@ -180,8 +180,8 @@ mod tests {
 
         let state = AppState {
             shared_secret: "".to_string(),
-            agent_name: "Eliza".to_string(),
-            eliza: Arc::new(ElizaClassicPlugin::new()),
+            agent_name: "Tokagent".to_string(),
+            tokagent: Arc::new(TokagentClassicPlugin::new()),
             roblox: Some(Arc::new(client)),
         };
 

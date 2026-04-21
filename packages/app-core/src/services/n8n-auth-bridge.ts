@@ -1,15 +1,15 @@
 /**
- * n8n auth bridge — wires Eliza Cloud auth-state transitions to the local
+ * n8n auth bridge — wires Tokagent Cloud auth-state transitions to the local
  * n8n sidecar lifecycle.
  *
- * Motivation: when a user signs in to Eliza Cloud we route workflows
+ * Motivation: when a user signs in to Tokagent Cloud we route workflows
  * through the cloud gateway, so the local sidecar is dead weight (port
  * 5678, ~200MB RAM, a child Node/n8n process). When they sign out, we
  * want the local sidecar back — but only when `config.n8n.localEnabled`
  * is set and we are not running on a mobile shell (where no local
  * runtime exists).
  *
- * CLOUD_AUTH (from @elizaos/plugin-elizacloud) does not expose a native
+ * CLOUD_AUTH (from @elizaos/plugin-tokagentcloud) does not expose a native
  * observable; `isAuthenticated()` is read synchronously. We therefore
  * poll that method on a short interval and emit transitions. A 2s
  * debounce window guards against flap during init or token refresh.
@@ -26,8 +26,8 @@
  * swallowed so boot cannot be broken by sidecar lifecycle hiccups.
  */
 
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   disposeN8nSidecar,
   getN8nSidecar,
@@ -40,7 +40,7 @@ interface CloudAuthLike {
   isAuthenticated?: () => boolean;
 }
 
-/** Subset of ElizaConfig the bridge reads. */
+/** Subset of TokagentConfig the bridge reads. */
 export interface N8nAuthBridgeConfigLike {
   n8n?: {
     localEnabled?: boolean;
@@ -105,7 +105,7 @@ function resolveSidecarConfig(
 }
 
 /**
- * Start an auth-state bridge that reacts to Eliza Cloud login/logout and
+ * Start an auth-state bridge that reacts to Tokagent Cloud login/logout and
  * manages the local n8n sidecar accordingly.
  *
  * The caller owns lifetime — call `stop()` on shutdown.

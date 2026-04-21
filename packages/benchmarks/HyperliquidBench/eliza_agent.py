@@ -1,11 +1,11 @@
 """
-Canonical ElizaOS Agent for HyperliquidBench.
+Canonical TokagentOS Agent for HyperliquidBench.
 
-This agent wraps the HyperliquidBench Rust toolchain behind an ElizaOS runtime
+This agent wraps the HyperliquidBench Rust toolchain behind an TokagentOS runtime
 with ``handle_message()`` driven actions and providers.  The flow is:
 
 1. Load scenario(s) from dataset JSON/JSONL files
-2. Send scenario description as a message to the Eliza runtime
+2. Send scenario description as a message to the Tokagent runtime
 3. The agent generates a plan via the GENERATE_PLAN action
 4. The plan is executed by shelling out to ``hl-runner`` (EXECUTE_PLAN action)
 5. ``hl-evaluator`` scores the run
@@ -24,11 +24,11 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from elizaos import AgentRuntime
-from elizaos.types import Plugin
-from elizaos.types.agent import Character
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid, string_to_uuid
+from tokagentos import AgentRuntime
+from tokagentos.types import Plugin
+from tokagentos.types.agent import Character
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid, string_to_uuid
 
 from .plugin import hl_bench_plugin
 from .types import (
@@ -96,7 +96,7 @@ Respond using XML format like this:
 def _get_model_plugin(model_name: str) -> Plugin:
     """Get the model plugin — supports OpenAI directly, or Groq/OpenRouter via custom handler."""
     from benchmarks.evm.providers import detect_provider, PROVIDER_URLS, PROVIDER_KEY_VARS
-    from elizaos.types import ModelType
+    from tokagentos.types import ModelType
 
     provider = detect_provider(model_name)
     env_provider = os.getenv("MODEL_PROVIDER") or os.getenv("BENCHMARK_MODEL_PROVIDER")
@@ -115,7 +115,7 @@ def _get_model_plugin(model_name: str) -> Plugin:
     if provider == "openai":
         os.environ["OPENAI_SMALL_MODEL"] = clean_model
         os.environ["OPENAI_LARGE_MODEL"] = clean_model
-        from elizaos_plugin_openai import get_openai_plugin
+        from tokagentos_plugin_openai import get_openai_plugin
         return get_openai_plugin()
 
     # Non-OpenAI: custom handler that bypasses sk- key validation
@@ -279,9 +279,9 @@ def _describe_step_kinds(steps: list[dict[str, object]]) -> str:
 
 # ── Agent ───────────────────────────────────────────────────────────
 
-class ElizaHyperliquidAgent:
+class TokagentHyperliquidAgent:
     """
-    Canonical ElizaOS agent for HyperliquidBench.
+    Canonical TokagentOS agent for HyperliquidBench.
 
     This agent:
     - Creates an ``AgentRuntime`` with a trader character
@@ -304,7 +304,7 @@ class ElizaHyperliquidAgent:
         self._runtime: AgentRuntime | None = None
 
     async def _initialize_runtime(self) -> AgentRuntime:
-        """Initialise the full ElizaOS runtime with character and plugins."""
+        """Initialise the full TokagentOS runtime with character and plugins."""
         os.environ.setdefault("OPENAI_SMALL_MODEL", self._config.model_name)
         os.environ.setdefault("OPENAI_LARGE_MODEL", self._config.model_name)
 
@@ -349,7 +349,7 @@ class ElizaHyperliquidAgent:
         await runtime.initialize()
 
         logger.info(
-            "ElizaOS runtime initialised with %d actions, %d providers",
+            "TokagentOS runtime initialised with %d actions, %d providers",
             len(runtime.actions),
             len(runtime.providers),
         )
@@ -375,7 +375,7 @@ class ElizaHyperliquidAgent:
         self, scenario: TradingScenario
     ) -> BenchmarkResult:
         """
-        Run a single benchmark scenario through the Eliza agent.
+        Run a single benchmark scenario through the Tokagent agent.
 
         1. Initialise runtime (once)
         2. Inject scenario context

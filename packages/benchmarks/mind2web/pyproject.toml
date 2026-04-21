@@ -3,16 +3,16 @@ requires = ["hatchling>=1.18"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-mind2web"
+name = "tokagentos-mind2web"
 version = "0.1.0"
-description = "Mind2Web benchmark for ElizaOS - web agent evaluation"
+description = "Mind2Web benchmark for TokagentOS - web agent evaluation"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
-    { name = "ElizaOS Team" }
+    { name = "TokagentOS Team" }
 ]
-keywords = ["benchmark", "mind2web", "web-agent", "elizaos", "browser-automation"]
+keywords = ["benchmark", "mind2web", "web-agent", "tokagentos", "browser-automation"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "elizaos>=0.1.0",
+    "tokagentos>=0.1.0",
 ]
 
 [project.optional-dependencies]
@@ -37,13 +37,13 @@ hf = [
     "datasets>=2.0",
 ]
 groq = [
-    "elizaos-plugin-groq>=1.0",
+    "tokagentos-plugin-groq>=1.0",
 ]
 openai = [
-    "elizaos-plugin-openai>=1.0",
+    "tokagentos-plugin-openai>=1.0",
 ]
 all = [
-    "elizaos-mind2web[dev,hf,groq,openai]",
+    "tokagentos-mind2web[dev,hf,groq,openai]",
 ]
 
 [project.scripts]

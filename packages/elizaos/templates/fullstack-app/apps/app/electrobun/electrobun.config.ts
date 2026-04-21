@@ -16,13 +16,13 @@ export default {
     identifier: "__BUNDLE_ID__",
     version: "2.0.0-alpha.87",
     description: "Cute AI agents for the desktop",
-    urlSchemes: ["eliza"],
+    urlSchemes: ["tokagent"],
   },
   runtime: {
     exitOnLastWindowClosed: false,
   },
   scripts: {
-    // Sign native code inside eliza-dist/node_modules on the inner app bundle
+    // Sign native code inside tokagent-dist/node_modules on the inner app bundle
     // before Electrobun runs the platform signing/notarization flow.
     postBuild: "scripts/postwrap-sign-runtime-macos.ts",
     // Capture wrapper-bundle binary metadata after the self-extractor is created.
@@ -43,7 +43,7 @@ export default {
       "artifacts/",
       "build/",
     ],
-    // Eliza intentionally supports both desktop WebGPU paths:
+    // Tokagent intentionally supports both desktop WebGPU paths:
     // 1. renderer-webview WebGPU (`three/webgpu` via browser `navigator.gpu`)
     // 2. Electrobun-native Dawn for Bun-side GpuWindow / <electrobun-wgpu>
     //    surfaces and future native compute workloads.
@@ -53,18 +53,18 @@ export default {
     copy: {
       "../dist": "renderer",
       "src/preload.js": "bun/preload.js",
-      // elizaOS backend server bundle (tsdown output from repo root dist/).
-      // agent.ts walks up from import.meta.dir looking for eliza-dist/ to spawn
+      // tokagentOS backend server bundle (tsdown output from repo root dist/).
+      // agent.ts walks up from import.meta.dir looking for tokagent-dist/ to spawn
       // the canonical runtime entry (`entry.js start`).
       // Paths are relative to apps/app/electrobun/ (where electrobun build is run).
-      "../../../dist": "eliza-dist",
+      "../../../dist": "tokagent-dist",
       // plugins.json lives at repo root, not in dist/. Without it,
       // findOwnPackageRoot() can't locate the manifest and
       // discoverPluginsFromManifest() returns an empty array.
-      "../../../plugins.json": "eliza-dist/plugins.json",
+      "../../../plugins.json": "tokagent-dist/plugins.json",
       // package.json is needed so findOwnPackageRoot() can match on the
-      // "eliza" package name. dist/package.json only has {"type":"module"}.
-      "../../../package.json": "eliza-dist/package.json",
+      // "tokagent" package name. dist/package.json only has {"type":"module"}.
+      "../../../package.json": "tokagent-dist/package.json",
       // Runtime window + tray icons are loaded via path.join(import.meta.dir, "../assets/appIcon.*").
       // import.meta.dir resolves to app/bun/ in the packaged bundle, so these
       // destinations place the assets at app/assets/appIcon.*.
@@ -81,7 +81,7 @@ export default {
       codesign: process.env.ELECTROBUN_SKIP_CODESIGN !== "1",
       notarize:
         process.env.ELECTROBUN_SKIP_CODESIGN !== "1" &&
-        process.env.ELIZA_ELECTROBUN_NOTARIZE !== "0",
+        process.env.TOKAGENT_ELECTROBUN_NOTARIZE !== "0",
       defaultRenderer: "native",
       icons: "assets/appIcon.iconset",
       entitlements: {

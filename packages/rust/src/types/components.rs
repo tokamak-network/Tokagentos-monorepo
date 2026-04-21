@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 
-pub use super::generated::eliza::v1::{
+pub use super::generated::tokagent::v1::{
     ActionExample, ActionParameter, ActionParameterSchema, EvaluationExample,
 };
 use super::memory::Memory;

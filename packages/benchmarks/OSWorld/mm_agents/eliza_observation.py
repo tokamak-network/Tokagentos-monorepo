@@ -1,8 +1,8 @@
 """
-Observation provider for the Eliza OSWorld agent.
+Observation provider for the Tokagent OSWorld agent.
 
 Injects the current VM observation (accessibility tree, screenshot metadata,
-task instruction) into the Eliza state so the LLM can make informed decisions.
+task instruction) into the Tokagent state so the LLM can make informed decisions.
 
 The observation is set externally by the agent adapter before each
 handle_message call.
@@ -17,21 +17,21 @@ from typing import TYPE_CHECKING
 
 # Ensure protobuf generated modules are importable
 _generated_dir = os.path.join(
-    os.path.dirname(__file__), "..", "..", "..", "eliza", "packages", "python",
-    "elizaos", "types", "generated",
+    os.path.dirname(__file__), "..", "..", "..", "tokagent", "packages", "python",
+    "tokagentos", "types", "generated",
 )
 _generated_dir = os.path.normpath(_generated_dir)
 if os.path.isdir(_generated_dir) and _generated_dir not in sys.path:
     sys.path.insert(0, _generated_dir)
 
-from elizaos.types.components import Provider, ProviderResult
+from tokagentos.types.components import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types.memory import Memory
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State
 
-logger = logging.getLogger("osworld.eliza.observation")
+logger = logging.getLogger("osworld.tokagent.observation")
 
 
 class ObservationStore:

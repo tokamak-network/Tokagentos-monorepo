@@ -1,6 +1,6 @@
-"""Eliza Agent Runner for the Experience Benchmark.
+"""Tokagent Agent Runner for the Experience Benchmark.
 
-Runs the experience benchmark through a real Eliza agent, testing the full
+Runs the experience benchmark through a real Tokagent agent, testing the full
 pipeline: Provider -> Model -> Action -> Evaluator.
 
 Two phases:
@@ -18,7 +18,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos_experience_bench.eliza_plugin import (
+from tokagentos_experience_bench.tokagent_plugin import (
     ExperienceBenchSession,
     ExperienceEvaluation,
     ExperiencePhase,
@@ -26,20 +26,20 @@ from elizaos_experience_bench.eliza_plugin import (
     set_experience_bench_session,
     setup_experience_benchmark_runtime,
 )
-from elizaos_experience_bench.generator import (
+from tokagentos_experience_bench.generator import (
     ExperienceGenerator,
     GeneratedExperience,
     LearningScenario,
 )
-from elizaos_experience_bench.types import (
-    ElizaAgentMetrics,
+from tokagentos_experience_bench.types import (
+    TokagentAgentMetrics,
     LearningCycleMetrics,
     RetrievalMetrics,
 )
 
 if TYPE_CHECKING:
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.runtime import IAgentRuntime
 
 import sys
 from pathlib import Path
@@ -49,8 +49,8 @@ sys.path.insert(
     str(Path(__file__).resolve().parents[3] / "plugins" / "plugin-experience" / "python"),
 )
 
-from elizaos_plugin_experience.service import ExperienceService
-from elizaos_plugin_experience.types import ExperienceQuery
+from tokagentos_plugin_experience.service import ExperienceService
+from tokagentos_plugin_experience.types import ExperienceQuery
 
 
 # ============================================================================
@@ -60,7 +60,7 @@ from elizaos_plugin_experience.types import ExperienceQuery
 
 @dataclass
 class AgentBenchmarkConfig:
-    """Configuration for the Eliza agent experience benchmark."""
+    """Configuration for the Tokagent agent experience benchmark."""
 
     # Number of learning scenarios to run through the agent
     num_learning_scenarios: int = 10
@@ -126,13 +126,13 @@ class AgentBenchmarkResult:
     # Comparison: direct service retrieval on the same queries
     direct_retrieval_metrics: RetrievalMetrics | None = None
     # Combined agent metrics
-    agent_metrics: ElizaAgentMetrics | None = None
+    agent_metrics: TokagentAgentMetrics | None = None
     # Timing
     total_duration_ms: float = 0.0
 
 
-class ElizaAgentExperienceRunner:
-    """Run the experience benchmark through a real Eliza agent."""
+class TokagentAgentExperienceRunner:
+    """Run the experience benchmark through a real Tokagent agent."""
 
     def __init__(
         self,
@@ -160,7 +160,7 @@ class ElizaAgentExperienceRunner:
         set_experience_bench_session(session)
 
         # --- Load background noise experiences directly ---
-        print("[ElizaAgent] Loading background experiences...")
+        print("[TokagentAgent] Loading background experiences...")
         bg_experiences = self.generator.generate_experiences(
             count=self.config.num_background_experiences,
             domains=self.config.domains,
@@ -182,7 +182,7 @@ class ElizaAgentExperienceRunner:
                 created_at=now_ms - offset_ms,
             )
         print(
-            f"[ElizaAgent] Loaded {svc.experience_count} background experiences"
+            f"[TokagentAgent] Loaded {svc.experience_count} background experiences"
         )
 
         # --- Generate learning scenarios ---
@@ -192,7 +192,7 @@ class ElizaAgentExperienceRunner:
 
         # --- Phase 1: Learning through the agent ---
         print(
-            f"\n[ElizaAgent] Phase 1: Learning ({len(scenarios)} scenarios)..."
+            f"\n[TokagentAgent] Phase 1: Learning ({len(scenarios)} scenarios)..."
         )
         learning_successes = 0
 
@@ -239,13 +239,13 @@ class ElizaAgentExperienceRunner:
             learning_successes / len(scenarios) if scenarios else 0.0
         )
         print(
-            f"[ElizaAgent] Learning phase: {learning_successes}/{len(scenarios)} "
+            f"[TokagentAgent] Learning phase: {learning_successes}/{len(scenarios)} "
             f"experiences recorded ({result.learning_success_rate:.1%})"
         )
 
         # --- Phase 2: Retrieval through the agent ---
         print(
-            f"\n[ElizaAgent] Phase 2: Retrieval ({len(scenarios)} queries)..."
+            f"\n[TokagentAgent] Phase 2: Retrieval ({len(scenarios)} queries)..."
         )
 
         for i, scenario in enumerate(scenarios):
@@ -284,7 +284,7 @@ class ElizaAgentExperienceRunner:
             progress_callback("Retrieval", len(scenarios), len(scenarios))
 
         # --- Phase 3: Compute metrics and compare ---
-        print("\n[ElizaAgent] Phase 3: Computing metrics...")
+        print("\n[TokagentAgent] Phase 3: Computing metrics...")
 
         # Agent retrieval metrics
         agent_recall_hits = sum(
@@ -335,7 +335,7 @@ class ElizaAgentExperienceRunner:
         )
 
         # Agent-mediated metrics (using eval results, not direct service)
-        result.agent_metrics = ElizaAgentMetrics(
+        result.agent_metrics = TokagentAgentMetrics(
             learning_success_rate=result.learning_success_rate,
             agent_recall_rate=agent_recall_rate,
             agent_keyword_incorporation_rate=agent_keyword_rate,
@@ -369,7 +369,7 @@ class ElizaAgentExperienceRunner:
             return
 
         print("\n" + "=" * 60)
-        print("ELIZA AGENT EXPERIENCE BENCHMARK RESULTS")
+        print("TOKAGENT AGENT EXPERIENCE BENCHMARK RESULTS")
         print("=" * 60)
 
         print(f"\n  Learning Phase:")
@@ -418,12 +418,12 @@ class ElizaAgentExperienceRunner:
 # ============================================================================
 
 
-async def run_eliza_agent_experience_benchmark(
+async def run_tokagent_agent_experience_benchmark(
     model_plugin_factory: Callable[[], Plugin] | None = None,
     config: AgentBenchmarkConfig | None = None,
     progress_callback: Callable[[str, int, int], None] | None = None,
 ) -> AgentBenchmarkResult:
-    """Set up Eliza runtime and run the full agent experience benchmark.
+    """Set up Tokagent runtime and run the full agent experience benchmark.
 
     Convenience function that:
     1. Creates an AgentRuntime with experience character
@@ -436,7 +436,7 @@ async def run_eliza_agent_experience_benchmark(
 
     model_plugin: Plugin | None = None
     if model_plugin_factory is not None:
-        from elizaos.types.plugin import Plugin as PluginType
+        from tokagentos.types.plugin import Plugin as PluginType
 
         candidate = model_plugin_factory()
         if isinstance(candidate, PluginType):
@@ -445,7 +445,7 @@ async def run_eliza_agent_experience_benchmark(
     runtime = await setup_experience_benchmark_runtime(model_plugin)
 
     try:
-        runner = ElizaAgentExperienceRunner(config=bench_config)
+        runner = TokagentAgentExperienceRunner(config=bench_config)
         return await runner.run(runtime, progress_callback=progress_callback)
     finally:
         await runtime.stop()

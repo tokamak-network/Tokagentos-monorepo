@@ -2,9 +2,9 @@
 Domain environment implementations for Tau-bench.
 """
 
-from elizaos_tau_bench.environments.base import DomainEnvironment
-from elizaos_tau_bench.environments.retail import RetailEnvironment
-from elizaos_tau_bench.environments.airline import AirlineEnvironment
+from tokagentos_tau_bench.environments.base import DomainEnvironment
+from tokagentos_tau_bench.environments.retail import RetailEnvironment
+from tokagentos_tau_bench.environments.airline import AirlineEnvironment
 
 __all__ = [
     "DomainEnvironment",

@@ -5,13 +5,13 @@ import {
   stopSelfControlBlock,
 } from "../website-blocker/engine.ts";
 import { syncWebsiteBlockerExpiryTask } from "../website-blocker/service.ts";
-import type { IAgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type {
   LifeOpsOccurrence,
   LifeOpsTaskDefinition,
-} from "@elizaos/shared/contracts/lifeops";
-import type { RouteRequestContext } from "@elizaos/agent/api/route-helpers";
+} from "@tokagentos/shared/contracts/lifeops";
+import type { RouteRequestContext } from "@tokagentos/agent/api/route-helpers";
 
 type WebsiteBlockerRequestBody = {
   websites?: string[] | string;
@@ -193,7 +193,7 @@ export async function handleWebsiteBlockerRoutes(
     if (parsed.request.durationMinutes !== null && !runtime) {
       error(
         res,
-        "Timed website blocks require the Eliza runtime so Eliza can schedule the automatic unblock task.",
+        "Timed website blocks require the Tokagent runtime so Tokagent can schedule the automatic unblock task.",
         503,
       );
       return true;
@@ -214,7 +214,7 @@ export async function handleWebsiteBlockerRoutes(
               {
                 success: false,
                 error:
-                  "Eliza started the website block but could not schedule its automatic unblock task, so it rolled the block back.",
+                  "Tokagent started the website block but could not schedule its automatic unblock task, so it rolled the block back.",
               },
               500,
             );
@@ -226,7 +226,7 @@ export async function handleWebsiteBlockerRoutes(
             res,
             {
               success: false,
-              error: `Eliza could not schedule the automatic unblock task, so it rolled the website block back. ${scheduleError instanceof Error ? scheduleError.message : String(scheduleError)}`,
+              error: `Tokagent could not schedule the automatic unblock task, so it rolled the website block back. ${scheduleError instanceof Error ? scheduleError.message : String(scheduleError)}`,
             },
             500,
           );

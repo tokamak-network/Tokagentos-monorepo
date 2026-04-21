@@ -67,7 +67,7 @@ The foundational paradigm for context evaluation: finding specific information (
 - **LlamaIndex**: Document chunking and retrieval
 - **Chroma/Qdrant**: Vector stores for RAG
 
-## Implementation Plan for ElizaOS Python
+## Implementation Plan for TokagentOS Python
 
 ### Phase 1: Core Framework (Week 1-2)
 
@@ -219,12 +219,12 @@ class PositionAnalyzer:
         pass
 ```
 
-### Phase 3: ElizaOS Integration (Week 4)
+### Phase 3: TokagentOS Integration (Week 4)
 
 #### 3.1 Context Provider
 ```python
 # benchmarks/context-bench/providers/context.py
-from elizaos.types.components import Provider, ProviderResult
+from tokagentos.types.components import Provider, ProviderResult
 
 class LongContextProvider(Provider):
     """Provider that supplies long context to agent."""
@@ -406,10 +406,10 @@ class ContextBenchReporter:
 - **Multi-hop Success Rate**: Chain reasoning accuracy
 - **RAG Recall@K**: Relevant chunks in top-K
 
-## Integration with ElizaOS
+## Integration with TokagentOS
 
 ### Memory System
-- Leverage ElizaOS memory for context storage
+- Leverage TokagentOS memory for context storage
 - Use embedding system for semantic retrieval
 - Track retrieval patterns in memory
 
@@ -437,7 +437,7 @@ class ContextBenchReporter:
 | 1 | Core types, context generator |
 | 2 | Dataset loading, basic NIAH |
 | 3 | Evaluators, position analysis |
-| 4 | ElizaOS providers, RAG integration |
+| 4 | TokagentOS providers, RAG integration |
 | 5 | Benchmark suites (NIAH, multi-hop) |
 | 6 | Runner, reporting, visualization |
 
@@ -463,11 +463,11 @@ class ContextBenchReporter:
 
 ## ✅ FULLY IMPLEMENTED
 
-The context-bench benchmark has been fully implemented in Python and is ready for testing with ElizaOS.
+The context-bench benchmark has been fully implemented in Python and is ready for testing with TokagentOS.
 
 ### Package Location
 ```
-benchmarks/context-bench/python/elizaos_context_bench/
+benchmarks/context-bench/python/tokagentos_context_bench/
 ```
 
 ### Components Implemented
@@ -482,7 +482,7 @@ benchmarks/context-bench/python/elizaos_context_bench/
 | Multi-hop Suite | `suites/multihop.py` | ✅ Complete |
 | Benchmark Runner | `runner.py` | ✅ Complete |
 | Reporting | `reporting.py` | ✅ Complete |
-| ElizaOS Providers | `providers/context.py` | ✅ Complete |
+| TokagentOS Providers | `providers/context.py` | ✅ Complete |
 | Tests | `tests/` | ✅ 57 tests passing |
 
 ### Installation
@@ -498,7 +498,7 @@ pip install -e ".[dev]"
 ### Quick Start
 
 ```python
-from elizaos_context_bench import (
+from tokagentos_context_bench import (
     ContextBenchRunner,
     ContextBenchConfig,
     ContextBenchReporter,
@@ -599,7 +599,7 @@ async def run_benchmark():
 
 4. **No Lost-in-Middle Effect**: Interestingly, the mock LLM shows no significant position bias (2.7%), unlike real LLMs which typically show 10-25% degradation in middle positions.
 
-## Recommendations for ElizaOS
+## Recommendations for TokagentOS
 
 Based on the benchmark results:
 
@@ -635,11 +635,11 @@ export ANTHROPIC_API_KEY=your_key
 python run_benchmark.py --provider anthropic
 ```
 
-### With ElizaOS Runtime (Model Layer Only)
+### With TokagentOS Runtime (Model Layer Only)
 ```python
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_context_bench import run_eliza_benchmark
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_context_bench import run_tokagent_benchmark
 
 async def main():
     runtime = AgentRuntime()
@@ -650,20 +650,20 @@ async def main():
         for model_type, handler in plugin.models.items():
             runtime.register_model(model_type, handler, provider=plugin.name)
 
-    results = await run_eliza_benchmark(runtime)
+    results = await run_tokagent_benchmark(runtime)
     print(f"Accuracy: {results.metrics.overall_accuracy:.1%}")
 ```
 
-### Full Agent Loop Benchmark (Canonical Eliza Flow)
+### Full Agent Loop Benchmark (Canonical Tokagent Flow)
 
-The most comprehensive mode tests the **entire Eliza agent architecture**, not just the model layer:
+The most comprehensive mode tests the **entire Tokagent agent architecture**, not just the model layer:
 
 ```bash
 export OPENAI_API_KEY=your_key
-python run_benchmark.py --provider eliza-agent
+python run_benchmark.py --provider tokagent-agent
 ```
 
-This mode exercises the **canonical Eliza flow**:
+This mode exercises the **canonical Tokagent flow**:
 
 1. **CONTEXT_BENCH Provider** → Injects benchmark context into agent state
 2. **MESSAGE_HANDLER_TEMPLATE** → Agent generates response with action selection
@@ -671,8 +671,8 @@ This mode exercises the **canonical Eliza flow**:
 4. **CONTEXT_BENCH_EVALUATOR** → Assesses answer accuracy
 
 ```python
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_context_bench.eliza_plugin import (
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_context_bench.tokagent_plugin import (
     setup_benchmark_runtime,
     BenchmarkSession,
     run_benchmark_task_through_agent,

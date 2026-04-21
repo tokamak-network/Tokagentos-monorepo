@@ -1,10 +1,10 @@
 """
-elizaOS MCP Agent Server - Python
+tokagentOS MCP Agent Server - Python
 
-Exposes an elizaOS agent as an MCP server. Any MCP-compatible client
+Exposes an tokagentOS agent as an MCP server. Any MCP-compatible client
 (Claude Desktop, VS Code, etc.) can interact with your agent.
 
-Uses real elizaOS runtime with OpenAI plugin.
+Uses real tokagentOS runtime with OpenAI plugin.
 """
 
 from __future__ import annotations
@@ -21,9 +21,9 @@ from mcp.types import Tool, TextContent
 
 from uuid6 import uuid7
 
-from elizaos import Character, ChannelType, Content, Memory
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import Character, ChannelType, Content, Memory
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
 
 # ============================================================================
 # Configuration
@@ -33,9 +33,9 @@ logging.basicConfig(level=logging.INFO, stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
 CHARACTER = Character(
-    name="Eliza",
-    username="eliza",
-    bio="A helpful AI assistant powered by elizaOS, accessible via MCP.",
+    name="Tokagent",
+    username="tokagent",
+    bio="A helpful AI assistant powered by tokagentOS, accessible via MCP.",
     system="You are a helpful, friendly AI assistant. Be concise and informative.",
 )
 
@@ -54,7 +54,7 @@ async def get_runtime() -> AgentRuntime:
     if _runtime is not None:
         return _runtime
 
-    logger.info("🚀 Initializing elizaOS runtime...")
+    logger.info("🚀 Initializing tokagentOS runtime...")
 
     _runtime = AgentRuntime(
         character=CHARACTER,
@@ -63,7 +63,7 @@ async def get_runtime() -> AgentRuntime:
     )
 
     await _runtime.initialize()
-    logger.info("✅ elizaOS runtime initialized")
+    logger.info("✅ tokagentOS runtime initialized")
 
     return _runtime
 
@@ -115,7 +115,7 @@ def get_agent_info() -> dict[str, Any]:
 TOOLS = [
     Tool(
         name="chat",
-        description="Send a message to the Eliza agent and receive a response",
+        description="Send a message to the Tokagent agent and receive a response",
         inputSchema={
             "type": "object",
             "properties": {
@@ -133,7 +133,7 @@ TOOLS = [
     ),
     Tool(
         name="get_agent_info",
-        description="Get information about the Eliza agent",
+        description="Get information about the Tokagent agent",
         inputSchema={
             "type": "object",
             "properties": {},
@@ -144,7 +144,7 @@ TOOLS = [
 
 async def main() -> None:
     """Run the MCP server."""
-    server = Server("eliza-mcp-server")
+    server = Server("tokagent-mcp-server")
 
     @server.list_tools()
     async def list_tools() -> list[Tool]:
@@ -173,7 +173,7 @@ async def main() -> None:
         except Exception as e:
             return [TextContent(type="text", text=f"Error: {e}")]
 
-    logger.info("🌐 elizaOS MCP Server starting on stdio")
+    logger.info("🌐 tokagentOS MCP Server starting on stdio")
     logger.info("📚 Available tools: chat, get_agent_info")
 
     async with stdio_server() as (read_stream, write_stream):

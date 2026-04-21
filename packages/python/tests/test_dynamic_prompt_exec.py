@@ -11,9 +11,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from elizaos.runtime import AgentRuntime, DynamicPromptOptions
-from elizaos.types import Character
-from elizaos.types.state import (
+from tokagentos.runtime import AgentRuntime, DynamicPromptOptions
+from tokagentos.types import Character
+from tokagentos.types.state import (
     RetryBackoffConfig,
     SchemaRow,
     StreamEvent,
@@ -338,7 +338,7 @@ class TestDynamicPromptExecFromState:
         runtime.register_model("TEXT_LARGE", mock_model_handler, "mock")
 
         # Create a mock state
-        from elizaos.types.state import State
+        from tokagentos.types.state import State
 
         # Use a simple dict-like mock for state
         state = MagicMock(spec=State)

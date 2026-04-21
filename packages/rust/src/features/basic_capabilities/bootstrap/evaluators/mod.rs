@@ -1,4 +1,4 @@
-//! Evaluators module for the elizaOS BasicCapabilities Plugin.
+//! Evaluators module for the tokagentOS BasicCapabilities Plugin.
 //!
 //! This module contains all evaluator implementations.
 

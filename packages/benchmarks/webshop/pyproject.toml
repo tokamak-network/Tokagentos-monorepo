@@ -3,13 +3,13 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "elizaos-webshop"
+name = "tokagentos-webshop"
 version = "2.0.0"
-description = "WebShop benchmark for ElizaOS - web interaction shopping evaluation"
+description = "WebShop benchmark for TokagentOS - web interaction shopping evaluation"
 readme = "RESEARCH.md"
 license = "MIT"
 requires-python = ">=3.10"
-authors = [{ name = "elizaOS Contributors" }]
+authors = [{ name = "tokagentOS Contributors" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 dependencies = [
-  "elizaos>=1.0.0",
+  "tokagentos>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -35,11 +35,11 @@ hf = [
 ]
 
 [project.scripts]
-webshop-bench = "elizaos_webshop.cli:main"
+webshop-bench = "tokagentos_webshop.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["elizaos_webshop*"]
+include = ["tokagentos_webshop*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

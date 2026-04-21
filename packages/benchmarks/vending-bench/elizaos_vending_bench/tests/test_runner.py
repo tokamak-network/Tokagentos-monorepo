@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from elizaos_vending_bench.runner import VendingBenchRunner
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.runner import VendingBenchRunner
+from tokagentos_vending_bench.types import (
     LEADERBOARD_SCORES,
     VendingBenchConfig,
 )

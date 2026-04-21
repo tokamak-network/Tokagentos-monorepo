@@ -1,6 +1,6 @@
-"""Eliza Benchmark Plugin for Experience Bench.
+"""Tokagent Benchmark Plugin for Experience Bench.
 
-This plugin provides canonical Eliza integration for benchmarking
+This plugin provides canonical Tokagent integration for benchmarking
 the experience learning and retrieval pipeline:
 - EXPERIENCE_CONTEXT provider: Injects relevant past experiences into agent state
 - RECORD_EXPERIENCE action: Records a new experience from the current interaction
@@ -14,9 +14,9 @@ using the canonical agent flow:
 4. BenchmarkExperienceEvaluator captures and scores the response
 
 Usage:
-    from elizaos.runtime import AgentRuntime
-    from elizaos_plugin_openai import get_openai_plugin
-    from elizaos_experience_bench.eliza_plugin import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_plugin_openai import get_openai_plugin
+    from tokagentos_experience_bench.tokagent_plugin import (
         get_experience_bench_plugin,
         ExperienceBenchSession,
         run_experience_task_through_agent,
@@ -39,7 +39,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.types.components import (
+from tokagentos.types.components import (
     Action,
     ActionResult,
     Evaluator,
@@ -47,14 +47,14 @@ from elizaos.types.components import (
     Provider,
     ProviderResult,
 )
-from elizaos.types.memory import Memory
-from elizaos.types.plugin import Plugin
-from elizaos.types.primitives import Content, string_to_uuid
-from elizaos.types.state import State
+from tokagentos.types.memory import Memory
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.primitives import Content, string_to_uuid
+from tokagentos.types.state import State
 
 if TYPE_CHECKING:
-    from elizaos.types.components import HandlerCallback
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.components import HandlerCallback
+    from tokagentos.types.runtime import IAgentRuntime
 
 import sys
 from pathlib import Path
@@ -64,8 +64,8 @@ sys.path.insert(
     str(Path(__file__).resolve().parents[3] / "plugins" / "plugin-experience" / "python"),
 )
 
-from elizaos_plugin_experience.service import ExperienceService
-from elizaos_plugin_experience.types import ExperienceQuery
+from tokagentos_plugin_experience.service import ExperienceService
+from tokagentos_plugin_experience.types import ExperienceQuery
 
 
 # ============================================================================
@@ -118,7 +118,7 @@ class ExperienceEvaluation:
 class ExperienceBenchSession:
     """Session manager for experience benchmark tasks.
 
-    Coordinates between the benchmark runner and the Eliza plugin,
+    Coordinates between the benchmark runner and the Tokagent plugin,
     storing task context and collecting evaluation results.
     """
 
@@ -747,9 +747,9 @@ async def run_experience_task_through_agent(
     expected_learning: str = "",
     expected_experience_keywords: list[str] | None = None,
 ) -> ExperienceEvaluation:
-    """Run a single experience benchmark task through the full Eliza agent loop.
+    """Run a single experience benchmark task through the full Tokagent agent loop.
 
-    Exercises the CANONICAL Eliza flow:
+    Exercises the CANONICAL Tokagent flow:
     1. Sets up the benchmark session with task context
     2. Creates a message
     3. Processes through message_service.handle_message()
@@ -825,7 +825,7 @@ async def run_experience_task_through_agent(
 async def setup_experience_benchmark_runtime(
     model_plugin: Plugin | None = None,
 ) -> "IAgentRuntime":
-    """Set up an Eliza runtime configured for experience benchmarking.
+    """Set up an Tokagent runtime configured for experience benchmarking.
 
     Creates a runtime with:
     - basicCapabilities enabled (default) - loads bootstrap plugin
@@ -833,8 +833,8 @@ async def setup_experience_benchmark_runtime(
     - Experience bench plugin registered
     - Custom messageHandlerTemplate for experience learning
     """
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
 
     character = Character(
         name="ExperienceAgent",

@@ -1,10 +1,10 @@
 """Tests for input validation across GAIA benchmark components."""
 
 import pytest
-from elizaos_gaia.types import GAIAConfig, GAIALevel
-from elizaos_gaia.dataset import GAIADataset
-from elizaos_gaia.runner import GAIARunner
-from elizaos_gaia.agent import GAIAAgent
+from tokagentos_gaia.types import GAIAConfig, GAIALevel
+from tokagentos_gaia.dataset import GAIADataset
+from tokagentos_gaia.runner import GAIARunner
+from tokagentos_gaia.agent import GAIAAgent
 
 
 class TestConfigValidation:
@@ -117,7 +117,7 @@ class TestToolValidation:
     
     def test_calculator_handles_invalid_expression(self):
         """Test calculator handles invalid expressions."""
-        from elizaos_gaia.tools.calculator import Calculator
+        from tokagentos_gaia.tools.calculator import Calculator
         
         calc = Calculator()
         result = calc.calculate("2 +")
@@ -127,7 +127,7 @@ class TestToolValidation:
     
     def test_calculator_handles_division_by_zero(self):
         """Test calculator handles division by zero."""
-        from elizaos_gaia.tools.calculator import Calculator
+        from tokagentos_gaia.tools.calculator import Calculator
         
         calc = Calculator()
         result = calc.calculate("1 / 0")
@@ -138,7 +138,7 @@ class TestToolValidation:
     @pytest.mark.asyncio
     async def test_file_processor_handles_missing_file(self):
         """Test file processor handles missing files."""
-        from elizaos_gaia.tools.file_processor import FileProcessor
+        from tokagentos_gaia.tools.file_processor import FileProcessor
         
         processor = FileProcessor()
         result = await processor.process("/nonexistent/file.txt")
@@ -149,7 +149,7 @@ class TestToolValidation:
     @pytest.mark.asyncio
     async def test_web_search_handles_errors(self):
         """Test web search handles errors gracefully."""
-        from elizaos_gaia.tools.web_search import WebSearchTool
+        from tokagentos_gaia.tools.web_search import WebSearchTool
         
         # With a clearly invalid API key, the search should fail gracefully
         search = WebSearchTool(api_key="invalid", engine="serper")
@@ -165,7 +165,7 @@ class TestResultValidation:
     
     def test_gaia_result_requires_fields(self):
         """Test that GAIAResult requires all fields."""
-        from elizaos_gaia.types import GAIAResult, GAIALevel
+        from tokagentos_gaia.types import GAIAResult, GAIALevel
         
         # This should work with all required fields
         result = GAIAResult(
@@ -182,7 +182,7 @@ class TestResultValidation:
     
     def test_gaia_metrics_default_values(self):
         """Test that GAIAMetrics has sensible defaults."""
-        from elizaos_gaia.types import GAIAMetrics
+        from tokagentos_gaia.types import GAIAMetrics
         
         metrics = GAIAMetrics(
             overall_accuracy=0.5,

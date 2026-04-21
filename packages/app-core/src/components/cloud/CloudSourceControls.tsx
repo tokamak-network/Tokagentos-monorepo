@@ -1,4 +1,4 @@
-import { Button, ConnectionStatus } from "@elizaos/ui";
+import { Button, ConnectionStatus } from "@tokagentos/ui";
 import { useApp } from "../../state";
 
 export type CloudSourceMode = "cloud" | "own-key";
@@ -6,7 +6,7 @@ export type CloudSourceMode = "cloud" | "own-key";
 export function CloudSourceModeToggle({
   mode,
   onChange,
-  cloudLabel = "Eliza Cloud",
+  cloudLabel = "Tokagent Cloud",
   ownKeyLabel = "Own API Key",
 }: {
   mode: CloudSourceMode;
@@ -57,7 +57,7 @@ export function CloudConnectionStatus({
   disconnectedText: string;
 }) {
   const { t } = useApp();
-  const resolvedConnectedText = connectedText ?? "Connected to Eliza Cloud";
+  const resolvedConnectedText = connectedText ?? "Connected to Tokagent Cloud";
   return (
     <div
       className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-bg-muted/90 px-3 py-2.5"

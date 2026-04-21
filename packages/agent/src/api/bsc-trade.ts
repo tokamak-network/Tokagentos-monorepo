@@ -6,7 +6,7 @@
  * - Validate wallet/rpc/chain/gas/token before producing a quote.
  */
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { ethers } from "ethers";
 import type {
   BscTradePreflightResponse,
@@ -174,7 +174,7 @@ export function resolveBscRpcUrls(input: BscTradeRpcConfig): string[] {
         ? input.quickNodeBscRpcUrl
         : process.env.QUICKNODE_BSC_RPC_URL,
     ),
-    // Standard plugin env key used across elizaOS EVM tooling.
+    // Standard plugin env key used across tokagentOS EVM tooling.
     normalizeRpcUrl(
       input.bscRpcUrl !== undefined ? input.bscRpcUrl : process.env.BSC_RPC_URL,
     ),
@@ -546,7 +546,7 @@ export async function buildBscTradePreflight(
 
   if (rpcUrls.length === 0) {
     reasons.push(
-      "BSC RPC not configured. Connect Eliza Cloud or set NODEREAL_BSC_RPC_URL, QUICKNODE_BSC_RPC_URL, or BSC_RPC_URL.",
+      "BSC RPC not configured. Connect Tokagent Cloud or set NODEREAL_BSC_RPC_URL, QUICKNODE_BSC_RPC_URL, or BSC_RPC_URL.",
     );
   } else {
     try {

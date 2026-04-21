@@ -10,7 +10,7 @@ const STEP_INTERVAL_SECS: u64 = 30;
 #[tokio::main]
 async fn main() {
     eprintln!("virus.exe v{}", env!("CARGO_PKG_VERSION"));
-    eprintln!("an autonomous eliza agent");
+    eprintln!("an autonomous tokagent agent");
     eprintln!();
 
     let args: Vec<String> = std::env::args().collect();

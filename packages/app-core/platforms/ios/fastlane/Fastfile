@@ -8,7 +8,7 @@ platform :ios do
 
     match(
       type: "appstore",
-      app_identifier: "ai.elizaos.app",
+      app_identifier: "ai.tokagentos.app",
       readonly: is_ci
     )
   end
@@ -23,11 +23,11 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "ai.elizaos.app" => "match AppStore ai.elizaos.app"
+          "ai.tokagentos.app" => "match AppStore ai.tokagentos.app"
         }
       },
       output_directory: "build",
-      output_name: "ElizaOSApp.ipa",
+      output_name: "TokagentOSApp.ipa",
       clean: true,
       include_bitcode: false
     )

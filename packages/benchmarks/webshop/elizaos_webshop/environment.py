@@ -4,7 +4,7 @@ import logging
 import re
 from dataclasses import dataclass
 
-from elizaos_webshop.types import PageObservation, PageType, Product, SearchResult, WebShopTask
+from tokagentos_webshop.types import PageObservation, PageType, Product, SearchResult, WebShopTask
 
 logger = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@ import type {
   ProviderResult,
   State,
   Task,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   isWorkbenchTodoTask,
   readTaskCompleted,

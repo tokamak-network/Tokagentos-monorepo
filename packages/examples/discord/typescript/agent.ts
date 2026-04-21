@@ -10,7 +10,7 @@
  * - Uses OpenAI for language understanding
  */
 
-import { AgentRuntime } from "@elizaos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import discordPlugin from "@elizaos/plugin-discord";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";

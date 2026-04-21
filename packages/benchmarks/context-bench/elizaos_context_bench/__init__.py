@@ -1,4 +1,4 @@
-"""ElizaOS Context Benchmark - Evaluating LLM Context Retrieval Capabilities.
+"""TokagentOS Context Benchmark - Evaluating LLM Context Retrieval Capabilities.
 
 This benchmark suite evaluates how well LLMs retrieve and reason about information embedded
 in long contexts, including:
@@ -14,28 +14,28 @@ Key features:
 - Comparison to published leaderboard scores
 """
 
-from elizaos_context_bench.evaluators import (
+from tokagentos_context_bench.evaluators import (
     PositionAnalyzer,
     RetrievalEvaluator,
 )
-from elizaos_context_bench.generator import (
+from tokagentos_context_bench.generator import (
     ContextGenerator,
     create_benchmark_suite,
 )
-from elizaos_context_bench.reporting import (
+from tokagentos_context_bench.reporting import (
     ContextBenchReporter,
     save_results,
 )
-from elizaos_context_bench.runner import (
+from tokagentos_context_bench.runner import (
     ContextBenchRunner,
     quick_test,
-    run_eliza_benchmark,
+    run_tokagent_benchmark,
 )
-from elizaos_context_bench.suites import (
+from tokagentos_context_bench.suites import (
     MultiHopBenchmarkSuite,
     NIAHBenchmarkSuite,
 )
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.types import (
     LEADERBOARD_SCORES,
     ContextBenchConfig,
     ContextBenchMetrics,
@@ -71,7 +71,7 @@ __all__ = [
     # Runner
     "ContextBenchRunner",
     "quick_test",
-    "run_eliza_benchmark",
+    "run_tokagent_benchmark",
     # Reporting
     "ContextBenchReporter",
     "save_results",

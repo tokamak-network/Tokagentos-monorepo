@@ -17,7 +17,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import ts from "typescript";
 
-const ELIZA_CORE_RUNTIME_FILES = [
+const TOKAGENT_CORE_RUNTIME_FILES = [
   "dist/index.js",
   "dist/browser/index.browser.js",
   "dist/node/index.node.js",
@@ -100,16 +100,16 @@ function hasRequiredFiles(dirPath, relativePaths) {
 }
 
 /**
- * Some published @elizaos/core builds in Bun's cache only contain dist/testing,
+ * Some published @tokagentos/core builds in Bun's cache only contain dist/testing,
  * but their package.json still exports dist/node and dist/browser. Copy the
  * runtime dist from a healthy install when that happens so dependents can boot.
  */
-export function repairElizaCoreRuntimeDist(targetPkgDir, sourcePkgDir) {
+export function repairTokagentCoreRuntimeDist(targetPkgDir, sourcePkgDir) {
   if (!targetPkgDir || !sourcePkgDir) return false;
   if (targetPkgDir === sourcePkgDir) return false;
   if (!existsSync(targetPkgDir)) return false;
-  if (!hasRequiredFiles(sourcePkgDir, ELIZA_CORE_RUNTIME_FILES)) return false;
-  if (hasRequiredFiles(targetPkgDir, ELIZA_CORE_RUNTIME_FILES)) return false;
+  if (!hasRequiredFiles(sourcePkgDir, TOKAGENT_CORE_RUNTIME_FILES)) return false;
+  if (hasRequiredFiles(targetPkgDir, TOKAGENT_CORE_RUNTIME_FILES)) return false;
 
   const sourceDist = resolve(sourcePkgDir, "dist");
   const targetDist = resolve(targetPkgDir, "dist");
@@ -120,29 +120,29 @@ export function repairElizaCoreRuntimeDist(targetPkgDir, sourcePkgDir) {
 }
 
 /**
- * Repair any cached @elizaos/core package copies whose runtime dist files are
+ * Repair any cached @tokagentos/core package copies whose runtime dist files are
  * missing by cloning the dist tree from the healthy root install.
  */
-export function patchBrokenElizaCoreRuntimeDists(root, log = console.log) {
-  const pkgPaths = findPackageJsonPaths(root, "@elizaos/core");
+export function patchBrokenTokagentCoreRuntimeDists(root, log = console.log) {
+  const pkgPaths = findPackageJsonPaths(root, "@tokagentos/core");
   const pkgDirs = pkgPaths.map((pkgPath) => dirname(pkgPath));
   const sourcePkgDir = pkgDirs.find((pkgDir) =>
-    hasRequiredFiles(pkgDir, ELIZA_CORE_RUNTIME_FILES),
+    hasRequiredFiles(pkgDir, TOKAGENT_CORE_RUNTIME_FILES),
   );
 
   if (!sourcePkgDir) {
     log(
-      "[patch-deps] Skipping @elizaos/core runtime repair: no healthy source dist was found.",
+      "[patch-deps] Skipping @tokagentos/core runtime repair: no healthy source dist was found.",
     );
     return false;
   }
 
   let patched = false;
   for (const pkgDir of pkgDirs) {
-    if (repairElizaCoreRuntimeDist(pkgDir, sourcePkgDir)) {
+    if (repairTokagentCoreRuntimeDist(pkgDir, sourcePkgDir)) {
       patched = true;
       log(
-        `[patch-deps] Repaired @elizaos/core runtime dist in Bun cache: ${pkgDir}`,
+        `[patch-deps] Repaired @tokagentos/core runtime dist in Bun cache: ${pkgDir}`,
       );
     }
   }
@@ -150,39 +150,39 @@ export function patchBrokenElizaCoreRuntimeDists(root, log = console.log) {
 }
 
 /**
- * Install the `@elizaos/core/roles` runtime subpath.
+ * Install the `@tokagentos/core/roles` runtime subpath.
  *
- * The published `@elizaos/core@alpha` exposes `dist/roles.d.ts` (types only)
+ * The published `@tokagentos/core@alpha` exposes `dist/roles.d.ts` (types only)
  * and declares `export * from "./roles";` in `dist/index.node.d.ts`, but
  * neither the matching runtime `dist/roles.js` file nor a `./roles` subpath
  * in `package.json` `exports` ship in the published tarball. Every
- * `import { … } from "@elizaos/core/roles"` therefore fails with
+ * `import { … } from "@tokagentos/core/roles"` therefore fails with
  * `ERR_MODULE_NOT_FOUND` at runtime (vitest, node, bun) even though tsc
- * resolves the subpath via the tsconfig `paths` map to the local `./eliza`
+ * resolves the subpath via the tsconfig `paths` map to the local `./tokagent`
  * source.
  *
- * Copy a pre-bundled shim (see `scripts/lib/elizaos-core-roles-shim.js`) to
- * each installed `@elizaos/core/dist/roles.js` location and add the matching
+ * Copy a pre-bundled shim (see `scripts/lib/tokagentos-core-roles-shim.js`) to
+ * each installed `@tokagentos/core/dist/roles.js` location and add the matching
  * `./roles` entry to the package.json `exports` field. The shim bundles
- * `eliza/packages/typescript/src/roles.ts` verbatim with its two runtime
+ * `tokagent/packages/typescript/src/roles.ts` verbatim with its two runtime
  * dependencies (`createUniqueUuid`, `logger`) left as top-level imports from
- * `@elizaos/core` — both of which are already present in the main published
+ * `@tokagentos/core` — both of which are already present in the main published
  * runtime bundle.
  */
-export function patchElizaCoreRolesSubpath(root, log = console.log) {
+export function patchTokagentCoreRolesSubpath(root, log = console.log) {
   const shimSource = resolve(
     dirname(fileURLToPath(import.meta.url)),
-    "elizaos-core-roles-shim.js",
+    "tokagentos-core-roles-shim.js",
   );
   if (!existsSync(shimSource)) {
     log(
-      `[patch-deps] Skipping @elizaos/core/roles subpath install: shim ${shimSource} is missing`,
+      `[patch-deps] Skipping @tokagentos/core/roles subpath install: shim ${shimSource} is missing`,
     );
     return false;
   }
   const shimContents = readFileSync(shimSource, "utf8");
 
-  const pkgPaths = findPackageJsonPaths(root, "@elizaos/core");
+  const pkgPaths = findPackageJsonPaths(root, "@tokagentos/core");
   let patchedAny = false;
 
   for (const pkgPath of pkgPaths) {
@@ -230,20 +230,20 @@ export function patchElizaCoreRolesSubpath(root, log = console.log) {
     if (wroteJs || wrotePkg) {
       patchedAny = true;
       log(
-        `[patch-deps] Installed @elizaos/core/roles runtime subpath at ${pkgDir}`,
+        `[patch-deps] Installed @tokagentos/core/roles runtime subpath at ${pkgDir}`,
       );
     }
   }
 
   if (!patchedAny) {
     log(
-      "[patch-deps] @elizaos/core/roles subpath already installed in every cache location",
+      "[patch-deps] @tokagentos/core/roles subpath already installed in every cache location",
     );
   }
   return patchedAny;
 }
 
-function findElizaPluginPackageJsonPaths(root) {
+function findTokagentPluginPackageJsonPaths(root) {
   const candidates = [];
   const rootScopeDir = resolve(root, "node_modules", "@elizaos");
 
@@ -272,13 +272,13 @@ function findElizaPluginPackageJsonPaths(root) {
 }
 
 /**
- * Bun can keep a private @elizaos/core inside individual plugin package dirs.
+ * Bun can keep a private @tokagentos/core inside individual plugin package dirs.
  * When that happens, ESM resolves the plugin's own nested core first instead of
  * the root install, which can re-introduce version skew even when the root core
  * is pinned and healthy. Remove those nested copies so plugins resolve the
  * canonical top-level core.
  */
-export function pruneNestedElizaPluginCoreCopies(root, log = console.log) {
+export function pruneNestedTokagentPluginCoreCopies(root, log = console.log) {
   const rootCorePkgPath = resolve(
     root,
     "node_modules",
@@ -288,11 +288,11 @@ export function pruneNestedElizaPluginCoreCopies(root, log = console.log) {
   );
   const preferredCorePkgPath = existsSync(rootCorePkgPath)
     ? rootCorePkgPath
-    : findPackageJsonPaths(root, "@elizaos/core")[0];
+    : findPackageJsonPaths(root, "@tokagentos/core")[0];
 
   if (!preferredCorePkgPath) {
     log(
-      "[patch-deps] Skipping nested @elizaos/core pruning: no root core install was found.",
+      "[patch-deps] Skipping nested @tokagentos/core pruning: no root core install was found.",
     );
     return false;
   }
@@ -305,7 +305,7 @@ export function pruneNestedElizaPluginCoreCopies(root, log = console.log) {
   }
 
   let patched = false;
-  for (const pluginPkgPath of findElizaPluginPackageJsonPaths(root)) {
+  for (const pluginPkgPath of findTokagentPluginPackageJsonPaths(root)) {
     const pluginDir = dirname(pluginPkgPath);
     const nestedCoreDir = resolve(
       pluginDir,
@@ -339,27 +339,27 @@ export function pruneNestedElizaPluginCoreCopies(root, log = console.log) {
     rmSync(nestedCoreDir, { recursive: true, force: true });
     patched = true;
     log(
-      `[patch-deps] Removed nested @elizaos/core from ${pluginName}; plugin imports now resolve the root core.`,
+      `[patch-deps] Removed nested @tokagentos/core from ${pluginName}; plugin imports now resolve the root core.`,
     );
   }
 
   return patched;
 }
 
-/** @see patchElizaCoreStreamingTtsHandlerGuard */
-const ELIZA_CORE_STREAMING_TTS_PATCH_MARKER =
+/** @see patchTokagentCoreStreamingTtsHandlerGuard */
+const TOKAGENT_CORE_STREAMING_TTS_PATCH_MARKER =
   "getModel(ModelType.TEXT_TO_SPEECH) ? await runtime2.useModel(ModelType.TEXT_TO_SPEECH, params)";
 
-const ELIZA_CORE_NODE_EDGE_TTS_FROM =
+const TOKAGENT_CORE_NODE_EDGE_TTS_FROM =
   "const result2 = await runtime2.useModel(ModelType.TEXT_TO_SPEECH, params);";
-const ELIZA_CORE_NODE_EDGE_TTS_TO =
+const TOKAGENT_CORE_NODE_EDGE_TTS_TO =
   "const result2 = runtime2.getModel(ModelType.TEXT_TO_SPEECH) ? await runtime2.useModel(ModelType.TEXT_TO_SPEECH, params) : void 0;";
 
 /**
  * Minified browser bundle (variable names change between releases — extend if
- * postinstall logs "Skipping @elizaos/core streaming TTS guard" for browser).
+ * postinstall logs "Skipping @tokagentos/core streaming TTS guard" for browser).
  */
-const ELIZA_CORE_BROWSER_TTS_REPLACEMENTS = [
+const TOKAGENT_CORE_BROWSER_TTS_REPLACEMENTS = [
   [
     ",S=await $.useModel(b$.TEXT_TO_SPEECH,M);",
     ",S=$.getModel(b$.TEXT_TO_SPEECH)?await $.useModel(b$.TEXT_TO_SPEECH,M):void 0;",
@@ -371,8 +371,8 @@ const ELIZA_CORE_BROWSER_TTS_REPLACEMENTS = [
 ];
 
 /**
- * Eliza core's message handler synthesizes voice audio whenever `onStreamChunk`
- * is provided. Eliza's SSE chat always passes that callback, so the runtime
+ * Tokagent core's message handler synthesizes voice audio whenever `onStreamChunk`
+ * is provided. Tokagent's SSE chat always passes that callback, so the runtime
  * calls `useModel(TEXT_TO_SPEECH)` — unrelated to the dashboard "agent voice"
  * toggle. If no handler is registered yet (e.g. race before Edge TTS loads) or
  * no provider is configured, that throws and logs
@@ -380,11 +380,11 @@ const ELIZA_CORE_BROWSER_TTS_REPLACEMENTS = [
  *
  * Guard both `useModel` sites so we only call TTS when `getModel` finds a handler.
  */
-export function patchElizaCoreStreamingTtsHandlerGuard(
+export function patchTokagentCoreStreamingTtsHandlerGuard(
   root,
   log = console.log,
 ) {
-  const pkgJsonPaths = findPackageJsonPaths(root, "@elizaos/core");
+  const pkgJsonPaths = findPackageJsonPaths(root, "@tokagentos/core");
   let patchedAny = false;
 
   for (const pkgJsonPath of pkgJsonPaths) {
@@ -399,7 +399,7 @@ export function patchElizaCoreStreamingTtsHandlerGuard(
       if (!existsSync(filePath)) continue;
       const src = readFileSync(filePath, "utf8");
       if (!src.includes("Error generating voice for remaining text")) continue;
-      if (src.includes(ELIZA_CORE_STREAMING_TTS_PATCH_MARKER)) continue;
+      if (src.includes(TOKAGENT_CORE_STREAMING_TTS_PATCH_MARKER)) continue;
 
       let next = src;
       const isNodeOrEdge =
@@ -407,10 +407,10 @@ export function patchElizaCoreStreamingTtsHandlerGuard(
         filePath.endsWith("index.edge.js");
 
       if (isNodeOrEdge) {
-        if (!next.includes(ELIZA_CORE_NODE_EDGE_TTS_FROM)) continue;
+        if (!next.includes(TOKAGENT_CORE_NODE_EDGE_TTS_FROM)) continue;
         next = next.replaceAll(
-          ELIZA_CORE_NODE_EDGE_TTS_FROM,
-          ELIZA_CORE_NODE_EDGE_TTS_TO,
+          TOKAGENT_CORE_NODE_EDGE_TTS_FROM,
+          TOKAGENT_CORE_NODE_EDGE_TTS_TO,
         );
       } else {
         // Newer core builds may already ship this guard in the browser bundle.
@@ -420,11 +420,11 @@ export function patchElizaCoreStreamingTtsHandlerGuard(
           )
         )
           continue;
-        const allPresent = ELIZA_CORE_BROWSER_TTS_REPLACEMENTS.every(([from]) =>
+        const allPresent = TOKAGENT_CORE_BROWSER_TTS_REPLACEMENTS.every(([from]) =>
           next.includes(from),
         );
         if (!allPresent) continue;
-        for (const [from, to] of ELIZA_CORE_BROWSER_TTS_REPLACEMENTS) {
+        for (const [from, to] of TOKAGENT_CORE_BROWSER_TTS_REPLACEMENTS) {
           next = next.replace(from, to);
         }
       }
@@ -433,7 +433,7 @@ export function patchElizaCoreStreamingTtsHandlerGuard(
         writeFileSync(filePath, next, "utf8");
         patchedAny = true;
         log(
-          `[patch-deps] Patched @elizaos/core streaming TTS guard: ${filePath}`,
+          `[patch-deps] Patched @tokagentos/core streaming TTS guard: ${filePath}`,
         );
       }
     }
@@ -443,7 +443,7 @@ export function patchElizaCoreStreamingTtsHandlerGuard(
 }
 
 /** User-visible chunk injected on each structured-output retry (non-rich stream). */
-const ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_NODE = `    if (!this.config.hasRichConsumer) {
+const TOKAGENT_CORE_STREAM_RETRY_PLACEHOLDER_NODE = `    if (!this.config.hasRichConsumer) {
       this.config.onChunk(\`
 -- that's not right, let me start again:
 \`);
@@ -451,23 +451,23 @@ const ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_NODE = `    if (!this.config.hasRichCo
 `;
 
 /** Minified browser bundle: comma-operator if sets state then checks hasRichConsumer. */
-const ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_FROM = `if(this.state="retrying",!this.config.hasRichConsumer)this.config.onChunk(\`
+const TOKAGENT_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_FROM = `if(this.state="retrying",!this.config.hasRichConsumer)this.config.onChunk(\`
 -- that's not right, let me start again:
 \`);`;
 
-const ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_TO = `this.state="retrying";`;
+const TOKAGENT_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_TO = `this.state="retrying";`;
 
 /**
- * `ValidationStreamExtractor.signalRetry` in @elizaos/core calls `onChunk` with a
+ * `ValidationStreamExtractor.signalRetry` in @tokagentos/core calls `onChunk` with a
  * fixed apology line for non-rich streaming consumers on every parse/validation
  * retry. That duplicates in the saved message (e.g. 3× with maxRetries 3).
  * Remove the placeholder; `emitEvent({ eventType: "retry_start" })` is unchanged.
  */
-export function patchElizaCoreStreamingRetryPlaceholder(
+export function patchTokagentCoreStreamingRetryPlaceholder(
   root,
   log = console.log,
 ) {
-  const pkgJsonPaths = findPackageJsonPaths(root, "@elizaos/core");
+  const pkgJsonPaths = findPackageJsonPaths(root, "@tokagentos/core");
   let patchedAny = false;
 
   for (const pkgJsonPath of pkgJsonPaths) {
@@ -488,14 +488,14 @@ export function patchElizaCoreStreamingRetryPlaceholder(
         filePath.endsWith("index.node.js") ||
         filePath.endsWith("index.edge.js")
       ) {
-        if (!next.includes(ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_NODE)) continue;
-        next = next.replace(ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_NODE, "");
+        if (!next.includes(TOKAGENT_CORE_STREAM_RETRY_PLACEHOLDER_NODE)) continue;
+        next = next.replace(TOKAGENT_CORE_STREAM_RETRY_PLACEHOLDER_NODE, "");
       } else {
-        if (!next.includes(ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_FROM))
+        if (!next.includes(TOKAGENT_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_FROM))
           continue;
         next = next.replaceAll(
-          ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_FROM,
-          ELIZA_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_TO,
+          TOKAGENT_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_FROM,
+          TOKAGENT_CORE_STREAM_RETRY_PLACEHOLDER_BROWSER_TO,
         );
       }
 
@@ -503,7 +503,7 @@ export function patchElizaCoreStreamingRetryPlaceholder(
         writeFileSync(filePath, next, "utf8");
         patchedAny = true;
         log(
-          `[patch-deps] Patched @elizaos/core streaming retry placeholder: ${filePath}`,
+          `[patch-deps] Patched @tokagentos/core streaming retry placeholder: ${filePath}`,
         );
       }
     }
@@ -652,12 +652,12 @@ export function applyExtensionlessJsExportAliases(pkgPath) {
 }
 
 /**
- * Some upstream @elizaos packages (notably @elizaos/agent and @elizaos/ui)
+ * Some upstream @elizaos packages (notably @tokagentos/agent and @tokagentos/ui)
  * publish exports maps where glob subpath targets still carry the source
  * extension before the .js / .d.ts suffix — e.g. "./packages/agent/src/runtime/*.ts.js".
  * That breaks Bun resolution because the on-disk files are "*.js" / "*.d.ts".
  *
- * The bug originates in eliza's prepare-package-dist.mjs `replaceSourceExtension`
+ * The bug originates in tokagent's prepare-package-dist.mjs `replaceSourceExtension`
  * helper (it appends ".js" instead of replacing the source extension when the
  * relative path contains a "*"). Rather than wait for upstream republish, we
  * rewrite every export value matching /\*\.(ts|tsx|mts|cts)\.(js|d\.ts)$/
@@ -929,10 +929,10 @@ export function patchMissingLifecycleScript(
   return patched;
 }
 
-function loadElizaOnboardingPresetsSource(root, targetPath) {
+function loadTokagentOnboardingPresetsSource(root, targetPath) {
   const sourcePath = resolve(
     root,
-    "eliza/packages/app-core/src/onboarding-presets.ts",
+    "tokagent/packages/app-core/src/onboarding-presets.ts",
   );
   const source = readFileSync(sourcePath, "utf8");
   if (!targetPath?.endsWith(".js")) {
@@ -949,12 +949,12 @@ function loadElizaOnboardingPresetsSource(root, targetPath) {
 }
 
 /**
- * Eliza owns the onboarding preset roster, but the published autonomous
+ * Tokagent owns the onboarding preset roster, but the published autonomous
  * package still serves upstream style presets. Replace the installed module
- * with Eliza's local preset source so the onboarding API and runtime expose
- * the same Eliza-specific characters that app-core is patched to display.
+ * with Tokagent's local preset source so the onboarding API and runtime expose
+ * the same Tokagent-specific characters that app-core is patched to display.
  */
-export function applyAutonomousElizaOnboardingPresetsPatch(filePath, source) {
+export function applyAutonomousTokagentOnboardingPresetsPatch(filePath, source) {
   if (!existsSync(filePath)) return false;
 
   // When writing to a .js file, strip TypeScript-only syntax so Bun can
@@ -995,7 +995,7 @@ function stripTypeScriptSyntax(src) {
   return src;
 }
 
-export function patchAutonomousElizaOnboardingPresets(
+export function patchAutonomousTokagentOnboardingPresets(
   root,
   log = console.log,
   source,
@@ -1003,17 +1003,17 @@ export function patchAutonomousElizaOnboardingPresets(
   const candidates = [
     ...findPackageFilePaths(
       root,
-      "@elizaos/agent",
-      "eliza/agent/src/onboarding-presets.js",
+      "@tokagentos/agent",
+      "tokagent/agent/src/onboarding-presets.js",
     ),
     ...findPackageFilePaths(
       root,
-      "@elizaos/agent",
+      "@tokagentos/agent",
       "src/onboarding-presets.js",
     ),
     ...findPackageFilePaths(
       root,
-      "@elizaos/agent",
+      "@tokagentos/agent",
       "src/onboarding-presets.ts",
     ),
   ];
@@ -1021,13 +1021,13 @@ export function patchAutonomousElizaOnboardingPresets(
   let patched = false;
   for (const filePath of candidates) {
     const nextSource =
-      source ?? loadElizaOnboardingPresetsSource(root, filePath);
-    if (!applyAutonomousElizaOnboardingPresetsPatch(filePath, nextSource)) {
+      source ?? loadTokagentOnboardingPresetsSource(root, filePath);
+    if (!applyAutonomousTokagentOnboardingPresetsPatch(filePath, nextSource)) {
       continue;
     }
     patched = true;
     log(
-      "[patch-deps] Patched @elizaos/agent eliza/agent/src/onboarding-presets.js: onboarding presets now derive from Eliza.",
+      "[patch-deps] Patched @tokagentos/agent tokagent/agent/src/onboarding-presets.js: onboarding presets now derive from Tokagent.",
     );
   }
 
@@ -1280,7 +1280,7 @@ export function applyPtyManagerEsmDirnameCompat(filePath) {
  */
 export function patchPtyManagerEsmDirnameCompat(root, log = console.log) {
   const searchRoots = dedupeRealPaths(
-    [root, resolve(root, "eliza")].filter((candidate) => existsSync(candidate)),
+    [root, resolve(root, "tokagent")].filter((candidate) => existsSync(candidate)),
   );
   const candidates = dedupeRealPaths(
     searchRoots.flatMap((searchRoot) =>
@@ -1377,7 +1377,7 @@ export function applyPtyManagerCursorPositionCompat(filePath) {
  */
 export function patchPtyManagerCursorPositionCompat(root, log = console.log) {
   const searchRoots = dedupeRealPaths(
-    [root, resolve(root, "eliza")].filter((candidate) => existsSync(candidate)),
+    [root, resolve(root, "tokagent")].filter((candidate) => existsSync(candidate)),
   );
   const candidates = dedupeRealPaths(
     searchRoots.flatMap((searchRoot) => [
@@ -1490,7 +1490,7 @@ export function patchElectrobunWindowsTar(root, log = console.log) {
 export function patchAutonomousTypeError(root, log = console.log) {
   const candidates = findPackageFilePaths(
     root,
-    "@elizaos/agent",
+    "@tokagentos/agent",
     "src/api/server.ts",
   );
   let patched = false;
@@ -1506,7 +1506,7 @@ export function patchAutonomousTypeError(root, log = console.log) {
       );
       writeFileSync(filePath, source, "utf8");
       patched = true;
-      log("[patch-deps] Patched @elizaos/agent type error in server.ts");
+      log("[patch-deps] Patched @tokagentos/agent type error in server.ts");
     }
   }
   return patched;

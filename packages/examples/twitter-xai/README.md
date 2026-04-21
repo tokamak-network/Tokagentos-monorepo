@@ -1,15 +1,15 @@
 # X (Twitter) Agent Example (Grok + X API)
 
-A full-featured elizaOS agent that runs on **X (formerly Twitter)** and uses:
+A full-featured tokagentOS agent that runs on **X (formerly Twitter)** and uses:
 
-- **Grok (xAI)** for text generation + embeddings (via `@elizaos/plugin-xai` / `elizaos-plugin-xai` / `elizaos-plugin-xai` Rust crate)
+- **Grok (xAI)** for text generation + embeddings (via `@elizaos/plugin-xai` / `tokagentos-plugin-xai` / `tokagentos-plugin-xai` Rust crate)
 - **X API v2** for reading mentions and creating posts/replies
 
 This example is implemented in **TypeScript**, **Python**, and **Rust**.
 
 ## What this example does
 
-- **Replies to @mentions** by polling X search results and routing each mention through the **full elizaOS pipeline** (`messageService.handleMessage()` / `message_service.handle_message()`).
+- **Replies to @mentions** by polling X search results and routing each mention through the **full tokagentOS pipeline** (`messageService.handleMessage()` / `message_service.handle_message()`).
 - **Optional automated posting** (TypeScript version uses the plugin’s built-in post loop; Python/Rust versions include an explicit loop).
 - **Dry run mode** supported via `X_DRY_RUN=true` (no writes to X).
 
@@ -93,7 +93,7 @@ cargo run --release
 
 ## How it works (canonical pipeline)
 
-For each incoming mention, the examples aim to route the event through the elizaOS “message service” so you get consistent state composition and response generation.
+For each incoming mention, the examples aim to route the event through the tokagentOS “message service” so you get consistent state composition and response generation.
 
 ### TypeScript (most complete, service-driven)
 
@@ -115,7 +115,7 @@ For each incoming mention, the examples aim to route the event through the eliza
 For each incoming mention, we:
 
 1. **Create a `Memory`** for the X post (stable IDs per post/conversation).\n
-2. **Ensure connection/room** exists in elizaOS (world + room + entity).\n
+2. **Ensure connection/room** exists in tokagentOS (world + room + entity).\n
 3. Call the language runtime’s **message service**.\n
 4. Post a reply to X (unless `X_DRY_RUN=true`).\n
 

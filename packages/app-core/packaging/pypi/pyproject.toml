@@ -3,21 +3,21 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-app"
+name = "tokagentos-app"
 version = "2.0.0a7"
-description = "Dynamic loader for elizaOS App — personal AI assistant built on elizaOS"
+description = "Dynamic loader for tokagentOS App — personal AI assistant built on tokagentOS"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.9"
 authors = [
-    { name = "elizaos", email = "dev@app.elizaos.ai" },
+    { name = "tokagentos", email = "dev@app.tokagentos.ai" },
 ]
 keywords = [
     "ai",
     "assistant",
     "agent",
-    "elizaos",
-    "elizaos-app",
+    "tokagentos",
+    "tokagentos-app",
     "llm",
     "cli",
 ]
@@ -42,14 +42,14 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://app.elizaos.ai"
-Repository = "https://github.com/elizaos/elizaos-app"
-Documentation = "https://docs.app.elizaos.ai"
-Issues = "https://github.com/elizaos/elizaos-app/issues"
+Homepage = "https://app.tokagentos.ai"
+Repository = "https://github.com/tokagentos/tokagentos-app"
+Documentation = "https://docs.app.tokagentos.ai"
+Issues = "https://github.com/tokagentos/tokagentos-app/issues"
 
 [project.scripts]
-elizaos-app = "elizaos_app.cli:main"
+tokagentos-app = "tokagentos_app.cli:main"
 
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_app"]
+packages = ["tokagentos_app"]

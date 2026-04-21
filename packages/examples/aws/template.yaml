@@ -1,9 +1,9 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  elizaOS AWS Lambda Worker
+  tokagentOS AWS Lambda Worker
 
-  Deploy an elizaOS agent as a serverless Lambda function with API Gateway.
+  Deploy an tokagentOS agent as a serverless Lambda function with API Gateway.
 
 # Global settings
 Globals:
@@ -31,7 +31,7 @@ Parameters:
 
   CharacterName:
     Type: String
-    Default: Eliza
+    Default: Tokagent
     Description: Name of the AI agent
 
   CharacterBio:
@@ -61,7 +61,7 @@ Conditions:
 
 Resources:
   # API Gateway HTTP API
-  ElizaApi:
+  TokagentApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: prod
@@ -75,15 +75,15 @@ Resources:
           - GET
           - POST
           - OPTIONS
-      Description: elizaOS Worker API
+      Description: tokagentOS Worker API
 
   # TypeScript Lambda Function
-  ElizaWorkerTypeScript:
+  TokagentWorkerTypeScript:
     Type: AWS::Serverless::Function
     Condition: IsTypeScript
     Properties:
-      FunctionName: eliza-worker-typescript
-      Description: elizaOS chat worker (TypeScript)
+      FunctionName: tokagent-worker-typescript
+      Description: tokagentOS chat worker (TypeScript)
       CodeUri: typescript/dist/
       Handler: handler.handler
       Runtime: nodejs20.x
@@ -100,19 +100,19 @@ Resources:
         Health:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /
             Method: GET
         HealthCheck:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /health
             Method: GET
         Chat:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /chat
             Method: POST
     Metadata:
@@ -125,12 +125,12 @@ Resources:
           - handler.ts
 
   # Python Lambda Function
-  ElizaWorkerPython:
+  TokagentWorkerPython:
     Type: AWS::Serverless::Function
     Condition: IsPython
     Properties:
-      FunctionName: eliza-worker-python
-      Description: elizaOS chat worker (Python)
+      FunctionName: tokagent-worker-python
+      Description: tokagentOS chat worker (Python)
       CodeUri: python/
       Handler: handler.handler
       Runtime: python3.11
@@ -147,29 +147,29 @@ Resources:
         Health:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /
             Method: GET
         HealthCheck:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /health
             Method: GET
         Chat:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /chat
             Method: POST
 
   # Rust Lambda Function (custom runtime)
-  ElizaWorkerRust:
+  TokagentWorkerRust:
     Type: AWS::Serverless::Function
     Condition: IsRust
     Properties:
-      FunctionName: eliza-worker-rust
-      Description: elizaOS chat worker (Rust)
+      FunctionName: tokagent-worker-rust
+      Description: tokagentOS chat worker (Rust)
       CodeUri: rust/target/lambda/bootstrap/
       Handler: bootstrap
       Runtime: provided.al2023
@@ -188,19 +188,19 @@ Resources:
         Health:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /
             Method: GET
         HealthCheck:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /health
             Method: GET
         Chat:
           Type: HttpApi
           Properties:
-            ApiId: !Ref ElizaApi
+            ApiId: !Ref TokagentApi
             Path: /chat
             Method: POST
 
@@ -208,25 +208,25 @@ Resources:
 Outputs:
   ApiEndpoint:
     Description: API Gateway endpoint URL
-    Value: !Sub "https://${ElizaApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
+    Value: !Sub "https://${TokagentApi}.execute-api.${AWS::Region}.amazonaws.com/prod"
 
   ChatEndpoint:
     Description: Chat endpoint URL
-    Value: !Sub "https://${ElizaApi}.execute-api.${AWS::Region}.amazonaws.com/prod/chat"
+    Value: !Sub "https://${TokagentApi}.execute-api.${AWS::Region}.amazonaws.com/prod/chat"
 
   HealthEndpoint:
     Description: Health check endpoint URL
-    Value: !Sub "https://${ElizaApi}.execute-api.${AWS::Region}.amazonaws.com/prod/health"
+    Value: !Sub "https://${TokagentApi}.execute-api.${AWS::Region}.amazonaws.com/prod/health"
 
   FunctionArn:
     Description: Lambda function ARN
     Value: !If
       - IsTypeScript
-      - !GetAtt ElizaWorkerTypeScript.Arn
+      - !GetAtt TokagentWorkerTypeScript.Arn
       - !If
         - IsPython
-        - !GetAtt ElizaWorkerPython.Arn
-        - !GetAtt ElizaWorkerRust.Arn
+        - !GetAtt TokagentWorkerPython.Arn
+        - !GetAtt TokagentWorkerRust.Arn
 
 
 

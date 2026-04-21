@@ -1,4 +1,4 @@
-//! Agent and Character types for elizaOS
+//! Agent and Character types for tokagentOS
 //!
 //! Contains Character, Agent, and related configuration types.
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import fs from 'node:fs/promises';
 import path from 'node:path';
 

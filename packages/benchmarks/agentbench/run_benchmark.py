@@ -4,7 +4,7 @@ Run AgentBench benchmark and generate results report.
 
 Usage:
     python run_benchmark.py                  # Run with mock runtime
-    python run_benchmark.py --elizaos        # Run with ElizaOS runtime
+    python run_benchmark.py --tokagentos        # Run with TokagentOS runtime
     python run_benchmark.py --env os db      # Run specific environments
     python run_benchmark.py --trajectories   # Export trajectories for RL training
 """
@@ -18,13 +18,13 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from elizaos_agentbench import (
+from tokagentos_agentbench import (
     AgentBenchRunner,
     AgentBenchConfig,
     AgentBenchEnvironment,
 )
-from elizaos_agentbench.types import EnvironmentConfig
-from elizaos_agentbench.mock_runtime import SmartMockRuntime
+from tokagentos_agentbench.types import EnvironmentConfig
+from tokagentos_agentbench.mock_runtime import SmartMockRuntime
 
 
 def _load_dotenv() -> None:
@@ -69,14 +69,14 @@ def _load_dotenv() -> None:
 async def main() -> int:
     parser = argparse.ArgumentParser(description="Run AgentBench benchmark")
     parser.add_argument(
-        "--elizaos",
+        "--tokagentos",
         action="store_true",
-        help="Use ElizaOS runtime (requires elizaos package)",
+        help="Use TokagentOS runtime (requires tokagentos package)",
     )
     parser.add_argument(
-        "--eliza",
+        "--tokagent",
         action="store_true",
-        help="Use eliza TypeScript agent via benchmark server",
+        help="Use tokagent TypeScript agent via benchmark server",
     )
     parser.add_argument(
         "--env",
@@ -111,7 +111,7 @@ async def main() -> int:
     args = parser.parse_args()
 
     print("=" * 60)
-    print("AgentBench Evaluation - ElizaOS Python")
+    print("AgentBench Evaluation - TokagentOS Python")
     print("=" * 60)
 
     # Create configuration
@@ -159,13 +159,13 @@ async def main() -> int:
 
     # Initialize runtime
     runtime = None
-    if args.elizaos:
+    if args.tokagentos:
         try:
-            from elizaos.runtime import AgentRuntime
-            from elizaos.bootstrap import bootstrap_plugin
-            from elizaos.types.model import LLMMode, ModelType
+            from tokagentos.runtime import AgentRuntime
+            from tokagentos.bootstrap import bootstrap_plugin
+            from tokagentos.types.model import LLMMode, ModelType
 
-            from elizaos_agentbench.eliza_harness import create_benchmark_character
+            from tokagentos_agentbench.tokagent_harness import create_benchmark_character
 
             _load_dotenv()
 
@@ -174,7 +174,7 @@ async def main() -> int:
             has_model_plugin = False
 
             try:
-                from elizaos_plugin_openai import get_openai_plugin
+                from tokagentos_plugin_openai import get_openai_plugin
 
                 if os.environ.get("OPENAI_API_KEY"):
                     plugins.append(get_openai_plugin())
@@ -191,7 +191,7 @@ async def main() -> int:
                 runtime = SmartMockRuntime()
             else:
                 print("\n" + "=" * 60)
-                print("Initializing FULL ElizaOS Pipeline")
+                print("Initializing FULL TokagentOS Pipeline")
                 print("=" * 60)
                 print("\n📦 Loading plugins:")
                 print("   • bootstrap (basicCapabilities: providers, actions, evaluators)")
@@ -203,7 +203,7 @@ async def main() -> int:
                 print(f"   System: {character.system[:80]}...")
 
                 # Add benchmark plugin (provider + action for benchmarks)
-                from elizaos_agentbench.eliza_harness import create_benchmark_plugin
+                from tokagentos_agentbench.tokagent_harness import create_benchmark_plugin
 
                 benchmark_plugin = create_benchmark_plugin()
                 plugins.append(benchmark_plugin)
@@ -212,7 +212,7 @@ async def main() -> int:
                 # Optional: register trajectory logger plugin for end-to-end capture
                 if args.trajectories:
                     try:
-                        from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+                        from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
                         plugins.append(get_trajectory_logger_plugin())
                         print("   • trajectory-logger (end-to-end training/benchmark capture)")
@@ -224,7 +224,7 @@ async def main() -> int:
                 runtime = AgentRuntime(character=character, plugins=plugins, llm_mode=LLMMode.SMALL)
 
                 # Register in-memory database adapter for message storage
-                from elizaos_agentbench.eliza_harness import BenchmarkDatabaseAdapter
+                from tokagentos_agentbench.tokagent_harness import BenchmarkDatabaseAdapter
 
                 db_adapter = BenchmarkDatabaseAdapter()
                 await db_adapter.initialize()
@@ -238,17 +238,17 @@ async def main() -> int:
                     await runtime.stop()
                     runtime = SmartMockRuntime()
                 else:
-                    print("\n✅ ElizaOS runtime ready")
+                    print("\n✅ TokagentOS runtime ready")
                     print("   • message_service: enabled (full pipeline)")
                     print(f"   • providers: {len(runtime.providers)} loaded")
                     print(f"   • actions: {len(runtime.actions)} registered")
                     print("=" * 60)
 
         except ImportError as e:
-            print(f"Warning: ElizaOS not available ({e})")
+            print(f"Warning: TokagentOS not available ({e})")
             print("Falling back to deterministic mock runtime")
             runtime = SmartMockRuntime()
-    elif args.eliza:
+    elif args.tokagent:
         print("\n" + "=" * 60)
         print("Using MILADY TypeScript agent via benchmark server")
         print("=" * 60)
@@ -263,7 +263,7 @@ async def main() -> int:
         # the actual agent loop.
         runtime = SmartMockRuntime()
         runtime._milady_harness = milady_harness  # type: ignore[attr-defined]
-        print("✅ Eliza benchmark server connected")
+        print("✅ Tokagent benchmark server connected")
     else:
         print("\nUsing deterministic mock runtime (for harness validation)")
         runtime = SmartMockRuntime()
@@ -334,11 +334,11 @@ async def main() -> int:
         try:
             from typing import Protocol, runtime_checkable
 
-            from elizaos_plugin_trajectory_logger import (
+            from tokagentos_plugin_trajectory_logger import (
                 TRAJECTORY_LOGGER_SERVICE_TYPE,
                 TrajectoryLoggerRuntimeService,
             )
-            from elizaos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
+            from tokagentos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
 
             @runtime_checkable
             class _ExportableTrajectoryService(Protocol):

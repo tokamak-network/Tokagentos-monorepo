@@ -1,12 +1,12 @@
 [package]
-name = "elizaos"
+name = "tokagentos"
 version = "2.0.0"
 edition = "2021"
-authors = ["elizaOS Contributors"]
-# Multi-language support for elizaOS
-description = "Core runtime and types for elizaOS - Rust implementation"
+authors = ["tokagentOS Contributors"]
+# Multi-language support for tokagentOS
+description = "Core runtime and types for tokagentOS - Rust implementation"
 license = "MIT"
-repository = "https://github.com/elizaos/eliza"
+repository = "https://github.com/tokagentos/tokagent"
 keywords = ["ai", "agent", "runtime", "wasm"]
 categories = ["wasm", "web-programming"]
 include = ["src/**/*", "Cargo.toml", "build.rs", "proto/**/*"]

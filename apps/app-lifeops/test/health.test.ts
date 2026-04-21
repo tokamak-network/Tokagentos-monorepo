@@ -40,7 +40,7 @@ const SAME_ID = "00000000-0000-0000-0000-000000000001";
 
 beforeEach(() => {
   for (const k of Object.keys(process.env)) {
-    if (k.startsWith("ELIZA_HEALTHKIT") || k.startsWith("ELIZA_GOOGLE_FIT")) {
+    if (k.startsWith("TOKAGENT_HEALTHKIT") || k.startsWith("TOKAGENT_GOOGLE_FIT")) {
       delete process.env[k];
     }
   }

@@ -11,12 +11,12 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import Provider
+from tokagentos.types import Provider
 
 from .config import OnboardingSetting
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 logger = logging.getLogger(__name__)
 

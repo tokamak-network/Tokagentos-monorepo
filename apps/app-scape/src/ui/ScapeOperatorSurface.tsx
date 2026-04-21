@@ -1,8 +1,8 @@
 
 
 import { useCallback, useMemo, useState } from "react";
-import { type AppSessionJsonValue, client } from "@elizaos/app-core/api";
-import { useApp } from "@elizaos/app-core/state";
+import { type AppSessionJsonValue, client } from "@tokagentos/app-core/api";
+import { useApp } from "@tokagentos/app-core/state";
 import {
   formatDetailTimestamp,
   SurfaceBadge,
@@ -15,9 +15,9 @@ import {
   toneForHealthState,
   toneForStatusText,
   toneForViewerAttachment,
-} from "@elizaos/app-core/components/apps/extensions/surface";
-import type { AppOperatorSurfaceProps } from "@elizaos/app-core/components/apps/surfaces/types";
-import { Button, Input } from "@elizaos/ui";
+} from "@tokagentos/app-core/components/apps/extensions/surface";
+import type { AppOperatorSurfaceProps } from "@tokagentos/app-core/components/apps/surfaces/types";
+import { Button, Input } from "@tokagentos/ui";
 
 // ─────────────────────────────────────────────────────────────────────────
 // Telemetry shape — a partial view of what buildScapeSessionState emits.

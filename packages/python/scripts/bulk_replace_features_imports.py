@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rewrite elizaos.* imports after moving packages under elizaos.features."""
+"""Rewrite tokagentos.* imports after moving packages under tokagentos.features."""
 
 from __future__ import annotations
 
@@ -8,11 +8,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 REPLACEMENTS: list[tuple[str, str]] = [
-    ("elizaos.advanced_capabilities", "elizaos.features.advanced_capabilities"),
-    ("elizaos.advanced_memory", "elizaos.features.advanced_memory"),
-    ("elizaos.advanced_planning", "elizaos.features.advanced_planning"),
-    ("elizaos.basic_capabilities", "elizaos.features.basic_capabilities"),
-    ("elizaos.core_capabilities", "elizaos.features.core_capabilities"),
+    ("tokagentos.advanced_capabilities", "tokagentos.features.advanced_capabilities"),
+    ("tokagentos.advanced_memory", "tokagentos.features.advanced_memory"),
+    ("tokagentos.advanced_planning", "tokagentos.features.advanced_planning"),
+    ("tokagentos.basic_capabilities", "tokagentos.features.basic_capabilities"),
+    ("tokagentos.core_capabilities", "tokagentos.features.core_capabilities"),
 ]
 
 

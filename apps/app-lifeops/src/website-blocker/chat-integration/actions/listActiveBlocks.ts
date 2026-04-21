@@ -3,7 +3,7 @@ import type {
   ActionExample,
   ActionResult,
   IAgentRuntime,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { BlockRuleReader } from "../block-rule-service.js";
 import {
   formatWebsiteList,

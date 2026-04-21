@@ -8,26 +8,26 @@ import time
 from typing import TYPE_CHECKING, Any, ClassVar
 from uuid import uuid4
 
-from elizaos.advanced_capabilities.experience.types import (
+from tokagentos.advanced_capabilities.experience.types import (
     Experience,
     ExperienceAnalysis,
     ExperienceQuery,
     ExperienceType,
     OutcomeType,
 )
-from elizaos.advanced_capabilities.experience.utils.confidence_decay import (
+from tokagentos.advanced_capabilities.experience.utils.confidence_decay import (
     ConfidenceDecayManager,
 )
-from elizaos.advanced_capabilities.experience.utils.experience_relationships import (
+from tokagentos.advanced_capabilities.experience.utils.experience_relationships import (
     ExperienceRelationship,
     ExperienceRelationshipManager,
 )
-from elizaos.types import ModelType, Service
+from tokagentos.types import ModelType, Service
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
-logger = logging.getLogger("elizaos.experience")
+logger = logging.getLogger("tokagentos.experience")
 
 # Constant for the service type string
 EXPERIENCE_SERVICE_TYPE = "experience"

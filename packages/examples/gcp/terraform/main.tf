@@ -1,4 +1,4 @@
-# Terraform configuration for elizaOS Cloud Run deployment
+# Terraform configuration for tokagentOS Cloud Run deployment
 #
 # Usage:
 #   cd terraform
@@ -38,7 +38,7 @@ variable "runtime" {
 variable "service_name" {
   description = "Base name for the Cloud Run service"
   type        = string
-  default     = "eliza-worker"
+  default     = "tokagent-worker"
 }
 
 variable "openai_api_key" {
@@ -56,7 +56,7 @@ variable "openai_model" {
 variable "character_name" {
   description = "AI character name"
   type        = string
-  default     = "Eliza"
+  default     = "Tokagent"
 }
 
 variable "character_bio" {
@@ -123,10 +123,10 @@ resource "google_project_service" "secretmanager" {
 }
 
 # Artifact Registry repository
-resource "google_artifact_registry_repository" "eliza" {
+resource "google_artifact_registry_repository" "tokagent" {
   location      = var.region
-  repository_id = "eliza"
-  description   = "elizaOS container images"
+  repository_id = "tokagent"
+  description   = "tokagentOS container images"
   format        = "DOCKER"
 
   depends_on = [google_project_service.artifactregistry]
@@ -149,25 +149,25 @@ resource "google_secret_manager_secret_version" "openai_key" {
 }
 
 # Service account for Cloud Run
-resource "google_service_account" "eliza_worker" {
-  account_id   = "eliza-worker"
-  display_name = "elizaOS Cloud Run Worker"
+resource "google_service_account" "tokagent_worker" {
+  account_id   = "tokagent-worker"
+  display_name = "tokagentOS Cloud Run Worker"
 }
 
 # Grant secret access to service account
 resource "google_secret_manager_secret_iam_member" "openai_key_access" {
   secret_id = google_secret_manager_secret.openai_key.id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.eliza_worker.email}"
+  member    = "serviceAccount:${google_service_account.tokagent_worker.email}"
 }
 
 # Cloud Run service
-resource "google_cloud_run_v2_service" "eliza_worker" {
+resource "google_cloud_run_v2_service" "tokagent_worker" {
   name     = "${var.service_name}-${var.runtime}"
   location = var.region
 
   template {
-    service_account = google_service_account.eliza_worker.email
+    service_account = google_service_account.tokagent_worker.email
 
     scaling {
       min_instance_count = var.min_instances
@@ -175,7 +175,7 @@ resource "google_cloud_run_v2_service" "eliza_worker" {
     }
 
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project_id}/eliza/${var.service_name}-${var.runtime}:latest"
+      image = "${var.region}-docker.pkg.dev/${var.project_id}/tokagent/${var.service_name}-${var.runtime}:latest"
 
       resources {
         limits = {
@@ -250,7 +250,7 @@ resource "google_cloud_run_v2_service" "eliza_worker" {
 
   depends_on = [
     google_project_service.run,
-    google_artifact_registry_repository.eliza,
+    google_artifact_registry_repository.tokagent,
     google_secret_manager_secret_version.openai_key,
     google_secret_manager_secret_iam_member.openai_key_access,
   ]
@@ -258,8 +258,8 @@ resource "google_cloud_run_v2_service" "eliza_worker" {
 
 # Allow unauthenticated access
 resource "google_cloud_run_v2_service_iam_member" "public_access" {
-  location = google_cloud_run_v2_service.eliza_worker.location
-  name     = google_cloud_run_v2_service.eliza_worker.name
+  location = google_cloud_run_v2_service.tokagent_worker.location
+  name     = google_cloud_run_v2_service.tokagent_worker.name
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
@@ -267,17 +267,17 @@ resource "google_cloud_run_v2_service_iam_member" "public_access" {
 # Outputs
 output "service_url" {
   description = "Cloud Run service URL"
-  value       = google_cloud_run_v2_service.eliza_worker.uri
+  value       = google_cloud_run_v2_service.tokagent_worker.uri
 }
 
 output "service_name" {
   description = "Cloud Run service name"
-  value       = google_cloud_run_v2_service.eliza_worker.name
+  value       = google_cloud_run_v2_service.tokagent_worker.name
 }
 
 output "repository_url" {
   description = "Artifact Registry repository URL"
-  value       = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.eliza.repository_id}"
+  value       = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.tokagent.repository_id}"
 }
 
 

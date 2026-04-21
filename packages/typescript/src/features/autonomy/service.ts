@@ -1,5 +1,5 @@
 /**
- * Autonomy Service for elizaOS
+ * Autonomy Service for tokagentOS
  *
  * Provides autonomous operation for agents using the prompt batcher (Option A).
  * One register only: the batcher. When enableAutonomy is true, a recurring
@@ -7,7 +7,7 @@
  * when the autonomy section drains. No Task DB or worker.
  */
 
-// Review: Templates were relocated, and dependency on @elizaos/prompts is now obsolete in this module.
+// Review: Templates were relocated, and dependency on @tokagentos/prompts is now obsolete in this module.
 import { v4 as uuidv4 } from "uuid";
 import {
 	autonomyContinuousContinueTemplate,
@@ -400,7 +400,7 @@ export class AutonomyService extends Service {
 	}
 
 	/**
-	 * Perform one iteration of autonomous thinking using the full Eliza agent pipeline.
+	 * Perform one iteration of autonomous thinking using the full Tokagent agent pipeline.
 	 * This processes the message through:
 	 * - All registered providers (context gathering)
 	 * - The LLM generation pipeline (response creation)
@@ -573,7 +573,7 @@ export class AutonomyService extends Service {
 
 		this.runtime.logger.debug(
 			{ src: "autonomy", agentId: this.runtime.agentId },
-			"Processing through full Eliza agent pipeline (providers, actions, evaluators)...",
+			"Processing through full Tokagent agent pipeline (providers, actions, evaluators)...",
 		);
 
 		// Use the canonical message service if available (full agent pipeline)

@@ -13,13 +13,13 @@ import logging
 import re
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import Action, ActionResult, Content
+from tokagentos.types import Action, ActionResult, Content
 
 from ..services.task_clipboard_service import create_task_clipboard_service
 from ..types import TaskClipboardSourceType
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
 logger = logging.getLogger(__name__)
 

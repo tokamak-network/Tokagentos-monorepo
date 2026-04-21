@@ -3,7 +3,7 @@
   "run_index": 0,
   "run_id": "evm_26-02-07_062202_a2a42a5f",
   "chain": "general",
-  "agent_type": "eliza",
+  "agent_type": "tokagent",
   "start_time": "2026-02-07T06:22:02.774709",
   "environment_config": null,
   "messages": [

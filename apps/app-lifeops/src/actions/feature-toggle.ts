@@ -7,9 +7,9 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
-import { ModelType, parseJSONObjectFromText } from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { ModelType, parseJSONObjectFromText } from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import { createFeatureFlagService } from "../lifeops/feature-flags.js";
 import {
   ALL_FEATURE_KEYS,
@@ -264,7 +264,7 @@ export const toggleLifeOpsFeatureAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "Disabled 'browser.automation' (local). Allow Eliza to drive the browser extension (form fills, navigation, clicks).",
+          text: "Disabled 'browser.automation' (local). Allow Tokagent to drive the browser extension (form fills, navigation, clicks).",
         },
       },
     ],

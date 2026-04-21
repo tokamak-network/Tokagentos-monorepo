@@ -139,12 +139,12 @@ report.daemonReady = info.exitCode === 0;
 report.status = report.daemonReady ? "ready" : "blocked";
 
 let smoke = null;
-if (report.daemonReady && process.env.ELIZA_DOCKER_REVIEW_RUN_SMOKE === "1") {
+if (report.daemonReady && process.env.TOKAGENT_DOCKER_REVIEW_RUN_SMOKE === "1") {
   smoke = await runCommand(
     "bash",
     [
-      "eliza/packages/app-core/scripts/docker-ci-smoke.sh",
-      ...(process.env.ELIZA_DOCKER_REVIEW_FULL_SMOKE === "1"
+      "tokagent/packages/app-core/scripts/docker-ci-smoke.sh",
+      ...(process.env.TOKAGENT_DOCKER_REVIEW_FULL_SMOKE === "1"
         ? []
         : ["--skip-smoke"]),
     ],

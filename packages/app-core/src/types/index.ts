@@ -2,19 +2,19 @@
 // Defined here so both src/bridge/ and platforms/electrobun/ can import them
 // without crossing the build boundary.
 
-export type ExistingElizaInstallSource =
+export type ExistingTokagentInstallSource =
   | "config-path-env"
   | "state-dir-env"
   | "default-state-dir";
 
-export interface ExistingElizaInstallInfo {
+export interface ExistingTokagentInstallInfo {
   detected: boolean;
   stateDir: string;
   configPath: string;
   configExists: boolean;
   stateDirExists: boolean;
   hasStateEntries: boolean;
-  source: ExistingElizaInstallSource;
+  source: ExistingTokagentInstallSource;
 }
 
 /**
@@ -312,9 +312,9 @@ export type ConfigSnapshot = {
 
 // ── Simple showIf (legacy, still supported) ─────────────────────────
 
-export type { ShowIfCondition } from "@elizaos/agent/config/schema";
+export type { ShowIfCondition } from "@tokagentos/agent/config/schema";
 
-import type { ShowIfCondition } from "@elizaos/agent/config/schema";
+import type { ShowIfCondition } from "@tokagentos/agent/config/schema";
 
 // ── Dynamic values (Phase 2) ─────────────────────────────────────────
 

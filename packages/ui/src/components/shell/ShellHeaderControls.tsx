@@ -9,11 +9,11 @@ import {
 import {
   LANGUAGE_DROPDOWN_TRIGGER_CLASSNAME,
   LanguageDropdown,
-} from "@elizaos/app-core/components/shared/LanguageDropdown";
-import { ThemeToggle } from "@elizaos/app-core/components/shared/ThemeToggle";
-import { useMediaQuery } from "@elizaos/app-core/hooks";
-import type { UiLanguage } from "@elizaos/app-core/i18n";
-import type { ShellView, UiTheme } from "@elizaos/app-core/state";
+} from "@tokagentos/app-core/components/shared/LanguageDropdown";
+import { ThemeToggle } from "@tokagentos/app-core/components/shared/ThemeToggle";
+import { useMediaQuery } from "@tokagentos/app-core/hooks";
+import type { UiLanguage } from "@tokagentos/app-core/i18n";
+import type { ShellView, UiTheme } from "@tokagentos/app-core/state";
 import {
   Check,
   Loader2,

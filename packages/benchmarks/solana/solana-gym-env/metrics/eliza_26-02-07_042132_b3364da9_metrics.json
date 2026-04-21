@@ -1,7 +1,7 @@
 {
   "model": "claude-sonnet-4-20250514",
   "run_index": 0,
-  "run_id": "eliza_26-02-07_042132_b3364da9",
+  "run_id": "tokagent_26-02-07_042132_b3364da9",
   "start_time": "2026-02-07T04:21:32.547877",
   "environment_config": "voyager/environments/basic_env.json",
   "messages": [

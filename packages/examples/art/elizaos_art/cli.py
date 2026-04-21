@@ -1,5 +1,5 @@
 """
-Main CLI for ElizaOS ART demos.
+Main CLI for TokagentOS ART demos.
 
 Provides unified commands across all games.
 """
@@ -12,8 +12,8 @@ from rich.console import Console
 from rich.table import Table
 
 app = typer.Typer(
-    name="elizaos-art",
-    help="ElizaOS ART (Adaptive Reinforcement Training) - Train LLMs with GRPO",
+    name="tokagentos-art",
+    help="TokagentOS ART (Adaptive Reinforcement Training) - Train LLMs with GRPO",
 )
 console = Console()
 
@@ -27,10 +27,10 @@ def list_games() -> None:
     table.add_column("Command")
 
     games = [
-        ("2048", "Tile-merging puzzle game", "elizaos-art-2048"),
-        ("Tic-Tac-Toe", "Classic strategy game", "elizaos-art-tictactoe"),
-        ("Codenames", "Word association game", "elizaos-art-codenames"),
-        ("Temporal Clue", "Temporal reasoning puzzles", "elizaos-art-temporal"),
+        ("2048", "Tile-merging puzzle game", "tokagentos-art-2048"),
+        ("Tic-Tac-Toe", "Classic strategy game", "tokagentos-art-tictactoe"),
+        ("Codenames", "Word association game", "tokagentos-art-codenames"),
+        ("Temporal Clue", "Temporal reasoning puzzles", "tokagentos-art-temporal"),
     ]
 
     for name, desc, cmd in games:
@@ -81,7 +81,7 @@ def benchmark_all(
     output_dir: str = typer.Option("./benchmark_results/art", help="Output directory"),
 ) -> None:
     """Run baseline benchmarks across all games."""
-    from elizaos_art.benchmark_runner import run_baselines
+    from tokagentos_art.benchmark_runner import run_baselines
 
     console.print(f"\n[bold]Running baseline benchmarks[/bold]")
     console.print(f"Episodes per game: {episodes}\n")
@@ -100,7 +100,7 @@ def train_all(
     output_dir: str = typer.Option("./benchmark_results/art", help="Output directory"),
 ) -> None:
     """Run full training pipelines for all games."""
-    from elizaos_art.benchmark_runner import run_pipelines
+    from tokagentos_art.benchmark_runner import run_pipelines
 
     console.print(f"\n[bold]Running training pipelines[/bold]")
     console.print(f"Model: {model}")
@@ -139,7 +139,7 @@ def clean(
 @app.command()
 def info() -> None:
     """Show information about supported models and configuration."""
-    console.print("\n[bold cyan]ElizaOS ART - Adaptive Reinforcement Training[/bold cyan]\n")
+    console.print("\n[bold cyan]TokagentOS ART - Adaptive Reinforcement Training[/bold cyan]\n")
 
     console.print("[bold]Supported Local Models:[/bold]")
     models_table = Table(show_header=True)
@@ -174,13 +174,13 @@ def info() -> None:
 
     console.print("\n[bold]Quick Start:[/bold]")
     console.print("  # Run baselines")
-    console.print("  elizaos-art benchmark --episodes 100")
+    console.print("  tokagentos-art benchmark --episodes 100")
     console.print("")
     console.print("  # Train all games")
-    console.print("  elizaos-art train-all --steps 50")
+    console.print("  tokagentos-art train-all --steps 50")
     console.print("")
     console.print("  # Train single game")
-    console.print("  elizaos-art-2048 pipeline --steps 100")
+    console.print("  tokagentos-art-2048 pipeline --steps 100")
 
 
 if __name__ == "__main__":

@@ -1,11 +1,11 @@
-//! X (Twitter) agent example using Grok (xAI) + X API v2 with the full elizaOS pipeline.
+//! X (Twitter) agent example using Grok (xAI) + X API v2 with the full tokagentOS pipeline.
 
 mod character;
 
 use anyhow::{Context, Result};
-use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-use elizaos_plugin_sql::plugin as sql_plugin;
-use elizaos_plugin_xai::{create_xai_elizaos_plugin, start_x_service};
+use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+use tokagentos_plugin_sql::plugin as sql_plugin;
+use tokagentos_plugin_xai::{create_xai_tokagentos_plugin, start_x_service};
 use std::sync::Arc;
 use tokio::signal;
 use tracing::{info, Level};
@@ -49,7 +49,7 @@ async fn main() -> Result<()> {
     let runtime = Arc::new(
         AgentRuntime::new(RuntimeOptions {
             character: Some(character),
-            plugins: vec![sql_plugin(), create_xai_elizaos_plugin()?],
+            plugins: vec![sql_plugin(), create_xai_tokagentos_plugin()?],
             ..Default::default()
         })
         .await
@@ -62,7 +62,7 @@ async fn main() -> Result<()> {
     // Fail fast if SQL isn't active (X service persists cursor + dedupe memories).
     runtime
         .get_adapter()
-        .context("SQL adapter not available; ensure elizaos-plugin-sql is configured")?;
+        .context("SQL adapter not available; ensure tokagentos-plugin-sql is configured")?;
 
     let _x_service = start_x_service(Arc::clone(&runtime)).await?;
     info!("X service started. Waiting for Ctrl+C...");

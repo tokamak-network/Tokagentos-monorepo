@@ -5,7 +5,7 @@ from __future__ import annotations
 import shlex
 from typing import TYPE_CHECKING
 
-from elizaos.types import (
+from tokagentos.types import (
     Action,
     ActionExample,
     ActionParameter,
@@ -15,7 +15,7 @@ from elizaos.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -77,14 +77,14 @@ async def _handle_write_file(
     try:
         # Write via heredoc
         safe_path = shlex.quote(path)
-        # Escape any ELIZAEOF in content
-        safe_content = normalized_content.replace("ELIZAEOF", "ELIZA_EOF")
+        # Escape any TOKAGENTEOF in content
+        safe_content = normalized_content.replace("TOKAGENTEOF", "TOKAGENT_EOF")
         # IMPORTANT: if content is empty, heredoc would still write a trailing newline,
         # producing a non-empty file. Use a truncation redirect instead.
         if safe_content == "":
             command = f"> {safe_path}"
         else:
-            command = f"cat << 'ELIZAEOF' > {safe_path}\n{safe_content}\nELIZAEOF"
+            command = f"cat << 'TOKAGENTEOF' > {safe_path}\n{safe_content}\nTOKAGENTEOF"
 
         result = await env.execute(command)
 

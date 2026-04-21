@@ -6,7 +6,7 @@
  * Remote connection state (connecting/connected/error) collapses into one object.
  */
 
-import { getDefaultStylePreset } from "@elizaos/shared/onboarding-presets";
+import { getDefaultStylePreset } from "@tokagentos/shared/onboarding-presets";
 import { useCallback, useReducer, useRef } from "react";
 import type { OnboardingOptions } from "../api";
 import { isElectrobunRuntime } from "../bridge";
@@ -87,7 +87,7 @@ export interface OnboardingState {
 
   // Tabs
   subscriptionTab: "token" | "oauth";
-  elizaCloudTab: "login" | "apikey";
+  tokagentCloudTab: "login" | "apikey";
 
   // Chain / RPC
   selectedChains: Set<string>;
@@ -192,7 +192,7 @@ function createInitialState(cloudOnly?: boolean): OnboardingState {
   const defaultStyle = getDefaultStylePreset();
   const initialServer = loadInitialServerSelection();
   const initialServerTarget = cloudOnly
-    ? "elizacloud"
+    ? "tokagentcloud"
     : initialServer.serverTarget;
 
   const persistedStep = loadPersistedOnboardingStep();
@@ -240,7 +240,7 @@ function createInitialState(cloudOnly?: boolean): OnboardingState {
     remoteApiBase: initialServer.remoteApiBase,
     remoteToken: initialServer.remoteToken,
     subscriptionTab: "token",
-    elizaCloudTab: "login",
+    tokagentCloudTab: "login",
     selectedChains: new Set(["evm", "solana"]),
     rpcSelections: {},
     rpcKeys: {},

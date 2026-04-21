@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input } from "@elizaos/ui";
+import { Button, Checkbox, Input } from "@tokagentos/ui";
 
 import { useCallback, useRef, useState } from "react";
 import { useApp } from "../../state/useApp";

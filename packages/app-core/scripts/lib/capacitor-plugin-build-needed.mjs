@@ -1,6 +1,6 @@
 /**
  * Returns true if any Capacitor plugin under the given directory (typically
- * `eliza/packages/native-plugins`) needs a rebuild (missing dist or src /
+ * `tokagent/packages/native-plugins`) needs a rebuild (missing dist or src /
  * config newer than dist marker).
  */
 import fs from "node:fs";

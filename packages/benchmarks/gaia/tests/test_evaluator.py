@@ -1,7 +1,7 @@
 """Tests for GAIA answer evaluator."""
 
 import pytest
-from elizaos_gaia.evaluator import GAIAEvaluator
+from tokagentos_gaia.evaluator import GAIAEvaluator
 
 
 class TestGAIAEvaluator:

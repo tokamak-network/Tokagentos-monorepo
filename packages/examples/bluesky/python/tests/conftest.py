@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from elizaos import string_to_uuid
+from tokagentos import string_to_uuid
 
 
 @pytest.fixture

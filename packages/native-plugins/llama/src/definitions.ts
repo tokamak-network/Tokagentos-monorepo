@@ -1,7 +1,7 @@
 /**
  * Milady-flavoured Capacitor llama.cpp adapter contract.
  *
- * This mirrors the `LocalInferenceLoader` interface in @elizaos/app-core so
+ * This mirrors the `LocalInferenceLoader` interface in @tokagentos/app-core so
  * `ActiveModelCoordinator` can swap between the desktop engine
  * (node-llama-cpp) and the mobile Capacitor plugin without caring which is
  * active. Native llama.cpp work is handled by `llama-cpp-capacitor`; this

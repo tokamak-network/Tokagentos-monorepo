@@ -1,13 +1,13 @@
 
 import { initializeAgent } from "./src/lib/agent.js";
 import { v4 } from "uuid";
-import { createMessageMemory } from "@elizaos/core";
+import { createMessageMemory } from "@tokagentos/core";
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
 
-// Load environment variables from eliza/.env
-dotenv.config({ path: "../../eliza/.env" });
+// Load environment variables from tokagent/.env
+dotenv.config({ path: "../../tokagent/.env" });
 
 async function main() {
     console.log("🚀 Starting Direct Agent Verification...");

@@ -1,4 +1,4 @@
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import {
   AgentRuntime,
   ChannelType,
@@ -11,7 +11,7 @@ import {
   ModelType,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import anthropicPlugin from "@elizaos/plugin-anthropic";
 import googleGenAIPlugin from "@elizaos/plugin-google-genai";
 import groqPlugin from "@elizaos/plugin-groq";
@@ -21,7 +21,7 @@ import localAiPlugin from "../../../../plugins/plugin-local-ai/typescript/index.
 import localdbPlugin from "../../../../plugins/plugin-localdb/typescript/index.browser";
 import { TOWN_AGENTS, type TownAgentDefinition } from "../../shared/agents";
 import { DEFAULT_AUDIO_RANGE_TILES } from "../../shared/types";
-import elizaTownPlugin from "../plugins/elizaTownPlugin";
+import tokagentTownPlugin from "../plugins/tokagentTownPlugin";
 import {
   defaultModelSettings,
   type ModelProvider,
@@ -51,7 +51,7 @@ function buildCharacter(profile: TownAgentDefinition): Character {
     bio: [profile.description],
     adjectives: ["curious", "friendly", "observant"],
     system: [
-      `You are ${profile.name}, the ${profile.role} of Eliza Town.`,
+      `You are ${profile.name}, the ${profile.role} of Tokagent Town.`,
       profile.persona,
       "Speak in one short sentence. Be friendly and keep it simple.",
       "You are playing a social deduction game with night and day phases.",
@@ -92,7 +92,7 @@ function buildSocialContext(profile: TownAgentDefinition): string {
 function buildPlugins(provider: ModelProvider): Plugin[] {
   const basePlugins = [
     normalizePlugin(localdbPlugin),
-    normalizePlugin(elizaTownPlugin),
+    normalizePlugin(tokagentTownPlugin),
   ];
   switch (provider) {
     case "openai":
@@ -312,7 +312,7 @@ export async function requestAgentMoveDecision(
   }
 
   const decisionPrompt = [
-    "Decide your next move in Eliza Town.",
+    "Decide your next move in Tokagent Town.",
     "Check TOWN_OBJECTIVES for your assigned tasks and head toward them.",
     "If you are mafia, use the map and objectives to lure isolated targets.",
     "Use the MOVE action with parameters to choose a destination.",
@@ -634,7 +634,7 @@ export async function requestAgentChatDecision(
     "If you are busy (moving, thinking, speaking, or in the middle of a task), you may ignore nearby activity.",
     "If someone nearby spoke recently or you received a notice that someone came near, reply in one short sentence.",
     "Otherwise, say one short sentence to nearby agents.",
-    "Use ELIZA_TOWN to see nearby agents and ROOM_MESSAGES for recent chat.",
+    "Use TOKAGENT_TOWN to see nearby agents and ROOM_MESSAGES for recent chat.",
     "You may use EMOTE to express an emoji instead of speaking.",
   ].join("\n");
 

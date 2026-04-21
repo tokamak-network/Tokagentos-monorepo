@@ -1,6 +1,6 @@
 import type http from "node:http";
 import type { DropService } from "./drop-service.js";
-import type { ReadJsonBodyOptions } from "@elizaos/agent/api/http-helpers";
+import type { ReadJsonBodyOptions } from "@tokagentos/agent/api/http-helpers";
 import { buildWhitelistTree, generateProof } from "./merkle-tree.js";
 import {
   generateVerificationMessage,
@@ -88,7 +88,7 @@ export async function handleDropRoutes(
     }>(req, res);
     if (!body) return true;
 
-    const name = body.name || agentName || "Eliza";
+    const name = body.name || agentName || "Tokagent";
     const endpoint = body.endpoint || "";
 
     const result = body.shiny
@@ -128,7 +128,7 @@ export async function handleDropRoutes(
       proof = proofResult.proof;
     }
 
-    const name = body.name || agentName || "Eliza";
+    const name = body.name || agentName || "Tokagent";
     const endpoint = body.endpoint || "";
     const result = await dropService.mintWithWhitelist(name, endpoint, proof);
     json(res, result);
@@ -175,7 +175,7 @@ export async function handleDropRoutes(
       error(res, "EVM wallet not configured. Complete onboarding first.");
       return true;
     }
-    const name = agentName || "Eliza";
+    const name = agentName || "Tokagent";
     const message = generateVerificationMessage(name, walletAddress);
     json(res, { message, walletAddress });
     return true;

@@ -4,7 +4,7 @@
   "effectTimeoutMs": 2000,
   "llmDryRun": false,
   "network": "demo",
-  "outDir": "/Users/shawwalters/eliza-workspace/benchmarks/HyperliquidBench/runs/eliza-20260208-093504",
+  "outDir": "/Users/shawwalters/tokagent-workspace/benchmarks/HyperliquidBench/runs/tokagent-20260208-093504",
   "plan": {
     "steps": [
       {

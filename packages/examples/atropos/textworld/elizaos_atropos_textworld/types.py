@@ -273,5 +273,5 @@ class Trajectory:
     won: bool = False
     steps: int = 0
     max_steps: int = 100
-    agent_type: str = "unknown"  # "elizaos", "heuristic", "random", etc.
+    agent_type: str = "unknown"  # "tokagentos", "heuristic", "random", etc.
     seed: int = 0  # Game seed for reproducibility

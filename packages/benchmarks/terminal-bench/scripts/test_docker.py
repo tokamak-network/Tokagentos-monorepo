@@ -11,8 +11,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from elizaos_terminal_bench.environment import TerminalEnvironment
-from elizaos_terminal_bench.types import TaskCategory, TaskDifficulty, TerminalTask
+from tokagentos_terminal_bench.environment import TerminalEnvironment
+from tokagentos_terminal_bench.types import TaskCategory, TaskDifficulty, TerminalTask
 
 
 async def test_docker_environment() -> bool:

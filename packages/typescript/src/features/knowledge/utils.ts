@@ -297,7 +297,7 @@ export async function fetchUrlContent(
 		const response = await fetch(url, {
 			signal: controller.signal,
 			headers: {
-				"User-Agent": "Eliza-Knowledge-Plugin/1.0",
+				"User-Agent": "Tokagent-Knowledge-Plugin/1.0",
 			},
 		});
 		clearTimeout(timeoutId);

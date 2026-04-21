@@ -1,4 +1,4 @@
-import { Button, PagePanel } from "@elizaos/ui";
+import { Button, PagePanel } from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { client } from "../../api/client";
 import type {

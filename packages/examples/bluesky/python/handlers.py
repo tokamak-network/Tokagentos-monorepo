@@ -1,14 +1,14 @@
 """
 Bluesky Event Handlers
 
-These handlers process Bluesky events through the FULL elizaOS pipeline:
+These handlers process Bluesky events through the FULL tokagentOS pipeline:
 - State composition with providers (CHARACTER, RECENT_MESSAGES, ACTIONS, etc.)
 - shouldRespond evaluation
 - Action planning and execution
 - Response generation via messageHandlerTemplate
 - Evaluators
 
-This is the canonical way to handle messages in elizaOS - NO bypassing the pipeline.
+This is the canonical way to handle messages in tokagentOS - NO bypassing the pipeline.
 """
 
 from __future__ import annotations
@@ -18,12 +18,12 @@ from typing import TYPE_CHECKING, Any
 
 from uuid6 import uuid7
 
-from elizaos import ChannelType, Content, Memory, string_to_uuid
-from elizaos.types.primitives import UUID
+from tokagentos import ChannelType, Content, Memory, string_to_uuid
+from tokagentos.types.primitives import UUID
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos_plugin_bluesky import BlueSkyNotification, BlueSkyService
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_plugin_bluesky import BlueSkyNotification, BlueSkyService
 
 logger = logging.getLogger(__name__)
 
@@ -52,7 +52,7 @@ async def handle_mention_received(
     notification: BlueSkyNotification,
 ) -> None:
     """
-    Handle incoming Bluesky mentions through the FULL elizaOS pipeline.
+    Handle incoming Bluesky mentions through the FULL tokagentOS pipeline.
 
     This processes mentions through messageService.handleMessage() which runs:
     - State composition with all registered providers
@@ -141,7 +141,7 @@ async def handle_mention_received(
             response_text = response_text[:297] + "..."
 
         try:
-            from elizaos_plugin_bluesky import CreatePostRequest
+            from tokagentos_plugin_bluesky import CreatePostRequest
 
             # Post the reply
             post = await bluesky_service.client.send_post(
@@ -176,20 +176,20 @@ async def handle_mention_received(
             logger.error(f"Failed to post reply: {e}")
             return []
 
-    # Process through the FULL elizaOS pipeline
+    # Process through the FULL tokagentOS pipeline
     if not runtime.message_service:
-        logger.error("MessageService not available - cannot process through elizaOS pipeline")
+        logger.error("MessageService not available - cannot process through tokagentOS pipeline")
         return
 
     try:
         result = await runtime.message_service.handle_message(runtime, message, callback)
 
         logger.debug(
-            f"elizaOS pipeline completed: did_respond={result.did_respond}, mode={result.mode}"
+            f"tokagentOS pipeline completed: did_respond={result.did_respond}, mode={result.mode}"
         )
 
     except Exception as e:
-        logger.error(f"Error processing message through elizaOS pipeline: {e}")
+        logger.error(f"Error processing message through tokagentOS pipeline: {e}")
 
 
 async def handle_should_respond(
@@ -206,12 +206,12 @@ async def handle_create_post(
     automated: bool = True,
 ) -> None:
     """
-    Handle automated post creation through the elizaOS pipeline.
+    Handle automated post creation through the tokagentOS pipeline.
     """
     if not automated:
         return
 
-    logger.info("Generating automated Bluesky post via elizaOS pipeline")
+    logger.info("Generating automated Bluesky post via tokagentOS pipeline")
 
     bluesky_service = get_bluesky_service(runtime)
     if not bluesky_service:
@@ -260,7 +260,7 @@ async def handle_create_post(
             post_text = post_text[:297] + "..."
 
         try:
-            from elizaos_plugin_bluesky import CreatePostRequest
+            from tokagentos_plugin_bluesky import CreatePostRequest
 
             post = await bluesky_service.client.send_post(
                 CreatePostRequest(content=Content(text=post_text))
@@ -328,4 +328,4 @@ def register_bluesky_handlers(runtime: AgentRuntime) -> None:
     runtime.register_event("bluesky.should_respond", on_should_respond)
     runtime.register_event("bluesky.create_post", on_create_post)
 
-    logger.info("Registered Bluesky event handlers (full elizaOS pipeline)")
+    logger.info("Registered Bluesky event handlers (full tokagentOS pipeline)")

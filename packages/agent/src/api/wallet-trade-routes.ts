@@ -1,5 +1,5 @@
 import type { ethers } from "ethers";
-import type { ElizaConfig } from "../config/config.js";
+import type { TokagentConfig } from "../config/config.js";
 import type {
   BscTradeQuoteResponse,
   BscUnsignedApprovalTx,
@@ -55,8 +55,8 @@ export interface StewardSignResult {
 
 export interface WalletTradeExecuteDeps {
   getWalletAddresses: () => WalletAddresses;
-  resolveWalletRpcReadiness: (config: ElizaConfig) => WalletRpcReadiness;
-  resolveTradePermissionMode: (config: ElizaConfig) => TradePermissionMode;
+  resolveWalletRpcReadiness: (config: TokagentConfig) => WalletRpcReadiness;
+  resolveTradePermissionMode: (config: TokagentConfig) => TradePermissionMode;
   isAgentAutomationRequest: (req: RouteRequestContext["req"]) => boolean;
   canUseLocalTradeExecution: (
     mode: TradePermissionMode,
@@ -129,7 +129,7 @@ export interface WalletTradeExecuteDeps {
 
 export interface WalletTradeExecuteRouteContext extends RouteRequestContext {
   state: {
-    config: ElizaConfig;
+    config: TokagentConfig;
   };
   deps: WalletTradeExecuteDeps;
 }

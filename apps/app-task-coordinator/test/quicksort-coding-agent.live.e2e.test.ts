@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import {
   PTYService,
   spawnAgentAction,
@@ -14,8 +14,8 @@ import { createRealTestRuntime } from "../../../../test/helpers/real-runtime";
 
 const LIVE_TESTS_ENABLED =
   process.env.MILADY_LIVE_TEST === "1" ||
-  process.env.ELIZA_LIVE_TEST === "1";
-const KEEP_ARTIFACTS = process.env.ELIZA_KEEP_LIVE_ARTIFACTS === "1";
+  process.env.TOKAGENT_LIVE_TEST === "1";
+const KEEP_ARTIFACTS = process.env.TOKAGENT_KEEP_LIVE_ARTIFACTS === "1";
 
 type CommandResult = {
   exitCode: number;
@@ -149,7 +149,7 @@ describeIf(LIVE_TESTS_ENABLED && CAN_RUN_CODEX)(
         service,
       ]);
       workdir = fs.mkdtempSync(
-        path.join(ensureLocalLiveBaseDir(), "eliza-quicksort-coding-agent-"),
+        path.join(ensureLocalLiveBaseDir(), "tokagent-quicksort-coding-agent-"),
       );
     }, 180_000);
 

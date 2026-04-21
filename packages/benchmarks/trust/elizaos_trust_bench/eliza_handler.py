@@ -1,6 +1,6 @@
-"""Eliza-integrated handler for the trust benchmark.
+"""Tokagent-integrated handler for the trust benchmark.
 
-Uses a real ElizaOS AgentRuntime with an LLM (OpenAI) to analyze messages for
+Uses a real TokagentOS AgentRuntime with an LLM (OpenAI) to analyze messages for
 security threats, rather than the pattern-based heuristics used by RealTrustHandler.
 
 Each detection method sends the message through
@@ -10,7 +10,7 @@ assessment via a custom TRUST_DETECTION action.
 The handler implements the same TrustHandler protocol as RealTrustHandler, so
 it can be used as a drop-in replacement in the benchmark runner.
 
-Reference: benchmarks/tau-bench/elizaos_tau_bench/eliza_agent.py
+Reference: benchmarks/tau-bench/tokagentos_tau_bench/tokagent_agent.py
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from typing import TYPE_CHECKING
 from uuid import uuid4
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -36,17 +36,17 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# ElizaOS imports — optional dependency
+# TokagentOS imports — optional dependency
 # ---------------------------------------------------------------------------
 
 try:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.primitives import Content, as_uuid
-    from elizaos.types.memory import Memory
-    from elizaos.types.state import State
-    from elizaos.types.components import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.primitives import Content, as_uuid
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.state import State
+    from tokagentos.types.components import (
         Action,
         ActionResult,
         ActionExample,
@@ -56,9 +56,9 @@ try:
         ProviderResult,
         HandlerOptions as HandlerOptionsType,
     )
-    from elizaos.types.model import ModelType
+    from tokagentos.types.model import ModelType
 
-    ELIZAOS_AVAILABLE = True
+    TOKAGENTOS_AVAILABLE = True
 except ImportError:
     AgentRuntime = None  # type: ignore[misc, assignment]
     Character = None  # type: ignore[misc, assignment]
@@ -76,8 +76,8 @@ except ImportError:
     HandlerOptionsType = None  # type: ignore[misc, assignment]
     ModelType = None  # type: ignore[misc, assignment]
     as_uuid = None  # type: ignore[misc, assignment]
-    ELIZAOS_AVAILABLE = False
-    logger.warning("ElizaOS not available — ElizaTrustHandler cannot be used")
+    TOKAGENTOS_AVAILABLE = False
+    logger.warning("TokagentOS not available — TokagentTrustHandler cannot be used")
 
 
 # ---------------------------------------------------------------------------
@@ -137,7 +137,7 @@ def _normalize_thought_tags(text: str) -> str:
 
 def _get_model_provider_plugin(provider: str | None = None, model_name: str | None = None) -> "Plugin | None":
     """Resolve and build model provider plugin for trust benchmark."""
-    if not ELIZAOS_AVAILABLE:
+    if not TOKAGENTOS_AVAILABLE:
         return None
 
     requested = (provider or os.environ.get("BENCHMARK_MODEL_PROVIDER", "")).strip().lower()
@@ -170,13 +170,13 @@ def _get_model_provider_plugin(provider: str | None = None, model_name: str | No
         os.environ["OPENAI_SMALL_MODEL"] = clean_model
         os.environ["OPENAI_LARGE_MODEL"] = clean_model
         try:
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             logger.info("Using OpenAI model provider for trust benchmark (%s)", clean_model)
             return get_openai_plugin()
         except ImportError:
             logger.warning(
-                "OPENAI_API_KEY found but elizaos-plugin-openai is not installed"
+                "OPENAI_API_KEY found but tokagentos-plugin-openai is not installed"
             )
 
     if requested in {"groq", "openrouter"} and os.environ.get(provider_key_var[requested]):
@@ -557,7 +557,7 @@ class TrustDetectionAction:
     @property
     def examples(self) -> "list[list[ActionExample]]":
         """Action examples for LLM context."""
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             [
@@ -578,7 +578,7 @@ class TrustDetectionAction:
     @property
     def parameters(self) -> "list[ActionParameter]":
         """Action parameters for LLM understanding."""
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             ActionParameter(
@@ -608,8 +608,8 @@ def create_trust_bench_plugin() -> "Plugin":
     - TRUST_CONTEXT provider: Injects the message/username to analyze
     - TRUST_DETECTION action: Receives the LLM's analysis results
     """
-    if not ELIZAOS_AVAILABLE:
-        raise RuntimeError("ElizaOS is required for the trust benchmark plugin")
+    if not TOKAGENTOS_AVAILABLE:
+        raise RuntimeError("TokagentOS is required for the trust benchmark plugin")
 
     detection_action_def = TrustDetectionAction()
 
@@ -639,12 +639,12 @@ def create_trust_bench_plugin() -> "Plugin":
 
 
 # ---------------------------------------------------------------------------
-# ElizaTrustHandler — sync wrapper around async Eliza runtime
+# TokagentTrustHandler — sync wrapper around async Tokagent runtime
 # ---------------------------------------------------------------------------
 
 
-class ElizaTrustHandler:
-    """Handler that uses a real ElizaOS agent with an LLM to detect threats.
+class TokagentTrustHandler:
+    """Handler that uses a real TokagentOS agent with an LLM to detect threats.
 
     Implements the same TrustHandler protocol as RealTrustHandler so it can
     be used as a drop-in replacement in the benchmark runner.
@@ -666,10 +666,10 @@ class ElizaTrustHandler:
     """
 
     def __init__(self, model_provider: str | None = None, model_name: str | None = None) -> None:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             raise ImportError(
-                "ElizaOS is required for ElizaTrustHandler. "
-                "Install with: pip install elizaos elizaos-plugin-openai"
+                "TokagentOS is required for TokagentTrustHandler. "
+                "Install with: pip install tokagentos tokagentos-plugin-openai"
             )
 
         self._model_provider = (model_provider or "").strip().lower() or None
@@ -691,17 +691,17 @@ class ElizaTrustHandler:
     @property
     def name(self) -> str:
         """Human-readable handler name."""
-        return "eliza-llm"
+        return "tokagent-llm"
 
     async def _initialize(self) -> None:
-        """Initialize the ElizaOS runtime with model provider and benchmark plugin."""
+        """Initialize the TokagentOS runtime with model provider and benchmark plugin."""
         model_plugin = _get_model_provider_plugin(
             provider=self._model_provider,
             model_name=self._model_name,
         )
         if model_plugin is None:
             raise RuntimeError(
-                "No model provider available for ElizaTrustHandler. "
+                "No model provider available for TokagentTrustHandler. "
                 "Set the provider API key and install required model plugin(s)."
             )
 
@@ -740,10 +740,10 @@ class ElizaTrustHandler:
         has_model = self._runtime.has_model("TEXT_LARGE")
         if not has_model:
             raise RuntimeError(
-                "ElizaTrustHandler runtime initialized but no TEXT_LARGE model available"
+                "TokagentTrustHandler runtime initialized but no TEXT_LARGE model available"
             )
 
-        logger.info("ElizaTrustHandler initialized with ElizaOS runtime")
+        logger.info("TokagentTrustHandler initialized with TokagentOS runtime")
         logger.info("  Actions: %s", [a.name for a in self._runtime.actions])
         logger.info("  Providers: %s", [p.name for p in self._runtime.providers])
 
@@ -817,7 +817,7 @@ class ElizaTrustHandler:
         analysis_type: str,
         existing_users: list[str] | None,
     ) -> dict[str, dict[str, bool | float]]:
-        """Send a message through the Eliza pipeline and collect results."""
+        """Send a message through the Tokagent pipeline and collect results."""
         if self._runtime is None:
             logger.error("Runtime not initialized")
             return {}
@@ -931,14 +931,14 @@ class ElizaTrustHandler:
         return results.get("content_policy", dict(_NOT_DETECTED))
 
     def close(self) -> None:
-        """Shut down the Eliza runtime and event loop."""
+        """Shut down the Tokagent runtime and event loop."""
         if self._runtime is not None:
             try:
                 self._loop.run_until_complete(self._runtime.stop())
             except Exception:
                 logger.exception("Error stopping runtime")
         self._loop.close()
-        logger.info("ElizaTrustHandler closed")
+        logger.info("TokagentTrustHandler closed")
 
     def __del__(self) -> None:
         """Ensure cleanup on garbage collection."""

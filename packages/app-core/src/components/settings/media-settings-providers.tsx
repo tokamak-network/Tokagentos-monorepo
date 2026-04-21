@@ -7,7 +7,7 @@ import {
   SelectLabel,
   SelectValue,
   SettingsControls,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MediaConfig } from "../../api";
 import {
@@ -606,7 +606,7 @@ export function DesktopMediaControlPanel() {
                       ipcChannel: "screencapture:saveScreenshot",
                       params: {
                         data: screenshot.data,
-                        filename: "elizaos-desktop-screenshot.png",
+                        filename: "tokagentos-desktop-screenshot.png",
                       },
                     });
                     setLastSavedPath(saved?.path ?? null);

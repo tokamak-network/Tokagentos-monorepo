@@ -1,4 +1,4 @@
-package ai.elizaos.app;
+package ai.tokagentos.app;
 
 import android.Manifest;
 import android.content.pm.PackageManager;

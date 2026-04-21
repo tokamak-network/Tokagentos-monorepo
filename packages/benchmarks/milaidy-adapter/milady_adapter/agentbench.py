@@ -9,14 +9,14 @@ from dataclasses import dataclass, field
 from milady_adapter.client import MiladyClient
 
 # Import AgentBench types — these live next to the benchmark runner
-from elizaos_agentbench.types import (
+from tokagentos_agentbench.types import (
     AgentBenchEnvironment,
     AgentBenchResult,
     AgentBenchTask,
     ObservationType,
     StepRecord,
 )
-from elizaos_agentbench.eliza_harness import EnvironmentAdapterProtocol
+from tokagentos_agentbench.tokagent_harness import EnvironmentAdapterProtocol
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class MiladyAgentHarness:
     """AgentBench harness backed by the milady TypeScript agent.
 
-    Drop-in replacement for ``ElizaAgentHarness`` — same ``run_task`` interface
+    Drop-in replacement for ``TokagentAgentHarness`` — same ``run_task`` interface
     but delegates to the milady benchmark HTTP server.
     """
 

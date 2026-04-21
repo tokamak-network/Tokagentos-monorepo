@@ -10,7 +10,7 @@ import {
   type Service,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 import type { RobloxService } from "@elizaos/plugin-roblox";
 
@@ -66,12 +66,12 @@ function timingSafeEqual(a: string, b: string): boolean {
 export function verifySharedSecret(req: HeaderReader, sharedSecret: string): boolean {
   if (!sharedSecret) return true;
 
-  const headerSecret = req.header("x-eliza-secret") ?? "";
+  const headerSecret = req.header("x-tokagent-secret") ?? "";
   if (headerSecret && timingSafeEqual(headerSecret, sharedSecret)) return true;
 
   // Optional HMAC mode:
-  // x-eliza-signature: sha256=<hex(hmac_sha256(secret, rawBody))>
-  const sig = req.header("x-eliza-signature") ?? "";
+  // x-tokagent-signature: sha256=<hex(hmac_sha256(secret, rawBody))>
+  const sig = req.header("x-tokagent-signature") ?? "";
   if (!sig.startsWith("sha256=")) return false;
   const rawBody = req.rawBody ?? "";
   const expected =

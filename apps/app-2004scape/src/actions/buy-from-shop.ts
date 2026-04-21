@@ -1,4 +1,4 @@
-import type { Action, IAgentRuntime, Memory, State, HandlerCallback } from "@elizaos/core";
+import type { Action, IAgentRuntime, Memory, State, HandlerCallback } from "@tokagentos/core";
 import { getCurrentLlmResponse } from "../shared-state.js";
 import { extractParam, extractParamInt } from "./param-parser.js";
 

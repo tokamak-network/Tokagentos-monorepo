@@ -633,7 +633,7 @@ class SessionCleanupService {
 ```javascript
 import { useState, useCallback, useEffect, useRef } from "react";
 
-function useElizaSession(agentId, userId) {
+function useTokagentSession(agentId, userId) {
   const [sessionId, setSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -1363,7 +1363,7 @@ const agentConfig = {
 
 ## Complete API Reference
 
-The Sessions API provides a comprehensive set of endpoints for managing stateful conversations with ElizaOS agents. This reference covers all available endpoints, request/response schemas, and error handling.
+The Sessions API provides a comprehensive set of endpoints for managing stateful conversations with TokagentOS agents. This reference covers all available endpoints, request/response schemas, and error handling.
 
 ### Base URL
 
@@ -1986,7 +1986,7 @@ class SessionsAPIClient:
     icon="lightbulb"
     href="/agents/runtime-and-lifecycle"
   >
-    Understand ElizaOS runtime architecture
+    Understand TokagentOS runtime architecture
   </Card>
   <Card title="Create a Plugin" icon="puzzle" href="/guides/create-a-plugin">
     Build custom plugins for your agents

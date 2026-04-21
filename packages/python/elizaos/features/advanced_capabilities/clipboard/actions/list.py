@@ -4,12 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.types import Action, ActionResult, Content
+from tokagentos.types import Action, ActionResult, Content
 
 from ..services.clipboard_service import create_clipboard_service
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
 
 async def _validate(runtime: IAgentRuntime, message: Memory, _state: State | None = None) -> bool:

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from elizaos_adhdbench.types import DEFAULT_SCALE_POINTS, ScalePoint
+from tokagentos_adhdbench.types import DEFAULT_SCALE_POINTS, ScalePoint
 
 
 @dataclass

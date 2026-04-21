@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LifeOpsActivitySignal } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsActivitySignal } from "@tokagentos/shared/contracts/lifeops";
 import { inferLifeOpsScheduleInsight } from "../src/lifeops/schedule-insight.js";
 
 describe("lifeops schedule insight inference", () => {

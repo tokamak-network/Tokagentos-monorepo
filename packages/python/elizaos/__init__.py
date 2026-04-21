@@ -1,20 +1,20 @@
-# Generated _pb2 files use "from eliza.v1 import ..."; make that resolve to elizaos.types.generated.eliza.v1
+# Generated _pb2 files use "from tokagent.v1 import ..."; make that resolve to tokagentos.types.generated.tokagent.v1
 import os
 import sys
 import types
 
-if "eliza.v1" not in sys.modules:
-    _eliza = types.ModuleType("eliza")
-    _v1_path = os.path.join(os.path.dirname(__file__), "types", "generated", "eliza", "v1")
-    _v1 = types.ModuleType("eliza.v1")
+if "tokagent.v1" not in sys.modules:
+    _tokagent = types.ModuleType("tokagent")
+    _v1_path = os.path.join(os.path.dirname(__file__), "types", "generated", "tokagent", "v1")
+    _v1 = types.ModuleType("tokagent.v1")
     _v1.__path__ = [_v1_path]
-    _v1.__package__ = "eliza.v1"
-    sys.modules["eliza"] = _eliza
-    sys.modules["eliza.v1"] = _v1
-    _eliza.v1 = _v1  # type: ignore[attr-defined]
+    _v1.__package__ = "tokagent.v1"
+    sys.modules["tokagent"] = _tokagent
+    sys.modules["tokagent.v1"] = _v1
+    _tokagent.v1 = _v1  # type: ignore[attr-defined]
 
-from elizaos.character import parse_character, validate_character_config
-from elizaos.generated.action_docs import (
+from tokagentos.character import parse_character, validate_character_config
+from tokagentos.generated.action_docs import (
     ActionDoc,
     ActionDocExampleCall,
     ActionDocParameter,
@@ -33,7 +33,7 @@ from elizaos.generated.action_docs import (
     core_evaluator_docs,
     core_evaluators_spec_version,
 )
-from elizaos.generated.spec_helpers import (
+from tokagentos.generated.spec_helpers import (
     get_action_spec,
     get_evaluator_spec,
     get_provider_spec,
@@ -41,16 +41,16 @@ from elizaos.generated.spec_helpers import (
     require_evaluator_spec,
     require_provider_spec,
 )
-from elizaos.logger import Logger, create_logger
-from elizaos.plugin import load_plugin, register_plugin
-from elizaos.prompt_compression import (
+from tokagentos.logger import Logger, create_logger
+from tokagentos.plugin import load_plugin, register_plugin
+from tokagentos.prompt_compression import (
     compress_prompt_description,
     get_prompt_action_description,
     get_prompt_parameter_description,
     get_prompt_provider_description,
     is_prompt_compression_enabled,
 )
-from elizaos.prompts import (
+from tokagentos.prompts import (
     BOOLEAN_FOOTER,
     CHOOSE_OPTION_TEMPLATE,
     IMAGE_GENERATION_TEMPLATE,
@@ -62,9 +62,9 @@ from elizaos.prompts import (
     UPDATE_ENTITY_TEMPLATE,
     UPDATE_SETTINGS_TEMPLATE,
 )
-from elizaos.runtime import AgentRuntime
-from elizaos.services import DefaultMessageService, IMessageService, MessageProcessingResult
-from elizaos.settings import (
+from tokagentos.runtime import AgentRuntime
+from tokagentos.services import DefaultMessageService, IMessageService, MessageProcessingResult
+from tokagentos.settings import (
     decrypt_object_values,
     decrypt_secret,
     decrypt_string_value,
@@ -72,7 +72,7 @@ from elizaos.settings import (
     encrypt_string_value,
     get_salt,
 )
-from elizaos.types import (
+from tokagentos.types import (
     UUID,
     Action,
     ActionContext,
@@ -130,16 +130,16 @@ from elizaos.types import (
     as_uuid,
     string_to_uuid,
 )
-from elizaos.types.database import IDatabaseAdapter  # noqa: E402
-from elizaos.types.primitives import (  # noqa: E402
+from tokagentos.types.database import IDatabaseAdapter  # noqa: E402
+from tokagentos.types.primitives import (  # noqa: E402
     ChannelType,
     Content,
     ContentType,
     Media,
     Metadata,
 )
-from elizaos.types.runtime import IAgentRuntime  # noqa: E402
-from elizaos.utils import compose_prompt, compose_prompt_from_state, get_current_time_ms
+from tokagentos.types.runtime import IAgentRuntime  # noqa: E402
+from tokagentos.utils import compose_prompt, compose_prompt_from_state, get_current_time_ms
 
 _rebuild_ns = {
     "IAgentRuntime": IAgentRuntime,

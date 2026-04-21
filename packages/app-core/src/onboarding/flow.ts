@@ -108,7 +108,7 @@ export function shouldSkipFeaturesStep(args: {
 
 export function shouldUseCloudOnboardingFastTrack(args: {
   cloudProvisionedContainer: boolean;
-  elizaCloudConnected: boolean;
+  tokagentCloudConnected: boolean;
   onboardingRunMode: "local" | "cloud" | "";
   onboardingProvider: string;
 }): boolean {
@@ -117,11 +117,11 @@ export function shouldUseCloudOnboardingFastTrack(args: {
   }
 
   return (
-    args.elizaCloudConnected &&
+    args.tokagentCloudConnected &&
     !(
       args.onboardingRunMode === "local" &&
       args.onboardingProvider &&
-      args.onboardingProvider !== "elizacloud"
+      args.onboardingProvider !== "tokagentcloud"
     )
   );
 }

@@ -2,14 +2,14 @@
  * Unit tests for Bluesky handlers
  *
  * These tests verify that the handlers correctly:
- * - Route to the full elizaOS messageService.handleMessage() pipeline
+ * - Route to the full tokagentOS messageService.handleMessage() pipeline
  * - Create proper Memory objects using createMessageMemory()
  * - Set up connections and rooms correctly
  * - Handle callbacks that post to Bluesky
  */
 
-import type { Content, IAgentRuntime, Memory, Service } from "@elizaos/core";
-import { stringToUuid } from "@elizaos/core";
+import type { Content, IAgentRuntime, Memory, Service } from "@tokagentos/core";
+import { stringToUuid } from "@tokagentos/core";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import {
   type BlueSkyCreatePostEventPayload,
@@ -61,10 +61,10 @@ function createMockRuntime(): IAgentRuntime {
           _message: Memory,
           callback?: (content: Content) => Promise<Memory[]>,
         ) => {
-          // Simulate elizaOS pipeline generating a response
+          // Simulate tokagentOS pipeline generating a response
           if (callback) {
             const responseContent: Content = {
-              text: "This is a test response from the elizaOS pipeline!",
+              text: "This is a test response from the tokagentOS pipeline!",
               source: "bluesky",
             };
             await callback(responseContent);
@@ -138,7 +138,7 @@ function getMockPostService(runtime: IAgentRuntime): MockPostService {
 // Tests
 // ============================================================================
 
-describe("Bluesky Handlers - Full elizaOS Pipeline", () => {
+describe("Bluesky Handlers - Full tokagentOS Pipeline", () => {
   let runtime: IAgentRuntime;
 
   beforeEach(() => {

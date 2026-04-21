@@ -2,7 +2,7 @@
  * Popup Script
  *
  * Handles the chat UI, settings management, and communication
- * with the Eliza runtime.
+ * with the Tokagent runtime.
  */
 
 // Global error handler to catch module loading errors
@@ -25,7 +25,7 @@ import {
   resetConversation,
   sendMessage,
   updatePageContent,
-} from "../../shared/eliza-runtime";
+} from "../../shared/tokagent-runtime";
 import {
   deepMergeConfig,
   DEFAULT_CONFIG,
@@ -92,7 +92,7 @@ let isProcessing = false;
 // Storage
 // ============================================
 
-const CONFIG_KEY = "elizaos-extension-config";
+const CONFIG_KEY = "tokagentos-extension-config";
 
 async function loadConfig(): Promise<void> {
   try {
@@ -125,7 +125,7 @@ function updateStatus(mode: ProviderMode, ready: boolean): void {
 
   if (!ready) {
     elements.statusDot.className = "status-dot";
-  } else if (effectiveMode === "elizaClassic") {
+  } else if (effectiveMode === "tokagentClassic") {
     elements.statusDot.className = "status-dot offline";
   } else {
     elements.statusDot.className = "status-dot online";
@@ -162,7 +162,7 @@ function updateProviderSettings(): void {
   const dotEl = noteEl.querySelector(".dot") as HTMLElement;
   const textEl = noteEl.querySelector(".note-text") as HTMLElement;
 
-  if (config.mode === "elizaClassic") {
+  if (config.mode === "tokagentClassic") {
     dotEl.className = "dot good";
     textEl.textContent = `Using: ${getModeLabel(effectiveMode)} (no API key needed)`;
   } else if (hasKey) {

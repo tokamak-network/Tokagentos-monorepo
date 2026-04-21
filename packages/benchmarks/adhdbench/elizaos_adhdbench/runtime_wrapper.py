@@ -8,16 +8,16 @@ import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types.agent import Character
-from elizaos.types.components import Action
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.agent import Character
+from tokagentos.types.components import Action
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid
 
-from elizaos_adhdbench.config import ADHDBenchConfig
+from tokagentos_adhdbench.config import ADHDBenchConfig
 
 if TYPE_CHECKING:
-    from elizaos.types.state import State
+    from tokagentos.types.state import State
 
 
 @dataclass
@@ -30,7 +30,7 @@ class TurnCapture:
 class InstrumentedCapture:
     """Captures provider execution data by wrapping compose_state.
 
-    This replaces the trajectory logger approach because the Eliza runtime's
+    This replaces the trajectory logger approach because the Tokagent runtime's
     trajectory_step_id path uses camelCase getattr on protobuf objects which
     always returns None (protobuf only exposes snake_case).  Method wrapping
     is reliable and doesn't depend on broken metadata plumbing.
@@ -104,7 +104,7 @@ def create_benchmark_runtime(
 class _DictLikeSettings:
     """Wraps protobuf CharacterSettings to support dict-style .get() access.
 
-    The Eliza MemoryService/PlanningService call ``settings.get("KEY")`` but
+    The Tokagent MemoryService/PlanningService call ``settings.get("KEY")`` but
     CharacterSettings is a protobuf message without .get().  This wrapper
     bridges the gap by delegating .get() to the protobuf extra Struct field
     and forwarding all other attribute access to the underlying proto.

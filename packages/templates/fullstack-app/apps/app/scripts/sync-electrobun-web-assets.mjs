@@ -17,9 +17,9 @@ async function ensureDirExists(dir) {
 }
 
 if (!(await ensureDirExists(sourceDir))) {
-  console.error(`[Eliza] Web build output not found: ${sourceDir}`);
+  console.error(`[Tokagent] Web build output not found: ${sourceDir}`);
   console.error(
-    "[Eliza] Run `bun run build` from apps/app before syncing Electrobun assets.",
+    "[Tokagent] Run `bun run build` from apps/app before syncing Electrobun assets.",
   );
   process.exit(1);
 }
@@ -29,5 +29,5 @@ await mkdir(targetDir, { recursive: true });
 await cp(sourceDir, targetDir, { recursive: true, force: true });
 
 console.info(
-  `[Eliza] Synced Electrobun web assets: ${sourceDir} -> ${targetDir}`,
+  `[Tokagent] Synced Electrobun web assets: ${sourceDir} -> ${targetDir}`,
 );

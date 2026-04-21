@@ -9,8 +9,8 @@ import fs from "node:fs";
 import type http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { logger } from "@elizaos/core";
-import { resolveApiToken } from "@elizaos/shared/runtime-env";
+import { logger } from "@tokagentos/core";
+import { resolveApiToken } from "@tokagentos/shared/runtime-env";
 import { isCloudProvisionedContainer } from "./cloud-provisioning.js";
 import { sendJsonError } from "./http-helpers.js";
 import { getOrReadCachedFile } from "./memory-bounds.js";
@@ -76,7 +76,7 @@ export function resolveUiDir(): string | null {
       if (fs.statSync(indexPath).isFile()) {
         uiDir = candidate;
         uiIndexHtml = fs.readFileSync(indexPath);
-        logger.info(`[eliza-api] Serving dashboard UI from ${candidate}`);
+        logger.info(`[tokagent-api] Serving dashboard UI from ${candidate}`);
         return uiDir;
       }
     } catch {
@@ -85,7 +85,7 @@ export function resolveUiDir(): string | null {
   }
 
   uiDir = null;
-  logger.info("[eliza-api] No built UI found — dashboard routes are disabled");
+  logger.info("[tokagent-api] No built UI found — dashboard routes are disabled");
   return null;
 }
 
@@ -150,10 +150,10 @@ export function injectApiBaseIntoHtml(
 
   const parts: string[] = [];
   if (trimmedBase) {
-    parts.push(`window.__ELIZA_API_BASE__=${JSON.stringify(trimmedBase)};`);
+    parts.push(`window.__TOKAGENT_API_BASE__=${JSON.stringify(trimmedBase)};`);
   }
   if (trimmedToken) {
-    parts.push(`window.__ELIZA_API_TOKEN__=${JSON.stringify(trimmedToken)};`);
+    parts.push(`window.__TOKAGENT_API_TOKEN__=${JSON.stringify(trimmedToken)};`);
   }
   const injection = Buffer.from(`<script>${parts.join("")}</script>`);
 
@@ -263,7 +263,7 @@ export function serveStaticUi(
     : null;
   const html = injectApiBaseIntoHtml(
     uiIndexHtml,
-    process.env.ELIZA_EXTERNAL_BASE_URL,
+    process.env.TOKAGENT_EXTERNAL_BASE_URL,
     cloudToken ? { apiToken: cloudToken } : undefined,
   );
 

@@ -83,7 +83,7 @@ The plugin assumes a live production ClawVille backend at `api.clawville.world`.
 
 ```
 plugins/app-clawville/
-├── package.json            # elizaos.app manifest
+├── package.json            # tokagentos.app manifest
 ├── README.md               # this file
 └── src/
     ├── index.ts            # re-exports handleAppRoutes, resolveLaunchSession, refreshRunSession

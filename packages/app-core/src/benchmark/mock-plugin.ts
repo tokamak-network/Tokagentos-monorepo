@@ -6,7 +6,7 @@ import {
   type ObjectGenerationParams,
   type Plugin,
   type TextEmbeddingParams,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 function extractPrompt(
   input: GenerateTextParams | string | null | undefined,

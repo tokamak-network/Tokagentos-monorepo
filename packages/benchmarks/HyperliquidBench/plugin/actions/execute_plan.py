@@ -18,7 +18,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from elizaos.types import (
+from tokagentos.types import (
     Action,
     ActionExample,
     ActionParameter,
@@ -28,7 +28,7 @@ from elizaos.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -195,7 +195,7 @@ async def _handle_execute_plan(
 
     # Create a timestamped output directory
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    out_dir = bench_root / config.runs_dir / f"eliza-{timestamp}"
+    out_dir = bench_root / config.runs_dir / f"tokagent-{timestamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # ── Step 1: Run hl-runner ──────────────────────────────────────

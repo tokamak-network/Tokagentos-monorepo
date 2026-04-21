@@ -15,7 +15,7 @@ import { clipboardWriteAction } from "./actions/write.ts";
 import { clipboardProvider } from "./providers/clipboard.ts";
 
 /**
- * Clipboard Plugin for ElizaOS
+ * Clipboard Plugin for TokagentOS
  *
  * Provides file-based memory storage that persists across sessions.
  * The agent can write, read, search, and manage clipboard entries

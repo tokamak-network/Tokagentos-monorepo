@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
     allowNavigation: [
       "localhost",
       "127.0.0.1",
-      "*.elizacloud.ai",
+      "*.tokagentcloud.ai",
       "rs-sdk-demo.fly.dev",
       "*.fly.dev",
       "hyperscape.gg",

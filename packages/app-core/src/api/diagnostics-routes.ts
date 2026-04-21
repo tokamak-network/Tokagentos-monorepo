@@ -1,14 +1,14 @@
 import {
   type DiagnosticsRouteContext as AutonomousDiagnosticsRouteContext,
   handleDiagnosticsRoutes as handleAutonomousDiagnosticsRoutes,
-} from "@elizaos/agent/api/diagnostics-routes";
+} from "@tokagentos/agent/api/diagnostics-routes";
 import {
   AUDIT_EVENT_TYPES,
   AUDIT_SEVERITIES,
   getAuditFeedSize,
   queryAuditFeed,
   subscribeAuditFeed,
-} from "@elizaos/agent/security/audit-log";
+} from "@tokagentos/agent/security/audit-log";
 
 type DiagnosticsRouteContext = Omit<
   AutonomousDiagnosticsRouteContext,

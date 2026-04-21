@@ -1,6 +1,6 @@
-# ELIZA Next.js Example
+# TOKAGENT Next.js Example
 
-A full-stack Next.js chat application using elizaOS AgentRuntime with PGLite and OpenAI.
+A full-stack Next.js chat application using tokagentOS AgentRuntime with PGLite and OpenAI.
 
 ## Quick Start
 
@@ -20,7 +20,7 @@ The API route (`app/api/chat/route.ts`) mirrors `examples/chat/typescript/chat.t
 
 ```typescript
 const character: Character = {
-  name: "Eliza",
+  name: "Tokagent",
   bio: "A helpful AI assistant.",
   secrets: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
@@ -70,7 +70,7 @@ Environment variables must be passed via `character.secrets` because `runtime.ge
 
 ```typescript
 const character: Character = {
-  name: "Eliza",
+  name: "Tokagent",
   bio: "A helpful AI assistant.",
   secrets: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
@@ -87,7 +87,7 @@ examples/next/
 │   ├── page.tsx             # Chat UI
 │   └── ...
 ├── lib/
-│   └── eliza-classic.ts     # Classic ELIZA fallback
+│   └── tokagent-classic.ts     # Classic TOKAGENT fallback
 ├── next.config.js           # PGLite webpack config
 └── package.json
 ```

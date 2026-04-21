@@ -4,7 +4,7 @@ import {
   type PipelineStageId,
   TrajectoryLlmCallCard,
   TrajectoryPipelineGraph,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   Brain,
   CheckCircle,

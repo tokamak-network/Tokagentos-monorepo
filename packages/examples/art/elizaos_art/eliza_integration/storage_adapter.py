@@ -1,5 +1,5 @@
 """
-Storage Adapter for ElizaOS plugin-localdb
+Storage Adapter for TokagentOS plugin-localdb
 
 Provides trajectory and checkpoint storage using:
 - Local JSON files (compatible with plugin-localdb format)
@@ -205,7 +205,7 @@ class TrajectoryStore:
         return len(list(self.trajectories_dir.glob("*.json")))
 
 
-class ElizaStorageAdapter:
+class TokagentStorageAdapter:
     """
     Full storage adapter compatible with plugin-localdb.
     

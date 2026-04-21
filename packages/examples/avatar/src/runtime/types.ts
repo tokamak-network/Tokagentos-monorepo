@@ -1,4 +1,4 @@
-export type DemoMode = "elizaClassic" | "openai" | "anthropic" | "xai" | "gemini" | "groq";
+export type DemoMode = "tokagentClassic" | "openai" | "anthropic" | "xai" | "gemini" | "groq";
 
 export type SamVoiceParams = {
   speed: number;
@@ -54,7 +54,7 @@ export type DemoConfig = {
 };
 
 export const DEFAULT_DEMO_CONFIG: DemoConfig = {
-  mode: "elizaClassic",
+  mode: "tokagentClassic",
   voiceInputEnabled: false,
   voiceOutputEnabled: true,
   voiceOutputProvider: "sam",

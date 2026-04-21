@@ -52,8 +52,8 @@ import type {
   ProviderResult,
   State,
   UUID,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type { FormService } from "../service";
 import { buildTemplateValues, renderTemplate, resolveControlTemplates } from "../template";
 import type { FormContextState } from "../types";

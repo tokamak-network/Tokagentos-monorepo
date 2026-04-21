@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/example-chat",
   "version": "2.0.0-alpha",
-  "description": "Interactive CLI chat with an AI agent using elizaOS - supports OpenAI, Claude, xAI, Gemini, and Groq",
+  "description": "Interactive CLI chat with an AI agent using tokagentOS - supports OpenAI, Claude, xAI, Gemini, and Groq",
   "type": "module",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "dev": "bun --watch run chat.ts"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-anthropic": "alpha",
     "@elizaos/plugin-xai": "alpha",

@@ -1,4 +1,4 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { packageNameToAppDisplayName } from "../contracts/apps.js";
 import type {
   AppUiExtensionConfig,

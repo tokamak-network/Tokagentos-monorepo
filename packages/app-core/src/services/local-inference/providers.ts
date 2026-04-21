@@ -29,7 +29,7 @@ export type ProviderId =
   | "anthropic"
   | "openai"
   | "grok"
-  | "elizacloud"
+  | "tokagentcloud"
   | "google"
   | "mistral";
 
@@ -110,11 +110,11 @@ const DEVICE_BRIDGE_PROVIDER: ProviderDefinition = {
   supportedSlots: ["TEXT_SMALL", "TEXT_LARGE"],
   async getEnableState(): Promise<ProviderEnableState> {
     const bridgeEnabled =
-      process.env.ELIZA_DEVICE_BRIDGE_ENABLED?.trim() === "1";
+      process.env.TOKAGENT_DEVICE_BRIDGE_ENABLED?.trim() === "1";
     if (!bridgeEnabled) {
       return {
         enabled: false,
-        reason: "Set ELIZA_DEVICE_BRIDGE_ENABLED=1 to enable",
+        reason: "Set TOKAGENT_DEVICE_BRIDGE_ENABLED=1 to enable",
       };
     }
     const status = deviceBridge.status();
@@ -209,9 +209,9 @@ const GROK_PROVIDER: ProviderDefinition = {
   configureHref: "#ai-model",
 };
 
-const ELIZACLOUD_PROVIDER: ProviderDefinition = {
-  id: "elizacloud",
-  label: "Eliza Cloud",
+const TOKAGENTCLOUD_PROVIDER: ProviderDefinition = {
+  id: "tokagentcloud",
+  label: "Tokagent Cloud",
   kind: "cloud-subscription",
   description:
     "Milady-hosted inference routed through your subscription. No API key to manage.",
@@ -224,9 +224,9 @@ const ELIZACLOUD_PROVIDER: ProviderDefinition = {
   ],
   async getEnableState(): Promise<ProviderEnableState> {
     const token =
-      process.env.ELIZA_CLOUD_TOKEN?.trim() ??
-      process.env.ELIZACLOUD_TOKEN?.trim() ??
-      process.env.ELIZAOS_API_KEY?.trim();
+      process.env.TOKAGENT_CLOUD_TOKEN?.trim() ??
+      process.env.TOKAGENTCLOUD_TOKEN?.trim() ??
+      process.env.TOKAGENTOS_API_KEY?.trim();
     return token
       ? { enabled: true, reason: "Cloud token set" }
       : { enabled: false, reason: "Not signed in" };
@@ -269,7 +269,7 @@ export const BUILT_IN_PROVIDERS: readonly ProviderDefinition[] = [
   LOCAL_PROVIDER,
   DEVICE_BRIDGE_PROVIDER,
   CAPACITOR_LLAMA_PROVIDER,
-  ELIZACLOUD_PROVIDER,
+  TOKAGENTCLOUD_PROVIDER,
   ANTHROPIC_PROVIDER,
   OPENAI_PROVIDER,
   GOOGLE_PROVIDER,

@@ -6,10 +6,10 @@ import json
 import logging
 import warnings
 
-from elizaos_trust_bench.corpus import get_corpus
-from elizaos_trust_bench.reporter import format_report
-from elizaos_trust_bench.scorer import score_results
-from elizaos_trust_bench.types import (
+from tokagentos_trust_bench.corpus import get_corpus
+from tokagentos_trust_bench.reporter import format_report
+from tokagentos_trust_bench.scorer import score_results
+from tokagentos_trust_bench.types import (
     BenchmarkConfig,
     BenchmarkResult,
     DetectionResult,
@@ -152,8 +152,8 @@ class TrustBenchmarkRunner:
     """Run the trust & security benchmark against a handler.
 
     Usage:
-        from elizaos_trust_bench.runner import TrustBenchmarkRunner
-        from elizaos_trust_bench.baselines import PerfectHandler
+        from tokagentos_trust_bench.runner import TrustBenchmarkRunner
+        from tokagentos_trust_bench.baselines import PerfectHandler
 
         runner = TrustBenchmarkRunner()
         result = runner.run(PerfectHandler())

@@ -31,7 +31,7 @@ function readBoolFlag(name: string, fallback = false): boolean {
 }
 
 /**
- * Eliza Cloud remote-signing wallet bridge.
+ * Tokagent Cloud remote-signing wallet bridge.
  *
  * When on: `POST /api/cloud/login/status` provisions cloud wallets, writes
  * `WALLET_SOURCE_*`, and the UI exposes a dual-wallet (local | cloud) picker.

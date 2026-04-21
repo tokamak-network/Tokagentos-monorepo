@@ -8,13 +8,13 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { type AgentRuntime, logger } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import { type AgentRuntime, logger } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import type { SkillEntry } from "./skills-routes.js";
 
 /** Cache key for persisting skill enable/disable state in the agent database. */
-const SKILL_PREFS_CACHE_KEY = "eliza:skill-preferences";
+const SKILL_PREFS_CACHE_KEY = "tokagent:skill-preferences";
 
 /** Shape stored in the cache: maps skill ID → enabled flag. */
 type SkillPreferencesMap = Record<string, boolean>;
@@ -48,7 +48,7 @@ export async function saveSkillPreferences(
     await runtime.setCache(SKILL_PREFS_CACHE_KEY, prefs);
   } catch (err) {
     logger.debug(
-      `[eliza-api] Failed to save skill preferences: ${err instanceof Error ? err.message : err}`,
+      `[tokagent-api] Failed to save skill preferences: ${err instanceof Error ? err.message : err}`,
     );
   }
 }
@@ -57,7 +57,7 @@ export async function saveSkillPreferences(
 // Skill scan acknowledgments — tracks user review of security findings
 // ---------------------------------------------------------------------------
 
-const SKILL_ACK_CACHE_KEY = "eliza:skill-scan-acknowledgments";
+const SKILL_ACK_CACHE_KEY = "tokagent:skill-scan-acknowledgments";
 
 type SkillAcknowledgmentMap = Record<
   string,
@@ -85,7 +85,7 @@ export async function saveSkillAcknowledgments(
     await runtime.setCache(SKILL_ACK_CACHE_KEY, acks);
   } catch (err) {
     logger.debug(
-      `[eliza-api] Failed to save skill acknowledgments: ${err instanceof Error ? err.message : err}`,
+      `[tokagent-api] Failed to save skill acknowledgments: ${err instanceof Error ? err.message : err}`,
     );
   }
 }
@@ -174,7 +174,7 @@ export async function loadScanReportFromDisk(
  */
 export function resolveSkillEnabled(
   id: string,
-  config: ElizaConfig,
+  config: TokagentConfig,
   dbPrefs: SkillPreferencesMap,
 ): boolean {
   // Database preference takes priority (explicit user action)
@@ -233,7 +233,7 @@ export function shouldExposeBinanceSkillRecord(skill: {
 }
 
 /**
- * Discover skills from @elizaos/skills and workspace, applying
+ * Discover skills from @tokagentos/skills and workspace, applying
  * database preferences and config filtering.
  *
  * When a runtime is available, skills are primarily sourced from the
@@ -243,7 +243,7 @@ export function shouldExposeBinanceSkillRecord(skill: {
  */
 export async function discoverSkills(
   workspaceDir: string,
-  config: ElizaConfig,
+  config: TokagentConfig,
   runtime: AgentRuntime | null,
 ): Promise<SkillEntry[]> {
   // Load persisted preferences from the agent database
@@ -314,7 +314,7 @@ export async function discoverSkills(
       }
     } catch {
       logger.debug(
-        "[eliza-api] AgentSkillsService not available, falling back to filesystem scan",
+        "[tokagent-api] AgentSkillsService not available, falling back to filesystem scan",
       );
     }
   }
@@ -322,9 +322,9 @@ export async function discoverSkills(
   // ── Fallback: filesystem scanning ───────────────────────────────────────
   const skillsDirs = new Set<string>();
 
-  // Bundled skills from the @elizaos/skills package
+  // Bundled skills from the @tokagentos/skills package
   try {
-    const skillsPkg = (await import(/* @vite-ignore */ "@elizaos/skills")) as {
+    const skillsPkg = (await import(/* @vite-ignore */ "@tokagentos/skills")) as {
       getSkillsDir: () => string;
     };
     const bundledDir = skillsPkg.getSkillsDir();
@@ -333,11 +333,11 @@ export async function discoverSkills(
     }
   } catch {
     logger.debug(
-      "[eliza-api] @elizaos/skills not available for skill discovery",
+      "[tokagent-api] @tokagentos/skills not available for skill discovery",
     );
   }
 
-  // Runtime-provided skill directories (works even when @elizaos/skills is not installed
+  // Runtime-provided skill directories (works even when @tokagentos/skills is not installed
   // as a direct dependency and AgentSkillsService catalog sync is degraded).
   if (runtime && typeof runtime.getSetting === "function") {
     for (const dir of parseSkillDirsSetting(
@@ -357,7 +357,7 @@ export async function discoverSkills(
     }
   }
 
-  // Managed skills in the state dir (~/.eliza/skills by default)
+  // Managed skills in the state dir (~/.tokagent/skills by default)
   const managedSkills = path.join(resolveStateDir(), "skills");
   if (fs.existsSync(managedSkills)) {
     skillsDirs.add(managedSkills);
@@ -402,7 +402,7 @@ export function scanSkillsDir(
   dir: string,
   skills: SkillEntry[],
   seen: Set<string>,
-  config: ElizaConfig,
+  config: TokagentConfig,
   dbPrefs: SkillPreferencesMap,
 ): void {
   if (!fs.existsSync(dir)) return;

@@ -1,17 +1,17 @@
 // @ts-nocheck — mixin: type safety is enforced on the composed class
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import type {
   LifeOpsConnectorSide,
   LifeOpsSignalConnectorStatus,
   LifeOpsSignalInboundMessage,
   LifeOpsSignalPairingStatus,
   StartLifeOpsSignalPairingResponse,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_SIGNAL_CAPABILITIES,
   capabilitiesForSide,
-} from "@elizaos/shared/contracts/lifeops";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/shared/contracts/lifeops";
+import { logger } from "@tokagentos/core";
 import { createLifeOpsConnectorGrant } from "./repository.js";
 import {
   fail,

@@ -4,7 +4,7 @@ import {
   type DesktopPowerState,
   invokeDesktopBridgeRequest,
   isElectrobunRuntime,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 
 /** How often to re-read AC vs battery in the Electrobun shell (ms). */
 export const VRM_DESKTOP_BATTERY_POLL_MS = 60_000;
@@ -15,7 +15,7 @@ export const VRM_DESKTOP_BATTERY_POLL_MS = 60_000;
  * **WHY:** some users prefer visual fidelity over the default **1×** pixel cap
  * when unplugged.
  */
-export const VRM_BATTERY_PIXEL_CAP_STORAGE_KEY = "eliza.vrmBatteryPixelCap";
+export const VRM_BATTERY_PIXEL_CAP_STORAGE_KEY = "tokagent.vrmBatteryPixelCap";
 
 export function isVrmBatteryPixelCapEnabled(): boolean {
   if (typeof window === "undefined") return true;

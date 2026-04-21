@@ -1,33 +1,33 @@
 #!/usr/bin/env node
 
 /**
- * Disable the repo-local `eliza/` workspace for CI runs that have
- * `ELIZA_SKIP_LOCAL_UPSTREAMS=1` set (Docker CI Smoke, Release
+ * Disable the repo-local `tokagent/` workspace for CI runs that have
+ * `TOKAGENT_SKIP_LOCAL_UPSTREAMS=1` set (Docker CI Smoke, Release
  * Workflow Contract, packaged build jobs, etc.).
  *
  * Three things have to happen for Bun to produce a clean lockfile when
- * `eliza/` is absent:
+ * `tokagent/` is absent:
  *
- *   1. The `eliza/` directory must not exist on disk. The submodule
+ *   1. The `tokagent/` directory must not exist on disk. The submodule
  *      init step already skips it in SKIP_LOCAL_UPSTREAMS mode, but if
  *      a fresh checkout DID materialize it (e.g. local repro) we also
  *      rename it out of the way here.
  *
  *   2. The root `package.json` `workspaces` array must not contain
- *      `"eliza/packages/*"`. Leaving that glob in place while the
+ *      `"tokagent/packages/*"`. Leaving that glob in place while the
  *      directory is absent causes Bun 1.3.x to emit a bun.lock that
  *      carries both a workspace entry AND an npm-resolved entry for
- *      `@elizaos/core`.
+ *      `@tokagentos/core`.
  *
  *   3. Every workspace package.json that still pins
- *      `"@elizaos/core": "workspace:*"` must be rewritten to the same
+ *      `"@tokagentos/core": "workspace:*"` must be rewritten to the same
  *      registry version that the root `overrides` block and
- *      `eliza/packages/app-core/deploy/cloud-agent-template` already use
- *      (`@elizaos/core@2.0.0-alpha.115` at time of writing). Without
- *      this rewrite, Bun hoists a registry-resolved `@elizaos/core`
+ *      `tokagent/packages/app-core/deploy/cloud-agent-template` already use
+ *      (`@tokagentos/core@2.0.0-alpha.115` at time of writing). Without
+ *      this rewrite, Bun hoists a registry-resolved `@tokagentos/core`
  *      for the workspace:* callers AND a separate registry-resolved
- *      `@elizaos/core` for cloud-agent-template, emitting two
- *      top-level `"@elizaos/core"` entries in bun.lock's packages
+ *      `@tokagentos/core` for cloud-agent-template, emitting two
+ *      top-level `"@tokagentos/core"` entries in bun.lock's packages
  *      section. The next `bun pm pack --dry-run` (invoked from
  *      `scripts/release-check.ts`) then fails with:
  *
@@ -39,7 +39,7 @@
  *
  * We patch every affected file in place (no commit, CI-only). All
  * edits are idempotent and gated on `GITHUB_ACTIONS=true` +
- * `ELIZA_SKIP_LOCAL_UPSTREAMS=1`, so local runs and non-skip CI are
+ * `TOKAGENT_SKIP_LOCAL_UPSTREAMS=1`, so local runs and non-skip CI are
  * untouched.
  */
 
@@ -47,12 +47,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const ELIZA_WORKSPACE_GLOB = "eliza/packages/*";
-export const PLUGIN_ROOT_WORKSPACE_GLOB = "eliza/plugins/*";
+export const TOKAGENT_WORKSPACE_GLOB = "tokagent/packages/*";
+export const PLUGIN_ROOT_WORKSPACE_GLOB = "tokagent/plugins/*";
 export const PLUGIN_TYPESCRIPT_WORKSPACE_GLOB =
-  "eliza/plugins/plugin-*/typescript";
+  "tokagent/plugins/plugin-*/typescript";
 export const DISABLED_WORKSPACE_GLOBS = [
-  ELIZA_WORKSPACE_GLOB,
+  TOKAGENT_WORKSPACE_GLOB,
   PLUGIN_ROOT_WORKSPACE_GLOB,
   PLUGIN_TYPESCRIPT_WORKSPACE_GLOB,
 ];
@@ -64,7 +64,7 @@ export const DEPENDENCY_FIELDS = [
 ];
 export const CI_LOCKFILES = ["bun.lock", "bun.lockb"];
 
-const ELIZAOS_CORE_NAME = "@elizaos/core";
+const TOKAGENTOS_CORE_NAME = "@tokagentos/core";
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
 const DEFAULT_REPO_ROOT = process.cwd();
 
@@ -84,14 +84,14 @@ export function resolvePinnedCoreVersion(
   rootDir,
   { rootPackage, readJson = readPackageJson } = {},
 ) {
-  const fromOverrides = rootPackage?.overrides?.[ELIZAOS_CORE_NAME];
+  const fromOverrides = rootPackage?.overrides?.[TOKAGENTOS_CORE_NAME];
   if (isExactRegistryVersion(fromOverrides)) {
     return fromOverrides;
   }
 
   const templatePath = path.join(
     rootDir,
-    "eliza",
+    "tokagent",
     "packages",
     "app-core",
     "deploy",
@@ -101,7 +101,7 @@ export function resolvePinnedCoreVersion(
   if (fs.existsSync(templatePath)) {
     try {
       const templatePkg = readJson(templatePath);
-      const fromTemplate = templatePkg?.dependencies?.[ELIZAOS_CORE_NAME];
+      const fromTemplate = templatePkg?.dependencies?.[TOKAGENTOS_CORE_NAME];
       if (isExactRegistryVersion(fromTemplate)) {
         return fromTemplate;
       }
@@ -188,7 +188,7 @@ export function resolvePinnedWorkspaceVersions(
   const pinnedVersions = new Map();
 
   if (isExactRegistryVersion(pinnedCore)) {
-    pinnedVersions.set(ELIZAOS_CORE_NAME, pinnedCore);
+    pinnedVersions.set(TOKAGENTOS_CORE_NAME, pinnedCore);
   }
 
   for (const [dependencyName, specifier] of Object.entries(
@@ -237,30 +237,30 @@ export function rewriteWorkspaceDependencySpecifiers(pkg, pinnedVersions) {
   return mutated;
 }
 
-export function disableLocalElizaWorkspace(
+export function disableLocalTokagentWorkspace(
   repoRoot = DEFAULT_REPO_ROOT,
   { log = console.log, warn = console.warn, errorLog = console.error } = {},
 ) {
-  const elizaRoot = path.join(repoRoot, "eliza");
-  const disabledElizaRoot = path.join(repoRoot, ".eliza.ci-disabled");
+  const tokagentRoot = path.join(repoRoot, "tokagent");
+  const disabledTokagentRoot = path.join(repoRoot, ".tokagent.ci-disabled");
   const packageJsonPath = path.join(repoRoot, "package.json");
   const removedLockfiles = [];
 
-  if (fs.existsSync(elizaRoot)) {
-    fs.rmSync(disabledElizaRoot, { recursive: true, force: true });
-    fs.renameSync(elizaRoot, disabledElizaRoot);
+  if (fs.existsSync(tokagentRoot)) {
+    fs.rmSync(disabledTokagentRoot, { recursive: true, force: true });
+    fs.renameSync(tokagentRoot, disabledTokagentRoot);
     log(
-      `[disable-local-eliza-workspace] Disabled repo-local eliza workspace at ${elizaRoot}`,
+      `[disable-local-tokagent-workspace] Disabled repo-local tokagent workspace at ${tokagentRoot}`,
     );
   } else {
     log(
-      "[disable-local-eliza-workspace] Repo-local eliza workspace already absent",
+      "[disable-local-tokagent-workspace] Repo-local tokagent workspace already absent",
     );
   }
 
   if (!fs.existsSync(packageJsonPath)) {
     log(
-      "[disable-local-eliza-workspace] Root package.json not found; skipping workspace patch",
+      "[disable-local-tokagent-workspace] Root package.json not found; skipping workspace patch",
     );
     return {
       rewrites: 0,
@@ -275,7 +275,7 @@ export function disableLocalElizaWorkspace(
     rootPkg = JSON.parse(rawRootPkg);
   } catch (error) {
     errorLog(
-      `[disable-local-eliza-workspace] Failed to parse ${packageJsonPath}: ${error.message}`,
+      `[disable-local-tokagent-workspace] Failed to parse ${packageJsonPath}: ${error.message}`,
     );
     throw error;
   }
@@ -293,12 +293,12 @@ export function disableLocalElizaWorkspace(
 
     if (removedWorkspaceGlobs.length === 0) {
       log(
-        `[disable-local-eliza-workspace] Root package.json workspaces array does not include ${DISABLED_WORKSPACE_GLOBS.join(", ")}; nothing to patch`,
+        `[disable-local-tokagent-workspace] Root package.json workspaces array does not include ${DISABLED_WORKSPACE_GLOBS.join(", ")}; nothing to patch`,
       );
     } else {
       rootPkg.workspaces = filteredWorkspaces;
       log(
-        `[disable-local-eliza-workspace] Removed ${removedWorkspaceGlobs.join(", ")} from root package.json workspaces`,
+        `[disable-local-tokagent-workspace] Removed ${removedWorkspaceGlobs.join(", ")} from root package.json workspaces`,
       );
     }
   }
@@ -309,9 +309,9 @@ export function disableLocalElizaWorkspace(
     rootPackage: rootPkg,
   });
 
-  if (!pinnedWorkspaceVersions.has(ELIZAOS_CORE_NAME)) {
+  if (!pinnedWorkspaceVersions.has(TOKAGENTOS_CORE_NAME)) {
     warn(
-      "[disable-local-eliza-workspace] Could not resolve a pinned @elizaos/core version from overrides or cloud-agent-template; leaving workspace:* specifiers in place",
+      "[disable-local-tokagent-workspace] Could not resolve a pinned @tokagentos/core version from overrides or cloud-agent-template; leaving workspace:* specifiers in place",
     );
     return {
       rewrites: 0,
@@ -321,7 +321,7 @@ export function disableLocalElizaWorkspace(
   }
 
   log(
-    `[disable-local-eliza-workspace] Rewriting workspace specifiers for ${pinnedWorkspaceVersions.size} package(s) to exact registry versions`,
+    `[disable-local-tokagent-workspace] Rewriting workspace specifiers for ${pinnedWorkspaceVersions.size} package(s) to exact registry versions`,
   );
 
   const seen = new Set();
@@ -341,7 +341,7 @@ export function disableLocalElizaWorkspace(
   if (rewriteWorkspaceDependencySpecifiers(rootPkg, pinnedWorkspaceVersions)) {
     writePackageJson(packageJsonPath, rawRootPkg, rootPkg);
     rewrites++;
-    log("[disable-local-eliza-workspace]   patched .");
+    log("[disable-local-tokagent-workspace]   patched .");
   }
 
   for (const workspaceRel of pendingWorkspaceDirs) {
@@ -355,7 +355,7 @@ export function disableLocalElizaWorkspace(
       pkg = JSON.parse(originalRaw);
     } catch (error) {
       warn(
-        `[disable-local-eliza-workspace]   skipped ${workspaceRel}: ${error.message}`,
+        `[disable-local-tokagent-workspace]   skipped ${workspaceRel}: ${error.message}`,
       );
       continue;
     }
@@ -365,17 +365,17 @@ export function disableLocalElizaWorkspace(
     }
     if (writePackageJson(pkgPath, originalRaw, pkg)) {
       rewrites++;
-      log(`[disable-local-eliza-workspace]   patched ${workspaceRel}`);
+      log(`[disable-local-tokagent-workspace]   patched ${workspaceRel}`);
     }
   }
 
   if (rewrites === 0) {
     log(
-      "[disable-local-eliza-workspace] No disabled upstream workspace specifiers found; nothing rewritten",
+      "[disable-local-tokagent-workspace] No disabled upstream workspace specifiers found; nothing rewritten",
     );
   } else {
     log(
-      `[disable-local-eliza-workspace] Rewrote disabled upstream workspace specifiers in ${rewrites} package.json file(s)`,
+      `[disable-local-tokagent-workspace] Rewrote disabled upstream workspace specifiers in ${rewrites} package.json file(s)`,
     );
   }
 
@@ -388,7 +388,7 @@ export function disableLocalElizaWorkspace(
 
   if (removedLockfiles.length > 0) {
     log(
-      `[disable-local-eliza-workspace] Removed ${removedLockfiles.join(", ")} so Bun regenerates the lockfile against the rewritten workspace graph`,
+      `[disable-local-tokagent-workspace] Removed ${removedLockfiles.join(", ")} so Bun regenerates the lockfile against the rewritten workspace graph`,
     );
   }
 
@@ -406,17 +406,17 @@ const isMain =
 
 if (isMain) {
   const skipLocalUpstreams =
-    process.env.ELIZA_SKIP_LOCAL_UPSTREAMS === "1" ||
-    process.env.ELIZA_SKIP_LOCAL_UPSTREAMS === "1";
+    process.env.TOKAGENT_SKIP_LOCAL_UPSTREAMS === "1" ||
+    process.env.TOKAGENT_SKIP_LOCAL_UPSTREAMS === "1";
   const runningInCi = process.env.GITHUB_ACTIONS === "true";
-  const forced = process.env.ELIZA_DISABLE_LOCAL_UPSTREAMS === "force";
+  const forced = process.env.TOKAGENT_DISABLE_LOCAL_UPSTREAMS === "force";
 
   if (!skipLocalUpstreams || (!runningInCi && !forced)) {
     process.exit(0);
   }
 
   try {
-    disableLocalElizaWorkspace();
+    disableLocalTokagentWorkspace();
   } catch {
     process.exit(1);
   }

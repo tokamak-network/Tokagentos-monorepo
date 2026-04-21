@@ -28,9 +28,9 @@ impl Default for Character {
 /// Create the Discord agent character
 pub fn create_character() -> Character {
     Character {
-        name: "DiscordEliza".to_string(),
+        name: "DiscordTokagent".to_string(),
         bio: "A helpful and friendly AI assistant on Discord. I can answer questions, have conversations, moderate channels, and help with various tasks.".to_string(),
-        system: r#"You are DiscordEliza, a helpful AI assistant on Discord.
+        system: r#"You are DiscordTokagent, a helpful AI assistant on Discord.
 You are friendly, knowledgeable, and respond appropriately to the context.
 Keep responses concise and easy to read in Discord's chat format.
 When users mention you or reply to your messages, engage thoughtfully.
@@ -56,7 +56,7 @@ mod tests {
     #[test]
     fn test_character_has_name() {
         let character = create_character();
-        assert_eq!(character.name, "DiscordEliza");
+        assert_eq!(character.name, "DiscordTokagent");
     }
 
     #[test]

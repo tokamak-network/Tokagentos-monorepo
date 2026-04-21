@@ -15,14 +15,14 @@ class BenchmarkSuite(str, Enum):
     CROSS_DOMAIN = "cross_domain"
     SCALE = "scale"
     HARD_CASES = "hard_cases"
-    ELIZA_AGENT = "eliza_agent"
+    TOKAGENT_AGENT = "tokagent_agent"
 
 
 class BenchmarkMode(str, Enum):
     """Benchmark execution mode."""
 
     DIRECT = "direct"  # Direct ExperienceService testing (existing behavior)
-    ELIZA_AGENT = "eliza_agent"  # Full Eliza agent loop testing
+    TOKAGENT_AGENT = "tokagent_agent"  # Full Tokagent agent loop testing
 
 
 @dataclass
@@ -135,8 +135,8 @@ class HardCaseMetrics:
 
 
 @dataclass
-class ElizaAgentMetrics:
-    """Metrics from the Eliza agent experience benchmark."""
+class TokagentAgentMetrics:
+    """Metrics from the Tokagent agent experience benchmark."""
 
     # Phase 1: Learning
     learning_success_rate: float = 0.0
@@ -164,6 +164,6 @@ class BenchmarkResult:
     learning_cycle: LearningCycleMetrics | None = None
     hard_cases: HardCaseMetrics | None = None
     scale: ScaleMetrics | None = None
-    eliza_agent: ElizaAgentMetrics | None = None
+    tokagent_agent: TokagentAgentMetrics | None = None
     total_experiences: int = 0
     total_queries: int = 0

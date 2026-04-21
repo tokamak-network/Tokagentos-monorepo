@@ -1,8 +1,8 @@
-//! Serialization compatibility tests for elizaOS Core
+//! Serialization compatibility tests for tokagentOS Core
 //!
 //! These tests verify that Rust types serialize to JSON in a format identical to TypeScript.
 
-use elizaos::types::{
+use tokagentos::types::{
     Agent, AgentStatus, Bio, Character, Content, Memory, Room, State, World, UUID,
 };
 use pretty_assertions::assert_eq;

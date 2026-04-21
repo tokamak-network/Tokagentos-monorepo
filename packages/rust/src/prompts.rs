@@ -1,4 +1,4 @@
-//! Auto-generated prompt templates for elizaOS Rust runtime.
+//! Auto-generated prompt templates for tokagentOS Rust runtime.
 //! DO NOT EDIT - Generated from packages/prompts/prompts/*.txt
 //!
 //! These prompts use Handlebars-style template syntax:

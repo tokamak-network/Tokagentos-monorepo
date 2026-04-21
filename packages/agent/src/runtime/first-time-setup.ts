@@ -14,12 +14,12 @@
  *   7. GitHub access (local runtime only)
  *   8. Persist agent + style + provider + embedding config
  *
- * Extracted from eliza.ts to reduce file size.
+ * Extracted from tokagent.ts to reduce file size.
  *
  * @module first-time-setup
  */
 
-import { getStylePresets } from "@elizaos/shared/onboarding-presets";
+import { getStylePresets } from "@tokagentos/shared/onboarding-presets";
 import { persistConfigEnv } from "../api/config-env.js";
 import {
   CLOUD_EVM_ADDRESS_ENV_KEY,
@@ -27,14 +27,14 @@ import {
   WALLET_SOURCE_EVM_ENV_KEY,
   WALLET_SOURCE_SOLANA_ENV_KEY,
 } from "../api/wallet.js";
-import { type ElizaConfig, saveElizaConfig } from "../config/config.js";
+import { type TokagentConfig, saveTokagentConfig } from "../config/config.js";
 import { isCloudWalletEnabled } from "../config/feature-flags.js";
 import type { AgentConfig } from "../config/types.agents.js";
 import type { StylePreset } from "../contracts/onboarding.js";
 import { migrateLegacyRuntimeConfig } from "../contracts/onboarding.js";
 import {
-  buildDefaultElizaCloudServiceRouting,
-  buildElizaCloudServiceRoute,
+  buildDefaultTokagentCloudServiceRouting,
+  buildTokagentCloudServiceRoute,
 } from "../contracts/service-routing.js";
 import { pickRandomNames } from "./onboarding-names.js";
 
@@ -48,35 +48,35 @@ function formatError(err: unknown): string {
 
 type FirstTimeSetupCloudResult =
   import("./cloud-onboarding").CloudOnboardingResult;
-const DEFAULT_ONBOARDING_AGENT_NAME = getStylePresets()[0]?.name ?? "Eliza";
+const DEFAULT_ONBOARDING_AGENT_NAME = getStylePresets()[0]?.name ?? "Tokagent";
 
 export function applyFirstTimeSetupTopology(
-  config: ElizaConfig,
+  config: TokagentConfig,
   args: {
     isCloudRuntime: boolean;
     selectedProviderId?: string;
     cloudOnboardingResult?: FirstTimeSetupCloudResult | null;
   },
-): ElizaConfig {
+): TokagentConfig {
   const linkedAccounts = {
     ...(config.linkedAccounts ?? {}),
-  } as NonNullable<ElizaConfig["linkedAccounts"]>;
+  } as NonNullable<TokagentConfig["linkedAccounts"]>;
   const serviceRouting = {
     ...(config.serviceRouting ?? {}),
-  } as NonNullable<ElizaConfig["serviceRouting"]>;
+  } as NonNullable<TokagentConfig["serviceRouting"]>;
   const cloudOnboardingResult = args.cloudOnboardingResult ?? null;
 
   if (cloudOnboardingResult?.apiKey?.trim()) {
-    linkedAccounts.elizacloud = {
+    linkedAccounts.tokagentcloud = {
       status: "linked",
       source: "oauth",
     };
   }
 
-  const shouldUseCloudInference = args.selectedProviderId === "elizacloud";
+  const shouldUseCloudInference = args.selectedProviderId === "tokagentcloud";
 
   if (shouldUseCloudInference) {
-    serviceRouting.llmText = buildElizaCloudServiceRoute();
+    serviceRouting.llmText = buildTokagentCloudServiceRoute();
   } else if (args.selectedProviderId?.trim()) {
     serviceRouting.llmText = {
       backend: args.selectedProviderId.trim(),
@@ -87,7 +87,7 @@ export function applyFirstTimeSetupTopology(
   if (args.isCloudRuntime || shouldUseCloudInference) {
     Object.assign(
       serviceRouting,
-      buildDefaultElizaCloudServiceRouting({
+      buildDefaultTokagentCloudServiceRouting({
         base: serviceRouting,
         includeInference: shouldUseCloudInference,
       }),
@@ -97,7 +97,7 @@ export function applyFirstTimeSetupTopology(
   return {
     ...config,
     deploymentTarget: args.isCloudRuntime
-      ? { runtime: "cloud", provider: "elizacloud" }
+      ? { runtime: "cloud", provider: "tokagentcloud" }
       : { runtime: "local" },
     linkedAccounts:
       Object.keys(linkedAccounts).length > 0 ? linkedAccounts : undefined,
@@ -151,7 +151,7 @@ function cancelOnboarding(): never {
  * Uses defensive accessors because `wallet.cloud` is introduced by the
  * cloud-wallet module (Phase 3) and may not exist in older configs.
  */
-function hasCloudWalletBinding(config: ElizaConfig): boolean {
+function hasCloudWalletBinding(config: TokagentConfig): boolean {
   const walletSection = config.wallet;
   if (!walletSection || typeof walletSection !== "object") return false;
   const cloud = walletSection.cloud;
@@ -161,7 +161,7 @@ function hasCloudWalletBinding(config: ElizaConfig): boolean {
 }
 
 function readCloudWalletAddress(
-  config: ElizaConfig,
+  config: TokagentConfig,
   chain: "evm" | "solana",
 ): string | null {
   const walletSection = config.wallet;
@@ -184,7 +184,7 @@ function readCloudWalletAddress(
  *  - "local": user explicitly chose local
  *  - null: user has not made an explicit choice (should auto-bind to cloud)
  */
-function readUserPrimarySelection(config: ElizaConfig): {
+function readUserPrimarySelection(config: TokagentConfig): {
   evm: "local" | "cloud" | null;
   solana: "local" | "cloud" | null;
 } {
@@ -219,7 +219,7 @@ function readUserPrimarySelection(config: ElizaConfig): {
  *
  * No-ops if `ENABLE_CLOUD_WALLET` is off or if the cache is empty.
  */
-export async function bindCloudProvider(config: ElizaConfig): Promise<void> {
+export async function bindCloudProvider(config: TokagentConfig): Promise<void> {
   if (!isCloudWalletEnabled()) return;
   if (!hasCloudWalletBinding(config)) return;
 
@@ -263,8 +263,8 @@ export async function bindCloudProvider(config: ElizaConfig): Promise<void> {
 // ---------------------------------------------------------------------------
 
 export async function runFirstTimeSetup(
-  config: ElizaConfig,
-): Promise<ElizaConfig> {
+  config: TokagentConfig,
+): Promise<TokagentConfig> {
   const agentEntry = config.agents?.list?.[0];
   const hasName = Boolean(agentEntry?.name || config.ui?.assistant?.name);
 
@@ -284,7 +284,7 @@ export async function runFirstTimeSetup(
   const clack = await loadClack();
 
   // ── Step 1: Welcome ────────────────────────────────────────────────────
-  clack.intro("WELCOME TO ELIZA!");
+  clack.intro("WELCOME TO TOKAGENT!");
 
   // ── Step 2: Name ───────────────────────────────────────────────────────
   const randomNames = pickRandomNames(4);
@@ -345,7 +345,7 @@ export async function runFirstTimeSetup(
     options: [
       {
         value: "cloud",
-        label: "☁️  Eliza Cloud (recommended)",
+        label: "☁️  Tokagent Cloud (recommended)",
         hint: "zero setup — hosted, always online",
       },
       {
@@ -366,7 +366,7 @@ export async function runFirstTimeSetup(
   if (runtimeChoice === "later") {
     // User deferred the decision — continue with local setup (steps 4–7).
     clack.log.info(
-      "No problem! Starting with local setup. You can switch to cloud anytime with `eliza cloud connect`.",
+      "No problem! Starting with local setup. You can switch to cloud anytime with `tokagent cloud connect`.",
     );
   } else if (runtimeChoice === "cloud") {
     const { runCloudOnboarding } = await import("./cloud-onboarding.js");
@@ -382,7 +382,7 @@ export async function runFirstTimeSetup(
     } else if (cloudOnboardingResult) {
       // Auth succeeded but no agent provisioned — save auth for later
       clack.log.info(
-        "Cloud auth saved. You can provision later with `eliza cloud connect`.",
+        "Cloud auth saved. You can provision later with `tokagent cloud connect`.",
       );
     } else {
       // Cloud flow cancelled / failed — fall back to local
@@ -393,7 +393,7 @@ export async function runFirstTimeSetup(
   // ── Step 4: Model provider ───────────────────────────────────────────────
   // Runtime location and inference provider are independent. Cloud-hosted
   // agents can still use direct providers, and local agents can still use
-  // Eliza Cloud as the inference backend when linked.
+  // Tokagent Cloud as the inference backend when linked.
   let selectedProviderId: string | undefined;
   let providerEnvKey: string | undefined;
   let providerApiKey: string | undefined;
@@ -408,11 +408,11 @@ export async function runFirstTimeSetup(
     ...(cloudOnboardingResult?.apiKey
       ? ([
           {
-            id: "elizacloud",
-            label: "Eliza Cloud",
+            id: "tokagentcloud",
+            label: "Tokagent Cloud",
             envKey: null,
             detectKeys: [] as string[],
-            hint: "use linked Eliza Cloud inference",
+            hint: "use linked Tokagent Cloud inference",
           },
         ] as const)
       : []),
@@ -523,7 +523,7 @@ export async function runFirstTimeSetup(
           hint:
             p.id === "ollama"
               ? "no API key needed"
-              : p.id === "elizacloud"
+              : p.id === "tokagentcloud"
                 ? "bundled cloud inference"
                 : undefined,
         })),
@@ -543,8 +543,8 @@ export async function runFirstTimeSetup(
         selectedProviderId = chosen.id;
         providerEnvKey = chosen.envKey ?? undefined;
 
-        if (chosen.id === "elizacloud") {
-          clack.log.info("Using linked Eliza Cloud inference.");
+        if (chosen.id === "tokagentcloud") {
+          clack.log.info("Using linked Tokagent Cloud inference.");
         } else if (chosen.id === "ollama") {
           // Ollama just needs a base URL, default to localhost
           const ollamaUrl = await clack.text({
@@ -740,7 +740,7 @@ export async function runFirstTimeSetup(
     ...existingList.slice(1),
   ];
 
-  const updated: ElizaConfig = {
+  const updated: TokagentConfig = {
     ...config,
     agents: {
       ...config.agents,
@@ -789,7 +789,7 @@ export async function runFirstTimeSetup(
 
   try {
     migrateLegacyRuntimeConfig(topologyUpdated as Record<string, unknown>);
-    saveElizaConfig(topologyUpdated);
+    saveTokagentConfig(topologyUpdated);
   } catch (err) {
     // Non-fatal: the agent can still start, but choices won't persist.
     clack.log.warn(`Could not save config: ${formatError(err)}`);

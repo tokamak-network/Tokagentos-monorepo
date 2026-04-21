@@ -4,7 +4,7 @@ import type {
   WalletBalancesResponse,
   WalletConfigStatus,
   WalletNftsResponse,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import { useMemo } from "react";
 import type { InventoryChainFilters } from "../../state/types";
 import {

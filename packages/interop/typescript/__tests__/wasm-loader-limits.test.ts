@@ -6,7 +6,7 @@ import { loadWasmPlugin } from "../wasm-loader";
 
 describe("WASM Loader - limits", () => {
   test("should reject WASM binaries exceeding maxWasmBytes", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "eliza-wasm-"));
+    const dir = mkdtempSync(join(tmpdir(), "tokagent-wasm-"));
     const wasmPath = join(dir, "too-big.wasm");
     writeFileSync(wasmPath, Buffer.from("not a wasm"));
 

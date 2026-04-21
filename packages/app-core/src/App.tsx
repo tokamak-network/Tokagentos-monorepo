@@ -11,7 +11,7 @@ import {
   DrawerSheetHeader,
   DrawerSheetTitle,
   ErrorBoundary,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   type ReactNode,
   useCallback,

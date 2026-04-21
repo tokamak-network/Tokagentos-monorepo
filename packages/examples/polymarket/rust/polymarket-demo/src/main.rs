@@ -1,8 +1,8 @@
 use anyhow::Result;
-use elizaos_plugin_evm::providers::wallet::{WalletProvider, WalletProviderConfig};
-use elizaos_plugin_evm::types::SupportedChain;
-use elizaos_plugin_polymarket::client::ClobClient;
-use elizaos_plugin_polymarket::types::OrderBook;
+use tokagentos_plugin_evm::providers::wallet::{WalletProvider, WalletProviderConfig};
+use tokagentos_plugin_evm::types::SupportedChain;
+use tokagentos_plugin_polymarket::client::ClobClient;
+use tokagentos_plugin_polymarket::types::OrderBook;
 use rust_decimal::prelude::FromPrimitive;
 use rust_decimal::Decimal;
 use serde::Deserialize;

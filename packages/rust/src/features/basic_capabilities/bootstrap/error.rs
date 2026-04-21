@@ -1,4 +1,4 @@
-//! Error types for the elizaOS BasicCapabilities Plugin.
+//! Error types for the tokagentOS BasicCapabilities Plugin.
 
 use thiserror::Error;
 

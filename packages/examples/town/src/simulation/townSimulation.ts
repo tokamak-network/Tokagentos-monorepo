@@ -19,7 +19,7 @@ import {
   requestAgentGameDecision,
   requestAgentMoveDecision,
   sendProximityNotice,
-} from "./elizaTownRuntime";
+} from "./tokagentTownRuntime";
 import {
   advanceMafiaPhase,
   buildMafiaGameViewForAgent,

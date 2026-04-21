@@ -4,7 +4,7 @@ import {
   useApp,
   usePtySessions,
   useRenderGuard,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import { PtyConsoleSidePanel } from "@elizaos/app-task-coordinator";
 import {
   lazy,
@@ -23,7 +23,7 @@ import { InferenceCloudAlertButton } from "./InferenceCloudAlertButton";
 import { resolveCompanionInferenceNotice } from "./resolve-companion-inference-notice";
 
 const CharacterEditor = lazy(() =>
-  import("@elizaos/app-core").then((m) => ({
+  import("@tokagentos/app-core").then((m) => ({
     default: m.CharacterEditor,
   })),
 );
@@ -64,10 +64,10 @@ const CompanionOverlay = memo(function CompanionOverlay() {
     chatAgentVoiceMuted,
     chatLastUsage,
     conversationMessages,
-    elizaCloudAuthRejected,
-    elizaCloudConnected,
-    elizaCloudCreditsError,
-    elizaCloudEnabled,
+    tokagentCloudAuthRejected,
+    tokagentCloudConnected,
+    tokagentCloudCreditsError,
+    tokagentCloudEnabled,
     handleNewConversation,
     navigation,
     setState,
@@ -115,9 +115,9 @@ const CompanionOverlay = memo(function CompanionOverlay() {
   useEffect(() => {
     setState(
       "chatMode",
-      elizaCloudEnabled || elizaCloudConnected ? "power" : "simple",
+      tokagentCloudEnabled || tokagentCloudConnected ? "power" : "simple",
     );
-  }, [elizaCloudConnected, elizaCloudEnabled, setState]);
+  }, [tokagentCloudConnected, tokagentCloudEnabled, setState]);
 
   const hasInterruptedAssistant = useMemo(
     () =>
@@ -128,20 +128,20 @@ const CompanionOverlay = memo(function CompanionOverlay() {
   const inferenceNotice = useMemo(
     () =>
       resolveCompanionInferenceNotice({
-        elizaCloudConnected,
-        elizaCloudAuthRejected,
-        elizaCloudCreditsError,
-        elizaCloudEnabled,
+        tokagentCloudConnected,
+        tokagentCloudAuthRejected,
+        tokagentCloudCreditsError,
+        tokagentCloudEnabled,
         chatLastUsageModel: chatLastUsage?.model,
         hasInterruptedAssistant,
         t,
       }),
     [
       chatLastUsage?.model,
-      elizaCloudAuthRejected,
-      elizaCloudConnected,
-      elizaCloudCreditsError,
-      elizaCloudEnabled,
+      tokagentCloudAuthRejected,
+      tokagentCloudConnected,
+      tokagentCloudCreditsError,
+      tokagentCloudEnabled,
       hasInterruptedAssistant,
       t,
     ],

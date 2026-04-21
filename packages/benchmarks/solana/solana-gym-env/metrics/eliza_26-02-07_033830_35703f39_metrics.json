@@ -1,7 +1,7 @@
 {
   "model": "anthropic/claude-sonnet-4",
   "run_index": 0,
-  "run_id": "eliza_26-02-07_033830_35703f39",
+  "run_id": "tokagent_26-02-07_033830_35703f39",
   "start_time": "2026-02-07T03:38:30.484928",
   "environment_config": "voyager/environments/basic_env.json",
   "messages": [

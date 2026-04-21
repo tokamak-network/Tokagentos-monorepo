@@ -1,4 +1,4 @@
-import { ElizaClient } from "./client-base";
+import { TokagentClient } from "./client-base";
 
 export type ComputerUseApprovalMode =
   | "full_control"
@@ -31,7 +31,7 @@ export interface ComputerUseApprovalResolution {
 }
 
 declare module "./client-base" {
-  interface ElizaClient {
+  interface TokagentClient {
     getComputerUseApprovals(): Promise<ComputerUseApprovalSnapshot>;
     respondToComputerUseApproval(
       id: string,
@@ -44,14 +44,14 @@ declare module "./client-base" {
   }
 }
 
-ElizaClient.prototype.getComputerUseApprovals = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getComputerUseApprovals = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/computer-use/approvals");
 };
 
-ElizaClient.prototype.respondToComputerUseApproval = async function (
-  this: ElizaClient,
+TokagentClient.prototype.respondToComputerUseApproval = async function (
+  this: TokagentClient,
   id: string,
   approved: boolean,
   reason?: string,
@@ -62,8 +62,8 @@ ElizaClient.prototype.respondToComputerUseApproval = async function (
   });
 };
 
-ElizaClient.prototype.setComputerUseApprovalMode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setComputerUseApprovalMode = async function (
+  this: TokagentClient,
   mode: ComputerUseApprovalMode,
 ) {
   return this.fetch("/api/computer-use/approval-mode", {

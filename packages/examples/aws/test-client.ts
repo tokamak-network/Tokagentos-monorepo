@@ -1,6 +1,6 @@
 #!/usr/bin/env npx ts-node
 /**
- * Interactive test client for elizaOS AWS Lambda worker
+ * Interactive test client for tokagentOS AWS Lambda worker
  *
  * Usage:
  *   npx ts-node test-client.ts --endpoint https://YOUR_API_ID.execute-api.us-east-1.amazonaws.com/prod/chat
@@ -24,7 +24,7 @@ function parseArgs(): { endpoint: string; conversationId: string | null } {
       i++;
     } else if (args[i] === "--help" || args[i] === "-h") {
       console.log(`
-elizaOS AWS Lambda Test Client
+tokagentOS AWS Lambda Test Client
 
 Usage:
   npx ts-node test-client.ts --endpoint <url> [options]
@@ -114,7 +114,7 @@ async function main(): Promise<void> {
   const { endpoint, conversationId: initialConversationId } = parseArgs();
   let conversationId = initialConversationId;
 
-  console.log("\n🤖 elizaOS AWS Lambda Test Client\n");
+  console.log("\n🤖 tokagentOS AWS Lambda Test Client\n");
   console.log(`📡 Endpoint: ${endpoint}\n`);
 
   // Check health
@@ -127,7 +127,7 @@ async function main(): Promise<void> {
   });
 
   console.log(
-    "💬 Chat with Eliza (type 'exit' to quit, 'new' for new conversation)\n",
+    "💬 Chat with Tokagent (type 'exit' to quit, 'new' for new conversation)\n",
   );
 
   const prompt = (): void => {
@@ -152,7 +152,7 @@ async function main(): Promise<void> {
         return;
       }
 
-      process.stdout.write("Eliza: ");
+      process.stdout.write("Tokagent: ");
       const start = Date.now();
       const response = await sendMessage(endpoint, text, conversationId);
       const duration = Date.now() - start;

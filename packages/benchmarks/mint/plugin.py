@@ -1,10 +1,10 @@
 """
-MINT Benchmark Plugin for ElizaOS
+MINT Benchmark Plugin for TokagentOS
 
 Provides the EXECUTE_CODE action and MINT_CONTEXT provider for canonical
-ElizaOS message handling integration.
+TokagentOS message handling integration.
 
-Pattern follows benchmarks/tau-bench/elizaos_tau_bench/eliza_agent.py.
+Pattern follows benchmarks/tau-bench/tokagentos_tau_bench/tokagent_agent.py.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ from benchmarks.mint.executor import PythonExecutor, ExecutionResult
 from benchmarks.mint.types import MINTTask, Turn, TurnType
 
 if TYPE_CHECKING:
-    from elizaos.types.components import (
+    from tokagentos.types.components import (
         Action,
         ActionExample,
         ActionParameter,
@@ -30,24 +30,24 @@ if TYPE_CHECKING:
         Provider,
         ProviderResult,
     )
-    from elizaos.types.memory import Memory
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
-# Try to import ElizaOS — optional dependency
+# Try to import TokagentOS — optional dependency
 # ---------------------------------------------------------------------------
 
 try:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.primitives import Content, as_uuid
-    from elizaos.types.memory import Memory
-    from elizaos.types.state import State
-    from elizaos.types.components import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.primitives import Content, as_uuid
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.state import State
+    from tokagentos.types.components import (
         Action,
         ActionResult,
         ActionExample,
@@ -57,9 +57,9 @@ try:
         ProviderResult,
         HandlerOptions,
     )
-    from elizaos.types.model import ModelType
+    from tokagentos.types.model import ModelType
 
-    ELIZAOS_AVAILABLE = True
+    TOKAGENTOS_AVAILABLE = True
 except ImportError:
     AgentRuntime = None  # type: ignore[misc, assignment]
     Plugin = None  # type: ignore[misc, assignment]
@@ -76,8 +76,8 @@ except ImportError:
     HandlerOptions = None  # type: ignore[misc, assignment]
     ModelType = None  # type: ignore[misc, assignment]
     as_uuid = None  # type: ignore[misc, assignment]
-    ELIZAOS_AVAILABLE = False
-    logger.warning("ElizaOS not available, MINT plugin will not function")
+    TOKAGENTOS_AVAILABLE = False
+    logger.warning("TokagentOS not available, MINT plugin will not function")
 
 
 # ---------------------------------------------------------------------------
@@ -377,7 +377,7 @@ class ExecuteCodeAction:
 
     @property
     def examples(self) -> list[list["ActionExample"]]:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             [
@@ -397,7 +397,7 @@ class ExecuteCodeAction:
 
     @property
     def parameters(self) -> list["ActionParameter"]:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             ActionParameter(
@@ -486,10 +486,10 @@ def create_mint_plugin(executor: PythonExecutor) -> "Plugin":
         executor: The PythonExecutor instance for code execution.
 
     Returns:
-        An ElizaOS Plugin configured for the MINT benchmark.
+        An TokagentOS Plugin configured for the MINT benchmark.
     """
-    if not ELIZAOS_AVAILABLE:
-        raise RuntimeError("ElizaOS is required for the MINT benchmark plugin")
+    if not TOKAGENTOS_AVAILABLE:
+        raise RuntimeError("TokagentOS is required for the MINT benchmark plugin")
 
     # Create action instance
     execute_code = ExecuteCodeAction()

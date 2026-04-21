@@ -26,7 +26,7 @@ export function App(): React.JSX.Element {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
   const [busy, setBusy] = useState<boolean>(false);
-  const [effectiveMode, setEffectiveMode] = useState<ProviderMode>("elizaClassic");
+  const [effectiveMode, setEffectiveMode] = useState<ProviderMode>("tokagentClassic");
 
   useEffect(() => {
     saveConfig(config);
@@ -90,7 +90,7 @@ export function App(): React.JSX.Element {
     <div className="page">
       <header className="header">
         <div>
-          <div className="title">ElizaOS Chat (Tauri example)</div>
+          <div className="title">TokagentOS Chat (Tauri example)</div>
           <div className="subtitle">Rust backend via Tauri commands</div>
         </div>
         <button className="btn" onClick={onReset} disabled={busy}>
@@ -108,7 +108,7 @@ export function App(): React.JSX.Element {
               onChange={(e) => setConfig((c) => ({ ...c, mode: e.target.value as ProviderMode }))}
               disabled={busy}
             >
-              {(["elizaClassic", "openai", "xai"] as const).map((m) => (
+              {(["tokagentClassic", "openai", "xai"] as const).map((m) => (
                 <option key={m} value={m}>
                   {getModeLabel(m)}
                 </option>

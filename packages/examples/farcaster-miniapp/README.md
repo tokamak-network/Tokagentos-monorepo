@@ -1,9 +1,9 @@
-# Eliza Classic Chat — Farcaster Miniapp (Demo)
+# Tokagent Classic Chat — Farcaster Miniapp (Demo)
 
 This demo is intentionally **chat-only**: no portfolio, swap, bridge, or social feed.
 
 ## What it is
-- **Frontend**: React + Vite miniapp that shows a single Eliza chat screen.
+- **Frontend**: React + Vite miniapp that shows a single Tokagent chat screen.
 - **Backend**: Express API with an **in-memory session store** (process memory).
 
 ## Running locally
@@ -32,7 +32,7 @@ Then open the Vite URL (default `http://localhost:3000`).
 
 ## Endpoints
 - `GET /health`
-- `POST /api/chat/eliza` with JSON:
+- `POST /api/chat/tokagent` with JSON:
   - `message: string`
   - `sessionId?: string`
   - `userId?: string`

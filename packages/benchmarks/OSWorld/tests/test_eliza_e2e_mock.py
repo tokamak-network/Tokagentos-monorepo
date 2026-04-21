@@ -1,8 +1,8 @@
 """
-End-to-end mock test for the Eliza OSWorld agent.
+End-to-end mock test for the Tokagent OSWorld agent.
 
 This test verifies the full pipeline WITHOUT a real VM:
-1. Agent initialization with real Eliza runtime
+1. Agent initialization with real Tokagent runtime
 2. Observation injection via provider
 3. Message service handle_message call (with real Groq LLM)
 4. Action generation and pyautogui code collection
@@ -27,8 +27,8 @@ if OSWORLD_ROOT not in sys.path:
     sys.path.insert(0, OSWORLD_ROOT)
 
 _generated_dir = os.path.normpath(os.path.join(
-    OSWORLD_ROOT, "..", "..", "eliza", "packages", "python",
-    "elizaos", "types", "generated",
+    OSWORLD_ROOT, "..", "..", "tokagent", "packages", "python",
+    "tokagentos", "types", "generated",
 ))
 if os.path.isdir(_generated_dir) and _generated_dir not in sys.path:
     sys.path.insert(0, _generated_dir)
@@ -50,15 +50,15 @@ push-button\tConfirm\t""\tGtkButton\tConfirm setting\t(850, 500)\t(100, 35)
 
 
 @pytest.mark.skipif(not GROQ_API_KEY, reason=SKIP_REASON)
-class TestElizaE2EMock:
+class TestTokagentE2EMock:
     """End-to-end test with mock observations but real LLM."""
 
     def test_agent_init_and_predict(self):
         """Test full agent init -> predict pipeline."""
-        from mm_agents.eliza_agent import ElizaOSWorldAgent
-        from mm_agents.eliza_desktop_actions import ActionCollector
+        from mm_agents.tokagent_agent import TokagentOSWorldAgent
+        from mm_agents.tokagent_desktop_actions import ActionCollector
 
-        agent = ElizaOSWorldAgent(
+        agent = TokagentOSWorldAgent(
             model="qwen/qwen3-32b",
             observation_type="a11y_tree",  # Text only, no screenshot
             max_steps=5,
@@ -109,9 +109,9 @@ class TestElizaE2EMock:
 
     def test_agent_multi_step(self):
         """Test agent can do multiple predict steps."""
-        from mm_agents.eliza_agent import ElizaOSWorldAgent
+        from mm_agents.tokagent_agent import TokagentOSWorldAgent
 
-        agent = ElizaOSWorldAgent(
+        agent = TokagentOSWorldAgent(
             model="qwen/qwen3-32b",
             observation_type="a11y_tree",
             max_steps=5,
@@ -137,9 +137,9 @@ class TestElizaE2EMock:
 
     def test_agent_reset_between_tasks(self):
         """Test that reset clears state for a new task."""
-        from mm_agents.eliza_agent import ElizaOSWorldAgent
+        from mm_agents.tokagent_agent import TokagentOSWorldAgent
 
-        agent = ElizaOSWorldAgent(
+        agent = TokagentOSWorldAgent(
             model="qwen/qwen3-32b",
             observation_type="a11y_tree",
             max_steps=5,
@@ -169,7 +169,7 @@ if __name__ == "__main__":
         print("Set GROQ_API_KEY to run this test")
         sys.exit(1)
 
-    test = TestElizaE2EMock()
+    test = TestTokagentE2EMock()
     print("Running test_agent_init_and_predict...")
     test.test_agent_init_and_predict()
     print("PASSED!")

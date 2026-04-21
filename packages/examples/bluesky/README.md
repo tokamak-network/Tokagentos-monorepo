@@ -1,10 +1,10 @@
 # Bluesky Agent Example
 
-A full-featured AI agent running on Bluesky, implemented in TypeScript, Python, and Rust. This agent uses the **complete elizaOS runtime pipeline** - no shortcuts, no bypasses.
+A full-featured AI agent running on Bluesky, implemented in TypeScript, Python, and Rust. This agent uses the **complete tokagentOS runtime pipeline** - no shortcuts, no bypasses.
 
 ## Key Features
 
-- **Full elizaOS Pipeline**: Processes messages through `messageService.handleMessage()` with:
+- **Full tokagentOS Pipeline**: Processes messages through `messageService.handleMessage()` with:
   - State composition using providers (CHARACTER, RECENT_MESSAGES, ACTIONS, etc.)
   - `shouldRespond` evaluation (LLM-powered decision making)
   - Action planning and execution
@@ -20,7 +20,7 @@ A full-featured AI agent running on Bluesky, implemented in TypeScript, Python, 
 
 ## How It Works
 
-This agent uses the canonical elizaOS message processing:
+This agent uses the canonical tokagentOS message processing:
 
 ```
 Bluesky Notification → Create Memory → messageService.handleMessage()
@@ -125,7 +125,7 @@ examples/bluesky/
         └── tests/        # Tests
 ```
 
-## The elizaOS Way
+## The tokagentOS Way
 
 ### Message Processing (Canonical Pattern)
 
@@ -157,7 +157,7 @@ const callback: HandlerCallback = async (content: Content) => {
   return [responseMemory];
 };
 
-// 3. Process through the FULL elizaOS pipeline
+// 3. Process through the FULL tokagentOS pipeline
 await runtime.messageService.handleMessage(runtime, message, callback);
 ```
 
@@ -321,4 +321,4 @@ const runtime = new AgentRuntime({
 
 ## License
 
-MIT - See the main elizaOS repository for details.
+MIT - See the main tokagentOS repository for details.

@@ -1,4 +1,4 @@
-import type { AgentRuntime, Memory, Service, UUID } from "@elizaos/core";
+import type { AgentRuntime, Memory, Service, UUID } from "@tokagentos/core";
 
 export interface KnowledgeServiceLike {
   addKnowledge(options: {

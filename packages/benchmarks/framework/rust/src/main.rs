@@ -1,4 +1,4 @@
-//! Eliza Framework Benchmark — Rust Runtime
+//! Tokagent Framework Benchmark — Rust Runtime
 //!
 //! Measures core agent framework performance with mock LLM handlers
 //! and in-memory database. No real LLM calls, no disk I/O, no network.
@@ -122,17 +122,17 @@ fn resolve_messages(messages: &serde_json::Value) -> Vec<ScenarioMessage> {
 
 // ─── Benchmark runners ──────────────────────────────────────────────────────
 //
-// STATUS: STUB — The Rust elizaos AgentRuntime public API is not yet stable
+// STATUS: STUB — The Rust tokagentos AgentRuntime public API is not yet stable
 // enough for direct integration. These runners produce results tagged with
 // is_stub: true so consumers know the data is NOT from the real runtime.
 //
 // What IS measured (baseline only):
 // - startup: mock plugin creation + HashMap allocation overhead
-// - db: raw HashMap insert/get (NOT the elizaos InMemoryDatabaseAdapter)
+// - db: raw HashMap insert/get (NOT the tokagentos InMemoryDatabaseAdapter)
 // - message: mock handler lookup overhead (NOT handleMessage pipeline)
 //
 // To make this real, replace the body of each runner with:
-// 1. elizaos::AgentRuntime::new(opts).initialize().await
+// 1. tokagentos::AgentRuntime::new(opts).initialize().await
 // 2. runtime.message_service.handle_message(runtime, message, callback).await
 // 3. Collect per-stage timings from the runtime
 
@@ -309,7 +309,7 @@ async fn main() -> Result<()> {
     };
 
     println!("╔══════════════════════════════════════════════════════════╗");
-    println!("║           Eliza Framework Benchmark — Rust              ║");
+    println!("║           Tokagent Framework Benchmark — Rust              ║");
     println!("╚══════════════════════════════════════════════════════════╝");
     println!();
 

@@ -78,8 +78,8 @@ export const DESKTOP_MEDIA_CLICK_AUDIT: readonly DesktopClickAuditItem[] = [
 export const IMAGE_PROVIDERS: ProviderOption[] = [
   {
     id: "cloud",
-    labelKey: "provider.elizaCloud",
-    hint: "elizaclouddashboard.NoSetupNeeded",
+    labelKey: "provider.tokagentCloud",
+    hint: "tokagentclouddashboard.NoSetupNeeded",
   },
   {
     id: "fal",
@@ -106,8 +106,8 @@ export const IMAGE_PROVIDERS: ProviderOption[] = [
 export const VIDEO_PROVIDERS: ProviderOption[] = [
   {
     id: "cloud",
-    labelKey: "provider.elizaCloud",
-    hint: "elizaclouddashboard.NoSetupNeeded",
+    labelKey: "provider.tokagentCloud",
+    hint: "tokagentclouddashboard.NoSetupNeeded",
   },
   {
     id: "fal",
@@ -129,8 +129,8 @@ export const VIDEO_PROVIDERS: ProviderOption[] = [
 export const AUDIO_PROVIDERS: ProviderOption[] = [
   {
     id: "cloud",
-    labelKey: "provider.elizaCloud",
-    hint: "elizaclouddashboard.NoSetupNeeded",
+    labelKey: "provider.tokagentCloud",
+    hint: "tokagentclouddashboard.NoSetupNeeded",
   },
   {
     id: "suno",
@@ -147,8 +147,8 @@ export const AUDIO_PROVIDERS: ProviderOption[] = [
 export const VISION_PROVIDERS: ProviderOption[] = [
   {
     id: "cloud",
-    labelKey: "provider.elizaCloud",
-    hint: "elizaclouddashboard.NoSetupNeeded",
+    labelKey: "provider.tokagentCloud",
+    hint: "tokagentclouddashboard.NoSetupNeeded",
   },
   {
     id: "openai",

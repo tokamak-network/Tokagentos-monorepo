@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { ChevronDown } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { SecretInfo } from "../../api";
@@ -16,7 +16,7 @@ import { useApp } from "../../state";
 
 /* ── Constants ──────────────────────────────────────────────────────── */
 
-const STORAGE_KEY = "eliza:secrets-vault-keys";
+const STORAGE_KEY = "tokagent:secrets-vault-keys";
 
 const CATEGORY_ORDER = [
   "ai-provider",

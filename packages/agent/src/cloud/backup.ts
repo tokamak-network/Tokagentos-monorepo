@@ -3,15 +3,15 @@
  * Default interval: 60s. Configurable via cloud.backup.autoBackupIntervalMs.
  */
 
-import { logger } from "@elizaos/core";
-import type { ElizaCloudClient } from "./bridge-client.js";
+import { logger } from "@tokagentos/core";
+import type { TokagentCloudClient } from "./bridge-client.js";
 
 export class BackupScheduler {
   private timer: ReturnType<typeof setInterval> | null = null;
   private running = false;
 
   constructor(
-    private client: ElizaCloudClient,
+    private client: TokagentCloudClient,
     private agentId: string,
     private intervalMs: number = 60_000,
   ) {}

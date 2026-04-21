@@ -1,8 +1,8 @@
-import { client } from "@elizaos/app-core/api";
+import { client } from "@tokagentos/app-core/api";
 import type {
   LifeOpsConnectorSide,
   LifeOpsDiscordConnectorStatus,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 function formatError(cause: unknown, fallback: string): string {

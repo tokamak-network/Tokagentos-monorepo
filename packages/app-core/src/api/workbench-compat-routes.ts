@@ -4,8 +4,8 @@
  * Handles all /api/workbench/todos routes backed by AgentRuntime tasks.
  */
 import type http from "node:http";
-import { WORKBENCH_TODO_TAG } from "@elizaos/agent/api/workbench-helpers";
-import { type AgentRuntime, logger } from "@elizaos/core";
+import { WORKBENCH_TODO_TAG } from "@tokagentos/agent/api/workbench-helpers";
+import { type AgentRuntime, logger } from "@tokagentos/core";
 import { ensureCompatApiAuthorized } from "./auth";
 import {
   type CompatRuntimeState,

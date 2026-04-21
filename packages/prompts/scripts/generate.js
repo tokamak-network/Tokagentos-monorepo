@@ -113,7 +113,7 @@ function generateTypeScript(prompts) {
   fs.mkdirSync(outputDir, { recursive: true });
 
   let output = `/**
- * Auto-generated prompt templates for elizaOS
+ * Auto-generated prompt templates for tokagentOS
  * DO NOT EDIT - Generated from packages/prompts/prompts/*.txt
  * 
  * These prompts use Handlebars-style template syntax:
@@ -140,7 +140,7 @@ function generateTypeScript(prompts) {
 
   // Also generate a simple .d.ts file
   let dts = `/**
- * Auto-generated type definitions for elizaOS prompts
+ * Auto-generated type definitions for tokagentOS prompts
  */
 
 `;
@@ -164,7 +164,7 @@ function generatePython(prompts) {
   fs.mkdirSync(outputDir, { recursive: true });
 
   let output = `"""
-Auto-generated prompt templates for elizaOS Python runtime.
+Auto-generated prompt templates for tokagentOS Python runtime.
 DO NOT EDIT - Generated from packages/prompts/prompts/*.txt
 
 These prompts use Handlebars-style template syntax:
@@ -198,7 +198,7 @@ from __future__ import annotations
   // Create __init__.py for package import
   fs.writeFileSync(
     path.join(outputDir, "__init__.py"),
-    `"""elizaOS Prompts Package"""\nfrom .prompts import *\n`,
+    `"""tokagentOS Prompts Package"""\nfrom .prompts import *\n`,
   );
 
   console.log(`Generated Python output: ${outputDir}/prompts.py`);
@@ -211,7 +211,7 @@ function generateRust(prompts) {
   const outputDir = path.join(DIST_DIR, "rust");
   fs.mkdirSync(outputDir, { recursive: true });
 
-  let output = `//! Auto-generated prompt templates for elizaOS Rust runtime.
+  let output = `//! Auto-generated prompt templates for tokagentOS Rust runtime.
 //! DO NOT EDIT - Generated from packages/prompts/prompts/*.txt
 //!
 //! These prompts use Handlebars-style template syntax:
@@ -235,7 +235,7 @@ function generateRust(prompts) {
   // Also create a mod.rs that re-exports
   fs.writeFileSync(
     path.join(outputDir, "mod.rs"),
-    `//! elizaOS Prompts Module\nmod prompts;\npub use prompts::*;\n`,
+    `//! tokagentOS Prompts Module\nmod prompts;\npub use prompts::*;\n`,
   );
 
   console.log(`Generated Rust output: ${outputDir}/prompts.rs`);

@@ -1,9 +1,9 @@
 //! X agent character configuration.
 //!
 //! This defines the agent's personality, knowledge, and response style.
-//! The elizaOS runtime uses this to compose state for Grok prompts and to guide replies.
+//! The tokagentOS runtime uses this to compose state for Grok prompts and to guide replies.
 
-use elizaos::types::Character;
+use tokagentos::types::Character;
 use serde_json::json;
 
 /// Create the XGrokBot character configuration.
@@ -11,7 +11,7 @@ pub fn create_character() -> Character {
     let character_json = json!({
         "name": "XGrokBot",
         "username": "xgrokbot",
-        "bio": "An opinionated but helpful AI agent on X, powered by Grok (xAI) and elizaOS.",
+        "bio": "An opinionated but helpful AI agent on X, powered by Grok (xAI) and tokagentOS.",
         "system": r#"You are XGrokBot, a helpful and opinionated AI agent on X (formerly Twitter).
 
 You must follow these rules:

@@ -1,17 +1,17 @@
-//! Vercel Edge Function handler library for elizaOS chat worker (Rust)
+//! Vercel Edge Function handler library for tokagentOS chat worker (Rust)
 //!
 //! This Edge Function processes chat messages and returns AI responses
-//! using the full elizaOS runtime with OpenAI as the LLM provider.
+//! using the full tokagentOS runtime with OpenAI as the LLM provider.
 //!
 //! Compiled to WebAssembly for Vercel Edge Runtime.
 
-use elizaos::{
+use tokagentos::{
     parse_character,
     runtime::{AgentRuntime, RuntimeOptions},
     services::IMessageService,
     types::{Content, Memory, UUID},
 };
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use wasm_bindgen::prelude::*;
@@ -28,10 +28,10 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>, String> {
             return Ok(runtime.clone());
         }
 
-        web_sys::console::log_1(&"Initializing elizaOS runtime...".into());
+        web_sys::console::log_1(&"Initializing tokagentOS runtime...".into());
 
         let character_json = r#"{
-            "name": "Eliza",
+            "name": "Tokagent",
             "bio": "A helpful AI assistant.",
             "system": "You are a helpful, concise AI assistant. Respond thoughtfully to user messages."
         }"#;
@@ -39,7 +39,7 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>, String> {
         let character = parse_character(character_json)
             .map_err(|e| format!("Failed to parse character: {}", e))?;
 
-        let openai_plugin = create_openai_elizaos_plugin()
+        let openai_plugin = create_openai_tokagentos_plugin()
             .map_err(|e| format!("Failed to create OpenAI plugin: {}", e))?;
 
         let runtime = AgentRuntime::new(RuntimeOptions {
@@ -55,7 +55,7 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>, String> {
             .await
             .map_err(|e| format!("Failed to initialize runtime: {}", e))?;
 
-        web_sys::console::log_1(&"elizaOS runtime initialized successfully".into());
+        web_sys::console::log_1(&"tokagentOS runtime initialized successfully".into());
 
         RUNTIME = Some(runtime.clone());
         Ok(runtime)
@@ -108,7 +108,7 @@ fn json_response(status: u16, body: &str) -> Result<Response, JsValue> {
     Response::new_with_opt_str_and_init(Some(body), &init)
 }
 
-/// Handle chat message using elizaOS runtime
+/// Handle chat message using tokagentOS runtime
 async fn handle_chat(request: ChatRequest) -> Result<ChatResponse, String> {
     let runtime = get_runtime().await?;
 
@@ -126,7 +126,7 @@ async fn handle_chat(request: ChatRequest) -> Result<ChatResponse, String> {
     };
     let mut message = Memory::new(user_id, room_id, content);
 
-    // Process message through elizaOS runtime
+    // Process message through tokagentOS runtime
     let result = runtime
         .message_service()
         .handle_message(&runtime, &mut message, None, None)
@@ -181,7 +181,7 @@ async fn handle_request(request: Request) -> Result<Response, JsValue> {
     if (path == "/api" || path == "/api/health" || path == "/") && method == "GET" {
         let response = HealthResponse {
             status: "healthy".to_string(),
-            runtime: "elizaos-rust".to_string(),
+            runtime: "tokagentos-rust".to_string(),
             version: "1.0.0".to_string(),
         };
         let body = serde_json::to_string(&response).map_err(|e| JsValue::from_str(&e.to_string()))?;

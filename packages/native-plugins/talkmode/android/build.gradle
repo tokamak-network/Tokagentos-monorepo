@@ -9,7 +9,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace "ai.eliza.plugins.talkmode"
+    namespace "ai.tokagent.plugins.talkmode"
     compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 35
     defaultConfig {
         minSdk project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 24

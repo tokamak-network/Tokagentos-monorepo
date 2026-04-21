@@ -13,7 +13,7 @@ export function formatCliCommand(
 ): string {
   const cliName = resolveCliName();
   const normalizedCommand = replaceCliName(command, cliName);
-  const profile = normalizeProfileName(env.ELIZA_PROFILE);
+  const profile = normalizeProfileName(env.TOKAGENT_PROFILE);
   if (!profile) {
     return normalizedCommand;
   }

@@ -6,7 +6,7 @@
  * or /proc/self/environ.
  *
  * This module has NO external dependencies so it can be imported by
- * any module without pulling in @elizaos/agent or @elizaos/core.
+ * any module without pulling in @tokagentos/agent or @elizaos/core.
  */
 
 const _cloudSecrets: Record<string, string | undefined> = Object.create(null);
@@ -22,7 +22,7 @@ Object.defineProperty(_cloudSecrets, Symbol.toStringTag, {
  * sets the key before this module loads (e.g. docker entrypoints).
  */
 export function getCloudSecret(
-  key: "ELIZAOS_CLOUD_API_KEY" | "ELIZAOS_CLOUD_ENABLED",
+  key: "TOKAGENTOS_CLOUD_API_KEY" | "TOKAGENTOS_CLOUD_ENABLED",
 ): string | undefined {
   return _cloudSecrets[key] ?? process.env[key];
 }
@@ -30,8 +30,8 @@ export function getCloudSecret(
 /** Scrub cloud secrets from process.env and capture into the sealed store. */
 export function scrubCloudSecretsFromEnv(): void {
   for (const key of [
-    "ELIZAOS_CLOUD_API_KEY",
-    "ELIZAOS_CLOUD_ENABLED",
+    "TOKAGENTOS_CLOUD_API_KEY",
+    "TOKAGENTOS_CLOUD_ENABLED",
   ] as const) {
     if (process.env[key] !== undefined) {
       _cloudSecrets[key] = process.env[key];
@@ -43,8 +43,8 @@ export function scrubCloudSecretsFromEnv(): void {
 /** Clear any sealed cloud secrets after an explicit disconnect. */
 export function clearCloudSecrets(): void {
   for (const key of [
-    "ELIZAOS_CLOUD_API_KEY",
-    "ELIZAOS_CLOUD_ENABLED",
+    "TOKAGENTOS_CLOUD_API_KEY",
+    "TOKAGENTOS_CLOUD_ENABLED",
   ] as const) {
     delete _cloudSecrets[key];
   }

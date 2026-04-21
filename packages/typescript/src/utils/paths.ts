@@ -1,5 +1,5 @@
 /**
- * elizaOS data directory paths configuration
+ * tokagentOS data directory paths configuration
  * This module provides a standard interface for accessing data directory paths
  * that can be customized via environment variables.
  */
@@ -37,9 +37,9 @@ function getEnvVar(key: string): string | undefined {
 }
 
 /**
- * Interface for elizaOS paths configuration
+ * Interface for tokagentOS paths configuration
  */
-export interface ElizaPathsConfig {
+export interface TokagentPathsConfig {
 	dataDir: string;
 	databaseDir: string;
 	charactersDir: string;
@@ -57,39 +57,39 @@ interface PathConfig {
 }
 
 /**
- * Path configurations for all elizaOS directories
+ * Path configurations for all tokagentOS directories
  */
 const PATH_CONFIGS: Record<
-	keyof Omit<ElizaPathsConfig, "dataDir">,
+	keyof Omit<TokagentPathsConfig, "dataDir">,
 	PathConfig
 > = {
 	databaseDir: {
-		envKey: "ELIZA_DATABASE_DIR",
-		subPath: [".elizadb"],
+		envKey: "TOKAGENT_DATABASE_DIR",
+		subPath: [".tokagentdb"],
 	},
 	charactersDir: {
-		envKey: "ELIZA_DATA_DIR_CHARACTERS",
+		envKey: "TOKAGENT_DATA_DIR_CHARACTERS",
 		subPath: ["data", "characters"],
 	},
 	generatedDir: {
-		envKey: "ELIZA_DATA_DIR_GENERATED",
+		envKey: "TOKAGENT_DATA_DIR_GENERATED",
 		subPath: ["data", "generated"],
 	},
 	uploadsAgentsDir: {
-		envKey: "ELIZA_DATA_DIR_UPLOADS_AGENTS",
+		envKey: "TOKAGENT_DATA_DIR_UPLOADS_AGENTS",
 		subPath: ["data", "uploads", "agents"],
 	},
 	uploadsChannelsDir: {
-		envKey: "ELIZA_DATA_DIR_UPLOADS_CHANNELS",
+		envKey: "TOKAGENT_DATA_DIR_UPLOADS_CHANNELS",
 		subPath: ["data", "uploads", "channels"],
 	},
 };
 
 /**
- * elizaOS paths management class
- * Provides centralized access to all elizaOS data directory paths
+ * tokagentOS paths management class
+ * Provides centralized access to all tokagentOS data directory paths
  */
-class ElizaPaths {
+class TokagentPaths {
 	private cache = new Map<string, string>();
 
 	/**
@@ -99,7 +99,7 @@ class ElizaPaths {
 		const cached = this.cache.get("dataDir");
 		if (cached) return cached;
 
-		const dir = getEnvVar("ELIZA_DATA_DIR") || pathJoin(getCwd(), ".eliza");
+		const dir = getEnvVar("TOKAGENT_DATA_DIR") || pathJoin(getCwd(), ".tokagent");
 		this.cache.set("dataDir", dir);
 		return dir;
 	}
@@ -142,7 +142,7 @@ class ElizaPaths {
 	/**
 	 * Get all paths as a configuration object
 	 */
-	getAllPaths(): ElizaPathsConfig {
+	getAllPaths(): TokagentPathsConfig {
 		return {
 			dataDir: this.getDataDir(),
 			databaseDir: this.getDatabaseDir(),
@@ -182,16 +182,16 @@ class ElizaPaths {
 }
 
 /**
- * Singleton instance of the ElizaPaths class
+ * Singleton instance of the TokagentPaths class
  */
-let pathsInstance: ElizaPaths | null = null;
+let pathsInstance: TokagentPaths | null = null;
 
 /**
- * Get the singleton ElizaPaths instance
+ * Get the singleton TokagentPaths instance
  */
-export function getElizaPaths(): ElizaPaths {
+export function getTokagentPaths(): TokagentPaths {
 	if (!pathsInstance) {
-		pathsInstance = new ElizaPaths();
+		pathsInstance = new TokagentPaths();
 	}
 	return pathsInstance;
 }
@@ -200,49 +200,49 @@ export function getElizaPaths(): ElizaPaths {
  * Convenience function to get the data directory
  */
 export function getDataDir(): string {
-	return getElizaPaths().getDataDir();
+	return getTokagentPaths().getDataDir();
 }
 
 /**
  * Convenience function to get the database directory
  */
 export function getDatabaseDir(): string {
-	return getElizaPaths().getDatabaseDir();
+	return getTokagentPaths().getDatabaseDir();
 }
 
 /**
  * Convenience function to get the characters directory
  */
 export function getCharactersDir(): string {
-	return getElizaPaths().getCharactersDir();
+	return getTokagentPaths().getCharactersDir();
 }
 
 /**
  * Convenience function to get the generated content directory
  */
 export function getGeneratedDir(): string {
-	return getElizaPaths().getGeneratedDir();
+	return getTokagentPaths().getGeneratedDir();
 }
 
 /**
  * Convenience function to get the agent uploads directory
  */
 export function getUploadsAgentsDir(): string {
-	return getElizaPaths().getUploadsAgentsDir();
+	return getTokagentPaths().getUploadsAgentsDir();
 }
 
 /**
  * Convenience function to get the channel uploads directory
  */
 export function getUploadsChannelsDir(): string {
-	return getElizaPaths().getUploadsChannelsDir();
+	return getTokagentPaths().getUploadsChannelsDir();
 }
 
 /**
  * Convenience function to get all paths
  */
-export function getAllElizaPaths(): ElizaPathsConfig {
-	return getElizaPaths().getAllPaths();
+export function getAllTokagentPaths(): TokagentPathsConfig {
+	return getTokagentPaths().getAllPaths();
 }
 
 /**

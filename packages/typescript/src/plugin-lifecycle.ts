@@ -76,8 +76,8 @@ type AsyncContextStorage<T> = {
 };
 
 type RuntimeWithPluginLifecycle = IAgentRuntime & {
-	__elizaPluginLifecycleInstalled?: boolean;
-	__elizaPluginOwnership?: Map<string, PluginOwnership>;
+	__tokagentPluginLifecycleInstalled?: boolean;
+	__tokagentPluginOwnership?: Map<string, PluginOwnership>;
 	registerDatabaseAdapter: (adapter: IAgentRuntime["adapter"]) => void;
 	unloadPlugin?: (pluginName: string) => Promise<PluginOwnership | null>;
 	reloadPlugin?: (plugin: Plugin) => Promise<void>;
@@ -167,10 +167,10 @@ function getRuntimePrivateState(runtime: IAgentRuntime): RuntimePrivateState {
 function getPluginOwnershipStore(
 	runtime: RuntimeWithPluginLifecycle,
 ): Map<string, PluginOwnership> {
-	if (!runtime.__elizaPluginOwnership) {
-		runtime.__elizaPluginOwnership = new Map();
+	if (!runtime.__tokagentPluginOwnership) {
+		runtime.__tokagentPluginOwnership = new Map();
 	}
-	return runtime.__elizaPluginOwnership;
+	return runtime.__tokagentPluginOwnership;
 }
 
 function getOwnershipTarget(
@@ -628,7 +628,7 @@ function trackRoutesAndPluginRef(
 
 export function installRuntimePluginLifecycle(runtime: IAgentRuntime): void {
 	const runtimeWithLifecycle = runtime as RuntimeWithPluginLifecycle;
-	if (runtimeWithLifecycle.__elizaPluginLifecycleInstalled) {
+	if (runtimeWithLifecycle.__tokagentPluginLifecycleInstalled) {
 		return;
 	}
 
@@ -907,7 +907,7 @@ export function installRuntimePluginLifecycle(runtime: IAgentRuntime): void {
 	runtimeWithLifecycle.getAllPluginOwnership = () =>
 		Array.from(getPluginOwnershipStore(runtimeWithLifecycle).values());
 
-	runtimeWithLifecycle.__elizaPluginLifecycleInstalled = true;
+	runtimeWithLifecycle.__tokagentPluginLifecycleInstalled = true;
 }
 
 export function supportsRuntimePluginLifecycle(

@@ -16,7 +16,7 @@ function hasElectrobunWorkspaceRoot(candidateDir: string): boolean {
       fs.existsSync(
         path.join(
           candidateDir,
-          "eliza/packages/app-core/platforms/electrobun/package.json",
+          "tokagent/packages/app-core/platforms/electrobun/package.json",
         ),
       ))
   );
@@ -63,27 +63,27 @@ const libMacWindowEffectsDylib = path.join(
 
 export function createElectrobunConfig(): ElectrobunConfig {
   const appName =
-    (process.env.ELIZA_APP_NAME ?? process.env.ELIZA_APP_NAME ?? "").trim() ||
-    "elizaOS";
+    (process.env.TOKAGENT_APP_NAME ?? process.env.TOKAGENT_APP_NAME ?? "").trim() ||
+    "tokagentOS";
   const appId =
-    (process.env.ELIZA_APP_ID ?? process.env.ELIZA_APP_ID ?? "").trim() ||
-    "ai.elizaos.app";
+    (process.env.TOKAGENT_APP_ID ?? process.env.TOKAGENT_APP_ID ?? "").trim() ||
+    "ai.tokagentos.app";
   const urlScheme =
     (
-      process.env.ELIZA_URL_SCHEME ??
-      process.env.ELIZA_URL_SCHEME ??
+      process.env.TOKAGENT_URL_SCHEME ??
+      process.env.TOKAGENT_URL_SCHEME ??
       ""
-    ).trim() || "elizaos";
+    ).trim() || "tokagentos";
   const releaseUrl =
     (
-      process.env.ELIZA_RELEASE_URL ??
-      process.env.ELIZA_RELEASE_URL ??
+      process.env.TOKAGENT_RELEASE_URL ??
+      process.env.TOKAGENT_RELEASE_URL ??
       ""
     ).trim() || "";
   const runtimeDistDir =
-    (process.env.ELIZA_RUNTIME_DIST_DIR ?? "").trim() || "eliza-dist";
+    (process.env.TOKAGENT_RUNTIME_DIST_DIR ?? "").trim() || "tokagent-dist";
   // Note: All paths relative to electrobun.config.ts location
-  // (eliza/packages/app-core/platforms/electrobun/)
+  // (tokagent/packages/app-core/platforms/electrobun/)
   // ../../../../../ goes to milady repo root where dist/, plugins.json, package.json exist
 
   return {
@@ -141,8 +141,8 @@ export function createElectrobunConfig(): ElectrobunConfig {
         codesign: process.env.ELECTROBUN_SKIP_CODESIGN !== "1",
         notarize:
           process.env.ELECTROBUN_SKIP_CODESIGN !== "1" &&
-          (process.env.ELIZA_ELECTROBUN_NOTARIZE ??
-            process.env.ELIZA_ELECTROBUN_NOTARIZE) !== "0",
+          (process.env.TOKAGENT_ELECTROBUN_NOTARIZE ??
+            process.env.TOKAGENT_ELECTROBUN_NOTARIZE) !== "0",
         defaultRenderer: "native",
         icons: "assets/appIcon.iconset",
         entitlements: {

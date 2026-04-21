@@ -21,8 +21,8 @@ for rel in ("packages/python", "plugins/plugin-evm/python", "plugins/plugin-poly
     if p.exists():
         sys.path.insert(0, str(p))
 
-from elizaos_plugin_evm.providers.wallet import EVMWalletProvider  # noqa: E402
-from elizaos_plugin_polymarket.providers.clob import ClobClientProvider  # noqa: E402
+from tokagentos_plugin_evm.providers.wallet import EVMWalletProvider  # noqa: E402
+from tokagentos_plugin_polymarket.providers.clob import ClobClientProvider  # noqa: E402
 
 
 _PRIVATE_KEY_RE = re.compile(r"^0x[0-9a-fA-F]{64}$")
@@ -356,8 +356,8 @@ def once(opts: Options) -> None:
             "Set CLOB_API_KEY, CLOB_API_SECRET, CLOB_API_PASSPHRASE."
         )
 
-    from elizaos_plugin_polymarket.actions.orders import place_order as place_order_action
-    from elizaos_plugin_polymarket.types import OrderParams, OrderSide, OrderType
+    from tokagentos_plugin_polymarket.actions.orders import place_order as place_order_action
+    from tokagentos_plugin_polymarket.types import OrderParams, OrderSide, OrderType
 
     result = asyncio.run(
         place_order_action(

@@ -1,5 +1,5 @@
 /**
- * Elizagotchi Game Engine
+ * Tokagentgotchi Game Engine
  *
  * Core game logic for the virtual pet, implementing all Tamagotchi mechanics.
  */
@@ -80,7 +80,7 @@ function createInitialEvolution(): EvolutionData {
   };
 }
 
-export function createNewPet(name: string = "Elizagotchi"): PetState {
+export function createNewPet(name: string = "Tokagentgotchi"): PetState {
   const now = Date.now();
   return {
     name,
@@ -722,7 +722,7 @@ function getMoodEmoji(mood: Mood): string {
 
 export function getHelp(): string {
   return (
-    `🎮 ELIZAGOTCHI COMMANDS:\n\n` +
+    `🎮 TOKAGENTGOTCHI COMMANDS:\n\n` +
     `🍔 "feed" - Feed your pet\n` +
     `🎮 "play" - Play with your pet\n` +
     `🧹 "clean" - Clean up messes\n` +

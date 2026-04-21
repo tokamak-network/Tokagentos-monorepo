@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { type IAgentRuntime, logger } from "@elizaos/core";
+import { type IAgentRuntime, logger } from "@tokagentos/core";
 import type {
   LifeOpsAuditEvent,
   LifeOpsAuditEventType,
@@ -12,13 +12,13 @@ import type {
   LifeOpsOwnershipInput,
   LifeOpsWorkflowDefinition,
   UpsertLifeOpsBrowserCompanionRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_BROWSER_COMPANION_CONNECTION_STATES,
   LIFEOPS_BROWSER_KINDS,
-} from "@elizaos/shared/contracts/lifeops";
-import { getAgentEventService } from "@elizaos/agent/runtime";
-import { resolveOwnerEntityId } from "@elizaos/agent/runtime/owner-entity";
+} from "@tokagentos/shared/contracts/lifeops";
+import { getAgentEventService } from "@tokagentos/agent/runtime";
+import { resolveOwnerEntityId } from "@tokagentos/agent/runtime/owner-entity";
 import { computeAdaptiveWindowPolicy } from "./defaults.js";
 import {
   GoogleManagedClient,

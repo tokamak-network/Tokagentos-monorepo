@@ -32,7 +32,7 @@ mod handler_tests {
     #[test]
     fn test_create_unique_uuid_consistency() {
         // UUIDs should be deterministic for same inputs
-        use elizaos::{string_to_uuid, types::UUID};
+        use tokagentos::{string_to_uuid, types::UUID};
 
         let agent_id = UUID::new_v4();
         let base_id = "test-base-id";
@@ -50,7 +50,7 @@ mod handler_tests {
 #[cfg(feature = "live")]
 mod live_tests {
     use super::*;
-    use elizaos_plugin_bluesky::{BlueSkyClient, BlueSkyConfig};
+    use tokagentos_plugin_bluesky::{BlueSkyClient, BlueSkyConfig};
 
     #[tokio::test]
     async fn test_bluesky_authentication() -> Result<()> {
@@ -77,7 +77,7 @@ mod live_tests {
         client.authenticate().await?;
 
         let timeline = client.get_timeline(
-            elizaos_plugin_bluesky::TimelineRequest {
+            tokagentos_plugin_bluesky::TimelineRequest {
                 limit: 5,
                 ..Default::default()
             }

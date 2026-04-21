@@ -1,4 +1,4 @@
-import { useApp, type CodingAgentSession } from "@elizaos/app-core";
+import { useApp, type CodingAgentSession } from "@tokagentos/app-core";
 import { useCallback, useEffect, useState } from "react";
 import "@xterm/xterm/css/xterm.css";
 import { PtyTerminalPane } from "./PtyTerminalPane";

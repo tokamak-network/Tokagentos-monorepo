@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# elizaOS ICP Canister Setup Script
+# tokagentOS ICP Canister Setup Script
 # This script helps set up and deploy the canister
 
 set -e
@@ -10,7 +10,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 cd "$PROJECT_DIR"
 
-echo "=== elizaOS ICP Canister Setup ==="
+echo "=== tokagentOS ICP Canister Setup ==="
 echo ""
 
 # Check prerequisites
@@ -92,15 +92,15 @@ case $ACTION in
         echo "Deployment complete!"
         echo ""
         echo "To initialize the agent, run:"
-        echo "  dfx canister call eliza_icp_backend init_agent '(null)'"
+        echo "  dfx canister call tokagent_icp_backend init_agent '(null)'"
         echo ""
         echo "To chat with the agent, run:"
-        echo "  dfx canister call eliza_icp_backend chat '(record { message = \"Hello!\"; user_id = null; room_id = null; metadata = null })'"
+        echo "  dfx canister call tokagent_icp_backend chat '(record { message = \"Hello!\"; user_id = null; room_id = null; metadata = null })'"
         ;;
     
     init)
         echo "Initializing agent..."
-        dfx canister call eliza_icp_backend init_agent '(null)'
+        dfx canister call tokagent_icp_backend init_agent '(null)'
         ;;
     
     chat)
@@ -108,11 +108,11 @@ case $ACTION in
             echo "Usage: $0 --action chat \"Your message here\""
             exit 1
         fi
-        dfx canister call eliza_icp_backend chat "(record { message = \"$2\"; user_id = null; room_id = null; metadata = null })"
+        dfx canister call tokagent_icp_backend chat "(record { message = \"$2\"; user_id = null; room_id = null; metadata = null })"
         ;;
     
     health)
-        dfx canister call eliza_icp_backend health
+        dfx canister call tokagent_icp_backend health
         ;;
     
     clean)

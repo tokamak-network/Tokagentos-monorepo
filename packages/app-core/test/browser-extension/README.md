@@ -16,7 +16,7 @@ that the extension correctly:
 ## Prerequisites
 
 1. **Chrome/Chromium browser** with Developer Mode enabled
-2. **The extension loaded** from `eliza/packages/computeruse/crates/computeruse/browser-extension/`
+2. **The extension loaded** from `tokagent/packages/computeruse/crates/computeruse/browser-extension/`
 3. **At least one browser tab** open (extension needs a tab to evaluate code in)
 4. **Node.js 22+** with tsx installed
 
@@ -33,7 +33,7 @@ that the extension correctly:
 ### Basic Test Run
 
 ```bash
-# From eliza root
+# From tokagent root
 npx tsx test/browser-extension/test-harness.ts
 ```
 

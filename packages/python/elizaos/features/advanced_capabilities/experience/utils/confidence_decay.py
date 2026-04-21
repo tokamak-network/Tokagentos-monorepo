@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.features.advanced_capabilities.experience.types import Experience
+    from tokagentos.features.advanced_capabilities.experience.types import Experience
 
 # Time constants in milliseconds
 _MS_PER_DAY = 24 * 60 * 60 * 1000
@@ -70,7 +70,7 @@ class ConfidenceDecayManager:
 
     def get_domain_specific_decay(self, experience: Experience) -> DecayConfig:
         """Adjust decay rate based on experience type and domain."""
-        from elizaos.features.advanced_capabilities.experience.types import ExperienceType
+        from tokagentos.features.advanced_capabilities.experience.types import ExperienceType
 
         config = DecayConfig(
             half_life=self._config.half_life,

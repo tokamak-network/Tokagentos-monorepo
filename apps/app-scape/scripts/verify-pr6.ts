@@ -20,7 +20,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 
 import { decode } from "@toon-format/toon";
-import type { IAgentRuntime, Memory } from "@elizaos/core";
+import type { IAgentRuntime, Memory } from "@tokagentos/core";
 
 import {
     JournalStore,

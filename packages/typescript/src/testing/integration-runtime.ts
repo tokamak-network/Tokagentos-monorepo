@@ -65,7 +65,7 @@ export const DEFAULT_TEST_CHARACTER: Character = {
 	name: "IntegrationTestAgent",
 	system:
 		"You are a helpful assistant used for integration testing. Respond concisely and accurately.",
-	bio: ["Integration test agent for elizaOS"],
+	bio: ["Integration test agent for tokagentOS"],
 	templates: {},
 	messageExamples: [],
 	postExamples: [],

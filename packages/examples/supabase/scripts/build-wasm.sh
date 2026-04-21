@@ -6,9 +6,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 RUST_DIR="$PROJECT_DIR/rust"
-OUTPUT_DIR="$PROJECT_DIR/functions/eliza-chat-wasm/wasm"
+OUTPUT_DIR="$PROJECT_DIR/functions/tokagent-chat-wasm/wasm"
 
-echo "🔧 Building elizaOS Rust WASM module..."
+echo "🔧 Building tokagentOS Rust WASM module..."
 echo "   Source: $RUST_DIR"
 echo "   Output: $OUTPUT_DIR"
 
@@ -36,10 +36,10 @@ ls -la "$OUTPUT_DIR"
 echo ""
 echo "Next steps:"
 echo "  1. Deploy the edge function:"
-echo "     supabase functions deploy eliza-chat-wasm"
+echo "     supabase functions deploy tokagent-chat-wasm"
 echo ""
 echo "  2. Test locally:"
-echo "     supabase functions serve eliza-chat-wasm --env-file .env"
+echo "     supabase functions serve tokagent-chat-wasm --env-file .env"
 
 
 

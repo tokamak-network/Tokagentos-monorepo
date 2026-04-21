@@ -87,7 +87,7 @@ export default function Home() {
             Help
           </h1>
           <p>
-            Welcome to Eliza Town. Eliza agents wander the map, notice nearby
+            Welcome to Tokagent Town. Tokagent agents wander the map, notice nearby
             neighbors, and start conversations on their own.
           </p>
           <h2 className="text-4xl mt-4">Viewing the town</h2>
@@ -99,7 +99,7 @@ export default function Home() {
           <p className="mt-4">
             The town runs entirely in your browser. Each agent receives a short
             world update, picks an action like moving or chatting, and speaks
-            using an elizaOS runtime.
+            using an tokagentOS runtime.
           </p>
         </div>
       </ReactModal>

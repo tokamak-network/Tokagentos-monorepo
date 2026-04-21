@@ -4,8 +4,8 @@ import type {
   Provider,
   ProviderResult,
   UUID,
-} from "@elizaos/core";
-import { logger, stringToUuid } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger, stringToUuid } from "@tokagentos/core";
 import {
   extractConversationMetadataFromRoom,
   isAutomationConversationMetadata,

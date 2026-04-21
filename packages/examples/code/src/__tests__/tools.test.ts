@@ -18,7 +18,7 @@ describe("createTools", () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = await fs.mkdtemp(path.join(os.tmpdir(), "eliza-code-test-"));
+    testDir = await fs.mkdtemp(path.join(os.tmpdir(), "tokagent-code-test-"));
   });
 
   afterEach(async () => {

@@ -58,7 +58,7 @@ function isLikelyLifeOpsTab(tab: ExtensionTab): boolean {
   return (
     haystack.includes("milady") ||
     haystack.includes("lifeops") ||
-    haystack.includes("eliza")
+    haystack.includes("tokagent")
   );
 }
 

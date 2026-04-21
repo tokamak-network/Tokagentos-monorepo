@@ -3,16 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-atropos-holdem"
+name = "tokagentos-atropos-holdem"
 version = "2.0.0"
-description = "Texas Hold'em poker environment for ElizaOS RL training with Atropos"
+description = "Texas Hold'em poker environment for TokagentOS RL training with Atropos"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
-keywords = ["elizaos", "atropos", "reinforcement-learning", "poker", "texas-holdem"]
+keywords = ["tokagentos", "atropos", "reinforcement-learning", "poker", "texas-holdem"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Games/Entertainment",
 ]
 dependencies = [
-    "elizaos>=2.0.0a4",
+    "tokagentos>=2.0.0a4",
     "pydantic>=2.0.0",
 ]
 
@@ -34,14 +34,14 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 openai = [
-    "elizaos-plugin-openai>=2.0.0a4",
+    "tokagentos-plugin-openai>=2.0.0a4",
 ]
 
 [project.scripts]
-elizaos-holdem = "elizaos_atropos_holdem.cli:main"
+tokagentos-holdem = "tokagentos_atropos_holdem.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_atropos_holdem"]
+packages = ["tokagentos_atropos_holdem"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

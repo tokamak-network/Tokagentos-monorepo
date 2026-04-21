@@ -24,7 +24,7 @@ describe('App Component', () => {
         render(<App />)
 
         await waitFor(() => {
-            expect(screen.getByText(/Eliza/i)).toBeInTheDocument()
+            expect(screen.getByText(/Tokagent/i)).toBeInTheDocument()
         }, { timeout: 3000 })
     })
 

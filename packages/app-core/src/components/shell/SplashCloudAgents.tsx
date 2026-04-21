@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Input, Spinner } from "@elizaos/ui";
+import { Button, Card, CardContent, Input, Spinner } from "@tokagentos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { client } from "../../api";
 import type {
@@ -53,11 +53,11 @@ export function SplashCloudAgents({
   onBack,
   dispatchStartup,
 }: SplashCloudAgentsProps) {
-  const { elizaCloudConnected, elizaCloudLoginBusy, handleCloudLogin } =
+  const { tokagentCloudConnected, tokagentCloudLoginBusy, handleCloudLogin } =
     useApp();
 
   const [stage, setStage] = useState<Stage>(
-    elizaCloudConnected ? "loading" : "login",
+    tokagentCloudConnected ? "loading" : "login",
   );
   const [agents, setAgents] = useState<CloudCompatAgent[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -74,10 +74,10 @@ export function SplashCloudAgents({
 
   // When cloud connection state changes and we're on the login stage, proceed
   useEffect(() => {
-    if (elizaCloudConnected && stage === "login") {
+    if (tokagentCloudConnected && stage === "login") {
       setStage("loading");
     }
-  }, [elizaCloudConnected, stage]);
+  }, [tokagentCloudConnected, stage]);
 
   // Fetch agents when entering loading stage
   useEffect(() => {
@@ -231,7 +231,7 @@ export function SplashCloudAgents({
           className="text-3xs uppercase text-black/60"
         >
           {t("startupshell.CloudLogin", {
-            defaultValue: "Sign in to Eliza Cloud",
+            defaultValue: "Sign in to Tokagent Cloud",
           })}
         </p>
         <Button
@@ -239,9 +239,9 @@ export function SplashCloudAgents({
           variant="default"
           className="justify-center border-2 border-black bg-black px-3 py-5 text-[#ffe600] font-semibold shadow-md hover:bg-[#ffe600] hover:text-black"
           onClick={handleLogin}
-          disabled={elizaCloudLoginBusy}
+          disabled={tokagentCloudLoginBusy}
         >
-          {elizaCloudLoginBusy ? (
+          {tokagentCloudLoginBusy ? (
             <span className="flex items-center gap-2">
               <Spinner className="h-4 w-4" />
               {t("startupshell.WaitingForAuth", {
@@ -249,8 +249,8 @@ export function SplashCloudAgents({
               })}
             </span>
           ) : (
-            t("startupshell.SignInElizaCloud", {
-              defaultValue: "Sign in with Eliza Cloud",
+            t("startupshell.SignInTokagentCloud", {
+              defaultValue: "Sign in with Tokagent Cloud",
             })
           )}
         </Button>

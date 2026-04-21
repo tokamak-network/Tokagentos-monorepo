@@ -8,7 +8,7 @@ import random
 import uuid
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_reasoning.types import Problem, TaskType, Difficulty
+from tokagentos_atropos_reasoning.types import Problem, TaskType, Difficulty
 
 if TYPE_CHECKING:
     pass

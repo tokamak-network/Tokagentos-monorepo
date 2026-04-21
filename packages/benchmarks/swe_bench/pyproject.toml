@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-swe-bench"
+name = "tokagentos-swe-bench"
 version = "2.0.0"
-description = "SWE-bench benchmark for ElizaOS Python agents"
+description = "SWE-bench benchmark for TokagentOS Python agents"
 readme = "RESEARCH.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
 keywords = ["ai", "agents", "benchmark", "swe-bench", "software-engineering"]
 classifiers = [
@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "elizaos>=1.0.0",
+    "tokagentos>=1.0.0",
     "datasets>=2.14.0",
     "gitpython>=3.1.0",
     "unidiff>=0.7.0",
@@ -48,9 +48,9 @@ dev = [
 swe-bench = "benchmarks.swe_bench.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/elizaos/eliza"
-Documentation = "https://elizaos.ai/docs/benchmarks/swe-bench"
-Repository = "https://github.com/elizaos/eliza/tree/main/benchmarks/swe-bench"
+Homepage = "https://github.com/tokagentos/tokagent"
+Documentation = "https://tokagentos.ai/docs/benchmarks/swe-bench"
+Repository = "https://github.com/tokagentos/tokagent/tree/main/benchmarks/swe-bench"
 
 [tool.hatch.build.targets.wheel]
 packages = ["benchmarks"]

@@ -1,6 +1,6 @@
-# elizaOS A2A Agent Server - Rust
+# tokagentOS A2A Agent Server - Rust
 
-An HTTP server that exposes an elizaOS agent for agent-to-agent communication using Rust and Axum.
+An HTTP server that exposes an tokagentOS agent for agent-to-agent communication using Rust and Axum.
 
 ## Requirements
 
@@ -73,4 +73,4 @@ Stream a response from the agent (Server-Sent Events).
 - `OPENAI_API_KEY` - OpenAI API key (optional)
 - `OPENAI_BASE_URL` - Custom OpenAI endpoint
 
-When `OPENAI_API_KEY` is not set, the server uses `@elizaos/plugin-inmemorydb` (ephemeral) + `elizaos-plugin-eliza-classic` so it can run deterministically without external services.
+When `OPENAI_API_KEY` is not set, the server uses `@elizaos/plugin-inmemorydb` (ephemeral) + `tokagentos-plugin-tokagent-classic` so it can run deterministically without external services.

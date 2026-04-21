@@ -2,8 +2,8 @@ from typing import Any
 
 import pytest
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types import (
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types import (
     Action,
     ActionResult,
     Character,

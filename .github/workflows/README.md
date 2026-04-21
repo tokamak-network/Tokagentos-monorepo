@@ -1,6 +1,6 @@
 # CI/CD Workflows
 
-This directory contains GitHub Actions workflows for the elizaOS project (v2.0.0).
+This directory contains GitHub Actions workflows for the tokagentOS project (v2.0.0).
 
 ## Workflow Overview
 
@@ -47,8 +47,8 @@ Publishes Python packages to PyPI.
 
 **Packages:**
 
-- `elizaos` (packages/python) - Core runtime and types
-- `elizaos-plugin-sql` (packages/plugin-sql/python) - SQL database adapters
+- `tokagentos` (packages/python) - Core runtime and types
+- `tokagentos-plugin-sql` (packages/plugin-sql/python) - SQL database adapters
 - Additional plugins as configured
 
 **Required Secrets:** `PYPI_TOKEN`
@@ -64,8 +64,8 @@ Publishes Rust crates to crates.io.
 
 **Crates:**
 
-- `elizaos` (packages/rust) - Core runtime and types
-- `elizaos-plugin-sql` (packages/plugin-sql/rust) - SQL database adapters
+- `tokagentos` (packages/rust) - Core runtime and types
+- `tokagentos-plugin-sql` (packages/plugin-sql/rust) - SQL database adapters
 - Additional plugins as configured
 
 **Required Secrets:** `CRATES_IO_TOKEN`
@@ -184,14 +184,14 @@ cargo publish
 When releasing, packages are published in this order:
 
 1. **Core packages first:**
-   - `elizaos` (Python)
-   - `elizaos` (Rust)
-   - `@elizaos/core` (NPM)
+   - `tokagentos` (Python)
+   - `tokagentos` (Rust)
+   - `@tokagentos/core` (NPM)
 
 2. **Then dependent packages:**
-   - `elizaos-plugin-*` (Python, depends on elizaos)
-   - `elizaos-plugin-*` (Rust, depends on elizaos)
-   - `@elizaos/plugin-*` (NPM, depends on @elizaos/core)
+   - `tokagentos-plugin-*` (Python, depends on tokagentos)
+   - `tokagentos-plugin-*` (Rust, depends on tokagentos)
+   - `@elizaos/plugin-*` (NPM, depends on @tokagentos/core)
 
 The workflows handle this ordering automatically.
 

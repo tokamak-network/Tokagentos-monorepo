@@ -4,11 +4,11 @@ import {
   client,
   isElectrobunRuntime,
   useApp,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import type {
   LifeOpsOwnerBrowserAccessStatus,
   LifeOpsTelegramAuthState,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { Loader2, MessageCircle, Phone, QrCode } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useDiscordConnector } from "../hooks/useDiscordConnector.js";

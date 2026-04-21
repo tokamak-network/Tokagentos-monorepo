@@ -4,32 +4,32 @@
 
 AgentBench is a comprehensive benchmark introduced in 2023 by THUDM (Tsinghua University) to evaluate Large Language Models (LLMs) functioning as autonomous agents across diverse interactive environments. It is considered one of the most comprehensive agent benchmarks available.
 
-## Implementation Status: ✅ COMPLETE (with Full ElizaOS Integration)
+## Implementation Status: ✅ COMPLETE (with Full TokagentOS Integration)
 
-The AgentBench benchmark has been fully implemented for ElizaOS Python with **canonical ElizaOS runtime integration**:
+The AgentBench benchmark has been fully implemented for TokagentOS Python with **canonical TokagentOS runtime integration**:
 
 | Component | Status | Location |
 |-----------|--------|----------|
-| Core Types | ✅ Complete | `python/elizaos_agentbench/types.py` |
-| **ElizaOS Harness** | ✅ Complete | `python/elizaos_agentbench/eliza_harness.py` |
-| OS Environment | ✅ Complete | `python/elizaos_agentbench/adapters/os_adapter.py` |
-| Database Environment | ✅ Complete | `python/elizaos_agentbench/adapters/db_adapter.py` |
-| Knowledge Graph | ✅ Complete | `python/elizaos_agentbench/adapters/kg_adapter.py` |
-| Web Shopping | ✅ Complete | `python/elizaos_agentbench/adapters/webshop_adapter.py` |
-| Lateral Thinking | ✅ Complete | `python/elizaos_agentbench/adapters/lateral_thinking_adapter.py` |
+| Core Types | ✅ Complete | `python/tokagentos_agentbench/types.py` |
+| **TokagentOS Harness** | ✅ Complete | `python/tokagentos_agentbench/tokagent_harness.py` |
+| OS Environment | ✅ Complete | `python/tokagentos_agentbench/adapters/os_adapter.py` |
+| Database Environment | ✅ Complete | `python/tokagentos_agentbench/adapters/db_adapter.py` |
+| Knowledge Graph | ✅ Complete | `python/tokagentos_agentbench/adapters/kg_adapter.py` |
+| Web Shopping | ✅ Complete | `python/tokagentos_agentbench/adapters/webshop_adapter.py` |
+| Lateral Thinking | ✅ Complete | `python/tokagentos_agentbench/adapters/lateral_thinking_adapter.py` |
 | Card Game | 🔄 Planned | - |
 | Householding | 🔄 Planned | - |
 | Web Browsing | 🔄 Planned | - |
-| Benchmark Runner | ✅ Complete | `python/elizaos_agentbench/runner.py` |
-| CLI Interface | ✅ Complete | `python/elizaos_agentbench/cli.py` |
-| Test Suite | ✅ Complete | `python/elizaos_agentbench/tests/` (42 tests) |
+| Benchmark Runner | ✅ Complete | `python/tokagentos_agentbench/runner.py` |
+| CLI Interface | ✅ Complete | `python/tokagentos_agentbench/cli.py` |
+| Test Suite | ✅ Complete | `python/tokagentos_agentbench/tests/` (42 tests) |
 
-### Full ElizaOS Pipeline Integration (Canonical Flow)
+### Full TokagentOS Pipeline Integration (Canonical Flow)
 
-The benchmark uses the **canonical ElizaOS message processing pipeline**, exactly as implemented in `examples/chat/`:
+The benchmark uses the **canonical TokagentOS message processing pipeline**, exactly as implemented in `examples/chat/`:
 
 ```python
-# Canonical ElizaOS pattern (same as examples/chat/python/chat.py)
+# Canonical TokagentOS pattern (same as examples/chat/python/chat.py)
 message = Memory(
     entity_id=user_id,
     room_id=room_id,
@@ -59,14 +59,14 @@ pip install -e .
 # Run with deterministic mock (harness validation)
 python run_benchmark.py --env all
 
-# Run with FULL ElizaOS runtime (recommended)
-python run_benchmark.py --elizaos --env all
+# Run with FULL TokagentOS runtime (recommended)
+python run_benchmark.py --tokagentos --env all
 
 # Single environment
-python run_benchmark.py --elizaos --env db --max-tasks 3
+python run_benchmark.py --tokagentos --env db --max-tasks 3
 ```
 
-### Latest Results (Full ElizaOS Pipeline + OpenAI)
+### Latest Results (Full TokagentOS Pipeline + OpenAI)
 
 | Environment | Success Rate | GPT-4 Baseline | Difference |
 |-------------|-------------|----------------|------------|
@@ -104,7 +104,7 @@ Results from running with mock runtime (baseline for infrastructure validation):
 | Knowledge Graph | 0.0% | 58.4% | -58.4% |
 | Lateral Thinking | 0.0% | 34.8% | -34.8% |
 
-> **Note**: Mock runtime returns placeholder responses. Run with `--elizaos` flag and proper LLM configuration for real evaluation.
+> **Note**: Mock runtime returns placeholder responses. Run with `--tokagentos` flag and proper LLM configuration for real evaluation.
 
 ## Published Leaderboard Scores (ICLR 2024)
 
@@ -163,12 +163,12 @@ Results from running with mock runtime (baseline for infrastructure validation):
 ### Package Structure
 ```
 benchmarks/agentbench/python/
-├── elizaos_agentbench/
+├── tokagentos_agentbench/
 │   ├── __init__.py           # Package exports
 │   ├── types.py              # Core data types and baselines
 │   ├── runner.py             # Main benchmark orchestrator
-│   ├── eliza_harness.py      # Canonical ElizaOS integration (handle_message flow)
-│   ├── benchmark_actions.py  # ElizaOS Action definitions for benchmarks
+│   ├── tokagent_harness.py      # Canonical TokagentOS integration (handle_message flow)
+│   ├── benchmark_actions.py  # TokagentOS Action definitions for benchmarks
 │   ├── cli.py                # Command-line interface
 │   ├── adapters/
 │   │   ├── base.py           # Abstract adapter interface
@@ -187,13 +187,13 @@ benchmarks/agentbench/python/
 └── run_benchmark.py
 ```
 
-### ElizaOS Harness Architecture
+### TokagentOS Harness Architecture
 
-The `eliza_harness.py` module implements the canonical ElizaOS integration:
+The `tokagent_harness.py` module implements the canonical TokagentOS integration:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    ElizaAgentHarness                            │
+│                    TokagentAgentHarness                            │
 ├─────────────────────────────────────────────────────────────────┤
 │  1. Reset environment → get initial observation                 │
 │  2. Set BenchmarkContext (global, accessible by provider)       │
@@ -270,19 +270,19 @@ cd benchmarks/agentbench/python
 python run_benchmark.py --env db kg --max-tasks 5
 ```
 
-### With ElizaOS Runtime
+### With TokagentOS Runtime
 ```bash
-# Ensure ElizaOS is configured with an LLM provider
-python run_benchmark.py --elizaos --env all --output ./results
+# Ensure TokagentOS is configured with an LLM provider
+python run_benchmark.py --tokagentos --env all --output ./results
 ```
 
 ### Using CLI
 ```bash
 # List environments
-python -m elizaos_agentbench.cli list
+python -m tokagentos_agentbench.cli list
 
 # Run specific environments
-python -m elizaos_agentbench.cli run --env os database --max-tasks 10
+python -m tokagentos_agentbench.cli run --env os database --max-tasks 10
 ```
 
 ## Testing
@@ -291,7 +291,7 @@ All tests pass (42 total):
 
 ```bash
 cd benchmarks/agentbench/python
-pytest elizaos_agentbench/tests/ -v
+pytest tokagentos_agentbench/tests/ -v
 
 # Results:
 # test_types.py: 12 passed
@@ -322,7 +322,7 @@ After benchmark execution:
 ## Future Work
 
 1. **Complete remaining environments**: Card Game, Householding (ALFWorld), Web Browsing
-2. **Real LLM evaluation**: Run with GPT-4, Claude, or local models via ElizaOS
+2. **Real LLM evaluation**: Run with GPT-4, Claude, or local models via TokagentOS
 3. **Extended datasets**: Load full AgentBench dataset files
 4. **Docker integration**: Improve OS environment sandboxing
 5. **Performance optimization**: Parallel task execution

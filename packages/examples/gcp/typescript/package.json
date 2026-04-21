@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/gcp-worker-typescript",
   "version": "2.0.0-alpha",
-  "description": "elizaOS GCP Cloud Run worker (TypeScript)",
+  "description": "tokagentOS GCP Cloud Run worker (TypeScript)",
   "type": "module",
   "main": "dist/handler.js",
   "scripts": {
@@ -12,11 +12,11 @@
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "docker:build": "docker build -t eliza-worker-ts .",
-    "docker:run": "docker run -p 8080:8080 -e OPENAI_API_KEY=$OPENAI_API_KEY eliza-worker-ts"
+    "docker:build": "docker build -t tokagent-worker-ts .",
+    "docker:run": "docker run -p 8080:8080 -e OPENAI_API_KEY=$OPENAI_API_KEY tokagent-worker-ts"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
     "uuid": "^13.0.0"

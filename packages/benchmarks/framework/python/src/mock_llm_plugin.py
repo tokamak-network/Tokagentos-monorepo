@@ -10,12 +10,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.types.model import ModelType
-from elizaos.types.plugin import Plugin
-from elizaos.types.components import ProviderResult
+from tokagentos.types.model import ModelType
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.components import ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 # ─── Mock response constants ────────────────────────────────────────────────
 
@@ -125,7 +125,7 @@ async def mock_completion_handler(
 
 def create_dummy_providers(count: int) -> list[object]:
     """Create N dummy providers that return minimal static data."""
-    from elizaos.types.components import Provider
+    from tokagentos.types.components import Provider
 
     providers: list[object] = []
     for i in range(count):

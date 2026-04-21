@@ -1,15 +1,15 @@
-# Vercel Edge Function elizaOS Worker Examples
+# Vercel Edge Function tokagentOS Worker Examples
 
-Deploy AI chat agents as serverless Vercel Edge Functions. These examples show how to run an elizaOS agent as a stateless worker that processes chat messages via HTTP.
+Deploy AI chat agents as serverless Vercel Edge Functions. These examples show how to run an tokagentOS agent as a stateless worker that processes chat messages via HTTP.
 
-All handlers use the full **elizaOS runtime** with OpenAI as the LLM provider, providing the same capabilities as the AWS Lambda examples.
+All handlers use the full **tokagentOS runtime** with OpenAI as the LLM provider, providing the same capabilities as the AWS Lambda examples.
 
 ## Architecture
 
 ```
 ┌──────────────┐     ┌─────────────────┐     ┌────────────────┐
 │  Test Client │────▶│  Vercel Edge    │────▶│  Edge Function │
-│  (curl/bun)  │◀────│  Network        │◀────│  (elizaOS)     │
+│  (curl/bun)  │◀────│  Network        │◀────│  (tokagentOS)     │
 └──────────────┘     └─────────────────┘     └────────────────┘
                                                     │
                                                     ▼
@@ -30,7 +30,7 @@ All handlers use the full **elizaOS runtime** with OpenAI as the LLM provider, p
 
 ### 1. Set Environment Variables
 
-Create a `.env` file in the project root (`/home/shaw/eliza/.env`):
+Create a `.env` file in the project root (`/home/shaw/tokagent/.env`):
 
 ```bash
 OPENAI_API_KEY=your-openai-api-key
@@ -77,7 +77,7 @@ curl http://localhost:3000/api/health
 # Chat
 curl -X POST http://localhost:3000/api/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "Hello, Eliza!"}'
+  -d '{"message": "Hello, Tokagent!"}'
 ```
 
 ### 3. Deploy to Vercel
@@ -111,7 +111,7 @@ After deployment, Vercel outputs your deployment URL. Test it:
 # Using curl
 curl -X POST https://your-app.vercel.app/api/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "Hello, Eliza!"}'
+  -d '{"message": "Hello, Tokagent!"}'
 
 # Using the test client
 bun run test-client.ts --endpoint https://your-app.vercel.app
@@ -147,7 +147,7 @@ examples/vercel/
 
 ### POST /api/chat
 
-Send a message to the elizaOS agent.
+Send a message to the tokagentOS agent.
 
 **Request:**
 
@@ -178,7 +178,7 @@ Health check endpoint.
 ```json
 {
   "status": "healthy",
-  "runtime": "elizaos-typescript",
+  "runtime": "tokagentos-typescript",
   "version": "2.0.0-alpha"
 }
 ```
@@ -236,7 +236,7 @@ vercel deploy
 | `OPENAI_API_KEY`     | Yes      | -                         | Your OpenAI API key |
 | `OPENAI_SMALL_MODEL` | No       | `gpt-5-mini`              | Small model to use  |
 | `OPENAI_LARGE_MODEL` | No       | `gpt-5`                   | Large model to use  |
-| `CHARACTER_NAME`     | No       | `Eliza`                   | Agent's name        |
+| `CHARACTER_NAME`     | No       | `Tokagent`                   | Agent's name        |
 | `CHARACTER_BIO`      | No       | `A helpful AI assistant.` | Agent's bio         |
 | `CHARACTER_SYSTEM`   | No       | (default)                 | System prompt       |
 
@@ -379,7 +379,7 @@ vercel remove your-project-name
 
 ## See Also
 
-- [elizaOS Documentation](https://elizaos.ai/docs)
+- [tokagentOS Documentation](https://tokagentos.ai/docs)
 - [Vercel Edge Functions](https://vercel.com/docs/functions/edge-functions)
 - [Vercel CLI Documentation](https://vercel.com/docs/cli)
 - [AWS Lambda Examples](../aws/README.md)

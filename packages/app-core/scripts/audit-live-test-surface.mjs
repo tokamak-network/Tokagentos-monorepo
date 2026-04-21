@@ -50,7 +50,7 @@ const STUB_PATTERNS = [
   { id: "test.fixme", regex: /\btest\.fixme\s*\(/g },
 ];
 const HARNESS_BLOCKER_PATTERNS = [
-  { id: "ELIZA_LIVE_TEST=0", regex: /ELIZA_LIVE_TEST\s*=\s*["']0["']/g },
+  { id: "TOKAGENT_LIVE_TEST=0", regex: /TOKAGENT_LIVE_TEST\s*=\s*["']0["']/g },
   { id: "MILADY_LIVE_TEST=0", regex: /MILADY_LIVE_TEST\s*=\s*["']0["']/g },
   {
     id: "MILADY_SKIP_STEWARD_FI_LIVE_SMOKE=1",
@@ -88,35 +88,35 @@ const ROOTS = [
   {
     id: "main",
     dir: repoRoot,
-    ignoreDirs: new Set([...IGNORE_DIRS, "eliza"]),
+    ignoreDirs: new Set([...IGNORE_DIRS, "tokagent"]),
     packageJson: path.join(repoRoot, "package.json"),
     requireSurfaceFiles: true,
     requireExplicitLiveFiles: false,
     requiredScriptKinds: ["e2e", "playwright"],
   },
   {
-    id: "eliza",
-    dir: path.join(repoRoot, "eliza"),
+    id: "tokagent",
+    dir: path.join(repoRoot, "tokagent"),
     ignoreDirs: new Set([...IGNORE_DIRS, "cloud", "examples", "steward-fi"]),
-    packageJson: path.join(repoRoot, "eliza", "package.json"),
+    packageJson: path.join(repoRoot, "tokagent", "package.json"),
     requireSurfaceFiles: true,
     requireExplicitLiveFiles: true,
     requiredScriptKinds: [],
   },
   {
     id: "cloud",
-    dir: path.join(repoRoot, "eliza", "cloud"),
+    dir: path.join(repoRoot, "tokagent", "cloud"),
     ignoreDirs: new Set([...IGNORE_DIRS, "examples"]),
-    packageJson: path.join(repoRoot, "eliza", "cloud", "package.json"),
+    packageJson: path.join(repoRoot, "tokagent", "cloud", "package.json"),
     requireSurfaceFiles: true,
     requireExplicitLiveFiles: false,
     requiredScriptKinds: ["e2e", "playwright"],
   },
   {
     id: "steward-fi",
-    dir: path.join(repoRoot, "eliza", "steward-fi"),
+    dir: path.join(repoRoot, "tokagent", "steward-fi"),
     ignoreDirs: new Set([...IGNORE_DIRS, "examples"]),
-    packageJson: path.join(repoRoot, "eliza", "steward-fi", "package.json"),
+    packageJson: path.join(repoRoot, "tokagent", "steward-fi", "package.json"),
     requireSurfaceFiles: true,
     requireExplicitLiveFiles: false,
     requiredScriptKinds: ["e2e"],
@@ -156,7 +156,7 @@ function isSurfaceFile(rootId, relPath) {
 
   if (
     rootId === "cloud" &&
-    relPath.startsWith("eliza/cloud/packages/tests/e2e/") &&
+    relPath.startsWith("tokagent/cloud/packages/tests/e2e/") &&
     TEST_FILE_PATTERN.test(relPath)
   ) {
     return true;
@@ -164,7 +164,7 @@ function isSurfaceFile(rootId, relPath) {
 
   if (
     rootId === "cloud" &&
-    relPath.startsWith("eliza/cloud/packages/tests/playwright/") &&
+    relPath.startsWith("tokagent/cloud/packages/tests/playwright/") &&
     TEST_FILE_PATTERN.test(relPath)
   ) {
     return true;
@@ -172,7 +172,7 @@ function isSurfaceFile(rootId, relPath) {
 
   return (
     rootId === "steward-fi" &&
-    /^eliza\/steward-fi\/scripts\/e2e-.*\.ts$/i.test(relPath)
+    /^tokagent\/steward-fi\/scripts\/e2e-.*\.ts$/i.test(relPath)
   );
 }
 

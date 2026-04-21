@@ -6,7 +6,7 @@ import {
   resolveApiToken,
   resolveServerOnlyPort,
   setApiToken,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import type { Command } from "commander";
 import { formatDocsLink } from "../../terminal/links";
 import { theme } from "../../terminal/theme";
@@ -49,15 +49,15 @@ async function startAction() {
   const connectionKey = resolveApiToken(process.env);
 
   await runCommandWithRuntime(defaultRuntime, async () => {
-    const { startEliza } = await import("../../runtime/eliza");
+    const { startTokagent } = await import("../../runtime/tokagent");
     // Use serverOnly mode: starts API server, no interactive chat loop
-    await startEliza({
+    await startTokagent({
       serverOnly: true,
       onEmbeddingProgress: (phase, detail) => {
         if (phase === "downloading") {
-          console.log(`[eliza] Embedding: ${detail ?? "downloading..."}`);
+          console.log(`[tokagent] Embedding: ${detail ?? "downloading..."}`);
         } else if (phase === "ready") {
-          console.log(`[eliza] Embedding model ready`);
+          console.log(`[tokagent] Embedding model ready`);
         }
       },
     });
@@ -81,7 +81,7 @@ async function startAction() {
 export function registerStartCommand(program: Command) {
   program
     .command("start")
-    .description("Start the elizaOS agent runtime")
+    .description("Start the tokagentOS agent runtime")
     .option(
       "--connection-key [key]",
       "Set or auto-generate a connection key for remote access",
@@ -89,7 +89,7 @@ export function registerStartCommand(program: Command) {
     .addHelpText(
       "after",
       () =>
-        `\n${theme.muted("Docs:")} ${formatDocsLink("/getting-started", "docs.eliza.ai/getting-started")}\n`,
+        `\n${theme.muted("Docs:")} ${formatDocsLink("/getting-started", "docs.tokagent.ai/getting-started")}\n`,
     )
     .action(async (opts: { connectionKey?: string | boolean }) => {
       if (typeof opts.connectionKey === "string" && opts.connectionKey) {

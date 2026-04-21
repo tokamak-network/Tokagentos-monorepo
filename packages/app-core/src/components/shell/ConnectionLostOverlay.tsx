@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   StatusBadge,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useState } from "react";
 import { isElectrobunRuntime } from "../../bridge";
 import { useApp } from "../../state";

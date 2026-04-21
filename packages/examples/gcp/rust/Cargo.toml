@@ -1,20 +1,20 @@
 [package]
-name = "eliza-cloud-run"
+name = "tokagent-cloud-run"
 version = "1.0.0"
 edition = "2021"
-description = "elizaOS GCP Cloud Run worker (Rust)"
+description = "tokagentOS GCP Cloud Run worker (Rust)"
 publish = false
 
 [[bin]]
-name = "eliza-cloud-run"
+name = "tokagent-cloud-run"
 path = "src/main.rs"
 
 [dependencies]
-# elizaOS Core
-elizaos = "2.0.0"
+# tokagentOS Core
+tokagentos = "2.0.0"
 
-# elizaOS OpenAI Plugin
-elizaos-plugin-openai = "2.0.0"
+# tokagentOS OpenAI Plugin
+tokagentos-plugin-openai = "2.0.0"
 
 # Web framework
 axum = { version = "0.7", features = ["tokio"] }

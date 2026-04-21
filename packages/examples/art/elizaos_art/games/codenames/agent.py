@@ -4,8 +4,8 @@ Codenames Agents for ART Training
 
 import re
 
-from elizaos_art.base import BaseAgent
-from elizaos_art.games.codenames.types import (
+from tokagentos_art.base import BaseAgent
+from tokagentos_art.games.codenames.types import (
     CardColor,
     CodenamesAction,
     CodenamesState,

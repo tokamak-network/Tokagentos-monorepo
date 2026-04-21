@@ -1,1 +1,1 @@
-export * from "@elizaos/shared/onboarding-presets";
+export * from "@tokagentos/shared/onboarding-presets";

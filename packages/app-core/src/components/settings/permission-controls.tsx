@@ -1,4 +1,4 @@
-import { Button, StatusBadge, Switch } from "@elizaos/ui";
+import { Button, StatusBadge, Switch } from "@tokagentos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   type AllPermissionsState,

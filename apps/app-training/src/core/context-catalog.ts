@@ -1,5 +1,5 @@
 /**
- * Canonical context catalog for all known elizaOS actions, providers, and plugins.
+ * Canonical context catalog for all known tokagentOS actions, providers, and plugins.
  *
  * This catalog maps every known action and provider to one or more AgentContext
  * categories. It is used by:
@@ -171,17 +171,17 @@ export const PROVIDER_CONTEXT_MAP: Record<string, AgentContext[]> = {
   // System providers
   agentConfig: ["system"],
   pluginList: ["system"],
-  elizaChannelProfile: ["general"],
-  elizaSessionKey: ["general", "system"],
+  tokagentChannelProfile: ["general"],
+  tokagentSessionKey: ["general", "system"],
   roleBackfill: ["social", "system"],
   "activity-profile": ["general", "social"],
-  elizaAdminTrust: ["social", "system"],
+  tokagentAdminTrust: ["social", "system"],
   escalationTrigger: ["system", "social"],
   uiCatalog: ["system"],
   workspaceContext: ["code", "knowledge"],
   userName: ["social"],
   adminPanel: ["social", "system"],
-  elizaDynamicSkills: ["code", "general"],
+  tokagentDynamicSkills: ["code", "general"],
   lifeops: ["automation"],
   "recent-conversations": ["knowledge", "social"],
   "relevant-conversations": ["knowledge", "social"],

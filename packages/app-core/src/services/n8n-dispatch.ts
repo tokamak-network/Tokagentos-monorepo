@@ -18,15 +18,15 @@
  * should ensure the autostart handle has completed before dispatch.
  */
 
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { isNativeServerPlatform } from "../platform/is-native-server.js";
 import { type N8nModeConfigLike, resolveN8nMode } from "./n8n-mode.js";
 import { peekN8nSidecar } from "./n8n-sidecar.js";
 
 /**
- * Subset of ElizaConfig the dispatch service reads. Shares shape with
- * n8n-mode / n8n-autostart so the same `loadElizaConfig()` output feeds
+ * Subset of TokagentConfig the dispatch service reads. Shares shape with
+ * n8n-mode / n8n-autostart so the same `loadTokagentConfig()` output feeds
  * all three.
  */
 export interface N8nDispatchConfigLike extends N8nModeConfigLike {
@@ -83,7 +83,7 @@ export interface CreateN8nDispatchServiceOptions {
   resolveAgentId?: (runtime: AgentRuntime) => string;
 }
 
-const DEFAULT_CLOUD_API_BASE_URL = "https://api.eliza.how";
+const DEFAULT_CLOUD_API_BASE_URL = "https://api.tokagent.how";
 const ZERO_AGENT_ID = "00000000-0000-0000-0000-000000000000";
 
 function normalizeBaseUrl(raw: string | undefined | null): string {
@@ -128,7 +128,7 @@ async function readJsonBody(res: Response): Promise<unknown> {
 /**
  * Construct the dispatch service. The returned value is registered under
  * `"N8N_DISPATCH"` on the runtime by `ensureN8nDispatchService` in
- * runtime/eliza.ts.
+ * runtime/tokagent.ts.
  */
 export function createN8nDispatchService(
   options: CreateN8nDispatchServiceOptions,

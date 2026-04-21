@@ -13,11 +13,11 @@ from cryptography.hazmat.primitives.padding import PKCS7
 def get_salt() -> str:
     salt = os.environ.get("SECRET_SALT", "secretsalt")
     node_env = os.environ.get("NODE_ENV", "").strip().lower()
-    allow_default = os.environ.get("ELIZA_ALLOW_DEFAULT_SECRET_SALT", "").strip().lower() == "true"
+    allow_default = os.environ.get("TOKAGENT_ALLOW_DEFAULT_SECRET_SALT", "").strip().lower() == "true"
     if node_env == "production" and salt == "secretsalt" and not allow_default:
         raise RuntimeError(
             "SECRET_SALT must be set to a non-default value in production. "
-            "Set ELIZA_ALLOW_DEFAULT_SECRET_SALT=true to override (not recommended)."
+            "Set TOKAGENT_ALLOW_DEFAULT_SECRET_SALT=true to override (not recommended)."
         )
     return salt
 
@@ -59,7 +59,7 @@ def encrypt_string_value(value: object, salt: str) -> object:
     # v2: AES-256-GCM with integrity tag
     key = _derive_key(salt)
     iv = secrets.token_bytes(12)
-    aad = b"elizaos:settings:v2"
+    aad = b"tokagentos:settings:v2"
     aesgcm = AESGCM(key)
     ciphertext_and_tag = aesgcm.encrypt(iv, value.encode("utf-8"), aad)
     ciphertext = ciphertext_and_tag[:-16]
@@ -83,7 +83,7 @@ def decrypt_string_value(value: object, salt: str) -> object:
             return value
 
         key = _derive_key(salt)
-        aad = b"elizaos:settings:v2"
+        aad = b"tokagentos:settings:v2"
         aesgcm = AESGCM(key)
         try:
             plaintext_bytes = aesgcm.decrypt(iv, ciphertext + tag, aad)

@@ -1,9 +1,9 @@
-import { CHANNEL_PLUGIN_MAP as upstreamChannelPluginMap } from "@elizaos/agent/runtime/plugin-collector";
+import { CHANNEL_PLUGIN_MAP as upstreamChannelPluginMap } from "@tokagentos/agent/runtime/plugin-collector";
 
 const INTERNAL_CHANNEL_PLUGIN_OVERRIDES = {
   signal: "@elizaos/plugin-signal",
   whatsapp: "@elizaos/plugin-whatsapp",
-  wechat: "elizaoswechat",
+  wechat: "tokagentoswechat",
 } as const;
 
 export const CHANNEL_PLUGIN_MAP = {

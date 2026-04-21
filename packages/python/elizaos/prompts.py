@@ -1,5 +1,5 @@
 """
-Auto-generated prompt templates for elizaOS Python runtime.
+Auto-generated prompt templates for tokagentOS Python runtime.
 DO NOT EDIT - Generated from packages/prompts/prompts/*.txt
 
 These prompts use Handlebars-style template syntax:

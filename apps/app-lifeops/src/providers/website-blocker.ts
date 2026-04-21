@@ -4,7 +4,7 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { getSelfControlAccess } from "../website-blocker/access.ts";
 import { getCachedSelfControlStatus } from "../website-blocker/engine.ts";
 
@@ -84,7 +84,7 @@ export const websiteBlockerProvider: Provider = {
         "Local website blocking is available through the system hosts file.",
         statusLine,
         status.reason ??
-          "Eliza can remove the block early when it has permission to edit the hosts file.",
+          "Tokagent can remove the block early when it has permission to edit the hosts file.",
       ].join(" "),
       values: {
         websiteBlockerAuthorized: true,

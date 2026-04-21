@@ -10,13 +10,13 @@
  */
 
 import crypto from "node:crypto";
-import type { AgentRuntime, Memory, UUID } from "@elizaos/core";
+import type { AgentRuntime, Memory, UUID } from "@tokagentos/core";
 import {
   ChannelType,
   createMessageMemory,
   logger,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   CapturedAction,
   ScenarioContext,
@@ -25,7 +25,7 @@ import type {
   ScenarioJudgeRubric,
   ScenarioTurn,
   ScenarioTurnExecution,
-} from "@elizaos/scenario-schema";
+} from "@tokagentos/scenario-schema";
 import { runFinalCheck } from "./final-checks/index.ts";
 import {
   attachInterceptor,
@@ -965,7 +965,7 @@ export async function runScenario(
       if (pluginIsRegistered(runtime, pkg)) continue;
       try {
         const mod = (await import(pkg)) as Record<string, unknown>;
-        const candidate = mod.default ?? mod.elizaPlugin ?? mod.plugin;
+        const candidate = mod.default ?? mod.tokagentPlugin ?? mod.plugin;
         if (
           candidate !== null &&
           typeof candidate === "object" &&

@@ -7,7 +7,7 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { resolveStateDir } from "@elizaos/core";
+import { resolveStateDir } from "@tokagentos/core";
 
 /**
  * Cached skills directory path
@@ -49,7 +49,7 @@ function looksLikeSkillsDir(dir: string): boolean {
  * Get the absolute path to the bundled skills directory.
  *
  * Resolution order:
- * 1. ELIZAOS_BUNDLED_SKILLS_DIR environment variable
+ * 1. TOKAGENTOS_BUNDLED_SKILLS_DIR environment variable
  * 2. Sibling `skills/` next to the executable (for compiled binaries)
  * 3. Package's own `skills/` directory (relative to this module)
  *
@@ -63,7 +63,7 @@ export function getSkillsDir(): string {
   }
 
   // Check environment variable override
-  const override = process.env.ELIZAOS_BUNDLED_SKILLS_DIR?.trim();
+  const override = process.env.TOKAGENTOS_BUNDLED_SKILLS_DIR?.trim();
   if (override && existsSync(override)) {
     cachedSkillsDir = override;
     return cachedSkillsDir;
@@ -99,7 +99,7 @@ export function getSkillsDir(): string {
   }
 
   throw new Error(
-    "Could not find bundled skills directory. Set ELIZAOS_BUNDLED_SKILLS_DIR environment variable or ensure skills/ directory exists in package.",
+    "Could not find bundled skills directory. Set TOKAGENTOS_BUNDLED_SKILLS_DIR environment variable or ensure skills/ directory exists in package.",
   );
 }
 
@@ -118,7 +118,7 @@ export function clearSkillsDirCache(): void {
  *   curated/active/    — auto-promoted or human-promoted skills (loaded)
  *   curated/proposed/  — staged drafts awaiting human review (NOT loaded)
  *
- * Honors `MILADY_STATE_DIR` and `ELIZA_STATE_DIR` (in that order); falls back
+ * Honors `MILADY_STATE_DIR` and `TOKAGENT_STATE_DIR` (in that order); falls back
  * to `~/.milady`.
  */
 function resolveCuratedBaseDir(): string {

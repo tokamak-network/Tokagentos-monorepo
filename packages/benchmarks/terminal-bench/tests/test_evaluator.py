@@ -2,11 +2,11 @@
 
 import pytest
 
-from elizaos_terminal_bench.evaluator import (
+from tokagentos_terminal_bench.evaluator import (
     TerminalBenchEvaluator,
     format_report_markdown,
 )
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.types import (
     CategoryMetrics,
     DifficultyMetrics,
     LeaderboardComparison,

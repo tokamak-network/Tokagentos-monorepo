@@ -1,4 +1,4 @@
-import { AgentRuntime, type Plugin } from '@elizaos/core';
+import { AgentRuntime, type Plugin } from '@tokagentos/core';
 import autoTraderPlugin from '@elizaos/plugin-auto-trader';
 import { traderCharacter } from './character';
 

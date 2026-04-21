@@ -10,7 +10,7 @@
  * and aggregates across that history on demand.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 export interface BrowserSessionRegistration {
   readonly deviceId: string;

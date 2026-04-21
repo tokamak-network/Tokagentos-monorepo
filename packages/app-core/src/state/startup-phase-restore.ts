@@ -5,13 +5,13 @@
  * Probes for an existing install/connection and dispatches the result.
  */
 
-import { ONBOARDING_PROVIDER_CATALOG } from "@elizaos/shared/contracts/onboarding";
-import { getStylePresets } from "@elizaos/shared/onboarding-presets";
+import { ONBOARDING_PROVIDER_CATALOG } from "@tokagentos/shared/contracts/onboarding";
+import { getStylePresets } from "@tokagentos/shared/onboarding-presets";
 import { client, type OnboardingOptions } from "../api";
 import {
   getBackendStartupTimeoutMs,
   getDesktopRuntimeMode,
-  inspectExistingElizaInstall,
+  inspectExistingTokagentInstall,
   invokeDesktopBridgeRequest,
   isElectrobunRuntime,
   scanProviderCredentials,
@@ -89,7 +89,7 @@ function activeServerToTarget(
 
 /**
  * Runs the restoring-session phase.
- * Probes the local Eliza install and/or API to detect an existing connection,
+ * Probes the local Tokagent install and/or API to detect an existing connection,
  * then dispatches SESSION_RESTORED or NO_SESSION.
  *
  * @param deps - Coordinator dependency bag
@@ -116,7 +116,7 @@ export async function runRestoringSession(
 
   const desktopInstall =
     !persistedActiveServer && isElectrobunRuntime()
-      ? await inspectExistingElizaInstall().catch(() => null)
+      ? await inspectExistingTokagentInstall().catch(() => null)
       : null;
   if (cancelled.current) return;
 
@@ -170,14 +170,14 @@ export async function runRestoringSession(
       const det = await scanProviderCredentials();
       if (!cancelled.current && det.length > 0) {
         console.log(
-          `[eliza][startup] Keychain scan found ${det.length} provider(s):`,
+          `[tokagent][startup] Keychain scan found ${det.length} provider(s):`,
           det.map((p) => p.id),
         );
         deps.applyDetectedProviders(det);
       }
     } catch (scanErr) {
       console.warn(
-        "[eliza][startup] Keychain credential scan failed:",
+        "[tokagent][startup] Keychain credential scan failed:",
         scanErr,
       );
     }

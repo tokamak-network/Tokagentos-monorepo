@@ -1,15 +1,15 @@
-//! AWS Lambda handler library for elizaOS chat worker (Rust)
+//! AWS Lambda handler library for tokagentOS chat worker (Rust)
 //!
 //! This Lambda function processes chat messages and returns AI responses
-//! using the full elizaOS runtime with OpenAI as the LLM provider.
+//! using the full tokagentOS runtime with OpenAI as the LLM provider.
 
-use elizaos::{
+use tokagentos::{
     parse_character,
     runtime::{AgentRuntime, RuntimeOptions},
     services::IMessageService,
     types::{Content, Memory, UUID},
 };
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use lambda_http::{
     http::{Method, StatusCode},
     Body, Request, Response,
@@ -26,11 +26,11 @@ static RUNTIME: OnceCell<Arc<AgentRuntime>> = OnceCell::const_new();
 async fn get_runtime() -> Result<Arc<AgentRuntime>, String> {
     RUNTIME
         .get_or_try_init(|| async {
-            info!("Initializing elizaOS runtime...");
+            info!("Initializing tokagentOS runtime...");
 
             let character_json = format!(
                 r#"{{"name": "{}", "bio": "{}", "system": "{}"}}"#,
-                env::var("CHARACTER_NAME").unwrap_or_else(|_| "Eliza".to_string()),
+                env::var("CHARACTER_NAME").unwrap_or_else(|_| "Tokagent".to_string()),
                 env::var("CHARACTER_BIO").unwrap_or_else(|_| "A helpful AI assistant.".to_string()),
                 env::var("CHARACTER_SYSTEM").unwrap_or_else(|_| {
                     "You are a helpful, concise AI assistant. Respond thoughtfully to user messages."
@@ -41,7 +41,7 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>, String> {
             let character = parse_character(&character_json)
                 .map_err(|e| format!("Failed to parse character: {}", e))?;
 
-            let openai_plugin = create_openai_elizaos_plugin()
+            let openai_plugin = create_openai_tokagentos_plugin()
                 .map_err(|e| format!("Failed to create OpenAI plugin: {}", e))?;
 
             let runtime = AgentRuntime::new(RuntimeOptions {
@@ -57,7 +57,7 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>, String> {
                 .await
                 .map_err(|e| format!("Failed to initialize runtime: {}", e))?;
 
-            info!("elizaOS runtime initialized successfully");
+            info!("tokagentOS runtime initialized successfully");
             Ok(Arc::new(runtime))
         })
         .await
@@ -107,7 +107,7 @@ pub fn json_response<T: Serialize>(status: StatusCode, body: &T) -> Response<Bod
         .unwrap()
 }
 
-/// Handle chat message using elizaOS runtime
+/// Handle chat message using tokagentOS runtime
 pub async fn handle_chat(request: ChatRequest) -> Result<ChatResponse, String> {
     let runtime = get_runtime().await?;
 
@@ -125,7 +125,7 @@ pub async fn handle_chat(request: ChatRequest) -> Result<ChatResponse, String> {
     };
     let mut message = Memory::new(user_id, room_id, content);
 
-    // Process message through elizaOS runtime
+    // Process message through tokagentOS runtime
     let result = runtime
         .message_service()
         .handle_message(&runtime, &mut message, None, None)
@@ -164,7 +164,7 @@ pub async fn function_handler(event: Request) -> Result<Response<Body>, lambda_h
     if (path == "/" || path == "/health") && method == Method::GET {
         let response = HealthResponse {
             status: "healthy".to_string(),
-            runtime: "elizaos-rust".to_string(),
+            runtime: "tokagentos-rust".to_string(),
             version: "1.0.0".to_string(),
         };
         return Ok(json_response(StatusCode::OK, &response));

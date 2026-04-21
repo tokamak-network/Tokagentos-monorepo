@@ -85,8 +85,8 @@ import type {
   Memory,
   State,
   UUID,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { llmIntentAndExtract } from "../extraction";
 import { quickIntentDetect } from "../intent";
 import type { FormService } from "../service";

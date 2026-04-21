@@ -1,11 +1,11 @@
 ---
 title: "Test a Project"
-description: "Write tests for your multi-agent elizaOS project"
+description: "Write tests for your multi-agent tokagentOS project"
 ---
 
 <Tip>
   **Video Tutorial**: [**Testing Projects and Plugins with
-  elizaOS**](https://www.youtube.com/watch?v=HHbY9a27b6A&list=PLrjBjP4nU8ehOgKAa0-XddHzE0KK0nNvS&index=5)
+  tokagentOS**](https://www.youtube.com/watch?v=HHbY9a27b6A&list=PLrjBjP4nU8ehOgKAa0-XddHzE0KK0nNvS&index=5)
 </Tip>
 
 <Note>
@@ -23,7 +23,7 @@ We added a bunch of new features to our project. In addition to the default test
 | **Multi-agent runtime**       | E2E       | Both agents initialize and run simultaneously                 |
 
 <Note>
-  ElizaOS projects ship with comprehensive built-in tests for core functionality
+  TokagentOS projects ship with comprehensive built-in tests for core functionality
   (character config, plugin loading, runtime behavior). For details on the
   default test structure, see [Testing
   Projects](/projects/overview#testing-projects).
@@ -132,16 +132,16 @@ export const ProjectStarterTestSuite: TestSuite = {
 
 ```bash Terminal
 # Run all tests
-elizaos test
+tokagentos test
 
 # Run only component tests
-elizaos test --type component
+tokagentos test --type component
 
 # Run only E2E tests
-elizaos test --type e2e
+tokagentos test --type e2e
 
 # Run specific test suite (case sensitive)
-elizaos test --name "multi-agent"
+tokagentos test --name "multi-agent"
 ```
 
 ### Verify test results
@@ -162,13 +162,13 @@ For complete test runner options, see the [CLI Test Reference](/cli-reference/te
     Build custom plugins with comprehensive test coverage
   </Card>
   <Card title="Publish a Plugin" icon="upload" href="/guides/publish-a-plugin">
-    Learn how to publish your plugins to the elizaOS registry
+    Learn how to publish your plugins to the tokagentOS registry
   </Card>
   <Card
     title="Contribute to Core"
     icon="heart"
     href="/guides/contribute-to-core"
   >
-    Help improve elizaOS by contributing to the core framework
+    Help improve tokagentOS by contributing to the core framework
   </Card>
 </CardGroup>

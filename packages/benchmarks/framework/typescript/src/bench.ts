@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Eliza Framework Benchmark — TypeScript Runtime
+ * Tokagent Framework Benchmark — TypeScript Runtime
  *
  * Measures core agent framework performance with mock LLM handlers
  * and in-memory database. No real LLM calls, no disk I/O, no network.
@@ -602,7 +602,7 @@ async function main(): Promise<void> {
   }
 
   console.log("╔══════════════════════════════════════════════════════════╗");
-  console.log("║         Eliza Framework Benchmark — TypeScript          ║");
+  console.log("║         Tokagent Framework Benchmark — TypeScript          ║");
   console.log("╚══════════════════════════════════════════════════════════╝");
   console.log();
 

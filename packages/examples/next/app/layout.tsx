@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ELIZA Chat - elizaOS Next.js Demo",
-  description: "Chat with ELIZA powered by elizaOS AgentRuntime",
+  title: "TOKAGENT Chat - tokagentOS Next.js Demo",
+  description: "Chat with TOKAGENT powered by tokagentOS AgentRuntime",
 };
 
 export default function RootLayout({

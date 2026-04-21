@@ -1,4 +1,4 @@
-use elizaos::settings::get_salt;
+use tokagentos::settings::get_salt;
 
 fn with_env_lock<T>(f: impl FnOnce() -> T) -> T {
     static ENV_LOCK: std::sync::OnceLock<std::sync::Mutex<()>> = std::sync::OnceLock::new();
@@ -15,7 +15,7 @@ fn get_salt_panics_in_production_when_default() {
     with_env_lock(|| {
         std::env::set_var("NODE_ENV", "production");
         std::env::remove_var("SECRET_SALT");
-        std::env::remove_var("ELIZA_ALLOW_DEFAULT_SECRET_SALT");
+        std::env::remove_var("TOKAGENT_ALLOW_DEFAULT_SECRET_SALT");
 
         // Catch the panic while holding the env lock to avoid poisoning and to
         // prevent other tests from racing env access.
@@ -32,7 +32,7 @@ fn get_salt_allows_override_in_production() {
     with_env_lock(|| {
         std::env::set_var("NODE_ENV", "production");
         std::env::remove_var("SECRET_SALT");
-        std::env::set_var("ELIZA_ALLOW_DEFAULT_SECRET_SALT", "true");
+        std::env::set_var("TOKAGENT_ALLOW_DEFAULT_SECRET_SALT", "true");
         let salt = get_salt();
         assert_eq!(salt, "secretsalt");
     })

@@ -1,4 +1,4 @@
-import { ContentLayout } from "@elizaos/ui";
+import { ContentLayout } from "@tokagentos/ui";
 import type { ReactNode } from "react";
 import { LogsView } from "./LogsView";
 

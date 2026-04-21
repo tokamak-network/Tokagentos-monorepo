@@ -150,7 +150,7 @@ def build_conversation_seed(
 
     return build_deterministic_seed(
         [
-            "eliza-prompt-cache-v1",
+            "tokagent-prompt-cache-v1",
             world_id,
             room_id,
             character_id,

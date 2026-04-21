@@ -14,7 +14,7 @@
  *   - Intervals are clipped to the report window [since, until].
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import {
   type ActivityEventRow,
   listActivityEvents,

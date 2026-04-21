@@ -1,4 +1,4 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { GoogleApiError } from "./google-api-error.js";
 
 const MAX_RETRIES = 2;

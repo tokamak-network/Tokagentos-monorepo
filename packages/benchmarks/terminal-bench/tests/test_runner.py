@@ -4,11 +4,11 @@ import pytest
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from elizaos_terminal_bench.runner import (
+from tokagentos_terminal_bench.runner import (
     TerminalBenchRunner,
     run_terminal_bench,
 )
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.types import (
     TaskCategory,
     TaskDifficulty,
     TerminalBenchConfig,
@@ -206,7 +206,7 @@ class TestReportSaving:
 
     def test_report_to_dict(self, config: TerminalBenchConfig) -> None:
         """Test report dictionary conversion."""
-        from elizaos_terminal_bench.types import TerminalBenchReport
+        from tokagentos_terminal_bench.types import TerminalBenchReport
 
         runner = TerminalBenchRunner(config=config)
 

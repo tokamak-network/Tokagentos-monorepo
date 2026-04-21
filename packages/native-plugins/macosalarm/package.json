@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/macosalarm",
   "version": "0.1.0",
-  "description": "macOS native alarm helper plugin. Schedules UNUserNotificationCenter calendar-trigger alarms via a self-contained Swift CLI invoked from the Eliza runtime.",
+  "description": "macOS native alarm helper plugin. Schedules UNUserNotificationCenter calendar-trigger alarms via a self-contained Swift CLI invoked from the Tokagent runtime.",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -30,14 +30,14 @@
     "clean": "rm -rf dist bin"
   },
   "dependencies": {
-    "@elizaos/core": "workspace:*"
+    "@tokagentos/core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
     "typescript": "^5.6.0",
     "vitest": "^4.0.0"
   },
-  "author": "elizaOS",
+  "author": "tokagentOS",
   "license": "MIT",
   "milady": {
     "platforms": [

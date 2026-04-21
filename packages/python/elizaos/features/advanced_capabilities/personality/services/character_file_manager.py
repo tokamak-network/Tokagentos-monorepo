@@ -17,13 +17,13 @@ from typing import TYPE_CHECKING, Any
 
 from google.protobuf.json_format import MessageToDict, ParseDict
 
-from elizaos.types import MemoryType, Service
-from elizaos.types.agent import CharacterSettings, StyleGuides
+from tokagentos.types import MemoryType, Service
+from tokagentos.types.agent import CharacterSettings, StyleGuides
 
 from ..types import PERSONALITY_SERVICE_TYPE
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 logger = logging.getLogger(__name__)
 
@@ -105,7 +105,7 @@ class CharacterFileManager(Service):
     def __init__(self, runtime: IAgentRuntime | None = None) -> None:
         self._runtime: IAgentRuntime | None = runtime
         self._character_file_path: str | None = None
-        self._backup_dir: str = os.path.join(os.getcwd(), ".eliza", "character-backups")
+        self._backup_dir: str = os.path.join(os.getcwd(), ".tokagent", "character-backups")
         self._max_backups: int = 10
 
     @classmethod

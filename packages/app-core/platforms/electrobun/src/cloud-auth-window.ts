@@ -39,9 +39,9 @@ const CLOUD_WINDOW_FRAME: CloudAuthWindowFrame = {
   width: 1280,
   height: 900,
 };
-const TRUSTED_ELIZA_HOST_SUFFIXES = ["elizacloud.ai", "elizaos.ai"] as const;
-const TRUSTED_ELIZA_CLOSE_MESSAGE_TYPE = "eliza.trusted-eliza-window.close";
-const TRUSTED_ELIZA_WINDOW_PRELOAD = `(() => {
+const TRUSTED_TOKAGENT_HOST_SUFFIXES = ["tokagentcloud.ai", "tokagentos.ai"] as const;
+const TRUSTED_TOKAGENT_CLOSE_MESSAGE_TYPE = "tokagent.trusted-tokagent-window.close";
+const TRUSTED_TOKAGENT_WINDOW_PRELOAD = `(() => {
   const emitHostMessage = (message) => {
     setTimeout(() => {
       const bridge =
@@ -61,7 +61,7 @@ const TRUSTED_ELIZA_WINDOW_PRELOAD = `(() => {
   };
   const closeSelf = () => {
     emitHostMessage({
-      type: ${JSON.stringify(TRUSTED_ELIZA_CLOSE_MESSAGE_TYPE)},
+      type: ${JSON.stringify(TRUSTED_TOKAGENT_CLOSE_MESSAGE_TYPE)},
     });
   };
   try {
@@ -83,7 +83,7 @@ const TRUSTED_ELIZA_WINDOW_PRELOAD = `(() => {
   }
 })();`;
 
-export function isTrustedElizaUrl(value: string): boolean {
+export function isTrustedTokagentUrl(value: string): boolean {
   try {
     const url = new URL(value);
     if (url.protocol !== "http:" && url.protocol !== "https:") {
@@ -91,7 +91,7 @@ export function isTrustedElizaUrl(value: string): boolean {
     }
 
     const hostname = url.hostname.toLowerCase();
-    return TRUSTED_ELIZA_HOST_SUFFIXES.some(
+    return TRUSTED_TOKAGENT_HOST_SUFFIXES.some(
       (suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`),
     );
   } catch {
@@ -141,12 +141,12 @@ function readHostMessageEventDetail(event: HostMessageEventLike): unknown {
   return event?.data?.detail;
 }
 
-function isTrustedElizaCloseMessage(event: HostMessageEventLike): boolean {
+function isTrustedTokagentCloseMessage(event: HostMessageEventLike): boolean {
   const detail = readHostMessageEventDetail(event);
   if (typeof detail === "string") {
     try {
       const parsed = JSON.parse(detail) as { type?: unknown };
-      return parsed.type === TRUSTED_ELIZA_CLOSE_MESSAGE_TYPE;
+      return parsed.type === TRUSTED_TOKAGENT_CLOSE_MESSAGE_TYPE;
     } catch {
       return false;
     }
@@ -156,7 +156,7 @@ function isTrustedElizaCloseMessage(event: HostMessageEventLike): boolean {
     return false;
   }
 
-  return "type" in detail && detail.type === TRUSTED_ELIZA_CLOSE_MESSAGE_TYPE;
+  return "type" in detail && detail.type === TRUSTED_TOKAGENT_CLOSE_MESSAGE_TYPE;
 }
 
 export class CloudAuthWindowManager {
@@ -170,9 +170,9 @@ export class CloudAuthWindowManager {
   }
 
   open(url: string): boolean {
-    if (!isTrustedElizaUrl(url)) {
+    if (!isTrustedTokagentUrl(url)) {
       console.warn(
-        `[CloudAuthWindow] Rejected open(): URL is not a trusted Eliza origin: ${url}`,
+        `[CloudAuthWindow] Rejected open(): URL is not a trusted Tokagent origin: ${url}`,
       );
       return false;
     }
@@ -184,9 +184,9 @@ export class CloudAuthWindowManager {
     }
 
     const window = this.createWindowFn({
-      title: "Eliza Cloud",
+      title: "Tokagent Cloud",
       url,
-      preload: TRUSTED_ELIZA_WINDOW_PRELOAD,
+      preload: TRUSTED_TOKAGENT_WINDOW_PRELOAD,
       frame: CLOUD_WINDOW_FRAME,
       titleBarStyle: "default",
       transparent: false,
@@ -197,7 +197,7 @@ export class CloudAuthWindowManager {
     this.onWindowFocused?.(window);
 
     window.webview.on("host-message", (event) => {
-      if (!isTrustedElizaCloseMessage(event as HostMessageEventLike)) {
+      if (!isTrustedTokagentCloseMessage(event as HostMessageEventLike)) {
         return;
       }
       window.close();

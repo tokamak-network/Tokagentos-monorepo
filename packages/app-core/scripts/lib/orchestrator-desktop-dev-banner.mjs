@@ -1,13 +1,13 @@
 /**
- * Orchestrator-only settings table for `eliza/packages/app-core/scripts/dev-platform.mjs`.
+ * Orchestrator-only settings table for `tokagent/packages/app-core/scripts/dev-platform.mjs`.
  * Plain string (figlet heading + framed table + footer); TTY color applied by dev-platform.
  */
-import { prependDevSubsystemFigletHeading } from "@elizaos/shared/dev-settings-figlet-heading";
-import { formatDevSettingsTable } from "@elizaos/shared/dev-settings-table";
+import { prependDevSubsystemFigletHeading } from "@tokagentos/shared/dev-settings-figlet-heading";
+import { formatDevSettingsTable } from "@tokagentos/shared/dev-settings-table";
 import {
   resolveDesktopApiPortPreference,
   resolveDesktopUiPortPreference,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 
 /**
  * @param {object} p
@@ -39,8 +39,8 @@ export function formatOrchestratorDesktopDevBanner(p) {
     desktopDevLogPath,
     desktopDevLogOptOut,
     childrenList,
-    elizaNamespace,
-    elizaNamespaceUnset,
+    tokagentNamespace,
+    tokagentNamespaceUnset,
   } = p;
 
   const apiPref = resolveDesktopApiPortPreference(process.env);
@@ -54,14 +54,14 @@ export function formatOrchestratorDesktopDevBanner(p) {
     ? forceRendererCli
       ? "cli — --force-renderer"
       : forceRenderer && !forceRendererCli
-        ? "env set — ELIZA_DESKTOP_RENDERER_BUILD"
+        ? "env set — TOKAGENT_DESKTOP_RENDERER_BUILD"
         : `derived — ${rendererStaleReason ?? "dist stale vs sources"}`
     : "default — dist up to date (skipped initial vite build)";
 
   const rendererChange =
-    "bun run dev:desktop -- --force-renderer or ELIZA_DESKTOP_RENDERER_BUILD=always; omit to follow mtime heuristic";
+    "bun run dev:desktop -- --force-renderer or TOKAGENT_DESKTOP_RENDERER_BUILD=always; omit to follow mtime heuristic";
 
-  /** @type {import("@elizaos/shared/dev-settings-table").DevSettingsRow[]} */
+  /** @type {import("@tokagentos/shared/dev-settings-table").DevSettingsRow[]} */
   const rows = [
     {
       setting: ".env.worktree",
@@ -80,15 +80,15 @@ export function formatOrchestratorDesktopDevBanner(p) {
       change: "bun run dev:desktop -- --no-api to skip API child",
     },
     {
-      setting: "--force-renderer / ELIZA_DESKTOP_RENDERER_BUILD",
+      setting: "--force-renderer / TOKAGENT_DESKTOP_RENDERER_BUILD",
       effective: forceRenderer ? "on" : "off",
       source: forceRendererCli
         ? "cli — --force-renderer"
-        : process.env.ELIZA_DESKTOP_RENDERER_BUILD?.trim()
-          ? `env set — ELIZA_DESKTOP_RENDERER_BUILD=${process.env.ELIZA_DESKTOP_RENDERER_BUILD}`
+        : process.env.TOKAGENT_DESKTOP_RENDERER_BUILD?.trim()
+          ? `env set — TOKAGENT_DESKTOP_RENDERER_BUILD=${process.env.TOKAGENT_DESKTOP_RENDERER_BUILD}`
           : "default (off — follow mtime)",
       change:
-        "unset ELIZA_DESKTOP_RENDERER_BUILD or omit --force-renderer for default skip-when-fresh",
+        "unset TOKAGENT_DESKTOP_RENDERER_BUILD or omit --force-renderer for default skip-when-fresh",
     },
     {
       setting: "Initial vite build (apps/app/dist)",
@@ -97,10 +97,10 @@ export function formatOrchestratorDesktopDevBanner(p) {
       change: rendererChange,
     },
     {
-      setting: "ELIZA_DESKTOP_VITE_WATCH",
+      setting: "TOKAGENT_DESKTOP_VITE_WATCH",
       effective: viteWatch ? "1" : "0",
       source: viteWatch
-        ? "env set — ELIZA_DESKTOP_VITE_WATCH=1 (root package.json dev script sets this)"
+        ? "env set — TOKAGENT_DESKTOP_VITE_WATCH=1 (root package.json dev script sets this)"
         : "default (unset — 0)",
       change:
         "bun run dev sets 1; bun run dev:desktop leaves unset/0 for static dist + faster path",
@@ -110,31 +110,31 @@ export function formatOrchestratorDesktopDevBanner(p) {
       effective: pipeline,
       source: "derived — from watch + rollup flags",
       change:
-        "ELIZA_DESKTOP_VITE_BUILD_WATCH=1 + watch=1 for Rollup; else dev server when watch=1",
+        "TOKAGENT_DESKTOP_VITE_BUILD_WATCH=1 + watch=1 for Rollup; else dev server when watch=1",
     },
     {
-      setting: "--vite-force / ELIZA_VITE_FORCE / ELIZA_VITE_FORCE",
+      setting: "--vite-force / TOKAGENT_VITE_FORCE / TOKAGENT_VITE_FORCE",
       effective: viteDepForce ? "on" : "off",
       source: viteDepForceCli
         ? "cli — --vite-force"
-        : process.env.ELIZA_VITE_FORCE === "1"
-          ? "env set — ELIZA_VITE_FORCE=1"
-          : process.env.ELIZA_VITE_FORCE === "1"
-            ? "env set — ELIZA_VITE_FORCE=1"
+        : process.env.TOKAGENT_VITE_FORCE === "1"
+          ? "env set — TOKAGENT_VITE_FORCE=1"
+          : process.env.TOKAGENT_VITE_FORCE === "1"
+            ? "env set — TOKAGENT_VITE_FORCE=1"
             : "default (off)",
       change:
-        "bun run dev:desktop -- --vite-force or export ELIZA_VITE_FORCE=1; unset to disable",
+        "bun run dev:desktop -- --vite-force or export TOKAGENT_VITE_FORCE=1; unset to disable",
     },
     {
-      setting: "--rollup-watch / ELIZA_DESKTOP_VITE_BUILD_WATCH",
+      setting: "--rollup-watch / TOKAGENT_DESKTOP_VITE_BUILD_WATCH",
       effective: viteRollupWatch ? "on" : "off",
       source: viteRollupWatchCli
         ? "cli — --rollup-watch"
         : viteRollupWatch
-          ? "env set — ELIZA_DESKTOP_VITE_BUILD_WATCH=1"
+          ? "env set — TOKAGENT_DESKTOP_VITE_BUILD_WATCH=1"
           : "default (off)",
       change:
-        "requires ELIZA_DESKTOP_VITE_WATCH=1; bun run dev:desktop -- --rollup-watch or set env",
+        "requires TOKAGENT_DESKTOP_VITE_WATCH=1; bun run dev:desktop -- --rollup-watch or set env",
     },
     {
       setting: "API port (preference)",
@@ -151,8 +151,8 @@ export function formatOrchestratorDesktopDevBanner(p) {
           : `derived — preferred ${preferredApiPort} busy, next free loopback`,
       change:
         allocatedApiPort === preferredApiPort
-          ? "free conflicting listeners or set ELIZA_API_PORT to a free port"
-          : `unset env ports to retry default, or set ELIZA_API_PORT=${allocatedApiPort} explicitly`,
+          ? "free conflicting listeners or set TOKAGENT_API_PORT to a free port"
+          : `unset env ports to retry default, or set TOKAGENT_API_PORT=${allocatedApiPort} explicitly`,
     },
   ];
 
@@ -173,41 +173,41 @@ export function formatOrchestratorDesktopDevBanner(p) {
             : `derived — preferred ${preferredUiPort} busy`,
         change:
           allocatedUiPort === preferredUiPort
-            ? "export ELIZA_PORT=<free port> if needed"
-            : `export ELIZA_PORT=${allocatedUiPort} to pin`,
+            ? "export TOKAGENT_PORT=<free port> if needed"
+            : `export TOKAGENT_PORT=${allocatedUiPort} to pin`,
       },
     );
   } else {
     rows.push({
-      setting: "ELIZA_PORT (Vite dev UI)",
+      setting: "TOKAGENT_PORT (Vite dev UI)",
       effective: "—",
       source: "default (not used — no Vite dev child)",
-      change: "enable ELIZA_DESKTOP_VITE_WATCH=1 without Rollup-only mode",
+      change: "enable TOKAGENT_DESKTOP_VITE_WATCH=1 without Rollup-only mode",
     });
   }
 
   rows.push(
     {
-      setting: "ELIZA_DESKTOP_SCREENSHOT_SERVER",
+      setting: "TOKAGENT_DESKTOP_SCREENSHOT_SERVER",
       effective: screenshotServerEnabled ? "on" : "off",
       source: screenshotServerEnabled
-        ? process.env.ELIZA_DESKTOP_SCREENSHOT_SERVER === "1"
-          ? "env set — ELIZA_DESKTOP_SCREENSHOT_SERVER=1"
+        ? process.env.TOKAGENT_DESKTOP_SCREENSHOT_SERVER === "1"
+          ? "env set — TOKAGENT_DESKTOP_SCREENSHOT_SERVER=1"
           : "default (on)"
         : "env set — opt-out (0/false/no/off)",
       change:
-        "export ELIZA_DESKTOP_SCREENSHOT_SERVER=0 to disable; unset for default on",
+        "export TOKAGENT_DESKTOP_SCREENSHOT_SERVER=0 to disable; unset for default on",
     },
     {
-      setting: "ELIZA_SCREENSHOT_SERVER_PORT",
+      setting: "TOKAGENT_SCREENSHOT_SERVER_PORT",
       effective: screenshotPort,
-      source: process.env.ELIZA_SCREENSHOT_SERVER_PORT?.trim()
-        ? `env set — ELIZA_SCREENSHOT_SERVER_PORT=${screenshotPort}`
+      source: process.env.TOKAGENT_SCREENSHOT_SERVER_PORT?.trim()
+        ? `env set — TOKAGENT_SCREENSHOT_SERVER_PORT=${screenshotPort}`
         : "default (31339)",
-      change: "export ELIZA_SCREENSHOT_SERVER_PORT=<port>",
+      change: "export TOKAGENT_SCREENSHOT_SERVER_PORT=<port>",
     },
     {
-      setting: "ELIZA_SCREENSHOT_SERVER_TOKEN",
+      setting: "TOKAGENT_SCREENSHOT_SERVER_TOKEN",
       effective: screenshotTokenRedacted,
       source: screenshotServerEnabled
         ? "generated — random per orchestrator run"
@@ -216,7 +216,7 @@ export function formatOrchestratorDesktopDevBanner(p) {
         "set by orchestrator when screenshot server on; redacted in table",
     },
     {
-      setting: "ELIZA_ELECTROBUN_SCREENSHOT_URL (API child)",
+      setting: "TOKAGENT_ELECTROBUN_SCREENSHOT_URL (API child)",
       effective: screenshotServerEnabled && !skipApi ? screenshotProxyUrl : "—",
       source:
         screenshotServerEnabled && !skipApi
@@ -228,21 +228,21 @@ export function formatOrchestratorDesktopDevBanner(p) {
         "set automatically when screenshot enabled; API proxies /api/dev/cursor-screenshot",
     },
     {
-      setting: "ELIZA_DESKTOP_DEV_LOG",
+      setting: "TOKAGENT_DESKTOP_DEV_LOG",
       effective: desktopDevLogOptOut ? "off" : "on",
       source: desktopDevLogOptOut
-        ? "env set — ELIZA_DESKTOP_DEV_LOG=0"
+        ? "env set — TOKAGENT_DESKTOP_DEV_LOG=0"
         : "default (on)",
-      change: "export ELIZA_DESKTOP_DEV_LOG=0 to disable aggregated file",
+      change: "export TOKAGENT_DESKTOP_DEV_LOG=0 to disable aggregated file",
     },
     {
-      setting: "ELIZA_DESKTOP_DEV_LOG_PATH",
+      setting: "TOKAGENT_DESKTOP_DEV_LOG_PATH",
       effective: desktopDevLogPath ?? "—",
       source: desktopDevLogPath
         ? "derived — orchestrator sets path + passes to children"
         : "default (disabled)",
       change:
-        "orchestrator writes .eliza/desktop-dev-console.log when enabled",
+        "orchestrator writes .tokagent/desktop-dev-console.log when enabled",
     },
     {
       setting: "Children spawned",
@@ -251,12 +251,12 @@ export function formatOrchestratorDesktopDevBanner(p) {
       change: "controlled by flags above (e.g. --no-api removes api)",
     },
     {
-      setting: "ELIZA_NAMESPACE (Vite child env)",
-      effective: elizaNamespace,
-      source: elizaNamespaceUnset
-        ? "default (eliza)"
-        : `env set — ELIZA_NAMESPACE=${elizaNamespace}`,
-      change: "export ELIZA_NAMESPACE=<ns> or unset for eliza",
+      setting: "TOKAGENT_NAMESPACE (Vite child env)",
+      effective: tokagentNamespace,
+      source: tokagentNamespaceUnset
+        ? "default (tokagent)"
+        : `env set — TOKAGENT_NAMESPACE=${tokagentNamespace}`,
+      change: "export TOKAGENT_NAMESPACE=<ns> or unset for tokagent",
     },
     {
       setting: "ELECTROBUN_SKIP_CODESIGN",
@@ -265,7 +265,7 @@ export function formatOrchestratorDesktopDevBanner(p) {
       change: "set by orchestrator (dev only)",
     },
     {
-      setting: "ELIZA_HEADLESS (API child)",
+      setting: "TOKAGENT_HEADLESS (API child)",
       effective: skipApi ? "—" : "1",
       source: skipApi ? "default (n/a)" : "derived — dev-platform sets for API",
       change: "set by orchestrator for headless API + runtime",
@@ -278,7 +278,7 @@ export function formatOrchestratorDesktopDevBanner(p) {
   );
   const footer =
     "Per-process settings: Vite, API, and Electrobun print their own tables below.\n" +
-    "Other env: inherited process.env; see docs/apps/desktop-local-development.md and @elizaos/shared/runtime-env.\n";
+    "Other env: inherited process.env; see docs/apps/desktop-local-development.md and @tokagentos/shared/runtime-env.\n";
   return prependDevSubsystemFigletHeading(
     "orchestrator",
     `${table}\n${footer}`,

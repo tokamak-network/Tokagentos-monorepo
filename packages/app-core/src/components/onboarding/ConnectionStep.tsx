@@ -1,5 +1,5 @@
-import type { ProviderOption } from "@elizaos/shared/contracts/onboarding";
-import { ONBOARDING_PROVIDER_CATALOG } from "@elizaos/shared/contracts/onboarding";
+import type { ProviderOption } from "@tokagentos/shared/contracts/onboarding";
+import { ONBOARDING_PROVIDER_CATALOG } from "@tokagentos/shared/contracts/onboarding";
 import { useCallback, useEffect, useMemo } from "react";
 import { useBranding } from "../../config/branding";
 import {
@@ -30,11 +30,11 @@ const providerOverrides: Record<
     descriptionKey?: string;
   }
 > = {
-  elizacloud: {
-    nameDefault: "Eliza Cloud",
+  tokagentcloud: {
+    nameDefault: "Tokagent Cloud",
     descriptionDefault: "Models + RPC included",
-    nameKey: "onboarding.providerElizaCloud",
-    descriptionKey: "onboarding.providerElizaCloudDescription",
+    nameKey: "onboarding.providerTokagentCloud",
+    descriptionKey: "onboarding.providerTokagentCloudDescription",
   },
   "anthropic-subscription": {
     nameDefault: "Claude Sub",
@@ -138,8 +138,8 @@ function applyOnboardingPatch(
   if (patch.onboardingSubscriptionTab !== undefined) {
     setState("onboardingSubscriptionTab", patch.onboardingSubscriptionTab);
   }
-  if (patch.onboardingElizaCloudTab !== undefined) {
-    setState("onboardingElizaCloudTab", patch.onboardingElizaCloudTab);
+  if (patch.onboardingTokagentCloudTab !== undefined) {
+    setState("onboardingTokagentCloudTab", patch.onboardingTokagentCloudTab);
   }
 }
 
@@ -150,7 +150,7 @@ export function ConnectionStep() {
     onboardingServerTarget,
     onboardingProvider,
     onboardingSubscriptionTab,
-    onboardingElizaCloudTab,
+    onboardingTokagentCloudTab,
     onboardingDetectedProviders,
     onboardingRemoteConnected,
     handleOnboardingUseLocalBackend,
@@ -241,7 +241,7 @@ export function ConnectionStep() {
       onboardingServerTarget: resolvedOnboardingServerTarget,
       onboardingProvider,
       onboardingRemoteConnected,
-      onboardingElizaCloudTab,
+      onboardingTokagentCloudTab,
       onboardingSubscriptionTab,
       forceCloud,
       isNative,
@@ -252,7 +252,7 @@ export function ConnectionStep() {
       resolvedOnboardingServerTarget,
       onboardingProvider,
       onboardingRemoteConnected,
-      onboardingElizaCloudTab,
+      onboardingTokagentCloudTab,
       onboardingSubscriptionTab,
       forceCloud,
       cloudOnly,
@@ -286,7 +286,7 @@ export function ConnectionStep() {
       onboardingServerTarget: resolvedOnboardingServerTarget,
       onboardingProvider,
       onboardingRemoteConnected,
-      onboardingElizaCloudTab,
+      onboardingTokagentCloudTab,
       onboardingSubscriptionTab,
       forceCloud,
       isNative,
@@ -304,7 +304,7 @@ export function ConnectionStep() {
     resolvedOnboardingServerTarget,
     onboardingProvider,
     onboardingRemoteConnected,
-    onboardingElizaCloudTab,
+    onboardingTokagentCloudTab,
     onboardingSubscriptionTab,
     cloudOnly,
     onboardingDetectedProviders,

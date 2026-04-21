@@ -1,5 +1,5 @@
-import type { Action, ActionExample, ProviderDataRecord } from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+import type { Action, ActionExample, ProviderDataRecord } from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import { CheckinService } from "../lifeops/checkin/checkin-service.js";
 import type { CheckinReport } from "../lifeops/checkin/types.js";
 

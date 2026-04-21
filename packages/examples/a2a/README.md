@@ -1,11 +1,11 @@
-# elizaOS A2A (Agent-to-Agent) Server Examples
+# tokagentOS A2A (Agent-to-Agent) Server Examples
 
-This directory contains A2A (Agent-to-Agent) server implementations that expose an elizaOS agent as an HTTP server. This enables agent-to-agent communication, webhooks, and integration with other AI systems.
+This directory contains A2A (Agent-to-Agent) server implementations that expose an tokagentOS agent as an HTTP server. This enables agent-to-agent communication, webhooks, and integration with other AI systems.
 
-**Uses real elizaOS runtime.**
+**Uses real tokagentOS runtime.**
 
 - If `OPENAI_API_KEY` is set, the server will use an OpenAI-backed model (and SQL where supported).
-- If `OPENAI_API_KEY` is not set, the server runs in a deterministic “ELIZA classic” mode (no API keys required), backed by `@elizaos/plugin-inmemorydb` for ephemeral multi-turn state.
+- If `OPENAI_API_KEY` is not set, the server runs in a deterministic “TOKAGENT classic” mode (no API keys required), backed by `@elizaos/plugin-inmemorydb` for ephemeral multi-turn state.
 
 ## Available Examples
 
@@ -40,11 +40,11 @@ Response:
 
 ```json
 {
-  "name": "Eliza",
+  "name": "Tokagent",
   "bio": "A helpful AI assistant",
   "version": "2.0.0-alpha",
   "capabilities": ["chat", "reasoning", "tool-use"],
-  "powered_by": "elizaOS"
+  "powered_by": "tokagentOS"
 }
 ```
 
@@ -71,7 +71,7 @@ Response:
 ```json
 {
   "response": "Hello! I'm doing well, thank you for asking. How can I help you today?",
-  "agentId": "eliza-agent-id",
+  "agentId": "tokagent-agent-id",
   "sessionId": "user-123",
   "timestamp": "2024-01-10T12:00:00Z"
 }

@@ -19,12 +19,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from elizaos_terminal_bench.agent import TerminalAgent
-from elizaos_terminal_bench.dataset import TerminalBenchDataset
-from elizaos_terminal_bench.environment import TerminalEnvironment, MockTerminalEnvironment
-from elizaos_terminal_bench.evaluator import TerminalBenchEvaluator, format_report_markdown
-from elizaos_terminal_bench.runner import TerminalBenchRunner
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.agent import TerminalAgent
+from tokagentos_terminal_bench.dataset import TerminalBenchDataset
+from tokagentos_terminal_bench.environment import TerminalEnvironment, MockTerminalEnvironment
+from tokagentos_terminal_bench.evaluator import TerminalBenchEvaluator, format_report_markdown
+from tokagentos_terminal_bench.runner import TerminalBenchRunner
+from tokagentos_terminal_bench.types import (
     TaskCategory,
     TaskDifficulty,
     TerminalBenchConfig,
@@ -263,7 +263,7 @@ async def test_evaluator_metrics(results: IntegrationTestResult) -> None:
     logger.info("\n--- Testing Evaluator Metrics ---")
     
     try:
-        from elizaos_terminal_bench.types import TerminalBenchResult
+        from tokagentos_terminal_bench.types import TerminalBenchResult
         
         evaluator = TerminalBenchEvaluator()
         

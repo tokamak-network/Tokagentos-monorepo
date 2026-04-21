@@ -19,7 +19,7 @@ function expectScript(scriptName: string) {
 
 function extractTestPaths(command: string) {
   return Array.from(
-    command.matchAll(/eliza\/[\w./-]+\.(?:test|spec)\.ts[x]?/g),
+    command.matchAll(/tokagent\/[\w./-]+\.(?:test|spec)\.ts[x]?/g),
     (match) => match[0],
   );
 }
@@ -30,16 +30,16 @@ describe("startup integration script drift", () => {
     const e2eCommand = expectScript("test:selfcontrol:e2e");
 
     expect(startupCommand).toContain(
-      "eliza/apps/app-lifeops/test/selfcontrol-chat.live.e2e.test.ts",
+      "tokagent/apps/app-lifeops/test/selfcontrol-chat.live.e2e.test.ts",
     );
     expect(startupCommand).toContain(
-      "eliza/apps/app-lifeops/test/selfcontrol-dev.live.e2e.test.ts",
+      "tokagent/apps/app-lifeops/test/selfcontrol-dev.live.e2e.test.ts",
     );
     expect(e2eCommand).toContain(
-      "eliza/apps/app-lifeops/test/selfcontrol-dev.live.e2e.test.ts",
+      "tokagent/apps/app-lifeops/test/selfcontrol-dev.live.e2e.test.ts",
     );
     expect(e2eCommand).toContain(
-      "eliza/apps/app-lifeops/test/selfcontrol-desktop.live.e2e.test.ts",
+      "tokagent/apps/app-lifeops/test/selfcontrol-desktop.live.e2e.test.ts",
     );
 
     for (const relativePath of new Set([

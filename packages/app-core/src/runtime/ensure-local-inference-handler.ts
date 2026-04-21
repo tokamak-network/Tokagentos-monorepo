@@ -17,7 +17,7 @@ import {
   type IAgentRuntime,
   logger,
   ModelType,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { LocalInferenceLoader } from "../services/local-inference/active-model";
 import { readAssignments } from "../services/local-inference/assignments";
 import { deviceBridge } from "../services/local-inference/device-bridge";
@@ -215,7 +215,7 @@ export async function ensureLocalInferenceHandler(
   // Loader precedence:
   //   1. Capacitor native adapter when running on a mobile device itself.
   //   2. Device-bridge (WebSocket to a paired phone) when explicitly
-  //      opted in via ELIZA_DEVICE_BRIDGE_ENABLED=1.
+  //      opted in via TOKAGENT_DEVICE_BRIDGE_ENABLED=1.
   //   3. Standalone node-llama-cpp engine for desktop / server.
   //
   // All three satisfy the same `localInferenceLoader` service contract.
@@ -224,7 +224,7 @@ export async function ensureLocalInferenceHandler(
   // register bottom-up to preserve that precedence.
   const capacitorRegistered = await tryRegisterCapacitorLoader(runtime);
   const deviceBridgeEnabled =
-    process.env.ELIZA_DEVICE_BRIDGE_ENABLED?.trim() === "1";
+    process.env.TOKAGENT_DEVICE_BRIDGE_ENABLED?.trim() === "1";
   if (!capacitorRegistered && deviceBridgeEnabled) {
     registerDeviceBridgeLoader(runtime);
     logger.info(

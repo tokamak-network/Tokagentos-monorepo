@@ -1,6 +1,6 @@
 # TypeScript Examples
 
-Pure TypeScript examples using elizaOS.
+Pure TypeScript examples using tokagentOS.
 
 ## Examples
 
@@ -68,13 +68,13 @@ import {
   stringToUuid,
   type Character,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
 // Create character and runtime
 const character: Character = {
-  name: "Eliza",
+  name: "Tokagent",
   bio: "A helpful AI assistant.",
 };
 
@@ -110,7 +110,7 @@ await runtime.stop();
 ### Adventure Game Example
 
 ```typescript
-import { AgentRuntime, ModelType, stringToUuid } from "@elizaos/core";
+import { AgentRuntime, ModelType, stringToUuid } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import { plugin as sqlPlugin } from "@elizaos/plugin-sql";
 
@@ -151,8 +151,8 @@ await runtime.stop();
 - Items: torch, sword, golden key, health potions, treasure
 - Enemies: goblin, skeleton, dragon (final boss)
 - Two game modes:
-  - **Watch AI Play**: Eliza makes all decisions autonomously
-  - **Interactive**: Guide Eliza or play yourself
+  - **Watch AI Play**: Tokagent makes all decisions autonomously
+  - **Interactive**: Guide Tokagent or play yourself
 
 ## Related Examples
 

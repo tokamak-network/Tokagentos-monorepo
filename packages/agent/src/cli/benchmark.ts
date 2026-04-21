@@ -23,7 +23,7 @@ import {
   logger,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 /** Input task schema accepted from the orchestrator. */
 interface BenchmarkTask {
@@ -320,12 +320,12 @@ export async function runBenchmark(
   if (!process.env.LOG_LEVEL) {
     process.env.LOG_LEVEL = "error";
   }
-  process.env.ELIZA_HEADLESS = "1";
+  process.env.TOKAGENT_HEADLESS = "1";
 
-  const { bootElizaRuntime } = await import("../runtime/eliza.js");
+  const { bootTokagentRuntime } = await import("../runtime/tokagent.js");
   let runtime: AgentRuntime;
   try {
-    runtime = await bootElizaRuntime();
+    runtime = await bootTokagentRuntime();
   } catch (err) {
     const errorResult: BenchmarkResult = {
       id: opts.task ? "file" : "stdin",

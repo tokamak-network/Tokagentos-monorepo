@@ -1,8 +1,8 @@
--- Eliza Bridge (ServerScriptService)
+-- Tokagent Bridge (ServerScriptService)
 --
 -- Responsibilities:
 -- 1) Receive agent messages/actions via MessagingService topic
--- 2) Forward player chat to an external elizaOS HTTP bridge (your agent server)
+-- 2) Forward player chat to an external tokagentOS HTTP bridge (your agent server)
 -- 3) Execute a small set of demo actions (teleport / move_npc)
 --
 -- IMPORTANT:
@@ -18,9 +18,9 @@ local TextChatService = game:GetService("TextChatService")
 -- === Configuration ===
 local AGENT_URL = "https://YOUR_PUBLIC_URL/roblox/chat" -- change me
 local SHARED_SECRET = "CHANGE_ME" -- optional, must match the agent server config
-local TOPIC = "eliza-agent" -- must match ROBLOX_MESSAGING_TOPIC on the agent
+local TOPIC = "tokagent-agent" -- must match ROBLOX_MESSAGING_TOPIC on the agent
 local REQUIRE_MENTION = true -- if true, only forward chat that mentions the agent (recommended)
-local AGENT_MENTIONS = { "eliza", "@eliza", "/eliza" }
+local AGENT_MENTIONS = { "tokagent", "@eliza", "/tokagent" }
 local MIN_SECONDS_BETWEEN_REQUESTS_PER_PLAYER = 2.0
 
 -- === Utilities ===
@@ -50,7 +50,7 @@ local function broadcastSystemMessage(text)
 	end
 
 	-- Fallback: just print (you can replace this with custom UI).
-	print("[ElizaBridge] SYSTEM:", text)
+	print("[TokagentBridge] SYSTEM:", text)
 end
 
 local function stringStartsWith(s, prefix)
@@ -75,7 +75,7 @@ local function handleAgentMessage(payload)
 	if payload.type == "agent_message" then
 		local content = tostring(payload.content or "")
 		if content ~= "" then
-			print("[ElizaBridge] agent_message:", content)
+			print("[TokagentBridge] agent_message:", content)
 			broadcastSystemMessage(content)
 		end
 		return
@@ -84,20 +84,20 @@ local function handleAgentMessage(payload)
 	if payload.type == "agent_action" then
 		local action = tostring(payload.action or "")
 		local params = payload.parameters or {}
-		print("[ElizaBridge] agent_action:", action, HttpService:JSONEncode(params))
+		print("[TokagentBridge] agent_action:", action, HttpService:JSONEncode(params))
 
 		if action == "teleport" then
 			-- Demo: teleport everyone to a place inside the same universe.
 			-- You must replace this with your placeId mapping logic.
 			local destination = tostring(params.destination or "")
-			print("[ElizaBridge] teleport destination:", destination)
+			print("[TokagentBridge] teleport destination:", destination)
 			return
 		end
 
 		if action == "move_npc" then
-			-- Demo: move an NPC named "ElizaNPC" to a waypoint or coordinates.
+			-- Demo: move an NPC named "TokagentNPC" to a waypoint or coordinates.
 			-- This is intentionally minimal; real games should use PathfindingService.
-			local npc = workspace:FindFirstChild("ElizaNPC")
+			local npc = workspace:FindFirstChild("TokagentNPC")
 			if npc and npc:FindFirstChild("Humanoid") and npc:FindFirstChild("HumanoidRootPart") then
 				local humanoid = npc.Humanoid
 				local root = npc.HumanoidRootPart
@@ -119,7 +119,7 @@ local function handleAgentMessage(payload)
 			return
 		end
 
-		print("[ElizaBridge] unknown action:", action)
+		print("[TokagentBridge] unknown action:", action)
 		return
 	end
 end
@@ -134,9 +134,9 @@ local function subscribeToAgentTopic()
 		end)
 	end)
 	if not ok then
-		warn("[ElizaBridge] Failed to subscribe:", err)
+		warn("[TokagentBridge] Failed to subscribe:", err)
 	else
-		print("[ElizaBridge] Subscribed to topic:", TOPIC)
+		print("[TokagentBridge] Subscribed to topic:", TOPIC)
 	end
 end
 
@@ -152,7 +152,7 @@ local function postChatToAgent(player, text)
 
 	local headers = {
 		["Content-Type"] = "application/json",
-		["x-eliza-secret"] = SHARED_SECRET,
+		["x-tokagent-secret"] = SHARED_SECRET,
 	}
 
 	local ok, resp = pcall(function()
@@ -165,12 +165,12 @@ local function postChatToAgent(player, text)
 	end)
 
 	if not ok then
-		warn("[ElizaBridge] HTTP request failed:", resp)
+		warn("[TokagentBridge] HTTP request failed:", resp)
 		return nil
 	end
 
 	if not resp.Success then
-		warn("[ElizaBridge] Agent returned non-success:", resp.StatusCode, resp.Body)
+		warn("[TokagentBridge] Agent returned non-success:", resp.StatusCode, resp.Body)
 		return nil
 	end
 
@@ -196,11 +196,11 @@ local function hookPlayerChat()
 			end
 			lastSentAt[player.UserId] = now
 
-			print("[ElizaBridge] player chat:", player.Name, text)
+			print("[TokagentBridge] player chat:", player.Name, text)
 
 			local reply = postChatToAgent(player, text)
 			if reply and reply.reply then
-				print("[ElizaBridge] agent reply:", tostring(reply.reply))
+				print("[TokagentBridge] agent reply:", tostring(reply.reply))
 				broadcastSystemMessage(tostring(reply.reply))
 			end
 		end)

@@ -3,7 +3,7 @@ import type {
   LifeOpsConnectorGrant,
   LifeOpsConnectorMode,
   LifeOpsConnectorSide,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import crypto from "node:crypto";
 import {
   createGmailFilterForSender,

@@ -22,7 +22,7 @@ import { pathToFileURL } from "node:url";
 import { describe, expect, it, vi } from "vitest";
 
 vi.mock(
-  "@elizaos/scenario-schema",
+  "@tokagentos/scenario-schema",
   () => ({
     scenario: <T>(value: T) => value,
   }),
@@ -54,7 +54,7 @@ type TsScenario = {
 const REPO_ROOT = path.resolve(import.meta.dirname, "../../../..");
 const JSON_SCENARIO_DIR = path.join(
   REPO_ROOT,
-  "eliza",
+  "tokagent",
   "apps",
   "app-lifeops",
   "scenarios",

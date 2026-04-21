@@ -1,24 +1,24 @@
-import type { RouteRequestContext } from "@elizaos/agent/api";
+import type { RouteRequestContext } from "@tokagentos/agent/api";
 import {
   type PermissionRouteState as AutonomousPermissionRouteState,
   handlePermissionRoutes as handleAutonomousPermissionRoutes,
-} from "@elizaos/agent/api/permissions-routes";
-import type { ElizaConfig } from "@elizaos/agent/config/types";
-import type { AgentRuntime } from "@elizaos/core";
-import type { PermissionState } from "@elizaos/shared/contracts/permissions";
+} from "@tokagentos/agent/api/permissions-routes";
+import type { TokagentConfig } from "@tokagentos/agent/config/types";
+import type { AgentRuntime } from "@tokagentos/core";
+import type { PermissionState } from "@tokagentos/shared/contracts/permissions";
 
 export type { PermissionState };
 
 export interface PermissionRouteState {
   runtime: AgentRuntime | null;
-  config: ElizaConfig;
+  config: TokagentConfig;
   permissionStates?: Record<string, PermissionState>;
   shellEnabled?: boolean;
 }
 
 export interface PermissionRouteContext extends RouteRequestContext {
   state: PermissionRouteState;
-  saveConfig: (config: ElizaConfig) => void;
+  saveConfig: (config: TokagentConfig) => void;
   scheduleRuntimeRestart: (reason: string) => void;
 }
 
@@ -34,6 +34,6 @@ export async function handlePermissionRoutes(
   return handleAutonomousPermissionRoutes({
     ...ctx,
     state: toAutonomousState(ctx.state),
-    saveConfig: (config) => ctx.saveConfig(config as ElizaConfig),
+    saveConfig: (config) => ctx.saveConfig(config as TokagentConfig),
   });
 }

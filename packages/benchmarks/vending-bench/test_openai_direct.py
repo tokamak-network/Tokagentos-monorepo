@@ -18,7 +18,7 @@ async def main():
         print("No OPENAI_API_KEY found in environment!")
         return 1
 
-    from elizaos_vending_bench.providers.openai import OpenAIProvider
+    from tokagentos_vending_bench.providers.openai import OpenAIProvider
 
     try:
         provider = OpenAIProvider(api_key=api_key, model="gpt-5-mini")

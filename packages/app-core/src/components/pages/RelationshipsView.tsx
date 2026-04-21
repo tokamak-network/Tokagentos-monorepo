@@ -8,7 +8,7 @@ import {
   SidebarHeader,
   SidebarPanel,
   SidebarScrollRegion,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   type ReactNode,
   useCallback,
@@ -95,8 +95,8 @@ function profileSourceLabel(source: string): string {
   switch (source) {
     case "client_chat":
       return "App chat";
-    case "elizacloud":
-      return "Eliza Cloud";
+    case "tokagentcloud":
+      return "Tokagent Cloud";
     case "twitter":
       return "X / Twitter";
     default:

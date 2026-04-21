@@ -1,6 +1,6 @@
 # Autonomous Rust Agent
 
-A minimal autonomous Eliza agent written in Rust, packaged as a single binary (~5 MB). Originally by [@millw14](https://github.com/millw14) — migrated from [elizaOS/eliza#6613](https://github.com/elizaOS/eliza/pull/6613).
+A minimal autonomous Tokagent agent written in Rust, packaged as a single binary (~5 MB). Originally by [@millw14](https://github.com/millw14) — migrated from [tokagentOS/tokagent#6613](https://github.com/tokagentOS/tokagent/pull/6613).
 
 ## How it works
 

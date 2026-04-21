@@ -10,21 +10,21 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from elizaos_art.base import TrainingConfig
-from elizaos_art.games.temporal_clue.agent import (
+from tokagentos_art.base import TrainingConfig
+from tokagentos_art.games.temporal_clue.agent import (
     TemporalClueAgent,
     TemporalClueHeuristicAgent,
 )
-from elizaos_art.games.temporal_clue.environment import TemporalClueEnvironment
-from elizaos_art.games.temporal_clue.types import (
+from tokagentos_art.games.temporal_clue.environment import TemporalClueEnvironment
+from tokagentos_art.games.temporal_clue.types import (
     Difficulty,
     TemporalClueAction,
     TemporalClueConfig,
 )
-from elizaos_art.trainer import GRPOTrainer
+from tokagentos_art.trainer import GRPOTrainer
 
 app = typer.Typer(
-    name="elizaos-art-temporal",
+    name="tokagentos-art-temporal",
     help="Temporal Clue puzzle training with ART/GRPO",
 )
 console = Console()

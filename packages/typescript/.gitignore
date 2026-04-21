@@ -1,6 +1,6 @@
 node_modules
 dist
-elizaConfig.yaml
+tokagentConfig.yaml
 custom_actions/
 cache/
 coverage/

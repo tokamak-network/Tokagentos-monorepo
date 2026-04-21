@@ -1,6 +1,6 @@
 # App Eval Benchmarks
 
-Automated evaluation suite for elizaOS app agents. Measures response quality across research and coding tasks using deterministic scoring (no LLM-based evaluation).
+Automated evaluation suite for tokagentOS app agents. Measures response quality across research and coding tasks using deterministic scoring (no LLM-based evaluation).
 
 Scores are heuristic proxies based on keyword coverage and response structure. They are useful for regression tracking, not as a ground-truth correctness metric.
 
@@ -50,7 +50,7 @@ python3 benchmarks/app-eval/evaluate.py benchmarks/app-eval/results/latest/ -o r
 app-eval/
   run-benchmarks.ts         Main orchestrator (Bun script)
   evaluate.py               Unified Python evaluator
-  adapter.py                Adapter for elizaOS/benchmarks orchestrator
+  adapter.py                Adapter for tokagentOS/benchmarks orchestrator
   README.md                 This file
   tasks/
     research-tasks.json     Research task definitions (10 tasks)
@@ -113,9 +113,9 @@ Each criterion is weighted according to the task's `evaluation.criteria` array. 
 3. Use unique IDs with the pattern `research-NNN` or `code-NNN`
 4. Run `bun run benchmarks/app-eval/run-benchmarks.ts --task <your-id>` to test
 
-## Integration with elizaOS Benchmarks
+## Integration with tokagentOS Benchmarks
 
-The `adapter.py` file integrates with the elizaOS benchmarks orchestrator. Set `ELIZA_APP_ROOT` to the app repo root and place the adapter in the orchestrator's adapters directory.
+The `adapter.py` file integrates with the tokagentOS benchmarks orchestrator. Set `TOKAGENT_APP_ROOT` to the app repo root and place the adapter in the orchestrator's adapters directory.
 
 ## CLI Options
 

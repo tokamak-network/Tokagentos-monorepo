@@ -5,7 +5,7 @@ export interface AgentProfile {
   label: string;
   /** How this agent is hosted. */
   kind: "local" | "cloud" | "remote";
-  /** For cloud agents: the Eliza Cloud agent ID. */
+  /** For cloud agents: the Tokagent Cloud agent ID. */
   cloudAgentId?: string;
   /** For remote/cloud agents: the reachable API base URL. */
   apiBase?: string;

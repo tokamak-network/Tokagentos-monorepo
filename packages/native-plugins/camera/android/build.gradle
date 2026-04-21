@@ -11,7 +11,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace "ai.eliza.plugins.camera"
+    namespace "ai.tokagent.plugins.camera"
     compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 34
 
     defaultConfig {

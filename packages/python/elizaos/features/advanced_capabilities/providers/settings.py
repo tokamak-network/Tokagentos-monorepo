@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.features.advanced_capabilities.providers.agent_settings import SENSITIVE_KEY_PATTERNS
-from elizaos.types import Provider, ProviderResult
+from tokagentos.features.advanced_capabilities.providers.agent_settings import SENSITIVE_KEY_PATTERNS
+from tokagentos.types import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 
 async def get_settings_context(

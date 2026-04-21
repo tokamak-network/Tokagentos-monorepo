@@ -71,7 +71,7 @@ try {
 console.log("🔗 Generating WASM bindings...");
 const wasmFile = join(
   projectRoot,
-  `target/${wasmTarget}/release/elizaos_plugin_starter.wasm`,
+  `target/${wasmTarget}/release/tokagentos_plugin_starter.wasm`,
 );
 
 if (!existsSync(wasmFile)) {
@@ -109,5 +109,5 @@ try {
 }
 
 console.log("✅ Build complete!");
-console.log(`   WASM file: ${distDir}/elizaos_plugin_starter_bg.wasm`);
-console.log(`   JS bindings: ${distDir}/elizaos_plugin_starter.js`);
+console.log(`   WASM file: ${distDir}/tokagentos_plugin_starter_bg.wasm`);
+console.log(`   JS bindings: ${distDir}/tokagentos_plugin_starter.js`);

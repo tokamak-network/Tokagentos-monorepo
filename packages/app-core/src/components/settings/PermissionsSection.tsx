@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { Check } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import type { SystemPermissionId } from "../../api";
@@ -146,7 +146,7 @@ function MobilePermissionsView() {
         })}
         description={t("permissionssection.MobileStreamingDesc", {
           defaultValue:
-            "Your device streams camera, microphone, and screen to your Eliza Cloud agent for processing.",
+            "Your device streams camera, microphone, and screen to your Tokagent Cloud agent for processing.",
         })}
       />
       {WebsiteBlockerSettingsCard ? (

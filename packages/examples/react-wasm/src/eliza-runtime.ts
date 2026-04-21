@@ -1,19 +1,19 @@
 /**
- * elizaOS Rust WASM Runtime for React
+ * tokagentOS Rust WASM Runtime for React
  *
  * This module provides the Rust WASM-powered AgentRuntime with:
- * - Classic ELIZA pattern matching (no LLM required)
+ * - Classic TOKAGENT pattern matching (no LLM required)
  * - LocalDB storage via localStorage
  *
  * The Rust runtime handles all message processing in WebAssembly while
- * delegating model inference to JavaScript (where we use plugin-eliza-classic).
+ * delegating model inference to JavaScript (where we use plugin-tokagent-classic).
  */
 
-import type { IDatabaseAdapter } from "@elizaos/core";
+import type { IDatabaseAdapter } from "@tokagentos/core";
 import {
-  generateElizaResponse,
-  getElizaGreeting,
-} from "@elizaos/plugin-eliza-classic";
+  generateTokagentResponse,
+  getTokagentGreeting,
+} from "@elizaos/plugin-tokagent-classic";
 import { createDatabaseAdapter } from "@elizaos/plugin-localdb";
 import { v4 as uuidv4 } from "uuid";
 
@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from "uuid";
 // Types
 // ============================================================================
 
-export interface ElizaRuntimeState {
+export interface TokagentRuntimeState {
   isInitialized: boolean;
   isInitializing: boolean;
   error: Error | null;
@@ -80,13 +80,13 @@ async function loadWasmModule(): Promise<WasmExports> {
   }
 
   wasmInitPromise = (async () => {
-    console.log("[elizaOS] Loading Rust WASM module...");
+    console.log("[tokagentOS] Loading Rust WASM module...");
 
     // Fetch the WASM file
-    const wasmResponse = await fetch("/wasm/elizaos_bg.wasm");
+    const wasmResponse = await fetch("/wasm/tokagentos_bg.wasm");
     if (!wasmResponse.ok) {
       throw new Error(
-        `Failed to load elizaos_bg.wasm: ${wasmResponse.status} ${wasmResponse.statusText}`,
+        `Failed to load tokagentos_bg.wasm: ${wasmResponse.status} ${wasmResponse.statusText}`,
       );
     }
 
@@ -527,7 +527,7 @@ async function loadWasmModule(): Promise<WasmExports> {
     // Call the start function to initialize
     (wasm.__wbindgen_start as () => void)();
 
-    console.log("[elizaOS] Rust WASM module loaded successfully");
+    console.log("[tokagentOS] Rust WASM module loaded successfully");
 
     // Create the JS wrapper API
     const api: WasmExports = {
@@ -746,13 +746,13 @@ async function loadWasmModule(): Promise<WasmExports> {
 }
 
 // ============================================================================
-// ELIZA Character Configuration
+// TOKAGENT Character Configuration
 // ============================================================================
 
-const elizaCharacter = {
-  name: "ELIZA",
+const tokagentCharacter = {
+  name: "TOKAGENT",
   bio: "A Rogerian psychotherapist simulation based on Joseph Weizenbaum's 1966 program. I use pattern matching to engage in therapeutic conversations.",
-  system: `You are ELIZA, a Rogerian psychotherapist simulation. Your role is to:
+  system: `You are TOKAGENT, a Rogerian psychotherapist simulation. Your role is to:
 - Listen empathetically to the user
 - Reflect their statements back to them
 - Ask open-ended questions to encourage self-exploration
@@ -772,7 +772,7 @@ let dbAdapter: IDatabaseAdapter | null = null;
 
 // Session identifiers
 const userId = uuidv4();
-const roomId = "eliza-chat-room";
+const roomId = "tokagent-chat-room";
 
 /**
  * Get or create the Rust WASM AgentRuntime instance.
@@ -797,34 +797,34 @@ export async function getRuntime(): Promise<WasmAgentRuntime> {
 }
 
 /**
- * Initialize a new Rust WASM AgentRuntime with ELIZA classic pattern matching.
+ * Initialize a new Rust WASM AgentRuntime with TOKAGENT classic pattern matching.
  */
 async function initializeRuntime(): Promise<WasmAgentRuntime> {
-  console.log("[elizaOS] Initializing Rust WASM AgentRuntime...");
+  console.log("[tokagentOS] Initializing Rust WASM AgentRuntime...");
 
   // Load the WASM module
   const wasm = await loadWasmModule();
 
-  console.log(`[elizaOS] Rust WASM Core v${wasm.getVersion()}`);
+  console.log(`[tokagentOS] Rust WASM Core v${wasm.getVersion()}`);
 
   // Initialize LocalDB storage
   // In browser, createDatabaseAdapter expects { prefix?: string }
   // TypeScript resolves to node types expecting { dataDir?: string }
   const agentId = wasm.stringToUuid(
-    elizaCharacter.name,
+    tokagentCharacter.name,
   ) as `${string}-${string}-${string}-${string}-${string}`;
   dbAdapter = createDatabaseAdapter(
-    { prefix: "elizaos-wasm" } as { dataDir?: string },
+    { prefix: "tokagentos-wasm" } as { dataDir?: string },
     agentId,
   ) as unknown as IDatabaseAdapter;
   await dbAdapter?.init();
 
-  console.log("[elizaOS] LocalDB storage initialized");
+  console.log("[tokagentOS] LocalDB storage initialized");
 
-  // Create the runtime with the ELIZA character
-  const runtime = wasm.WasmAgentRuntime.create(JSON.stringify(elizaCharacter));
+  // Create the runtime with the TOKAGENT character
+  const runtime = wasm.WasmAgentRuntime.create(JSON.stringify(tokagentCharacter));
 
-  // Register the ELIZA classic pattern matching as the TEXT_LARGE model handler
+  // Register the TOKAGENT classic pattern matching as the TEXT_LARGE model handler
   runtime.registerModelHandler(
     "TEXT_LARGE",
     async (paramsJson: string): Promise<string> => {
@@ -833,29 +833,29 @@ async function initializeRuntime(): Promise<WasmAgentRuntime> {
       const userMatch = params.prompt.match(/User:\s*(.+?)(?:\n|$)/i);
       const userInput = userMatch ? userMatch[1].trim() : params.prompt;
 
-      // Use the classic ELIZA pattern matching
-      return generateElizaResponse(userInput);
+      // Use the classic TOKAGENT pattern matching
+      return generateTokagentResponse(userInput);
     },
   );
 
   // Initialize the runtime
   runtime.initialize();
 
-  console.log("[elizaOS] Rust WASM AgentRuntime initialized successfully");
-  console.log(`[elizaOS] Agent ID: ${runtime.agentId}`);
-  console.log(`[elizaOS] Character: ${runtime.characterName}`);
+  console.log("[tokagentOS] Rust WASM AgentRuntime initialized successfully");
+  console.log(`[tokagentOS] Agent ID: ${runtime.agentId}`);
+  console.log(`[tokagentOS] Character: ${runtime.characterName}`);
 
   return runtime;
 }
 
 /**
- * Send a message to ELIZA and get a response.
+ * Send a message to TOKAGENT and get a response.
  *
  * This sends the message to the Rust WASM runtime, which processes it
- * and calls our JavaScript ELIZA pattern matching handler.
+ * and calls our JavaScript TOKAGENT pattern matching handler.
  *
  * @param text - The user's message
- * @returns The complete ELIZA response
+ * @returns The complete TOKAGENT response
  */
 export async function sendMessage(text: string): Promise<string> {
   const runtime = await getRuntime();
@@ -897,7 +897,7 @@ export async function sendMessage(text: string): Promise<string> {
   const responseText =
     response.responseContent?.text ?? "I'm not sure how to respond to that.";
 
-  // Store the ELIZA response in LocalDB
+  // Store the TOKAGENT response in LocalDB
   if (dbAdapter) {
     const responseId = wasm.generateUUID();
     await dbAdapter.createMemory(
@@ -919,10 +919,10 @@ export async function sendMessage(text: string): Promise<string> {
 }
 
 /**
- * Get the initial ELIZA greeting message.
+ * Get the initial TOKAGENT greeting message.
  */
 export function getGreeting(): string {
-  return getElizaGreeting();
+  return getTokagentGreeting();
 }
 
 /**

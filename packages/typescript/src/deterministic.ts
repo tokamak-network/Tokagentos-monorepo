@@ -195,7 +195,7 @@ export function buildConversationSeed({
 		bucketMs && bucketMs > 0 ? Math.floor(nowMs / bucketMs) : 0;
 
 	return buildDeterministicSeed([
-		"eliza-prompt-cache-v1",
+		"tokagent-prompt-cache-v1",
 		worldId,
 		roomId,
 		characterId,

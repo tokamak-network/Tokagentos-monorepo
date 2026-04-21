@@ -1,17 +1,17 @@
 import type http from "node:http";
 import { Readable } from "node:stream";
 import type { ReadableStream as NodeReadableStream } from "node:stream/web";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   AppLaunchPreparation,
   AppLaunchResult,
   AppSessionActionResult,
   AppSessionJsonValue,
   AppSessionState,
-} from "@elizaos/shared/contracts/apps";
+} from "@tokagentos/shared/contracts/apps";
 
 // ---------------------------------------------------------------------------
-// Inline route-context types (previously from @elizaos/agent route-helpers)
+// Inline route-context types (previously from @tokagentos/agent route-helpers)
 // ---------------------------------------------------------------------------
 
 interface RouteRequestMeta {
@@ -603,8 +603,8 @@ function buildViewerShellInjection(
   remoteServerUrl: string,
   gatewayPort?: number | null,
 ): string {
-  return `<base id="eliza-2004scape-viewer-base" href="${VIEWER_PROXY_PREFIX}/">
-<script id="eliza-2004scape-bridge">
+  return `<base id="tokagent-2004scape-viewer-base" href="${VIEWER_PROXY_PREFIX}/">
+<script id="tokagent-2004scape-bridge">
 (() => {
   const READY_TYPE = "RS_2004SCAPE_READY";
   const AUTH_TYPE = "RS_2004SCAPE_AUTH";
@@ -620,7 +620,7 @@ function buildViewerShellInjection(
   const DEFAULT_GOAL = "Finish tutorial and start gathering resources.";
   const baseFetch = window.fetch.bind(window);
   const NativeWebSocket = window.WebSocket;
-  const bridge = (window.__ELIZA_2004SCAPE_BRIDGE__ = {
+  const bridge = (window.__TOKAGENT_2004SCAPE_BRIDGE__ = {
     auth: null,
     cursor: 0,
     goal: DEFAULT_GOAL,
@@ -659,20 +659,20 @@ function buildViewerShellInjection(
     return input;
   };
   if (typeof NativeWebSocket === "function") {
-    function ElizaWebSocket(url, protocols) {
+    function TokagentWebSocket(url, protocols) {
       const rewrittenUrl = rewriteSocketUrl(url);
       return protocols === undefined
         ? new NativeWebSocket(rewrittenUrl)
         : new NativeWebSocket(rewrittenUrl, protocols);
     }
-    ElizaWebSocket.prototype = NativeWebSocket.prototype;
-    Object.defineProperties(ElizaWebSocket, {
+    TokagentWebSocket.prototype = NativeWebSocket.prototype;
+    Object.defineProperties(TokagentWebSocket, {
       CONNECTING: { value: NativeWebSocket.CONNECTING },
       OPEN: { value: NativeWebSocket.OPEN },
       CLOSING: { value: NativeWebSocket.CLOSING },
       CLOSED: { value: NativeWebSocket.CLOSED },
     });
-    window.WebSocket = ElizaWebSocket;
+    window.WebSocket = TokagentWebSocket;
   }
   const pushActivity = (action, detail, severity = "info") => {
     const ts = Date.now();

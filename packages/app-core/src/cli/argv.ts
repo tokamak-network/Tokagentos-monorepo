@@ -122,7 +122,7 @@ export function buildParseArgv(params: {
   const normalizedArgv =
     programName && baseArgv[0] === programName
       ? baseArgv.slice(1)
-      : baseArgv[0]?.endsWith("eliza") || baseArgv[0]?.endsWith("elizaai")
+      : baseArgv[0]?.endsWith("tokagent") || baseArgv[0]?.endsWith("tokagentai")
         ? baseArgv.slice(1)
         : baseArgv;
   const executable = (
@@ -134,7 +134,7 @@ export function buildParseArgv(params: {
   if (looksLikeNode) {
     return normalizedArgv;
   }
-  return ["node", programName || "eliza", ...normalizedArgv];
+  return ["node", programName || "tokagent", ...normalizedArgv];
 }
 
 const nodeExecutablePattern = /^node-\d+(?:\.\d+)*(?:\.exe)?$/;

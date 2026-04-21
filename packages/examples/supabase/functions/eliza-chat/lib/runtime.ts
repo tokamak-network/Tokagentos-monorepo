@@ -1,13 +1,13 @@
 /**
- * elizaOS Runtime for Supabase Edge Functions
+ * tokagentOS Runtime for Supabase Edge Functions
  *
- * Uses the canonical elizaOS runtime with messageService.handleMessage pattern.
+ * Uses the canonical tokagentOS runtime with messageService.handleMessage pattern.
  *
  * NOTE: Due to Supabase Edge Functions (Deno) constraints, some features may be limited.
- * For full elizaOS features, consider running elizaOS on a dedicated server.
+ * For full tokagentOS features, consider running tokagentOS on a dedicated server.
  */
 
-// Import elizaOS packages via npm specifiers (Deno-compatible)
+// Import tokagentOS packages via npm specifiers (Deno-compatible)
 import {
   AgentRuntime,
   ChannelType,
@@ -18,7 +18,7 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 import type {
@@ -32,7 +32,7 @@ import type {
 // ============================================================================
 
 function getCharacter(): Character {
-  const name = Deno.env.get("CHARACTER_NAME") ?? "Eliza";
+  const name = Deno.env.get("CHARACTER_NAME") ?? "Tokagent";
   const bio = Deno.env.get("CHARACTER_BIO") ?? "A helpful AI assistant.";
 
   return createCharacter({
@@ -66,7 +66,7 @@ async function getRuntime(): Promise<IAgentRuntime> {
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
-    console.log("[elizaOS] Initializing runtime...");
+    console.log("[tokagentOS] Initializing runtime...");
 
     const character = getCharacter();
 
@@ -77,7 +77,7 @@ async function getRuntime(): Promise<IAgentRuntime> {
 
     await newRuntime.initialize();
 
-    console.log("[elizaOS] Runtime initialized successfully");
+    console.log("[tokagentOS] Runtime initialized successfully");
     runtime = newRuntime;
     return newRuntime;
   })();
@@ -86,7 +86,7 @@ async function getRuntime(): Promise<IAgentRuntime> {
     return await initPromise;
   } catch (error) {
     initError = error instanceof Error ? error.message : "Unknown error";
-    console.error("[elizaOS] Runtime initialization failed:", initError);
+    console.error("[tokagentOS] Runtime initialization failed:", initError);
     throw error;
   }
 }
@@ -125,7 +125,7 @@ export function errorResponse(
 // ============================================================================
 
 /**
- * Handle POST /chat request using the canonical elizaOS pattern
+ * Handle POST /chat request using the canonical tokagentOS pattern
  */
 export async function handleChat(req: Request): Promise<Response> {
   try {
@@ -181,7 +181,7 @@ export async function handleChat(req: Request): Promise<Response> {
       },
     });
 
-    // Process through the FULL elizaOS pipeline
+    // Process through the FULL tokagentOS pipeline
     let responseText = "";
     await rt.messageService?.handleMessage(rt, messageMemory, async (content) => {
       if (content?.text) {
@@ -196,11 +196,11 @@ export async function handleChat(req: Request): Promise<Response> {
       timestamp: new Date().toISOString(),
     };
 
-    console.log("[elizaOS] Message processed successfully");
+    console.log("[tokagentOS] Message processed successfully");
     return jsonResponse(response);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("[elizaOS] Chat error:", errorMessage);
+    console.error("[tokagentOS] Chat error:", errorMessage);
     return errorResponse("Internal server error", 500, "INTERNAL_ERROR");
   }
 }
@@ -211,7 +211,7 @@ export async function handleChat(req: Request): Promise<Response> {
 export function handleHealth(): Response {
   const health: HealthResponse = {
     status: runtime ? "healthy" : initError ? "unhealthy" : "initializing",
-    runtime: "elizaos-supabase",
+    runtime: "tokagentos-supabase",
     version: "2.0.0",
   };
   return jsonResponse(health);

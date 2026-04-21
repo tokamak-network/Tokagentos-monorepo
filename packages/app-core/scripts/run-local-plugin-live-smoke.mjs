@@ -2,13 +2,13 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 
-// Script lives at eliza/packages/app-core/scripts/ — repo root is 4 levels up.
+// Script lives at tokagent/packages/app-core/scripts/ — repo root is 4 levels up.
 const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..", "..");
 const cwd = path.resolve(process.cwd());
 const pluginsManifestPath = path.join(repoRoot, "plugins.json");
 const liveTestPath = path.join(
   repoRoot,
-  "eliza",
+  "tokagent",
   "packages",
   "app-core",
   "test",
@@ -23,9 +23,9 @@ function readJson(filePath) {
 
 function resolvePackageRoot(dirName) {
   const candidates = [
-    path.join(repoRoot, "eliza", "plugins", dirName, "typescript"),
-    path.join(repoRoot, "eliza", "plugins", dirName),
-    path.join(repoRoot, "eliza", "packages", dirName),
+    path.join(repoRoot, "tokagent", "plugins", dirName, "typescript"),
+    path.join(repoRoot, "tokagent", "plugins", dirName),
+    path.join(repoRoot, "tokagent", "packages", dirName),
     path.join(repoRoot, "plugins", dirName, "typescript"),
     path.join(repoRoot, "plugins", dirName),
     path.join(repoRoot, "packages", dirName),
@@ -114,16 +114,16 @@ const result = spawnSync(
     "run",
     "--config",
     "test/vitest/live-e2e.config.ts",
-    "eliza/packages/app-core/test/live-agent/plugin-lifecycle.live.e2e.test.ts",
+    "tokagent/packages/app-core/test/live-agent/plugin-lifecycle.live.e2e.test.ts",
   ],
   {
     cwd: repoRoot,
     stdio: "inherit",
     env: {
       ...process.env,
-      ELIZA_LIVE_TEST: "1",
+      TOKAGENT_LIVE_TEST: "1",
       MILADY_LIVE_TEST: "1",
-      ...(pluginId ? { ELIZA_PLUGIN_LIFECYCLE_FILTER: pluginId } : {}),
+      ...(pluginId ? { TOKAGENT_PLUGIN_LIFECYCLE_FILTER: pluginId } : {}),
     },
   },
 );

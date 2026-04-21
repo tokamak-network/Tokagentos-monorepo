@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Suppress elizaOS logs before any imports
+// Suppress tokagentOS logs before any imports
 process.env.LOG_LEVEL = "fatal";
 
 import { App } from "./App.js";
@@ -84,7 +84,7 @@ async function runInteractive(): Promise<void> {
   if (process.stdin.isTTY === false || process.stdout.isTTY === false) {
     console.error("❌ Interactive mode requires a terminal.");
     console.error(
-      "   Use CLI mode for non-interactive usage: eliza-code --help",
+      "   Use CLI mode for non-interactive usage: tokagent-code --help",
     );
     process.exit(1);
   }

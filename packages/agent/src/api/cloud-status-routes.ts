@@ -1,17 +1,17 @@
-import type { AgentRuntime, Service } from "@elizaos/core";
+import type { AgentRuntime, Service } from "@tokagentos/core";
 import {
-  isElizaCloudServiceSelectedInConfig,
+  isTokagentCloudServiceSelectedInConfig,
   migrateLegacyRuntimeConfig,
-} from "@elizaos/shared/contracts";
-import { isCloudInferenceSelectedInConfig } from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts";
+import { isCloudInferenceSelectedInConfig } from "@tokagentos/shared/contracts/onboarding";
 import { resolveCloudApiBaseUrl as resolveCanonicalCloudApiBaseUrl } from "../cloud/base-url.js";
 import { validateCloudBaseUrl } from "../cloud/validate-url.js";
 import type { RouteHelpers, RouteRequestMeta } from "./route-helpers.js";
 import { resolveCloudApiKey } from "./wallet-rpc.js";
 
-const DEFAULT_CLOUD_API_BASE_URL = "https://www.elizacloud.ai/api/v1";
+const DEFAULT_CLOUD_API_BASE_URL = "https://www.tokagentcloud.ai/api/v1";
 const CLOUD_BILLING_URL =
-  "https://www.elizacloud.ai/dashboard/settings?tab=billing";
+  "https://www.tokagentcloud.ai/dashboard/settings?tab=billing";
 
 interface CloudAuthIdentityService {
   isAuthenticated: () => boolean;
@@ -97,7 +97,7 @@ export async function handleCloudStatusRoutes(
     const cloudEnabled = isCloudInferenceSelectedInConfig(
       config as Record<string, unknown>,
     );
-    const cloudVoiceProxyAvailable = isElizaCloudServiceSelectedInConfig(
+    const cloudVoiceProxyAvailable = isTokagentCloudServiceSelectedInConfig(
       config as Record<string, unknown>,
       "tts",
     );

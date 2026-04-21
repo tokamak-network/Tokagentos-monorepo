@@ -1,4 +1,4 @@
-//! Types for the ICP elizaOS canister
+//! Types for the ICP tokagentOS canister
 //!
 //! This module mirrors the plugin-inmemorydb types but adapted for ICP stable memory.
 //! Uses serde_json::Value for flexible schema matching the TypeScript implementation.
@@ -114,11 +114,11 @@ pub struct CharacterConfig {
 impl Default for CharacterConfig {
     fn default() -> Self {
         Self {
-            name: "Eliza".to_string(),
+            name: "Tokagent".to_string(),
             bio: "A helpful AI assistant running on the Internet Computer.".to_string(),
             system: Some(
-                "You are Eliza, a helpful AI assistant. Give direct, substantive answers. \
-                 Do NOT act like a therapist or the classic ELIZA chatbot."
+                "You are Tokagent, a helpful AI assistant. Give direct, substantive answers. \
+                 Do NOT act like a therapist or the classic TOKAGENT chatbot."
                     .to_string(),
             ),
             personality_traits: vec![
@@ -177,7 +177,7 @@ impl Default for AgentState {
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize, PartialEq)]
 pub enum InferenceMode {
     /// Pattern-based Rogerian psychotherapist (instant, free, fully on-chain)
-    ElizaClassic,
+    TokagentClassic,
     /// OpenAI API via HTTP outcalls (fast, costs cycles + API key)
     OpenAI,
     /// On-chain LLM via llama_cpp_canister (slower, costs cycles only, fully decentralized)
@@ -188,7 +188,7 @@ pub enum InferenceMode {
 
 impl Default for InferenceMode {
     fn default() -> Self {
-        InferenceMode::ElizaClassic
+        InferenceMode::TokagentClassic
     }
 }
 
@@ -283,7 +283,7 @@ impl OnChainLLMConfig {
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize)]
 pub struct InferenceStatus {
     pub current_mode: InferenceMode,
-    pub eliza_classic_ready: bool,
+    pub tokagent_classic_ready: bool,
     pub openai_configured: bool,
     pub onchain_llm_configured: bool,
     pub onchain_llm_canister_id: Option<String>,
@@ -384,7 +384,7 @@ pub struct EncryptedVetKey {
     pub context: VetKeyContext,
 }
 
-// ========== Memory Types (matching elizaOS) ==========
+// ========== Memory Types (matching tokagentOS) ==========
 
 /// Content type for memories
 #[derive(Debug, Clone, Default, CandidType, Serialize, Deserialize)]

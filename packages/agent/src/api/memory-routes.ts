@@ -7,7 +7,7 @@ import {
   ModelType,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { parsePositiveInteger } from "../utils/number-parsing.js";
 import {
   getKnowledgeService,
@@ -64,7 +64,7 @@ type KnowledgeSearchMatch = {
 };
 
 function resolveAgentName(runtime: AgentRuntime, fallbackName: string): string {
-  return runtime.character.name?.trim() || fallbackName || "Eliza";
+  return runtime.character.name?.trim() || fallbackName || "Tokagent";
 }
 
 async function ensureMemoryConnection(

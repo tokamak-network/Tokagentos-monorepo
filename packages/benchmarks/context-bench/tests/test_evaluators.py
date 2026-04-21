@@ -1,9 +1,9 @@
 """Tests for evaluators."""
 
 
-from elizaos_context_bench.evaluators.position import PositionAnalyzer
-from elizaos_context_bench.evaluators.retrieval import RetrievalEvaluator
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.evaluators.position import PositionAnalyzer
+from tokagentos_context_bench.evaluators.retrieval import RetrievalEvaluator
+from tokagentos_context_bench.types import (
     ContextBenchResult,
     ContextBenchType,
     NeedlePosition,

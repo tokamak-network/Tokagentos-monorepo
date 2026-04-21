@@ -1,7 +1,7 @@
-// payment.proto - x402 payment schema types for elizaOS
+// payment.proto - x402 payment schema types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
 import "google/protobuf/struct.proto";
 

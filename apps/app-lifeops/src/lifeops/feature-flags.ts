@@ -1,4 +1,4 @@
-import { type IAgentRuntime, logger, type Service } from "@elizaos/core";
+import { type IAgentRuntime, logger, type Service } from "@tokagentos/core";
 import {
   ALL_FEATURE_KEYS,
   BASE_FEATURE_DEFAULTS,
@@ -32,7 +32,7 @@ import {
  * canonical representation of an unmodified default (Commandment 7).
  *
  * Cloud-link awareness: when a `CLOUD_AUTH` runtime service reports the
- * user is signed into Eliza Cloud, travel features and `cloud.duffel`
+ * user is signed into Tokagent Cloud, travel features and `cloud.duffel`
  * default to ON. The Cloud-side billing layer applies a 5% service fee;
  * the local code never recomputes that markup (Commandment 2).
  */
@@ -289,7 +289,7 @@ export function createFeatureFlagService(
 /**
  * Convenience guard for action handlers. Throws `FeatureNotEnabledError`
  * when the feature is off, with Cloud-aware messaging so the planner can
- * suggest signing in to Eliza Cloud as the easiest path.
+ * suggest signing in to Tokagent Cloud as the easiest path.
  */
 export async function requireFeatureEnabled(
   runtime: IAgentRuntime,

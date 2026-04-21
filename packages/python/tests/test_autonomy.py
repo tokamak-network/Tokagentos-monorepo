@@ -7,8 +7,8 @@ import pytest
 # The basic_capabilities.autonomy sub-package is still WIP; skip the entire module
 # when it is not available so the rest of the test suite can proceed.
 _autonomy = pytest.importorskip(
-    "elizaos.features.basic_capabilities.autonomy",
-    reason="elizaos.features.basic_capabilities.autonomy not yet available",
+    "tokagentos.features.basic_capabilities.autonomy",
+    reason="tokagentos.features.basic_capabilities.autonomy not yet available",
 )
 
 AUTONOMY_SERVICE_TYPE = _autonomy.AUTONOMY_SERVICE_TYPE
@@ -18,12 +18,12 @@ autonomy_status_provider = _autonomy.autonomy_status_provider
 send_to_admin_action = _autonomy.send_to_admin_action
 
 _types = pytest.importorskip(
-    "elizaos.features.basic_capabilities.autonomy.types",
-    reason="elizaos.features.basic_capabilities.autonomy.types not yet available",
+    "tokagentos.features.basic_capabilities.autonomy.types",
+    reason="tokagentos.features.basic_capabilities.autonomy.types not yet available",
 )
 AutonomyStatus = _types.AutonomyStatus
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid
 
 TEST_AGENT_ID = "00000000-0000-0000-0000-000000000001"
 TEST_ROOM_ID = "00000000-0000-0000-0000-000000000002"

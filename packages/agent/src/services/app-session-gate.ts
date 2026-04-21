@@ -3,7 +3,7 @@
  * is active (AppManager run and/or overlay heartbeat for local overlay apps).
  */
 
-import type { Action, Plugin, Provider } from "@elizaos/core";
+import type { Action, Plugin, Provider } from "@tokagentos/core";
 import { readAppRunStore } from "./app-run-store.js";
 import { isOverlayAppPresenceActive } from "./overlay-app-presence.js";
 

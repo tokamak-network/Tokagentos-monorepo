@@ -1,11 +1,11 @@
 /**
- * Minimal Popup Script - Uses only ELIZA Classic (no heavy AI dependencies)
+ * Minimal Popup Script - Uses only TOKAGENT Classic (no heavy AI dependencies)
  */
 
 console.log("[Popup] Script loading...");
 
-// Simple ELIZA Classic implementation (no external deps)
-const elizaKeywords = [
+// Simple TOKAGENT Classic implementation (no external deps)
+const tokagentKeywords = [
   { pattern: /\bmother\b/i, response: "Tell me more about your family." },
   { pattern: /\bfather\b/i, response: "How does that make you feel about your father?" },
   { pattern: /\bfeel\b/i, response: "Do you often feel this way?" },
@@ -25,7 +25,7 @@ const elizaKeywords = [
   { pattern: /.*/, response: "Please go on." },
 ];
 
-function getElizaResponse(input: string, pageContext?: string): string {
+function getTokagentResponse(input: string, pageContext?: string): string {
   const lowerInput = input.toLowerCase();
   
   // Check if asking about page content
@@ -34,7 +34,7 @@ function getElizaResponse(input: string, pageContext?: string): string {
     return `Based on this page, I can see: "${preview}..." What would you like to know about it?`;
   }
   
-  for (const keyword of elizaKeywords) {
+  for (const keyword of tokagentKeywords) {
     if (keyword.pattern.test(input)) {
       return keyword.response;
     }
@@ -61,7 +61,7 @@ console.log("[Popup] Elements loaded, setting up...");
 
 // Update UI status
 function updateStatus(ready: boolean) {
-  statusText.textContent = ready ? "ELIZA Classic" : "Initializing...";
+  statusText.textContent = ready ? "TOKAGENT Classic" : "Initializing...";
   statusDot.className = ready ? "status-dot active" : "status-dot";
 }
 
@@ -132,8 +132,8 @@ function handleSend() {
   messageInput.value = "";
   addMessage("user", text);
   
-  // Get ELIZA response
-  const response = getElizaResponse(text, pageContent || undefined);
+  // Get TOKAGENT response
+  const response = getTokagentResponse(text, pageContent || undefined);
   
   // Simulate typing delay
   setTimeout(() => {
@@ -171,7 +171,7 @@ async function init() {
   updateStatus(true);
   
   // Add greeting
-  addMessage("assistant", "Hello! I'm ELIZA. I can chat with you about this webpage or anything else. What's on your mind?");
+  addMessage("assistant", "Hello! I'm TOKAGENT. I can chat with you about this webpage or anything else. What's on your mind?");
   
   console.log("[Popup] Ready!");
 }

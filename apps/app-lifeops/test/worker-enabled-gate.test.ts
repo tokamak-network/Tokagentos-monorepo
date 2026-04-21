@@ -8,13 +8,13 @@
  * running (failing open so a transient cache issue doesn't halt LifeOps).
  */
 
-import type { IAgentRuntime, TaskWorker } from "@elizaos/core";
+import type { IAgentRuntime, TaskWorker } from "@tokagentos/core";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { registerProactiveTaskWorker } from "../src/activity-profile/proactive-worker.js";
 import { registerFollowupTrackerWorker } from "../src/followup/followup-tracker.js";
 import { registerLifeOpsTaskWorker } from "../src/lifeops/runtime.js";
 
-const APP_STATE_CACHE_KEY = "eliza:lifeops-app-state";
+const APP_STATE_CACHE_KEY = "tokagent:lifeops-app-state";
 
 type RegisterFn = (runtime: IAgentRuntime) => void;
 

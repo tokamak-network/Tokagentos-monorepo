@@ -1,17 +1,17 @@
 import {
   type ProviderOption,
   registerProviderOption,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 
 export const DEFAULT_ONBOARDING_PROVIDER_OPTIONS = [
   {
-    id: "elizacloud",
-    name: "Eliza Cloud",
+    id: "tokagentcloud",
+    name: "Tokagent Cloud",
     envKey: null,
-    pluginName: "@elizaos/plugin-elizacloud",
+    pluginName: "@elizaos/plugin-tokagentcloud",
     keyPrefix: null,
-    description: "Managed hosting for Eliza agents and bundled infrastructure.",
-    family: "elizacloud",
+    description: "Managed hosting for Tokagent agents and bundled infrastructure.",
+    family: "tokagentcloud",
     authMode: "cloud",
     group: "cloud",
     order: 10,
@@ -24,7 +24,7 @@ export const DEFAULT_ONBOARDING_PROVIDER_OPTIONS = [
     pluginName: "@elizaos/plugin-anthropic",
     keyPrefix: null,
     description:
-      "Powers task agents via Claude Code CLI. For the main agent, use Eliza Cloud or a direct API key.",
+      "Powers task agents via Claude Code CLI. For the main agent, use Tokagent Cloud or a direct API key.",
     family: "anthropic",
     authMode: "subscription",
     group: "subscription",

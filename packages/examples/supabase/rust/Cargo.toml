@@ -1,8 +1,8 @@
 [package]
-name = "eliza-chat-wasm"
+name = "tokagent-chat-wasm"
 version = "1.0.0"
 edition = "2021"
-description = "elizaOS chat handler compiled to WebAssembly for Supabase Edge Functions"
+description = "tokagentOS chat handler compiled to WebAssembly for Supabase Edge Functions"
 license = "MIT"
 
 [lib]

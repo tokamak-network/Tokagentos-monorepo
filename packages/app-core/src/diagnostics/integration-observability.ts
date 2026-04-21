@@ -1,4 +1,4 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 export type IntegrationBoundary = "cloud" | "wallet" | "marketplace" | "mcp";
 export type IntegrationOutcome = "success" | "failure";

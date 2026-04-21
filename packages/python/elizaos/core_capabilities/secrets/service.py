@@ -14,7 +14,7 @@ import time
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from elizaos.types import Service
+from tokagentos.types import Service
 
 from .crypto import KeyManager
 from .storage import (
@@ -37,7 +37,7 @@ from .types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 
 class SecretsService(Service):

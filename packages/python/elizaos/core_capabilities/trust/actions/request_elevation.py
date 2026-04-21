@@ -11,12 +11,12 @@ import time
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import Action, ActionResult, Content
+from tokagentos.types import Action, ActionResult, Content
 
 from ..types import TrustContext, TrustRequirements
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
     from ..service import TrustEngineService
 

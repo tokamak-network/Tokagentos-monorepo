@@ -1,7 +1,7 @@
 /**
  * Steward credential persistence for non-sidecar (web/dev) mode.
  *
- * On first setup, saves steward credentials to `~/.eliza/steward-credentials.json`.
+ * On first setup, saves steward credentials to `~/.tokagent/steward-credentials.json`.
  * On subsequent launches, loads credentials from this file.
  * Environment variables always override file values.
  */
@@ -27,7 +27,7 @@ const CREDENTIALS_FILENAME = "steward-credentials.json";
 
 function resolveCredentialsDir(): string {
   const home = process.env.HOME || process.env.USERPROFILE || "";
-  return path.join(home, ".eliza");
+  return path.join(home, ".tokagent");
 }
 
 function resolveCredentialsPath(): string {
@@ -94,8 +94,8 @@ export function resolveEffectiveStewardConfig(
   const tenantId = env.STEWARD_TENANT_ID?.trim() || persisted?.tenantId || null;
   const agentId =
     env.STEWARD_AGENT_ID?.trim() ||
-    env.ELIZA_STEWARD_AGENT_ID?.trim() ||
-    env.ELIZA_STEWARD_AGENT_ID?.trim() ||
+    env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
+    env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
     persisted?.agentId ||
     null;
   const apiKey = env.STEWARD_API_KEY?.trim() || persisted?.apiKey || "";

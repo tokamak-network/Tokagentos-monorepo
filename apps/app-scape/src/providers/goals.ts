@@ -15,7 +15,7 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { encode } from "@toon-format/toon";
 
 import type { ScapeGameService } from "../services/game-service.js";

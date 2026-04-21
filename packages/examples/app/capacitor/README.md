@@ -1,15 +1,15 @@
-# ElizaOS Chat (Capacitor example)
+# TokagentOS Chat (Capacitor example)
 
 This example is a **simple chat UI** (frontend) talking to a **local AgentRuntime backend** over HTTP.
 
 - **Frontend**: Vite + React (runs in Capacitor WebView)
 - **Backend agent**: TypeScript `AgentRuntime` (Bun/Node) using `@elizaos/plugin-localdb` for persistence
-- **LLM selection**: ELIZA classic fallback when no API key is configured
+- **LLM selection**: TOKAGENT classic fallback when no API key is configured
 
 ## Structure
 
 - `frontend/`: Vite React app (Capacitor web app)
-- `backend/`: Bun HTTP server hosting the elizaOS agent
+- `backend/`: Bun HTTP server hosting the tokagentOS agent
 
 ## Run (dev)
 
@@ -19,7 +19,7 @@ From the repo root:
 
 ```bash
 bun install
-bunx turbo run build --filter=@elizaos/core --filter=@elizaos/plugin-*
+bunx turbo run build --filter=@tokagentos/core --filter=@elizaos/plugin-*
 ```
 
 In one terminal:
@@ -44,7 +44,7 @@ Open the UI at `http://localhost:5176`. The backend defaults to `http://localhos
 
 The backend uses `@elizaos/plugin-localdb` and writes JSON files to:
 
-- `LOCALDB_DATA_DIR` (if set), otherwise `examples/app/capacitor/backend/.eliza-localdb`
+- `LOCALDB_DATA_DIR` (if set), otherwise `examples/app/capacitor/backend/.tokagent-localdb`
 
 ## Capacitor (optional)
 

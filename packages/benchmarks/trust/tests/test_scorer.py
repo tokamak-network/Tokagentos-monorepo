@@ -1,7 +1,7 @@
 """Tests for the scoring logic."""
 
-from elizaos_trust_bench.scorer import score_results
-from elizaos_trust_bench.types import (
+from tokagentos_trust_bench.scorer import score_results
+from tokagentos_trust_bench.types import (
     DetectionResult,
     Difficulty,
     ThreatCategory,

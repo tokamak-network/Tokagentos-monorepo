@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { sdk } from '@farcaster/miniapp-sdk'
 import { Header } from './components/Header'
 import { LoadingScreen } from './components/LoadingScreen'
-import { ElizaChat } from './components/ElizaChat'
+import { TokagentChat } from './components/TokagentChat'
 import './App.css'
 
 function App() {
@@ -36,7 +36,7 @@ function App() {
         return (
             <div className="error-container">
                 <div className="error-card">
-                    <h1>🤖 Eliza</h1>
+                    <h1>🤖 Tokagent</h1>
                     <p className="error-message">⚠️ {error}</p>
                     <button onClick={initialize} className="btn-retry">
                         Retry
@@ -51,7 +51,7 @@ function App() {
             <Header />
 
             <main className="content">
-                <ElizaChat />
+                <TokagentChat />
             </main>
         </div>
     )

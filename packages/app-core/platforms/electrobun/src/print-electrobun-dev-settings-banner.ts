@@ -1,13 +1,13 @@
-import { colorizeDevSettingsStartupBanner } from "@elizaos/shared/dev-settings-banner-style";
-import { prependDevSubsystemFigletHeading } from "@elizaos/shared/dev-settings-figlet-heading";
+import { colorizeDevSettingsStartupBanner } from "@tokagentos/shared/dev-settings-banner-style";
+import { prependDevSubsystemFigletHeading } from "@tokagentos/shared/dev-settings-figlet-heading";
 import {
   type DevSettingsRow,
   formatDevSettingsTable,
-} from "@elizaos/shared/dev-settings-table";
+} from "@tokagentos/shared/dev-settings-table";
 import {
   firstWinningEnvString,
   resolveDesktopApiPortPreference,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import { resolveDesktopRuntimeMode } from "./api-base";
 import { resolveMainWindowPartition } from "./main-window-session";
 
@@ -32,14 +32,14 @@ export function printElectrobunDevSettingsBanner(
   const partition = resolveMainWindowPartition(env);
 
   const rendererWin = firstWinningEnvString(env, [
-    "ELIZA_RENDERER_URL",
+    "TOKAGENT_RENDERER_URL",
     "VITE_DEV_SERVER_URL",
   ]);
 
-  const browserPort = env.ELIZA_BROWSER_WORKSPACE_PORT?.trim();
-  const browserTok = env.ELIZA_BROWSER_WORKSPACE_TOKEN?.trim();
+  const browserPort = env.TOKAGENT_BROWSER_WORKSPACE_PORT?.trim();
+  const browserTok = env.TOKAGENT_BROWSER_WORKSPACE_TOKEN?.trim();
 
-  const shotOpt = env.ELIZA_DESKTOP_SCREENSHOT_SERVER?.trim().toLowerCase();
+  const shotOpt = env.TOKAGENT_DESKTOP_SCREENSHOT_SERVER?.trim().toLowerCase();
   const screenshotOff =
     shotOpt === "0" ||
     shotOpt === "false" ||
@@ -54,19 +54,19 @@ export function printElectrobunDevSettingsBanner(
         runtime.mode === "external" && runtime.externalApi.source
           ? `env set — ${runtime.externalApi.source}`
           : runtime.mode === "disabled"
-            ? "env set — ELIZA_DESKTOP_SKIP_EMBEDDED_AGENT"
+            ? "env set — TOKAGENT_DESKTOP_SKIP_EMBEDDED_AGENT"
             : "default (local embedded agent)",
       change:
-        "set ELIZA_DESKTOP_TEST_API_BASE / ELIZA_DESKTOP_API_BASE / ELIZA_API_BASE_URL / ELIZA_API_BASE for external; ELIZA_DESKTOP_SKIP_EMBEDDED_AGENT=1 for disabled",
+        "set TOKAGENT_DESKTOP_TEST_API_BASE / TOKAGENT_DESKTOP_API_BASE / TOKAGENT_API_BASE_URL / TOKAGENT_API_BASE for external; TOKAGENT_DESKTOP_SKIP_EMBEDDED_AGENT=1 for disabled",
     },
     {
-      setting: "ELIZA_RENDERER_URL / VITE_DEV_SERVER_URL",
+      setting: "TOKAGENT_RENDERER_URL / VITE_DEV_SERVER_URL",
       effective: rendererWin?.value ?? "—",
       source: rendererWin
         ? `env set — ${rendererWin.key}`
         : "default (unset — static dist)",
       change:
-        "export ELIZA_RENDERER_URL=http://127.0.0.1:<vite>/ (or VITE_DEV_SERVER_URL)",
+        "export TOKAGENT_RENDERER_URL=http://127.0.0.1:<vite>/ (or VITE_DEV_SERVER_URL)",
     },
     {
       setting: "API port (preference)",
@@ -75,53 +75,53 @@ export function printElectrobunDevSettingsBanner(
       change: apiPref.changeLabel,
     },
     {
-      setting: "ELIZA_DESKTOP_TEST_PARTITION",
-      effective: env.ELIZA_DESKTOP_TEST_PARTITION?.trim() || "—",
-      source: env.ELIZA_DESKTOP_TEST_PARTITION?.trim()
-        ? "env set — ELIZA_DESKTOP_TEST_PARTITION"
+      setting: "TOKAGENT_DESKTOP_TEST_PARTITION",
+      effective: env.TOKAGENT_DESKTOP_TEST_PARTITION?.trim() || "—",
+      source: env.TOKAGENT_DESKTOP_TEST_PARTITION?.trim()
+        ? "env set — TOKAGENT_DESKTOP_TEST_PARTITION"
         : "default (unset)",
-      change: "export ELIZA_DESKTOP_TEST_PARTITION=<id> for test profile",
+      change: "export TOKAGENT_DESKTOP_TEST_PARTITION=<id> for test profile",
     },
     {
-      setting: "ELIZA_DESKTOP_TEST_API_BASE",
-      effective: env.ELIZA_DESKTOP_TEST_API_BASE?.trim() || "—",
-      source: env.ELIZA_DESKTOP_TEST_API_BASE?.trim()
-        ? "env set — ELIZA_DESKTOP_TEST_API_BASE"
+      setting: "TOKAGENT_DESKTOP_TEST_API_BASE",
+      effective: env.TOKAGENT_DESKTOP_TEST_API_BASE?.trim() || "—",
+      source: env.TOKAGENT_DESKTOP_TEST_API_BASE?.trim()
+        ? "env set — TOKAGENT_DESKTOP_TEST_API_BASE"
         : "default (unset)",
       change:
-        "export ELIZA_DESKTOP_TEST_API_BASE=https://… for partition tests",
+        "export TOKAGENT_DESKTOP_TEST_API_BASE=https://… for partition tests",
     },
     {
       setting: "resolveMainWindowPartition",
       effective: partition ?? "—",
       source: "derived — main-window-session.ts",
       change:
-        "export ELIZA_DESKTOP_TEST_PARTITION or ELIZA_DESKTOP_TEST_API_BASE (see source)",
+        "export TOKAGENT_DESKTOP_TEST_PARTITION or TOKAGENT_DESKTOP_TEST_API_BASE (see source)",
     },
     {
-      setting: "ELIZA_BROWSER_WORKSPACE_PORT",
+      setting: "TOKAGENT_BROWSER_WORKSPACE_PORT",
       effective: browserPort || "—",
       source: browserPort
-        ? "env set — ELIZA_BROWSER_WORKSPACE_PORT"
+        ? "env set — TOKAGENT_BROWSER_WORKSPACE_PORT"
         : "default (unset)",
-      change: "export ELIZA_BROWSER_WORKSPACE_PORT=<port>",
+      change: "export TOKAGENT_BROWSER_WORKSPACE_PORT=<port>",
     },
     {
-      setting: "ELIZA_BROWSER_WORKSPACE_TOKEN",
+      setting: "TOKAGENT_BROWSER_WORKSPACE_TOKEN",
       effective: browserTok ? "set (redacted)" : "—",
       source: browserTok
-        ? "env set — ELIZA_BROWSER_WORKSPACE_TOKEN"
+        ? "env set — TOKAGENT_BROWSER_WORKSPACE_TOKEN"
         : "default (unset)",
-      change: "export ELIZA_BROWSER_WORKSPACE_TOKEN=<secret> or unset",
+      change: "export TOKAGENT_BROWSER_WORKSPACE_TOKEN=<secret> or unset",
     },
     {
-      setting: "ELIZA_DESKTOP_SCREENSHOT_SERVER",
+      setting: "TOKAGENT_DESKTOP_SCREENSHOT_SERVER",
       effective: screenshotOff ? "off" : "on",
       source: screenshotOff
         ? "env set — opt-out (0/false/no/off)"
         : "default (on)",
       change:
-        "export ELIZA_DESKTOP_SCREENSHOT_SERVER=0 to disable; ELIZA_SCREENSHOT_SERVER_PORT for port",
+        "export TOKAGENT_DESKTOP_SCREENSHOT_SERVER=0 to disable; TOKAGENT_SCREENSHOT_SERVER_PORT for port",
     },
     {
       setting: "NODE_ENV",

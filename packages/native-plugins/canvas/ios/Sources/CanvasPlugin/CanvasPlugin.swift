@@ -6,10 +6,10 @@ import WebKit
 
 // MARK: - Plugin Registration
 
-@objc(ElizaCanvasPlugin)
-public class ElizaCanvasPlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "ElizaCanvasPlugin"
-    public let jsName = "ElizaCanvas"
+@objc(TokagentCanvasPlugin)
+public class TokagentCanvasPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "TokagentCanvasPlugin"
+    public let jsName = "TokagentCanvas"
     public let pluginMethods: [CAPPluginMethod] = [
         // Drawing canvas
         CAPPluginMethod(name: "create", returnType: CAPPluginReturnPromise),
@@ -1023,7 +1023,7 @@ public class ElizaCanvasPlugin: CAPPlugin, CAPBridgedPlugin {
         let js = """
         (() => {
           try {
-            const host = globalThis.elizaA2UI;
+            const host = globalThis.tokagentA2UI;
             if (host && typeof host.applyMessages === 'function') {
               host.applyMessages(JSON.parse(\(escapedJSON)));
               return 'ok';
@@ -1070,7 +1070,7 @@ public class ElizaCanvasPlugin: CAPPlugin, CAPBridgedPlugin {
         let js = """
         (() => {
           try {
-            const host = globalThis.elizaA2UI;
+            const host = globalThis.tokagentA2UI;
             if (host && typeof host.reset === 'function') {
               host.reset();
               return 'ok';
@@ -1618,7 +1618,7 @@ public class ElizaCanvasPlugin: CAPPlugin, CAPBridgedPlugin {
 
 // MARK: - ManagedCanvas
 
-extension ElizaCanvasPlugin {
+extension TokagentCanvasPlugin {
     class ManagedCanvas {
         let id: String
         var view: CanvasView
@@ -1660,7 +1660,7 @@ extension ElizaCanvasPlugin {
 
 // MARK: - CanvasView
 
-extension ElizaCanvasPlugin {
+extension TokagentCanvasPlugin {
     class CanvasView: UIView {
         private var drawingImage: UIImage?
         var touchHandler: ((String, [TouchInfo]) -> Void)?
@@ -1734,7 +1734,7 @@ extension ElizaCanvasPlugin {
 
 // MARK: - WKNavigationDelegate
 
-/// Handles navigation policy for the canvas web view: intercepts eliza:// deep links,
+/// Handles navigation policy for the canvas web view: intercepts tokagent:// deep links,
 /// reports load errors, and emits navigation events to the Capacitor layer.
 // `@MainActor` on the whole delegate class lets us invoke
 // `decisionHandler` (which WebKit now types as `@MainActor @Sendable`
@@ -1747,10 +1747,10 @@ extension ElizaCanvasPlugin {
 // main thread, so this matches the actual runtime contract.
 @MainActor
 final class CanvasNavigationDelegate: NSObject, WKNavigationDelegate {
-    weak var plugin: ElizaCanvasPlugin?
+    weak var plugin: TokagentCanvasPlugin?
     let canvasId: String
 
-    init(plugin: ElizaCanvasPlugin, canvasId: String) {
+    init(plugin: TokagentCanvasPlugin, canvasId: String) {
         self.plugin = plugin
         self.canvasId = canvasId
         super.init()
@@ -1766,8 +1766,8 @@ final class CanvasNavigationDelegate: NSObject, WKNavigationDelegate {
             return
         }
 
-        // Intercept eliza:// deep links.
-        if url.scheme?.lowercased() == "eliza" {
+        // Intercept tokagent:// deep links.
+        if url.scheme?.lowercased() == "tokagent" {
             decisionHandler(.cancel)
             plugin?.notifyListeners("deepLink", data: [
                 "canvasId": canvasId,
@@ -1806,12 +1806,12 @@ final class CanvasNavigationDelegate: NSObject, WKNavigationDelegate {
 /// Receives A2UI action messages from the canvas web view (e.g. button taps in A2UI components)
 /// and forwards them as Capacitor events.
 final class CanvasA2UIMessageHandler: NSObject, WKScriptMessageHandler {
-    static let messageName = "elizaCanvasA2UIAction"
+    static let messageName = "tokagentCanvasA2UIAction"
 
-    weak var plugin: ElizaCanvasPlugin?
+    weak var plugin: TokagentCanvasPlugin?
     let canvasId: String
 
-    init(plugin: ElizaCanvasPlugin, canvasId: String) {
+    init(plugin: TokagentCanvasPlugin, canvasId: String) {
         self.plugin = plugin
         self.canvasId = canvasId
         super.init()
@@ -1846,8 +1846,8 @@ final class CanvasA2UIMessageHandler: NSObject, WKScriptMessageHandler {
         // Dispatch action status acknowledgement back to the web view.
         let statusJS = """
         (() => {
-          const detail = { id: \(ElizaCanvasPlugin.jsStringLiteral(actionId)), ok: true, error: '' };
-          window.dispatchEvent(new CustomEvent('eliza:a2ui-action-status', { detail }));
+          const detail = { id: \(TokagentCanvasPlugin.jsStringLiteral(actionId)), ok: true, error: '' };
+          window.dispatchEvent(new CustomEvent('tokagent:a2ui-action-status', { detail }));
         })();
         """
         webView.evaluateJavaScript(statusJS) { _, _ in }

@@ -1,9 +1,9 @@
-// components.proto - Action, Provider, Evaluator types for elizaOS
+// components.proto - Action, Provider, Evaluator types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
-import "eliza/v1/primitives.proto";
+import "tokagent/v1/primitives.proto";
 import "google/protobuf/struct.proto";
 
 // JSON Schema for action parameter validation

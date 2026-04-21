@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Quick curl tests for the elizaOS Convex agent.
+# Quick curl tests for the tokagentOS Convex agent.
 #
 # Usage:
 #   CONVEX_URL=https://your-deployment.convex.cloud ./scripts/test-curl.sh

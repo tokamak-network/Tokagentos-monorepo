@@ -1,6 +1,6 @@
-# elizaOS MCP Agent Server - TypeScript
+# tokagentOS MCP Agent Server - TypeScript
 
-Exposes an elizaOS agent as an MCP (Model Context Protocol) server using TypeScript.
+Exposes an tokagentOS agent as an MCP (Model Context Protocol) server using TypeScript.
 
 ## Requirements
 
@@ -39,7 +39,7 @@ Add to your `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "eliza": {
+    "tokagent": {
       "command": "bun",
       "args": ["run", "start"],
       "cwd": "/path/to/this/directory",

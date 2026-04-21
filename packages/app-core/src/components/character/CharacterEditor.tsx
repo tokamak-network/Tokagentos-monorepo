@@ -1,4 +1,4 @@
-import { getStylePresets } from "@elizaos/shared/onboarding-presets";
+import { getStylePresets } from "@tokagentos/shared/onboarding-presets";
 import type { CharacterData } from "../../api/client";
 import { client } from "../../api/client";
 import {
@@ -95,7 +95,7 @@ import {
   SidebarContent,
   SidebarPanel,
   SidebarScrollRegion,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   type ChangeEvent,
   type ReactNode,
@@ -208,12 +208,12 @@ export function CharacterEditor({
     syncRegistryProfile: _syncRegistryProfile,
     loadDropStatus,
     walletConfig: _walletConfig,
-    elizaCloudConnected,
-    elizaCloudVoiceProxyAvailable,
+    tokagentCloudConnected,
+    tokagentCloudVoiceProxyAvailable,
   } = useApp();
 
   /** ElevenLabs voices are available only when direct key or cloud voice routing is active. */
-  const useElevenLabs = elizaCloudConnected || elizaCloudVoiceProxyAvailable;
+  const useElevenLabs = tokagentCloudConnected || tokagentCloudVoiceProxyAvailable;
   const elevenLabsVoiceGroups = ELEVENLABS_VOICE_GROUPS.map((group) => ({
     label: t(group.labelKey, { defaultValue: group.defaultLabel }),
     items: group.items,
@@ -817,7 +817,7 @@ export function CharacterEditor({
         voice.speak(greeting.catchphrase);
       }, 400);
     };
-    const eventName = "eliza:vrm-teleport-complete";
+    const eventName = "tokagent:vrm-teleport-complete";
     window.addEventListener(eventName, handler);
     return () => {
       window.removeEventListener(eventName, handler);
@@ -837,7 +837,7 @@ export function CharacterEditor({
     const dispatch = () => {
       const offset = isEditorTab && !mql.matches ? 0.85 : 0;
       window.dispatchEvent(
-        new CustomEvent("eliza:editor-camera-offset", {
+        new CustomEvent("tokagent:editor-camera-offset", {
           detail: { offset },
         }),
       );
@@ -848,7 +848,7 @@ export function CharacterEditor({
     return () => {
       mql.removeEventListener("change", onChange);
       window.dispatchEvent(
-        new CustomEvent("eliza:editor-camera-offset", {
+        new CustomEvent("tokagent:editor-camera-offset", {
           detail: { offset: 0 },
         }),
       );

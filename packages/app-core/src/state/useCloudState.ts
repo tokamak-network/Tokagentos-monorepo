@@ -1,5 +1,5 @@
 /**
- * Eliza Cloud state — extracted from AppContext.
+ * Tokagent Cloud state — extracted from AppContext.
  *
  * Manages:
  * - Cloud connection state (enabled, connected, persisted key, user ID)
@@ -24,7 +24,7 @@ import {
   isElectrobunRuntime,
 } from "../bridge";
 import { getBootConfig, setBootConfig } from "../config/boot-config";
-import { dispatchElizaCloudStatusUpdated } from "../events";
+import { dispatchTokagentCloudStatusUpdated } from "../events";
 import {
   confirmDesktopAction,
   openExternalUrl,
@@ -33,14 +33,14 @@ import {
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-const ELIZA_CLOUD_LOGIN_POLL_INTERVAL_MS = 1000;
-const ELIZA_CLOUD_LOGIN_TIMEOUT_MS = 300_000;
-const ELIZA_CLOUD_LOGIN_MAX_CONSECUTIVE_ERRORS = 3;
+const TOKAGENT_CLOUD_LOGIN_POLL_INTERVAL_MS = 1000;
+const TOKAGENT_CLOUD_LOGIN_TIMEOUT_MS = 300_000;
+const TOKAGENT_CLOUD_LOGIN_MAX_CONSECUTIVE_ERRORS = 3;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 /** Publish server cloud snapshot for chat TTS (`useVoiceChat` + `loadVoiceConfig`). */
-function publishElizaCloudVoiceSnapshot(
+function publishTokagentCloudVoiceSnapshot(
   setHasPersistedKey: (value: boolean) => void,
   snapshot: {
     apiConnected: boolean;
@@ -50,7 +50,7 @@ function publishElizaCloudVoiceSnapshot(
   },
 ): void {
   setHasPersistedKey(snapshot.hasPersistedApiKey);
-  dispatchElizaCloudStatusUpdated({
+  dispatchTokagentCloudStatusUpdated({
     connected: snapshot.apiConnected,
     enabled: snapshot.enabled,
     hasPersistedApiKey: snapshot.hasPersistedApiKey,
@@ -83,57 +83,57 @@ export function useCloudState({
 }: CloudStateParams) {
   // ── State ──────────────────────────────────────────────────────────
 
-  const [elizaCloudEnabled, setElizaCloudEnabled] = useState(false);
-  const [elizaCloudVoiceProxyAvailable, setElizaCloudVoiceProxyAvailable] =
+  const [tokagentCloudEnabled, setTokagentCloudEnabled] = useState(false);
+  const [tokagentCloudVoiceProxyAvailable, setTokagentCloudVoiceProxyAvailable] =
     useState(false);
-  const [elizaCloudConnected, setElizaCloudConnected] = useState(false);
-  const [elizaCloudHasPersistedKey, setElizaCloudHasPersistedKey] =
+  const [tokagentCloudConnected, setTokagentCloudConnected] = useState(false);
+  const [tokagentCloudHasPersistedKey, setTokagentCloudHasPersistedKey] =
     useState(false);
-  const [elizaCloudCredits, setElizaCloudCredits] = useState<number | null>(
+  const [tokagentCloudCredits, setTokagentCloudCredits] = useState<number | null>(
     null,
   );
-  const [elizaCloudCreditsLow, setElizaCloudCreditsLow] = useState(false);
-  const [elizaCloudCreditsCritical, setElizaCloudCreditsCritical] =
+  const [tokagentCloudCreditsLow, setTokagentCloudCreditsLow] = useState(false);
+  const [tokagentCloudCreditsCritical, setTokagentCloudCreditsCritical] =
     useState(false);
-  const [elizaCloudAuthRejected, setElizaCloudAuthRejected] = useState(false);
-  const [elizaCloudCreditsError, setElizaCloudCreditsError] = useState<
+  const [tokagentCloudAuthRejected, setTokagentCloudAuthRejected] = useState(false);
+  const [tokagentCloudCreditsError, setTokagentCloudCreditsError] = useState<
     string | null
   >(null);
-  const [elizaCloudTopUpUrl, setElizaCloudTopUpUrl] =
+  const [tokagentCloudTopUpUrl, setTokagentCloudTopUpUrl] =
     useState("/cloud/billing");
-  const [elizaCloudUserId, setElizaCloudUserId] = useState<string | null>(null);
-  const [elizaCloudStatusReason, setElizaCloudStatusReason] = useState<
+  const [tokagentCloudUserId, setTokagentCloudUserId] = useState<string | null>(null);
+  const [tokagentCloudStatusReason, setTokagentCloudStatusReason] = useState<
     string | null
   >(null);
   const [cloudDashboardView, setCloudDashboardView] = useState<
     "overview" | "billing"
   >("overview");
-  const [elizaCloudLoginBusy, setElizaCloudLoginBusy] = useState(false);
-  const [elizaCloudLoginError, setElizaCloudLoginError] = useState<
+  const [tokagentCloudLoginBusy, setTokagentCloudLoginBusy] = useState(false);
+  const [tokagentCloudLoginError, setTokagentCloudLoginError] = useState<
     string | null
   >(null);
-  const [elizaCloudDisconnecting, setElizaCloudDisconnecting] = useState(false);
+  const [tokagentCloudDisconnecting, setTokagentCloudDisconnecting] = useState(false);
 
   // ── Refs ───────────────────────────────────────────────────────────
 
   /** Recurring interval that polls cloud credits every 60s while connected. */
-  const elizaCloudPollInterval = useRef<number | null>(null);
+  const tokagentCloudPollInterval = useRef<number | null>(null);
   /** While true, ignore stale poll results (in-flight GETs may predate POST /api/cloud/disconnect). */
-  const elizaCloudDisconnectInFlightRef = useRef(false);
+  const tokagentCloudDisconnectInFlightRef = useRef(false);
   /**
-   * After the user disconnects, keep the "Connect Eliza Cloud" screen until they start
+   * After the user disconnects, keep the "Connect Tokagent Cloud" screen until they start
    * login again, even if GET /api/cloud/status still reports `connected: true` (laggy
    * snapshot or proxy mismatch).
    */
-  const elizaCloudPreferDisconnectedUntilLoginRef = useRef(false);
+  const tokagentCloudPreferDisconnectedUntilLoginRef = useRef(false);
   /** Last `connected` applied by pollCloudCredits; used when a poll is skipped mid-flight. */
-  const lastElizaCloudPollConnectedRef = useRef(false);
+  const lastTokagentCloudPollConnectedRef = useRef(false);
   /** Short-lived polling interval used during the browser-based login flow. */
-  const elizaCloudLoginPollTimer = useRef<number | null>(null);
+  const tokagentCloudLoginPollTimer = useRef<number | null>(null);
   /** Synchronous lock to prevent duplicate login clicks in the same tick. */
-  const elizaCloudLoginBusyRef = useRef(false);
+  const tokagentCloudLoginBusyRef = useRef(false);
   /** Tracks whether the auth-rejected notice has already been sent for the current rejection. */
-  const elizaCloudAuthNoticeSentRef = useRef(false);
+  const tokagentCloudAuthNoticeSentRef = useRef(false);
   /**
    * Forward ref so handleOnboardingNext (defined earlier in AppContext) can call
    * handleCloudLogin (defined later).
@@ -143,17 +143,17 @@ export function useCloudState({
   // ── Callbacks ──────────────────────────────────────────────────────
 
   const pollCloudCredits = useCallback(async (): Promise<boolean> => {
-    if (elizaCloudDisconnectInFlightRef.current) {
-      return lastElizaCloudPollConnectedRef.current;
+    if (tokagentCloudDisconnectInFlightRef.current) {
+      return lastTokagentCloudPollConnectedRef.current;
     }
     const cloudStatus = await client.getCloudStatus().catch(() => null);
-    if (elizaCloudDisconnectInFlightRef.current) {
-      return lastElizaCloudPollConnectedRef.current;
+    if (tokagentCloudDisconnectInFlightRef.current) {
+      return lastTokagentCloudPollConnectedRef.current;
     }
     if (!cloudStatus) {
       // Preserve the last applied cloud snapshot across transient backend
       // restarts so the UI does not flap into a false "disconnected" state.
-      return lastElizaCloudPollConnectedRef.current;
+      return lastTokagentCloudPollConnectedRef.current;
     }
     const enabled = Boolean(cloudStatus.enabled ?? false);
     const cloudVoiceProxyAvailable = Boolean(
@@ -162,51 +162,51 @@ export function useCloudState({
     const hasPersistedApiKey = Boolean(cloudStatus.hasApiKey);
     // Trust `connected` from the server snapshot (it already folds in API key + CLOUD_AUTH).
     const isConnected = Boolean(cloudStatus.connected);
-    if (isConnected && elizaCloudPreferDisconnectedUntilLoginRef.current) {
-      publishElizaCloudVoiceSnapshot(setElizaCloudHasPersistedKey, {
+    if (isConnected && tokagentCloudPreferDisconnectedUntilLoginRef.current) {
+      publishTokagentCloudVoiceSnapshot(setTokagentCloudHasPersistedKey, {
         apiConnected: isConnected,
         enabled,
         cloudVoiceProxyAvailable,
         hasPersistedApiKey,
       });
-      lastElizaCloudPollConnectedRef.current = false;
+      lastTokagentCloudPollConnectedRef.current = false;
       return false;
     }
     if (!isConnected) {
-      elizaCloudPreferDisconnectedUntilLoginRef.current = false;
+      tokagentCloudPreferDisconnectedUntilLoginRef.current = false;
     }
-    setElizaCloudEnabled(enabled);
-    setElizaCloudVoiceProxyAvailable(cloudVoiceProxyAvailable);
-    setElizaCloudConnected(isConnected);
-    publishElizaCloudVoiceSnapshot(setElizaCloudHasPersistedKey, {
+    setTokagentCloudEnabled(enabled);
+    setTokagentCloudVoiceProxyAvailable(cloudVoiceProxyAvailable);
+    setTokagentCloudConnected(isConnected);
+    publishTokagentCloudVoiceSnapshot(setTokagentCloudHasPersistedKey, {
       apiConnected: isConnected,
       enabled,
       cloudVoiceProxyAvailable,
       hasPersistedApiKey,
     });
-    setElizaCloudUserId(cloudStatus.userId ?? null);
-    setElizaCloudStatusReason(
+    setTokagentCloudUserId(cloudStatus.userId ?? null);
+    setTokagentCloudStatusReason(
       isConnected &&
         typeof cloudStatus.reason === "string" &&
         cloudStatus.reason.trim()
         ? cloudStatus.reason.trim()
         : null,
     );
-    if (cloudStatus.topUpUrl) setElizaCloudTopUpUrl(cloudStatus.topUpUrl);
+    if (cloudStatus.topUpUrl) setTokagentCloudTopUpUrl(cloudStatus.topUpUrl);
     if (isConnected) {
       const credits = await client.getCloudCredits().catch(() => null);
-      if (elizaCloudDisconnectInFlightRef.current) {
-        return lastElizaCloudPollConnectedRef.current;
+      if (tokagentCloudDisconnectInFlightRef.current) {
+        return lastTokagentCloudPollConnectedRef.current;
       }
       if (credits?.authRejected) {
-        setElizaCloudAuthRejected(true);
-        setElizaCloudCreditsError(null);
-        setElizaCloudCredits(null);
-        setElizaCloudCreditsLow(false);
-        setElizaCloudCreditsCritical(false);
-        if (credits.topUpUrl) setElizaCloudTopUpUrl(credits.topUpUrl);
+        setTokagentCloudAuthRejected(true);
+        setTokagentCloudCreditsError(null);
+        setTokagentCloudCredits(null);
+        setTokagentCloudCreditsLow(false);
+        setTokagentCloudCreditsCritical(false);
+        if (credits.topUpUrl) setTokagentCloudTopUpUrl(credits.topUpUrl);
       } else {
-        setElizaCloudAuthRejected(false);
+        setTokagentCloudAuthRejected(false);
         const apiErr =
           credits &&
           typeof credits.error === "string" &&
@@ -214,33 +214,33 @@ export function useCloudState({
           typeof credits.balance !== "number"
             ? credits.error.trim()
             : null;
-        setElizaCloudCreditsError(apiErr);
+        setTokagentCloudCreditsError(apiErr);
         if (credits && typeof credits.balance === "number") {
-          setElizaCloudCredits(credits.balance);
-          setElizaCloudCreditsLow(credits.low ?? false);
-          setElizaCloudCreditsCritical(credits.critical ?? false);
-          if (credits.topUpUrl) setElizaCloudTopUpUrl(credits.topUpUrl);
+          setTokagentCloudCredits(credits.balance);
+          setTokagentCloudCreditsLow(credits.low ?? false);
+          setTokagentCloudCreditsCritical(credits.critical ?? false);
+          if (credits.topUpUrl) setTokagentCloudTopUpUrl(credits.topUpUrl);
         } else {
-          setElizaCloudCredits(null);
-          setElizaCloudCreditsLow(false);
-          setElizaCloudCreditsCritical(false);
-          if (credits?.topUpUrl) setElizaCloudTopUpUrl(credits.topUpUrl);
+          setTokagentCloudCredits(null);
+          setTokagentCloudCreditsLow(false);
+          setTokagentCloudCreditsCritical(false);
+          if (credits?.topUpUrl) setTokagentCloudTopUpUrl(credits.topUpUrl);
         }
       }
     } else {
-      setElizaCloudCredits(null);
-      setElizaCloudCreditsLow(false);
-      setElizaCloudCreditsCritical(false);
-      setElizaCloudAuthRejected(false);
-      setElizaCloudCreditsError(null);
-      setElizaCloudStatusReason(null);
+      setTokagentCloudCredits(null);
+      setTokagentCloudCreditsLow(false);
+      setTokagentCloudCreditsCritical(false);
+      setTokagentCloudAuthRejected(false);
+      setTokagentCloudCreditsError(null);
+      setTokagentCloudStatusReason(null);
     }
-    lastElizaCloudPollConnectedRef.current = isConnected;
+    lastTokagentCloudPollConnectedRef.current = isConnected;
     // Self-manage the recurring poll interval: start when connected, stop when not.
     // This covers login during onboarding (interval wasn't started at mount) and
     // disconnect (interval should stop to avoid useless API calls).
-    if (isConnected && !elizaCloudPollInterval.current) {
-      elizaCloudPollInterval.current = window.setInterval(() => {
+    if (isConnected && !tokagentCloudPollInterval.current) {
+      tokagentCloudPollInterval.current = window.setInterval(() => {
         if (
           typeof document !== "undefined" &&
           document.visibilityState !== "visible"
@@ -249,37 +249,37 @@ export function useCloudState({
         }
         void pollCloudCredits();
       }, 60_000);
-    } else if (!isConnected && elizaCloudPollInterval.current) {
-      clearInterval(elizaCloudPollInterval.current);
-      elizaCloudPollInterval.current = null;
+    } else if (!isConnected && tokagentCloudPollInterval.current) {
+      clearInterval(tokagentCloudPollInterval.current);
+      tokagentCloudPollInterval.current = null;
     }
     return isConnected;
   }, []);
 
   const handleCloudLogin = useCallback(async () => {
     // Already connected (existing API key) — no need to re-authenticate.
-    if (elizaCloudConnected) return;
-    if (elizaCloudLoginBusyRef.current || elizaCloudLoginBusy) return;
-    elizaCloudLoginBusyRef.current = true;
-    setElizaCloudLoginBusy(true);
-    setElizaCloudLoginError(null);
-    elizaCloudPreferDisconnectedUntilLoginRef.current = false;
+    if (tokagentCloudConnected) return;
+    if (tokagentCloudLoginBusyRef.current || tokagentCloudLoginBusy) return;
+    tokagentCloudLoginBusyRef.current = true;
+    setTokagentCloudLoginBusy(true);
+    setTokagentCloudLoginError(null);
+    tokagentCloudPreferDisconnectedUntilLoginRef.current = false;
 
     // Determine if we should use direct cloud auth (no local backend) or
     // go through the local agent's proxy.
     const hasBackend = Boolean(client.getBaseUrl());
     const cloudApiBase =
-      getBootConfig().cloudApiBase ?? "https://www.elizacloud.ai";
+      getBootConfig().cloudApiBase ?? "https://www.tokagentcloud.ai";
     const useDirectAuth = !hasBackend;
 
     if (hasBackend) {
       const alreadyConnected = await pollCloudCredits();
       if (alreadyConnected) {
         await loadWalletConfig().catch(() => undefined);
-        setElizaCloudLoginError(null);
-        setActionNotice("Already connected to Eliza Cloud.", "info", 4000);
-        elizaCloudLoginBusyRef.current = false;
-        setElizaCloudLoginBusy(false);
+        setTokagentCloudLoginError(null);
+        setActionNotice("Already connected to Tokagent Cloud.", "info", 4000);
+        tokagentCloudLoginBusyRef.current = false;
+        setTokagentCloudLoginBusy(false);
         return;
       }
     }
@@ -297,11 +297,11 @@ export function useCloudState({
         resp = await client.cloudLogin();
       }
       if (!resp.ok) {
-        setElizaCloudLoginError(
-          resp.error || "Failed to start Eliza Cloud login",
+        setTokagentCloudLoginError(
+          resp.error || "Failed to start Tokagent Cloud login",
         );
-        elizaCloudLoginBusyRef.current = false;
-        setElizaCloudLoginBusy(false);
+        tokagentCloudLoginBusyRef.current = false;
+        setTokagentCloudLoginBusy(false);
         return;
       }
 
@@ -311,7 +311,7 @@ export function useCloudState({
           await openExternalUrl(resp.browserUrl);
         } catch {
           // Popup was blocked — show a clickable link so the user can open it.
-          setElizaCloudLoginError(
+          setTokagentCloudLoginError(
             `Open this link to log in: ${resp.browserUrl}`,
           );
         }
@@ -321,32 +321,32 @@ export function useCloudState({
 
       let pollInFlight = false;
       let consecutivePollErrors = 0;
-      const pollDeadline = Date.now() + ELIZA_CLOUD_LOGIN_TIMEOUT_MS;
+      const pollDeadline = Date.now() + TOKAGENT_CLOUD_LOGIN_TIMEOUT_MS;
       const stopCloudLoginPolling = (error: string | null = null) => {
-        if (elizaCloudLoginPollTimer.current !== null) {
-          clearInterval(elizaCloudLoginPollTimer.current);
-          elizaCloudLoginPollTimer.current = null;
+        if (tokagentCloudLoginPollTimer.current !== null) {
+          clearInterval(tokagentCloudLoginPollTimer.current);
+          tokagentCloudLoginPollTimer.current = null;
         }
-        elizaCloudLoginBusyRef.current = false;
-        setElizaCloudLoginBusy(false);
+        tokagentCloudLoginBusyRef.current = false;
+        setTokagentCloudLoginBusy(false);
         if (error !== null) {
-          setElizaCloudLoginError(error);
+          setTokagentCloudLoginError(error);
         }
       };
 
       // Start polling
-      elizaCloudLoginPollTimer.current = window.setInterval(async () => {
-        if (!elizaCloudLoginPollTimer.current || pollInFlight) return;
+      tokagentCloudLoginPollTimer.current = window.setInterval(async () => {
+        if (!tokagentCloudLoginPollTimer.current || pollInFlight) return;
         if (Date.now() >= pollDeadline) {
           stopCloudLoginPolling(
-            "Eliza Cloud login timed out. Please try again.",
+            "Tokagent Cloud login timed out. Please try again.",
           );
           return;
         }
 
         pollInFlight = true;
         try {
-          if (!elizaCloudLoginPollTimer.current) return;
+          if (!tokagentCloudLoginPollTimer.current) return;
           let poll: {
             status: string;
             token?: string;
@@ -358,36 +358,36 @@ export function useCloudState({
           } else {
             poll = await client.cloudLoginPoll(sessionId);
           }
-          if (!elizaCloudLoginPollTimer.current) return;
+          if (!tokagentCloudLoginPollTimer.current) return;
 
           consecutivePollErrors = 0;
           if (poll.status === "authenticated") {
             stopCloudLoginPolling();
-            setElizaCloudConnected(true);
-            setElizaCloudLoginError(null);
+            setTokagentCloudConnected(true);
+            setTokagentCloudLoginError(null);
             if (poll.userId) {
-              setElizaCloudUserId(poll.userId);
+              setTokagentCloudUserId(poll.userId);
             }
 
             // Store the cloud auth token for provisioning
             if (poll.token && typeof window !== "undefined") {
               (
                 globalThis as Record<string, unknown>
-              ).__ELIZA_CLOUD_AUTH_TOKEN__ = poll.token;
+              ).__TOKAGENT_CLOUD_AUTH_TOKEN__ = poll.token;
               // Also update boot config so subsequent reads use the resolved cloud base.
               const cfg = getBootConfig();
               setBootConfig({ ...cfg, cloudApiBase });
             }
 
             setActionNotice(
-              "Logged in to Eliza Cloud successfully.",
+              "Logged in to Tokagent Cloud successfully.",
               "success",
               6000,
             );
             if (useDirectAuth && poll.token) {
               // Direct auth bypasses the backend's login/status handler, so
               // the API key was never persisted server-side. Send it now so
-              // billing/compat routes can authenticate with Eliza Cloud.
+              // billing/compat routes can authenticate with Tokagent Cloud.
               void fetch("/api/cloud/login/persist", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -406,35 +406,35 @@ export function useCloudState({
             );
           }
         } catch (pollErr) {
-          console.error("Eliza Cloud login poll error:", pollErr);
-          if (!elizaCloudLoginPollTimer.current) return;
+          console.error("Tokagent Cloud login poll error:", pollErr);
+          if (!tokagentCloudLoginPollTimer.current) return;
 
           consecutivePollErrors += 1;
           if (
-            consecutivePollErrors >= ELIZA_CLOUD_LOGIN_MAX_CONSECUTIVE_ERRORS
+            consecutivePollErrors >= TOKAGENT_CLOUD_LOGIN_MAX_CONSECUTIVE_ERRORS
           ) {
             const detail =
               pollErr instanceof Error && pollErr.message
                 ? ` Last error: ${pollErr.message}`
                 : "";
             stopCloudLoginPolling(
-              `Eliza Cloud login check failed after repeated errors.${detail}`,
+              `Tokagent Cloud login check failed after repeated errors.${detail}`,
             );
           }
         } finally {
           pollInFlight = false;
         }
-      }, ELIZA_CLOUD_LOGIN_POLL_INTERVAL_MS);
+      }, TOKAGENT_CLOUD_LOGIN_POLL_INTERVAL_MS);
     } catch (err) {
-      setElizaCloudLoginError(
-        err instanceof Error ? err.message : "Eliza Cloud login failed",
+      setTokagentCloudLoginError(
+        err instanceof Error ? err.message : "Tokagent Cloud login failed",
       );
-      elizaCloudLoginBusyRef.current = false;
-      setElizaCloudLoginBusy(false);
+      tokagentCloudLoginBusyRef.current = false;
+      setTokagentCloudLoginBusy(false);
     }
   }, [
-    elizaCloudConnected,
-    elizaCloudLoginBusy,
+    tokagentCloudConnected,
+    tokagentCloudLoginBusy,
     setActionNotice,
     pollCloudCredits,
     loadWalletConfig,
@@ -448,8 +448,8 @@ export function useCloudState({
     const MAIN_POST_ONLY_MS = 12_000;
     const RENDERER_DISCONNECT_MS = 12_000;
 
-    elizaCloudDisconnectInFlightRef.current = true;
-    setElizaCloudDisconnecting(true);
+    tokagentCloudDisconnectInFlightRef.current = true;
+    setTokagentCloudDisconnecting(true);
 
     try {
       let needRendererDisconnect = true;
@@ -489,7 +489,7 @@ export function useCloudState({
         if (needRendererDisconnect) {
           if (
             !(await confirmDesktopAction({
-              title: "Disconnect from Eliza Cloud",
+              title: "Disconnect from Tokagent Cloud",
               message:
                 "The agent will need a local AI provider to continue working.",
               confirmLabel: "Disconnect",
@@ -529,7 +529,7 @@ export function useCloudState({
         }
       } else if (
         !(await confirmDesktopAction({
-          title: "Disconnect from Eliza Cloud",
+          title: "Disconnect from Tokagent Cloud",
           message:
             "The agent will need a local AI provider to continue working.",
           confirmLabel: "Disconnect",
@@ -557,33 +557,33 @@ export function useCloudState({
         ]);
       }
 
-      setElizaCloudEnabled(false);
-      setElizaCloudConnected(false);
-      publishElizaCloudVoiceSnapshot(setElizaCloudHasPersistedKey, {
+      setTokagentCloudEnabled(false);
+      setTokagentCloudConnected(false);
+      publishTokagentCloudVoiceSnapshot(setTokagentCloudHasPersistedKey, {
         apiConnected: false,
         enabled: false,
         cloudVoiceProxyAvailable: false,
         hasPersistedApiKey: false,
       });
-      setElizaCloudVoiceProxyAvailable(false);
-      setElizaCloudCredits(null);
-      setElizaCloudCreditsLow(false);
-      setElizaCloudCreditsCritical(false);
-      setElizaCloudAuthRejected(false);
-      setElizaCloudCreditsError(null);
-      setElizaCloudUserId(null);
-      setElizaCloudStatusReason(null);
-      lastElizaCloudPollConnectedRef.current = false;
-      elizaCloudPreferDisconnectedUntilLoginRef.current = true;
-      setActionNotice("Disconnected from Eliza Cloud.", "success");
+      setTokagentCloudVoiceProxyAvailable(false);
+      setTokagentCloudCredits(null);
+      setTokagentCloudCreditsLow(false);
+      setTokagentCloudCreditsCritical(false);
+      setTokagentCloudAuthRejected(false);
+      setTokagentCloudCreditsError(null);
+      setTokagentCloudUserId(null);
+      setTokagentCloudStatusReason(null);
+      lastTokagentCloudPollConnectedRef.current = false;
+      tokagentCloudPreferDisconnectedUntilLoginRef.current = true;
+      setActionNotice("Disconnected from Tokagent Cloud.", "success");
     } catch (err) {
       setActionNotice(
         `Failed to disconnect: ${err instanceof Error ? err.message : err}`,
         "error",
       );
     } finally {
-      elizaCloudDisconnectInFlightRef.current = false;
-      setElizaCloudDisconnecting(false);
+      tokagentCloudDisconnectInFlightRef.current = false;
+      setTokagentCloudDisconnecting(false);
       void pollCloudCredits();
     }
   }, [pollCloudCredits, setActionNotice]);
@@ -591,59 +591,59 @@ export function useCloudState({
   // ── Effects ────────────────────────────────────────────────────────
 
   useEffect(() => {
-    if (elizaCloudAuthRejected) {
-      if (!elizaCloudAuthNoticeSentRef.current) {
-        elizaCloudAuthNoticeSentRef.current = true;
-        setActionNotice(t("notice.elizaCloudAuthRejected"), "error", 14_000);
+    if (tokagentCloudAuthRejected) {
+      if (!tokagentCloudAuthNoticeSentRef.current) {
+        tokagentCloudAuthNoticeSentRef.current = true;
+        setActionNotice(t("notice.tokagentCloudAuthRejected"), "error", 14_000);
       }
     } else {
-      elizaCloudAuthNoticeSentRef.current = false;
+      tokagentCloudAuthNoticeSentRef.current = false;
     }
-  }, [elizaCloudAuthRejected, setActionNotice, t]);
+  }, [tokagentCloudAuthRejected, setActionNotice, t]);
 
   // ── Return ─────────────────────────────────────────────────────────
 
   return {
     // State
-    elizaCloudEnabled,
-    setElizaCloudEnabled,
-    elizaCloudVoiceProxyAvailable,
-    setElizaCloudVoiceProxyAvailable,
-    elizaCloudConnected,
-    setElizaCloudConnected,
-    elizaCloudHasPersistedKey,
-    setElizaCloudHasPersistedKey,
-    elizaCloudCredits,
-    setElizaCloudCredits,
-    elizaCloudCreditsLow,
-    setElizaCloudCreditsLow,
-    elizaCloudCreditsCritical,
-    setElizaCloudCreditsCritical,
-    elizaCloudAuthRejected,
-    setElizaCloudAuthRejected,
-    elizaCloudCreditsError,
-    setElizaCloudCreditsError,
-    elizaCloudTopUpUrl,
-    setElizaCloudTopUpUrl,
-    elizaCloudUserId,
-    setElizaCloudUserId,
-    elizaCloudStatusReason,
-    setElizaCloudStatusReason,
+    tokagentCloudEnabled,
+    setTokagentCloudEnabled,
+    tokagentCloudVoiceProxyAvailable,
+    setTokagentCloudVoiceProxyAvailable,
+    tokagentCloudConnected,
+    setTokagentCloudConnected,
+    tokagentCloudHasPersistedKey,
+    setTokagentCloudHasPersistedKey,
+    tokagentCloudCredits,
+    setTokagentCloudCredits,
+    tokagentCloudCreditsLow,
+    setTokagentCloudCreditsLow,
+    tokagentCloudCreditsCritical,
+    setTokagentCloudCreditsCritical,
+    tokagentCloudAuthRejected,
+    setTokagentCloudAuthRejected,
+    tokagentCloudCreditsError,
+    setTokagentCloudCreditsError,
+    tokagentCloudTopUpUrl,
+    setTokagentCloudTopUpUrl,
+    tokagentCloudUserId,
+    setTokagentCloudUserId,
+    tokagentCloudStatusReason,
+    setTokagentCloudStatusReason,
     cloudDashboardView,
     setCloudDashboardView,
-    elizaCloudLoginBusy,
-    setElizaCloudLoginBusy,
-    elizaCloudLoginError,
-    setElizaCloudLoginError,
-    elizaCloudDisconnecting,
-    setElizaCloudDisconnecting,
+    tokagentCloudLoginBusy,
+    setTokagentCloudLoginBusy,
+    tokagentCloudLoginError,
+    setTokagentCloudLoginError,
+    tokagentCloudDisconnecting,
+    setTokagentCloudDisconnecting,
     // Refs (exposed for cleanup in AppContext's startup effect and for forward ref)
-    elizaCloudPollInterval,
-    elizaCloudDisconnectInFlightRef,
-    elizaCloudPreferDisconnectedUntilLoginRef,
-    lastElizaCloudPollConnectedRef,
-    elizaCloudLoginPollTimer,
-    elizaCloudLoginBusyRef,
+    tokagentCloudPollInterval,
+    tokagentCloudDisconnectInFlightRef,
+    tokagentCloudPreferDisconnectedUntilLoginRef,
+    lastTokagentCloudPollConnectedRef,
+    tokagentCloudLoginPollTimer,
+    tokagentCloudLoginBusyRef,
     handleCloudLoginRef,
     // Callbacks
     pollCloudCredits,

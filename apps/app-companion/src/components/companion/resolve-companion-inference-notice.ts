@@ -1,44 +1,44 @@
-import { modelLooksLikeElizaCloudHosted } from "@elizaos/app-core";
+import { modelLooksLikeTokagentCloudHosted } from "@tokagentos/app-core";
 
 export type CompanionInferenceNotice =
   | { kind: "cloud"; variant: "danger" | "warn"; tooltip: string }
   | { kind: "settings"; variant: "warn"; tooltip: string };
 
 export function resolveCompanionInferenceNotice(args: {
-  elizaCloudConnected: boolean;
-  elizaCloudAuthRejected: boolean;
-  elizaCloudCreditsError: string | null | undefined;
-  elizaCloudEnabled: boolean;
+  tokagentCloudConnected: boolean;
+  tokagentCloudAuthRejected: boolean;
+  tokagentCloudCreditsError: string | null | undefined;
+  tokagentCloudEnabled: boolean;
   chatLastUsageModel?: string;
   hasInterruptedAssistant: boolean;
   t: (key: string) => string;
 }): CompanionInferenceNotice | null {
   const {
-    elizaCloudConnected,
-    elizaCloudAuthRejected,
-    elizaCloudCreditsError,
-    elizaCloudEnabled,
+    tokagentCloudConnected,
+    tokagentCloudAuthRejected,
+    tokagentCloudCreditsError,
+    tokagentCloudEnabled,
     chatLastUsageModel,
     hasInterruptedAssistant,
     t,
   } = args;
 
   if (
-    elizaCloudConnected &&
-    (elizaCloudAuthRejected || Boolean(elizaCloudCreditsError?.trim()))
+    tokagentCloudConnected &&
+    (tokagentCloudAuthRejected || Boolean(tokagentCloudCreditsError?.trim()))
   ) {
     return {
       kind: "cloud",
-      variant: elizaCloudAuthRejected ? "danger" : "warn",
-      tooltip: elizaCloudAuthRejected
-        ? t("notice.elizaCloudAuthRejected")
-        : (elizaCloudCreditsError?.trim() ?? ""),
+      variant: tokagentCloudAuthRejected ? "danger" : "warn",
+      tooltip: tokagentCloudAuthRejected
+        ? t("notice.tokagentCloudAuthRejected")
+        : (tokagentCloudCreditsError?.trim() ?? ""),
     };
   }
 
   const disconnectedCloudRelevant =
-    !elizaCloudConnected &&
-    (elizaCloudEnabled || modelLooksLikeElizaCloudHosted(chatLastUsageModel));
+    !tokagentCloudConnected &&
+    (tokagentCloudEnabled || modelLooksLikeTokagentCloudHosted(chatLastUsageModel));
 
   if (disconnectedCloudRelevant) {
     return {

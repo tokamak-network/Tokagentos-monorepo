@@ -44,19 +44,19 @@
   },
   "scripts": {
     "test": "vitest run --config vitest.config.ts",
-    "test:app-state": "vitest run --config vitest.config.ts eliza/apps/app-lifeops/test/lifeops-app-state.test.ts",
-    "test:integration": "cd ../../.. && vitest run --config test/vitest/integration.config.ts eliza/apps/app-lifeops/test/life-smoke.integration.test.ts",
+    "test:app-state": "vitest run --config vitest.config.ts tokagent/apps/app-lifeops/test/lifeops-app-state.test.ts",
+    "test:integration": "cd ../../.. && vitest run --config test/vitest/integration.config.ts tokagent/apps/app-lifeops/test/life-smoke.integration.test.ts",
     "verify:live-schedule": "bun run ./scripts/verify-live-schedule-data.ts"
   },
   "dependencies": {
-    "@elizaos/agent": "workspace:*",
-    "@elizaos/app-core": "workspace:*",
-    "@elizaos/core": "workspace:*",
+    "@tokagentos/agent": "workspace:*",
+    "@tokagentos/app-core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
     "@elizaos/native-activity-tracker": "workspace:*",
     "@elizaos/plugin-signal": "workspace:*",
     "@elizaos/plugin-telegram": "workspace:*",
-    "@elizaos/shared": "workspace:*",
-    "@elizaos/ui": "workspace:*",
+    "@tokagentos/shared": "workspace:*",
+    "@tokagentos/ui": "workspace:*",
     "drizzle-orm": "^0.45.1",
     "lucide-react": "^1.0.0",
     "sharp": "^0.34.5"
@@ -65,10 +65,10 @@
     "react": "*"
   },
   "agentConfig": {
-    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginType": "tokagentos:plugin:1.0.0",
     "pluginParameters": {}
   },
-  "elizaos": {
+  "tokagentos": {
     "app": {
       "heroImage": "assets/hero.png"
     }

@@ -5,7 +5,7 @@
   "timestamp": "1771143963165",
   "iterations": 1,
   "datasetName": "voicebench-ground-truth-elevenlabs",
-  "datasetPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/manifest-elevenlabs.json",
+  "datasetPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/manifest-elevenlabs.json",
   "sampleCount": 10,
   "modes": [
     {
@@ -23,7 +23,7 @@
     {
       "mode": "simple",
       "sampleId": "greeting_short",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/greeting_short.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/greeting_short.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Hello there. This is a short voice benchmark sample.",
@@ -98,7 +98,7 @@
     {
       "mode": "simple",
       "sampleId": "weather_city",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/weather_city.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/weather_city.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Today in Austin, skies are clear and temperatures are mild.",
@@ -173,7 +173,7 @@
     {
       "mode": "simple",
       "sampleId": "finance_brief",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/finance_brief.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/finance_brief.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "The quarterly report shows revenue growth and improving margins.",
@@ -248,7 +248,7 @@
     {
       "mode": "simple",
       "sampleId": "support_reset",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/support_reset.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/support_reset.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "To reset your password, open settings, choose security, then tap reset.",
@@ -323,7 +323,7 @@
     {
       "mode": "simple",
       "sampleId": "calendar_note",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/calendar_note.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/calendar_note.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Your next meeting starts at three fifteen PM and lasts forty five minutes.",
@@ -398,7 +398,7 @@
     {
       "mode": "simple",
       "sampleId": "navigation_turn",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/navigation_turn.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/navigation_turn.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "In five hundred feet, turn right and continue for two miles.",
@@ -473,7 +473,7 @@
     {
       "mode": "simple",
       "sampleId": "medical_disclaimer",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/medical_disclaimer.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/medical_disclaimer.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "This information is educational and does not replace medical advice from a clinician.",
@@ -548,7 +548,7 @@
     {
       "mode": "simple",
       "sampleId": "multisentence_long",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/multisentence_long.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/multisentence_long.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Latency depends on model size, region distance, and network jitter. Caching first sentence audio can reduce perceived delay.",
@@ -623,7 +623,7 @@
     {
       "mode": "simple",
       "sampleId": "list_format",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/list_format.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/list_format.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Checklist: one, capture audio; two, transcribe; three, generate response; four, synthesize speech.",
@@ -698,7 +698,7 @@
     {
       "mode": "simple",
       "sampleId": "numbers_dates",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/numbers_dates.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/numbers_dates.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "On January fifteenth twenty twenty six, the average response time was one point four seconds.",
@@ -773,7 +773,7 @@
     {
       "mode": "non-simple",
       "sampleId": "greeting_short",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/greeting_short.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/greeting_short.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Hello there. This is a short voice benchmark sample.",
@@ -848,7 +848,7 @@
     {
       "mode": "non-simple",
       "sampleId": "weather_city",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/weather_city.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/weather_city.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Today in Austin, skies are clear and temperatures are mild.",
@@ -923,7 +923,7 @@
     {
       "mode": "non-simple",
       "sampleId": "finance_brief",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/finance_brief.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/finance_brief.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "The quarterly report shows revenue growth and improving margins.",
@@ -998,7 +998,7 @@
     {
       "mode": "non-simple",
       "sampleId": "support_reset",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/support_reset.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/support_reset.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "To reset your password, open settings, choose security, then tap reset.",
@@ -1073,7 +1073,7 @@
     {
       "mode": "non-simple",
       "sampleId": "calendar_note",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/calendar_note.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/calendar_note.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Your next meeting starts at three fifteen PM and lasts forty five minutes.",
@@ -1148,7 +1148,7 @@
     {
       "mode": "non-simple",
       "sampleId": "navigation_turn",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/navigation_turn.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/navigation_turn.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "In five hundred feet, turn right and continue for two miles.",
@@ -1223,7 +1223,7 @@
     {
       "mode": "non-simple",
       "sampleId": "medical_disclaimer",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/medical_disclaimer.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/medical_disclaimer.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "This information is educational and does not replace medical advice from a clinician.",
@@ -1298,7 +1298,7 @@
     {
       "mode": "non-simple",
       "sampleId": "multisentence_long",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/multisentence_long.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/multisentence_long.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Latency depends on model size, region distance, and network jitter. Caching first sentence audio can reduce perceived delay.",
@@ -1373,7 +1373,7 @@
     {
       "mode": "non-simple",
       "sampleId": "list_format",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/list_format.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/list_format.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "Checklist: one, capture audio; two, transcribe; three, generate response; four, synthesize speech.",
@@ -1448,7 +1448,7 @@
     {
       "mode": "non-simple",
       "sampleId": "numbers_dates",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/numbers_dates.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/numbers_dates.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": "On January fifteenth twenty twenty six, the average response time was one point four seconds.",

@@ -1,8 +1,8 @@
 import time
 
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content
-from elizaos.utils.validation import validate_action_keywords, validate_action_regex
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content
+from tokagentos.utils.validation import validate_action_keywords, validate_action_regex
 
 
 def create_mock_memory(text: str, id: str = "1") -> Memory:

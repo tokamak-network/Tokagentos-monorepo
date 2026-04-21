@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Ensure generated i18n keyword data exists for @elizaos/shared and
+ * Ensure generated i18n keyword data exists for @tokagentos/shared and
  * @elizaos/core. Source of truth is packages/shared/src/i18n/keywords/*.keywords.json
  * and the generator is packages/shared/scripts/generate-keywords.mjs.
  *
@@ -20,11 +20,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const REPO_ROOT = resolveRepoRootFromImportMeta(import.meta.url);
-const ELIZA_ROOT = existsSync(join(REPO_ROOT, "eliza", "packages", "shared"))
-  ? join(REPO_ROOT, "eliza")
+const TOKAGENT_ROOT = existsSync(join(REPO_ROOT, "tokagent", "packages", "shared"))
+  ? join(REPO_ROOT, "tokagent")
   : REPO_ROOT;
 
-const SHARED_PKG_DIR = join(ELIZA_ROOT, "packages", "shared");
+const SHARED_PKG_DIR = join(TOKAGENT_ROOT, "packages", "shared");
 const GENERATOR_PATH = join(
   SHARED_PKG_DIR,
   "scripts",

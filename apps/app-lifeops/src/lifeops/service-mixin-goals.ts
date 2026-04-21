@@ -16,12 +16,12 @@ import type {
   LifeOpsReminderUrgency,
   LifeOpsTaskDefinition,
   UpdateLifeOpsGoalRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_GOAL_STATUSES,
   LIFEOPS_GOAL_SUGGESTION_KINDS,
   LIFEOPS_REVIEW_STATES,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   createLifeOpsAuditEvent,
   createLifeOpsGoalDefinition,

@@ -1,11 +1,11 @@
-//! elizaOS REST API Example - Actix Web
+//! tokagentOS REST API Example - Actix Web
 //!
 //! A REST API server for chat with an AI agent.
-//! Uses the canonical elizaOS runtime with messageService.handleMessage pattern.
+//! Uses the canonical tokagentOS runtime with messageService.handleMessage pattern.
 
 use actix_cors::Cors;
 use actix_web::{web, App, HttpResponse, HttpServer, Responder};
-use elizaos::{
+use tokagentos::{
     AgentRuntime, Character, Content, Memory, UUID,
     runtime::RuntimeOptions,
     services::IMessageService,
@@ -20,8 +20,8 @@ use tokio::sync::RwLock;
 // Configuration
 // ============================================================================
 
-const CHARACTER_NAME: &str = "Eliza";
-const CHARACTER_BIO: &str = "A helpful AI assistant powered by elizaOS.";
+const CHARACTER_NAME: &str = "Tokagent";
+const CHARACTER_BIO: &str = "A helpful AI assistant powered by tokagentOS.";
 
 // ============================================================================
 // Runtime State
@@ -52,14 +52,14 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>, String> {
     }
 
     // Initialize runtime
-    println!("🚀 Initializing elizaOS runtime...");
+    println!("🚀 Initializing tokagentOS runtime...");
 
     let character_name = std::env::var("CHARACTER_NAME").unwrap_or_else(|_| CHARACTER_NAME.to_string());
     let character_bio = std::env::var("CHARACTER_BIO").unwrap_or_else(|_| CHARACTER_BIO.to_string());
 
     let character = Character {
         name: character_name,
-        bio: elizaos::Bio::Single(character_bio),
+        bio: tokagentos::Bio::Single(character_bio),
         ..Default::default()
     };
 
@@ -74,7 +74,7 @@ async fn get_runtime() -> Result<Arc<AgentRuntime>, String> {
                 return Err(error);
             }
 
-            println!("✅ elizaOS runtime initialized");
+            println!("✅ tokagentOS runtime initialized");
             RUNTIME.set(runtime.clone()).ok();
             Ok(runtime)
         }
@@ -146,14 +146,14 @@ async fn info() -> impl Responder {
     endpoints.insert("GET /health".to_string(), "Health check endpoint".to_string());
     endpoints.insert("GET /".to_string(), "This info endpoint".to_string());
 
-    let mode = if RUNTIME.get().is_some() { "elizaos" } else { "initializing" };
+    let mode = if RUNTIME.get().is_some() { "tokagentos" } else { "initializing" };
     let error = INIT_ERROR.get().cloned();
 
     HttpResponse::Ok().json(InfoResponse {
         name: CHARACTER_NAME.to_string(),
         bio: CHARACTER_BIO.to_string(),
         version: "2.0.0".to_string(),
-        powered_by: "elizaOS".to_string(),
+        powered_by: "tokagentOS".to_string(),
         framework: "Actix Web".to_string(),
         mode: mode.to_string(),
         error,
@@ -259,7 +259,7 @@ async fn main() -> std::io::Result<()> {
         .parse()
         .unwrap_or(3000);
 
-    println!("\n🌐 elizaOS REST API (Actix Web)");
+    println!("\n🌐 tokagentOS REST API (Actix Web)");
     println!("   http://localhost:{}\n", port);
     println!("📚 Endpoints:");
     println!("   GET  /       - Agent info");

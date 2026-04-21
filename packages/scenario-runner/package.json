@@ -1,7 +1,7 @@
 {
-  "name": "@elizaos/scenario-runner",
+  "name": "@tokagentos/scenario-runner",
   "version": "2.0.0-alpha.223",
-  "description": "Lean scenario runner for the WS7 scenario-schema architecture. Loads .scenario.ts files, executes them against a real @elizaos/core AgentRuntime with a live LLM, and emits a JSON report.",
+  "description": "Lean scenario runner for the WS7 scenario-schema architecture. Loads .scenario.ts files, executes them against a real @tokagentos/core AgentRuntime with a live LLM, and emits a JSON report.",
   "type": "module",
   "main": "./src/index.ts",
   "publishConfig": {
@@ -19,9 +19,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elizaos/core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
     "@elizaos/plugin-sql": "workspace:*",
-    "@elizaos/scenario-schema": "workspace:*"
+    "@tokagentos/scenario-schema": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^6.0.0",

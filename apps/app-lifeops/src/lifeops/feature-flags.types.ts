@@ -15,13 +15,13 @@
  *    resolved compile-time default for the current Cloud-link context.
  *    The runtime never *writes* a `default` row.
  *  - `local`   — toggled from the desktop UI / chat command.
- *  - `cloud`   — auto-provisioned by an Eliza Cloud package sync.
+ *  - `cloud`   — auto-provisioned by an Tokagent Cloud package sync.
  *
  * Cloud rows are read-only from the local UI: a Cloud-managed enable
  * cannot be revoked locally, only by removing the Cloud package.
  *
  * Cloud-default policy:
- *  - When the user is signed into Eliza Cloud, travel features and
+ *  - When the user is signed into Tokagent Cloud, travel features and
  *    `cloud.duffel` flip ON by default. Cost is metered Cloud-side with
  *    a 5% service fee; the local code never recomputes that markup
  *    (Commandment 2).
@@ -108,7 +108,7 @@ export const BASE_FEATURE_DEFAULTS: Readonly<
   "browser.automation": {
     enabled: false,
     description:
-      "Allow Eliza to drive the browser extension (form fills, navigation, clicks).",
+      "Allow Tokagent to drive the browser extension (form fills, navigation, clicks).",
     costsMoney: false,
   },
   "email.draft": {
@@ -125,13 +125,13 @@ export const BASE_FEATURE_DEFAULTS: Readonly<
   "cloud.duffel": {
     enabled: false,
     description:
-      "Use Eliza Cloud's managed Duffel billing instead of bringing your own DUFFEL_API_KEY.",
+      "Use Tokagent Cloud's managed Duffel billing instead of bringing your own DUFFEL_API_KEY.",
     costsMoney: true,
   },
 };
 
 /**
- * Feature keys that default to ON when the user is signed into Eliza
+ * Feature keys that default to ON when the user is signed into Tokagent
  * Cloud. The 5% service fee is applied Cloud-side (Commandment 2/4 — no
  * client math), so flipping these on locally is purely a default-policy
  * decision: it does not change billing.
@@ -152,7 +152,7 @@ export interface ResolveFeatureDefaultsArgs {
  * Resolve effective compile-time defaults for the given Cloud-link state.
  *
  *  - `cloudLinked: true`  → travel + `cloud.duffel` ON, billed via
- *    Eliza Cloud at the Cloud-side 5% service fee.
+ *    Tokagent Cloud at the Cloud-side 5% service fee.
  *  - `cloudLinked: false` → baseline (paid features OFF) until the user
  *    opts in locally and supplies their own Duffel API key.
  */
@@ -259,7 +259,7 @@ function buildFeatureDisabledMessage(
     return `${base} Enable it via Settings → Features.`;
   }
   if (!args.cloudLinked) {
-    return `${base} The simplest path is to sign in to Eliza Cloud — travel features turn on automatically with a 5% service fee. Or enable it locally via Settings → Features (requires your own Duffel API key).`;
+    return `${base} The simplest path is to sign in to Tokagent Cloud — travel features turn on automatically with a 5% service fee. Or enable it locally via Settings → Features (requires your own Duffel API key).`;
   }
-  return `${base} Enable it via Settings → Features or sign up for the matching Eliza Cloud package.`;
+  return `${base} Enable it via Settings → Features or sign up for the matching Tokagent Cloud package.`;
 }

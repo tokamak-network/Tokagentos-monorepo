@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { Moon, Sun } from "lucide-react";
 import { useCallback } from "react";
 import type { UiTheme } from "../../state/persistence";

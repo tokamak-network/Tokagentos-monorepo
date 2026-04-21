@@ -3,10 +3,10 @@ from __future__ import annotations
 from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
-from elizaos.types import ActionExample, Content
+from tokagentos.types import ActionExample, Content
 
 if TYPE_CHECKING:
-    from elizaos.generated.action_docs import ActionDoc
+    from tokagentos.generated.action_docs import ActionDoc
 
 
 def _coerce_text(value: object) -> str:

@@ -1,5 +1,5 @@
 /**
- * Abstract database schemas — the canonical data model for elizaOS.
+ * Abstract database schemas — the canonical data model for tokagentOS.
  *
  * These SchemaTable objects define the structure of all core tables in a
  * database-agnostic format. Use buildBaseTables(adapter) to convert them
@@ -111,7 +111,7 @@ export interface BaseTables {
 /**
  * Factory: build all 20 base tables using the given dialect adapter and buildTable function.
  *
- * This is the single source of truth for the elizaOS data model. Plugins
+ * This is the single source of truth for the tokagentOS data model. Plugins
  * import this function and pass their dialect adapter (pgAdapter, mysqlAdapter)
  * to get concrete ORM table objects.
  *

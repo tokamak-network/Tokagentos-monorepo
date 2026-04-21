@@ -1,6 +1,6 @@
 """ADHDBench: attention & context scaling benchmark."""
 
-from elizaos_adhdbench.types import (
+from tokagentos_adhdbench.types import (
     BenchmarkResults,
     ExpectedOutcome,
     OutcomeType,
@@ -11,7 +11,7 @@ from elizaos_adhdbench.types import (
     Turn,
     TurnResult,
 )
-from elizaos_adhdbench.config import ADHDBenchConfig
+from tokagentos_adhdbench.config import ADHDBenchConfig
 
 
 __all__ = [

@@ -1,16 +1,16 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { resolveOAuthDir } from "@elizaos/agent/config/paths";
+import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
 import type {
   AgentRuntime,
   Memory,
   Plugin,
   UUID,
-} from "@elizaos/core";
-import { ChannelType, createMessageMemory, logger } from "@elizaos/core";
-import type { PluginModuleShape } from "@elizaos/agent/test-support/test-helpers";
-import { extractPlugin } from "@elizaos/agent/test-support/test-helpers";
+} from "@tokagentos/core";
+import { ChannelType, createMessageMemory, logger } from "@tokagentos/core";
+import type { PluginModuleShape } from "@tokagentos/agent/test-support/test-helpers";
+import { extractPlugin } from "@tokagentos/agent/test-support/test-helpers";
 import {
   addDaysToLocalDate,
   buildUtcDateFromLocalParts,
@@ -246,7 +246,7 @@ export async function seedMorningBriefFixtures(args: {
       roomId: args.dmRoomId,
       metadata: {
         type: "assistant_message",
-        entityName: "Eliza",
+        entityName: "Tokagent",
       },
       content: {
         text:

@@ -1,4 +1,4 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { describe, expect, it } from "vitest";
 import { createRealTestRuntime } from "../../../../test/helpers/real-runtime";
 import {

@@ -1,11 +1,11 @@
 """
-ElizaOS Plugin for the Solana benchmark.
+TokagentOS Plugin for the Solana benchmark.
 
 Provides EXECUTE_CODE action and SOLANA_CONTEXT provider for
 Solana program interaction discovery.
 """
 
-from elizaos.types import Plugin
+from tokagentos.types import Plugin
 
 from .actions import SOLANA_ACTIONS
 from .providers import SOLANA_PROVIDERS
@@ -18,7 +18,7 @@ def create_solana_bench_plugin() -> Plugin:
     return Plugin(
         name="solana-bench",
         description=(
-            "Solana benchmark plugin for ElizaOS — provides EXECUTE_CODE action "
+            "Solana benchmark plugin for TokagentOS — provides EXECUTE_CODE action "
             "for running TypeScript skills against a Solana validator, and "
             "SOLANA_CONTEXT provider for injecting discovery state."
         ),

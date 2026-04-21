@@ -1,4 +1,4 @@
-import type { Memory } from "@elizaos/core";
+import type { Memory } from "@tokagentos/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const createBrowserSession = vi.fn(async (request: Record<string, unknown>) => ({
@@ -10,7 +10,7 @@ const createBrowserSession = vi.fn(async (request: Record<string, unknown>) => (
   tabId: null,
 }));
 
-vi.mock("@elizaos/agent/security", () => ({
+vi.mock("@tokagentos/agent/security", () => ({
   hasAdminAccess: vi.fn(async () => true),
 }));
 

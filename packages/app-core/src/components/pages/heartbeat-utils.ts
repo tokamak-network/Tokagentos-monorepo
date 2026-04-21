@@ -12,7 +12,7 @@ import type {
   TriggerWakeMode,
   UpdateTriggerRequest,
 } from "../../api/client";
-import type { TriggerKind } from "@elizaos/agent/triggers/types";
+import type { TriggerKind } from "@tokagentos/agent/triggers/types";
 import { formatDurationMs } from "../../utils/format";
 import { CronExpressionParser } from "cron-parser";
 
@@ -116,7 +116,7 @@ export interface HeartbeatTemplate {
   instructionsKey?: string;
 }
 
-export const TEMPLATES_STORAGE_KEY = "elizaos:heartbeat-templates";
+export const TEMPLATES_STORAGE_KEY = "tokagentos:heartbeat-templates";
 
 export const BUILT_IN_TEMPLATES: HeartbeatTemplate[] = [
   {

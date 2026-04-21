@@ -1,5 +1,5 @@
 import { CodingAgentTasksPanel } from "@elizaos/app-task-coordinator";
-import { PagePanel } from "@elizaos/ui";
+import { PagePanel } from "@tokagentos/ui";
 import { useApp } from "../../state";
 
 export function TasksPageView() {

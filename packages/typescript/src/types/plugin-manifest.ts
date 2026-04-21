@@ -1,7 +1,7 @@
 /**
  * Plugin Manifest Types
  *
- * Defines the structure for plugin manifests (elizaos.plugin.json).
+ * Defines the structure for plugin manifests (tokagentos.plugin.json).
  * These manifests describe plugin metadata, configuration schemas,
  * and capabilities for discovery and loading.
  *
@@ -125,7 +125,7 @@ export interface PluginManifestApp {
 }
 
 /**
- * Plugin manifest structure (elizaos.plugin.json).
+ * Plugin manifest structure (tokagentos.plugin.json).
  */
 export interface PluginManifest {
 	/** Unique plugin identifier */
@@ -158,8 +158,8 @@ export interface PluginManifest {
 	optionalSecrets?: string[];
 	/** Plugin dependencies (other plugin IDs) */
 	dependencies?: string[];
-	/** Minimum elizaOS version required */
-	minElizaVersion?: string;
+	/** Minimum tokagentOS version required */
+	minTokagentVersion?: string;
 	/** Plugin author */
 	author?: string;
 	/** Plugin homepage URL */
@@ -218,7 +218,7 @@ export interface PluginCandidate {
 	/** Package directory */
 	packageDir?: string;
 	/** Extracted package manifest metadata */
-	packageManifest?: elizaOSPackageManifest;
+	packageManifest?: tokagentOSPackageManifest;
 }
 
 /**
@@ -324,9 +324,9 @@ export interface PluginPackageInstall {
 }
 
 /**
- * elizaOS-specific metadata in package.json.
+ * tokagentOS-specific metadata in package.json.
  */
-export interface elizaOSPackageManifest {
+export interface tokagentOSPackageManifest {
 	/** Entry point extensions */
 	extensions?: string[];
 	/** Channel metadata */
@@ -336,7 +336,7 @@ export interface elizaOSPackageManifest {
 }
 
 /**
- * Standard package.json structure with elizaOS metadata.
+ * Standard package.json structure with tokagentOS metadata.
  */
 export interface PackageManifest {
 	/** Package name */
@@ -345,8 +345,8 @@ export interface PackageManifest {
 	version?: string;
 	/** Package description */
 	description?: string;
-	/** elizaOS-specific metadata */
-	elizaos?: elizaOSPackageManifest;
+	/** tokagentOS-specific metadata */
+	tokagentos?: tokagentOSPackageManifest;
 }
 
 /**

@@ -1,4 +1,4 @@
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 
 /**
  * `@elizaos/app-hyperscape` plugin entry point.

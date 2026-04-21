@@ -1,4 +1,4 @@
-elizaOS App is a personal AI assistant that runs on YOUR device. Built on elizaOS, it connects to your preferred AI provider while keeping your data local and private.
+tokagentOS App is a personal AI assistant that runs on YOUR device. Built on tokagentOS, it connects to your preferred AI provider while keeping your data local and private.
 
 FEATURES
 - Interactive setup — pick a name, personality, and AI provider

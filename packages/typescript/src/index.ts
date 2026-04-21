@@ -1,5 +1,5 @@
 /**
- * Main entry point for @elizaos/core
+ * Main entry point for @tokagentos/core
  *
  * This is the default export that includes all modules.
  * The build system creates separate bundles for Node.js and browser environments.
@@ -10,5 +10,5 @@
  */
 
 // Re-export everything from the Node.js entry point
-// This ensures that imports from "@elizaos/core" resolve correctly during builds
+// This ensures that imports from "@tokagentos/core" resolve correctly during builds
 export * from "./index.node";

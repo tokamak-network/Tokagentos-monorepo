@@ -1,6 +1,6 @@
 import { DEFAULT_CONFIG, type AppConfig } from "./types";
 
-const CONFIG_KEY = "eliza:tauri-config";
+const CONFIG_KEY = "tokagent:tauri-config";
 
 export function loadConfig(): AppConfig {
   try {

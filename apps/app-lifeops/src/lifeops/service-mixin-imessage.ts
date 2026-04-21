@@ -1,6 +1,6 @@
 // @ts-nocheck — mixin: type safety is enforced on the composed class
-import { loadElizaConfig } from "@elizaos/agent/config/config";
-import type { LifeOpsIMessageConnectorStatus } from "@elizaos/shared/contracts/lifeops";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
+import type { LifeOpsIMessageConnectorStatus } from "@tokagentos/shared/contracts/lifeops";
 import {
   getIMessageBackendStatus,
   getIMessageDeliveryStatus,
@@ -46,7 +46,7 @@ function readConfiguredConnectors(): {
   imessage: JsonRecord | null;
 } {
   try {
-    const config = coerceRecord(loadElizaConfig());
+    const config = coerceRecord(loadTokagentConfig());
     const connectors = coerceRecord(config?.connectors ?? config?.channels);
     return {
       bluebubbles: coerceRecord(connectors?.bluebubbles),
@@ -65,18 +65,18 @@ export function resolveLifeOpsIMessageBridgeConfig(
 ): IMessageBridgeConfig {
   const { bluebubbles, imessage } = readConfiguredConnectors();
   const preferredBackend =
-    coerceBackend(env.ELIZA_IMESSAGE_BACKEND) ??
+    coerceBackend(env.TOKAGENT_IMESSAGE_BACKEND) ??
     coerceBackend(env.IMESSAGE_BACKEND);
   const bluebubblesUrl =
-    coerceString(env.ELIZA_BLUEBUBBLES_URL) ??
+    coerceString(env.TOKAGENT_BLUEBUBBLES_URL) ??
     coerceString(env.BLUEBUBBLES_SERVER_URL) ??
     coerceString(bluebubbles?.serverUrl);
   const bluebubblesPassword =
-    coerceString(env.ELIZA_BLUEBUBBLES_PASSWORD) ??
+    coerceString(env.TOKAGENT_BLUEBUBBLES_PASSWORD) ??
     coerceString(env.BLUEBUBBLES_PASSWORD) ??
     coerceString(bluebubbles?.password);
   const imsgPath =
-    coerceString(env.ELIZA_IMESSAGE_CLI_PATH) ??
+    coerceString(env.TOKAGENT_IMESSAGE_CLI_PATH) ??
     coerceString(env.IMESSAGE_CLI_PATH) ??
     coerceString(imessage?.cliPath);
   const fallbackPreferredBackend =

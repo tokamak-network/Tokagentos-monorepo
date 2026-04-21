@@ -8,7 +8,7 @@ import {
   useTranslation,
   VRM_COUNT,
   VRM_TELEPORT_COMPLETE_EVENT,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import {
   memo,
   type ReactNode,
@@ -27,7 +27,7 @@ import { VrmStage } from "./VrmStage";
 
 const COMPANION_ZOOM_WHEEL_SENSITIVITY = 1 / 720;
 const COMPANION_ZOOM_PINCH_SENSITIVITY = 2.35;
-const COMPANION_ZOOM_STORAGE_KEY = "eliza.companion.zoom.v1";
+const COMPANION_ZOOM_STORAGE_KEY = "tokagent.companion.zoom.v1";
 const DEFAULT_COMPANION_ZOOM = 0.95;
 const COMPANION_TELEPORT_GREETING_DELAY_MS = 400;
 const CAMERA_DRAG_IGNORE_SELECTOR =
@@ -531,9 +531,9 @@ function CompanionSceneSurface({
         engine.setCameraXOffset(offset);
       }
     };
-    window.addEventListener("eliza:editor-camera-offset", handler);
+    window.addEventListener("tokagent:editor-camera-offset", handler);
     return () =>
-      window.removeEventListener("eliza:editor-camera-offset", handler);
+      window.removeEventListener("tokagent:editor-camera-offset", handler);
   }, []);
   const sceneStatus = useMemo(
     () => ({

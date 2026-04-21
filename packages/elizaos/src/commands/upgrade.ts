@@ -24,7 +24,7 @@ export async function upgrade(options: UpgradeOptions): Promise<void> {
   const metadata = readProjectMetadata(projectRoot);
   if (!metadata) {
     clack.cancel(
-      "No .elizaos/template.json metadata found in the current directory.",
+      "No .tokagentos/template.json metadata found in the current directory.",
     );
     process.exit(1);
   }
@@ -47,7 +47,7 @@ export async function upgrade(options: UpgradeOptions): Promise<void> {
     templatesDir: getTemplatesDir(),
   });
 
-  clack.intro(pc.bgCyan(pc.black(" elizaOS ")));
+  clack.intro(pc.bgCyan(pc.black(" tokagentOS ")));
   const spinner = clack.spinner();
   spinner.start("Rendering latest template...");
 
@@ -66,7 +66,7 @@ export async function upgrade(options: UpgradeOptions): Promise<void> {
 
   if (template.upstream && !options.skipUpstream) {
     const upstream = resolveTemplateUpstream(template.upstream);
-    spinner.message("Updating upstream eliza checkout...");
+    spinner.message("Updating upstream tokagent checkout...");
     updateGitSubmodule({
       branch: upstream.branch,
       dryRun: options.check || options.dryRun,

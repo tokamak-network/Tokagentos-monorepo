@@ -231,7 +231,7 @@ def main() -> None:
 
     print()
     print("╔══════════════════════════════════════════════════════════════════════════╗")
-    print("║           Eliza Framework Benchmark — Visualization                     ║")
+    print("║           Tokagent Framework Benchmark — Visualization                     ║")
     print("╚══════════════════════════════════════════════════════════════════════════╝")
 
     print_summary_table(ts_result)

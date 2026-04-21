@@ -1,4 +1,4 @@
-# CI / production dockerignore for `eliza/packages/app-core/deploy/Dockerfile.ci`.
+# CI / production dockerignore for `tokagent/packages/app-core/deploy/Dockerfile.ci`.
 # Copy to the repo root as `.dockerignore` before `docker build` (context is `.`).
 # Pre-built `dist/` and `apps/app/dist/` are expected in the build context.
 
@@ -8,27 +8,27 @@
 .devin
 .vscode
 .idea
-.eliza.ci-disabled
+.tokagent.ci-disabled
 .env
 .env.local
 .env.*.local
 node_modules/.cache
 packages/**/node_modules
 apps/**/node_modules
-eliza/**/node_modules
-eliza/packages/app-core/deploy/**/node_modules
-eliza/.turbo
-eliza/packages/rust
-eliza/packages/python
-eliza/packages/benchmarks
-eliza/packages/examples
-eliza/apps
-eliza/cloud
-eliza/plugins/*/rust
-eliza/plugins/*/python
-eliza/plugins/*/.git
-eliza/plugins/*/.eliza
-eliza/plugins/*/.elizadb-test
+tokagent/**/node_modules
+tokagent/packages/app-core/deploy/**/node_modules
+tokagent/.turbo
+tokagent/packages/rust
+tokagent/packages/python
+tokagent/packages/benchmarks
+tokagent/packages/examples
+tokagent/apps
+tokagent/cloud
+tokagent/plugins/*/rust
+tokagent/plugins/*/python
+tokagent/plugins/*/.git
+tokagent/plugins/*/.tokagent
+tokagent/plugins/*/.tokagentdb-test
 apps/app/android
 apps/app/ios
 apps/app/electrobun
@@ -36,7 +36,7 @@ apps/app/.vite
 apps/app/screenshots
 apps/app/test-results
 apps/app/test
-apps/app/.eliza
+apps/app/.tokagent
 apps/homepage
 apps/home
 apps/landing
@@ -54,8 +54,8 @@ artifacts/
 deploy/
 
 # Other deploy Docker recipes — CI agent build only needs Dockerfile.ci
-eliza/packages/app-core/deploy/Dockerfile.cloud
-eliza/packages/app-core/deploy/Dockerfile.cloud-agent
-eliza/packages/app-core/deploy/Dockerfile.sandbox
-eliza/packages/app-core/deploy/Dockerfile.cloud.dockerignore
-!eliza/packages/app-core/deploy/Dockerfile.ci
+tokagent/packages/app-core/deploy/Dockerfile.cloud
+tokagent/packages/app-core/deploy/Dockerfile.cloud-agent
+tokagent/packages/app-core/deploy/Dockerfile.sandbox
+tokagent/packages/app-core/deploy/Dockerfile.cloud.dockerignore
+!tokagent/packages/app-core/deploy/Dockerfile.ci

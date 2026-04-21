@@ -71,7 +71,7 @@
   - **Why:** Observability, flush path parity with bounded concurrency, and safer lifecycle after shutdown.
 - **`Semaphore`:** Documented acquire/release pairing contract in the class header.
   - **Why:** Future callers are less likely to leak permits.
-- **`Semaphore`:** Removed duplicate class from `runtime.ts`; package entry points (`index.node` / `index.browser` / `index.edge`) re-export `Semaphore` from `utils/batch-queue/semaphore.js` so `import { Semaphore } from "@elizaos/core"` stays valid with a single implementation.
+- **`Semaphore`:** Removed duplicate class from `runtime.ts`; package entry points (`index.node` / `index.browser` / `index.edge`) re-export `Semaphore` from `utils/batch-queue/semaphore.js` so `import { Semaphore } from "@tokagentos/core"` stays valid with a single implementation.
   - **Why:** One semaphore implementation avoids drift and conflicting behavior.
 - **Knowledge embeddings:** `document-processor` batch fallback (single vector for many texts) and `llm.generateTextEmbeddingsBatch` now use `BatchProcessor` with `maxParallel: 10` instead of unbounded `Promise.all` over texts.
   - **Why:** Large document / batch sizes no longer open unbounded concurrent `TEXT_EMBEDDING` calls; retries on the document-processor fallback align with other batch paths (`maxRetriesAfterFailure: 2`).

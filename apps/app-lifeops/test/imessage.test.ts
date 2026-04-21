@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
-// Mock @elizaos/agent/config/config so the mixin's resolveLifeOpsIMessageBridgeConfig
+// Mock @tokagentos/agent/config/config so the mixin's resolveLifeOpsIMessageBridgeConfig
 // doesn't depend on real config loading.
-vi.mock("@elizaos/agent/config/config", () => ({
-  loadElizaConfig: () => ({}),
+vi.mock("@tokagentos/agent/config/config", () => ({
+  loadTokagentConfig: () => ({}),
 }));
 
 // child_process must be mocked before importing the bridge.

@@ -1,13 +1,13 @@
-# ELIZA React Example
+# TOKAGENT React Example
 
-A React implementation of the classic ELIZA chatbot powered by **elizaOS**, featuring a beautiful retro CRT terminal interface.
+A React implementation of the classic TOKAGENT chatbot powered by **tokagentOS**, featuring a beautiful retro CRT terminal interface.
 
 ## Overview
 
 This example demonstrates:
 
-- **elizaOS Integration**: Full AgentRuntime with plugin architecture
-- **Classic ELIZA Plugin**: Pattern matching model handler (no LLM required)
+- **tokagentOS Integration**: Full AgentRuntime with plugin architecture
+- **Classic TOKAGENT Plugin**: Pattern matching model handler (no LLM required)
 - **PGLite Database**: In-browser PostgreSQL-compatible storage
 - **Retro CRT aesthetic**: Phosphor green text, scanlines, and glow effects
 - **Fully client-side**: No server needed
@@ -29,7 +29,7 @@ The app will open at http://localhost:5173
 
 ## Architecture
 
-This example uses the full elizaOS agent framework:
+This example uses the full tokagentOS agent framework:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -39,20 +39,20 @@ This example uses the full elizaOS agent framework:
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    eliza-runtime.ts                          │
+│                    tokagent-runtime.ts                          │
 │              (AgentRuntime singleton manager)                │
 └─────────────────────────────────────────────────────────────┘
                               │
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     AgentRuntime                             │
-│                    (@elizaos/core)                           │
+│                    (@tokagentos/core)                           │
 └─────────────────────────────────────────────────────────────┘
                               │
               ┌───────────────┴───────────────┐
               ▼                               ▼
 ┌──────────────────────────┐    ┌──────────────────────────┐
-│     plugin-sql           │    │  plugin-eliza-classic    │
+│     plugin-sql           │    │  plugin-tokagent-classic    │
 │    (PGLite adapter)      │    │  (Pattern matching)      │
 │                          │    │                          │
 │  In-browser PostgreSQL   │    │  TEXT_LARGE handler      │
@@ -63,27 +63,27 @@ This example uses the full elizaOS agent framework:
 ### Plugins Used
 
 1. **@elizaos/plugin-sql**: Provides PGLite database adapter for in-browser persistence
-2. **plugin-eliza-classic**: Custom plugin that provides TEXT_LARGE/TEXT_SMALL model handlers using classic ELIZA pattern matching
+2. **plugin-tokagent-classic**: Custom plugin that provides TEXT_LARGE/TEXT_SMALL model handlers using classic TOKAGENT pattern matching
 
 ## How It Works
 
-### Pattern Matching (plugin-eliza-classic.ts)
+### Pattern Matching (plugin-tokagent-classic.ts)
 
-This implementation uses the original ELIZA pattern matching algorithm from Joseph Weizenbaum's 1966 program:
+This implementation uses the original TOKAGENT pattern matching algorithm from Joseph Weizenbaum's 1966 program:
 
 1. **Keywords**: Input is scanned for keywords with associated weights
 2. **Patterns**: Each keyword has regex patterns to match against
 3. **Transformations**: Captured groups are reflected (I → you, my → your)
 4. **Responses**: Random responses from templates avoid repetition
 
-### elizaOS Integration
+### tokagentOS Integration
 
-The classic ELIZA logic is wrapped as an elizaOS plugin that provides model handlers:
+The classic TOKAGENT logic is wrapped as an tokagentOS plugin that provides model handlers:
 
 ```typescript
-export const elizaClassicPlugin: Plugin = {
-  name: "eliza-classic",
-  description: "Classic ELIZA pattern matching psychotherapist",
+export const tokagentClassicPlugin: Plugin = {
+  name: "tokagent-classic",
+  description: "Classic TOKAGENT pattern matching psychotherapist",
   priority: 100, // High priority to override other model providers
 
   models: {
@@ -93,11 +93,11 @@ export const elizaClassicPlugin: Plugin = {
 };
 ```
 
-When the runtime processes a user message via `runtime.messageService.handleMessage(...)`, it will ultimately route to the classic ELIZA model handlers (TEXT_LARGE/TEXT_SMALL) provided by `plugin-eliza-classic` instead of an LLM API.
+When the runtime processes a user message via `runtime.messageService.handleMessage(...)`, it will ultimately route to the classic TOKAGENT model handlers (TEXT_LARGE/TEXT_SMALL) provided by `plugin-tokagent-classic` instead of an LLM API.
 
 ### No LLM Required
 
-Unlike modern chatbots, classic ELIZA uses purely rule-based pattern matching. This makes it:
+Unlike modern chatbots, classic TOKAGENT uses purely rule-based pattern matching. This makes it:
 
 - **Instant responses** (no API calls)
 - **Works offline** (all logic is client-side)
@@ -112,8 +112,8 @@ examples/react/
 │   ├── App.tsx                # Main chat component
 │   ├── App.css                # Terminal styling
 │   ├── index.css              # Global styles
-│   ├── eliza-runtime.ts       # AgentRuntime singleton manager
-│   └── plugin-eliza-classic.ts # ELIZA pattern matching plugin
+│   ├── tokagent-runtime.ts       # AgentRuntime singleton manager
+│   └── plugin-tokagent-classic.ts # TOKAGENT pattern matching plugin
 ├── index.html
 ├── package.json
 ├── tsconfig.json
@@ -149,7 +149,7 @@ You can add additional model providers by creating new plugins. The AgentRuntime
 // Example: Add an LLM fallback with lower priority
 const llmPlugin: Plugin = {
   name: "llm-fallback",
-  priority: 50, // Lower than ELIZA's 100
+  priority: 50, // Lower than TOKAGENT's 100
   models: {
     [ModelType.TEXT_LARGE]: async (runtime, params) => {
       // Call your LLM API here
@@ -160,17 +160,17 @@ const llmPlugin: Plugin = {
 
 ### Adding Bootstrap Actions
 
-The bootstrap plugin (actions, providers, evaluators, services) is now automatically included in the elizaOS core runtime. No need to manually import or configure it - it's built-in and auto-registered during initialization.
+The bootstrap plugin (actions, providers, evaluators, services) is now automatically included in the tokagentOS core runtime. No need to manually import or configure it - it's built-in and auto-registered during initialization.
 
-## About Classic ELIZA
+## About Classic TOKAGENT
 
-ELIZA was created by Joseph Weizenbaum at MIT in 1966. It simulates a Rogerian psychotherapist by:
+TOKAGENT was created by Joseph Weizenbaum at MIT in 1966. It simulates a Rogerian psychotherapist by:
 
 - Reflecting statements back as questions
 - Using keyword-based pattern matching
 - Creating the illusion of understanding through clever rephrasing
 
-This "ELIZA effect" - where people attribute human-like understanding to simple pattern matching - remains relevant in discussions about AI today.
+This "TOKAGENT effect" - where people attribute human-like understanding to simple pattern matching - remains relevant in discussions about AI today.
 
 ## License
 

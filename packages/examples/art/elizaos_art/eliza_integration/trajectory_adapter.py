@@ -1,13 +1,13 @@
 """
-Trajectory Adapter for ElizaOS plugin-trajectory-logger
+Trajectory Adapter for TokagentOS plugin-trajectory-logger
 
-Maps ART trajectories to ElizaOS trajectory format for:
+Maps ART trajectories to TokagentOS trajectory format for:
 - Persistent storage
 - Export to HuggingFace
 - GRPO grouping
 - RULER scoring integration
 
-This adapter provides end-to-end capture of the entire ElizaOS flow:
+This adapter provides end-to-end capture of the entire TokagentOS flow:
 - All LLM calls (prompts, responses, latency, tokens)
 - Provider accesses (game state, context, etc.)
 - Action executions (parameters, results, rewards)
@@ -21,12 +21,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Protocol, runtime_checkable
 
-from elizaos_art.base import EpisodeResult, State, Trajectory
+from tokagentos_art.base import EpisodeResult, State, Trajectory
 
 
 @runtime_checkable
 class TrajectoryLoggerService(Protocol):
-    """Protocol matching ElizaOS TrajectoryLoggerService interface."""
+    """Protocol matching TokagentOS TrajectoryLoggerService interface."""
 
     def start_trajectory(
         self,
@@ -106,9 +106,9 @@ class TrajectoryLoggerService(Protocol):
 
 
 @dataclass
-class ElizaEnvironmentState:
+class TokagentEnvironmentState:
     """
-    Environment state in ElizaOS format.
+    Environment state in TokagentOS format.
     
     Maps to EnvironmentState from plugin-trajectory-logger.
     """
@@ -136,8 +136,8 @@ class ElizaEnvironmentState:
 
 
 @dataclass
-class ElizaLLMCall:
-    """LLM call in ElizaOS format."""
+class TokagentLLMCall:
+    """LLM call in TokagentOS format."""
 
     model: str
     system_prompt: str
@@ -172,8 +172,8 @@ class ElizaLLMCall:
 
 
 @dataclass
-class ElizaProviderAccess:
-    """Provider access in ElizaOS format."""
+class TokagentProviderAccess:
+    """Provider access in TokagentOS format."""
 
     provider_name: str
     data: dict
@@ -192,8 +192,8 @@ class ElizaProviderAccess:
 
 
 @dataclass
-class ElizaActionAttempt:
-    """Action attempt in ElizaOS format."""
+class TokagentActionAttempt:
+    """Action attempt in TokagentOS format."""
 
     action_type: str
     action_name: str
@@ -217,13 +217,13 @@ class ElizaActionAttempt:
         }
 
 
-class ElizaTrajectoryLogger:
+class TokagentTrajectoryLogger:
     """
-    Adapter that wraps ART trajectory logging to ElizaOS format.
+    Adapter that wraps ART trajectory logging to TokagentOS format.
     
     When an external TrajectoryLoggerService is available, uses it.
     Otherwise, provides a standalone implementation that stores
-    trajectories locally in ElizaOS-compatible format.
+    trajectories locally in TokagentOS-compatible format.
     
     This adapter provides end-to-end capture of:
     - All LLM calls (prompts, responses, latency, tokens)
@@ -311,10 +311,10 @@ class ElizaTrajectoryLogger:
     def start_step(
         self,
         trajectory_id: str,
-        env_state: ElizaEnvironmentState | dict,
+        env_state: TokagentEnvironmentState | dict,
     ) -> str:
         """Start a new step in the trajectory."""
-        if isinstance(env_state, ElizaEnvironmentState):
+        if isinstance(env_state, TokagentEnvironmentState):
             env_state = env_state.to_dict()
 
         if self._external_logger:
@@ -356,10 +356,10 @@ class ElizaTrajectoryLogger:
     def log_llm_call(
         self,
         step_id: str,
-        llm_call: ElizaLLMCall | dict,
+        llm_call: TokagentLLMCall | dict,
     ) -> None:
         """Log an LLM call within a step."""
-        if isinstance(llm_call, ElizaLLMCall):
+        if isinstance(llm_call, TokagentLLMCall):
             call_dict = llm_call.to_dict()
         else:
             call_dict = llm_call
@@ -402,7 +402,7 @@ class ElizaTrajectoryLogger:
     def log_llm_call_by_trajectory_id(
         self,
         trajectory_id: str,
-        llm_call: ElizaLLMCall | dict,
+        llm_call: TokagentLLMCall | dict,
     ) -> None:
         """Log an LLM call using trajectory ID (uses current step)."""
         step_id = self._active_steps.get(trajectory_id)
@@ -412,10 +412,10 @@ class ElizaTrajectoryLogger:
     def log_provider_access(
         self,
         step_id: str,
-        provider_access: ElizaProviderAccess | dict,
+        provider_access: TokagentProviderAccess | dict,
     ) -> None:
         """Log a provider access within a step."""
-        if isinstance(provider_access, ElizaProviderAccess):
+        if isinstance(provider_access, TokagentProviderAccess):
             access_dict = provider_access.to_dict()
         else:
             access_dict = provider_access
@@ -449,7 +449,7 @@ class ElizaTrajectoryLogger:
     def log_provider_access_by_trajectory_id(
         self,
         trajectory_id: str,
-        provider_access: ElizaProviderAccess | dict,
+        provider_access: TokagentProviderAccess | dict,
     ) -> None:
         """Log a provider access using trajectory ID (uses current step)."""
         step_id = self._active_steps.get(trajectory_id)
@@ -460,12 +460,12 @@ class ElizaTrajectoryLogger:
         self,
         trajectory_id: str,
         step_id: str,
-        action: ElizaActionAttempt | dict,
+        action: TokagentActionAttempt | dict,
         reward: float | None = None,
         done: bool = False,
     ) -> None:
         """Complete a step with action outcome."""
-        if isinstance(action, ElizaActionAttempt):
+        if isinstance(action, TokagentActionAttempt):
             action_dict = action.to_dict()
         else:
             action_dict = action
@@ -514,7 +514,7 @@ class ElizaTrajectoryLogger:
     def complete_current_step(
         self,
         trajectory_id: str,
-        action: ElizaActionAttempt | dict,
+        action: TokagentActionAttempt | dict,
         reward: float | None = None,
         done: bool = False,
     ) -> None:
@@ -580,12 +580,12 @@ class ElizaTrajectoryLogger:
         return [p.stem for p in self.data_dir.glob("*.json")]
 
 
-def convert_to_eliza_trajectory(
+def convert_to_tokagent_trajectory(
     art_trajectory: Trajectory,
     agent_id: str,
 ) -> dict:
     """
-    Convert an ART Trajectory to ElizaOS trajectory format.
+    Convert an ART Trajectory to TokagentOS trajectory format.
     
     This enables using trajectories collected by ART with the
     plugin-trajectory-logger export functions.
@@ -686,7 +686,7 @@ class TrajectoryLoggingContext:
     
     Usage:
         ```python
-        logger = ElizaTrajectoryLogger(agent_id="my-agent")
+        logger = TokagentTrajectoryLogger(agent_id="my-agent")
         
         async with TrajectoryLoggingContext(
             logger,
@@ -702,7 +702,7 @@ class TrajectoryLoggingContext:
 
     def __init__(
         self,
-        logger: ElizaTrajectoryLogger,
+        logger: TokagentTrajectoryLogger,
         scenario_id: str | None = None,
         episode_id: str | None = None,
         batch_id: str | None = None,
@@ -737,16 +737,16 @@ class TrajectoryLoggingContext:
         """Set the final status before exit."""
         self._final_status = status
 
-    def start_step(self, env_state: ElizaEnvironmentState | dict) -> str:
+    def start_step(self, env_state: TokagentEnvironmentState | dict) -> str:
         """Start a new step in the trajectory."""
         return self._logger.start_step(self.trajectory_id, env_state)
 
-    def log_llm_call(self, step_id: str, llm_call: ElizaLLMCall | dict) -> None:
+    def log_llm_call(self, step_id: str, llm_call: TokagentLLMCall | dict) -> None:
         """Log an LLM call within a step."""
         self._logger.log_llm_call(step_id, llm_call)
 
     def log_provider_access(
-        self, step_id: str, provider_access: ElizaProviderAccess | dict
+        self, step_id: str, provider_access: TokagentProviderAccess | dict
     ) -> None:
         """Log a provider access within a step."""
         self._logger.log_provider_access(step_id, provider_access)
@@ -754,7 +754,7 @@ class TrajectoryLoggingContext:
     def complete_step(
         self,
         step_id: str,
-        action: ElizaActionAttempt | dict,
+        action: TokagentActionAttempt | dict,
         reward: float | None = None,
         done: bool = False,
     ) -> None:

@@ -6,9 +6,9 @@
  * at any time, not just during onboarding.
  */
 
-import type { ResolvedContentPack } from "@elizaos/shared/contracts/content-pack";
-import { BUILTIN_THEMES } from "@elizaos/shared/themes/presets";
-import { Button, Input } from "@elizaos/ui";
+import type { ResolvedContentPack } from "@tokagentos/shared/contracts/content-pack";
+import { BUILTIN_THEMES } from "@tokagentos/shared/themes/presets";
+import { Button, Input } from "@tokagentos/ui";
 import { Check, Moon, Sun } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -111,7 +111,7 @@ export function AppearanceSettingsSection() {
       .catch((err) => {
         if (cancelled) return;
         console.error(
-          "[eliza][content-packs] Failed to restore persisted pack:",
+          "[tokagent][content-packs] Failed to restore persisted pack:",
           err,
         );
         savePersistedActivePackUrl(null);

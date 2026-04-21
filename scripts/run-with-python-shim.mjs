@@ -81,7 +81,7 @@ function shellQuote(value) {
 }
 
 async function createShimDir(realPython) {
-  const shimDir = await mkdtemp(path.join(tmpdir(), "eliza-python-shim-"));
+  const shimDir = await mkdtemp(path.join(tmpdir(), "tokagent-python-shim-"));
   const quotedPython = shellQuote(realPython);
   const pythonWrapper = `#!/bin/sh
 real_python=${quotedPython}

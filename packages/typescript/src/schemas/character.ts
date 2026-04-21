@@ -245,7 +245,7 @@ export const characterSchema = z
 		name: z
 			.string()
 			.min(1, "Character name is required")
-			.describe('The name of the character (e.g., "Eliza")'),
+			.describe('The name of the character (e.g., "Tokagent")'),
 		username: z
 			.string()
 			.optional()

@@ -7,15 +7,15 @@ import {
   AgentRuntime,
   type Plugin,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { describeIf } from "../../../../test/helpers/conditional-tests.ts";
 import { ConversationHarness } from "../../../../test/helpers/conversation-harness.ts";
 import { saveEnv } from "../../../../test/helpers/test-utils";
-import { buildCharacterFromConfig } from "@elizaos/agent/runtime/eliza";
-import { configureLocalEmbeddingPlugin } from "@elizaos/agent/runtime/eliza";
-import { createElizaPlugin } from "@elizaos/agent/runtime/eliza-plugin";
+import { buildCharacterFromConfig } from "@tokagentos/agent/runtime/tokagent";
+import { configureLocalEmbeddingPlugin } from "@tokagentos/agent/runtime/tokagent";
+import { createTokagentPlugin } from "@tokagentos/agent/runtime/tokagent-plugin";
 import {
   LIVE_PROVIDER_ENV_KEYS,
   LIVE_TESTS_ENABLED,
@@ -77,24 +77,24 @@ describeIf(LIVE_SUITE_ENABLED)(
     let ownerId: UUID;
 
     const workspaceDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-identity-merge-workspace-"),
+      path.join(os.tmpdir(), "tokagent-identity-merge-workspace-"),
     );
     const pgliteDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-identity-merge-pglite-"),
+      path.join(os.tmpdir(), "tokagent-identity-merge-pglite-"),
     );
     const stateDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-identity-merge-state-"),
+      path.join(os.tmpdir(), "tokagent-identity-merge-state-"),
     );
 
     beforeAll(async () => {
       envBackup = saveEnv(
         ...LIVE_PROVIDER_ENV_KEYS,
         "PGLITE_DATA_DIR",
-        "ELIZA_STATE_DIR",
+        "TOKAGENT_STATE_DIR",
       );
       process.env.PGLITE_DATA_DIR = pgliteDir;
-      process.env.ELIZA_STATE_DIR = stateDir;
-      process.env.LOG_LEVEL = process.env.ELIZA_E2E_LOG_LEVEL ?? "error";
+      process.env.TOKAGENT_STATE_DIR = stateDir;
+      process.env.LOG_LEVEL = process.env.TOKAGENT_E2E_LOG_LEVEL ?? "error";
 
       for (const key of LIVE_PROVIDER_ENV_KEYS) {
         delete process.env[key];
@@ -106,7 +106,7 @@ describeIf(LIVE_SUITE_ENABLED)(
       const character = buildCharacterFromConfig({});
       character.settings = {
         ...(character.settings ?? {}),
-        ELIZA_ADMIN_ENTITY_ID: ownerId,
+        TOKAGENT_ADMIN_ENTITY_ID: ownerId,
       };
       character.secrets = selectedProviderEnv;
 
@@ -125,7 +125,7 @@ describeIf(LIVE_SUITE_ENABLED)(
         character,
         plugins: [
           providerPlugin as Plugin,
-          createElizaPlugin({
+          createTokagentPlugin({
             agentId: "main",
             workspaceDir,
           }),

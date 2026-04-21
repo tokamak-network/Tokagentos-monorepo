@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import time
 
-from elizaos.types import Provider, ProviderResult
-from elizaos.types.model import ModelType
+from tokagentos.types import Provider, ProviderResult
+from tokagentos.types.model import ModelType
 
 from .prompts import MESSAGE_CLASSIFIER_TEMPLATE
 

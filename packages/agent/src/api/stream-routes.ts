@@ -10,7 +10,7 @@
 
 import fs from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type { StreamConfig } from "../services/stream-manager.js";
 import {
   readRequestBody,
@@ -43,7 +43,7 @@ export type { StreamRouteState } from "./stream-route-state.js";
  *  - Legacy desktop screencapture bridges
  *  - Any client POSTing raw JPEG bytes
  */
-const MJPEG_BOUNDARY = "elizaframe";
+const MJPEG_BOUNDARY = "tokagentframe";
 
 const mjpegSubscribers = new Set<ServerResponse>();
 let latestFrame: Buffer | null = null;
@@ -134,7 +134,7 @@ export function detectCaptureMode(): StreamConfig["inputMode"] {
   if (explicit === "file") return "file";
 
   // Desktop bridge -> pipe mode
-  if ("__elizaScreenCapture" in (globalThis as Record<string, unknown>)) {
+  if ("__tokagentScreenCapture" in (globalThis as Record<string, unknown>)) {
     return "pipe";
   }
 
@@ -787,10 +787,10 @@ export async function handleStreamRoute(
         Number.isFinite(merged.avatarIndex)
       ) {
         try {
-          state.mirrorStreamAvatarToElizaConfig?.(merged.avatarIndex);
+          state.mirrorStreamAvatarToTokagentConfig?.(merged.avatarIndex);
         } catch (err) {
           logger.warn(
-            `[stream] mirrorStreamAvatarToElizaConfig failed (stream settings still saved): ${
+            `[stream] mirrorStreamAvatarToTokagentConfig failed (stream settings still saved): ${
               err instanceof Error ? err.message : String(err)
             }`,
           );

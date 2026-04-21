@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { resolveStateDir } from "@elizaos/agent/config/paths";
+import { resolveStateDir } from "@tokagentos/agent/config/paths";
 import type {
   BscTradeSide,
   BscTradeTxStatus,
@@ -13,7 +13,7 @@ import type {
   WalletTradingProfileSourceFilter,
   WalletTradingProfileTokenBreakdown,
   WalletTradingProfileWindow,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 
 const WALLET_PROFILE_LEDGER_VERSION = 1;
 const MAX_WALLET_PROFILE_LEDGER_ENTRIES = 2000;

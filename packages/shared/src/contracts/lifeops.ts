@@ -1706,7 +1706,7 @@ export interface LifeOpsSignalConnectorStatus {
 export interface LifeOpsSignalInboundMessage {
   /** Stable message ID (from the Signal service memory store or signal-cli). */
   id: string;
-  /** elizaOS room ID this message was placed into. */
+  /** tokagentOS room ID this message was placed into. */
   roomId: string;
   /** Signal channel ID (typically the sender's phone number or group ID). */
   channelId: string;
@@ -2379,5 +2379,5 @@ export interface LifeOpsOccurrenceActionResult {
 
 // ── Wave 1+ extensions (relationships, X read, cross-channel, screen time,
 //    scheduling, dossier, iMessage, WhatsApp). Re-exported from this barrel so
-//    all downstream imports continue to use `@elizaos/shared/contracts/lifeops`.
+//    all downstream imports continue to use `@tokagentos/shared/contracts/lifeops`.
 export * from "./lifeops-extensions.js";

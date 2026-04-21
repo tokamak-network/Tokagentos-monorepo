@@ -1,5 +1,5 @@
 """
-Cross-language interop tests for elizaOS Python.
+Cross-language interop tests for tokagentOS Python.
 
 Tests verify that plugins can be loaded from other languages
 and that type structures are consistent across runtimes.
@@ -197,8 +197,8 @@ class TestIPCMessages:
         assert "result" in message
 
 
-class TestElizaClassicParity:
-    """Tests for ELIZA Classic cross-language parity."""
+class TestTokagentClassicParity:
+    """Tests for TOKAGENT Classic cross-language parity."""
 
     def test_core_patterns_exist(self) -> None:
         """Core patterns should exist in all implementations."""

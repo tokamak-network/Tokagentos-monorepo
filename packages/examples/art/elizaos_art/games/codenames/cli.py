@@ -10,14 +10,14 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from elizaos_art.base import TrainingConfig
-from elizaos_art.games.codenames.agent import CodenamesAgent, CodenamesGuesserAgent
-from elizaos_art.games.codenames.environment import CodenamesEnvironment
-from elizaos_art.games.codenames.types import CodenamesAction, CodenamesConfig, CardColor, Role
-from elizaos_art.trainer import GRPOTrainer
+from tokagentos_art.base import TrainingConfig
+from tokagentos_art.games.codenames.agent import CodenamesAgent, CodenamesGuesserAgent
+from tokagentos_art.games.codenames.environment import CodenamesEnvironment
+from tokagentos_art.games.codenames.types import CodenamesAction, CodenamesConfig, CardColor, Role
+from tokagentos_art.trainer import GRPOTrainer
 
 app = typer.Typer(
-    name="elizaos-art-codenames",
+    name="tokagentos-art-codenames",
     help="Codenames game training with ART/GRPO",
 )
 console = Console()
@@ -129,7 +129,7 @@ def interactive(
                     clue_word = console.input("Clue word: ").strip()
                     clue_num = int(console.input("Number: ").strip())
 
-                    from elizaos_art.games.codenames.types import Clue
+                    from tokagentos_art.games.codenames.types import Clue
 
                     env.set_pending_clue(Clue(word=clue_word, number=clue_num))
                     state, _, _ = await env.step(CodenamesAction.GIVE_CLUE)

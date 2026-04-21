@@ -1,6 +1,6 @@
 # ConfigBench — Plugin Configuration & Secrets Security Benchmark
 
-A comprehensive benchmark for testing ElizaOS `plugin-secrets-manager` and `plugin-plugin-manager` through scripted conversational scenarios. Tests both **capability** (correct secret CRUD, plugin lifecycle management, dynamic activation) and **security** (secret leakage prevention, DM enforcement, social engineering resistance).
+A comprehensive benchmark for testing TokagentOS `plugin-secrets-manager` and `plugin-plugin-manager` through scripted conversational scenarios. Tests both **capability** (correct secret CRUD, plugin lifecycle management, dynamic activation) and **security** (secret leakage prevention, DM enforcement, social engineering resistance).
 
 ## Quick Start
 
@@ -9,8 +9,8 @@ A comprehensive benchmark for testing ElizaOS `plugin-secrets-manager` and `plug
 cd benchmarks/configbench
 bun run src/index.ts
 
-# Run with Eliza LLM agent (requires GROQ_API_KEY or OPENAI_API_KEY)
-bun run src/index.ts --eliza
+# Run with Tokagent LLM agent (requires GROQ_API_KEY or OPENAI_API_KEY)
+bun run src/index.ts --tokagent
 
 # Verbose output with per-scenario traces
 bun run src/index.ts --verbose
@@ -35,7 +35,7 @@ bun run src/index.ts --verbose
 | **Perfect (Oracle)** | No | Returns exact correct behavior from ground truth | 100% |
 | **Failing (Anti-Oracle)** | No | Deliberately fails everything, leaks secrets | ~0% |
 | **Random (Coin Flip)** | No | 50/50 correct/incorrect at each decision point | ~25-50% |
-| **Eliza (LLM Agent)** | Yes | Real ElizaOS runtime with both plugins + LLM inference | Measured |
+| **Tokagent (LLM Agent)** | Yes | Real TokagentOS runtime with both plugins + LLM inference | Measured |
 
 ### Scoring
 
@@ -97,8 +97,8 @@ Results are written to `results/`:
 
 | Code | Meaning |
 |------|---------|
-| 0 | Success (validation passed, no security violations in Eliza handler) |
-| 1 | Eliza handler had security violations |
+| 0 | Success (validation passed, no security violations in Tokagent handler) |
+| 1 | Tokagent handler had security violations |
 | 2 | Validation failed (Perfect handler < 100%) |
 | 3 | Fatal error |
 

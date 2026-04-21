@@ -1,5 +1,5 @@
-import { type AgentRuntime, logger } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import { type AgentRuntime, logger } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import { supportsRuntimePluginLifecycle } from "../runtime/plugin-lifecycle.js";
 import type { ResolvedPlugin } from "../runtime/plugin-types.js";
 
@@ -23,8 +23,8 @@ export interface PluginRuntimeApplyResult {
 
 interface ApplyPluginRuntimeMutationOptions {
   runtime: AgentRuntime | null;
-  previousConfig: ElizaConfig;
-  nextConfig: ElizaConfig;
+  previousConfig: TokagentConfig;
+  nextConfig: TokagentConfig;
   previousResolvedPlugins?: ResolvedPlugin[];
   nextResolvedPlugins?: ResolvedPlugin[];
   changedPluginId?: string;
@@ -103,7 +103,7 @@ function resolveTargetPackageName(
 }
 
 async function resolvePluginsForConfig(
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): Promise<ResolvedPlugin[]> {
   const { resolvePlugins } = await import("../runtime/plugin-resolver.js");
   return await resolvePlugins(config, { quiet: true });

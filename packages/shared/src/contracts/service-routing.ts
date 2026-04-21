@@ -55,16 +55,16 @@ export type ServiceRoutingConfig = Partial<
   Record<ServiceCapability, ServiceRouteConfig>
 >;
 
-const ELIZA_CLOUD_ROUTE_BASE = {
-  backend: "elizacloud",
+const TOKAGENT_CLOUD_ROUTE_BASE = {
+  backend: "tokagentcloud",
   transport: "cloud-proxy",
-  accountId: "elizacloud",
+  accountId: "tokagentcloud",
 } as const satisfies Pick<
   ServiceRouteConfig,
   "backend" | "transport" | "accountId"
 >;
 
-const ELIZA_CLOUD_DEFAULT_SERVICE_CAPABILITIES = [
+const TOKAGENT_CLOUD_DEFAULT_SERVICE_CAPABILITIES = [
   "tts",
   "media",
   "embeddings",
@@ -75,7 +75,7 @@ export type DeploymentTargetRuntime = "local" | "cloud" | "remote";
 
 export type DeploymentTargetConfig = {
   runtime: DeploymentTargetRuntime;
-  provider?: "elizacloud" | "remote";
+  provider?: "tokagentcloud" | "remote";
   remoteApiBase?: string;
   remoteAccessToken?: string;
 };
@@ -88,7 +88,7 @@ export const SERVICE_CAPABILITIES = [
   "rpc",
 ] as const satisfies readonly ServiceCapability[];
 
-export function buildElizaCloudServiceRoute(
+export function buildTokagentCloudServiceRoute(
   args: {
     nanoModel?: string;
     smallModel?: string;
@@ -104,7 +104,7 @@ export function buildElizaCloudServiceRoute(
   } = {},
 ): ServiceRouteConfig {
   return {
-    ...ELIZA_CLOUD_ROUTE_BASE,
+    ...TOKAGENT_CLOUD_ROUTE_BASE,
     ...(args.nanoModel ? { nanoModel: args.nanoModel } : {}),
     ...(args.smallModel ? { smallModel: args.smallModel } : {}),
     ...(args.mediumModel ? { mediumModel: args.mediumModel } : {}),
@@ -127,7 +127,7 @@ export function buildElizaCloudServiceRoute(
   };
 }
 
-export function buildDefaultElizaCloudServiceRouting(
+export function buildDefaultTokagentCloudServiceRouting(
   args: {
     base?: ServiceRoutingConfig | null;
     includeInference?: boolean;
@@ -146,12 +146,12 @@ export function buildDefaultElizaCloudServiceRouting(
 ): ServiceRoutingConfig {
   const next: ServiceRoutingConfig = { ...(args.base ?? {}) };
 
-  for (const capability of ELIZA_CLOUD_DEFAULT_SERVICE_CAPABILITIES) {
-    next[capability] ??= buildElizaCloudServiceRoute();
+  for (const capability of TOKAGENT_CLOUD_DEFAULT_SERVICE_CAPABILITIES) {
+    next[capability] ??= buildTokagentCloudServiceRoute();
   }
 
   if (args.includeInference) {
-    next.llmText ??= buildElizaCloudServiceRoute({
+    next.llmText ??= buildTokagentCloudServiceRoute({
       nanoModel: args.nanoModel,
       smallModel: args.smallModel,
       mediumModel: args.mediumModel,
@@ -363,7 +363,7 @@ export function normalizeDeploymentTargetConfig(
   }
 
   const provider =
-    target.provider === "elizacloud" || target.provider === "remote"
+    target.provider === "tokagentcloud" || target.provider === "remote"
       ? target.provider
       : undefined;
 

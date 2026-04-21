@@ -3,8 +3,8 @@
 import pytest
 from pathlib import Path
 
-from elizaos_terminal_bench.dataset import TerminalBenchDataset
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.dataset import TerminalBenchDataset
+from tokagentos_terminal_bench.types import (
     TaskCategory,
     TaskDifficulty,
     SAMPLE_TASKS,

@@ -24,8 +24,8 @@
  *   - `stop()` is idempotent and cancels any pending first-tick timer.
  */
 
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { isNativeServerPlatform } from "../platform/is-native-server.js";
 import { type N8nModeConfigLike, resolveN8nMode } from "./n8n-mode.js";
 import {
@@ -35,8 +35,8 @@ import {
 } from "./n8n-sidecar.js";
 
 /**
- * Subset of ElizaConfig the autostart reads. Shares shape with the auth
- * bridge so the same loadElizaConfig() output feeds both.
+ * Subset of TokagentConfig the autostart reads. Shares shape with the auth
+ * bridge so the same loadTokagentConfig() output feeds both.
  */
 export interface N8nAutoStartConfigLike extends N8nModeConfigLike {
   n8n?: {

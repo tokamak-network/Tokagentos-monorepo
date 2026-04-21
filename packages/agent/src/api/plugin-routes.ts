@@ -1,13 +1,13 @@
 import type http from "node:http";
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
-  isElizaSettingsDebugEnabled,
+  isTokagentSettingsDebugEnabled,
   sanitizeForSettingsDebug,
   settingsDebugCloudSummary,
-} from "@elizaos/shared";
-import type { ElizaConfig } from "../config/config.js";
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
+} from "@tokagentos/shared";
+import type { TokagentConfig } from "../config/config.js";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
 import {
   getPluginWidgets,
   type PluginWidgetDeclarationServer,
@@ -17,7 +17,7 @@ import {
   CORE_PLUGINS,
   OPTIONAL_CORE_PLUGINS,
 } from "../runtime/core-plugins.js";
-import type { ResolvedPlugin } from "../runtime/eliza.js";
+import type { ResolvedPlugin } from "../runtime/tokagent.js";
 import type {
   CoreManagerLike,
   InstallProgressLike,
@@ -135,7 +135,7 @@ export interface PluginRouteContext {
   url: URL;
   state: {
     runtime: AgentRuntime | null;
-    config: ElizaConfig;
+    config: TokagentConfig;
     plugins: PluginEntry[];
     broadcastWs: ((data: object) => void) | null;
   };
@@ -152,7 +152,7 @@ export interface PluginRouteContext {
   // Server.ts internal helpers
   BLOCKED_ENV_KEYS: Set<string>;
   discoverInstalledPlugins: (
-    config: ElizaConfig,
+    config: TokagentConfig,
     bundledIds: Set<string>,
   ) => PluginEntry[];
   maskValue: (value: string) => string;
@@ -162,7 +162,7 @@ export interface PluginRouteContext {
   ) => { models: Array<{ id: string; name: string; category: string }> } | null;
   paramKeyToCategory: (paramKey: string) => string;
   buildPluginEvmDiagnosticEntry: (opts: {
-    config: ElizaConfig;
+    config: TokagentConfig;
     runtime: AgentRuntime | null;
   }) => PluginEntry;
   EVM_PLUGIN_PACKAGE: string;
@@ -202,7 +202,7 @@ function getPluginHealthProbe(plugin: object): PluginHealthProbe | null {
 }
 
 function readCompatEnabledFromConfig(
-  config: ElizaConfig,
+  config: TokagentConfig,
   pluginId: string,
 ): boolean | null {
   const asRecord = (value: unknown): Record<string, unknown> | null => {
@@ -222,7 +222,7 @@ function readCompatEnabledFromConfig(
 }
 
 function buildCoreToggleDiagnostics(
-  config: ElizaConfig,
+  config: TokagentConfig,
   npmName: string,
 ): CoreToggleDriftDiagnostic | null {
   const pluginId = optionalPluginListId(npmName);
@@ -300,9 +300,9 @@ export async function handlePluginRoutes(
   } = ctx;
 
   const buildPluginsListSnapshot = async (): Promise<PluginEntry[]> => {
-    let freshConfig: ElizaConfig;
+    let freshConfig: TokagentConfig;
     try {
-      freshConfig = loadElizaConfig();
+      freshConfig = loadTokagentConfig();
     } catch {
       freshConfig = state.config;
     }
@@ -500,14 +500,14 @@ export async function handlePluginRoutes(
   };
 
   const resolvePluginsSnapshot = async (
-    config: ElizaConfig,
+    config: TokagentConfig,
   ): Promise<ResolvedPlugin[]> => {
     const { resolvePlugins } = await import("../runtime/plugin-resolver.js");
     return await resolvePlugins(config, { quiet: true });
   };
 
   const resolvePluginsSnapshotSafe = async (
-    config: ElizaConfig,
+    config: TokagentConfig,
     reason: string,
   ): Promise<ResolvedPlugin[] | undefined> => {
     try {
@@ -559,9 +559,9 @@ export async function handlePluginRoutes(
     }>(req, res);
     if (!body) return true;
 
-    if (isElizaSettingsDebugEnabled()) {
+    if (isTokagentSettingsDebugEnabled()) {
       logger.debug(
-        `[eliza][settings][api] PUT /api/plugins/${pluginId} body=${JSON.stringify(
+        `[tokagent][settings][api] PUT /api/plugins/${pluginId} body=${JSON.stringify(
           sanitizeForSettingsDebug({
             enabled: body.enabled,
             configKeys: body.config ? Object.keys(body.config).sort() : [],
@@ -575,9 +575,9 @@ export async function handlePluginRoutes(
     let plugin = state.plugins.find((p) => p.id === pluginId);
     if (!plugin) {
       // Check store-installed plugins from config
-      let freshCfg: ElizaConfig;
+      let freshCfg: TokagentConfig;
       try {
-        freshCfg = loadElizaConfig();
+        freshCfg = loadTokagentConfig();
       } catch {
         freshCfg = state.config;
       }
@@ -672,10 +672,10 @@ export async function handlePluginRoutes(
       // Save config even when only config values changed (no enable toggle)
       if (body.enabled === undefined) {
         try {
-          saveElizaConfig(state.config);
+          saveTokagentConfig(state.config);
         } catch (err) {
           logger.warn(
-            `[eliza-api] Failed to save config: ${err instanceof Error ? err.message : err}`,
+            `[tokagent-api] Failed to save config: ${err instanceof Error ? err.message : err}`,
           );
         }
       }
@@ -731,7 +731,7 @@ export async function handlePluginRoutes(
       }
 
       logger.info(
-        `[eliza-api] ${body.enabled ? "Enabled" : "Disabled"} plugin: ${packageName}`,
+        `[tokagent-api] ${body.enabled ? "Enabled" : "Disabled"} plugin: ${packageName}`,
       );
 
       // Persist capability toggle state in config.features so the runtime
@@ -752,10 +752,10 @@ export async function handlePluginRoutes(
 
       // Save updated config
       try {
-        saveElizaConfig(state.config);
+        saveTokagentConfig(state.config);
       } catch (err) {
         logger.warn(
-          `[eliza-api] Failed to save config: ${err instanceof Error ? err.message : err}`,
+          `[tokagent-api] Failed to save config: ${err instanceof Error ? err.message : err}`,
         );
       }
     }
@@ -780,12 +780,12 @@ export async function handlePluginRoutes(
       scheduleRuntimeRestart(runtimeApply.reason);
     }
 
-    if (isElizaSettingsDebugEnabled()) {
+    if (isTokagentSettingsDebugEnabled()) {
       const cloud = (state.config as Record<string, unknown>).cloud as
         | Record<string, unknown>
         | undefined;
       logger.debug(
-        `[eliza][settings][api] PUT /api/plugins/${pluginId} → done configured=${plugin.configured} enabled=${plugin.enabled} cloud=${JSON.stringify(settingsDebugCloudSummary(cloud))}`,
+        `[tokagent][settings][api] PUT /api/plugins/${pluginId} → done configured=${plugin.configured} enabled=${plugin.enabled} cloud=${JSON.stringify(settingsDebugCloudSummary(cloud))}`,
       );
     }
 
@@ -1023,7 +1023,7 @@ export async function handlePluginRoutes(
       pluginEntries[installedId] = { enabled: true };
 
       // Record the install path so plugin-resolver can find the package.
-      // Without this, the downloaded package in ~/.eliza/plugins/installed/
+      // Without this, the downloaded package in ~/.tokagent/plugins/installed/
       // is invisible to the runtime loader.
       if (result.installPath) {
         if (
@@ -1046,10 +1046,10 @@ export async function handlePluginRoutes(
       }
 
       try {
-        saveElizaConfig(state.config);
+        saveTokagentConfig(state.config);
       } catch (err) {
         logger.warn(
-          `[eliza-api] Failed to save config after install: ${err instanceof Error ? err.message : err}`,
+          `[tokagent-api] Failed to save config after install: ${err instanceof Error ? err.message : err}`,
         );
       }
 
@@ -1174,10 +1174,10 @@ export async function handlePluginRoutes(
       };
 
       try {
-        saveElizaConfig(state.config);
+        saveTokagentConfig(state.config);
       } catch (err) {
         logger.warn(
-          `[eliza-api] Failed to save config after update: ${err instanceof Error ? err.message : err}`,
+          `[tokagent-api] Failed to save config after update: ${err instanceof Error ? err.message : err}`,
         );
       }
 
@@ -1274,10 +1274,10 @@ export async function handlePluginRoutes(
       }
 
       try {
-        saveElizaConfig(state.config);
+        saveTokagentConfig(state.config);
       } catch (err) {
         logger.warn(
-          `[eliza-api] Failed to save config after uninstall: ${err instanceof Error ? err.message : err}`,
+          `[tokagent-api] Failed to save config after uninstall: ${err instanceof Error ? err.message : err}`,
         );
       }
 
@@ -1532,7 +1532,7 @@ export async function handlePluginRoutes(
   }
 
   // ── GET /api/core/status ────────────────────────────────────────────────
-  // Returns whether @elizaos/core is ejected or resolved from npm.
+  // Returns whether @tokagentos/core is ejected or resolved from npm.
   if (method === "GET" && pathname === "/api/core/status") {
     try {
       const coreManager = requireCoreManager(state.runtime);
@@ -1553,7 +1553,7 @@ export async function handlePluginRoutes(
   if (method === "GET" && pathname === "/api/plugins/core") {
     // Build a set of loaded plugin names for robust matching.
     // Plugin internal names vary wildly (e.g. "local-ai" for plugin-local-embedding,
-    // "eliza-coder" for plugin-code), so we check loaded names against multiple
+    // "tokagent-coder" for plugin-code), so we check loaded names against multiple
     // derived forms of the npm package name.
     const loadedNames: Set<string> = state.runtime
       ? new Set(state.runtime.plugins.map((p: { name: string }) => p.name))
@@ -1663,7 +1663,7 @@ export async function handlePluginRoutes(
     };
 
     try {
-      saveElizaConfig(state.config);
+      saveTokagentConfig(state.config);
     } catch (err) {
       logger.warn(
         `[api] Config save failed: ${err instanceof Error ? err.message : err}`,

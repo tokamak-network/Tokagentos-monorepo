@@ -61,7 +61,7 @@ export interface ShareTargetPayload {
 
 declare global {
   interface Window {
-    __ELIZAOS_SHARE_QUEUE__?: ShareTargetPayload[];
+    __TOKAGENTOS_SHARE_QUEUE__?: ShareTargetPayload[];
   }
 }
 
@@ -70,10 +70,10 @@ export function dispatchShareTarget(
   dispatchEvent: (name: string, detail: unknown) => void,
   eventName: string,
 ): void {
-  if (!window.__ELIZAOS_SHARE_QUEUE__) {
-    window.__ELIZAOS_SHARE_QUEUE__ = [];
+  if (!window.__TOKAGENTOS_SHARE_QUEUE__) {
+    window.__TOKAGENTOS_SHARE_QUEUE__ = [];
   }
-  window.__ELIZAOS_SHARE_QUEUE__.push(payload);
+  window.__TOKAGENTOS_SHARE_QUEUE__.push(payload);
   dispatchEvent(eventName, payload);
 }
 

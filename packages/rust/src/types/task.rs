@@ -1,4 +1,4 @@
-//! Task types for elizaOS
+//! Task types for tokagentOS
 //!
 //! Contains Task, TaskWorker, TaskMetadata, and related types for task management.
 //! This module provides parity with the TypeScript task system.

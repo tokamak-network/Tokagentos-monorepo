@@ -28,11 +28,11 @@
     "ios/Sources/",
     "*.podspec"
   ],
-  "author": "elizaOS",
+  "author": "tokagentOS",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaOS/eliza"
+    "url": "https://github.com/tokagentOS/tokagent"
   },
   "scripts": {
     "build": "npm run clean && tsc && rollup -c rollup.config.mjs",
@@ -57,13 +57,13 @@
   "capacitor": {
     "ios": {
       "src": "ios",
-      "podName": "ElizaosCapacitorMobileSignals"
+      "podName": "TokagentosCapacitorMobileSignals"
     },
     "android": {
       "src": "android"
     }
   },
-  "elizaos": {
+  "tokagentos": {
     "platforms": [
       "browser",
       "node"

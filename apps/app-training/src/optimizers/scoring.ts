@@ -153,7 +153,7 @@ export function subsample<T>(
 
 /**
  * Wraps `IAgentRuntime.useModel` into the `LlmAdapter` shape. We accept a
- * loose runtime type so this module stays free of `@elizaos/core` import
+ * loose runtime type so this module stays free of `@tokagentos/core` import
  * cycles — the native backend supplies the bound `useModel` directly.
  */
 export interface UseModelHandler {

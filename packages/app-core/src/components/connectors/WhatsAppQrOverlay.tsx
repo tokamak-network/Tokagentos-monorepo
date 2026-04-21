@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { useEffect, useRef } from "react";
 import { useWhatsAppPairing } from "../../hooks";
 import { useApp } from "../../state";

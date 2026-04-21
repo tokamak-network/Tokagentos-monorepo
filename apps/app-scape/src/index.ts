@@ -1,5 +1,5 @@
-import type { Plugin, ServiceClass } from "@elizaos/core";
-import { gatePluginSessionForHostedApp } from "@elizaos/agent/services/app-session-gate";
+import type { Plugin, ServiceClass } from "@tokagentos/core";
+import { gatePluginSessionForHostedApp } from "@tokagentos/agent/services/app-session-gate";
 
 import { scapeActions } from "./actions/index.js";
 import { scapeProviders } from "./providers/index.js";
@@ -9,7 +9,7 @@ import { ScapeGameService } from "./services/game-service.js";
  * `@elizaos/app-scape` plugin entry point.
  *
  * PR 2 scope: plugin shell only. Declares the app metadata that the
- * eliza launcher reads (display name, capabilities, viewer URL) and
+ * tokagent launcher reads (display name, capabilities, viewer URL) and
  * wires up the minimal route handler that serves the viewer iframe.
  *
  * PR 3+ will add `services`, `actions`, and `providers` so the LLM

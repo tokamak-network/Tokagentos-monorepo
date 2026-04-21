@@ -6,7 +6,7 @@
  * for the per-user preference storage case.
  *
  * Requires:
- *   - ELIZA_LIVE_TEST=1 (or ELIZA_LIVE_TEST=1)
+ *   - TOKAGENT_LIVE_TEST=1 (or TOKAGENT_LIVE_TEST=1)
  *   - at least one real model provider API key
  */
 import crypto from "node:crypto";
@@ -23,20 +23,20 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { describeIf } from "../helpers/conditional-tests.ts";
 import { selectLiveProvider } from "../helpers/live-provider";
 
-/** Matches the table name used by @elizaos/core personality module. */
+/** Matches the table name used by @tokagentos/core personality module. */
 const USER_PREFS_TABLE = "user_personality_preferences";
 
-import { configureLocalEmbeddingPlugin } from "@elizaos/agent/runtime/eliza";
+import { configureLocalEmbeddingPlugin } from "@tokagentos/agent/runtime/tokagent";
 import {
   extractPlugin,
   type TestPluginModule,
-} from "@elizaos/agent/test-support/test-helpers";
+} from "@tokagentos/agent/test-support/test-helpers";
 import { withTimeout } from "../helpers/test-utils";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
@@ -45,7 +45,7 @@ dotenv.config({ path: path.resolve(packageRoot, ".env") });
 dotenv.config({ path: path.resolve(packageRoot, "..", "..", ".env") });
 
 const liveModelTestsEnabled =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const selectedLiveProvider = liveModelTestsEnabled
   ? selectLiveProvider()
   : null;
@@ -100,7 +100,7 @@ describeIf(hasModelProvider)("Personality Routing E2E", () => {
   let runtime: AgentRuntime;
 
   const pgliteDir = fs.mkdtempSync(
-    path.join(os.tmpdir(), "eliza-personality-e2e-pglite-"),
+    path.join(os.tmpdir(), "tokagent-personality-e2e-pglite-"),
   );
   const worldId = stringToUuid("personality-routing-world");
 

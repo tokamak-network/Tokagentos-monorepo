@@ -4,10 +4,10 @@ import os
 from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
-from elizaos.generated.spec_helpers import get_action_spec, get_provider_spec
+from tokagentos.generated.spec_helpers import get_action_spec, get_provider_spec
 
 if TYPE_CHECKING:
-    from elizaos.types import Action, ActionParameter, IAgentRuntime, Provider
+    from tokagentos.types import Action, ActionParameter, IAgentRuntime, Provider
 
 
 _PROMPT_COMPRESSION_KEYS = (

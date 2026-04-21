@@ -1,5 +1,5 @@
 /**
- * Markdown utilities for elizaOS.
+ * Markdown utilities for tokagentOS.
  *
  * Provides:
  * - Code fence parsing

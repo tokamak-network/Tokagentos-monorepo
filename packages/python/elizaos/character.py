@@ -7,7 +7,7 @@ from typing import Any
 
 from google.protobuf.json_format import MessageToDict, ParseDict
 
-from elizaos.types.agent import Character
+from tokagentos.types.agent import Character
 
 
 class CharacterValidationError(Exception):

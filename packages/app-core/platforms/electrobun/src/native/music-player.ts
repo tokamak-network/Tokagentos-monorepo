@@ -1,5 +1,5 @@
 /**
- * Desktop helper for elizaOS plugin-music-player HTTP routes.
+ * Desktop helper for tokagentOS plugin-music-player HTTP routes.
  *
  * Those routes are mounted on the agent HTTP server outside `/api` (e.g.
  * `/music-player/stream`). The main process resolves the same loopback base URL
@@ -30,7 +30,7 @@ export class MusicPlayerManager {
       return {
         ok: false,
         reason:
-          "Could not resolve agent API base (check ELIZA_API_PORT / embedded agent)",
+          "Could not resolve agent API base (check TOKAGENT_API_PORT / embedded agent)",
       };
     }
 

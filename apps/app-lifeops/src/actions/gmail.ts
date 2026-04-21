@@ -7,22 +7,22 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   CreateLifeOpsGmailBatchReplyDraftsRequest,
   CreateLifeOpsGmailReplyDraftRequest,
   LifeOpsGmailBatchReplySendItem,
   SendLifeOpsGmailBatchReplyRequest,
   SendLifeOpsGmailReplyRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { resolveDefaultTimeZone } from "../lifeops/defaults.js";
 import { LifeOpsService, LifeOpsServiceError } from "../lifeops/service.js";
-import { hasContextSignalForKey } from "@elizaos/agent/actions";
+import { hasContextSignalForKey } from "@tokagentos/agent/actions";
 import {
   extractActionResultsFromState,
   extractRecentMessageEntriesFromState,
@@ -30,7 +30,7 @@ import {
   renderGroundedActionReply,
   summarizeActiveTrajectory,
   summarizeRecentActionHistory,
-} from "@elizaos/agent/actions";
+} from "@tokagentos/agent/actions";
 import { recentConversationTexts as collectRecentConversationTexts } from "./life-recent-context.js";
 import {
   detailArray,
@@ -1412,10 +1412,10 @@ function normalizeBatchSendItems(
 }
 
 // `suppressPostActionContinuation` is a local feature flag the runtime
-// reads via a wider Action shape than the npm `@elizaos/core@alpha`
+// reads via a wider Action shape than the npm `@tokagentos/core@alpha`
 // dist-tag's exported type — the published type hasn't caught up yet
 // so tsc rejects the property when compiled against node_modules on CI
-// (local resolves via paths map to the newer eliza/ source and accepts
+// (local resolves via paths map to the newer tokagent/ source and accepts
 // it natively).
 //
 // We used to end this declaration with

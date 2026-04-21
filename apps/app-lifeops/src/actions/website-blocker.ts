@@ -4,12 +4,12 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   getSelfControlAccess,
   SELFCONTROL_ACCESS_ERROR,
@@ -81,20 +81,20 @@ function formatPermissionText(
   if (permission.status === "granted") {
     return (
       permission.reason ??
-      "Website blocking permission is ready. Eliza can edit the system hosts file directly on this machine."
+      "Website blocking permission is ready. Tokagent can edit the system hosts file directly on this machine."
     );
   }
 
   if (permission.canRequest) {
     return (
       permission.reason ??
-      "Eliza can ask the OS for administrator/root approval whenever it needs to edit the system hosts file."
+      "Tokagent can ask the OS for administrator/root approval whenever it needs to edit the system hosts file."
     );
   }
 
   return (
     permission.reason ??
-    "Eliza cannot raise an administrator/root prompt for website blocking on this machine."
+    "Tokagent cannot raise an administrator/root prompt for website blocking on this machine."
   );
 }
 
@@ -396,14 +396,14 @@ export const blockWebsitesAction: Action & {
           await stopSelfControlBlock();
           return {
             success: false,
-            text: "Eliza started the website block but could not schedule its automatic unblock task, so it rolled the block back.",
+            text: "Tokagent started the website block but could not schedule its automatic unblock task, so it rolled the block back.",
           };
         }
       } catch (error) {
         await stopSelfControlBlock();
         return {
           success: false,
-          text: `Eliza could not schedule the automatic unblock task, so it rolled the website block back. ${error instanceof Error ? error.message : String(error)}`,
+          text: `Tokagent could not schedule the automatic unblock task, so it rolled the website block back. ${error instanceof Error ? error.message : String(error)}`,
         };
       }
     }
@@ -642,7 +642,7 @@ export const requestWebsiteBlockingPermissionAction: Action = {
       {
         name: "{{agentName}}",
         content: {
-          text: "The approval prompt completed successfully. Eliza can ask the OS for administrator/root approval whenever it needs to edit the system hosts file. That approval is per operation, so you may see the prompt again when starting or stopping a block.",
+          text: "The approval prompt completed successfully. Tokagent can ask the OS for administrator/root approval whenever it needs to edit the system hosts file. That approval is per operation, so you may see the prompt again when starting or stopping a block.",
           action: "REQUEST_WEBSITE_BLOCKING_PERMISSION",
         },
       },
@@ -659,7 +659,7 @@ export const unblockWebsitesAction: Action = {
     "LIFT_WEBSITE_BLOCK",
   ],
   description:
-    "Admin-only. Remove the current local website block by restoring the system hosts file entries Eliza added.",
+    "Admin-only. Remove the current local website block by restoring the system hosts file entries Tokagent added.",
   descriptionCompressed: "Admin: remove website block.",
   validate: async (runtime, message) => {
     const access = await getSelfControlAccess(runtime, message);

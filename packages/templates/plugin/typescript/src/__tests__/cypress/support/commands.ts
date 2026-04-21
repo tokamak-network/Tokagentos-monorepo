@@ -18,14 +18,14 @@ Cypress.Commands.add("shouldBeDarkMode", () => {
   cy.get("html").should("have.class", "dark");
 });
 
-// Custom command to set ELIZA_CONFIG
-Cypress.Commands.add("setElizaConfig", (config) => {
+// Custom command to set TOKAGENT_CONFIG
+Cypress.Commands.add("setTokagentConfig", (config) => {
   cy.window().then((win) => {
     // Extend Window interface for test configuration
-    interface WindowWithElizaConfig extends Window {
-      ELIZA_CONFIG?: { agentId: string; apiBase?: string };
+    interface WindowWithTokagentConfig extends Window {
+      TOKAGENT_CONFIG?: { agentId: string; apiBase?: string };
     }
-    (win as WindowWithElizaConfig).ELIZA_CONFIG = config;
+    (win as WindowWithTokagentConfig).TOKAGENT_CONFIG = config;
   });
 });
 
@@ -34,7 +34,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       shouldBeDarkMode(): Chainable<JQuery<HTMLElement>>;
-      setElizaConfig(config: { agentId: string; apiBase?: string }): Chainable<Window>;
+      setTokagentConfig(config: { agentId: string; apiBase?: string }): Chainable<Window>;
       mount(component: React.ReactElement): Chainable<unknown>;
     }
   }

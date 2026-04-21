@@ -62,7 +62,7 @@ export const DESKTOP_WORKSPACE_SURFACES: readonly DesktopWorkspaceSurfaceDef[] =
     {
       id: "cloud",
       label: "Cloud Window",
-      description: "Open Eliza Cloud controls in a detached window.",
+      description: "Open Tokagent Cloud controls in a detached window.",
     },
   ] as const;
 

@@ -1,5 +1,5 @@
 /**
- * @elizaos/skills - Bundled skills and skill loading utilities for elizaOS agents
+ * @tokagentos/skills - Bundled skills and skill loading utilities for tokagentOS agents
  *
  * This package provides:
  * - Bundled skills (markdown files with instructions for specific tasks)
@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { getSkillsDir, loadSkills, formatSkillsForPrompt } from "@elizaos/skills";
+ * import { getSkillsDir, loadSkills, formatSkillsForPrompt } from "@tokagentos/skills";
  *
  * // Get path to bundled skills
  * const skillsPath = getSkillsDir();

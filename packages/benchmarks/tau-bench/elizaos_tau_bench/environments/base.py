@@ -5,7 +5,7 @@ Base domain environment for Tau-bench.
 from abc import ABC, abstractmethod
 from typing import Any
 
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauBenchTask,
     ToolCall,
     ToolDefinition,

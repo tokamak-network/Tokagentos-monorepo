@@ -12,7 +12,7 @@ import {
   SidebarPanel,
   SidebarScrollRegion,
   TrajectorySidebarItem,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { Download, RefreshCw, Trash2, XCircle } from "lucide-react";
 import {
   type ReactNode,

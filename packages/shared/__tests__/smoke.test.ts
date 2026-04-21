@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-describe("@elizaos/shared", () => {
+describe("@tokagentos/shared", () => {
   it("exports the package entry point", async () => {
     const mod = await import("../src/index.ts");
     expect(mod).toBeDefined();
@@ -183,14 +183,14 @@ describe("@elizaos/shared", () => {
 
     it("resolves custom ports from env", async () => {
       const { resolveRuntimePorts } = await import("../src/index.ts");
-      const ports = resolveRuntimePorts({ ELIZA_API_PORT: "9999", ELIZA_UI_PORT: "8888" });
+      const ports = resolveRuntimePorts({ TOKAGENT_API_PORT: "9999", TOKAGENT_UI_PORT: "8888" });
       expect(ports.desktopApiPort).toBe(9999);
       expect(ports.desktopUiPort).toBe(8888);
     });
 
     it("ignores invalid port values", async () => {
       const { resolveRuntimePorts, DEFAULT_DESKTOP_API_PORT } = await import("../src/index.ts");
-      const ports = resolveRuntimePorts({ ELIZA_API_PORT: "not-a-number" });
+      const ports = resolveRuntimePorts({ TOKAGENT_API_PORT: "not-a-number" });
       expect(ports.desktopApiPort).toBe(DEFAULT_DESKTOP_API_PORT);
     });
 
@@ -228,30 +228,30 @@ describe("@elizaos/shared", () => {
       expect(config.allowedHosts).toEqual([]);
     });
 
-    it("resolveApiSecurityConfig reads ELIZA_API_TOKEN", async () => {
+    it("resolveApiSecurityConfig reads TOKAGENT_API_TOKEN", async () => {
       const { resolveApiSecurityConfig } = await import("../src/index.ts");
-      const config = resolveApiSecurityConfig({ ELIZA_API_TOKEN: "test-token-123" });
+      const config = resolveApiSecurityConfig({ TOKAGENT_API_TOKEN: "test-token-123" });
       expect(config.token).toBe("test-token-123");
     });
 
     it("resolveApiSecurityConfig parses comma-separated origins", async () => {
       const { resolveApiSecurityConfig } = await import("../src/index.ts");
       const config = resolveApiSecurityConfig({
-        ELIZA_ALLOWED_ORIGINS: "http://localhost:3000,http://example.com",
+        TOKAGENT_ALLOWED_ORIGINS: "http://localhost:3000,http://example.com",
       });
       expect(config.allowedOrigins).toEqual(["http://localhost:3000", "http://example.com"]);
     });
   });
 
   describe("settings-debug utilities", () => {
-    it("isElizaSettingsDebugEnabled returns false when env is empty", async () => {
-      const { isElizaSettingsDebugEnabled } = await import("../src/index.ts");
-      expect(isElizaSettingsDebugEnabled({ env: {} })).toBe(false);
+    it("isTokagentSettingsDebugEnabled returns false when env is empty", async () => {
+      const { isTokagentSettingsDebugEnabled } = await import("../src/index.ts");
+      expect(isTokagentSettingsDebugEnabled({ env: {} })).toBe(false);
     });
 
-    it("isElizaSettingsDebugEnabled returns true when ELIZA_SETTINGS_DEBUG=1", async () => {
-      const { isElizaSettingsDebugEnabled } = await import("../src/index.ts");
-      expect(isElizaSettingsDebugEnabled({ env: { ELIZA_SETTINGS_DEBUG: "1" } })).toBe(true);
+    it("isTokagentSettingsDebugEnabled returns true when TOKAGENT_SETTINGS_DEBUG=1", async () => {
+      const { isTokagentSettingsDebugEnabled } = await import("../src/index.ts");
+      expect(isTokagentSettingsDebugEnabled({ env: { TOKAGENT_SETTINGS_DEBUG: "1" } })).toBe(true);
     });
 
     it("sanitizeForSettingsDebug masks sensitive keys", async () => {

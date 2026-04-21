@@ -1,5 +1,5 @@
 """
-Shared helpers for integrating Atropos environments with the canonical elizaOS pipeline.
+Shared helpers for integrating Atropos environments with the canonical tokagentOS pipeline.
 
 Key idea:
 - Store per-step environment context in a typed ContextStore
@@ -15,8 +15,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from elizaos.services.message_service import MessageProcessingResult
-from elizaos.types import (
+from tokagentos.services.message_service import MessageProcessingResult
+from tokagentos.types import (
     Action,
     ActionParameter,
     ActionParameterSchema,
@@ -28,12 +28,12 @@ from elizaos.types import (
     Provider,
     ProviderResult,
 )
-from elizaos.types.memory import Memory, MessageMetadata
-from elizaos.types.primitives import as_uuid
+from tokagentos.types.memory import Memory, MessageMetadata
+from tokagentos.types.primitives import as_uuid
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types import State
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types import State
 
 
 JsonScalar = str | int | float | bool | None
@@ -102,7 +102,7 @@ async def run_with_context(
     trajectory_step_id: str | None = None,
 ) -> tuple[MessageProcessingResult, TContext]:
     """
-    Run one canonical elizaOS message loop with a context set.
+    Run one canonical tokagentOS message loop with a context set.
 
     Returns:
       (MessageProcessingResult, context_after_actions)

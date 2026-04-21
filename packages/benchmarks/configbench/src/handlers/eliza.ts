@@ -1,4 +1,4 @@
-/** Real ElizaOS agent handler. Requires GROQ_API_KEY or OPENAI_API_KEY. */
+/** Real TokagentOS agent handler. Requires GROQ_API_KEY or OPENAI_API_KEY. */
 
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -11,13 +11,13 @@ import type {
   Memory,
   Plugin,
   Character,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   asUUID,
   ChannelType,
   createUniqueUuid,
   EventType,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type { Handler, Scenario, ScenarioOutcome } from "../types.js";
 import { getNewlyActivatedPlugin, getNewlyDeactivatedPlugin } from "../plugins/index.js";
 
@@ -63,10 +63,10 @@ async function collectSecrets(rt: IAgentRuntime): Promise<Record<string, string>
 }
 
 async function tryImportDeps(): Promise<boolean> {
-  const core = await import("@elizaos/core");
+  const core = await import("@tokagentos/core");
   // AgentRuntime may or may not be exported — it is on the default package
   if (!("AgentRuntime" in core) || typeof core.AgentRuntime !== "function") {
-    console.error("[ElizaHandler] @elizaos/core does not export AgentRuntime");
+    console.error("[TokagentHandler] @tokagentos/core does not export AgentRuntime");
     return false;
   }
   AgentRuntimeCtor = core.AgentRuntime as unknown as typeof AgentRuntimeCtor;
@@ -131,17 +131,17 @@ function sendMessageAndWaitForResponse(
   });
 }
 
-export const elizaHandler: Handler = {
-  name: "Eliza (LLM Agent)",
+export const tokagentHandler: Handler = {
+  name: "Tokagent (LLM Agent)",
 
   async setup(): Promise<void> {
     depsAvailable = await tryImportDeps().catch((err) => {
-      console.error(`[ElizaHandler] Failed to import dependencies: ${err instanceof Error ? err.message : String(err)}`);
+      console.error(`[TokagentHandler] Failed to import dependencies: ${err instanceof Error ? err.message : String(err)}`);
       return false;
     });
 
     if (!depsAvailable || !AgentRuntimeCtor) {
-      console.warn("[ElizaHandler] Dependencies not available. Eliza handler will skip all scenarios.");
+      console.warn("[TokagentHandler] Dependencies not available. Tokagent handler will skip all scenarios.");
       depsAvailable = false;
       return;
     }
@@ -152,7 +152,7 @@ export const elizaHandler: Handler = {
     const hasAnthropic = !!process.env.ANTHROPIC_API_KEY;
 
     if (!hasGroq && !hasOpenAI && !hasAnthropic) {
-      console.warn("[ElizaHandler] No model provider API key found (GROQ_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY). Eliza handler will skip.");
+      console.warn("[TokagentHandler] No model provider API key found (GROQ_API_KEY, OPENAI_API_KEY, or ANTHROPIC_API_KEY). Tokagent handler will skip.");
       depsAvailable = false;
       return;
     }
@@ -190,7 +190,7 @@ export const elizaHandler: Handler = {
     if (typeof (runtime as Record<string, unknown>).initialize === "function") {
       await (runtime as unknown as { initialize(): Promise<void> }).initialize();
     }
-    console.log("[ElizaHandler] Runtime initialized with plugins:", plugins.map(p => p.name).join(", "));
+    console.log("[TokagentHandler] Runtime initialized with plugins:", plugins.map(p => p.name).join(", "));
   },
 
   async teardown(): Promise<void> {
@@ -215,12 +215,12 @@ export const elizaHandler: Handler = {
         pluginActivated: null,
       pluginDeactivated: null,
         latencyMs: Date.now() - start,
-        traces: ["ElizaHandler: skipped (dependencies not available)"],
+        traces: ["TokagentHandler: skipped (dependencies not available)"],
         error: "Dependencies not available",
       };
     }
 
-    const traces: string[] = ["ElizaHandler: using real AgentRuntime with LLM"];
+    const traces: string[] = ["TokagentHandler: using real AgentRuntime with LLM"];
     const agentResponses: string[] = [];
 
     // Create test user

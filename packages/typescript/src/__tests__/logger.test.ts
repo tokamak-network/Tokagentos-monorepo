@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createLogger, elizaLogger, logger } from "../logger";
+import { createLogger, tokagentLogger, logger } from "../logger";
 
 // Mock environment variables
 const mockEnv = {
@@ -42,9 +42,9 @@ describe("Logger", () => {
 			expect(typeof logger.debug).toBe("function");
 		});
 
-		it("should export elizaLogger as alias", () => {
-			expect(elizaLogger).toBeDefined();
-			expect(elizaLogger).toBe(logger);
+		it("should export tokagentLogger as alias", () => {
+			expect(tokagentLogger).toBeDefined();
+			expect(tokagentLogger).toBe(logger);
 		});
 
 		it("should have custom log levels", () => {

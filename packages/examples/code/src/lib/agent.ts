@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { AgentRuntime, type Character, type Plugin } from "@elizaos/core";
+import { AgentRuntime, type Character, type Plugin } from "@tokagentos/core";
 import anthropicPlugin from "@elizaos/plugin-anthropic";
 import { coderPlugin } from "@elizaos/plugin-code";
 import goalsPlugin from "@elizaos/plugin-goals";
@@ -13,10 +13,10 @@ import { resolveModelProvider } from "./model-provider.js";
 import { CODE_ASSISTANT_SYSTEM_PROMPT } from "./prompts.js";
 
 /**
- * Eliza Code Character Configuration (Direct Code Agent)
+ * Tokagent Code Character Configuration (Direct Code Agent)
  */
-const elizaCodeCharacter: Character = {
-  name: "Eliza",
+const tokagentCodeCharacter: Character = {
+  name: "Tokagent",
   bio: [
     "A coding assistant that directly helps users with implementation tasks.",
     "Capable of reading, writing, and editing files directly.",
@@ -69,17 +69,17 @@ The current working directory is dynamically provided.`,
 import { agentOrchestratorPlugin } from "@elizaos/plugin-agent-orchestrator";
 
 /**
- * Initialize the Eliza runtime with coding capabilities
+ * Initialize the Tokagent runtime with coding capabilities
  */
 export async function initializeAgent(): Promise<AgentRuntime> {
   const provider = resolveModelProvider(process.env);
   if (provider === "anthropic" && !process.env.ANTHROPIC_API_KEY) {
     throw new Error(
-      "ANTHROPIC_API_KEY is required (ELIZA_CODE_PROVIDER=anthropic).",
+      "ANTHROPIC_API_KEY is required (TOKAGENT_CODE_PROVIDER=anthropic).",
     );
   }
   if (provider === "openai" && !process.env.OPENAI_API_KEY) {
-    throw new Error("OPENAI_API_KEY is required (ELIZA_CODE_PROVIDER=openai).");
+    throw new Error("OPENAI_API_KEY is required (TOKAGENT_CODE_PROVIDER=openai).");
   }
 
   const providerPlugin =
@@ -109,7 +109,7 @@ export async function initializeAgent(): Promise<AgentRuntime> {
   ];
 
   const runtime = new AgentRuntime({
-    character: elizaCodeCharacter,
+    character: tokagentCodeCharacter,
     plugins,
   });
 

@@ -13,7 +13,7 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   APP_BLOCKER_ACCESS_ERROR,
   getAppBlockerAccess,

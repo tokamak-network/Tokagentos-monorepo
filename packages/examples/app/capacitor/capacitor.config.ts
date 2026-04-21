@@ -1,8 +1,8 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "com.elizaos.example.chat",
-  appName: "ElizaOS Chat",
+  appId: "com.tokagentos.example.chat",
+  appName: "TokagentOS Chat",
   webDir: "frontend/dist",
   bundledWebRuntime: false,
 };

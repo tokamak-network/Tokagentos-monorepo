@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from elizaos.types import Plugin
+from tokagentos.types import Plugin
 
 from .evaluators import long_term_extraction_evaluator, summarization_evaluator
 from .memory_service import MemoryService

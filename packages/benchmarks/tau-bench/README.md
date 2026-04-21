@@ -1,6 +1,6 @@
-# ElizaOS Tau-bench Benchmark
+# TokagentOS Tau-bench Benchmark
 
-A comprehensive implementation of the **τ-bench (Tau-bench)** benchmark for evaluating ElizaOS agents on real-world tool-augmented customer service tasks.
+A comprehensive implementation of the **τ-bench (Tau-bench)** benchmark for evaluating TokagentOS agents on real-world tool-augmented customer service tasks.
 
 ## Overview
 
@@ -35,18 +35,18 @@ pip install -e .
 
 ```bash
 # Run all domains with sample tasks
-python -m elizaos_tau_bench --sample
+python -m tokagentos_tau_bench --sample
 
 # Run specific domain
-python -m elizaos_tau_bench --sample --domain retail
+python -m tokagentos_tau_bench --sample --domain retail
 
 # Run with multiple trials for Pass^k evaluation
-python -m elizaos_tau_bench --sample --trials 8
+python -m tokagentos_tau_bench --sample --trials 8
 ```
 
-### Run with a Real LLM (ElizaOS Runtime)
+### Run with a Real LLM (TokagentOS Runtime)
 
-The Python benchmark currently supports the **OpenAI** model provider via the `elizaos-plugin-openai` package.
+The Python benchmark currently supports the **OpenAI** model provider via the `tokagentos-plugin-openai` package.
 
 ```bash
 cd benchmarks/tau-bench/python
@@ -58,7 +58,7 @@ pip install -e ".[dev]"
 pip install -e ../../../plugins/plugin-openai/python
 
 # (Recommended) Install trajectory logger plugin (from this monorepo)
-# This captures full end-to-end ElizaOS trajectories and exports them for training.
+# This captures full end-to-end TokagentOS trajectories and exports them for training.
 pip install -e ../../../plugins/plugin-trajectory-logger/python
 
 # Provide credentials
@@ -69,7 +69,7 @@ export OPENAI_SMALL_MODEL="gpt-5-mini"
 export OPENAI_LARGE_MODEL="gpt-5-mini"
 
 # Run full dataset with real LLM
-python -m elizaos_tau_bench --all --real-llm --trials 1
+python -m tokagentos_tau_bench --all --real-llm --trials 1
 ```
 
 ### Trajectory Logging (ART / GRPO)
@@ -81,32 +81,32 @@ When running with `--real-llm`, tau-bench exports trajectories compatible with t
 
 ```bash
 # Default: trajectories enabled in real-llm mode (ART)
-python -m elizaos_tau_bench --all --real-llm --output ./results/tau-bench-run
+python -m tokagentos_tau_bench --all --real-llm --output ./results/tau-bench-run
 
 # Disable explicitly
-python -m elizaos_tau_bench --all --real-llm --no-trajectories
+python -m tokagentos_tau_bench --all --real-llm --no-trajectories
 
 # Export in GRPO grouped format (best for RL training rollouts)
-python -m elizaos_tau_bench --all --real-llm --trajectory-format grpo
+python -m tokagentos_tau_bench --all --real-llm --trajectory-format grpo
 ```
 
 ### Run with Custom Data
 
 ```bash
 # Run with benchmark data
-python -m elizaos_tau_bench --all --data-path ./benchmark-data/tau-bench
+python -m tokagentos_tau_bench --all --data-path ./benchmark-data/tau-bench
 
 # Run specific domain with verbose output
-python -m elizaos_tau_bench --domain airline --verbose
+python -m tokagentos_tau_bench --domain airline --verbose
 
 # Run with custom output directory
-python -m elizaos_tau_bench --all --output ./results/tau-bench-2026
+python -m tokagentos_tau_bench --all --output ./results/tau-bench-2026
 ```
 
 ## CLI Options
 
 ```
-Usage: python -m elizaos_tau_bench [OPTIONS]
+Usage: python -m tokagentos_tau_bench [OPTIONS]
 
 Options:
   --all                 Run all domains (retail + airline)
@@ -124,10 +124,10 @@ Options:
   --verbose             Enable verbose output
   --json                Output results as JSON to stdout
   --llm-judge           Use LLM to evaluate response quality
-  --real-llm            Use real LLM via ElizaOS runtime (default: mock agent)
+  --real-llm            Use real LLM via TokagentOS runtime (default: mock agent)
   --temperature FLOAT   Temperature for model calls (provider-dependent)
   --model-provider STR  Provider selection (Python: openai)
-  --trajectories        Enable trajectory logging + export (requires elizaos-plugin-trajectory-logger)
+  --trajectories        Enable trajectory logging + export (requires tokagentos-plugin-trajectory-logger)
   --no-trajectories     Disable trajectory logging
   --trajectory-format {art,grpo}
                         Export format for trajectories
@@ -169,7 +169,7 @@ Results are saved to the output directory:
 
 ```
 ╔═══════════════════════════════════════════════════════════════════════╗
-║                  ElizaOS Tau-bench Benchmark Runner                   ║
+║                  TokagentOS Tau-bench Benchmark Runner                   ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 
 📋 Configuration:
@@ -237,7 +237,7 @@ pip install -e ".[dev]"
 pytest tests/
 
 # Run with coverage
-pytest tests/ --cov=elizaos_tau_bench --cov-report=html
+pytest tests/ --cov=tokagentos_tau_bench --cov-report=html
 
 # Run specific test file
 pytest tests/test_environments.py -v
@@ -249,13 +249,13 @@ pytest tests/test_integration.py -v
 ## Architecture
 
 ```
-elizaos_tau_bench/
+tokagentos_tau_bench/
 ├── __init__.py           # Package exports
 ├── constants.py          # Leaderboard baselines (reference)
 ├── types.py              # Core type definitions
 ├── dataset.py            # Task loading and management
 ├── agent.py              # Legacy mock agent (kept for reference)
-├── eliza_agent.py        # Real LLM agent integration (ElizaOS runtime)
+├── tokagent_agent.py        # Real LLM agent integration (TokagentOS runtime)
 ├── executor.py           # Tool execution engine
 ├── evaluator.py          # Result evaluation and Pass^k
 ├── runner.py             # Benchmark runner

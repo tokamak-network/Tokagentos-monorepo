@@ -7,12 +7,12 @@ import type {
   IAgentRuntime,
   Memory,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   logger,
   resolveCanonicalOwnerIdForMessage,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { hasAdminAccess } from "../security/access.js";
 import {
   formatContactCandidates,
@@ -95,7 +95,7 @@ async function handleAdminMessage(
       String(err),
     );
     return {
-      text: "Failed to send message to admin. The Eliza app may not be connected.",
+      text: "Failed to send message to admin. The Tokagent app may not be connected.",
       success: false,
       values: { success: false, error: "SEND_FAILED" },
       data: { actionName: "SEND_MESSAGE", targetType: "admin", urgency },

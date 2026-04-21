@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
-from elizaos_gaia.types import GAIAConfig, GAIAResult
+from tokagentos_gaia.types import GAIAConfig, GAIAResult
 
 
 class ProviderType(str, Enum):

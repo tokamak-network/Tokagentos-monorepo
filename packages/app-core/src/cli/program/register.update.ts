@@ -1,14 +1,14 @@
 /**
- * `eliza update` — check for and install updates.
+ * `tokagent update` — check for and install updates.
  *
- *   eliza update                   # Check & update on current channel
- *   eliza update --channel beta    # Switch to beta and update
- *   eliza update --check           # Check only, don't install
- *   eliza update status            # Show versions across all channels
- *   eliza update channel [name]    # View or change release channel
+ *   tokagent update                   # Check & update on current channel
+ *   tokagent update --channel beta    # Switch to beta and update
+ *   tokagent update --check           # Check only, don't install
+ *   tokagent update status            # Show versions across all channels
+ *   tokagent update channel [name]    # View or change release channel
  */
 
-import type { ReleaseChannel } from "@elizaos/agent/config";
+import type { ReleaseChannel } from "@tokagentos/agent/config";
 import type { Command } from "commander";
 import { theme } from "../../terminal/theme";
 import { CLI_VERSION } from "../version";
@@ -48,16 +48,16 @@ async function updateAction(opts: {
   check?: boolean;
   force?: boolean;
 }): Promise<void> {
-  const { loadElizaConfig, saveElizaConfig } = await import(
-    "@elizaos/agent/config/config"
+  const { loadTokagentConfig, saveTokagentConfig } = await import(
+    "@tokagentos/agent/config/config"
   );
   const { checkForUpdate, resolveChannel } = await import(
-    "@elizaos/agent/services/update-checker"
+    "@tokagentos/agent/services/update-checker"
   );
   const { detectInstallMethod, performUpdate } = await import(
-    "@elizaos/agent/services/self-updater"
+    "@tokagentos/agent/services/self-updater"
   );
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   let newChannel: ReleaseChannel | undefined;
 
   if (opts.channel) {
@@ -65,7 +65,7 @@ async function updateAction(opts: {
     const oldChannel = resolveChannel(config.update);
 
     if (newChannel !== oldChannel) {
-      saveElizaConfig({
+      saveTokagentConfig({
         ...config,
         update: {
           ...config.update,
@@ -84,7 +84,7 @@ async function updateAction(opts: {
   const effectiveChannel = newChannel ?? resolveChannel(config.update);
 
   console.log(
-    `\n${theme.heading("Eliza Update")}  ${theme.muted(`(channel: ${effectiveChannel})`)}`,
+    `\n${theme.heading("Tokagent Update")}  ${theme.muted(`(channel: ${effectiveChannel})`)}`,
   );
   console.log(theme.muted(`Current version: ${CLI_VERSION}\n`));
   console.log("Checking for updates...\n");
@@ -116,7 +116,7 @@ async function updateAction(opts: {
   );
 
   if (opts.check) {
-    console.log(theme.muted("  Run `eliza update` to install the update.\n"));
+    console.log(theme.muted("  Run `tokagent update` to install the update.\n"));
     return;
   }
 
@@ -164,21 +164,21 @@ async function updateAction(opts: {
     );
   }
   console.log(
-    theme.muted("  Restart eliza for the new version to take effect.\n"),
+    theme.muted("  Restart tokagent for the new version to take effect.\n"),
   );
 }
 
 async function statusAction(): Promise<void> {
-  const { loadElizaConfig } = await import("@elizaos/agent/config/config");
+  const { loadTokagentConfig } = await import("@tokagentos/agent/config/config");
   const { resolveChannel, fetchAllChannelVersions } = await import(
-    "@elizaos/agent/services/update-checker"
+    "@tokagentos/agent/services/update-checker"
   );
   const { detectInstallMethod } = await import(
-    "@elizaos/agent/services/self-updater"
+    "@tokagentos/agent/services/self-updater"
   );
   console.log(`\n${theme.heading("Version Status")}\n`);
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const channel = resolveChannel(config.update);
 
   console.log(`  Installed:  ${theme.accent(CLI_VERSION)}`);
@@ -205,13 +205,13 @@ async function statusAction(): Promise<void> {
 }
 
 async function channelAction(channelArg: string | undefined): Promise<void> {
-  const { loadElizaConfig, saveElizaConfig } = await import(
-    "@elizaos/agent/config/config"
+  const { loadTokagentConfig, saveTokagentConfig } = await import(
+    "@tokagentos/agent/config/config"
   );
   const { resolveChannel } = await import(
-    "@elizaos/agent/services/update-checker"
+    "@tokagentos/agent/services/update-checker"
   );
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const current = resolveChannel(config.update);
 
   if (!channelArg) {
@@ -226,7 +226,7 @@ async function channelAction(channelArg: string | undefined): Promise<void> {
       );
     }
     console.log(
-      `\n  ${theme.muted("Switch with: eliza update channel <stable|beta|nightly>")}\n`,
+      `\n  ${theme.muted("Switch with: tokagent update channel <stable|beta|nightly>")}\n`,
     );
     return;
   }
@@ -240,7 +240,7 @@ async function channelAction(channelArg: string | undefined): Promise<void> {
     return;
   }
 
-  saveElizaConfig({
+  saveTokagentConfig({
     ...config,
     update: {
       ...config.update,
@@ -255,7 +255,7 @@ async function channelAction(channelArg: string | undefined): Promise<void> {
   );
   console.log(theme.muted(`  ${CHANNEL_DESCRIPTIONS[newChannel]}`));
   console.log(
-    `\n  ${theme.muted("Run `eliza update` to fetch the latest version from this channel.")}\n`,
+    `\n  ${theme.muted("Run `tokagent update` to fetch the latest version from this channel.")}\n`,
   );
 }
 

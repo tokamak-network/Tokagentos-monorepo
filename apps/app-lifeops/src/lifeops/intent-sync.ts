@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import {
   executeRawSql,
   getRuntimeDb,
@@ -20,7 +20,7 @@ import {
  * NOTE: this module is *local-only*. There is no wire-level replication
  * across machines. Two separate agent processes running on different
  * machines will NOT see each other's intents. A cross-device replication
- * bridge (e.g. Eliza Cloud device-bus) is out of scope here — if/when that
+ * bridge (e.g. Tokagent Cloud device-bus) is out of scope here — if/when that
  * bridge exists, it would sit alongside this table, not inside it.
  */
 

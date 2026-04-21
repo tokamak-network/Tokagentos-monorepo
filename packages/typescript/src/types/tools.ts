@@ -1,7 +1,7 @@
 /**
  * Tool Policy Types
  *
- * Types and definitions for tool/action filtering and permissions in elizaOS.
+ * Types and definitions for tool/action filtering and permissions in tokagentOS.
  *
  * @module tools
  */

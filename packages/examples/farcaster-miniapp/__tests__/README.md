@@ -1,6 +1,6 @@
 # E2E Testing Suite
 
-Comprehensive end-to-end tests for the Eliza Multi-Chain Mini App.
+Comprehensive end-to-end tests for the Tokagent Multi-Chain Mini App.
 
 ## Test Structure
 

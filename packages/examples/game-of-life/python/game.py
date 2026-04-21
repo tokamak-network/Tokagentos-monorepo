@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-elizaOS Agentic Game of Life (Python)
+tokagentOS Agentic Game of Life (Python)
 
 This example is intentionally "no LLM": decisions are produced by a custom
 ModelType.TEXT_LARGE/TEXT_SMALL handler that returns deterministic XML.
 
-IMPORTANT: each tick is processed through the full Eliza pipeline:
+IMPORTANT: each tick is processed through the full Tokagent pipeline:
     result = await runtime.message_service.handle_message(runtime, message)
 
 so there’s no bypassing (actions run via runtime.process_actions()).
@@ -19,13 +19,13 @@ import time
 import uuid
 from dataclasses import dataclass
 
-from elizaos import ChannelType, Character, Content, Memory
-from elizaos.runtime import AgentRuntime
-from elizaos.types.components import Action, ActionResult, HandlerOptions
-from elizaos.types.model import ModelType
-from elizaos.types.plugin import Plugin
-from elizaos.types.primitives import UUID, as_uuid, string_to_uuid
-from elizaos.types.state import State
+from tokagentos import ChannelType, Character, Content, Memory
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.components import Action, ActionResult, HandlerOptions
+from tokagentos.types.model import ModelType
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.primitives import UUID, as_uuid, string_to_uuid
+from tokagentos.types.state import State
 
 # ============================================================================
 # SIM CONFIG + WORLD STATE
@@ -328,7 +328,7 @@ async def main() -> None:
 
     print(
         "\n╔══════════════════════════════════════════════════════════════╗\n"
-        "║              ELIZAOS AGENTIC GAME OF LIFE (PY)              ║\n"
+        "║              TOKAGENTOS AGENTIC GAME OF LIFE (PY)              ║\n"
         "╠══════════════════════════════════════════════════════════════╣\n"
         "║  Each tick: runtime.message_service.handle_message(...)      ║\n"
         "║  Decision: custom TEXT_LARGE handler (no LLM)                ║\n"

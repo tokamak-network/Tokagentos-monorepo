@@ -13,7 +13,7 @@
 
 import { execFile, spawn } from "node:child_process";
 import { promisify } from "node:util";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 const execFileAsync = promisify(execFile);
 
@@ -40,7 +40,7 @@ export interface PasswordManagerItem {
 
 export interface PasswordManagerBridgeConfig {
   preferredBackend?: PasswordManagerBackend;
-  /** Passed via `op --account`. Sourced from env `ELIZA_1PASSWORD_ACCOUNT`. */
+  /** Passed via `op --account`. Sourced from env `TOKAGENT_1PASSWORD_ACCOUNT`. */
   onePasswordAccount?: string;
   /** Binary override for 1Password CLI (default: "op"). */
   opPath?: string;

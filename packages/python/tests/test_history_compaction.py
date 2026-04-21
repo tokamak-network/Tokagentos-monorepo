@@ -6,19 +6,19 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from elizaos.features.advanced_memory.actions.reset_session import (
+from tokagentos.features.advanced_memory.actions.reset_session import (
     reset_session_action as advanced_reset_session_action,
 )
-from elizaos.features.advanced_memory.actions.reset_session import (
+from tokagentos.features.advanced_memory.actions.reset_session import (
     reset_session_action as basic_capabilities_reset_session_action,
 )
-from elizaos.features.basic_capabilities.providers.recent_messages import (
+from tokagentos.features.basic_capabilities.providers.recent_messages import (
     recent_messages_provider as basic_capabilities_recent_messages_provider,
 )
-from elizaos.features.basic_capabilities.providers.recent_messages import (
+from tokagentos.features.basic_capabilities.providers.recent_messages import (
     recent_messages_provider as basic_recent_messages_provider,
 )
-from elizaos.types import Content, Memory, as_uuid
+from tokagentos.types import Content, Memory, as_uuid
 
 
 @dataclass

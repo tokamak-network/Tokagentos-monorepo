@@ -1,5 +1,5 @@
 /**
- * elizaOS Cross-Language Interop - TypeScript
+ * tokagentOS Cross-Language Interop - TypeScript
  *
  * This module provides utilities for loading plugins written in other languages
  * (Rust, Python) into the TypeScript runtime.
@@ -44,7 +44,7 @@ export { loadWasmPlugin, validateWasmPlugin } from "./wasm-loader";
 /**
  * Universal plugin loader that auto-detects the plugin type
  */
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 import { loadPythonPlugin } from "./python-bridge";
 import type { PluginInteropConfig, PluginManifest } from "./types";
 import { loadWasmPlugin } from "./wasm-loader";

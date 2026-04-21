@@ -45,7 +45,7 @@
  * - No need to maintain exhaustive type lists
  */
 
-import type { JsonValue } from "@elizaos/core";
+import type { JsonValue } from "@tokagentos/core";
 import type { FormControl, TypeHandler } from "./types";
 
 /**

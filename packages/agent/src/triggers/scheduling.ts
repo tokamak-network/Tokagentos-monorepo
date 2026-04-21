@@ -1,4 +1,4 @@
-import type { UUID } from "@elizaos/core";
+import type { UUID } from "@tokagentos/core";
 import {
   type NormalizedTriggerDraft,
   TRIGGER_SCHEMA_VERSION,

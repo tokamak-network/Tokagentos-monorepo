@@ -1,10 +1,10 @@
-import type { Content, HandlerCallback, IAgentRuntime, State, TestSuite } from "@elizaos/core";
+import type { Content, HandlerCallback, IAgentRuntime, State, TestSuite } from "@tokagentos/core";
 
 /**
- * E2E (End-to-End) Test Suite for elizaOS Plugins
+ * E2E (End-to-End) Test Suite for tokagentOS Plugins
  * ================================================
  *
- * This file contains end-to-end tests that run within a real elizaOS runtime environment.
+ * This file contains end-to-end tests that run within a real tokagentOS runtime environment.
  * Unlike unit tests that test individual components in isolation, e2e tests validate
  * the entire plugin behavior in a production-like environment.
  *
@@ -15,7 +15,7 @@ import type { Content, HandlerCallback, IAgentRuntime, State, TestSuite } from "
  *
  * HOW E2E TESTS WORK:
  * -------------------
- * 1. Tests are executed by the elizaOS test runner using `elizaos test e2e`
+ * 1. Tests are executed by the tokagentOS test runner using `tokagentos test e2e`
  * 2. Each test receives a real runtime instance with the plugin loaded
  * 3. Tests can interact with the runtime just like in production
  * 4. Tests throw errors to indicate failure (no assertion library needed)
@@ -57,7 +57,7 @@ import type { Content, HandlerCallback, IAgentRuntime, State, TestSuite } from "
  * - runtime.actions: Access registered actions
  * - runtime.providers: Access registered providers
  *
- * For more details, see the elizaOS documentation.
+ * For more details, see the tokagentOS documentation.
  */
 
 // Define minimal interfaces for the types we need
@@ -86,9 +86,9 @@ export const StarterPluginTestSuite: TestSuite = {
       name: "example_test",
       fn: async (runtime: IAgentRuntime) => {
         // Test the character name
-        if (runtime.character.name !== "Eliza") {
+        if (runtime.character.name !== "Tokagent") {
           throw new Error(
-            `Expected character name to be "Eliza" but got "${runtime.character.name}"`,
+            `Expected character name to be "Tokagent" but got "${runtime.character.name}"`,
           );
         }
         // Verify the plugin is loaded properly

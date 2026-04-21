@@ -18,14 +18,14 @@ import {
   logger,
   type Media,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   normalizeCharacterLanguage,
   resolveStylePresetByAvatarIndex,
   resolveStylePresetById,
   resolveStylePresetByName,
-} from "@elizaos/shared/onboarding-presets";
-import type { ElizaConfig } from "../config/config.js";
+} from "@tokagentos/shared/onboarding-presets";
+import type { TokagentConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import {
   normalizeOnboardingProviderId,
@@ -121,7 +121,7 @@ export function readDeletedConversationIdsFromState(): Set<string> {
     );
   } catch (err) {
     logger.warn(
-      `[eliza-api] Failed to read deleted conversations state: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent-api] Failed to read deleted conversations state: ${err instanceof Error ? err.message : String(err)}`,
     );
     return new Set();
   }
@@ -203,7 +203,7 @@ export interface AgentStartupDiagnostics {
 // Onboarding & config helpers
 // ---------------------------------------------------------------------------
 
-export function hasPersistedOnboardingState(config: ElizaConfig): boolean {
+export function hasPersistedOnboardingState(config: TokagentConfig): boolean {
   if (config.meta?.onboardingComplete === true) {
     return true;
   }
@@ -219,10 +219,10 @@ export function hasPersistedOnboardingState(config: ElizaConfig): boolean {
     llmText?.remoteApiBase?.trim() ?? deploymentTarget.remoteApiBase?.trim();
   const hasCompleteCanonicalRouting =
     (llmText?.transport === "direct" &&
-      Boolean(backend && backend !== "elizacloud")) ||
+      Boolean(backend && backend !== "tokagentcloud")) ||
     (llmText?.transport === "remote" && Boolean(remoteApiBase)) ||
     (llmText?.transport === "cloud-proxy" &&
-      backend === "elizacloud" &&
+      backend === "tokagentcloud" &&
       Boolean(llmText.smallModel?.trim() && llmText.largeModel?.trim())) ||
     (deploymentTarget.runtime === "remote" &&
       Boolean(deploymentTarget.remoteApiBase?.trim()));
@@ -249,7 +249,7 @@ export function hasPersistedOnboardingState(config: ElizaConfig): boolean {
 const APP_OWNER_NAME_MAX_LENGTH = 60;
 
 /** Resolve the app owner's display name from config, or fall back to "User". */
-export function resolveAppUserName(config: ElizaConfig): string {
+export function resolveAppUserName(config: TokagentConfig): string {
   const ownerName = (config.ui as Record<string, unknown> | undefined)
     ?.ownerName as string | undefined;
   const normalized = ownerName?.trim().slice(0, APP_OWNER_NAME_MAX_LENGTH);
@@ -296,7 +296,7 @@ export function patchTouchesProviderSelection(
 export function resolveConversationGreetingText(
   runtime: AgentRuntime,
   lang: string,
-  uiConfig?: ElizaConfig["ui"],
+  uiConfig?: TokagentConfig["ui"],
 ): string {
   const pickRandom = (values: string[] | undefined): string => {
     const choices = (values ?? [])
@@ -339,7 +339,7 @@ export function resolveConversationGreetingText(
 // ---------------------------------------------------------------------------
 
 export function findOwnPackageRoot(startDir: string): string {
-  const KNOWN_NAMES = new Set(["eliza", "eliza", "elizaos"]);
+  const KNOWN_NAMES = new Set(["tokagent", "tokagent", "tokagentos"]);
   let dir = startDir;
   for (let i = 0; i < 10; i++) {
     const pkgPath = path.join(dir, "package.json");
@@ -638,7 +638,7 @@ function buildWalletContextPrompt(
 ): string {
   const addrs = getWalletAddresses();
   const walletNetwork =
-    process.env.ELIZA_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
+    process.env.TOKAGENT_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
       ? "testnet"
       : "mainnet";
   const localSignerAvailable = Boolean(process.env.EVM_PRIVATE_KEY?.trim());
@@ -731,7 +731,7 @@ export function buildWalletActionNotExecutedReply(
 ): string {
   const addrs = getWalletAddresses();
   const walletNetwork =
-    process.env.ELIZA_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
+    process.env.TOKAGENT_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
       ? "testnet"
       : "mainnet";
   const pluginEvmLoaded = resolvePluginEvmLoaded(runtime);

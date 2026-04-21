@@ -348,7 +348,7 @@ const DeploymentTargetSchema = z
       z.literal("remote"),
     ]),
     provider: z
-      .union([z.literal("elizacloud"), z.literal("remote")])
+      .union([z.literal("tokagentcloud"), z.literal("remote")])
       .optional(),
     remoteApiBase: z.string().optional(),
     remoteAccessToken: z.string().optional(),
@@ -371,7 +371,7 @@ export const CharacterSchema = z
 
 // --- Main config schema ---
 
-export const ElizaSchema = z
+export const TokagentSchema = z
   .object({
     meta: z
       .object({

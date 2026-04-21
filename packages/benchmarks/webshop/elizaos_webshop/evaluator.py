@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from elizaos_webshop.types import EpisodeStep, WebShopResult, WebShopTask
+from tokagentos_webshop.types import EpisodeStep, WebShopResult, WebShopTask
 
 
 class WebShopEvaluator:

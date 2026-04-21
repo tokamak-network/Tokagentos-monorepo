@@ -1,10 +1,10 @@
 import {
   applySubscriptionCredentials,
   deleteCredentials,
-} from "@elizaos/agent/auth";
-import { asNonEmptyString, asRecord } from "@elizaos/shared/type-guards";
+} from "@tokagentos/agent/auth";
+import { asNonEmptyString, asRecord } from "@tokagentos/shared/type-guards";
 import { SUBSCRIPTION_PROVIDER_MAP } from "../auth/types.js";
-import type { ElizaConfig } from "../config/types.eliza.js";
+import type { TokagentConfig } from "../config/types.tokagent.js";
 import {
   deriveOnboardingCredentialPersistencePlan,
   getOnboardingProviderOption,
@@ -26,13 +26,13 @@ import type {
   ServiceRoutingConfig,
 } from "../contracts/service-routing.js";
 import {
-  buildDefaultElizaCloudServiceRouting,
-  buildElizaCloudServiceRoute,
+  buildDefaultTokagentCloudServiceRouting,
+  buildTokagentCloudServiceRoute,
   normalizeDeploymentTargetConfig,
   normalizeServiceRoutingConfig,
 } from "../contracts/service-routing.js";
 
-type MutableElizaConfig = Partial<ElizaConfig> & {
+type MutableTokagentConfig = Partial<TokagentConfig> & {
   cloud?: Record<string, unknown>;
   models?: Record<string, unknown>;
   wallet?: { rpcProviders?: Record<string, string> };
@@ -43,12 +43,12 @@ type MutableElizaConfig = Partial<ElizaConfig> & {
 
 const trimToUndefined = asNonEmptyString;
 
-function ensureEnv(config: MutableElizaConfig): Record<string, unknown> {
+function ensureEnv(config: MutableTokagentConfig): Record<string, unknown> {
   config.env ??= {};
   return config.env as Record<string, unknown>;
 }
 
-function ensureEnvVars(config: MutableElizaConfig): Record<string, string> {
+function ensureEnvVars(config: MutableTokagentConfig): Record<string, string> {
   const env = ensureEnv(config);
   const existing = asRecord(env.vars);
   if (existing) {
@@ -60,39 +60,39 @@ function ensureEnvVars(config: MutableElizaConfig): Record<string, string> {
 }
 
 function ensureDefaults(
-  config: MutableElizaConfig,
-): NonNullable<NonNullable<ElizaConfig["agents"]>["defaults"]> {
+  config: MutableTokagentConfig,
+): NonNullable<NonNullable<TokagentConfig["agents"]>["defaults"]> {
   config.agents ??= {};
   config.agents.defaults ??= {};
   return config.agents.defaults;
 }
 
-function ensureCloud(config: MutableElizaConfig): Record<string, unknown> {
+function ensureCloud(config: MutableTokagentConfig): Record<string, unknown> {
   config.cloud ??= {};
   return config.cloud;
 }
 
-function ensureModels(config: MutableElizaConfig): Record<string, unknown> {
+function ensureModels(config: MutableTokagentConfig): Record<string, unknown> {
   config.models ??= {};
   return config.models;
 }
 
 function ensureLinkedAccounts(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
 ): LinkedAccountsConfig {
   config.linkedAccounts ??= {};
   return config.linkedAccounts;
 }
 
 function ensureServiceRouting(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
 ): ServiceRoutingConfig {
   config.serviceRouting ??= {};
   return config.serviceRouting;
 }
 
 function persistDeploymentTarget(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   deploymentTarget: DeploymentTargetConfig | null | undefined,
 ): void {
   if (!deploymentTarget) {
@@ -103,7 +103,7 @@ function persistDeploymentTarget(
 }
 
 function persistLinkedAccounts(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   linkedAccounts: LinkedAccountsConfig | null | undefined,
 ): void {
   if (!linkedAccounts) {
@@ -130,7 +130,7 @@ function persistLinkedAccounts(
 }
 
 function persistServiceRouting(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   serviceRouting: ServiceRoutingConfig | null | undefined,
   clearRoutes: readonly ServiceCapability[] = [],
 ): void {
@@ -159,7 +159,7 @@ function persistServiceRouting(
 }
 
 export function applyCanonicalOnboardingConfig(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   args: {
     deploymentTarget?: DeploymentTargetConfig | null;
     linkedAccounts?: LinkedAccountsConfig | null;
@@ -178,7 +178,7 @@ export function applyCanonicalOnboardingConfig(
   }
 }
 
-function pruneEnv(config: MutableElizaConfig): void {
+function pruneEnv(config: MutableTokagentConfig): void {
   const env = asRecord(config.env);
   if (!env) {
     return;
@@ -196,7 +196,7 @@ function pruneEnv(config: MutableElizaConfig): void {
 }
 
 function setEnvValue(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   key: string,
   value: string | undefined,
 ): void {
@@ -215,7 +215,7 @@ function setEnvValue(
 }
 
 function setPrimaryModel(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   primaryModel: string | undefined,
 ): void {
   const defaults = ensureDefaults(config);
@@ -228,7 +228,7 @@ function setPrimaryModel(
   defaults.model = { ...defaults.model, primary: primaryModel };
 }
 
-function clearPersistedEnvValue(config: MutableElizaConfig, key: string): void {
+function clearPersistedEnvValue(config: MutableTokagentConfig, key: string): void {
   const env = asRecord(config.env);
   const vars = asRecord(env?.vars);
 
@@ -247,7 +247,7 @@ function clearPersistedEnvValue(config: MutableElizaConfig, key: string): void {
   }
 }
 
-function clearCloudModelSelections(config: MutableElizaConfig): void {
+function clearCloudModelSelections(config: MutableTokagentConfig): void {
   const models = asRecord(config.models);
   if (!models) {
     return;
@@ -262,7 +262,7 @@ function clearCloudModelSelections(config: MutableElizaConfig): void {
   }
 }
 
-function clearRemoteProviderConfig(config: MutableElizaConfig): void {
+function clearRemoteProviderConfig(config: MutableTokagentConfig): void {
   const cloud = asRecord(config.cloud);
   if (!cloud) {
     return;
@@ -274,18 +274,18 @@ function clearRemoteProviderConfig(config: MutableElizaConfig): void {
   }
 }
 
-// Remove ElizaCloud CLI proxy endpoints from process.env and the API keys that server.ts
+// Remove TokagentCloud CLI proxy endpoints from process.env and the API keys that server.ts
 // pairs with them (same cloud key for both SDKs). Only clears a key when its matching
-// base URL pointed at ElizaCloud—so local-provider switches that never set those URLs
+// base URL pointed at TokagentCloud—so local-provider switches that never set those URLs
 // keep multi-key preservation (provider-switch.e2e).
-function clearElizaCloudCliProxyEnv(): void {
+function clearTokagentCloudCliProxyEnv(): void {
   const pairs = [
     ["OPENAI_BASE_URL", "OPENAI_API_KEY"],
     ["ANTHROPIC_BASE_URL", "ANTHROPIC_API_KEY"],
   ] as const;
   for (const [baseKey, apiKey] of pairs) {
     const v = process.env[baseKey];
-    if (v && /elizacloud/i.test(v)) {
+    if (v && /tokagentcloud/i.test(v)) {
       delete process.env[baseKey];
       delete process.env[apiKey];
     }
@@ -293,7 +293,7 @@ function clearElizaCloudCliProxyEnv(): void {
 }
 
 function persistLinkedCloudApiKey(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   apiKey: string | undefined,
 ): void {
   const normalizedApiKey = trimToUndefined(apiKey);
@@ -303,11 +303,11 @@ function persistLinkedCloudApiKey(
 
   const cloud = ensureCloud(config);
   cloud.apiKey = normalizedApiKey;
-  process.env.ELIZAOS_CLOUD_API_KEY = normalizedApiKey;
+  process.env.TOKAGENTOS_CLOUD_API_KEY = normalizedApiKey;
 
   applyCanonicalOnboardingConfig(config, {
     linkedAccounts: {
-      elizacloud: {
+      tokagentcloud: {
         status: "linked",
         source: "api-key",
       },
@@ -316,7 +316,7 @@ function persistLinkedCloudApiKey(
 }
 
 function applyLocalProviderCapabilities(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   selection: {
     backend: OnboardingLocalProviderId;
     apiKey?: string;
@@ -324,11 +324,11 @@ function applyLocalProviderCapabilities(
   },
 ): Promise<void> {
   const normalizedProvider = normalizeOnboardingProviderId(selection.backend);
-  if (!normalizedProvider || normalizedProvider === "elizacloud") {
+  if (!normalizedProvider || normalizedProvider === "tokagentcloud") {
     return Promise.resolve();
   }
 
-  clearElizaCloudCliProxyEnv();
+  clearTokagentCloudCliProxyEnv();
   clearRemoteProviderConfig(config);
   clearCloudModelSelections(config);
 
@@ -428,7 +428,7 @@ const PROVIDER_DEFAULT_MODELS: Record<
 };
 
 function applyDefaultModelNames(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   provider: string,
 ): void {
   const defaults = PROVIDER_DEFAULT_MODELS[provider];
@@ -448,7 +448,7 @@ function toOnboardingConnectionFromSelection(
   if (selection.transport === "cloud-proxy") {
     return {
       kind: "cloud-managed",
-      cloudProvider: "elizacloud",
+      cloudProvider: "tokagentcloud",
       ...(trimToUndefined(selection.apiKey)
         ? { apiKey: trimToUndefined(selection.apiKey) }
         : {}),
@@ -497,7 +497,7 @@ function toOnboardingConnectionFromSelection(
   }
 
   const normalizedProvider = normalizeOnboardingProviderId(selection.backend);
-  if (!normalizedProvider || normalizedProvider === "elizacloud") {
+  if (!normalizedProvider || normalizedProvider === "tokagentcloud") {
     return null;
   }
 
@@ -549,7 +549,7 @@ function toOnboardingConnectionFromSelection(
  * Mutates `config` in place.
  */
 export function applySubscriptionProviderConfig(
-  config: Partial<ElizaConfig>,
+  config: Partial<TokagentConfig>,
   provider: string,
 ): void {
   config.agents ??= {};
@@ -585,7 +585,7 @@ export function applySubscriptionProviderConfig(
  * Mutates `config` in place.
  */
 export function clearSubscriptionProviderConfig(
-  config: Partial<ElizaConfig>,
+  config: Partial<TokagentConfig>,
 ): void {
   config.agents ??= {};
   config.agents.defaults ??= {};
@@ -597,7 +597,7 @@ export function clearSubscriptionProviderConfig(
  * onboarding flow on the next load/reset.
  */
 export function clearPersistedOnboardingConfig(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
 ): void {
   if (config.meta && typeof config.meta === "object") {
     delete (config.meta as Record<string, unknown>).onboardingComplete;
@@ -663,17 +663,17 @@ export function clearPersistedOnboardingConfig(
     }
   }
 
-  delete process.env.ELIZAOS_CLOUD_API_KEY;
-  delete process.env.ELIZAOS_CLOUD_ENABLED;
-  delete process.env.ELIZAOS_CLOUD_NANO_MODEL;
-  delete process.env.ELIZAOS_CLOUD_MEDIUM_MODEL;
-  delete process.env.ELIZAOS_CLOUD_SMALL_MODEL;
-  delete process.env.ELIZAOS_CLOUD_LARGE_MODEL;
-  delete process.env.ELIZAOS_CLOUD_MEGA_MODEL;
-  delete process.env.ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL;
-  delete process.env.ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL;
-  delete process.env.ELIZAOS_CLOUD_ACTION_PLANNER_MODEL;
-  delete process.env.ELIZAOS_CLOUD_PLANNER_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_API_KEY;
+  delete process.env.TOKAGENTOS_CLOUD_ENABLED;
+  delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
   deleteCredentials("anthropic-subscription");
   deleteCredentials("openai-codex");
 }
@@ -688,10 +688,10 @@ export function createProviderSwitchConnection(args: {
     return null;
   }
 
-  if (provider === "elizacloud") {
+  if (provider === "tokagentcloud") {
     return {
       kind: "cloud-managed",
-      cloudProvider: "elizacloud",
+      cloudProvider: "tokagentcloud",
     };
   }
 
@@ -704,7 +704,7 @@ export function createProviderSwitchConnection(args: {
 }
 
 export async function applyOnboardingConnectionConfig(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   connection: OnboardingConnection,
 ): Promise<void> {
   const normalizedConnection = connection;
@@ -723,7 +723,7 @@ export async function applyOnboardingConnectionConfig(
     const apiKey = trimToUndefined(normalizedConnection.apiKey);
     if (apiKey) {
       cloud.apiKey = apiKey;
-      process.env.ELIZAOS_CLOUD_API_KEY = apiKey;
+      process.env.TOKAGENTOS_CLOUD_API_KEY = apiKey;
     }
     if (normalizedConnection.nanoModel) {
       models.nano = normalizedConnection.nanoModel;
@@ -741,10 +741,10 @@ export async function applyOnboardingConnectionConfig(
       models.mega = normalizedConnection.megaModel;
     }
 
-    const serviceRouting = buildDefaultElizaCloudServiceRouting({
+    const serviceRouting = buildDefaultTokagentCloudServiceRouting({
       base: {
         ...(config.serviceRouting ?? {}),
-        llmText: buildElizaCloudServiceRoute({
+        llmText: buildTokagentCloudServiceRoute({
           nanoModel: normalizedConnection.nanoModel,
           smallModel: normalizedConnection.smallModel,
           mediumModel: normalizedConnection.mediumModel,
@@ -764,7 +764,7 @@ export async function applyOnboardingConnectionConfig(
       deploymentTarget: existingDeploymentTarget,
       linkedAccounts: apiKey
         ? {
-            elizacloud: {
+            tokagentcloud: {
               status: "linked",
               source: "api-key",
             },
@@ -773,24 +773,24 @@ export async function applyOnboardingConnectionConfig(
       serviceRouting,
     });
 
-    process.env.ELIZAOS_CLOUD_ENABLED = "true";
+    process.env.TOKAGENTOS_CLOUD_ENABLED = "true";
     clearSubscriptionProviderConfig(config);
     migrateLegacyRuntimeConfig(config as Record<string, unknown>);
     return;
   }
 
-  delete process.env.ELIZAOS_CLOUD_ENABLED;
-  delete process.env.ELIZAOS_CLOUD_API_KEY;
-  delete process.env.ELIZAOS_CLOUD_BASE_URL;
-  delete process.env.ELIZAOS_CLOUD_NANO_MODEL;
-  delete process.env.ELIZAOS_CLOUD_MEDIUM_MODEL;
-  delete process.env.ELIZAOS_CLOUD_SMALL_MODEL;
-  delete process.env.ELIZAOS_CLOUD_LARGE_MODEL;
-  delete process.env.ELIZAOS_CLOUD_MEGA_MODEL;
-  delete process.env.ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL;
-  delete process.env.ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL;
-  delete process.env.ELIZAOS_CLOUD_ACTION_PLANNER_MODEL;
-  delete process.env.ELIZAOS_CLOUD_PLANNER_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_ENABLED;
+  delete process.env.TOKAGENTOS_CLOUD_API_KEY;
+  delete process.env.TOKAGENTOS_CLOUD_BASE_URL;
+  delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
+  delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
 
   if (normalizedConnection.kind === "remote-provider") {
     clearSubscriptionProviderConfig(config);
@@ -846,7 +846,7 @@ export async function applyOnboardingConnectionConfig(
       : undefined;
   const shouldDefaultCloudServices =
     existingDeploymentTarget?.runtime === "cloud" &&
-    existingDeploymentTarget.provider === "elizacloud";
+    existingDeploymentTarget.provider === "tokagentcloud";
   const directLlmRoute = {
     backend: normalizedConnection.provider,
     transport: "direct",
@@ -855,7 +855,7 @@ export async function applyOnboardingConnectionConfig(
       : {}),
   } satisfies NonNullable<ServiceRoutingConfig["llmText"]>;
   const serviceRouting = shouldDefaultCloudServices
-    ? buildDefaultElizaCloudServiceRouting({
+    ? buildDefaultTokagentCloudServiceRouting({
         base: {
           ...(config.serviceRouting ?? {}),
           llmText: directLlmRoute,
@@ -888,7 +888,7 @@ export async function applyOnboardingConnectionConfig(
 }
 
 export async function applyOnboardingCredentialPersistence(
-  config: MutableElizaConfig,
+  config: MutableTokagentConfig,
   args: {
     credentialInputs?: OnboardingCredentialInputs | null;
     deploymentTarget?: DeploymentTargetConfig | null;
@@ -923,7 +923,7 @@ export async function applyOnboardingCredentialPersistence(
   }
 
   const provider = normalizeOnboardingProviderId(plan.llmSelection.backend);
-  if (!provider || provider === "elizacloud") {
+  if (!provider || provider === "tokagentcloud") {
     return null;
   }
 

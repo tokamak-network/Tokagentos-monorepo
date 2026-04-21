@@ -1,4 +1,4 @@
-// Side-effect: register LifeOps + app-blocker methods on ElizaClient.
+// Side-effect: register LifeOps + app-blocker methods on TokagentClient.
 import "./api/client-lifeops.ts";
 import "./client.ts";
 

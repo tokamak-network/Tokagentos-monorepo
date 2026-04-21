@@ -1,9 +1,9 @@
 #![cfg(all(feature = "native", not(feature = "wasm")))]
 
 use anyhow::Result;
-use elizaos::runtime::RuntimeOptions;
-use elizaos::types::agent::{Bio, Character};
-use elizaos::{advanced_memory, AgentRuntime};
+use tokagentos::runtime::RuntimeOptions;
+use tokagentos::types::agent::{Bio, Character};
+use tokagentos::{advanced_memory, AgentRuntime};
 use serde_json::Value;
 use std::sync::Arc;
 
@@ -57,9 +57,9 @@ async fn long_term_memory_provider_returns_text_when_memories_exist() -> Result<
         .downcast_ref::<advanced_memory::MemoryService>()
         .expect("downcast MemoryService");
 
-    let entity_id = elizaos::UUID::new_v4();
+    let entity_id = tokagentos::UUID::new_v4();
     ms.store_long_term_memory(advanced_memory::LongTermMemory {
-        id: elizaos::UUID::new_v4(),
+        id: tokagentos::UUID::new_v4(),
         agent_id: runtime.agent_id.clone(),
         entity_id: entity_id.clone(),
         category: advanced_memory::LongTermMemoryCategory::Semantic,
@@ -69,7 +69,7 @@ async fn long_term_memory_provider_returns_text_when_memories_exist() -> Result<
         metadata: Value::Object(Default::default()),
     });
 
-    let msg = elizaos::Memory::message(entity_id.clone(), elizaos::UUID::new_v4(), "hi");
+    let msg = tokagentos::Memory::message(entity_id.clone(), tokagentos::UUID::new_v4(), "hi");
     let state = runtime.compose_state(&msg).await?;
     assert!(state.text.contains("What I Know About You"));
     Ok(())
@@ -78,11 +78,11 @@ async fn long_term_memory_provider_returns_text_when_memories_exist() -> Result<
 #[test]
 fn get_long_term_memories_returns_top_confidence_items() {
     let service = advanced_memory::MemoryService::default();
-    let entity_id = elizaos::UUID::new_v4();
-    let agent_id = elizaos::UUID::new_v4();
+    let entity_id = tokagentos::UUID::new_v4();
+    let agent_id = tokagentos::UUID::new_v4();
 
     service.store_long_term_memory(advanced_memory::LongTermMemory {
-        id: elizaos::UUID::new_v4(),
+        id: tokagentos::UUID::new_v4(),
         agent_id: agent_id.clone(),
         entity_id: entity_id.clone(),
         category: advanced_memory::LongTermMemoryCategory::Semantic,
@@ -92,7 +92,7 @@ fn get_long_term_memories_returns_top_confidence_items() {
         metadata: Value::Object(Default::default()),
     });
     service.store_long_term_memory(advanced_memory::LongTermMemory {
-        id: elizaos::UUID::new_v4(),
+        id: tokagentos::UUID::new_v4(),
         agent_id: agent_id.clone(),
         entity_id: entity_id.clone(),
         category: advanced_memory::LongTermMemoryCategory::Semantic,
@@ -102,7 +102,7 @@ fn get_long_term_memories_returns_top_confidence_items() {
         metadata: Value::Object(Default::default()),
     });
     service.store_long_term_memory(advanced_memory::LongTermMemory {
-        id: elizaos::UUID::new_v4(),
+        id: tokagentos::UUID::new_v4(),
         agent_id,
         entity_id: entity_id.clone(),
         category: advanced_memory::LongTermMemoryCategory::Semantic,
@@ -121,7 +121,7 @@ fn get_long_term_memories_returns_top_confidence_items() {
 #[test]
 fn get_long_term_memories_handles_zero_limit() {
     let service = advanced_memory::MemoryService::default();
-    let entity_id = elizaos::UUID::new_v4();
+    let entity_id = tokagentos::UUID::new_v4();
     let out = service.get_long_term_memories(entity_id, 0);
     assert!(out.is_empty());
 }

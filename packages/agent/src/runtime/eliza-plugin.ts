@@ -1,13 +1,13 @@
 /**
- * Eliza plugin for elizaOS — workspace context, session keys, and agent
+ * Tokagent plugin for tokagentOS — workspace context, session keys, and agent
  * lifecycle actions (restart).
  *
  * Compaction is handled by core auto-compaction in the recent-messages provider.
  * Memory search/get actions are superseded by plugin-clipboard.
  */
 
-import type { IAgentRuntime, Plugin, ServiceClass } from "@elizaos/core";
-import { AgentEventService } from "@elizaos/core";
+import type { IAgentRuntime, Plugin, ServiceClass } from "@tokagentos/core";
+import { AgentEventService } from "@tokagentos/core";
 import { launchAppAction, stopAppAction } from "../actions/app-control.js";
 import { browserSessionAction } from "../actions/browser-session.js";
 import {
@@ -51,19 +51,19 @@ import { uiCatalogProvider } from "../providers/ui-catalog.js";
 import { createUserNameProvider } from "../providers/user-name.js";
 import { resolveDefaultAgentWorkspaceDir } from "../providers/workspace.js";
 import { createWorkspaceProvider } from "../providers/workspace-provider.js";
-import { ElizaCharacterPersistenceService } from "../services/character-persistence.js";
+import { TokagentCharacterPersistenceService } from "../services/character-persistence.js";
 import { createTriggerTaskAction } from "../triggers/action.js";
 import { registerTriggerTaskWorker } from "../triggers/runtime.js";
 import { setCustomActionsRuntime } from "./custom-actions.js";
 
-export type ElizaPluginConfig = {
+export type TokagentPluginConfig = {
   workspaceDir?: string;
   initMaxChars?: number;
   sessionStorePath?: string;
   agentId?: string;
 };
 
-export function createElizaPlugin(config?: ElizaPluginConfig): Plugin {
+export function createTokagentPlugin(config?: TokagentPluginConfig): Plugin {
   const workspaceDir =
     config?.workspaceDir ?? resolveDefaultAgentWorkspaceDir();
   const agentId = config?.agentId ?? "main";
@@ -89,12 +89,12 @@ export function createElizaPlugin(config?: ElizaPluginConfig): Plugin {
   // PLAY_EMOTE lives in @elizaos/app-companion (emote catalog + action).
 
   const plugin: Plugin = {
-    name: "eliza",
-    description: "Eliza workspace context, session keys, and lifecycle actions",
+    name: "tokagent",
+    description: "Tokagent workspace context, session keys, and lifecycle actions",
 
     services: [
       AgentEventService as ServiceClass,
-      ElizaCharacterPersistenceService as ServiceClass,
+      TokagentCharacterPersistenceService as ServiceClass,
     ],
 
     init: async (_pluginConfig, runtime: IAgentRuntime) => {
@@ -166,9 +166,9 @@ export function createElizaPlugin(config?: ElizaPluginConfig): Plugin {
           }
 
           if (registered > 0) {
-            const { logger } = require("@elizaos/core");
+            const { logger } = require("@tokagentos/core");
             logger.info(
-              `[eliza] Registered ${registered} skills as slash commands`,
+              `[tokagent] Registered ${registered} skills as slash commands`,
             );
           }
           return true;

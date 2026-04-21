@@ -2,35 +2,35 @@
   "$schema": "https://turborepo.org/schema.json",
   "tasks": {
     "build": {
-      "dependsOn": ["@elizaos/core#build", "^build"],
+      "dependsOn": ["@tokagentos/core#build", "^build"],
       "env": ["LOG_LEVEL"],
       "outputs": ["dist/**"]
     },
-    "@elizaos/agent#build": {
-      "dependsOn": ["@elizaos/core#build", "@elizaos/shared#build"],
+    "@tokagentos/agent#build": {
+      "dependsOn": ["@tokagentos/core#build", "@tokagentos/shared#build"],
       "env": ["LOG_LEVEL"],
       "outputs": ["dist/**"]
     },
-    "@elizaos/app-core#build": {
-      "dependsOn": ["@elizaos/core#build", "@elizaos/agent#build", "@elizaos/shared#build"],
+    "@tokagentos/app-core#build": {
+      "dependsOn": ["@tokagentos/core#build", "@tokagentos/agent#build", "@tokagentos/shared#build"],
       "env": ["LOG_LEVEL"],
       "outputs": ["dist/**"]
     },
-    "@elizaos/core#build": {
+    "@tokagentos/core#build": {
       "dependsOn": [],
       "env": ["LOG_LEVEL"],
       "outputs": ["dist/**"],
       "inputs": ["src/**", "build.ts", "tsconfig.declarations.json"]
     },
-    "@elizaos/rust#build": {
+    "@tokagentos/rust#build": {
       "dependsOn": [],
       "outputs": ["pkg/**", "target/release/**"],
       "inputs": ["src/**", "Cargo.toml", "build.sh"]
     },
-    "@elizaos/python#build": {
+    "@tokagentos/python#build": {
       "dependsOn": [],
-      "outputs": ["elizaos.egg-info/**"],
-      "inputs": ["elizaos/**", "pyproject.toml"],
+      "outputs": ["tokagentos.egg-info/**"],
+      "inputs": ["tokagentos/**", "pyproject.toml"],
       "cache": false
     },
     "@elizaos/client#build": {
@@ -55,7 +55,7 @@
     "@elizaos/plugin-discord-root#build": {
       "outputs": []
     },
-    "@elizaos/plugin-elizacloud-root#build": {
+    "@elizaos/plugin-tokagentcloud-root#build": {
       "outputs": []
     },
     "@elizaos/plugin-groq-root#build": {
@@ -85,13 +85,13 @@
     "@elizaos/plugin-sql-root#build": {
       "outputs": []
     },
-    "@elizaos/schemas#build": {
+    "@tokagentos/schemas#build": {
       "outputs": []
     },
     "lint": {
       "outputs": []
     },
-    "@elizaos/interop#lint": {
+    "@tokagentos/interop#lint": {
       "outputs": []
     },
     "lint:check": {
@@ -101,7 +101,7 @@
       "outputs": []
     },
     "typecheck": {
-      "dependsOn": ["@elizaos/core#build"],
+      "dependsOn": ["@tokagentos/core#build"],
       "outputs": []
     },
     "typecheck:rust": {
@@ -120,12 +120,12 @@
       "outputs": []
     },
     "start": {
-      "dependsOn": ["@elizaos/core#build"],
+      "dependsOn": ["@tokagentos/core#build"],
       "env": ["LOG_LEVEL"],
       "persistent": true
     },
     "dev": {
-      "dependsOn": ["@elizaos/core#build"],
+      "dependsOn": ["@tokagentos/core#build"],
       "persistent": true
     },
     "test": {
@@ -134,20 +134,20 @@
       "inputs": ["src/**/*.ts", "src/**/*.js", "__tests__/**/*", "*.test.*", "package.json", "tests/**/*", "python/tests/**/*"],
       "cache": false
     },
-    "@elizaos/rust#test": {
+    "@tokagentos/rust#test": {
       "outputs": [],
       "inputs": ["src/**", "tests/**"]
     },
-    "@elizaos/python#test": {
+    "@tokagentos/python#test": {
       "outputs": [],
-      "inputs": ["elizaos/**", "tests/**"]
+      "inputs": ["tokagentos/**", "tests/**"]
     },
     "migrate": {
-      "dependsOn": ["@elizaos/core#build"],
+      "dependsOn": ["@tokagentos/core#build"],
       "cache": false
     },
     "migrate:generate": {
-      "dependsOn": ["@elizaos/core#build"],
+      "dependsOn": ["@tokagentos/core#build"],
       "cache": false
     },
     "clean": {

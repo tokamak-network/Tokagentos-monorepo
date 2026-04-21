@@ -16,7 +16,7 @@ import {
   logger,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { generateChatResponse as generateChatResponseFromChatRoutes } from "./chat-routes.js";
 import { resolveClientChatAdminEntityId } from "./client-chat-admin.js";
 import type {
@@ -278,7 +278,7 @@ async function buildTaskResultLine(task: {
   const port = portMatch?.[1];
   if (!port) return task.originalTask;
   if (await isPortServing(port)) {
-    const host = process.env.ELIZA_PUBLIC_HOST ?? "localhost";
+    const host = process.env.TOKAGENT_PUBLIC_HOST ?? "localhost";
     return `built and serving at http://${host}:${port}`;
   }
   return `built the files but server isn't running on port ${port} yet`;
@@ -354,7 +354,7 @@ export function wireCoordinatorEventRouting(st: ServerState): boolean {
           }
 
           // Ensure the legacy chat connection exists (creates room/world if needed).
-          const agentName = runtime.character.name ?? "Eliza";
+          const agentName = runtime.character.name ?? "Tokagent";
           const existingLegacyChatRoom = st.chatRoomId
             ? await runtime.getRoom(st.chatRoomId).catch(() => null)
             : null;
@@ -386,7 +386,7 @@ export function wireCoordinatorEventRouting(st: ServerState): boolean {
             return;
           }
 
-          // Create a message memory so the event enters Eliza's conversation history.
+          // Create a message memory so the event enters Tokagent's conversation history.
           const message = createMessageMemory({
             id: crypto.randomUUID() as UUID,
             entityId: st.chatUserId,

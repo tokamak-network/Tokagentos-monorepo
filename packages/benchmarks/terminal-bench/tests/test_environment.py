@@ -3,12 +3,12 @@
 import pytest
 from datetime import datetime
 
-from elizaos_terminal_bench.environment import (
+from tokagentos_terminal_bench.environment import (
     MockTerminalEnvironment,
     TerminalEnvironment,
     TerminalEnvironmentError,
 )
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.types import (
     CommandStatus,
     TaskCategory,
     TaskDifficulty,

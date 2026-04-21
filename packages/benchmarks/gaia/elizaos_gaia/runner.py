@@ -18,13 +18,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
+    from tokagentos.runtime import AgentRuntime
 
-from elizaos_gaia.agent import GAIAAgent
-from elizaos_gaia.dataset import DatasetAccessError, GAIADataset
-from elizaos_gaia.evaluator import GAIAEvaluator
-from elizaos_gaia.metrics import MetricsCalculator
-from elizaos_gaia.types import (
+from tokagentos_gaia.agent import GAIAAgent
+from tokagentos_gaia.dataset import DatasetAccessError, GAIADataset
+from tokagentos_gaia.evaluator import GAIAEvaluator
+from tokagentos_gaia.metrics import MetricsCalculator
+from tokagentos_gaia.types import (
     GAIABenchmarkResults,
     GAIAConfig,
     GAIALevel,
@@ -102,7 +102,7 @@ class GAIARunner:
 
         Args:
             config: Benchmark configuration
-            runtime: Optional ElizaOS runtime for LLM access
+            runtime: Optional TokagentOS runtime for LLM access
 
         Raises:
             ValueError: If config.split is not 'validation' or 'test'
@@ -115,19 +115,19 @@ class GAIARunner:
         self.runtime = runtime
         self._runtime_initialized = False
 
-        # If requested and no runtime was provided, build a canonical Eliza runtime.
-        if self.runtime is None and self.config.use_eliza_runtime:
-            from elizaos.runtime import AgentRuntime as _AgentRuntime
-            from elizaos.types.agent import Character
-            from elizaos.prompts import MESSAGE_HANDLER_TEMPLATE
+        # If requested and no runtime was provided, build a canonical Tokagent runtime.
+        if self.runtime is None and self.config.use_tokagent_runtime:
+            from tokagentos.runtime import AgentRuntime as _AgentRuntime
+            from tokagentos.types.agent import Character
+            from tokagentos.prompts import MESSAGE_HANDLER_TEMPLATE
 
-            from elizaos_gaia.inmemory_adapter import InMemoryBenchmarkAdapter
-            from elizaos_gaia.plugin import gaia_plugin
+            from tokagentos_gaia.inmemory_adapter import InMemoryBenchmarkAdapter
+            from tokagentos_gaia.plugin import gaia_plugin
 
             # Minimal character for benchmarking. The canonical MESSAGE_HANDLER_TEMPLATE
             # enforces XML response format; we add GAIA-specific requirements here.
             system = (
-                "You are an ElizaOS agent running the GAIA benchmark.\n"
+                "You are an TokagentOS agent running the GAIA benchmark.\n"
                 "This is an evaluation harness: do NOT chit-chat, do NOT ask 'why are you curious', and do NOT roleplay.\n"
                 "Your job is to solve the user's task using the available actions when needed.\n"
                 "When you are ready to answer, put the final answer in your <text> as:\n"
@@ -197,12 +197,12 @@ class GAIARunner:
         await self.memory_tracker.start()
 
         logger.info("=" * 60)
-        logger.info("GAIA Benchmark - ElizaOS Python")
+        logger.info("GAIA Benchmark - TokagentOS Python")
         logger.info("=" * 60)
 
         try:
-            # Initialize runtime/plugins once (canonical Eliza agent mode)
-            if self.runtime is not None and self.config.use_eliza_runtime and not self._runtime_initialized:
+            # Initialize runtime/plugins once (canonical Tokagent agent mode)
+            if self.runtime is not None and self.config.use_tokagent_runtime and not self._runtime_initialized:
                 await self.runtime.initialize()
                 self._runtime_initialized = True
 
@@ -309,9 +309,9 @@ class GAIARunner:
         finally:
             await self.memory_tracker.stop()
             await self.agent.close()
-            if self.config.use_eliza_runtime:
+            if self.config.use_tokagent_runtime:
                 try:
-                    from elizaos_gaia.plugin import close_gaia_plugin_tools
+                    from tokagentos_gaia.plugin import close_gaia_plugin_tools
 
                     await close_gaia_plugin_tools()
                 except Exception:
@@ -688,7 +688,7 @@ This table compares results across all tested models for this dataset. Results a
         md += """
 
 ---
-*Updated automatically by ElizaOS GAIA Benchmark Runner*
+*Updated automatically by TokagentOS GAIA Benchmark Runner*
 """
 
         with open(index_path, "w") as f:
@@ -724,7 +724,7 @@ This table compares results across all tested models for this dataset. Results a
         summary = results.summary
         metadata = results.metadata
 
-        md = f"""# GAIA Benchmark Results - ElizaOS Python
+        md = f"""# GAIA Benchmark Results - TokagentOS Python
 
 **Generated:** {metadata.get('timestamp', 'N/A')}
 
@@ -791,7 +791,7 @@ This table compares results across all tested models for this dataset. Results a
                 overall = scores.get("overall", 0)
 
                 # Highlight our entry
-                if name == "ElizaOS Agent":
+                if name == "TokagentOS Agent":
                     name = f"**{name}**"
 
                 md += f"| {name} | {l1:.1%} | {l2:.1%} | {l3:.1%} | {overall:.1%} |\n"
@@ -831,7 +831,7 @@ This table compares results across all tested models for this dataset. Results a
 - **Peak Memory:** {metadata.get('memory_peak_mb', 0):.1f} MB
 
 ---
-*Generated by ElizaOS GAIA Benchmark Runner*
+*Generated by TokagentOS GAIA Benchmark Runner*
 """
         return md
 

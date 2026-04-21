@@ -1,5 +1,5 @@
-import type { IAgentRuntime, Memory, State } from "@elizaos/core";
-import { ModelType } from "@elizaos/core";
+import type { IAgentRuntime, Memory, State } from "@tokagentos/core";
+import { ModelType } from "@tokagentos/core";
 import { describe, expect, it } from "vitest";
 import { renderGroundedActionReply } from "./grounded-action-reply.js";
 
@@ -15,7 +15,7 @@ describe("renderGroundedActionReply", () => {
         return "Here’s the updated reply.";
       },
       character: {
-        name: "Eliza",
+        name: "Tokagent",
         style: { chat: ["brief", "natural"] },
       },
     } as unknown as IAgentRuntime;

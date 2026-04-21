@@ -1,5 +1,5 @@
 /**
- * Security utilities for elizaOS.
+ * Security utilities for tokagentOS.
  *
  * Provides:
  * - Sensitive text redaction (pattern-based and secrets-based)

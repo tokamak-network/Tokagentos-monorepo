@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Literal
 if TYPE_CHECKING:
     pass
 
-from elizaos.advanced_capabilities.experience.types import (
+from tokagentos.advanced_capabilities.experience.types import (
     Experience,
     ExperienceType,
     JsonObject,

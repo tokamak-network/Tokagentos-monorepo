@@ -1,8 +1,8 @@
 """
-Vending-Bench ElizaOS Plugin - Canonical implementation using full ElizaOS runtime.
+Vending-Bench TokagentOS Plugin - Canonical implementation using full TokagentOS runtime.
 
 This plugin registers proper Actions and Providers for the vending machine benchmark,
-allowing the agent to use the standard ElizaOS message handling flow.
+allowing the agent to use the standard TokagentOS message handling flow.
 """
 
 from __future__ import annotations
@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import (
+from tokagentos.types import (
     Action,
     ActionExample,
     ActionParameter,
@@ -24,7 +24,7 @@ from elizaos.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
         State,
     )
 
-from elizaos_vending_bench.environment import VendingEnvironment
+from tokagentos_vending_bench.environment import VendingEnvironment
 
 # Store environments by agent_id (module-level dict since set_setting only accepts primitives)
 _ENVIRONMENTS: dict[str, VendingEnvironment] = {}

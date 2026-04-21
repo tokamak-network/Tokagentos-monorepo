@@ -1,4 +1,4 @@
-# Runtime and cloud (eliza app)
+# Runtime and cloud (tokagent app)
 
 ## Runtime shape
 
@@ -8,7 +8,7 @@ This app persists canonical runtime state in config fields such as:
 - `linkedAccounts` for which providers and cloud accounts are connected
 - `serviceRouting` for which backend handles each capability (`llmText`, `tts`, `media`, `embeddings`, `rpc`)
 
-This separation matters. Hosting on Eliza Cloud does not require all inference to run through Eliza Cloud, and direct provider keys can still be used for selected capabilities.
+This separation matters. Hosting on Tokagent Cloud does not require all inference to run through Tokagent Cloud, and direct provider keys can still be used for selected capabilities.
 
 ## Onboarding model
 
@@ -28,9 +28,9 @@ The runtime injects context through providers (workspace, admin trust, autonomou
 
 Shipped skills are separate from providers. Skills are disk-backed knowledge assets discovered from `skills/` and the managed skills directory, then selected dynamically per turn by the app’s skill provider.
 
-## Eliza Cloud in this app
+## Tokagent Cloud in this app
 
-Eliza Cloud is treated as a first-class managed backend:
+Tokagent Cloud is treated as a first-class managed backend:
 
 - cloud login and API key persistence
 - credit balance and in-app billing proxies
@@ -45,7 +45,7 @@ If a task is about app building and Cloud is enabled or requested, prefer the Cl
 
 For new app work, the default path should usually be:
 
-1. create or reuse an Eliza Cloud app
+1. create or reuse an Tokagent Cloud app
 2. use its `appId` plus API key
 3. configure origins, redirect URIs, and domains
 4. use Cloud APIs for chat/media/agent features
@@ -56,6 +56,6 @@ For new app work, the default path should usually be:
 
 In this repo’s implementation, app monetization is driven by markup/share fields and creator earnings tracking, not only generic per-request pricing prose. When docs drift, prefer:
 
-- schema fields in `eliza/cloud/packages/db/schemas/`
-- app monetization UI under `eliza/cloud/packages/ui/src/components/apps/`
+- schema fields in `tokagent/cloud/packages/db/schemas/`
+- app monetization UI under `tokagent/cloud/packages/ui/src/components/apps/`
 - billing and earnings APIs used by the UI

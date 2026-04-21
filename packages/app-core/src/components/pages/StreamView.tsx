@@ -1,4 +1,4 @@
-import { useDocumentVisibility } from "@elizaos/ui";
+import { useDocumentVisibility } from "@tokagentos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { client } from "../../api/client";
 import { isApiError } from "../../api/client-types-core";
@@ -12,7 +12,7 @@ import { StatusBar } from "../stream/StatusBar";
 export function StreamView({ inModal }: { inModal?: boolean } = {}) {
   const { agentStatus, t } = useApp();
   const { branding } = getBootConfig();
-  const agentName = agentStatus?.agentName ?? branding.appName ?? "Eliza";
+  const agentName = agentStatus?.agentName ?? branding.appName ?? "Tokagent";
   const isElectrobun = isElectrobunRuntime();
 
   const [streamLive, setStreamLive] = useState(false);
@@ -76,7 +76,7 @@ export function StreamView({ inModal }: { inModal?: boolean } = {}) {
             : "popout";
           window.open(
             `${base}${sep}/?${qs}`,
-            "elizaos-stream",
+            "tokagentos-stream",
             "width=1280,height=720,menubar=no,toolbar=no,location=no,status=no",
           );
         }

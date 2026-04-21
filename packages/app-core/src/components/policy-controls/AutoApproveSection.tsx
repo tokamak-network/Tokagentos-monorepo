@@ -1,4 +1,4 @@
-import { Input, Label } from "@elizaos/ui";
+import { Input, Label } from "@tokagentos/ui";
 import { ShieldCheck } from "lucide-react";
 import { parseAmount } from "./helpers";
 import type { AutoApproveConfig } from "./types";

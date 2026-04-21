@@ -1,12 +1,12 @@
-# elizaOS App — Microsoft Store Listing
+# tokagentOS App — Microsoft Store Listing
 
 ## Short Description (max 100 chars)
 Personal AI assistant that runs on your machine. Private, fast, extensible.
 
 ## Description (max 10,000 chars)
-elizaOS App is a personal AI assistant that runs entirely on YOUR machine. Not in the cloud. Not on someone else's server. Your computer.
+tokagentOS App is a personal AI assistant that runs entirely on YOUR machine. Not in the cloud. Not on someone else's server. Your computer.
 
-Built on elizaOS, it manages your sessions, tools, and workflows through a Gateway control plane. Connect to Telegram, Discord, or use the built-in WebChat UI.
+Built on tokagentOS, it manages your sessions, tools, and workflows through a Gateway control plane. Connect to Telegram, Discord, or use the built-in WebChat UI.
 
 **Features:**
 - Local-first AI — your data stays on your machine

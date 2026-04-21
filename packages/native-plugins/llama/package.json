@@ -25,7 +25,7 @@
     "dist/",
     "README.md"
   ],
-  "author": "elizaOS",
+  "author": "tokagentOS",
   "license": "MIT",
   "scripts": {
     "build": "npm run clean && tsc && rollup -c rollup.config.mjs",

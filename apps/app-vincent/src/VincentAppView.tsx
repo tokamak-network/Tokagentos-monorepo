@@ -14,10 +14,10 @@
  * Implements the OverlayApp Component contract.
  */
 
-import { Button, PagePanel, Spinner } from "@elizaos/app-core";
+import { Button, PagePanel, Spinner } from "@tokagentos/app-core";
 import { ArrowLeft, RefreshCw } from "lucide-react";
-import { useApp } from "@elizaos/app-core";
-import type { OverlayAppContext } from "@elizaos/app-core";
+import { useApp } from "@tokagentos/app-core";
+import type { OverlayAppContext } from "@tokagentos/app-core";
 import { TradingProfileCard } from "./TradingProfileCard";
 import { TradingStrategyPanel } from "./TradingStrategyPanel";
 import { useVincentDashboard } from "./useVincentDashboard";

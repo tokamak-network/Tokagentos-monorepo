@@ -10,7 +10,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace "ai.eliza.plugins.screencapture"
+    namespace "ai.tokagent.plugins.screencapture"
     compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 34
 
     defaultConfig {

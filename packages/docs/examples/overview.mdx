@@ -1,9 +1,9 @@
 ---
 title: "Examples Overview"
-description: "Learn elizaOS through working code in TypeScript, Python, and Rust"
+description: "Learn tokagentOS through working code in TypeScript, Python, and Rust"
 ---
 
-elizaOS comes with a comprehensive collection of examples demonstrating real-world usage patterns. Every example is available in multiple languages with identical functionality.
+tokagentOS comes with a comprehensive collection of examples demonstrating real-world usage patterns. Every example is available in multiple languages with identical functionality.
 
 ## Quick Reference
 
@@ -19,14 +19,14 @@ elizaOS comes with a comprehensive collection of examples demonstrating real-wor
 
 ## Running Examples
 
-All examples are located in the `examples/` directory of the elizaOS repository.
+All examples are located in the `examples/` directory of the tokagentOS repository.
 
 <Tabs>
   <Tab title="TypeScript">
 ```bash
 # Clone the repository (if you haven't already)
-git clone https://github.com/elizaos/eliza.git
-cd eliza
+git clone https://github.com/tokagentos/tokagent.git
+cd tokagent
 
 # Install dependencies
 
@@ -41,14 +41,14 @@ bun run examples/chat/typescript/chat.ts
   <Tab title="Python">
 ```bash
 # Clone the repository
-git clone https://github.com/elizaos/eliza.git
-cd eliza
+git clone https://github.com/tokagentos/tokagent.git
+cd tokagent
 
 # Set up Python environment
 python -m venv .venv
 source .venv/bin/activate
 
-# Install elizaOS packages
+# Install tokagentOS packages
 pip install -e packages/typescript/python
 pip install -e plugins/plugin-openai/python
 
@@ -60,8 +60,8 @@ python examples/chat/python/chat.py
   <Tab title="Rust">
 ```bash
 # Clone the repository
-git clone https://github.com/elizaos/eliza.git
-cd eliza
+git clone https://github.com/tokagentos/tokagent.git
+cd tokagent
 
 # Run any Rust example
 
@@ -135,11 +135,11 @@ All examples use identical APIs across languages:
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import { AgentRuntime } from '@elizaos/core';
+import { AgentRuntime } from '@tokagentos/core';
 import { openaiPlugin } from '@elizaos/plugin-openai';
 
 const runtime = new AgentRuntime({
-character: { name: 'Eliza', bio: 'A helpful AI.' },
+character: { name: 'Tokagent', bio: 'A helpful AI.' },
 plugins: [openaiPlugin],
 });
 
@@ -149,11 +149,11 @@ await runtime.initialize();
   </Tab>
   <Tab title="Python">
 ```python
-from elizaos import AgentRuntime, Character
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import AgentRuntime, Character
+from tokagentos_plugin_openai import get_openai_plugin
 
 runtime = AgentRuntime(
-    character=Character(name="Eliza", bio="A helpful AI."),
+    character=Character(name="Tokagent", bio="A helpful AI."),
     plugins=[get_openai_plugin()],
 )
 
@@ -163,10 +163,10 @@ await runtime.initialize()
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos::{AgentRuntime, RuntimeOptions, parse_character};
-use elizaos_plugin_openai::create_openai_plugin;
+use tokagentos::{AgentRuntime, RuntimeOptions, parse_character};
+use tokagentos_plugin_openai::create_openai_plugin;
 
-let character = parse_character(r#"{"name": "Eliza", "bio": "A helpful AI."}"#)?;
+let character = parse_character(r#"{"name": "Tokagent", "bio": "A helpful AI."}"#)?;
 let runtime = AgentRuntime::new(RuntimeOptions {
 character: Some(character),
 plugins: vec![create_openai_plugin()?],

@@ -1,8 +1,8 @@
 /**
- * GCP Cloud Run handler for elizaOS chat worker
+ * GCP Cloud Run handler for tokagentOS chat worker
  *
  * This Cloud Run service processes chat messages and returns AI responses
- * using the elizaOS runtime with OpenAI as the LLM provider.
+ * using the tokagentOS runtime with OpenAI as the LLM provider.
  */
 
 import {
@@ -18,7 +18,7 @@ import {
   createMessageMemory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
@@ -53,7 +53,7 @@ interface InfoResponse {
 // Character configuration from environment
 function getCharacter(): Character {
   return createCharacter({
-    name: process.env.CHARACTER_NAME ?? "Eliza",
+    name: process.env.CHARACTER_NAME ?? "Tokagent",
     bio: process.env.CHARACTER_BIO ?? "A helpful AI assistant.",
     system:
       process.env.CHARACTER_SYSTEM ??
@@ -66,7 +66,7 @@ let runtime: AgentRuntime | null = null;
 let initializationPromise: Promise<void> | null = null;
 
 /**
- * Initialize the elizaOS runtime (lazy, singleton pattern)
+ * Initialize the tokagentOS runtime (lazy, singleton pattern)
  */
 async function initializeRuntime(): Promise<AgentRuntime> {
   if (runtime) {
@@ -76,13 +76,13 @@ async function initializeRuntime(): Promise<AgentRuntime> {
   if (initializationPromise) {
     await initializationPromise;
     if (!runtime) {
-      throw new Error("elizaOS runtime initialization failed");
+      throw new Error("tokagentOS runtime initialization failed");
     }
     return runtime;
   }
 
   initializationPromise = (async () => {
-    console.log("Initializing elizaOS runtime...");
+    console.log("Initializing tokagentOS runtime...");
 
     const character = getCharacter();
     runtime = new AgentRuntime({
@@ -91,12 +91,12 @@ async function initializeRuntime(): Promise<AgentRuntime> {
     });
 
     await runtime.initialize();
-    console.log("elizaOS runtime initialized successfully");
+    console.log("tokagentOS runtime initialized successfully");
   })();
 
   await initializationPromise;
   if (!runtime) {
-    throw new Error("elizaOS runtime initialization failed");
+    throw new Error("tokagentOS runtime initialization failed");
   }
   return runtime;
 }
@@ -151,7 +151,7 @@ function sendJson(res: ServerResponse, statusCode: number, body: object): void {
 }
 
 /**
- * Handle chat message using full elizaOS runtime
+ * Handle chat message using full tokagentOS runtime
  */
 async function handleChat(request: ChatRequest): Promise<ChatResponse> {
   const rt = await initializeRuntime();
@@ -212,7 +212,7 @@ async function handleChat(request: ChatRequest): Promise<ChatResponse> {
 function handleHealth(): HealthResponse {
   return {
     status: "healthy",
-    runtime: "elizaos-typescript",
+    runtime: "tokagentos-typescript",
     version: "1.0.0",
   };
 }
@@ -227,10 +227,10 @@ function handleInfo(): InfoResponse {
     ? bio.join(" ")
     : (bio ?? "A helpful AI assistant.");
   return {
-    name: character.name ?? "elizaos",
+    name: character.name ?? "tokagentos",
     bio: bioStr,
     version: "1.0.0",
-    powered_by: "elizaOS",
+    powered_by: "tokagentOS",
     endpoints: {
       "POST /chat": "Send a message and receive a response",
       "GET /health": "Health check endpoint",
@@ -302,7 +302,7 @@ const server = createServer((req, res) => {
 });
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 elizaOS Cloud Run worker started on port ${PORT}`);
+  console.log(`🚀 tokagentOS Cloud Run worker started on port ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`💬 Chat endpoint: http://localhost:${PORT}/chat`);
 });

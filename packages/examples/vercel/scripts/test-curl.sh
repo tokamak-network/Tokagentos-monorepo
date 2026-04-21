@@ -1,5 +1,5 @@
 #!/bin/bash
-# Quick curl tests for elizaOS Vercel Edge Functions
+# Quick curl tests for tokagentOS Vercel Edge Functions
 #
 # Usage:
 #   ./scripts/test-curl.sh                    # Test local dev server
@@ -7,7 +7,7 @@
 
 ENDPOINT="${1:-http://localhost:3000}"
 
-echo "🧪 Quick curl tests for elizaOS Vercel Edge Functions"
+echo "🧪 Quick curl tests for tokagentOS Vercel Edge Functions"
 echo "📍 Endpoint: $ENDPOINT"
 echo ""
 

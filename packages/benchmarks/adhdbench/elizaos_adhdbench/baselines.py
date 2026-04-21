@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import random
 
-from elizaos_adhdbench.evaluator import compute_turn_score, evaluate_outcome
-from elizaos_adhdbench.types import Scenario, TurnResult
+from tokagentos_adhdbench.evaluator import compute_turn_score, evaluate_outcome
+from tokagentos_adhdbench.types import Scenario, TurnResult
 
 
 def compute_random_baseline(

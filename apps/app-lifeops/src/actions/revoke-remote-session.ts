@@ -9,8 +9,8 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import {
   RemoteSessionError,
   getRemoteSessionService,

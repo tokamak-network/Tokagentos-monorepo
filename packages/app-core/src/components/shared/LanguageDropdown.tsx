@@ -4,7 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { Check, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import type { UiLanguage } from "../../i18n/messages";

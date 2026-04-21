@@ -34,7 +34,7 @@ macro_rules! platform_async_trait {
 ///
 /// Usage:
 /// ```
-/// use elizaos::define_platform_trait;
+/// use tokagentos::define_platform_trait;
 ///
 /// define_platform_trait! {
 ///     pub trait MyService []
@@ -46,7 +46,7 @@ macro_rules! platform_async_trait {
 ///
 /// With bounds and generics:
 /// ```
-/// use elizaos::define_platform_trait;
+/// use tokagentos::define_platform_trait;
 ///
 /// define_platform_trait! {
 ///     pub trait MyService<T> [Clone] {

@@ -1,12 +1,12 @@
-# elizaOS Plugin
+# tokagentOS Plugin
 
-This is an elizaOS plugin built with the official plugin starter template.
+This is an tokagentOS plugin built with the official plugin starter template.
 
 ## Getting Started
 
 ```bash
 # Create a new plugin (automatically adds "plugin-" prefix)
-elizaos create --type plugin solana
+tokagentos create --type plugin solana
 # This creates: plugin-solana
 # Dependencies are automatically installed and built
 
@@ -14,27 +14,27 @@ elizaos create --type plugin solana
 cd plugin-solana
 
 # Start development immediately
-elizaos dev
+tokagentos dev
 ```
 
 ## Development
 
 ```bash
 # Start development with hot-reloading (recommended)
-elizaos dev
+tokagentos dev
 
 # OR start without hot-reloading
-elizaos start
+tokagentos start
 # Note: When using 'start', you need to rebuild after changes:
 # bun run build
 
 # Test the plugin
-elizaos test
+tokagentos test
 ```
 
 ## Testing
 
-elizaOS uses a dual testing approach that combines Vitest for component tests with a custom E2E test runner for integration testing within a live elizaOS runtime.
+tokagentOS uses a dual testing approach that combines Vitest for component tests with a custom E2E test runner for integration testing within a live tokagentOS runtime.
 
 ### Test Structure
 
@@ -42,7 +42,7 @@ elizaOS uses a dual testing approach that combines Vitest for component tests wi
 src/
   __tests__/              # All tests live inside src
     *.test.ts            # Component tests (use Vitest runner)
-    e2e/                 # E2E tests (use elizaOS test runner)
+    e2e/                 # E2E tests (use tokagentOS test runner)
       *.ts               # E2E test files
       README.md          # E2E testing documentation
 ```
@@ -69,17 +69,17 @@ describe("Plugin Configuration", () => {
 });
 ```
 
-#### 2. E2E Tests (elizaOS Test Runner)
+#### 2. E2E Tests (tokagentOS Test Runner)
 
-- **Purpose**: Test plugin behavior within a real elizaOS runtime
+- **Purpose**: Test plugin behavior within a real tokagentOS runtime
 - **Location**: `src/__tests__/e2e/*.ts`
-- **Runner**: elizaOS custom test runner
-- **Command**: `elizaos test --type e2e`
+- **Runner**: tokagentOS custom test runner
+- **Command**: `tokagentos test --type e2e`
 - **Features**: Real runtime, real database, full integration
 
 ```typescript
 // Example: src/__tests__/e2e/starter-plugin.ts
-import { type TestSuite } from "@elizaos/core";
+import { type TestSuite } from "@tokagentos/core";
 
 export const StarterPluginTestSuite: TestSuite = {
   name: "plugin_starter_test_suite",
@@ -103,22 +103,22 @@ export const StarterPluginTestSuite: TestSuite = {
 
 ```bash
 # Run all tests (both component and E2E)
-elizaos test
+tokagentos test
 
 # Run only component tests (fast, for TDD)
 npx vitest
 # or
-elizaos test --type component
+tokagentos test --type component
 
 # Run only E2E tests (slower, full integration)
-elizaos test --type e2e
+tokagentos test --type e2e
 ```
 
 ### Key Differences
 
 | Aspect          | Component Tests      | E2E Tests               |
 | --------------- | -------------------- | ----------------------- |
-| **Runner**      | Vitest               | elizaOS TestRunner      |
+| **Runner**      | Vitest               | tokagentOS TestRunner      |
 | **Environment** | Mocked               | Real runtime            |
 | **Database**    | Mocked               | Real (PGLite)           |
 | **Speed**       | Fast (ms)            | Slower (seconds)        |
@@ -205,7 +205,7 @@ Before publishing your plugin, ensure you meet these requirements:
 
 2. **GitHub Repository**
    - Create a public GitHub repository for this plugin
-   - Add the 'elizaos-plugins' topic to the repository
+   - Add the 'tokagentos-plugins' topic to the repository
    - Use 'main' as the default branch
 
 3. **Required Assets**
@@ -217,21 +217,21 @@ Before publishing your plugin, ensure you meet these requirements:
 
 ```bash
 # Test your plugin meets all requirements
-elizaos publish --test
+tokagentos publish --test
 
 # Publish to npm + GitHub + registry (recommended)
-elizaos publish
+tokagentos publish
 ```
 
 This command will:
 
 - Publish your plugin to npm for easy installation
 - Create/update your GitHub repository
-- Submit your plugin to the elizaOS registry for discoverability
+- Submit your plugin to the tokagentOS registry for discoverability
 
 ### Continuous Development & Updates
 
-**Important**: After your initial publish with `elizaos publish`, all future updates should be done using standard npm and git workflows, not the elizaOS CLI.
+**Important**: After your initial publish with `tokagentos publish`, all future updates should be done using standard npm and git workflows, not the tokagentOS CLI.
 
 #### Standard Update Workflow
 
@@ -239,18 +239,18 @@ This command will:
 
    ```bash
    # Edit your plugin code
-   elizaos dev  # Test locally with hot-reload
+   tokagentos dev  # Test locally with hot-reload
    ```
 
 2. **Test Your Changes**
 
    ```bash
    # Run all tests
-   elizaos test
+   tokagentos test
 
    # Run specific test types if needed
-   elizaos test component  # Component tests only
-   elizaos test e2e       # E2E tests only
+   tokagentos test component  # Component tests only
+   tokagentos test e2e       # E2E tests only
    ```
 
 3. **Update Version**
@@ -282,20 +282,20 @@ This command will:
 
 - **npm publish**: Directly updates your package on npm registry
 - **git push**: Updates your GitHub repository with latest code
-- **Automatic registry updates**: The elizaOS registry automatically syncs with npm, so no manual registry updates needed
+- **Automatic registry updates**: The tokagentOS registry automatically syncs with npm, so no manual registry updates needed
 - **Standard tooling**: Uses familiar npm/git commands that work with all development tools
 
 ### Alternative Publishing Options (Initial Only)
 
 ```bash
 # Publish to npm only (skip GitHub and registry)
-elizaos publish --npm
+tokagentos publish --npm
 
 # Publish but skip registry submission
-elizaos publish --skip-registry
+tokagentos publish --skip-registry
 
 # Generate registry files locally without publishing
-elizaos publish --dry-run
+tokagentos publish --dry-run
 ```
 
 ## Configuration
@@ -304,7 +304,7 @@ The `agentConfig` section in `package.json` defines the parameters your plugin r
 
 ```json
 "agentConfig": {
-  "pluginType": "elizaos:plugin:1.0.0",
+  "pluginType": "tokagentos:plugin:1.0.0",
   "pluginParameters": {
     "API_KEY": {
       "type": "string",

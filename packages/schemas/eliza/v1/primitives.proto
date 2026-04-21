@@ -1,8 +1,8 @@
-// primitives.proto - Core primitive types for elizaOS
+// primitives.proto - Core primitive types for tokagentOS
 // Single source of truth for TypeScript, Python, and Rust
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
 import "google/protobuf/struct.proto";
 

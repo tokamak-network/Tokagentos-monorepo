@@ -2,7 +2,7 @@
  * PR 3 runtime smoke test for `@elizaos/app-scape`.
  *
  * Exercises the SDK / BotManager / ScapeGameService layer WITHOUT
- * requiring the full eliza runtime to be booted. Flow:
+ * requiring the full tokagent runtime to be booted. Flow:
  *
  *   1. Import the SDK types + codec and round-trip an action frame
  *      through TOON encode/decode.
@@ -15,8 +15,8 @@
  *      perception frame. Controlled by `SCAPE_PR3_LIVE=1`.
  *
  * Run:
- *   bun eliza/apps/app-scape/scripts/verify-pr3.ts
- *   SCAPE_PR3_LIVE=1 BOT_SDK_TOKEN=dev-secret bun eliza/apps/app-scape/scripts/verify-pr3.ts
+ *   bun tokagent/apps/app-scape/scripts/verify-pr3.ts
+ *   SCAPE_PR3_LIVE=1 BOT_SDK_TOKEN=dev-secret bun tokagent/apps/app-scape/scripts/verify-pr3.ts
  */
 
 import appScapePlugin, {

@@ -1,4 +1,4 @@
-import { Button, PagePanel, Textarea } from "@elizaos/ui";
+import { Button, PagePanel, Textarea } from "@tokagentos/ui";
 import type { QueryResult } from "../../api";
 import { useApp } from "../../state";
 import { ResultsGrid } from "./database-utils";

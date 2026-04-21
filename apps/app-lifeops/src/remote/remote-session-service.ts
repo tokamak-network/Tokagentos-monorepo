@@ -8,7 +8,7 @@
  *     but still requires explicit `confirmed: true`).
  *   - Data-plane handoff point (`ingressUrl`).
  *
- * It does NOT own pixel transport. The data plane (VNC / Tailscale / Eliza
+ * It does NOT own pixel transport. The data plane (VNC / Tailscale / Tokagent
  * Cloud tunnel) is separate infrastructure. When no data plane is configured,
  * `startSession` returns an explicit `ingressUrl: null` with a structured
  * `reason: "data-plane-not-configured"` — this is deliberate absence, not a
@@ -18,8 +18,8 @@
 import { randomUUID } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import { logger } from "@elizaos/core";
-import { resolveStateDir } from "@elizaos/agent/config/paths";
+import { logger } from "@tokagentos/core";
+import { resolveStateDir } from "@tokagentos/agent/config/paths";
 import { PairingCodeStore } from "./pairing-code.js";
 
 export type RemoteSessionStatus = "pending" | "active" | "denied" | "revoked";
@@ -69,7 +69,7 @@ export interface DataPlaneResolution {
 export interface DataPlaneResolver {
   /**
    * Returns the ingress URL for this session, or an explicit reason absence.
-   * Implementations live in T9b (Tailscale) and the Eliza Cloud tunnel track.
+   * Implementations live in T9b (Tailscale) and the Tokagent Cloud tunnel track.
    */
   resolve(session: {
     sessionId: string;

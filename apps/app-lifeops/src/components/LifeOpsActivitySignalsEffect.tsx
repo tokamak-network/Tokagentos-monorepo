@@ -12,7 +12,7 @@
  * wire anything up.
  */
 
-import { useApp } from "@elizaos/app-core/state";
+import { useApp } from "@tokagentos/app-core/state";
 import { useLifeOpsActivitySignals } from "../hooks/useLifeOpsActivitySignals.js";
 
 export function LifeOpsActivitySignalsEffect(): null {

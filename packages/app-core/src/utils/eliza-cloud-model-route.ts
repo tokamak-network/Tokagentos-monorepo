@@ -1,5 +1,5 @@
-/** Heuristic: SSE `estimatedUsage.model` for Eliza Cloud–hosted Kimi / moonshot routes. */
-export function modelLooksLikeElizaCloudHosted(
+/** Heuristic: SSE `estimatedUsage.model` for Tokagent Cloud–hosted Kimi / moonshot routes. */
+export function modelLooksLikeTokagentCloudHosted(
   model: string | undefined,
 ): boolean {
   if (!model || typeof model !== "string") return false;
@@ -7,6 +7,6 @@ export function modelLooksLikeElizaCloudHosted(
   return (
     m.includes("kimi") ||
     m.includes("moonshot") ||
-    (m.includes("eliza") && m.includes("cloud"))
+    (m.includes("tokagent") && m.includes("cloud"))
   );
 }

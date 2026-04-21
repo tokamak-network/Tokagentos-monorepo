@@ -1,4 +1,4 @@
-import { Button, useTimeout } from "@elizaos/ui";
+import { Button, useTimeout } from "@tokagentos/ui";
 import { useState } from "react";
 
 export function CopyableAddress({

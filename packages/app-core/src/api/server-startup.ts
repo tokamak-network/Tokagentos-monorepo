@@ -7,10 +7,10 @@ import path from "node:path";
 import {
   isSafeResetStateDir as upstreamIsSafeResetStateDir,
   resolveCorsOrigin as upstreamResolveCorsOrigin,
-} from "@elizaos/agent/api/server";
-import { syncAppEnvToEliza, syncElizaEnvAliases } from "../utils/env.js";
+} from "@tokagentos/agent/api/server";
+import { syncAppEnvToTokagent, syncTokagentEnvAliases } from "../utils/env.js";
 
-const PACKAGE_ROOT_NAMES = new Set(["eliza", "elizaai", "elizaos", "eliza"]);
+const PACKAGE_ROOT_NAMES = new Set(["tokagent", "tokagentai", "tokagentos", "tokagent"]);
 
 export function isSafeResetStateDir(
   ...args: Parameters<typeof upstreamIsSafeResetStateDir>
@@ -39,8 +39,8 @@ export function isSafeResetStateDir(
 
   return normalizedState.split(path.sep).some((segment) => {
     const lower = segment.trim().toLowerCase();
-    if (lower === ".eliza") return true;
-    // Also accept brand-specific state dirs (e.g. ".eliza")
+    if (lower === ".tokagent") return true;
+    // Also accept brand-specific state dirs (e.g. ".tokagent")
     for (const name of PACKAGE_ROOT_NAMES) {
       if (lower === `.${name}`) return true;
     }
@@ -86,10 +86,10 @@ export function findOwnPackageRoot(startDir: string): string {
 export function resolveCorsOrigin(
   ...args: Parameters<typeof upstreamResolveCorsOrigin>
 ): ReturnType<typeof upstreamResolveCorsOrigin> {
-  syncElizaEnvAliases();
-  syncAppEnvToEliza();
+  syncTokagentEnvAliases();
+  syncAppEnvToTokagent();
   const result = upstreamResolveCorsOrigin(...args);
-  syncAppEnvToEliza();
-  syncElizaEnvAliases();
+  syncAppEnvToTokagent();
+  syncTokagentEnvAliases();
   return result;
 }

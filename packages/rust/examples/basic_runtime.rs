@@ -5,8 +5,8 @@
 
 #[cfg(all(feature = "native", not(feature = "wasm")))]
 mod inner {
-    use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-    use elizaos::types::{Bio, Character};
+    use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+    use tokagentos::types::{Bio, Character};
     use std::sync::Arc;
 
     pub async fn run() -> anyhow::Result<()> {

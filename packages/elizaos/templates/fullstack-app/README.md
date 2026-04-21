@@ -1,11 +1,11 @@
 # __APP_NAME__
 
-A Milady-style fullstack app workspace built on [elizaOS](https://github.com/elizaos/eliza).
+A Milady-style fullstack app workspace built on [tokagentOS](https://github.com/tokagentos/tokagent).
 
 ## Layout
 
 - `apps/app` — the branded React + Capacitor + Electrobun shell
-- `eliza` — upstream elizaOS source, managed as a git submodule
+- `tokagent` — upstream tokagentOS source, managed as a git submodule
 - `test` — thin test helpers that re-export the upstream app-core harness
 
 ## First Run
@@ -15,10 +15,10 @@ bun install
 bun run dev
 ```
 
-If the `eliza` submodule is missing, initialize it first:
+If the `tokagent` submodule is missing, initialize it first:
 
 ```bash
-git submodule update --init --remote eliza
+git submodule update --init --remote tokagent
 ```
 
 ## Common Commands
@@ -39,8 +39,8 @@ bun run --cwd apps/app build
 
 ## Notes
 
-- This template keeps the upstream elizaOS source local because several `@elizaos/*` workspace packages used by the app are not published on npm.
-- The generated project is meant to be its own repo, with `eliza/` pinned independently through the submodule.
+- This template keeps the upstream tokagentOS source local because several `@elizaos/*` workspace packages used by the app are not published on npm.
+- The generated project is meant to be its own repo, with `tokagent/` pinned independently through the submodule.
 - The default brand kit is intentionally minimal. The source-of-truth files are `apps/app/public/favicon.svg` and `apps/app/public/splash-bg.svg`.
 - `bun run --cwd apps/app brand:assets` regenerates the derived desktop assets: `public/splash-bg.jpg`, `electrobun/assets/appIcon.png`, `electrobun/assets/appIcon.ico`, and `electrobun/assets/appIcon.iconset/`.
-- `apps/app/public/logos/*` is still required because `@elizaos/app-core` maps provider IDs to those fixed asset paths during onboarding and settings flows.
+- `apps/app/public/logos/*` is still required because `@tokagentos/app-core` maps provider IDs to those fixed asset paths during onboarding and settings flows.

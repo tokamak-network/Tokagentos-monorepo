@@ -36,7 +36,7 @@ impl SecretsService {
         let encryption_key = if config.enable_encryption {
             let salt = config.encryption_salt.as_deref().unwrap_or("default-salt");
             Some(crypto::derive_key(
-                "elizaos-secrets",
+                "tokagentos-secrets",
                 salt.as_bytes(),
                 10000,
             ))

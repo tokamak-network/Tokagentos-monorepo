@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { invokeDesktopBridgeRequest } from "../bridge/electrobun-rpc";
 import { getBootConfig } from "../config/boot-config";
-import { getElizaApiBase } from "../utils/eliza-globals";
+import { getTokagentApiBase } from "../utils/tokagent-globals";
 
 /**
  * Default guild/room id for plugin-music-player when Discord is not used.
- * Keep in sync with `ELIZA_DESKTOP_MUSIC_GUILD_ID` in Electrobun `music-player.ts`.
+ * Keep in sync with `TOKAGENT_DESKTOP_MUSIC_GUILD_ID` in Electrobun `music-player.ts`.
  */
-export const ELIZA_DESKTOP_MUSIC_GUILD_ID = "elizaos-desktop";
+export const TOKAGENT_DESKTOP_MUSIC_GUILD_ID = "tokagentos-desktop";
 
 /**
  * Guild key used by plugin-music-player for web chat — must match
@@ -18,7 +18,7 @@ export function getWebMusicGuildIdFromRoomId(
 ): string {
   const r = roomId?.trim();
   if (!r) {
-    return ELIZA_DESKTOP_MUSIC_GUILD_ID;
+    return TOKAGENT_DESKTOP_MUSIC_GUILD_ID;
   }
   return `web-${r}`;
 }
@@ -47,17 +47,17 @@ export function buildMusicPlayerPaths(guildId: string): {
 }
 
 /**
- * Resolve the API base using the same chain as ElizaClient / resolveApiUrl:
+ * Resolve the API base using the same chain as TokagentClient / resolveApiUrl:
  * boot config → shell injection → sessionStorage → "" (same origin).
  * An empty string means relative URLs go through the Vite dev proxy.
  */
 function resolveApiBase(): string {
   const boot = getBootConfig().apiBase?.trim();
   if (boot) return boot;
-  const injected = getElizaApiBase();
+  const injected = getTokagentApiBase();
   if (injected) return injected;
   if (typeof window !== "undefined") {
-    const stored = window.sessionStorage.getItem("elizaos_api_base")?.trim();
+    const stored = window.sessionStorage.getItem("tokagentos_api_base")?.trim();
     if (stored) return stored;
   }
   return "";
@@ -85,7 +85,7 @@ export async function resolveMusicPlayerPlaybackUrls(options?: {
 }): Promise<
   ({ ok: true } & MusicPlaybackUrls) | { ok: false; reason: string }
 > {
-  const guildId = options?.guildId?.trim() || ELIZA_DESKTOP_MUSIC_GUILD_ID;
+  const guildId = options?.guildId?.trim() || TOKAGENT_DESKTOP_MUSIC_GUILD_ID;
 
   const desktop = await invokeDesktopBridgeRequest<RpcPlaybackPayload>({
     rpcMethod: "musicPlayerGetDesktopPlaybackUrls",
@@ -135,7 +135,7 @@ export function useMusicPlayerStream(options?: { guildId?: string }): {
     | null;
   attachStreamToAudioElement: (el: HTMLAudioElement | null) => void;
 } {
-  const guildId = options?.guildId ?? ELIZA_DESKTOP_MUSIC_GUILD_ID;
+  const guildId = options?.guildId ?? TOKAGENT_DESKTOP_MUSIC_GUILD_ID;
   const [urls, setUrls] = useState<
     ({ ok: true } & MusicPlaybackUrls) | { ok: false; reason: string } | null
   >(null);

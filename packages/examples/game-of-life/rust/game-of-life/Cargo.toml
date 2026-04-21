@@ -2,7 +2,7 @@
 name = "game-of-life"
 version = "0.1.0"
 edition = "2021"
-description = "elizaOS Rust Game-of-Life example (canonical message_service pipeline, no LLM)"
+description = "tokagentOS Rust Game-of-Life example (canonical message_service pipeline, no LLM)"
 publish = false
 
 [[bin]]
@@ -10,8 +10,8 @@ name = "game-of-life"
 path = "src/main.rs"
 
 [dependencies]
-# elizaOS Core
-elizaos = "2.0.0"
+# tokagentOS Core
+tokagentos = "2.0.0"
 
 # Async runtime
 tokio = { version = "1.42", features = ["rt-multi-thread", "macros", "time"] }

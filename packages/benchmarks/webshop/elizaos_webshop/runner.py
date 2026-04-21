@@ -8,16 +8,16 @@ from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
-from elizaos_webshop.dataset import WebShopDataset
-from elizaos_webshop.environment import WebShopEnvironment
-from elizaos_webshop.evaluator import WebShopEvaluator
-from elizaos_webshop.eliza_agent import create_webshop_agent, ELIZAOS_AVAILABLE
-from elizaos_webshop.trajectory_integration import (
+from tokagentos_webshop.dataset import WebShopDataset
+from tokagentos_webshop.environment import WebShopEnvironment
+from tokagentos_webshop.evaluator import WebShopEvaluator
+from tokagentos_webshop.tokagent_agent import create_webshop_agent, TOKAGENTOS_AVAILABLE
+from tokagentos_webshop.trajectory_integration import (
     WebShopTrajectoryConfig,
     WebShopTrajectoryIntegration,
     TRAJECTORY_LOGGER_AVAILABLE,
 )
-from elizaos_webshop.types import (
+from tokagentos_webshop.types import (
     EpisodeStep,
     WebShopConfig,
     WebShopReport,
@@ -38,12 +38,12 @@ class WebShopRunner:
         self.evaluator = WebShopEvaluator()
         self._start_time = 0.0
 
-        self._elizaos_mode = (not config.use_mock) and ELIZAOS_AVAILABLE
+        self._tokagentos_mode = (not config.use_mock) and TOKAGENTOS_AVAILABLE
         self._trajectory: WebShopTrajectoryIntegration | None = None
-        if self._elizaos_mode and config.enable_trajectory_logging:
+        if self._tokagentos_mode and config.enable_trajectory_logging:
             if not TRAJECTORY_LOGGER_AVAILABLE:
                 raise RuntimeError(
-                    "Trajectory logging enabled but elizaos-plugin-trajectory-logger is not installed. "
+                    "Trajectory logging enabled but tokagentos-plugin-trajectory-logger is not installed. "
                     "Install plugins/plugin-trajectory-logger/python."
                 )
             self._trajectory = WebShopTrajectoryIntegration(
@@ -191,7 +191,7 @@ class WebShopRunner:
         summary: dict[str, str | int | float | bool] = {
             "status": status,
             "timestamp": datetime.now().isoformat(),
-            "mode": "real-llm" if self._elizaos_mode else "mock",
+            "mode": "real-llm" if self._tokagentos_mode else "mock",
         }
 
         return WebShopReport(

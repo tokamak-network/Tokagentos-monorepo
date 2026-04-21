@@ -1,10 +1,10 @@
 import type {
   RouteHelpers,
   RouteRequestContext,
-} from "@elizaos/agent/api/route-helpers";
-import type { Trajectory } from "@elizaos/agent/types/trajectory";
-import { parsePositiveInteger } from "@elizaos/agent/utils/number-parsing";
-import type { AgentRuntime } from "@elizaos/core";
+} from "@tokagentos/agent/api/route-helpers";
+import type { Trajectory } from "@tokagentos/agent/types/trajectory";
+import { parsePositiveInteger } from "@tokagentos/agent/utils/number-parsing";
+import type { AgentRuntime } from "@tokagentos/core";
 import { AGENT_CONTEXTS, type AgentContext } from "../core/context-types.js";
 import type { RoleplayExecutionReport } from "../core/roleplay-executor.js";
 import {
@@ -918,7 +918,7 @@ export async function handleTrainingRoutes(
         trainingDataPath: body.trainingDataPath,
         validationDataPath: body.validationDataPath,
         epochs: body.epochs ?? 3,
-        displayName: body.displayName ?? "eliza-should-respond",
+        displayName: body.displayName ?? "tokagent-should-respond",
       });
       json(res, { job }, 201);
     } catch (err) {
@@ -1124,7 +1124,7 @@ export async function handleTrainingRoutes(
         validationDataPath: body.validationDataPath,
         epochs: body.epochs ?? 3,
         displayName:
-          body.displayName ?? `eliza-${slot.replace(/_/g, "-")}-${Date.now()}`,
+          body.displayName ?? `tokagent-${slot.replace(/_/g, "-")}-${Date.now()}`,
         slot,
         scope: body.scope ?? "global",
         ownerId: body.ownerId,

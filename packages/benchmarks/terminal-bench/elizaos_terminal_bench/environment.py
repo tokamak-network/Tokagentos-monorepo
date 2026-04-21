@@ -21,7 +21,7 @@ except ImportError:
     docker = None
     Container = None
 
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.types import (
     CommandStatus,
     TerminalCommand,
     TerminalTask,
@@ -269,7 +269,7 @@ class TerminalEnvironment:
         """
         # Write test script to container
         write_result = await self.execute(
-            f"cat << 'ELIZAEOF' > /tmp/test.sh\n{test_script}\nELIZAEOF"
+            f"cat << 'TOKAGENTEOF' > /tmp/test.sh\n{test_script}\nTOKAGENTEOF"
         )
         if write_result.exit_code != 0:
             return False, f"Failed to write test script: {write_result.stderr}", -1
@@ -296,7 +296,7 @@ class TerminalEnvironment:
         """Write content to a file in the container."""
         # Escape content for heredoc
         result = await self.execute(
-            f"cat << 'ELIZAEOF' > {path}\n{content}\nELIZAEOF"
+            f"cat << 'TOKAGENTEOF' > {path}\n{content}\nTOKAGENTEOF"
         )
         return result.exit_code == 0
 

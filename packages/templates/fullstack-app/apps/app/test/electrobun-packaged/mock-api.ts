@@ -85,7 +85,7 @@ interface CustomActionRecord {
 }
 
 const onboardingOptions = {
-  names: ["Eliza", "Lilypad", "Orbit", "Nova", "Echo"],
+  names: ["Tokagent", "Lilypad", "Orbit", "Nova", "Echo"],
   styles: [
     {
       catchphrase: "chaotic",
@@ -128,8 +128,8 @@ const onboardingOptions = {
   ],
   cloudProviders: [
     {
-      id: "elizacloud",
-      name: "Eliza Cloud",
+      id: "tokagentcloud",
+      name: "Tokagent Cloud",
       description: "Managed cloud runtime",
     },
   ],
@@ -138,7 +138,7 @@ const onboardingOptions = {
       {
         id: "small-model",
         name: "Small Model",
-        provider: "elizacloud",
+        provider: "tokagentcloud",
         description: "Fast",
       },
     ],
@@ -146,7 +146,7 @@ const onboardingOptions = {
       {
         id: "large-model",
         name: "Large Model",
-        provider: "elizacloud",
+        provider: "tokagentcloud",
         description: "High quality",
       },
     ],
@@ -162,12 +162,12 @@ function applyCors(res: http.ServerResponse): void {
     [
       "Content-Type",
       "Authorization",
-      "X-Eliza-Token",
+      "X-Tokagent-Token",
       "X-Api-Key",
-      "X-Eliza-Export-Token",
-      "X-Eliza-Client-Id",
-      "X-Eliza-Terminal-Token",
-      "X-Eliza-UI-Language",
+      "X-Tokagent-Export-Token",
+      "X-Tokagent-Client-Id",
+      "X-Tokagent-Terminal-Token",
+      "X-Tokagent-UI-Language",
     ].join(", "),
   );
 }
@@ -269,7 +269,7 @@ export async function startMockApiServer(
   const pairingExpiresAt =
     options.auth?.expiresAt ??
     (pairingEnabled ? Date.now() + 10 * 60 * 1000 : null);
-  const agentName = "Eliza";
+  const agentName = "Tokagent";
 
   const conversations: ConversationRecord[] = [
     {
@@ -660,7 +660,7 @@ export async function startMockApiServer(
       /^\/api\/conversations\/([^/]+)\/greeting$/,
     );
     if (method === "POST" && greetingMatch) {
-      json(res, 200, { text: "hello from eliza" });
+      json(res, 200, { text: "hello from tokagent" });
       return;
     }
 
@@ -744,7 +744,7 @@ export async function startMockApiServer(
         hasApiKey: false,
         userId: null,
         organizationId: null,
-        topUpUrl: "https://elizacloud.ai",
+        topUpUrl: "https://tokagentcloud.ai",
       });
       return;
     }
@@ -754,7 +754,7 @@ export async function startMockApiServer(
         balance: null,
         low: false,
         critical: false,
-        topUpUrl: "https://elizacloud.ai",
+        topUpUrl: "https://tokagentcloud.ai",
       });
       return;
     }
@@ -945,9 +945,9 @@ export async function startMockApiServer(
       json(res, 200, {
         character: {
           name: agentName,
-          username: "eliza",
+          username: "tokagent",
           bio: ["A mock agent for desktop e2e"],
-          system: "You are Eliza",
+          system: "You are Tokagent",
           adjectives: ["friendly"],
           style: { all: [], chat: [], post: [] },
           postExamples: [],
@@ -965,7 +965,7 @@ export async function startMockApiServer(
       return;
     }
     if (method === "POST" && pathname === "/api/character/random-name") {
-      json(res, 200, { name: "Eliza" });
+      json(res, 200, { name: "Tokagent" });
       return;
     }
 

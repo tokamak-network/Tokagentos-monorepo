@@ -8,9 +8,9 @@ import uuid
 from dataclasses import dataclass
 from typing import Literal
 
-from elizaos_plugin_inmemorydb import MemoryStorage
-from elizaos_plugin_local_ai import TextGenerationParams, create_plugin, parse_simple_xml
-from elizaos_plugin_shell import ShellConfig, ShellService
+from tokagentos_plugin_inmemorydb import MemoryStorage
+from tokagentos_plugin_local_ai import TextGenerationParams, create_plugin, parse_simple_xml
+from tokagentos_plugin_shell import ShellConfig, ShellService
 
 DecisionAction = Literal["RUN", "SLEEP", "STOP"]
 

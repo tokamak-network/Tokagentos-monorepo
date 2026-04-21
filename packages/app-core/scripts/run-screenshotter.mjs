@@ -112,17 +112,17 @@ async function main() {
         return dl?.href ?? null;
       }, i);
       if (!dataUrl?.startsWith("data:image/png")) {
-        console.warn(`[run-screenshotter] No preview for eliza-${i}`);
+        console.warn(`[run-screenshotter] No preview for tokagent-${i}`);
         continue;
       }
       const base64 = dataUrl.replace(/^data:image\/png;base64,/, "");
       const buf = Buffer.from(base64, "base64");
-      const previewPath = path.join(PREVIEWS_DIR, `eliza-${i}.png`);
+      const previewPath = path.join(PREVIEWS_DIR, `tokagent-${i}.png`);
       fs.writeFileSync(previewPath, buf);
       console.log(`[run-screenshotter] Saved ${previewPath}`);
       saved++;
 
-      const bgPath = path.join(BACKGROUNDS_DIR, `eliza-${i}.png`);
+      const bgPath = path.join(BACKGROUNDS_DIR, `tokagent-${i}.png`);
       fs.writeFileSync(bgPath, buf);
     }
 

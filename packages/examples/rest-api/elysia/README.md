@@ -1,16 +1,16 @@
-# elizaOS REST API - Elysia
+# tokagentOS REST API - Elysia
 
-A simple REST API server for chatting with an elizaOS agent using Elysia (Bun's fast web framework).
+A simple REST API server for chatting with an tokagentOS agent using Elysia (Bun's fast web framework).
 
 **No API keys or external services required!** Uses:
 
-- `plugin-eliza-classic` for pattern-matching responses (no LLM needed)
+- `plugin-tokagent-classic` for pattern-matching responses (no LLM needed)
 
 ## Quick Start
 
 ```bash
 # From the monorepo root, install dependencies
-cd /path/to/eliza
+cd /path/to/tokagent
 bun install
 
 # Start the server
@@ -54,7 +54,7 @@ Response:
 ```json
 {
   "response": "How do you do. Please state your problem.",
-  "character": "Eliza",
+  "character": "Tokagent",
   "userId": "generated-uuid"
 }
 ```

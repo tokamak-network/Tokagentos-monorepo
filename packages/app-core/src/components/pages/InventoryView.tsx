@@ -17,7 +17,7 @@ import {
   SidebarPanel,
   SidebarScrollRegion,
   TooltipHint,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   AlertTriangle,
   ChevronDown,
@@ -265,7 +265,7 @@ export function InventoryView() {
     walletError,
     loadBalances,
     loadNfts,
-    elizaCloudConnected,
+    tokagentCloudConnected,
     setTab,
     setState,
     setActionNotice,
@@ -391,7 +391,7 @@ export function InventoryView() {
   const cfg = walletConfig;
   const hasManagedBscRpc = Boolean(cfg?.managedBscRpcReady);
   const cloudManagedAccess = Boolean(
-    cfg?.cloudManagedAccess || elizaCloudConnected,
+    cfg?.cloudManagedAccess || tokagentCloudConnected,
   );
 
   const goToRpcSettings = useCallback(() => {
@@ -627,13 +627,13 @@ export function InventoryView() {
       : singleChainFocus === "bsc" && evmAddr && !bscReady
         ? {
             title: t("wallet.setup.rpcNotConfigured"),
-            body: t("portfolioheader.ConnectViaElizaCl"),
+            body: t("portfolioheader.ConnectViaTokagentCl"),
             actionLabel: t("wallet.setup.configureRpc"),
           }
         : singleChainFocus === "solana" && solAddr && !solanaReady
           ? {
               title: "Solana RPC is not configured.",
-              body: "Connect via Eliza Cloud or configure HELIUS_API_KEY / SOLANA_RPC_URL in Settings to load Solana balances.",
+              body: "Connect via Tokagent Cloud or configure HELIUS_API_KEY / SOLANA_RPC_URL in Settings to load Solana balances.",
               actionLabel: t("wallet.setup.configureRpc"),
             }
           : singleChainFocus &&
@@ -649,7 +649,7 @@ export function InventoryView() {
                     : false)
             ? {
                 title: `${focusedChainLabel ?? "Chain"} access is not configured.`,
-                body: `Connect via Eliza Cloud or configure ${focusedChainLabel ?? "this chain"} RPC access in Settings to load balances.`,
+                body: `Connect via Tokagent Cloud or configure ${focusedChainLabel ?? "this chain"} RPC access in Settings to load balances.`,
                 actionLabel: t("wallet.setup.configureRpc"),
               }
             : null;
@@ -1003,12 +1003,12 @@ export function InventoryView() {
                   <p className="mt-1 max-w-sm text-xs text-muted">
                     {t("wallet.setup.description", {
                       defaultValue:
-                        "Connect via Eliza Cloud or configure wallet keys directly to start trading.",
+                        "Connect via Tokagent Cloud or configure wallet keys directly to start trading.",
                     })}
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-2">
-                  {elizaCloudConnected ? (
+                  {tokagentCloudConnected ? (
                     <Button
                       variant="default"
                       size="sm"
@@ -1016,7 +1016,7 @@ export function InventoryView() {
                       onClick={goToRpcSettings}
                     >
                       {t("wallet.setup.importFromCloud", {
-                        defaultValue: "Import from Eliza Cloud",
+                        defaultValue: "Import from Tokagent Cloud",
                       })}
                     </Button>
                   ) : null}

@@ -1,4 +1,4 @@
-"""Solana benchmark actions for ElizaOS."""
+"""Solana benchmark actions for TokagentOS."""
 
 from .execute_code import execute_code_action
 

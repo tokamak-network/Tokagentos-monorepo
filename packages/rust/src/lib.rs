@@ -1,6 +1,6 @@
-//! elizaOS Core - Rust Implementation
+//! tokagentOS Core - Rust Implementation
 //!
-//! This crate provides the core runtime and types for elizaOS, a framework for building
+//! This crate provides the core runtime and types for tokagentOS, a framework for building
 //! AI agents. It is designed to be fully compatible with the TypeScript implementation,
 //! supporting both native Rust and WASM targets.
 //!
@@ -12,8 +12,8 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use elizaos::{AgentRuntime, Character, parse_character};
-//! use elizaos::runtime::RuntimeOptions;
+//! use tokagentos::{AgentRuntime, Character, parse_character};
+//! use tokagentos::runtime::RuntimeOptions;
 //!
 //! async fn example() -> anyhow::Result<()> {
 //!     let character = parse_character(r#"{"name": "TestAgent", "bio": "A test agent"}"#)?;

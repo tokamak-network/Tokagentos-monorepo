@@ -42,7 +42,7 @@ BOLD='\033[1m'
 # Script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MILADY_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-ELIZA_ROOT="$MILADY_ROOT/eliza"
+TOKAGENT_ROOT="$MILADY_ROOT/tokagent"
 PLUGINS_ROOT="$(cd "$MILADY_ROOT/plugins" 2>/dev/null && pwd || echo "")"
 
 # Results tracking
@@ -232,7 +232,7 @@ run_test_suite() {
 # ============================================================================
 run_vision_tests() {
     log_header "COMPUTER VISION TESTS"
-    log_info "Testing media providers: OpenAI, Google, Anthropic, xAI, Eliza Cloud"
+    log_info "Testing media providers: OpenAI, Google, Anthropic, xAI, Tokagent Cloud"
 
     run_test_suite \
         "Computer Vision (media-provider.test.ts)" \
@@ -247,7 +247,7 @@ run_computeruse_tests() {
     log_header "COMPUTER USE TESTS"
     log_info "Testing plugin-based desktop automation, approvals, runtime wiring, and UI smoke coverage"
 
-    local computeruse_dir="$ELIZA_ROOT/plugins/plugin-computeruse"
+    local computeruse_dir="$TOKAGENT_ROOT/plugins/plugin-computeruse"
 
     if [[ ! -d "$computeruse_dir" ]]; then
         log_skip "Computer Use tests - directory not found: $computeruse_dir"
@@ -292,7 +292,7 @@ run_extension_tests() {
     log_header "BROWSER EXTENSION TESTS"
     log_info "Testing ComputerUse Bridge Extension: WebSocket, CDP, JS evaluation"
 
-    local extension_dir="$ELIZA_ROOT/packages/computeruse/crates/computeruse/browser-extension"
+    local extension_dir="$TOKAGENT_ROOT/packages/computeruse/crates/computeruse/browser-extension"
 
     if [[ ! -d "$extension_dir" ]]; then
         log_skip "Browser Extension tests - directory not found: $extension_dir"
@@ -461,10 +461,10 @@ EOF
         <h2>Feature Coverage</h2>
         <div class="feature-section">
             <div class="feature-title">🔍 Computer Vision</div>
-            <p>Vision analysis providers: OpenAI, Google, Anthropic, xAI, Eliza Cloud</p>
+            <p>Vision analysis providers: OpenAI, Google, Anthropic, xAI, Tokagent Cloud</p>
             <p>Image generation: FAL, OpenAI DALL-E, Google Imagen, xAI Grok</p>
             <p>Video generation: FAL, OpenAI Sora, Google Veo</p>
-            <p>Audio generation: Suno, Eliza Cloud</p>
+            <p>Audio generation: Suno, Tokagent Cloud</p>
         </div>
 
         <div class="feature-section">
@@ -500,7 +500,7 @@ EOF
 main() {
     log_header "FEATURE VALIDATION SUITE"
     echo -e "${BOLD}Milady Root:${NC} $MILADY_ROOT"
-    echo -e "${BOLD}Eliza Root:${NC} $ELIZA_ROOT"
+    echo -e "${BOLD}Tokagent Root:${NC} $TOKAGENT_ROOT"
     echo -e "${BOLD}Plugins Root:${NC} ${PLUGINS_ROOT:-'Not found'}"
     echo -e "${BOLD}Quick Mode:${NC} $QUICK_MODE"
     echo -e "${BOLD}Verbose:${NC} $VERBOSE"

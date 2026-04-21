@@ -5,7 +5,7 @@
  * These are immutable operations that return new character objects.
  *
  * Note: Secrets are stored in character.settings.secrets for compatibility
- * with the Eliza runtime and existing character files.
+ * with the Tokagent runtime and existing character files.
  *
  * @module character-utils
  */

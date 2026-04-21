@@ -1,7 +1,7 @@
 import type {
   CustomActionDef,
   CustomActionHandler,
-} from "@elizaos/agent/contracts/config";
+} from "@tokagentos/agent/contracts/config";
 import {
   Banner,
   Button,
@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { client } from "../../api/client";

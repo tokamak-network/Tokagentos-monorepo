@@ -1,12 +1,12 @@
 param(
   [string]$ArtifactsDir = $(
     if ($env:MILADY_TEST_WINDOWS_ARTIFACTS_DIR) { $env:MILADY_TEST_WINDOWS_ARTIFACTS_DIR }
-    elseif ($env:ELIZA_TEST_WINDOWS_ARTIFACTS_DIR) { $env:ELIZA_TEST_WINDOWS_ARTIFACTS_DIR }
+    elseif ($env:TOKAGENT_TEST_WINDOWS_ARTIFACTS_DIR) { $env:TOKAGENT_TEST_WINDOWS_ARTIFACTS_DIR }
     else { Join-Path $PSScriptRoot "..\\artifacts" }
   ),
   [string]$BuildDir = $(
     if ($env:MILADY_TEST_WINDOWS_BUILD_DIR) { $env:MILADY_TEST_WINDOWS_BUILD_DIR }
-    elseif ($env:ELIZA_TEST_WINDOWS_BUILD_DIR) { $env:ELIZA_TEST_WINDOWS_BUILD_DIR }
+    elseif ($env:TOKAGENT_TEST_WINDOWS_BUILD_DIR) { $env:TOKAGENT_TEST_WINDOWS_BUILD_DIR }
     else { Join-Path $PSScriptRoot "..\\build" }
   ),
   [string]$ProofInstallDir = "C:\\mi-proof",
@@ -22,7 +22,7 @@ function Stop-MiladyProcesses() {
     Where-Object {
       $_.ProcessName -in @("launcher", "bun") -or
       $_.ProcessName -like "Milady*" -or
-      $_.ProcessName -like "ElizaOSApp-Setup*"
+      $_.ProcessName -like "TokagentOSApp-Setup*"
     } |
     Stop-Process -Force
 }
@@ -79,30 +79,30 @@ try {
   Stop-MiladyProcesses
   Remove-Item $ProofInstallDir -Recurse -Force -ErrorAction SilentlyContinue
 
-  $installer = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "ElizaOSApp-Setup-*.exe" -ErrorAction SilentlyContinue |
+  $installer = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "TokagentOSApp-Setup-*.exe" -ErrorAction SilentlyContinue |
     Sort-Object LastWriteTime -Descending |
     Select-Object -First 1
   if (-not $installer) {
-    $installer = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "Eliza-Setup-*.exe" -ErrorAction SilentlyContinue |
+    $installer = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "Tokagent-Setup-*.exe" -ErrorAction SilentlyContinue |
       Sort-Object LastWriteTime -Descending |
       Select-Object -First 1
   }
   if (-not $installer) {
-    throw "No canonical installer found in $resolvedArtifactsDir (ElizaOSApp-Setup-*.exe / Eliza-Setup-*.exe)."
+    throw "No canonical installer found in $resolvedArtifactsDir (TokagentOSApp-Setup-*.exe / Tokagent-Setup-*.exe)."
   }
 
   $summary.installer = $installer.FullName
   $summary.installerSizeBytes = [int64]$installer.Length
 
-  $env:ELIZA_WINDOWS_SMOKE_REQUIRE_INSTALLER = "1"
+  $env:TOKAGENT_WINDOWS_SMOKE_REQUIRE_INSTALLER = "1"
   $env:MILADY_WINDOWS_SMOKE_REQUIRE_INSTALLER = "1"
   $env:MILADY_TEST_WINDOWS_INSTALL_DIR = $ProofInstallDir
   $env:MILADY_TEST_WINDOWS_LAUNCHER_DIR = Join-Path $env:RUNNER_TEMP "milady-windows-proof-launcher"
-  $env:ELIZA_TEST_WINDOWS_LAUNCHER_PATH_FILE = Join-Path $env:RUNNER_TEMP "milady-windows-proof-launcher.txt"
+  $env:TOKAGENT_TEST_WINDOWS_LAUNCHER_PATH_FILE = Join-Path $env:RUNNER_TEMP "milady-windows-proof-launcher.txt"
   $env:MILADY_TEST_WINDOWS_LAUNCHER_PATH_FILE = Join-Path $env:RUNNER_TEMP "milady-windows-proof-launcher.txt"
 
   Remove-Item $env:MILADY_TEST_WINDOWS_LAUNCHER_DIR -Recurse -Force -ErrorAction SilentlyContinue
-  Remove-Item $env:ELIZA_TEST_WINDOWS_LAUNCHER_PATH_FILE -Force -ErrorAction SilentlyContinue
+  Remove-Item $env:TOKAGENT_TEST_WINDOWS_LAUNCHER_PATH_FILE -Force -ErrorAction SilentlyContinue
   Remove-Item $env:MILADY_TEST_WINDOWS_LAUNCHER_PATH_FILE -Force -ErrorAction SilentlyContinue
 
   pwsh -File (Join-Path $PSScriptRoot "smoke-test-windows.ps1") `
@@ -139,7 +139,7 @@ try {
     }
 
     $candidate = Get-ChildItem -Path $root -Recurse -File -Filter "*.lnk" -ErrorAction SilentlyContinue |
-      Where-Object { $_.Name -match "Milady|Eliza" } |
+      Where-Object { $_.Name -match "Milady|Tokagent" } |
       Sort-Object LastWriteTime -Descending |
       Select-Object -First 1
     if ($candidate) {
@@ -149,7 +149,7 @@ try {
   }
 
   if (-not $shortcut) {
-    throw "Start Menu shortcut containing 'Milady' or 'Eliza' was not found."
+    throw "Start Menu shortcut containing 'Milady' or 'Tokagent' was not found."
   }
 
   $summary.startMenuShortcut = $shortcut.FullName

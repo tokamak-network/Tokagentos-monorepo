@@ -1,5 +1,5 @@
 /**
- * Test client for elizaOS A2A Server
+ * Test client for tokagentOS A2A Server
  */
 
 const BASE_URL = process.env.A2A_URL ?? "http://localhost:3000";
@@ -17,7 +17,7 @@ function assert(condition: boolean, message: string): asserts condition {
 }
 
 export async function runA2ATestClient(baseUrl: string): Promise<void> {
-  console.log("🧪 Testing elizaOS A2A Server\n");
+  console.log("🧪 Testing tokagentOS A2A Server\n");
   console.log(`   URL: ${baseUrl}\n`);
 
   // Test 1: Get agent info

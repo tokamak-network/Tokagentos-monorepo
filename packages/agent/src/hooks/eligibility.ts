@@ -6,7 +6,7 @@ import { existsSync } from "node:fs";
 import { platform } from "node:os";
 import { delimiter, dirname, extname, isAbsolute, join } from "node:path";
 import type { HookConfig, InternalHooksConfig } from "../config/types.hooks.js";
-import type { ElizaHookMetadata } from "./types.js";
+import type { TokagentHookMetadata } from "./types.js";
 
 function binaryExists(name: string): boolean {
   const pathExts =
@@ -83,9 +83,9 @@ export interface EligibilityResult {
 }
 
 export function checkEligibility(
-  metadata: ElizaHookMetadata | undefined,
+  metadata: TokagentHookMetadata | undefined,
   hookConfig: HookConfig | undefined,
-  elizaConfig: Record<string, unknown> = {},
+  tokagentConfig: Record<string, unknown> = {},
 ): EligibilityResult {
   const missing: string[] = [];
 
@@ -136,7 +136,7 @@ export function checkEligibility(
 
   if (metadata.requires?.config) {
     for (const configPath of metadata.requires.config) {
-      if (!isConfigPathTruthy(elizaConfig, configPath)) {
+      if (!isConfigPathTruthy(tokagentConfig, configPath)) {
         missing.push(`Config missing: ${configPath}`);
       }
     }

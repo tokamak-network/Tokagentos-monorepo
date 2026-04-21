@@ -1,4 +1,4 @@
-import type { ElizaConfig } from "../config/types.eliza.js";
+import type { TokagentConfig } from "../config/types.tokagent.js";
 import type {
   EjectResult,
   InstalledPluginInfo,
@@ -16,9 +16,9 @@ import {
   searchPlugins,
 } from "./registry-client.js";
 
-type ConfigGetter = () => ElizaConfig;
+type ConfigGetter = () => TokagentConfig;
 
-function listInstalledFromConfig(config: ElizaConfig): InstalledPluginInfo[] {
+function listInstalledFromConfig(config: TokagentConfig): InstalledPluginInfo[] {
   const installs = config.plugins?.installs;
   if (!installs || typeof installs !== "object") {
     return [];

@@ -1,10 +1,10 @@
-import type { IAgentRuntime, Memory, State } from "@elizaos/core";
-import { ModelType, parseJSONObjectFromText } from "@elizaos/core";
+import type { IAgentRuntime, Memory, State } from "@tokagentos/core";
+import { ModelType, parseJSONObjectFromText } from "@tokagentos/core";
 import type {
   CreateLifeOpsGoalRequest,
   LifeOpsGoalDefinition,
   UpdateLifeOpsGoalRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   buildGoalGroundingMetadata,
   GOAL_GROUNDING_STATES,

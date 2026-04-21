@@ -234,7 +234,7 @@ export function getPresetNameMap(
   return result;
 }
 
-export function buildElizaCharacterCatalog(): {
+export function buildTokagentCharacterCatalog(): {
   assets: Array<{
     id: number;
     slug: string;
@@ -252,7 +252,7 @@ export function buildElizaCharacterCatalog(): {
     .sort((left, right) => left.avatarIndex - right.avatarIndex)
     .map((preset) => ({
       id: preset.avatarIndex,
-      slug: `eliza-${preset.avatarIndex}`,
+      slug: `tokagent-${preset.avatarIndex}`,
       title: preset.name,
       sourceName: preset.name,
     }));

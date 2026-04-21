@@ -32,7 +32,7 @@ export function App(): React.JSX.Element {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState<string>("");
   const [busy, setBusy] = useState<boolean>(false);
-  const [effectiveMode, setEffectiveMode] = useState<ProviderMode>("elizaClassic");
+  const [effectiveMode, setEffectiveMode] = useState<ProviderMode>("tokagentClassic");
 
   const backendUrl = useMemo(() => {
     const env = import.meta.env.VITE_CHAT_BACKEND_URL as string | undefined;
@@ -132,7 +132,7 @@ export function App(): React.JSX.Element {
     <div className="page">
       <header className="header">
         <div>
-          <div className="title">ElizaOS Chat (Capacitor example)</div>
+          <div className="title">TokagentOS Chat (Capacitor example)</div>
           <div className="subtitle">
             Backend: <code>{backendUrl}</code>
           </div>
@@ -157,7 +157,7 @@ export function App(): React.JSX.Element {
             >
               {(
                 [
-                  "elizaClassic",
+                  "tokagentClassic",
                   "openai",
                   "anthropic",
                   "gemini",

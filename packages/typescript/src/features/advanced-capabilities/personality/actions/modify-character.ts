@@ -1285,7 +1285,7 @@ acceptable_style_post: style item 1 || style item 2`;
 
 /**
  * Check if user has admin/owner permissions for global character modifications.
- * Uses the elizaOS role system — both ADMIN and OWNER can modify personality.
+ * Uses the tokagentOS role system — both ADMIN and OWNER can modify personality.
  */
 async function checkAdminPermissions(
 	runtime: IAgentRuntime,

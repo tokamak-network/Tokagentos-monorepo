@@ -9,12 +9,12 @@ from uuid import UUID, uuid4
 
 from google.protobuf.json_format import MessageToDict
 
-from elizaos.logger import Logger
-from elizaos.types.components import ActionContext, ActionResult, HandlerCallback, HandlerOptions
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content
-from elizaos.types.service import Service
-from elizaos.types.state import State
+from tokagentos.logger import Logger
+from tokagentos.types.components import ActionContext, ActionResult, HandlerCallback, HandlerOptions
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content
+from tokagentos.types.service import Service
+from tokagentos.types.state import State
 
 
 @dataclass

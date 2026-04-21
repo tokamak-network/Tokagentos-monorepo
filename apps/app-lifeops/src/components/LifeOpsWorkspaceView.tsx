@@ -8,7 +8,7 @@ import type {
   LifeOpsGmailTriageFeed,
   LifeOpsGoogleCapability,
   LifeOpsGoogleConnectorStatus,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   Badge,
   Button,
@@ -17,7 +17,7 @@ import {
   Textarea,
   client,
   useApp,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import { useGoogleLifeOpsConnector } from "../hooks/useGoogleLifeOpsConnector.js";
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 

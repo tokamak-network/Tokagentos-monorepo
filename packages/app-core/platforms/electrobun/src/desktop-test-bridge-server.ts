@@ -67,16 +67,16 @@ export async function startDesktopTestBridgeServer(): Promise<
   (() => void) | undefined
 > {
   if (
-    !isTruthyEnv(process.env.ELIZA_DESKTOP_TEST_BRIDGE_ENABLED) &&
-    !process.env.ELIZA_DESKTOP_TEST_BRIDGE_PORT &&
-    !process.env.ELIZA_DESKTOP_TEST_BRIDGE_TOKEN
+    !isTruthyEnv(process.env.TOKAGENT_DESKTOP_TEST_BRIDGE_ENABLED) &&
+    !process.env.TOKAGENT_DESKTOP_TEST_BRIDGE_PORT &&
+    !process.env.TOKAGENT_DESKTOP_TEST_BRIDGE_TOKEN
   ) {
     return undefined;
   }
 
   const requestedPort =
     Number.parseInt(
-      (process.env.ELIZA_DESKTOP_TEST_BRIDGE_PORT ?? "").trim(),
+      (process.env.TOKAGENT_DESKTOP_TEST_BRIDGE_PORT ?? "").trim(),
       10,
     ) || DEFAULT_TEST_BRIDGE_PORT;
   const port = await findFirstAvailableLoopbackPort(requestedPort, {
@@ -84,12 +84,12 @@ export async function startDesktopTestBridgeServer(): Promise<
     maxHops: 32,
   });
   const token =
-    process.env.ELIZA_DESKTOP_TEST_BRIDGE_TOKEN?.trim() ||
+    process.env.TOKAGENT_DESKTOP_TEST_BRIDGE_TOKEN?.trim() ||
     crypto.randomBytes(18).toString("hex");
   const baseUrl = `http://127.0.0.1:${port}`;
 
-  process.env.ELIZA_DESKTOP_TEST_BRIDGE_URL = baseUrl;
-  process.env.ELIZA_DESKTOP_TEST_BRIDGE_TOKEN = token;
+  process.env.TOKAGENT_DESKTOP_TEST_BRIDGE_URL = baseUrl;
+  process.env.TOKAGENT_DESKTOP_TEST_BRIDGE_TOKEN = token;
 
   const server = http.createServer(async (req, res) => {
     try {

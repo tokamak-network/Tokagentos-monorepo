@@ -1,4 +1,4 @@
-# Roadmap — `@elizaos/core`
+# Roadmap — `@tokagentos/core`
 
 Forward-looking work and **rationale** for changes we have not made yet. Shipped behavior, including **why** it landed, lives in [CHANGELOG.md](./CHANGELOG.md). Subsystem-specific intent is in [docs/DESIGN.md](./docs/DESIGN.md); queue/drain composition is in [docs/BATCH_QUEUE.md](./docs/BATCH_QUEUE.md).
 

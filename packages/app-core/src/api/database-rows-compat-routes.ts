@@ -1,5 +1,5 @@
 import type http from "node:http";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import {
   executeRawSql,
   quoteIdent,

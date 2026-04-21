@@ -2,20 +2,20 @@
   "$schema": "https://partner.microsoft.com/dashboard",
   "_comment": "Microsoft Partner Center listing metadata template. Fill in before submission.",
   "identity": {
-    "name": "ElizaOS.App",
+    "name": "TokagentOS.App",
     "publisher": "CN=PLACEHOLDER_PUBLISHER_ID",
-    "publisherDisplayName": "elizaOS"
+    "publisherDisplayName": "tokagentOS"
   },
   "listing": {
     "language": "en-us",
-    "displayName": "elizaOS App",
+    "displayName": "tokagentOS App",
     "shortDescription": "Personal AI assistant that runs on your machine. Private, fast, extensible.",
     "category": "Productivity",
     "subcategory": "Personal Assistant",
     "ageRating": "12+",
-    "website": "https://app.elizaos.ai",
-    "supportUrl": "https://github.com/elizaos/elizaos-app/issues",
-    "privacyUrl": "https://app.elizaos.ai/privacy"
+    "website": "https://app.tokagentos.ai",
+    "supportUrl": "https://github.com/tokagentos/tokagentos-app/issues",
+    "privacyUrl": "https://app.tokagentos.ai/privacy"
   },
   "screenshots": {
     "_comment": "Required: 1-10 screenshots, 1366x768 or 2560x1440 recommended",

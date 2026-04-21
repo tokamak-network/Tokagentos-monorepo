@@ -1,4 +1,4 @@
-//! Plugin loading and management for elizaOS
+//! Plugin loading and management for tokagentOS
 //!
 //! This module provides functions for loading, validating, and resolving plugin dependencies.
 

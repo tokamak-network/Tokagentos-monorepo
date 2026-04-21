@@ -14,7 +14,7 @@
  *     (`USE_COMPUTER`, `BROWSER_ACTION`, `MANAGE_WINDOW`, `FILE_ACTION`,
  *     `TERMINAL_ACTION`). Every action's handler is a `vi.fn()` that returns
  *     `{ success: true, surface: ... }`.
- *   - `@elizaos/agent/security.hasOwnerAccess` is mocked to always return true.
+ *   - `@tokagentos/agent/security.hasOwnerAccess` is mocked to always return true.
  *   - The similes-presence assertion (line ~166) verifies the STRING
  *     `"FINDER"` exists in the array; it does NOT verify the planner/LLM
  *     actually treats that simile as an alias.
@@ -26,7 +26,7 @@
  *     description drift (only the simile array is asserted here, not the
  *     routing prompt).
  */
-import type { Action, Memory } from "@elizaos/core";
+import type { Action, Memory } from "@tokagentos/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const desktopHandler = vi.fn(async () => ({ success: true, surface: "desktop" }));
@@ -73,7 +73,7 @@ const pluginActions: Action[] = [
   },
 ] as Action[];
 
-vi.mock("@elizaos/agent/security", () => ({
+vi.mock("@tokagentos/agent/security", () => ({
   hasOwnerAccess: vi.fn(async () => true),
 }));
 

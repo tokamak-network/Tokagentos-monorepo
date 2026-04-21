@@ -69,7 +69,7 @@ The plugin reads settings from:
 | `SCAPE_AGENT_ID`           | `scape-${SCAPE_AGENT_NAME}`                       | Stable identifier for the agent across reconnects. Used as the journal filename.                   |
 | `SCAPE_AGENT_PERSONA`      | *(empty)*                                         | Short persona string fed into the LLM's system prompt. Keep it under 200 chars.                    |
 | `SCAPE_LOOP_INTERVAL_MS`   | `15000`                                           | How often the autonomous LLM loop fires. Lower = more expensive.                                    |
-| `SCAPE_MODEL_SIZE`         | `TEXT_SMALL`                                      | Which elizaOS model tier to use. Try `TEXT_MINI` for cheaper, `TEXT_LARGE` for smarter.            |
+| `SCAPE_MODEL_SIZE`         | `TEXT_SMALL`                                      | Which tokagentOS model tier to use. Try `TEXT_MINI` for cheaper, `TEXT_LARGE` for smarter.            |
 
 ## Playing against the live deployment (no config)
 

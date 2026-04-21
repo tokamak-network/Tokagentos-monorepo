@@ -1,6 +1,6 @@
 import type http from "node:http";
-import { logger } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import { logger } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import { normalizeOnboardingProviderId } from "../contracts/onboarding.js";
 import type { ReadJsonBodyOptions } from "./http-helpers.js";
 import {
@@ -17,7 +17,7 @@ export interface ProviderSwitchRouteContext {
   res: http.ServerResponse;
   method: string;
   pathname: string;
-  state: { config: ElizaConfig };
+  state: { config: TokagentConfig };
   json: (res: http.ServerResponse, data: unknown, status?: number) => void;
   error: (res: http.ServerResponse, message: string, status?: number) => void;
   readJsonBody: <T extends object>(
@@ -25,7 +25,7 @@ export interface ProviderSwitchRouteContext {
     res: http.ServerResponse,
     options?: ReadJsonBodyOptions,
   ) => Promise<T | null>;
-  saveElizaConfig: (config: ElizaConfig) => void;
+  saveTokagentConfig: (config: TokagentConfig) => void;
   scheduleRuntimeRestart: (reason: string) => void;
   providerSwitchInProgress: boolean;
   setProviderSwitchInProgress: (value: boolean) => void;
@@ -79,19 +79,19 @@ export async function handleProviderSwitchRoutes(
         | ReturnType<typeof createProviderSwitchConnection>
         | {
             kind: "cloud-managed";
-            cloudProvider: "elizacloud";
+            cloudProvider: "tokagentcloud";
             apiKey?: string;
           }
         | null;
-      if (normalizedProvider === "elizacloud") {
+      if (normalizedProvider === "tokagentcloud") {
         connection = {
           kind: "cloud-managed" as const,
-          cloudProvider: "elizacloud" as const,
+          cloudProvider: "tokagentcloud" as const,
           apiKey: trimmedApiKey,
         };
         if (trimmedApiKey) {
           const cloudApiKey = trimmedApiKey;
-          const cloudBaseUrl = "https://www.elizacloud.ai";
+          const cloudBaseUrl = "https://www.tokagentcloud.ai";
           process.env.ANTHROPIC_BASE_URL = `${cloudBaseUrl}/api/v1`;
           process.env.ANTHROPIC_API_KEY = cloudApiKey;
           process.env.OPENAI_BASE_URL = `${cloudBaseUrl}/api/v1`;
@@ -117,7 +117,7 @@ export async function handleProviderSwitchRoutes(
       }
 
       await applyOnboardingConnectionConfig(config, connection);
-      ctx.saveElizaConfig(config);
+      ctx.saveTokagentConfig(config);
 
       const restartReason = `provider switch to ${normalizedProvider}`;
       const restarted = ctx.restartRuntime

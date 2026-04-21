@@ -2,8 +2,8 @@ import type {
   LifeOpsConnectorMode,
   LifeOpsConnectorSide,
   LifeOpsGoogleCapability,
-} from "@elizaos/shared/contracts/lifeops";
-import { Badge, Button, SegmentedControl } from "@elizaos/app-core";
+} from "@tokagentos/shared/contracts/lifeops";
+import { Badge, Button, SegmentedControl } from "@tokagentos/app-core";
 import { useGoogleLifeOpsConnector } from "../hooks/useGoogleLifeOpsConnector.js";
 import { Copy, ExternalLink, GitBranch } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -89,7 +89,7 @@ function modeLabel(mode: LifeOpsConnectorMode): string {
 function modeDescription(mode: VisibleConnectorMode): string {
   return mode === "local"
     ? "Tokens stay on this device. LifeOps can only access Google while the app is running."
-    : "Tokens live in Eliza Cloud. The agent can check Google on your behalf even when the app is closed.";
+    : "Tokens live in Tokagent Cloud. The agent can check Google on your behalf even when the app is closed.";
 }
 
 function sideTitle(side: LifeOpsConnectorSide): string {

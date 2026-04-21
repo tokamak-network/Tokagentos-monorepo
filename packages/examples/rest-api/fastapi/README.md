@@ -1,10 +1,10 @@
-# elizaOS REST API - FastAPI
+# tokagentOS REST API - FastAPI
 
-A simple REST API server for chatting with an elizaOS agent using FastAPI.
+A simple REST API server for chatting with an tokagentOS agent using FastAPI.
 
 **No API keys or external services required!** Uses:
 
-- `plugin-eliza-classic` for pattern-matching responses (no LLM needed)
+- `plugin-tokagent-classic` for pattern-matching responses (no LLM needed)
 
 ## Quick Start
 
@@ -55,7 +55,7 @@ Response:
 ```json
 {
   "response": "How do you do. Please state your problem.",
-  "character": "Eliza",
+  "character": "Tokagent",
   "userId": "generated-uuid"
 }
 ```

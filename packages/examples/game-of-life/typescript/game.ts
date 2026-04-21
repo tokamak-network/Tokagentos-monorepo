@@ -1,7 +1,7 @@
 /**
- * elizaOS Agentic Game of Life
+ * tokagentOS Agentic Game of Life
  *
- * Each entity is a REAL elizaOS AgentRuntime with:
+ * Each entity is a REAL tokagentOS AgentRuntime with:
  * - Its own character (DNA encoded in character settings)
  * - Custom actions: MOVE_TO_FOOD, FLEE, ATTACK, EAT, REPRODUCE
  * - Rule-based model handlers (no LLM)
@@ -32,7 +32,7 @@ import {
   type State,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 // Import the in-memory database adapter directly from plugin source (bun handles .ts)
 import { InMemoryDatabaseAdapter } from "../../../plugins/plugin-inmemorydb/typescript/adapter";
 import { MemoryStorage } from "../../../plugins/plugin-inmemorydb/typescript/storage-memory";
@@ -569,7 +569,7 @@ function escapeXml(text: string): string {
 function decisionXml(actionName: string, thought: string, text: string): string {
   // DefaultMessageService expects XML-ish tags like <thought>, <actions>, <text>.
   // We return a minimal, deterministic payload (no LLM) that still flows through
-  // the full Eliza message pipeline.
+  // the full Tokagent message pipeline.
   return [
     "<thought>",
     escapeXml(thought),
@@ -924,7 +924,7 @@ function render(): string {
   out += `\n  Tick: ${world.tick}  |  Agents: ${alive.length}  |  Food: ${world.food.size}  |  Avg Energy: ${avgEnergy}\n`;
   out += `  Avg Generation: ${avgGen}  |  Avg Aggression: ${avgAgg}%\n`;
   out += "\n  ● Normal  ◆ Aggressive  ▲ Fast  ◉ Sharp Vision  🌱 Food\n";
-  out += "  Each agent is a real elizaOS AgentRuntime!\n";
+  out += "  Each agent is a real tokagentOS AgentRuntime!\n";
 
   return out;
 }
@@ -944,9 +944,9 @@ async function main(): Promise<void> {
 
   console.log(`
 ╔════════════════════════════════════════════════════════════════════════╗
-║                     ELIZAOS AGENTIC GAME OF LIFE                       ║
+║                     TOKAGENTOS AGENTIC GAME OF LIFE                       ║
 ╠════════════════════════════════════════════════════════════════════════╣
-║  Each entity is a REAL elizaOS AgentRuntime with:                      ║
+║  Each entity is a REAL tokagentOS AgentRuntime with:                      ║
 ║  • Its own Character (DNA encoded in settings)                         ║
 ║  • Actions: MOVE_TO_FOOD, FLEE, ATTACK, EAT, REPRODUCE, WANDER         ║
 ║  • Rule-based model handlers (no LLM)                                  ║
@@ -998,7 +998,7 @@ async function main(): Promise<void> {
       const state = world.agents.get(id);
       if (!state || !state.isAlive) continue;
 
-      // Send a real "environment tick" message through the full Eliza pipeline.
+      // Send a real "environment tick" message through the full Tokagent pipeline.
       // This MUST go through runtime.messageService.handleMessage (no bypassing).
       const envText = [
         `TICK=${world.tick}`,
@@ -1101,7 +1101,7 @@ async function main(): Promise<void> {
   Simulation complete!
   Final tick: ${world.tick}
   Surviving agents: ${world.agents.size}
-  Each was a real elizaOS AgentRuntime with actions & model handlers!
+  Each was a real tokagentOS AgentRuntime with actions & model handlers!
 ════════════════════════════════════════════════════════════════════════
 `);
 }

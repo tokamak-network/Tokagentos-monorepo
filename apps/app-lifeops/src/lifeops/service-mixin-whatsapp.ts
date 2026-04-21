@@ -1,5 +1,5 @@
 // @ts-nocheck — mixin: type safety is enforced on the composed class
-import type { LifeOpsWhatsAppConnectorStatus } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsWhatsAppConnectorStatus } from "@tokagentos/shared/contracts/lifeops";
 import type { Constructor, LifeOpsServiceBase } from "./service-mixin-core.js";
 import { fail } from "./service-normalize.js";
 import {
@@ -36,7 +36,7 @@ export function withWhatsApp<TBase extends Constructor<LifeOpsServiceBase>>(
       if (!creds) {
         fail(
           400,
-          "WhatsApp is not configured. Set ELIZA_WHATSAPP_ACCESS_TOKEN and ELIZA_WHATSAPP_PHONE_NUMBER_ID.",
+          "WhatsApp is not configured. Set TOKAGENT_WHATSAPP_ACCESS_TOKEN and TOKAGENT_WHATSAPP_PHONE_NUMBER_ID.",
         );
       }
       try {

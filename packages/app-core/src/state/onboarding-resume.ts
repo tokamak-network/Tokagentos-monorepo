@@ -1,12 +1,12 @@
 import {
   getOnboardingProviderOption,
-  isElizaCloudLinkedInConfig,
+  isTokagentCloudLinkedInConfig,
   normalizeOnboardingProviderId,
   readOnboardingEnvSecret,
   resolveDeploymentTargetInConfig,
   resolveLinkedAccountsInConfig,
   resolveServiceRoutingInConfig,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 import type { BuildOnboardingConnectionArgs } from "../onboarding-config";
 import { asRecord } from "./config-readers";
 import type { OnboardingStep } from "./types";
@@ -36,7 +36,7 @@ export function hasPartialOnboardingConnectionConfig(
     return true;
   }
 
-  return isElizaCloudLinkedInConfig(config);
+  return isTokagentCloudLinkedInConfig(config);
 }
 
 export function inferOnboardingResumeStep(args: {
@@ -68,7 +68,7 @@ export function deriveOnboardingResumeFieldsFromConfig(
   const root = asRecord(config);
   const cloud = asRecord(root?.cloud);
   const cloudApiKey =
-    linkedAccounts?.elizacloud?.status === "linked" &&
+    linkedAccounts?.tokagentcloud?.status === "linked" &&
     typeof cloud?.apiKey === "string"
       ? cloud.apiKey.trim()
       : "";
@@ -77,7 +77,7 @@ export function deriveOnboardingResumeFieldsFromConfig(
     deploymentTarget.runtime === "remote"
       ? "remote"
       : deploymentTarget.runtime === "cloud"
-        ? "elizacloud"
+        ? "tokagentcloud"
         : "local";
 
   const fields: Partial<BuildOnboardingConnectionArgs> = {
@@ -102,16 +102,16 @@ export function deriveOnboardingResumeFieldsFromConfig(
     return fields;
   }
 
-  if (llmText.transport === "cloud-proxy" && llmBackend === "elizacloud") {
+  if (llmText.transport === "cloud-proxy" && llmBackend === "tokagentcloud") {
     return {
       ...fields,
-      onboardingProvider: "elizacloud",
+      onboardingProvider: "tokagentcloud",
       onboardingSmallModel: llmText.smallModel ?? "",
       onboardingLargeModel: llmText.largeModel ?? "",
     };
   }
 
-  if (llmBackend && llmBackend !== "elizacloud") {
+  if (llmBackend && llmBackend !== "tokagentcloud") {
     const apiKey =
       llmProvider?.envKey != null
         ? (readOnboardingEnvSecret(config, llmProvider.envKey) ?? "")

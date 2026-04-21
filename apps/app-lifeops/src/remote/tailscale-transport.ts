@@ -9,7 +9,7 @@
 // RemoteSessionService owns lifecycle; this module owns the CLI surface.
 
 import { spawn, type SpawnOptions } from "node:child_process";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 // ---------- Types ----------
 

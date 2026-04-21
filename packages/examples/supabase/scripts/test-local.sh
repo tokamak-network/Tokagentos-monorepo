@@ -1,5 +1,5 @@
 #!/bin/bash
-# Test elizaOS Supabase Edge Functions locally
+# Test tokagentOS Supabase Edge Functions locally
 
 set -e
 
@@ -7,11 +7,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Default values
-FUNCTION_NAME="${1:-eliza-chat}"
+FUNCTION_NAME="${1:-tokagent-chat}"
 PORT="${PORT:-54321}"
 ENV_FILE="${ENV_FILE:-$PROJECT_DIR/../../../.env}"
 
-echo "🧪 Testing elizaOS Supabase Edge Function: $FUNCTION_NAME"
+echo "🧪 Testing tokagentOS Supabase Edge Function: $FUNCTION_NAME"
 echo ""
 
 # Check if .env exists

@@ -7,7 +7,7 @@
  * initial startup and resolve assets against that stable base.
  */
 import { getBootConfig } from "../config/boot-config";
-import { getElizaApiBase } from "./eliza-globals";
+import { getTokagentApiBase } from "./tokagent-globals";
 
 type AssetUrlResolveOptions = {
   currentUrl?: string;
@@ -112,13 +112,13 @@ export function resolveAppAssetUrl(
   return new URL(normalized, baseHref).toString();
 }
 
-/** Keep in sync with `ElizaClient` SESSION_STORAGE_API_BASE_KEY. */
-const ELIZA_API_BASE_SESSION_KEY = "elizaos_api_base";
+/** Keep in sync with `TokagentClient` SESSION_STORAGE_API_BASE_KEY. */
+const TOKAGENT_API_BASE_SESSION_KEY = "tokagentos_api_base";
 
 function readSessionStorageApiBase(): string | undefined {
   try {
     if (typeof window === "undefined") return undefined;
-    const raw = window.sessionStorage.getItem(ELIZA_API_BASE_SESSION_KEY);
+    const raw = window.sessionStorage.getItem(TOKAGENT_API_BASE_SESSION_KEY);
     const trimmed = raw?.trim();
     return trimmed && trimmed.length > 0 ? trimmed : undefined;
   } catch {
@@ -131,7 +131,7 @@ function readSessionStorageApiBase(): string | undefined {
  * the renderer. In desktop shells the page origin is electrobun:// or
  * file://, so bare /api/... paths resolve to the SPA instead of the backend.
  *
- * Resolution order: boot `apiBase` → shell-injected `__ELIZAOS_API_BASE__` →
+ * Resolution order: boot `apiBase` → shell-injected `__TOKAGENTOS_API_BASE__` →
  * `sessionStorage` fallback. The boot config is the current client-owned
  * source of truth because `client.setBaseUrl()` updates it whenever the user
  * switches servers. Injection still beats stale session state from prior
@@ -141,7 +141,7 @@ function readSessionStorageApiBase(): string | undefined {
 export function resolveApiUrl(apiPath: string): string {
   const bootRaw = getBootConfig().apiBase?.trim();
   const boot = bootRaw && bootRaw.length > 0 ? bootRaw : undefined;
-  const injectedRaw = getElizaApiBase()?.trim();
+  const injectedRaw = getTokagentApiBase()?.trim();
   const injected =
     injectedRaw && injectedRaw.length > 0 ? injectedRaw : undefined;
   const stored = readSessionStorageApiBase();

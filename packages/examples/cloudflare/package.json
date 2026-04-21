@@ -1,7 +1,7 @@
 {
-  "name": "elizaos-cloudflare-worker",
+  "name": "tokagentos-cloudflare-worker",
   "version": "2.0.0-alpha",
-  "description": "elizaOS AI agent running on Cloudflare Workers using canonical runtime.messageService.handleMessage()",
+  "description": "tokagentOS AI agent running on Cloudflare Workers using canonical runtime.messageService.handleMessage()",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,7 +18,7 @@
     "typecheck": "echo 'Cloudflare Workers use wrangler for type checking'"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "uuid": "^11.0.5"
   },
@@ -28,7 +28,7 @@
     "wrangler": "^3.99.0"
   },
   "keywords": [
-    "elizaos",
+    "tokagentos",
     "cloudflare",
     "workers",
     "ai",

@@ -11,8 +11,8 @@
  * missing queue is a typed error that surfaces to the caller.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type {
   ApprovalEnqueueInput,
   ApprovalQueue,

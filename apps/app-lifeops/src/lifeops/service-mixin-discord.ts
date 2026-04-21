@@ -1,6 +1,6 @@
 // @ts-nocheck — mixin: type safety is enforced on the composed class
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type {
   LifeOpsBrowserCompanionStatus,
   LifeOpsBrowserSession,
@@ -14,12 +14,12 @@ import type {
   LifeOpsOwnerBrowserAuthState,
   LifeOpsOwnerBrowserNextAction,
   LifeOpsOwnerBrowserTabState,
-} from "@elizaos/shared/contracts/lifeops";
-import { asRecord } from "@elizaos/shared/type-guards";
+} from "@tokagentos/shared/contracts/lifeops";
+import { asRecord } from "@tokagentos/shared/type-guards";
 import {
   capabilitiesForSide,
   LIFEOPS_DISCORD_CAPABILITIES,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   captureDiscordDeliveryStatus,
   closeDiscordTab,

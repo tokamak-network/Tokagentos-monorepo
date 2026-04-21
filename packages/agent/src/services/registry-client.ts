@@ -1,5 +1,5 @@
 /**
- * Registry Client for Eliza.
+ * Registry Client for Tokagent.
  *
  * Provides a 3-tier cached registry (memory → file → network) that works
  * offline, in .app bundles, and in dev. Fetches from the next branch.
@@ -9,10 +9,10 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
-import { logger } from "@elizaos/core";
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
+import { logger } from "@tokagentos/core";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
-import type { RegistryEndpoint } from "../config/types.eliza.js";
+import type { RegistryEndpoint } from "../config/types.tokagent.js";
 import {
   LOCAL_APP_DEFAULT_SANDBOX,
   resolveAppOverride,
@@ -50,9 +50,9 @@ import type {
 // ---------------------------------------------------------------------------
 
 const GENERATED_REGISTRY_URL =
-  "https://raw.githubusercontent.com/elizaos-plugins/registry/next/generated-registry.json";
+  "https://raw.githubusercontent.com/tokagentos-plugins/registry/next/generated-registry.json";
 const INDEX_REGISTRY_URL =
-  "https://raw.githubusercontent.com/elizaos-plugins/registry/next/index.json";
+  "https://raw.githubusercontent.com/tokagentos-plugins/registry/next/index.json";
 const CACHE_TTL_MS = 3_600_000; // 1 hour
 const BLOCKED_REGISTRY_PLUGIN_NAMES = new Set([
   "@elizaos/app-agent-town",
@@ -224,7 +224,7 @@ async function writeFileCache(
 /** Return the list of custom registry endpoints from config. */
 export function getConfiguredEndpoints(): RegistryEndpoint[] {
   try {
-    const cfg = loadElizaConfig();
+    const cfg = loadTokagentConfig();
     return cfg.plugins?.registryEndpoints ?? [];
   } catch (err) {
     logger.warn(
@@ -243,7 +243,7 @@ export function addRegistryEndpoint(label: string, url: string): void {
   if (isDefaultEndpoint(normalised)) {
     throw new Error("Cannot add the default registry as a custom endpoint.");
   }
-  const cfg = loadElizaConfig();
+  const cfg = loadTokagentConfig();
   const endpoints = cfg.plugins?.registryEndpoints ?? [];
   if (endpoints.some((ep) => normaliseEndpointUrl(ep.url) === normalised)) {
     throw new Error(`Endpoint already exists: ${url}`);
@@ -253,7 +253,7 @@ export function addRegistryEndpoint(label: string, url: string): void {
     ...endpoints,
     { label, url: normalised, enabled: true },
   ];
-  saveElizaConfig(cfg);
+  saveTokagentConfig(cfg);
   memoryCache = null;
 }
 
@@ -261,9 +261,9 @@ export function addRegistryEndpoint(label: string, url: string): void {
 export function removeRegistryEndpoint(url: string): void {
   const normalised = normaliseEndpointUrl(url);
   if (isDefaultEndpoint(normalised)) {
-    throw new Error("Cannot remove the default elizaOS registry.");
+    throw new Error("Cannot remove the default tokagentOS registry.");
   }
-  const cfg = loadElizaConfig();
+  const cfg = loadTokagentConfig();
   const endpoints = cfg.plugins?.registryEndpoints ?? [];
   const updated = endpoints.filter(
     (ep) => normaliseEndpointUrl(ep.url) !== normalised,
@@ -273,21 +273,21 @@ export function removeRegistryEndpoint(url: string): void {
   }
   if (!cfg.plugins) cfg.plugins = {};
   cfg.plugins.registryEndpoints = updated;
-  saveElizaConfig(cfg);
+  saveTokagentConfig(cfg);
   memoryCache = null;
 }
 
 /** Toggle an endpoint's enabled status. */
 export function toggleRegistryEndpoint(url: string, enabled: boolean): void {
   const normalised = normaliseEndpointUrl(url);
-  const cfg = loadElizaConfig();
+  const cfg = loadTokagentConfig();
   const endpoints = cfg.plugins?.registryEndpoints ?? [];
   const ep = endpoints.find((e) => normaliseEndpointUrl(e.url) === normalised);
   if (!ep) throw new Error(`Endpoint not found: ${url}`);
   ep.enabled = enabled;
   if (!cfg.plugins) cfg.plugins = {};
   cfg.plugins.registryEndpoints = endpoints;
-  saveElizaConfig(cfg);
+  saveTokagentConfig(cfg);
   memoryCache = null;
 }
 

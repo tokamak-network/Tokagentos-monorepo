@@ -4,7 +4,7 @@ import {
   DrawerSheetContent,
   DrawerSheetHeader,
   DrawerSheetTitle,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 
 import { memo } from "react";
 import { useRenderGuard } from "../../hooks/useRenderGuard";

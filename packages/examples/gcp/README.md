@@ -1,12 +1,12 @@
-# GCP Cloud Run elizaOS Worker Examples
+# GCP Cloud Run tokagentOS Worker Examples
 
-Deploy elizaOS agents as serverless GCP Cloud Run services. This example shows how to run an AI agent as a containerized worker that processes chat messages via HTTP.
+Deploy tokagentOS agents as serverless GCP Cloud Run services. This example shows how to run an AI agent as a containerized worker that processes chat messages via HTTP.
 
 ## Architecture
 
 ```
 ┌──────────────┐     ┌─────────────────┐     ┌────────────────┐
-│  Test Client │────▶│  Cloud Run      │────▶│  elizaOS       │
+│  Test Client │────▶│  Cloud Run      │────▶│  tokagentOS       │
 │  (curl/node) │◀────│  (HTTP)         │◀────│  Worker        │
 └──────────────┘     └─────────────────┘     └────────────────┘
                                                      │
@@ -52,7 +52,7 @@ npm install
 npm run build
 
 # Build and deploy
-gcloud run deploy eliza-worker-ts \
+gcloud run deploy tokagent-worker-ts \
   --source . \
   --region $REGION \
   --allow-unauthenticated \
@@ -65,7 +65,7 @@ gcloud run deploy eliza-worker-ts \
 cd examples/gcp/python
 
 # Build and deploy
-gcloud run deploy eliza-worker-py \
+gcloud run deploy tokagent-worker-py \
   --source . \
   --region $REGION \
   --allow-unauthenticated \
@@ -78,15 +78,15 @@ gcloud run deploy eliza-worker-py \
 cd examples/gcp/rust
 
 # Build container
-docker build -t eliza-worker-rust .
+docker build -t tokagent-worker-rust .
 
 # Tag and push to Artifact Registry
-docker tag eliza-worker-rust $REGION-docker.pkg.dev/$PROJECT_ID/eliza/eliza-worker-rust
-docker push $REGION-docker.pkg.dev/$PROJECT_ID/eliza/eliza-worker-rust
+docker tag tokagent-worker-rust $REGION-docker.pkg.dev/$PROJECT_ID/tokagent/tokagent-worker-rust
+docker push $REGION-docker.pkg.dev/$PROJECT_ID/tokagent/tokagent-worker-rust
 
 # Deploy
-gcloud run deploy eliza-worker-rust \
-  --image $REGION-docker.pkg.dev/$PROJECT_ID/eliza/eliza-worker-rust \
+gcloud run deploy tokagent-worker-rust \
+  --image $REGION-docker.pkg.dev/$PROJECT_ID/tokagent/tokagent-worker-rust \
   --region $REGION \
   --allow-unauthenticated \
   --set-env-vars "OPENAI_API_KEY=$OPENAI_API_KEY"
@@ -98,7 +98,7 @@ After deployment, Cloud Run provides a URL. Test it:
 
 ```bash
 # Get service URL
-SERVICE_URL=$(gcloud run services describe eliza-worker-ts --region $REGION --format 'value(status.url)')
+SERVICE_URL=$(gcloud run services describe tokagent-worker-ts --region $REGION --format 'value(status.url)')
 
 # Health check
 curl $SERVICE_URL/health
@@ -106,7 +106,7 @@ curl $SERVICE_URL/health
 # Chat
 curl -X POST $SERVICE_URL/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "Hello, Eliza!"}'
+  -d '{"message": "Hello, Tokagent!"}'
 
 # Using the test client
 cd examples/gcp
@@ -169,7 +169,7 @@ examples/gcp/
 
 ### POST /chat
 
-Send a message to the elizaOS agent.
+Send a message to the tokagentOS agent.
 
 **Request:**
 
@@ -213,10 +213,10 @@ Service info endpoint.
 
 ```json
 {
-  "name": "Eliza",
+  "name": "Tokagent",
   "bio": "A helpful AI assistant.",
   "version": "2.0.0-alpha",
-  "powered_by": "elizaOS"
+  "powered_by": "tokagentOS"
 }
 ```
 
@@ -226,7 +226,7 @@ Service info endpoint.
 
 ```bash
 # Deploy from source (builds automatically)
-gcloud run deploy eliza-worker \
+gcloud run deploy tokagent-worker \
   --source . \
   --region $REGION \
   --allow-unauthenticated \
@@ -254,7 +254,7 @@ See the [Terraform example](./terraform/) for infrastructure-as-code deployment.
 | `OPENAI_API_KEY`   | Yes      | -                         | Your OpenAI API key            |
 | `OPENAI_MODEL`     | No       | `gpt-5-mini`              | Model to use                   |
 | `OPENAI_BASE_URL`  | No       | OpenAI default            | Custom API endpoint            |
-| `CHARACTER_NAME`   | No       | `Eliza`                   | Agent's name                   |
+| `CHARACTER_NAME`   | No       | `Tokagent`                   | Agent's name                   |
 | `CHARACTER_BIO`    | No       | `A helpful AI assistant.` | Agent's bio                    |
 | `CHARACTER_SYSTEM` | No       | Default system prompt     | Custom system prompt           |
 | `PORT`             | No       | `8080`                    | Server port (set by Cloud Run) |
@@ -265,7 +265,7 @@ See the [Terraform example](./terraform/) for infrastructure-as-code deployment.
 Customize the agent's personality via environment variables:
 
 ```bash
-gcloud run deploy eliza-worker \
+gcloud run deploy tokagent-worker \
   --set-env-vars "OPENAI_API_KEY=$OPENAI_API_KEY" \
   --set-env-vars "CHARACTER_NAME=Ada" \
   --set-env-vars "CHARACTER_BIO=A brilliant mathematician and programmer" \
@@ -281,14 +281,14 @@ Cloud Run cold starts are typically 1-3 seconds. To minimize:
 1. **Minimum Instances**: Keep at least one instance warm
 
    ```bash
-   gcloud run deploy eliza-worker --min-instances 1
+   gcloud run deploy tokagent-worker --min-instances 1
    ```
 
 2. **Smaller Container**: Use multi-stage Docker builds
 
 3. **Startup CPU Boost**: Enable for faster cold starts
    ```bash
-   gcloud run deploy eliza-worker --cpu-boost
+   gcloud run deploy tokagent-worker --cpu-boost
    ```
 
 ### Resource Configuration
@@ -302,7 +302,7 @@ Recommended settings:
 | Rust       | 256 Mi | 1   | 60s     |
 
 ```bash
-gcloud run deploy eliza-worker \
+gcloud run deploy tokagent-worker \
   --memory 512Mi \
   --cpu 1 \
   --timeout 60s
@@ -313,13 +313,13 @@ gcloud run deploy eliza-worker \
 ### View Logs
 
 ```bash
-gcloud run logs read eliza-worker --region $REGION --limit 100
+gcloud run logs read tokagent-worker --region $REGION --limit 100
 ```
 
 ### Streaming Logs
 
 ```bash
-gcloud run logs tail eliza-worker --region $REGION
+gcloud run logs tail tokagent-worker --region $REGION
 ```
 
 ### Cloud Monitoring
@@ -354,13 +354,13 @@ _Note: Free tier includes 2 million requests/month_
 ### Allow Unauthenticated (Public)
 
 ```bash
-gcloud run deploy eliza-worker --allow-unauthenticated
+gcloud run deploy tokagent-worker --allow-unauthenticated
 ```
 
 ### Require Authentication
 
 ```bash
-gcloud run deploy eliza-worker --no-allow-unauthenticated
+gcloud run deploy tokagent-worker --no-allow-unauthenticated
 
 # Invoke with authentication
 curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
@@ -371,8 +371,8 @@ curl -H "Authorization: Bearer $(gcloud auth print-identity-token)" \
 
 ```bash
 gcloud run domain-mappings create \
-  --service eliza-worker \
-  --domain eliza.yourdomain.com \
+  --service tokagent-worker \
+  --domain tokagent.yourdomain.com \
   --region $REGION
 ```
 
@@ -383,7 +383,7 @@ gcloud run domain-mappings create \
 Check logs for startup errors:
 
 ```bash
-gcloud run logs read eliza-worker --region $REGION --limit 50
+gcloud run logs read tokagent-worker --region $REGION --limit 50
 ```
 
 ### "Permission Denied" Error
@@ -391,7 +391,7 @@ gcloud run logs read eliza-worker --region $REGION --limit 50
 Ensure the service account has required permissions:
 
 ```bash
-gcloud run services add-iam-policy-binding eliza-worker \
+gcloud run services add-iam-policy-binding tokagent-worker \
   --member="allUsers" \
   --role="roles/run.invoker" \
   --region $REGION
@@ -402,7 +402,7 @@ gcloud run services add-iam-policy-binding eliza-worker \
 Verify environment variables are set:
 
 ```bash
-gcloud run services describe eliza-worker \
+gcloud run services describe tokagent-worker \
   --region $REGION \
   --format 'yaml(spec.template.spec.containers[0].env)'
 ```
@@ -412,7 +412,7 @@ gcloud run services describe eliza-worker \
 Increase request timeout:
 
 ```bash
-gcloud run deploy eliza-worker --timeout 300s
+gcloud run deploy tokagent-worker --timeout 300s
 ```
 
 ## Cleanup
@@ -421,11 +421,11 @@ Remove all deployed resources:
 
 ```bash
 # Delete Cloud Run service
-gcloud run services delete eliza-worker --region $REGION --quiet
+gcloud run services delete tokagent-worker --region $REGION --quiet
 
 # Delete container images (optional)
 gcloud artifacts docker images delete \
-  $REGION-docker.pkg.dev/$PROJECT_ID/eliza/eliza-worker --quiet
+  $REGION-docker.pkg.dev/$PROJECT_ID/tokagent/tokagent-worker --quiet
 ```
 
 ## Security Best Practices
@@ -435,7 +435,7 @@ gcloud artifacts docker images delete \
    ```bash
    echo -n "$OPENAI_API_KEY" | gcloud secrets create openai-api-key --data-file=-
 
-   gcloud run deploy eliza-worker \
+   gcloud run deploy tokagent-worker \
      --set-secrets "OPENAI_API_KEY=openai-api-key:latest"
    ```
 
@@ -447,7 +447,7 @@ gcloud artifacts docker images delete \
 
 ## See Also
 
-- [elizaOS Documentation](https://elizaos.ai/docs)
+- [tokagentOS Documentation](https://tokagentos.ai/docs)
 - [Cloud Run Documentation](https://cloud.google.com/run/docs)
 - [Cloud Build Documentation](https://cloud.google.com/build/docs)
 - [Artifact Registry Documentation](https://cloud.google.com/artifact-registry/docs)

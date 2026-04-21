@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/aws-examples",
   "version": "2.0.0-alpha",
-  "description": "elizaOS AWS Lambda worker examples and test clients",
+  "description": "tokagentOS AWS Lambda worker examples and test clients",
   "type": "module",
   "scripts": {
     "test:typescript": "npx ts-node test-client.ts",

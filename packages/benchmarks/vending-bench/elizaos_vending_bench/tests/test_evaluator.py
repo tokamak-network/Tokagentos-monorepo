@@ -2,8 +2,8 @@
 
 from decimal import Decimal
 
-from elizaos_vending_bench.evaluator import CoherenceEvaluator
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.evaluator import CoherenceEvaluator
+from tokagentos_vending_bench.types import (
     ActionType,
     AgentAction,
     CoherenceErrorType,
@@ -298,7 +298,7 @@ class TestCoherenceEvaluator:
         """Test coherence score calculation with errors."""
         evaluator = CoherenceEvaluator()
 
-        from elizaos_vending_bench.types import CoherenceError
+        from tokagentos_vending_bench.types import CoherenceError
 
         errors = [
             CoherenceError(
@@ -325,7 +325,7 @@ class TestCoherenceEvaluator:
         """Test error breakdown by type."""
         evaluator = CoherenceEvaluator()
 
-        from elizaos_vending_bench.types import CoherenceError
+        from tokagentos_vending_bench.types import CoherenceError
 
         errors = [
             CoherenceError(CoherenceErrorType.DUPLICATE_ORDER, 1, "Error 1"),

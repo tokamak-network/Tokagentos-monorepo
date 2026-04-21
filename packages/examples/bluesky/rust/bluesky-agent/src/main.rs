@@ -1,14 +1,14 @@
 //! Bluesky Agent - A full-featured AI agent running on Bluesky
 //!
-//! This agent uses the elizaOS runtime pipeline for message processing.
+//! This agent uses the tokagentOS runtime pipeline for message processing.
 
 mod character;
 mod handlers;
 
 use anyhow::{Context, Result};
-use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-use elizaos_plugin_bluesky::{BlueSkyClient, BlueSkyConfig};
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+use tokagentos_plugin_bluesky::{BlueSkyClient, BlueSkyConfig};
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::signal;
@@ -67,7 +67,7 @@ async fn main() -> Result<()> {
     // Create the runtime with plugins
     let runtime = AgentRuntime::new(RuntimeOptions {
         character: Some(character.clone()),
-        plugins: vec![create_openai_elizaos_plugin()?],
+        plugins: vec![create_openai_tokagentos_plugin()?],
         ..Default::default()
     })
     .await
@@ -109,7 +109,7 @@ async fn main() -> Result<()> {
     println!("   Automated posting: {}", enable_posting);
     println!("   DM processing: {}", enable_dms);
     println!("   Dry run mode: {}", dry_run);
-    println!("\n   Using elizaOS pipeline:");
+    println!("\n   Using tokagentOS pipeline:");
     println!("   - State composition with providers");
     println!("   - Response generation");
     println!("\n   Press Ctrl+C to stop.\n");

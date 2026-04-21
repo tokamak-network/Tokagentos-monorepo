@@ -1,5 +1,5 @@
 /**
- * Shared channel configuration types for Eliza plugins.
+ * Shared channel configuration types for Tokagent plugins.
  *
  * These types define the common configuration patterns used across
  * all communication channel plugins (Discord, Telegram, WhatsApp, etc.).

@@ -14,7 +14,7 @@ const ORIGINAL_FETCH = global.fetch;
 
 beforeEach(() => {
   for (const k of Object.keys(process.env)) {
-    if (k.startsWith("ELIZA_WHATSAPP_")) delete process.env[k];
+    if (k.startsWith("TOKAGENT_WHATSAPP_")) delete process.env[k];
   }
 });
 
@@ -30,8 +30,8 @@ describe("readWhatsAppCredentialsFromEnv", () => {
   });
 
   test("returns object when both env vars set", () => {
-    process.env.ELIZA_WHATSAPP_ACCESS_TOKEN = "tok-abc";
-    process.env.ELIZA_WHATSAPP_PHONE_NUMBER_ID = "555000111";
+    process.env.TOKAGENT_WHATSAPP_ACCESS_TOKEN = "tok-abc";
+    process.env.TOKAGENT_WHATSAPP_PHONE_NUMBER_ID = "555000111";
     const creds = readWhatsAppCredentialsFromEnv();
     expect(creds).not.toBeNull();
     expect(creds!.accessToken).toBe("tok-abc");

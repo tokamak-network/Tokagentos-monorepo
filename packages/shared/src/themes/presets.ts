@@ -13,7 +13,7 @@ import type { ThemeDefinition } from "../contracts/theme";
 export const BSC_GOLD_THEME: ThemeDefinition = {
   id: "bsc-gold",
   name: "BSC Gold",
-  description: "Classic gold accent — the default Eliza theme",
+  description: "Classic gold accent — the default Tokagent theme",
   preview: "linear-gradient(135deg, #1a1f26 0%, #f0b90b 100%)",
   light: {
     bg: "#f7f8fa",

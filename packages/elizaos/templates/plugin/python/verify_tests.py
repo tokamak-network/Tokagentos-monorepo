@@ -30,7 +30,7 @@ def main():
     print("=" * 50)
     
     # Check plugin.py
-    plugin_file = base_dir / "elizaos_plugin_starter" / "plugin.py"
+    plugin_file = base_dir / "tokagentos_plugin_starter" / "plugin.py"
     print(f"\n1. Checking {plugin_file.name}...")
     valid, msg = check_syntax(plugin_file)
     print(f"   {msg}")
@@ -38,7 +38,7 @@ def main():
         errors.append(f"{plugin_file}: {msg}")
     
     # Check tests.py (E2E tests)
-    tests_file = base_dir / "elizaos_plugin_starter" / "tests.py"
+    tests_file = base_dir / "tokagentos_plugin_starter" / "tests.py"
     print(f"\n2. Checking {tests_file.name} (E2E tests)...")
     valid, msg = check_syntax(tests_file)
     print(f"   {msg}")
@@ -93,7 +93,7 @@ def main():
         print("\nTo run tests:")
         print("  1. Install dependencies: pip install -e '.[dev]'")
         print("  2. Run unit tests: pytest tests/ -v")
-        print("  3. Run E2E tests: elizaos test --type e2e")
+        print("  3. Run E2E tests: tokagentos test --type e2e")
         return 0
 
 if __name__ == "__main__":

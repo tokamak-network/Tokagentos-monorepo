@@ -6,7 +6,7 @@ import { startLiveRuntimeServer } from "../../../packages/app-core/test/helpers/
 import type { RuntimeHarness } from "../../../packages/app-core/test/live-agent/helpers/runtime-harness.ts";
 
 const LIVE =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 
 async function waitForVincentRoute(runtime: RuntimeHarness): Promise<void> {
   const deadline = Date.now() + 30_000;
@@ -31,7 +31,7 @@ describeIf(LIVE)("Vincent API live route coverage", () => {
 
   beforeAll(async () => {
     runtime = await startLiveRuntimeServer({
-      tempPrefix: "eliza-vincent-api-",
+      tempPrefix: "tokagent-vincent-api-",
       loggingLevel: "warn",
     });
     await waitForVincentRoute(runtime);

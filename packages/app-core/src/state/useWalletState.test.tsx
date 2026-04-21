@@ -5,7 +5,7 @@ import {
   type WalletChainKind,
   type WalletEntry,
   type WalletPrimaryMap,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { WalletBalancesResponse, WalletConfigStatus } from "../api";
@@ -155,16 +155,16 @@ describe("useWalletState cloud wallet import", () => {
     cleanup();
   });
 
-  it("refreshes cloud wallets after saving Eliza Cloud RPC selections", async () => {
+  it("refreshes cloud wallets after saving Tokagent Cloud RPC selections", async () => {
     const params = createParams();
     const { result } = renderHook(() => useWalletState(params));
 
     await act(async () => {
       const saved = await result.current.handleWalletApiKeySave({
         selections: {
-          evm: "eliza-cloud",
-          bsc: "eliza-cloud",
-          solana: "eliza-cloud",
+          evm: "tokagent-cloud",
+          bsc: "tokagent-cloud",
+          solana: "tokagent-cloud",
         },
         walletNetwork: "mainnet",
       });
@@ -230,9 +230,9 @@ describe("useWalletState cloud wallet import", () => {
     await act(async () => {
       const saved = await result.current.handleWalletApiKeySave({
         selections: {
-          evm: "eliza-cloud",
-          bsc: "eliza-cloud",
-          solana: "eliza-cloud",
+          evm: "tokagent-cloud",
+          bsc: "tokagent-cloud",
+          solana: "tokagent-cloud",
         },
         walletNetwork: "mainnet",
       });
@@ -278,9 +278,9 @@ describe("useWalletState cloud wallet import", () => {
     await act(async () => {
       const saved = await result.current.handleWalletApiKeySave({
         selections: {
-          evm: "eliza-cloud",
-          bsc: "eliza-cloud",
-          solana: "eliza-cloud",
+          evm: "tokagent-cloud",
+          bsc: "tokagent-cloud",
+          solana: "tokagent-cloud",
         },
         walletNetwork: "mainnet",
       });
@@ -289,7 +289,7 @@ describe("useWalletState cloud wallet import", () => {
 
     await waitFor(() => {
       expect(params.setActionNotice).toHaveBeenCalledWith(
-        "EVM cloud wallet connected. Solana cloud wallet is unavailable because the connected Eliza Cloud backend is still using the legacy Solana wallet contract.",
+        "EVM cloud wallet connected. Solana cloud wallet is unavailable because the connected Tokagent Cloud backend is still using the legacy Solana wallet contract.",
         "info",
       );
     });
@@ -335,9 +335,9 @@ describe("useWalletState cloud wallet import", () => {
     await act(async () => {
       const saved = await result.current.handleWalletApiKeySave({
         selections: {
-          evm: "eliza-cloud",
-          bsc: "eliza-cloud",
-          solana: "eliza-cloud",
+          evm: "tokagent-cloud",
+          bsc: "tokagent-cloud",
+          solana: "tokagent-cloud",
         },
         walletNetwork: "mainnet",
       });

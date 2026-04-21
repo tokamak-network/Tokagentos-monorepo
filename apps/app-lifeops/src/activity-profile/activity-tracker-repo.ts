@@ -8,7 +8,7 @@
  */
 
 import crypto from "node:crypto";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import {
   executeRawSql,
   sqlQuote,

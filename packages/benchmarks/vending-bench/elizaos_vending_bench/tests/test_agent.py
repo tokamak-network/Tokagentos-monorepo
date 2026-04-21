@@ -5,9 +5,9 @@ from decimal import Decimal
 
 import pytest
 
-from elizaos_vending_bench.agent import MockLLMProvider, VendingAgent
-from elizaos_vending_bench.environment import VendingEnvironment
-from elizaos_vending_bench.types import ActionType
+from tokagentos_vending_bench.agent import MockLLMProvider, VendingAgent
+from tokagentos_vending_bench.environment import VendingEnvironment
+from tokagentos_vending_bench.types import ActionType
 
 
 class TestVendingAgent:

@@ -8,12 +8,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.types import Evaluator, EvaluatorResult, HandlerOptions
+from tokagentos.types import Evaluator, EvaluatorResult, HandlerOptions
 
 from ..types import TrustContext
 
 if TYPE_CHECKING:
-    from elizaos.types import ActionResult, IAgentRuntime, Memory, State
+    from tokagentos.types import ActionResult, IAgentRuntime, Memory, State
 
     from ..service import TrustEngineService
 

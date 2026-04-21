@@ -52,7 +52,7 @@ async function createDetachedWorktree(repoRoot: string): Promise<string> {
   const rand = crypto.randomBytes(6).toString("hex");
   const dir = path.join(
     repoRoot,
-    ".eliza",
+    ".tokagent",
     "e2e-worktrees",
     `${Date.now()}-${rand}`,
   );
@@ -136,8 +136,8 @@ function getRunnableTypes(): SubAgentType[] {
   // when keys are missing so this script can run in a local environment without
   // configuring every provider.
   const types: SubAgentType[] = [
-    "eliza",
-    "elizaos-native",
+    "tokagent",
+    "tokagentos-native",
     "opencode",
     "sweagent",
     "codex",
@@ -146,7 +146,7 @@ function getRunnableTypes(): SubAgentType[] {
 
   const openai = process.env.OPENAI_API_KEY?.trim();
   const anthropic = process.env.ANTHROPIC_API_KEY?.trim();
-  const provider = (process.env.ELIZA_CODE_PROVIDER ?? "").trim().toLowerCase();
+  const provider = (process.env.TOKAGENT_CODE_PROVIDER ?? "").trim().toLowerCase();
 
   return types.filter((t) => {
     if (t === "codex") return Boolean(openai);

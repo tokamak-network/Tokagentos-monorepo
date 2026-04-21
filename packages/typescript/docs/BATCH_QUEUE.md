@@ -1,6 +1,6 @@
 # Batch queue subsystem (`utils/batch-queue`)
 
-This document explains **why** `@elizaos/core` ships a small shared stack for prioritized queues, bounded-concurrency batch execution, repeat-task drains, and (when needed) the composed **`BatchQueue`**. It complements inline code comments and [CHANGELOG.md](../CHANGELOG.md).
+This document explains **why** `@tokagentos/core` ships a small shared stack for prioritized queues, bounded-concurrency batch execution, repeat-task drains, and (when needed) the composed **`BatchQueue`**. It complements inline code comments and [CHANGELOG.md](../CHANGELOG.md).
 
 ---
 
@@ -74,7 +74,7 @@ Registering a worker twice under the same task name would **overwrite** the prev
 
 ## Related docs
 
-- **Public docs (same content):** [Batch queue subsystem](https://docs.elizaos.ai/runtime/batch-queue) on docs.elizaos.ai — source: `packages/docs/runtime/batch-queue.mdx` in the monorepo.
+- **Public docs (same content):** [Batch queue subsystem](https://docs.tokagentos.ai/runtime/batch-queue) on docs.tokagentos.ai — source: `packages/docs/runtime/batch-queue.mdx` in the monorepo.
 - [DESIGN.md](./DESIGN.md) — Broader core design decisions.
 - [CHANGELOG.md](../CHANGELOG.md) — What shipped and when, with per-item WHYs.
 - [ROADMAP.md](../ROADMAP.md) — Forward-looking work (this subsystem is **shipped**; roadmap points here for rationale).

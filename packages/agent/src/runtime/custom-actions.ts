@@ -1,7 +1,7 @@
 /**
  * Custom Actions runtime loader.
  *
- * Converts `CustomActionDef[]` from config into elizaOS `Action[]` objects
+ * Converts `CustomActionDef[]` from config into tokagentOS `Action[]` objects
  * so the agent can use them in conversations.
  *
  * @module runtime/custom-actions
@@ -21,16 +21,16 @@ import {
   type HandlerOptions,
   type IAgentRuntime,
   logger,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   resolveApiToken,
   resolveServerOnlyPort,
-} from "@elizaos/shared/runtime-env";
-import { loadElizaConfig } from "../config/config.js";
+} from "@tokagentos/shared/runtime-env";
+import { loadTokagentConfig } from "../config/config.js";
 import type {
   CustomActionDef,
   CustomActionHandler,
-} from "../config/types.eliza.js";
+} from "../config/types.tokagent.js";
 import {
   isBlockedPrivateOrLinkLocalIp,
   normalizeHostLike,
@@ -49,7 +49,7 @@ export function setCustomActionsRuntime(runtime: IAgentRuntime): void {
 
 /**
  * Hot-register a CustomActionDef into the running agent.
- * Returns the elizaOS Action that was registered, or null if no runtime.
+ * Returns the tokagentOS Action that was registered, or null if no runtime.
  */
 export function registerCustomActionLive(def: CustomActionDef): Action | null {
   if (!_runtime) return null;
@@ -207,14 +207,14 @@ async function runCodeHandler(
     wrapperScript,
     Object.create(null),
     {
-      filename: "eliza-fetch-wrapper",
+      filename: "tokagent-fetch-wrapper",
       timeout: 1_000,
     },
   ) as (fn: typeof safeCodeFetch) => typeof safeCodeFetch;
   context.fetch = wrapFetch(safeCodeFetch);
 
   return await vmRunner.runInNewContext(`"use strict"; ${script}`, context, {
-    filename: "eliza-custom-action",
+    filename: "tokagent-custom-action",
     timeout: 30_000,
   });
 }
@@ -657,7 +657,7 @@ function defToAction(def: CustomActionDef): Action {
 
 export function loadCustomActions(): Action[] {
   try {
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const defs = config.customActions ?? [];
     return defs.filter((d) => d.enabled).map(defToAction);
   } catch (err) {

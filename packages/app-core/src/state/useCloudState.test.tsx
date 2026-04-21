@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const {
   clientMock,
-  dispatchElizaCloudStatusUpdatedMock,
+  dispatchTokagentCloudStatusUpdatedMock,
   getBootConfigMock,
   invokeDesktopBridgeRequestWithTimeoutMock,
   isElectrobunRuntimeMock,
@@ -22,7 +22,7 @@ const {
     cloudLoginPoll: vi.fn(),
     cloudLoginPollDirect: vi.fn(),
   },
-  dispatchElizaCloudStatusUpdatedMock: vi.fn(),
+  dispatchTokagentCloudStatusUpdatedMock: vi.fn(),
   getBootConfigMock: vi.fn(() => ({})),
   invokeDesktopBridgeRequestWithTimeoutMock: vi.fn(),
   isElectrobunRuntimeMock: vi.fn(() => false),
@@ -47,7 +47,7 @@ vi.mock("../config/boot-config", () => ({
 }));
 
 vi.mock("../events", () => ({
-  dispatchElizaCloudStatusUpdated: dispatchElizaCloudStatusUpdatedMock,
+  dispatchTokagentCloudStatusUpdated: dispatchTokagentCloudStatusUpdatedMock,
 }));
 
 vi.mock("../utils", () => ({
@@ -102,15 +102,15 @@ describe("useCloudState", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.elizaCloudConnected).toBe(true);
+      expect(result.current.tokagentCloudConnected).toBe(true);
     });
 
     await act(async () => {
       expect(await result.current.pollCloudCredits()).toBe(true);
     });
 
-    expect(result.current.elizaCloudConnected).toBe(true);
-    expect(result.current.elizaCloudCredits).toBe(11.13);
+    expect(result.current.tokagentCloudConnected).toBe(true);
+    expect(result.current.tokagentCloudCredits).toBe(11.13);
   });
 
   it("reconciles with backend cloud status instead of starting a second login flow", async () => {
@@ -130,17 +130,17 @@ describe("useCloudState", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.elizaCloudConnected).toBe(true);
+      expect(result.current.tokagentCloudConnected).toBe(true);
     });
 
     expect(clientMock.cloudLogin).not.toHaveBeenCalled();
     expect(params.loadWalletConfig).toHaveBeenCalledTimes(1);
     expect(params.setActionNotice).toHaveBeenCalledWith(
-      "Already connected to Eliza Cloud.",
+      "Already connected to Tokagent Cloud.",
       "info",
       4000,
     );
-    expect(result.current.elizaCloudLoginBusy).toBe(false);
-    expect(result.current.elizaCloudLoginError).toBeNull();
+    expect(result.current.tokagentCloudLoginBusy).toBe(false);
+    expect(result.current.tokagentCloudLoginError).toBeNull();
   });
 });

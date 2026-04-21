@@ -6,7 +6,7 @@ declare module "../../../types/service.ts" {
 	}
 }
 
-declare module "@elizaos/core" {
+declare module "@tokagentos/core" {
 	interface ServiceTypeRegistry {
 		CHARACTER_MANAGEMENT: "CHARACTER_MANAGEMENT";
 	}

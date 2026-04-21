@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { client } from "../../api";
 import type {

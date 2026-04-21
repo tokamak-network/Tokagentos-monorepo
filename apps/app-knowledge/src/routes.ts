@@ -7,20 +7,20 @@ import {
 import { request as requestHttps } from "node:https";
 import net from "node:net";
 import { Readable } from "node:stream";
-import type { AgentRuntime, Memory, UUID } from "@elizaos/core";
+import type { AgentRuntime, Memory, UUID } from "@tokagentos/core";
 import {
   isBlockedPrivateOrLinkLocalIp,
   normalizeHostLike,
-} from "@elizaos/agent/security/network-policy";
+} from "@tokagentos/agent/security/network-policy";
 import {
   parseClampedFloat,
   parsePositiveInteger,
-} from "@elizaos/agent/utils/number-parsing";
+} from "@tokagentos/agent/utils/number-parsing";
 import {
   getKnowledgeService,
   type KnowledgeServiceLike,
 } from "./service-loader.js";
-import type { RouteHelpers, RouteRequestContext } from "@elizaos/agent/api/route-helpers";
+import type { RouteHelpers, RouteRequestContext } from "@tokagentos/agent/api/route-helpers";
 
 export type KnowledgeRouteHelpers = RouteHelpers;
 
@@ -619,7 +619,7 @@ async function fetchUrlContent(
   const response = await fetchWithSafety(url, {
     redirect: "manual",
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; Eliza/1.0; +https://elizaos.ai)",
+      "User-Agent": "Mozilla/5.0 (compatible; Tokagent/1.0; +https://tokagentos.ai)",
     },
   });
 
@@ -892,7 +892,7 @@ export async function handleKnowledgeRoutes(
           ?.includeImageDescriptions === true;
       if (includeDescriptions && runtime) {
         try {
-          const { ModelType } = await import("@elizaos/core");
+          const { ModelType } = await import("@tokagentos/core");
           const dataUri = `data:${contentType};base64,${content}`;
           const description = await runtime.useModel(
             ModelType.IMAGE_DESCRIPTION,

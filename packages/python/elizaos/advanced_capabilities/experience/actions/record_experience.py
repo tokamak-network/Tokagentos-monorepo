@@ -5,10 +5,10 @@ import time
 from typing import TYPE_CHECKING
 from uuid import uuid4
 
-from elizaos.types import Action, ActionResult
+from tokagentos.types import Action, ActionResult
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
         State,
     )
 
-logger = logging.getLogger("elizaos.experience")
+logger = logging.getLogger("tokagentos.experience")
 
 
 async def _validate_record_experience(

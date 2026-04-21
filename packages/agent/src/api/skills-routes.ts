@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import type http from "node:http";
 import path from "node:path";
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import { resolveDefaultAgentWorkspaceDir } from "../providers/workspace.js";
 import {
   installMarketplaceSkill,
@@ -45,15 +45,15 @@ export interface SkillsRouteContext {
   // Functions from server.ts that skills routes need
   discoverSkills: (
     workspaceDir: string,
-    config: ElizaConfig,
+    config: TokagentConfig,
     runtime: AgentRuntime | null,
   ) => Promise<SkillEntry[]>;
-  saveElizaConfig: (config: ElizaConfig) => void;
+  saveTokagentConfig: (config: TokagentConfig) => void;
 }
 
 export interface SkillsServerState {
   runtime: AgentRuntime | null;
-  config: ElizaConfig;
+  config: TokagentConfig;
   skills: SkillEntry[];
 }
 
@@ -115,7 +115,7 @@ function shouldExposeBinanceSkillRecord(skill: {
 // Skill preferences (per-agent, persisted in agent database)
 // ---------------------------------------------------------------------------
 
-const SKILL_PREFS_CACHE_KEY = "eliza:skill-preferences";
+const SKILL_PREFS_CACHE_KEY = "tokagent:skill-preferences";
 type SkillPreferencesMap = Record<string, boolean>;
 
 async function loadSkillPreferences(
@@ -140,7 +140,7 @@ async function saveSkillPreferences(
     await runtime.setCache(SKILL_PREFS_CACHE_KEY, prefs);
   } catch (err) {
     logger.debug(
-      `[eliza-api] Failed to save skill preferences: ${err instanceof Error ? err.message : err}`,
+      `[tokagent-api] Failed to save skill preferences: ${err instanceof Error ? err.message : err}`,
     );
   }
 }
@@ -149,7 +149,7 @@ async function saveSkillPreferences(
 // Skill scan acknowledgments
 // ---------------------------------------------------------------------------
 
-const SKILL_ACK_CACHE_KEY = "eliza:skill-scan-acknowledgments";
+const SKILL_ACK_CACHE_KEY = "tokagent:skill-scan-acknowledgments";
 
 type SkillAcknowledgmentMap = Record<
   string,
@@ -177,7 +177,7 @@ async function saveSkillAcknowledgments(
     await runtime.setCache(SKILL_ACK_CACHE_KEY, acks);
   } catch (err) {
     logger.debug(
-      `[eliza-api] Failed to save skill acknowledgments: ${err instanceof Error ? err.message : err}`,
+      `[tokagent-api] Failed to save skill acknowledgments: ${err instanceof Error ? err.message : err}`,
     );
   }
 }
@@ -260,7 +260,7 @@ export async function handleSkillsRoutes(
     readJsonBody,
     readBody,
     discoverSkills,
-    saveElizaConfig,
+    saveTokagentConfig,
   } = ctx;
 
   // ── GET /api/skills/catalog ───────────────────────────────────────────
@@ -851,7 +851,7 @@ export async function handleSkillsRoutes(
           : "xdg-open";
     execFile(opener, [skillPath], (err) => {
       if (err)
-        logger.warn(`[eliza-api] Failed to open skill folder: ${err.message}`);
+        logger.warn(`[tokagent-api] Failed to open skill folder: ${err.message}`);
     });
     json(res, { ok: true, path: skillPath });
     return true;
@@ -1442,7 +1442,7 @@ export async function handleSkillsRoutes(
     process.env.SKILLSMP_API_KEY = apiKey;
     if (!state.config.env) state.config.env = {};
     (state.config.env as Record<string, string>).SKILLSMP_API_KEY = apiKey;
-    saveElizaConfig(state.config);
+    saveTokagentConfig(state.config);
     json(res, { ok: true, keySet: true });
     return true;
   }

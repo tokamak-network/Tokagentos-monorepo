@@ -18,4 +18,4 @@
         *   `description`: precise instructions.
         *   `verification_cmd`: command to prove it works.
 6.  **Handover**:
-    *   Trigger the `start_session.sh` script to spawn Builder agents for the first set of parallelizable tasks.
+    *   Trigger the `start_session.sh` script to spawn Builder agents for the first set of paralltokagentble tasks.

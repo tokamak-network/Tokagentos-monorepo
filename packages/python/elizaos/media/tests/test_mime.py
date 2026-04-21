@@ -1,6 +1,6 @@
 """Tests for MIME utilities."""
 
-from elizaos.media.mime import (
+from tokagentos.media.mime import (
     MediaKind,
     extension_for_mime,
     get_file_extension,

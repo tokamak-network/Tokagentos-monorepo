@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import { AgentRuntime } from "@elizaos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import { config as loadDotEnv } from "dotenv";
 
 import { character } from "./character";

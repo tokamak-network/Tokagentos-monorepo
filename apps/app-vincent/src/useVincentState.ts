@@ -10,7 +10,7 @@
  *   server-side exchange completes
  */
 
-import { client, openExternalUrl } from "@elizaos/app-core";
+import { client, openExternalUrl } from "@tokagentos/app-core";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface VincentStateParams {
@@ -69,7 +69,7 @@ export function useVincentState({ setActionNotice, t }: VincentStateParams) {
 
     try {
       // Step 1: Ask server to generate PKCE + authUrl
-      const { authUrl } = await client.vincentStartLogin("Eliza");
+      const { authUrl } = await client.vincentStartLogin("Tokagent");
 
       // Step 2: Open the browser on the authUrl
       await openExternalUrl(authUrl);

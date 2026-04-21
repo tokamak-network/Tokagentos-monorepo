@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import process from "node:process";
 
-declare const __ELIZA_VERSION__: string | undefined;
+declare const __TOKAGENT_VERSION__: string | undefined;
 
 const PACKAGE_JSON_CANDIDATE = "../../package.json";
 const BUILD_INFO_CANDIDATES = [
@@ -47,12 +47,12 @@ function readVersionFromBuildInfo(requireFn: NodeRequire): string | null {
   return null;
 }
 
-export function resolveElizaVersion(moduleUrl: string): string {
+export function resolveTokagentVersion(moduleUrl: string): string {
   const requireFn = createRequire(moduleUrl);
 
   return (
-    (typeof __ELIZA_VERSION__ === "string" && __ELIZA_VERSION__) ||
-    process.env.ELIZA_BUNDLED_VERSION ||
+    (typeof __TOKAGENT_VERSION__ === "string" && __TOKAGENT_VERSION__) ||
+    process.env.TOKAGENT_BUNDLED_VERSION ||
     readVersionFromPackageJson(requireFn) ||
     readVersionFromBuildInfo(requireFn) ||
     "0.0.0"

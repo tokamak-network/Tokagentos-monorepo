@@ -1,4 +1,4 @@
-//! Database types for elizaOS
+//! Database types for tokagentOS
 //!
 //! Contains database-related types, log types, and query parameters.
 

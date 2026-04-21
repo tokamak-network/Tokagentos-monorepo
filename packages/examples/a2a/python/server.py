@@ -1,8 +1,8 @@
 """
-elizaOS A2A (Agent-to-Agent) Server - Python
+tokagentOS A2A (Agent-to-Agent) Server - Python
 
-An HTTP server that exposes an elizaOS agent for agent-to-agent communication.
-Uses real elizaOS runtime (OpenAI optional).
+An HTTP server that exposes an tokagentOS agent for agent-to-agent communication.
+Uses real tokagentOS runtime (OpenAI optional).
 """
 
 from __future__ import annotations
@@ -19,13 +19,13 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from uuid6 import uuid7
 
-from elizaos import Character, ChannelType, Content, Memory
-from elizaos.runtime import AgentRuntime
-from elizaos.types.primitives import string_to_uuid
-from elizaos_plugin_eliza_classic.plugin import get_eliza_classic_plugin
-from elizaos_plugin_inmemorydb import InMemoryDatabaseAdapter, MemoryStorage
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_plugin_inmemorydb import plugin as inmemorydb_plugin
+from tokagentos import Character, ChannelType, Content, Memory
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.primitives import string_to_uuid
+from tokagentos_plugin_tokagent_classic.plugin import get_tokagent_classic_plugin
+from tokagentos_plugin_inmemorydb import InMemoryDatabaseAdapter, MemoryStorage
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_plugin_inmemorydb import plugin as inmemorydb_plugin
 
 # ============================================================================
 # Configuration
@@ -34,9 +34,9 @@ from elizaos_plugin_inmemorydb import plugin as inmemorydb_plugin
 PORT = int(os.environ.get("PORT", 3000))
 
 CHARACTER = Character(
-    name="Eliza",
-    username="eliza",
-    bio="A helpful AI assistant powered by elizaOS, available via A2A protocol.",
+    name="Tokagent",
+    username="tokagent",
+    bio="A helpful AI assistant powered by tokagentOS, available via A2A protocol.",
     system="You are a helpful, friendly AI assistant participating in agent-to-agent communication. Be concise, informative, and cooperative.",
 )
 
@@ -69,7 +69,7 @@ async def get_runtime() -> AgentRuntime:
     if _runtime is not None:
         return _runtime
 
-    print("🚀 Initializing elizaOS runtime...")
+    print("🚀 Initializing tokagentOS runtime...")
 
     if _storage is None:
         _storage = MemoryStorage()
@@ -81,7 +81,7 @@ async def get_runtime() -> AgentRuntime:
     if _should_use_openai():
         plugins.append(get_openai_plugin())
     else:
-        plugins.append(get_eliza_classic_plugin())
+        plugins.append(get_tokagent_classic_plugin())
 
     _runtime = AgentRuntime(
         character=CHARACTER,
@@ -91,7 +91,7 @@ async def get_runtime() -> AgentRuntime:
     )
 
     await _runtime.initialize()
-    print("✅ elizaOS runtime initialized")
+    print("✅ tokagentOS runtime initialized")
 
     return _runtime
 
@@ -185,8 +185,8 @@ class AgentInfo(BaseModel):
 # ============================================================================
 
 app = FastAPI(
-    title="elizaOS A2A Server",
-    description="Agent-to-Agent communication server powered by elizaOS",
+    title="tokagentOS A2A Server",
+    description="Agent-to-Agent communication server powered by tokagentOS",
     version="1.0.0",
 )
 
@@ -215,7 +215,7 @@ async def agent_info() -> AgentInfo:
         agentId=str(runtime.agent_id),
         version="1.0.0",
         capabilities=["chat", "reasoning", "multi-turn"],
-        powered_by="elizaOS",
+        powered_by="tokagentOS",
         endpoints={
             "POST /chat": "Send a message and receive a response",
             "POST /chat/stream": "Stream a response (SSE)",
@@ -341,7 +341,7 @@ async def chat_stream(
 async def startup_event() -> None:
     """Initialize the application."""
     await get_runtime()
-    print(f"\n🌐 elizaOS A2A Server (FastAPI)")
+    print(f"\n🌐 tokagentOS A2A Server (FastAPI)")
     print(f"   http://localhost:{PORT}\n")
     print("📚 Endpoints:")
     print("   GET  /            - Agent info")

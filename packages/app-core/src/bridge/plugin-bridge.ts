@@ -215,7 +215,7 @@ function wrapPlugin<T extends Record<string, unknown>>(
 /**
  * The plugin bridge providing access to all native plugins
  */
-export interface ElizaPlugins {
+export interface TokagentPlugins {
   /** Gateway connection plugin */
   gateway: WrappedPlugin<GenericNativePlugin>;
   /** Voice wake word plugin */
@@ -237,12 +237,12 @@ export interface ElizaPlugins {
 }
 
 // Singleton instance
-let pluginsInstance: ElizaPlugins | null = null;
+let pluginsInstance: TokagentPlugins | null = null;
 
 /**
  * Initialize and get the plugins interface
  */
-export function getPlugins(): ElizaPlugins {
+export function getPlugins(): TokagentPlugins {
   if (pluginsInstance) {
     if (pluginsInstance.desktop.isNative === isDesktopPlatform()) {
       return pluginsInstance;

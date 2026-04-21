@@ -1,4 +1,4 @@
-//! XML parsing utilities for elizaOS.
+//! XML parsing utilities for tokagentOS.
 //!
 //! This module provides utilities for parsing XML responses from LLM models.
 

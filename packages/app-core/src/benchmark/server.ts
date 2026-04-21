@@ -1,15 +1,15 @@
 import crypto from "node:crypto";
 import http from "node:http";
 import path from "node:path";
-import { CORE_PLUGINS, createElizaPlugin } from "@elizaos/agent/runtime";
+import { CORE_PLUGINS, createTokagentPlugin } from "@tokagentos/agent/runtime";
 import {
   AgentRuntime,
   type Content,
-  elizaLogger,
+  tokagentLogger,
   type Memory,
   type Plugin,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import {
   clearCapturedAction,
@@ -75,7 +75,7 @@ function resolveAllowedOrigin(req: http.IncomingMessage): string {
 }
 
 function resolveBenchToken(): string | null {
-  const token = process.env.ELIZA_BENCH_TOKEN?.trim();
+  const token = process.env.TOKAGENT_BENCH_TOKEN?.trim();
   return token || null;
 }
 
@@ -103,7 +103,7 @@ function checkBenchAuth(
     res.end(
       JSON.stringify({
         error:
-          "Benchmark server requires ELIZA_BENCH_TOKEN to be set. " +
+          "Benchmark server requires TOKAGENT_BENCH_TOKEN to be set. " +
           "Generate one with: openssl rand -hex 32",
       }),
     );
@@ -139,7 +139,7 @@ function disableManualCompactionAction(runtime: AgentRuntime): void {
     return;
   }
   runtimeWithActions.actions.splice(compactSessionIndex, 1);
-  elizaLogger.info(
+  tokagentLogger.info(
     "[bench] Disabled manual COMPACT_SESSION action; auto-compaction remains enabled",
   );
 }
@@ -245,14 +245,14 @@ async function collectSessionDiagnostics(
 // Proper robust server implementation
 export async function startBenchmarkServer() {
   const port = resolvePort();
-  elizaLogger.info(
-    `[bench] Initializing eliza benchmark runtime on port ${port}...`,
+  tokagentLogger.info(
+    `[bench] Initializing tokagent benchmark runtime on port ${port}...`,
   );
 
   // ═══════════════════════════════════════════════════════════════════════════
   // PLUGIN LOADING — Use full CORE_PLUGINS to test with realistic context
   // ═══════════════════════════════════════════════════════════════════════════
-  // We intentionally load the full Eliza plugin set to ensure benchmarks test
+  // We intentionally load the full Tokagent plugin set to ensure benchmarks test
   // the agent's ability to perform tasks despite context "pollution" from all
   // the default actions, providers, evaluators, etc. If the agent can still
   // succeed with a crowded context, it demonstrates sufficient context handling.
@@ -265,13 +265,13 @@ export async function startBenchmarkServer() {
   // Plugins to skip in benchmark context — these require external auth or
   // interfere with benchmark operation
   const skipPlugins = new Set([
-    "@elizaos/plugin-elizacloud", // Requires elizaOS cloud auth, conflicts with local LLM
+    "@elizaos/plugin-tokagentcloud", // Requires tokagentOS cloud auth, conflicts with local LLM
   ]);
 
-  // Load all CORE_PLUGINS — these are what the production Eliza runtime uses
+  // Load all CORE_PLUGINS — these are what the production Tokagent runtime uses
   for (const pluginName of CORE_PLUGINS) {
     if (skipPlugins.has(pluginName)) {
-      elizaLogger.debug(
+      tokagentLogger.debug(
         `[bench] Skipping plugin (benchmark mode): ${pluginName}`,
       );
       continue;
@@ -287,36 +287,36 @@ export async function startBenchmarkServer() {
     } catch (error: unknown) {
       // Some plugins may not be available in all environments — that's OK
       failedPlugins.push(pluginName);
-      elizaLogger.debug(
+      tokagentLogger.debug(
         `[bench] Plugin not available: ${pluginName} (${formatUnknownError(error)})`,
       );
     }
   }
 
-  elizaLogger.info(
+  tokagentLogger.info(
     `[bench] Loaded ${loadedPlugins.length}/${CORE_PLUGINS.length} core plugins`,
   );
   if (failedPlugins.length > 0) {
-    elizaLogger.debug(
+    tokagentLogger.debug(
       `[bench] Unavailable plugins: ${failedPlugins.join(", ")}`,
     );
   }
 
-  // Load Eliza plugin — provides workspace context, session keys, autonomous state,
+  // Load Tokagent plugin — provides workspace context, session keys, autonomous state,
   // custom actions, and lifecycle actions (restart, trigger tasks)
   try {
-    const workspaceDir = process.env.ELIZA_WORKSPACE_DIR ?? process.cwd();
-    const elizaPlugin = createElizaPlugin({
+    const workspaceDir = process.env.TOKAGENT_WORKSPACE_DIR ?? process.cwd();
+    const tokagentPlugin = createTokagentPlugin({
       workspaceDir,
       agentId: "benchmark",
     });
-    plugins.push(toPlugin(elizaPlugin, "eliza-plugin"));
-    elizaLogger.info(
-      `[bench] Loaded eliza plugin with workspace: ${workspaceDir}`,
+    plugins.push(toPlugin(tokagentPlugin, "tokagent-plugin"));
+    tokagentLogger.info(
+      `[bench] Loaded tokagent plugin with workspace: ${workspaceDir}`,
     );
   } catch (error: unknown) {
-    elizaLogger.error(
-      `[bench] Failed to load eliza plugin: ${formatUnknownError(error)}`,
+    tokagentLogger.error(
+      `[bench] Failed to load tokagent plugin: ${formatUnknownError(error)}`,
     );
   }
 
@@ -324,9 +324,9 @@ export async function startBenchmarkServer() {
   try {
     const benchmarkPlugin = createBenchmarkPlugin();
     plugins.push(toPlugin(benchmarkPlugin, "benchmark-plugin"));
-    elizaLogger.info("[bench] Loaded benchmark plugin");
+    tokagentLogger.info("[bench] Loaded benchmark plugin");
   } catch (error: unknown) {
-    elizaLogger.error(
+    tokagentLogger.error(
       `[bench] Failed to load benchmark plugin: ${formatUnknownError(error)}`,
     );
   }
@@ -341,9 +341,9 @@ export async function startBenchmarkServer() {
     try {
       const { default: groqPlugin } = await import("@elizaos/plugin-groq");
       plugins.push(toPlugin(groqPlugin, "@elizaos/plugin-groq"));
-      elizaLogger.info("[bench] Loaded LLM plugin: @elizaos/plugin-groq");
+      tokagentLogger.info("[bench] Loaded LLM plugin: @elizaos/plugin-groq");
     } catch (error: unknown) {
-      elizaLogger.warn(
+      tokagentLogger.warn(
         `[bench] Groq plugin not available: ${formatUnknownError(error)}`,
       );
     }
@@ -355,16 +355,16 @@ export async function startBenchmarkServer() {
     try {
       const { default: openaiPlugin } = await import("@elizaos/plugin-openai");
       plugins.push(toPlugin(openaiPlugin, "@elizaos/plugin-openai"));
-      elizaLogger.info("[bench] Loaded LLM plugin: @elizaos/plugin-openai");
+      tokagentLogger.info("[bench] Loaded LLM plugin: @elizaos/plugin-openai");
     } catch (error: unknown) {
-      elizaLogger.debug(
+      tokagentLogger.debug(
         `[bench] OpenAI plugin not available: ${formatUnknownError(error)}`,
       );
     }
   }
 
   // Load computer use plugin if enabled
-  if (process.env.ELIZA_ENABLE_COMPUTERUSE) {
+  if (process.env.TOKAGENT_ENABLE_COMPUTERUSE) {
     try {
       process.env.COMPUTERUSE_ENABLED ??= "true";
       process.env.COMPUTERUSE_MODE ??= "local";
@@ -380,12 +380,12 @@ export async function startBenchmarkServer() {
         computeruseModule.default;
       if (computerusePlugin) {
         plugins.push(toPlugin(computerusePlugin, localComputerusePath));
-        elizaLogger.info(
+        tokagentLogger.info(
           "[bench] Loaded local plugin: @elizaos/plugin-computeruse",
         );
       }
     } catch (error: unknown) {
-      elizaLogger.debug(
+      tokagentLogger.debug(
         `[bench] Computer use plugin not available: ${formatUnknownError(error)}`,
       );
     }
@@ -393,16 +393,16 @@ export async function startBenchmarkServer() {
 
   // Load mock plugin for testing (file is gitignored for local-only use)
   if (
-    process.env.ELIZA_BENCH_MOCK === "true" ||
-    process.env.ELIZA_BENCH_MOCK === "true"
+    process.env.TOKAGENT_BENCH_MOCK === "true" ||
+    process.env.TOKAGENT_BENCH_MOCK === "true"
   ) {
     try {
       const mockLocation = "./mock-plugin.ts";
       const { mockPlugin } = await import(mockLocation);
       plugins.push(toPlugin(mockPlugin, mockLocation));
-      elizaLogger.info("[bench] Loaded mock benchmark plugin");
+      tokagentLogger.info("[bench] Loaded mock benchmark plugin");
     } catch (error: unknown) {
-      elizaLogger.error(
+      tokagentLogger.error(
         `[bench] Failed to load mock benchmark plugin: ${formatUnknownError(error)}`,
       );
     }
@@ -472,10 +472,10 @@ export async function startBenchmarkServer() {
       ),
     ]),
   );
-  elizaLogger.info(
+  tokagentLogger.info(
     `[bench] Model handlers: ${JSON.stringify(modelHandlerSummary)}`,
   );
-  elizaLogger.info(
+  tokagentLogger.info(
     `[bench] Runtime initialized — agent=${runtime.character.name}, plugins=${plugins.length}`,
   );
 
@@ -619,7 +619,7 @@ export async function startBenchmarkServer() {
       res.end(
         JSON.stringify({
           status: "ready",
-          agent_name: runtime.character.name ?? "Eliza",
+          agent_name: runtime.character.name ?? "Tokagent",
           plugins: plugins.length,
           active_session: activeSession
             ? {
@@ -685,7 +685,7 @@ export async function startBenchmarkServer() {
           );
         } catch (err: unknown) {
           const errorMessage = err instanceof Error ? err.message : String(err);
-          elizaLogger.error(`[bench] Reset error: ${formatUnknownError(err)}`);
+          tokagentLogger.error(`[bench] Reset error: ${formatUnknownError(err)}`);
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: errorMessage }));
         }
@@ -798,7 +798,7 @@ export async function startBenchmarkServer() {
         res.end(JSON.stringify({ status: "ok", diagnostics }));
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : String(err);
-        elizaLogger.error(
+        tokagentLogger.error(
           `[bench] Diagnostics error: ${formatUnknownError(err)}`,
         );
         res.writeHead(500, { "Content-Type": "application/json" });
@@ -972,7 +972,7 @@ export async function startBenchmarkServer() {
         } catch (err: unknown) {
           const errorMessage = err instanceof Error ? err.message : String(err);
           // Log full detail server-side but never expose stack traces to clients.
-          elizaLogger.error(
+          tokagentLogger.error(
             `[bench] Request error: ${formatUnknownError(err)}`,
           );
           res.writeHead(500, { "Content-Type": "application/json" });
@@ -987,10 +987,10 @@ export async function startBenchmarkServer() {
   });
 
   server.listen(port, () => {
-    elizaLogger.info(
-      `[bench] Eliza benchmark server listening on port ${port}`,
+    tokagentLogger.info(
+      `[bench] Tokagent benchmark server listening on port ${port}`,
     );
-    console.log(`ELIZA_BENCH_READY port=${port}`);
+    console.log(`TOKAGENT_BENCH_READY port=${port}`);
   });
 }
 

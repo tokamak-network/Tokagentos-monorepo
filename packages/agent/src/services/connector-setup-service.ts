@@ -10,21 +10,21 @@
  * so connector plugins don't need to import agent internals.
  */
 
-import { type IAgentRuntime, logger, Service } from "@elizaos/core";
+import { type IAgentRuntime, logger, Service } from "@tokagentos/core";
 import {
   type OwnerContactUpdate,
   setOwnerContact,
 } from "../api/owner-contact-helpers.js";
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
 import { resolveDefaultAgentWorkspaceDir } from "../providers/workspace.js";
 import { registerEscalationChannel } from "./escalation.js";
 
 export type { OwnerContactUpdate };
 
 export interface ConnectorSetupServiceInstance extends Service {
-  /** Load the current Eliza config from disk. */
+  /** Load the current Tokagent config from disk. */
   getConfig(): Record<string, unknown>;
-  /** Save the Eliza config to disk. */
+  /** Save the Tokagent config to disk. */
   persistConfig(config: Record<string, unknown>): void;
   /** Load + return; caller mutates; then persistConfig(). Convenience wrapper. */
   updateConfig(updater: (config: Record<string, unknown>) => void): void;
@@ -57,11 +57,11 @@ export class ConnectorSetupService extends Service {
   }
 
   getConfig(): Record<string, unknown> {
-    return loadElizaConfig() as Record<string, unknown>;
+    return loadTokagentConfig() as Record<string, unknown>;
   }
 
   persistConfig(config: Record<string, unknown>): void {
-    saveElizaConfig(config as Parameters<typeof saveElizaConfig>[0]);
+    saveTokagentConfig(config as Parameters<typeof saveTokagentConfig>[0]);
   }
 
   updateConfig(updater: (config: Record<string, unknown>) => void): void {

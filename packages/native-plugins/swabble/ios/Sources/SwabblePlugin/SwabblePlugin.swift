@@ -94,7 +94,7 @@ private struct GateMatch {
 /// Wake word detection engine. Matches trigger words against speech segments using timing
 /// data to confirm a deliberate pause after the trigger, then extracts the command text.
 /// Supports fuzzy matching via Levenshtein edit distance so that imprecise recognition
-/// (e.g. "melody" for trigger "eliza") still fires.
+/// (e.g. "melody" for trigger "tokagent") still fires.
 private enum WakeGate {
 
     // MARK: Token types
@@ -170,7 +170,7 @@ private enum WakeGate {
     }
 
     /// Find the first trigger word and return everything after it.
-    /// Supports fuzzy matching so "melody" matches trigger "eliza".
+    /// Supports fuzzy matching so "melody" matches trigger "tokagent".
     static func textAfterTrigger(_ text: String, triggers: [String]) -> String {
         let words = text.split(whereSeparator: \.isWhitespace).map(String.init)
         guard !words.isEmpty else { return "" }
@@ -238,7 +238,7 @@ private enum WakeGate {
     // MARK: Fuzzy matching via Levenshtein distance
 
     /// Returns true if two normalized tokens are "close enough" to be considered a match.
-    /// Threshold: ceil(maxLen / 3). e.g. "eliza" (7) ↔ "melody" (6) → threshold 3, distance 3 → match.
+    /// Threshold: ceil(maxLen / 3). e.g. "tokagent" (7) ↔ "melody" (6) → threshold 3, distance 3 → match.
     static func fuzzyTokenMatch(_ a: String, _ b: String) -> Bool {
         if a == b { return true }
         let maxLen = max(a.count, b.count)
@@ -398,7 +398,7 @@ public class SwabblePlugin: CAPPlugin, CAPBridgedPlugin {
         var sampleRate: Double
 
         init(from obj: JSObject) {
-            self.triggers = (obj["triggers"] as? [String]) ?? ["eliza"]
+            self.triggers = (obj["triggers"] as? [String]) ?? ["tokagent"]
             self.minPostTriggerGap = (obj["minPostTriggerGap"] as? Double) ?? 0.45
             self.minCommandLength = (obj["minCommandLength"] as? Int) ?? 1
             self.locale = (obj["locale"] as? String) ?? Locale.current.identifier

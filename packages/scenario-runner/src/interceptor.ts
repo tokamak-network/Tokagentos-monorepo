@@ -14,7 +14,7 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   CapturedAction,
   CapturedApprovalRequest,
@@ -22,7 +22,7 @@ import type {
   CapturedConnectorDispatch,
   CapturedMemoryWrite,
   CapturedStateTransition,
-} from "@elizaos/scenario-schema";
+} from "@tokagentos/scenario-schema";
 
 const INTERCEPTOR_MARKER = Symbol.for("scenario-runner.interceptor-wrapped");
 const RUNTIME_CAPTURE_HOOK = Symbol.for("scenario-runner.capture-hooks");

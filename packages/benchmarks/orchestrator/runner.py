@@ -102,7 +102,7 @@ def _result_subdir(run_root: Path, adapter: BenchmarkAdapter, run_id: str) -> Pa
 
 def _default_env(workspace_root: Path, request: RunRequest) -> dict[str, str]:
     env = dict(os.environ)
-    load_env_file(workspace_root / "eliza" / ".env")
+    load_env_file(workspace_root / "tokagent" / ".env")
     load_env_file(workspace_root / ".env")
     env = dict(os.environ)
     python_bin = str(Path(sys.executable).parent)
@@ -118,7 +118,7 @@ def _default_env(workspace_root: Path, request: RunRequest) -> dict[str, str]:
                 plugin_python_paths.append(str(candidate))
     workspace_python = [
         str(workspace_root),
-        str(workspace_root / "eliza" / "packages" / "python"),
+        str(workspace_root / "tokagent" / "packages" / "python"),
         *plugin_python_paths,
     ]
     existing_pythonpath = env.get("PYTHONPATH", "")
@@ -146,11 +146,11 @@ def _default_env(workspace_root: Path, request: RunRequest) -> dict[str, str]:
 
 def _repo_meta(workspace_root: Path) -> dict[str, str | None]:
     benchmarks_root = workspace_root / "benchmarks"
-    eliza_root = workspace_root / "eliza"
+    tokagent_root = workspace_root / "tokagent"
     return {
         "benchmarks_commit": git_head(benchmarks_root),
-        "eliza_commit": git_head(eliza_root),
-        "eliza_version": safe_version_from_package_json(eliza_root / "package.json"),
+        "tokagent_commit": git_head(tokagent_root),
+        "tokagent_version": safe_version_from_package_json(tokagent_root / "package.json"),
         "benchmarks_version": safe_version_from_package_json(benchmarks_root / "package.json"),
     }
 
@@ -268,8 +268,8 @@ def run_benchmarks(
                     stderr_path="",
                     benchmark_version=repo_meta.get("benchmarks_version"),
                     benchmarks_commit=repo_meta.get("benchmarks_commit"),
-                    eliza_commit=repo_meta.get("eliza_commit"),
-                    eliza_version=repo_meta.get("eliza_version"),
+                    tokagent_commit=repo_meta.get("tokagent_commit"),
+                    tokagent_version=repo_meta.get("tokagent_version"),
                 )
                 update_run_result(
                     conn,
@@ -351,8 +351,8 @@ def run_benchmarks(
                     stderr_path="",
                     benchmark_version=repo_meta.get("benchmarks_version"),
                     benchmarks_commit=repo_meta.get("benchmarks_commit"),
-                    eliza_commit=repo_meta.get("eliza_commit"),
-                    eliza_version=repo_meta.get("eliza_version"),
+                    tokagent_commit=repo_meta.get("tokagent_commit"),
+                    tokagent_version=repo_meta.get("tokagent_version"),
                 )
                 update_run_result(
                     conn,
@@ -434,8 +434,8 @@ def run_benchmarks(
                 stderr_path="",
                 benchmark_version=repo_meta.get("benchmarks_version"),
                 benchmarks_commit=repo_meta.get("benchmarks_commit"),
-                eliza_commit=repo_meta.get("eliza_commit"),
-                eliza_version=repo_meta.get("eliza_version"),
+                tokagent_commit=repo_meta.get("tokagent_commit"),
+                tokagent_version=repo_meta.get("tokagent_version"),
             )
             update_run_result(
                 conn,
@@ -526,8 +526,8 @@ def run_benchmarks(
             stderr_path=str(stderr_path),
             benchmark_version=repo_meta.get("benchmarks_version"),
             benchmarks_commit=repo_meta.get("benchmarks_commit"),
-            eliza_commit=repo_meta.get("eliza_commit"),
-            eliza_version=repo_meta.get("eliza_version"),
+            tokagent_commit=repo_meta.get("tokagent_commit"),
+            tokagent_version=repo_meta.get("tokagent_version"),
         )
 
         started_wall_epoch = time.time()

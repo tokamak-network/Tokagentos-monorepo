@@ -1,16 +1,16 @@
 ---
 title: "Types Reference"
-description: "Complete TypeScript types and interfaces reference for elizaOS"
+description: "Complete TypeScript types and interfaces reference for tokagentOS"
 ---
 
 ## Overview
 
-This page documents the core TypeScript types and interfaces used throughout elizaOS. For usage examples, see the relevant feature documentation.
+This page documents the core TypeScript types and interfaces used throughout tokagentOS. For usage examples, see the relevant feature documentation.
 
 <Tip>
-All types are exported from `@elizaos/core`. Import what you need:
+All types are exported from `@tokagentos/core`. Import what you need:
 ```typescript
-import { Memory, Action, State, UUID } from '@elizaos/core';
+import { Memory, Action, State, UUID } from '@tokagentos/core';
 ```
 </Tip>
 
@@ -43,7 +43,7 @@ interface IStreamExtractor {
 **Example:**
 
 ```typescript
-import { XmlTagExtractor } from "@elizaos/core";
+import { XmlTagExtractor } from "@tokagentos/core";
 
 const extractor = new XmlTagExtractor("response");
 const streamable = extractor.push("<response>Hello");
@@ -522,14 +522,14 @@ interface TeePluginConfig {
 
 ---
 
-## ElizaOS Orchestrator
+## TokagentOS Orchestrator
 
-### IElizaOS
+### ITokagentOS
 
 Multi-agent orchestrator interface:
 
 ```typescript
-interface IElizaOS {
+interface ITokagentOS {
   // Handle single message (sync or async mode)
   handleMessage(
     agentId: UUID | IAgentRuntime,

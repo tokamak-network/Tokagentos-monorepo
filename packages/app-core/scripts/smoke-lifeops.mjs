@@ -15,19 +15,19 @@ export function resolveLifeOpsBaseUrls(
 ) {
   const argvBases = argv.map((value) => value.trim()).filter(Boolean);
   const envLists = [
-    env.ELIZA_LIFEOPS_BASE_URLS,
-    env.ELIZA_LIFEOPS_BASE_URLS,
-    env.ELIZA_DEPLOY_BASE_URLS,
-    env.ELIZA_DEPLOY_BASE_URLS,
+    env.TOKAGENT_LIFEOPS_BASE_URLS,
+    env.TOKAGENT_LIFEOPS_BASE_URLS,
+    env.TOKAGENT_DEPLOY_BASE_URLS,
+    env.TOKAGENT_DEPLOY_BASE_URLS,
   ]
     .flatMap((value) => value?.split(",") ?? [])
     .map((value) => value.trim())
     .filter(Boolean);
   const singleBase =
-    env.ELIZA_LIFEOPS_BASE_URL?.trim() ||
-    env.ELIZA_LIFEOPS_BASE_URL?.trim() ||
-    env.ELIZA_DEPLOY_BASE_URL?.trim() ||
-    env.ELIZA_DEPLOY_BASE_URL?.trim();
+    env.TOKAGENT_LIFEOPS_BASE_URL?.trim() ||
+    env.TOKAGENT_LIFEOPS_BASE_URL?.trim() ||
+    env.TOKAGENT_DEPLOY_BASE_URL?.trim() ||
+    env.TOKAGENT_DEPLOY_BASE_URL?.trim();
   if (singleBase) {
     envLists.push(singleBase);
   }
@@ -36,10 +36,10 @@ export function resolveLifeOpsBaseUrls(
 
 export function resolveLifeOpsAuthHeaders(env = process.env) {
   const token =
-    env.ELIZA_SMOKE_API_TOKEN?.trim() ||
-    env.ELIZA_SMOKE_API_TOKEN?.trim() ||
-    env.ELIZA_API_TOKEN?.trim() ||
-    env.ELIZA_API_TOKEN?.trim();
+    env.TOKAGENT_SMOKE_API_TOKEN?.trim() ||
+    env.TOKAGENT_SMOKE_API_TOKEN?.trim() ||
+    env.TOKAGENT_API_TOKEN?.trim() ||
+    env.TOKAGENT_API_TOKEN?.trim();
   if (!token) {
     return { Accept: "application/json" };
   }
@@ -133,19 +133,19 @@ export async function runSmokeLifeOps(options = {}) {
   const bases = resolveLifeOpsBaseUrls(argv, env);
   if (bases.length === 0) {
     error(
-      "[smoke-lifeops] Missing base URLs. Pass args or set ELIZA_LIFEOPS_BASE_URLS.",
+      "[smoke-lifeops] Missing base URLs. Pass args or set TOKAGENT_LIFEOPS_BASE_URLS.",
     );
     return 2;
   }
 
   const headers = resolveLifeOpsAuthHeaders(env);
   const expectGoogleConnected = parseTruthy(
-    env.ELIZA_LIFEOPS_EXPECT_GOOGLE_CONNECTED ||
-      env.ELIZA_LIFEOPS_EXPECT_GOOGLE_CONNECTED,
+    env.TOKAGENT_LIFEOPS_EXPECT_GOOGLE_CONNECTED ||
+      env.TOKAGENT_LIFEOPS_EXPECT_GOOGLE_CONNECTED,
   );
   const expectGmailTriage = parseTruthy(
-    env.ELIZA_LIFEOPS_EXPECT_GMAIL_TRIAGE ||
-      env.ELIZA_LIFEOPS_EXPECT_GMAIL_TRIAGE,
+    env.TOKAGENT_LIFEOPS_EXPECT_GMAIL_TRIAGE ||
+      env.TOKAGENT_LIFEOPS_EXPECT_GMAIL_TRIAGE,
   );
 
   let hasFailure = false;

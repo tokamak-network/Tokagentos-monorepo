@@ -1,4 +1,4 @@
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 const FETCH_TIMEOUT_MS = 8_000;
 const DEFAULT_API_BASE_PROD = "https://staging.babylon.market";

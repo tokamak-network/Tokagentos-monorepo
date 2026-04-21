@@ -4,7 +4,7 @@
  * Originally this module was a plain module-global pass-through used by
  * the autonomous loop in `ScapeGameService` to stash the raw LLM output
  * before dispatching any Actions. That design had a latent bug: if
- * elizaOS ever routed a human message (or any non-autonomous path) into
+ * tokagentOS ever routed a human message (or any non-autonomous path) into
  * one of our Action handlers, the handler would pull params from the
  * *last* LLM response instead of the current message — leaking stale
  * coordinates, stale slots, stale NPC ids into operator-triggered
@@ -22,13 +22,13 @@
  *     ↳ setCurrentLlmResponse(raw)            ← still useful as a hint
  *     ↳ dispatchFromLoop(parsed)              ← bypasses Actions entirely
  *
- * Action path (operator / elizaOS routing):
+ * Action path (operator / tokagentOS routing):
  *   runtime.processActions(message)
  *     ↳ validate(runtime, message)            ← hasActionTag(message, "WALK_TO")
  *     ↳ handler(runtime, message, …)          ← reads message.content.text
  */
 
-import type { Memory } from "@elizaos/core";
+import type { Memory } from "@tokagentos/core";
 
 let currentLlmResponse = "";
 
@@ -57,7 +57,7 @@ export function resolveActionText(message: Memory | undefined | null): string {
 /**
  * Return true when the given message is plausibly dispatching the named
  * action — i.e. contains `<action>NAME</action>` (case-insensitive). Used
- * by Action `validate()` functions so elizaOS doesn't dispatch arbitrary
+ * by Action `validate()` functions so tokagentOS doesn't dispatch arbitrary
  * plugin actions on arbitrary messages.
  */
 export function hasActionTag(

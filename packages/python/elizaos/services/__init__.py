@@ -1,6 +1,6 @@
-"""Services for elizaOS."""
+"""Services for tokagentOS."""
 
-from elizaos.services.hook_service import (
+from tokagentos.services.hook_service import (
     DEFAULT_HOOK_PRIORITY,
     LEGACY_EVENT_MAP,
     HookEligibilityResult,
@@ -17,14 +17,14 @@ from elizaos.services.hook_service import (
     map_legacy_event,
     map_legacy_events,
 )
-from elizaos.services.message_service import (
+from tokagentos.services.message_service import (
     DefaultMessageService,
     IMessageService,
     MessageProcessingOptions,
     MessageProcessingResult,
     StreamingMessageResult,
 )
-from elizaos.services.trajectories import (
+from tokagentos.services.trajectories import (
     TrajectoriesService,
 )
 

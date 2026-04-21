@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { LifeOpsScheduleInsight } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsScheduleInsight } from "@tokagentos/shared/contracts/lifeops";
 import {
   deriveLocalScheduleObservations,
   mergeScheduleObservations,

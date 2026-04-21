@@ -1,5 +1,5 @@
 import type { ServerResponse } from "node:http";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 
 type MusicTrack = {
   id?: string;

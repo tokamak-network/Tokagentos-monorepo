@@ -56,7 +56,7 @@ export function resolveStewardUiState(args: {
       showFeatures: false,
       title: "Steward vault not in use",
       description:
-        "This runtime is using Eliza Cloud wallet management, not a local Steward vault.",
+        "This runtime is using Tokagent Cloud wallet management, not a local Steward vault.",
     };
   }
 

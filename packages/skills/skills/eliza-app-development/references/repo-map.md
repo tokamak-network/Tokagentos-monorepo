@@ -1,8 +1,8 @@
-# eliza app repo map
+# tokagent app repo map
 
 ## What this repository is
 
-This checkout is an **elizaOS application**: runtime, UI, connectors, and Cloud hooks bundled as the **Eliza** product (CLI `eliza`, user-facing name Eliza). Same stack patterns apply to other eliza apps; this repo is one concrete implementation.
+This checkout is an **tokagentOS application**: runtime, UI, connectors, and Cloud hooks bundled as the **Tokagent** product (CLI `tokagent`, user-facing name Tokagent). Same stack patterns apply to other tokagent apps; this repo is one concrete implementation.
 
 It combines:
 
@@ -10,7 +10,7 @@ It combines:
 - a web dashboard
 - an Electrobun desktop shell
 - connector integrations
-- Eliza Cloud routing, provisioning, and billing hooks
+- Tokagent Cloud routing, provisioning, and billing hooks
 
 ## Main edit targets
 
@@ -27,19 +27,19 @@ Primary app-shell logic.
 
 ### `packages/agent/`
 
-Agent layer on elizaOS: providers, skill discovery and catalog plumbing, runtime compatibility layers, training and testing helpers.
+Agent layer on tokagentOS: providers, skill discovery and catalog plumbing, runtime compatibility layers, training and testing helpers.
 
 ### `apps/app/`
 
 Main React UI and desktop shell: web UI, onboarding, settings, Electrobun native process under `apps/app/electrobun/`.
 
-### `eliza/cloud/`
+### `tokagent/cloud/`
 
-Eliza Cloud product code (git submodule nested under `eliza/`): apps, billing, earnings, auth, containers, domains, cloud-side agent runtime and plugins.
+Tokagent Cloud product code (git submodule nested under `tokagent/`): apps, billing, earnings, auth, containers, domains, cloud-side agent runtime and plugins.
 
-### `eliza/`
+### `tokagent/`
 
-Repo-local upstream elizaOS checkout for linked development. Change this only when the issue is genuinely upstream or the user asks for upstream work.
+Repo-local upstream tokagentOS checkout for linked development. Change this only when the issue is genuinely upstream or the user asks for upstream work.
 
 ## Commands
 
@@ -54,7 +54,7 @@ Useful narrower commands:
 ```bash
 bun run dev
 bun run dev:desktop
-bun run eliza ...
+bun run tokagent ...
 bun run test:e2e
 bun run test:coverage
 ```
@@ -67,4 +67,4 @@ bun run test:coverage
 
 ## Default skill seeding
 
-Shipped skills are bundled in `@elizaos/skills` and are seeded into the state-dir skills folder (e.g. `~/.eliza/skills` when `ELIZA_NAMESPACE=eliza`) by Eliza’s `scripts/ensure-skills.mjs`. They are default agent knowledge, not optional extras.
+Shipped skills are bundled in `@tokagentos/skills` and are seeded into the state-dir skills folder (e.g. `~/.tokagent/skills` when `TOKAGENT_NAMESPACE=tokagent`) by Tokagent’s `scripts/ensure-skills.mjs`. They are default agent knowledge, not optional extras.

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import type { UUID } from "@elizaos/core";
+import type { UUID } from "@tokagentos/core";
 import { BlockRuleReader, BlockRuleWriter } from "../block-rule-service.js";
 import { reconcileBlockRulesOnce } from "../block-rule-reconciler.js";
 import {

@@ -13,8 +13,8 @@ import {
   ModelType,
   parseKeyValueXml,
   type State,
-} from "@elizaos/core";
-import { findKeywordTermMatch } from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/core";
+import { findKeywordTermMatch } from "@tokagentos/shared/validation-keywords";
 import {
   readTaskCompleted,
   readTaskMetadata,

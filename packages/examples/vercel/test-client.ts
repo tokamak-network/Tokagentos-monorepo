@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Test client for elizaOS Vercel Edge Functions
+ * Test client for tokagentOS Vercel Edge Functions
  *
  * Usage:
  *   bun run test-client.ts                              # Test local dev server
@@ -45,7 +45,7 @@ const DEFAULT_ENDPOINT = "http://localhost:3000";
 
 function showHelp(): void {
   console.log(`
-elizaOS Vercel Edge Function Test Client
+tokagentOS Vercel Edge Function Test Client
 
 Usage:
   bun run test-client.ts [options]
@@ -116,7 +116,7 @@ async function isServerAvailable(): Promise<boolean> {
  * Run automated tests
  */
 async function runTests(): Promise<void> {
-  console.log("🧪 Testing elizaOS Vercel Edge Functions\n");
+  console.log("🧪 Testing tokagentOS Vercel Edge Functions\n");
 
   // Check if server is available
   const serverAvailable = await isServerAvailable();
@@ -306,7 +306,7 @@ async function interactiveMode(): Promise<void> {
       });
 
       conversationId = data.conversationId;
-      console.log(`\nEliza: ${data.response}\n`);
+      console.log(`\nTokagent: ${data.response}\n`);
 
       prompt();
     });

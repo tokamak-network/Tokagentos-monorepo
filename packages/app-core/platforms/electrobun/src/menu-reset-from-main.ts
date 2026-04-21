@@ -7,7 +7,7 @@ import { getBrandConfig } from "./brand-config";
  * tests need mocked `fetch` without booting Electrobun. **WHY `pickReachable*`
  * uses `res.ok`:** 4xx/5xx must not count as a valid API base for
  * `POST /api/agent/reset`. **WHY embedded port first in candidates:** external
- * `ELIZA_DESKTOP_API_BASE` often points at a dev server that is down while the
+ * `TOKAGENT_DESKTOP_API_BASE` often points at a dev server that is down while the
  * embedded agent still listens on a dynamic loopback port.
  *
  * Native confirm, `Utils.showNotification`, and `getAgentManager()` stay in

@@ -1,4 +1,4 @@
-"""Long Context Provider for ElizaOS.
+"""Long Context Provider for TokagentOS.
 
 Provides long context data to the agent for context benchmark evaluation.
 """
@@ -6,10 +6,10 @@ Provides long context data to the agent for context benchmark evaluation.
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.types.components import ProviderResult
-    from elizaos.types.memory import Memory
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State
+    from tokagentos.types.components import ProviderResult
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State
 
 
 class LongContextProvider:
@@ -82,7 +82,7 @@ class LongContextProvider:
 
         """
         # Import here to avoid circular imports
-        from elizaos.types.components import ProviderResult
+        from tokagentos.types.components import ProviderResult
 
         if self.chunk_strategy == "full":
             return ProviderResult(
@@ -164,7 +164,7 @@ class BenchmarkContextProvider:
             ProviderResult with context and question.
 
         """
-        from elizaos.types.components import ProviderResult
+        from tokagentos.types.components import ProviderResult
 
         text = f"""<benchmark_context>
 {self._current_context}

@@ -7,7 +7,7 @@ Level 2: Complex task execution (10 scenarios)
 
 from __future__ import annotations
 
-from elizaos_adhdbench.types import (
+from tokagentos_adhdbench.types import (
     ExpectedOutcome,
     OutcomeType,
     Scenario,

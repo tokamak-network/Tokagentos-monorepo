@@ -1,6 +1,6 @@
 /**
  * LifeOps widgets module — side-effect import registers:
- *   1. LifeOps client methods on ElizaClient (via ../api/client-lifeops)
+ *   1. LifeOps client methods on TokagentClient (via ../api/client-lifeops)
  *   2. LifeOps widget components in the app-core widget registry
  *   3. LifeOps sidebar widget declarations for the "chat-sidebar" slot
  *
@@ -8,12 +8,12 @@
  *   import "@elizaos/app-lifeops/widgets";
  */
 
-// Side-effect: augment ElizaClient with LifeOps methods.
+// Side-effect: augment TokagentClient with LifeOps methods.
 import "../api/client-lifeops.js";
 import {
   registerBuiltinWidgetDeclarations,
   registerBuiltinWidgets,
-} from "@elizaos/app-core/widgets";
+} from "@tokagentos/app-core/widgets";
 import {
   LifeOpsOverviewSidebarWidget,
   LIFEOPS_OVERVIEW_WIDGETS,

@@ -1,11 +1,11 @@
 /**
- * elizaOS runtime entry point for Eliza.
+ * tokagentOS runtime entry point for Tokagent.
  *
- * Starts the elizaOS agent runtime with Eliza's plugin configuration.
- * Can be run directly via: node --import tsx src/runtime/eliza.ts
- * Or via the CLI: eliza start
+ * Starts the tokagentOS agent runtime with Tokagent's plugin configuration.
+ * Can be run directly via: node --import tsx src/runtime/tokagent.ts
+ * Or via the CLI: tokagent start
  *
- * @module eliza
+ * @module tokagent
  */
 import crypto from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, unlinkSync } from "node:fs";
@@ -25,7 +25,7 @@ import { resolvePlugins } from "./plugin-resolver.js";
 import {
   CUSTOM_PLUGINS_DIRNAME as CUSTOM_RUNTIME_PLUGINS_DIRNAME,
   type ResolvedPlugin as RuntimeResolvedPlugin,
-  STATIC_ELIZA_PLUGINS,
+  STATIC_TOKAGENT_PLUGINS,
 } from "./plugin-types.js";
 
 export {
@@ -44,9 +44,9 @@ export {
   type PluginModuleShape,
   type ResolvedPlugin,
   repairBrokenInstallRecord,
-  resolveElizaPluginImportSpecifier,
+  resolveTokagentPluginImportSpecifier,
   resolvePackageEntry,
-  STATIC_ELIZA_PLUGINS,
+  STATIC_TOKAGENT_PLUGINS,
   scanDropInPlugins,
   shouldIgnoreMissingPluginExport,
 } from "./plugin-types.js";
@@ -74,32 +74,32 @@ import {
   stringToUuid,
   type TargetInfo,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import * as pluginAgentSkills from "@elizaos/plugin-agent-skills";
 import * as pluginAnthropic from "@elizaos/plugin-anthropic";
 import * as pluginLocalEmbedding from "@elizaos/plugin-local-embedding";
 import * as pluginPdf from "@elizaos/plugin-pdf";
 import * as pluginSql from "@elizaos/plugin-sql";
 import {
-  isElizaSettingsDebugEnabled,
+  isTokagentSettingsDebugEnabled,
   settingsDebugCloudSummary,
-} from "@elizaos/shared";
-import { resolveElizaCloudTopology } from "@elizaos/shared/contracts";
+} from "@tokagentos/shared";
+import { resolveTokagentCloudTopology } from "@tokagentos/shared/contracts";
 import {
   getOnboardingProviderOption,
   migrateLegacyRuntimeConfig,
   normalizeOnboardingProviderId,
   resolveDeploymentTargetInConfig,
   resolveServiceRoutingInConfig,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import {
   getDefaultStylePreset,
   normalizeCharacterLanguage,
   resolveStylePresetByAvatarIndex,
   resolveStylePresetById,
   resolveStylePresetByName,
-} from "@elizaos/shared/onboarding-presets";
-import { resolveServerOnlyPort } from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/onboarding-presets";
+import { resolveServerOnlyPort } from "@tokagentos/shared/runtime-env";
 import {
   debugLogResolvedContext,
   validateRuntimeContext,
@@ -107,8 +107,8 @@ import {
 import { getWalletAddresses, syncSolanaPublicKeyEnv } from "../api/wallet.js";
 import {
   configFileExists,
-  type ElizaConfig,
-  loadElizaConfig,
+  type TokagentConfig,
+  loadTokagentConfig,
 } from "../config/config.js";
 import {
   CONNECTOR_ENV_MAP,
@@ -134,7 +134,7 @@ import {
 import { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS } from "./core-plugins.js";
 import { seedBundledKnowledge } from "./default-knowledge.js";
 import discordLocalPlugin from "./discord-local-plugin.js";
-import { createElizaPlugin } from "./eliza-plugin.js";
+import { createTokagentPlugin } from "./tokagent-plugin.js";
 import { detectEmbeddingPreset } from "./embedding-presets.js";
 import {
   runtimeKnowledgeEnabled,
@@ -189,14 +189,14 @@ try {
 } catch {
   pluginCron = null;
 }
-// Keep plugin-elizacloud behind a guarded runtime require as well. Some
+// Keep plugin-tokagentcloud behind a guarded runtime require as well. Some
 // published alpha builds advertise dist/node/index.node.js but do not ship
 // that ESM entry, which breaks CLI bootstrap in published-only CI.
-let pluginElizacloud: unknown = null;
+let pluginTokagentcloud: unknown = null;
 try {
-  pluginElizacloud = require("@elizaos/plugin-elizacloud");
+  pluginTokagentcloud = require("@elizaos/plugin-tokagentcloud");
 } catch {
-  pluginElizacloud = null;
+  pluginTokagentcloud = null;
 }
 // Keep plugin-ollama behind a guarded runtime require as well. Some published
 // alpha builds advertise dist/node/index.node.js but do not ship that ESM
@@ -216,7 +216,7 @@ try {
 } catch {
   pluginOpenai = null;
 }
-// plugin-personality is now built into @elizaos/core advanced-capabilities.
+// plugin-personality is now built into @tokagentos/core advanced-capabilities.
 // Enabled when advancedCapabilities: true.
 
 type SignalShutdownContext = {
@@ -250,7 +250,7 @@ function registerSignalShutdownHandlers(context: SignalShutdownContext): void {
       try {
         await current?.beforeShutdown?.();
       } catch (err) {
-        logger.warn(`[eliza] Pre-shutdown cleanup error: ${formatError(err)}`);
+        logger.warn(`[tokagent] Pre-shutdown cleanup error: ${formatError(err)}`);
       }
 
       try {
@@ -258,15 +258,15 @@ function registerSignalShutdownHandlers(context: SignalShutdownContext): void {
         if (sandboxManager) {
           try {
             await sandboxManager.stop();
-            logger.info("[eliza] Sandbox manager stopped");
+            logger.info("[tokagent] Sandbox manager stopped");
           } catch (err) {
             logger.warn(
-              `[eliza] Sandbox stop error: ${err instanceof Error ? err.message : String(err)}`,
+              `[tokagent] Sandbox stop error: ${err instanceof Error ? err.message : String(err)}`,
             );
           }
         }
       } catch (err) {
-        logger.warn(`[eliza] Sandbox shutdown error: ${formatError(err)}`);
+        logger.warn(`[tokagent] Sandbox shutdown error: ${formatError(err)}`);
       }
 
       try {
@@ -275,7 +275,7 @@ function registerSignalShutdownHandlers(context: SignalShutdownContext): void {
           await shutdownRuntime(runtime, "signal shutdown");
         }
       } catch (err) {
-        logger.warn(`[eliza] Error during shutdown: ${formatError(err)}`);
+        logger.warn(`[tokagent] Error during shutdown: ${formatError(err)}`);
       }
 
       process.exit(0);
@@ -297,9 +297,9 @@ function registerSignalShutdownHandlers(context: SignalShutdownContext): void {
  * ship a smaller baseline bundle. Those plugins fall through to dynamic
  * import() and can be installed later via the plugin installer.
  */
-// Populate the shared STATIC_ELIZA_PLUGINS registry (defined in plugin-types.ts)
+// Populate the shared STATIC_TOKAGENT_PLUGINS registry (defined in plugin-types.ts)
 // so plugin-resolver.ts can read it without importing this module directly.
-Object.assign(STATIC_ELIZA_PLUGINS, {
+Object.assign(STATIC_TOKAGENT_PLUGINS, {
   "@elizaos/plugin-sql": pluginSql,
   "@elizaos/plugin-local-embedding": pluginLocalEmbedding,
   // secrets-manager: now built-in core capability (ENABLE_SECRETS_MANAGER)
@@ -315,8 +315,8 @@ Object.assign(STATIC_ELIZA_PLUGINS, {
   ...(pluginOpenai ? { "@elizaos/plugin-openai": pluginOpenai } : {}),
   "@elizaos/plugin-anthropic": pluginAnthropic,
   ...(pluginOllama ? { "@elizaos/plugin-ollama": pluginOllama } : {}),
-  ...(pluginElizacloud
-    ? { "@elizaos/plugin-elizacloud": pluginElizacloud }
+  ...(pluginTokagentcloud
+    ? { "@elizaos/plugin-tokagentcloud": pluginTokagentcloud }
     : {}),
   // trust: now built-in core capability (ENABLE_TRUST)
   "@elizaos/app-lifeops": pluginAppLifeops,
@@ -326,15 +326,15 @@ Object.assign(STATIC_ELIZA_PLUGINS, {
 });
 
 // NODE_PATH so dynamic plugin imports (e.g. @elizaos/plugin-*) resolve.
-// WHY: When eliza is loaded from dist/ or by a test runner, Node's resolution does not
+// WHY: When tokagent is loaded from dist/ or by a test runner, Node's resolution does not
 // search repo root node_modules; import("@elizaos/plugin-*") then fails. We prepend
 // repo root node_modules only if not already in NODE_PATH (run-node.mjs may have set it)
 // to avoid duplicate entries; _initPaths() makes Node re-read NODE_PATH. See docs/plugin-resolution-and-node-path.md.
 // We walk up from this file to find node_modules — we do not assume a fixed depth
 // (e.g. two levels for src/runtime/ or dist/runtime/) so we still work if build
 // output structure changes (e.g. flat dist). First directory with node_modules wins.
-const _elizaDir = path.dirname(fileURLToPath(import.meta.url));
-let _dir = _elizaDir;
+const _tokagentDir = path.dirname(fileURLToPath(import.meta.url));
+let _dir = _tokagentDir;
 let _rootModules: string | null = null;
 while (_dir !== path.dirname(_dir)) {
   const candidate = path.join(_dir, "node_modules");
@@ -361,7 +361,7 @@ if (_rootModules) {
 // ---------------------------------------------------------------------------
 
 /**
- * Temporary local compatibility shim for `@elizaos/core` not exporting
+ * Temporary local compatibility shim for `@tokagentos/core` not exporting
  * `SandboxFetchAuditEvent` on the current dependency line in this repo.
  * It preserves the runtime shape used by `sandboxAuditHandler`:
  * - `direction` and `url` are required
@@ -376,7 +376,7 @@ type SandboxFetchAuditEvent = {
 
 export function configureLocalEmbeddingPlugin(
   _plugin: Plugin,
-  config?: ElizaConfig,
+  config?: TokagentConfig,
 ): void {
   const detectedPreset = detectEmbeddingPreset();
   const SQL_COMPATIBLE_EMBEDDING_DIMENSIONS = new Set([
@@ -435,7 +435,7 @@ export function configureLocalEmbeddingPlugin(
     process.env[key] = value;
   };
 
-  // Keep plugin-local-embedding aligned with Eliza's hardware-adaptive preset
+  // Keep plugin-local-embedding aligned with Tokagent's hardware-adaptive preset
   // selection. Hard-coding the standard preset here forces slower first-run
   // downloads on Windows and low-spec machines.
   setEnvIfMissing(
@@ -475,9 +475,9 @@ export function configureLocalEmbeddingPlugin(
   );
 
   // Set default models directory if not present
-  setEnvIfMissing("MODELS_DIR", path.join(os.homedir(), ".eliza", "models"));
+  setEnvIfMissing("MODELS_DIR", path.join(os.homedir(), ".tokagent", "models"));
 
-  // Normalize Google AI API key aliases — the elizaOS plugin and @google/genai
+  // Normalize Google AI API key aliases — the tokagentOS plugin and @google/genai
   // SDK expect different env var names. Canonicalize to the long form that
   // @elizaos/plugin-google-genai reads via runtime.getSetting(). Users can set
   // any of: GEMINI_API_KEY, GOOGLE_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY.
@@ -514,7 +514,7 @@ export function configureLocalEmbeddingPlugin(
   );
 
   logger.info(
-    `[eliza] Configured local embedding env: ${process.env.LOCAL_EMBEDDING_MODEL} (repo: ${process.env.LOCAL_EMBEDDING_MODEL_REPO ?? "auto"}, dims: ${process.env.LOCAL_EMBEDDING_DIMENSIONS ?? "auto"}, ctx: ${process.env.LOCAL_EMBEDDING_CONTEXT_SIZE ?? "auto"}, GPU: ${process.env.LOCAL_EMBEDDING_GPU_LAYERS}, mmap: ${process.env.LOCAL_EMBEDDING_USE_MMAP})`,
+    `[tokagent] Configured local embedding env: ${process.env.LOCAL_EMBEDDING_MODEL} (repo: ${process.env.LOCAL_EMBEDDING_MODEL_REPO ?? "auto"}, dims: ${process.env.LOCAL_EMBEDDING_DIMENSIONS ?? "auto"}, ctx: ${process.env.LOCAL_EMBEDDING_CONTEXT_SIZE ?? "auto"}, GPU: ${process.env.LOCAL_EMBEDDING_GPU_LAYERS}, mmap: ${process.env.LOCAL_EMBEDDING_USE_MMAP})`,
   );
 }
 
@@ -537,7 +537,7 @@ type MutableConfigEnv = Record<string, unknown> & {
   vars?: Record<string, unknown>;
 };
 
-function getMutableConfigEnv(config: ElizaConfig): MutableConfigEnv | null {
+function getMutableConfigEnv(config: TokagentConfig): MutableConfigEnv | null {
   if (
     !config.env ||
     typeof config.env !== "object" ||
@@ -562,7 +562,7 @@ function getMutableConfigEnvVars(
 }
 
 function readConfigEnvValue(
-  config: ElizaConfig,
+  config: TokagentConfig,
   key: string,
 ): string | undefined {
   const configEnv = getMutableConfigEnv(config);
@@ -572,7 +572,7 @@ function readConfigEnvValue(
 }
 
 function readEffectiveEnvValue(
-  config: ElizaConfig,
+  config: TokagentConfig,
   key: string,
   env: NodeJS.ProcessEnv = process.env,
 ): string | undefined {
@@ -580,7 +580,7 @@ function readEffectiveEnvValue(
 }
 
 function setConfigEnvValue(
-  config: ElizaConfig,
+  config: TokagentConfig,
   key: string,
   value: string,
 ): void {
@@ -601,7 +601,7 @@ function setConfigEnvValue(
   configEnv[key] = value;
 }
 
-function deleteConfigEnvValue(config: ElizaConfig, key: string): void {
+function deleteConfigEnvValue(config: TokagentConfig, key: string): void {
   const configEnv = getMutableConfigEnv(config);
   if (!configEnv) return;
 
@@ -652,10 +652,10 @@ function isLikelyOpenAiTextModel(value: string | undefined): boolean {
  */
 /** @internal Exported for testing. */
 export function normalizeOpenAiCompatibleProviderConfig(
-  config: ElizaConfig,
+  config: TokagentConfig,
   env: NodeJS.ProcessEnv = process.env,
 ): boolean {
-  const cloudInferenceEnabled = resolveElizaCloudTopology(
+  const cloudInferenceEnabled = resolveTokagentCloudTopology(
     config as Record<string, unknown>,
   ).services.inference;
   if (cloudInferenceEnabled) {
@@ -745,7 +745,7 @@ export function normalizeOpenAiCompatibleProviderConfig(
   }
 
   logger.warn(
-    "[eliza] Detected Groq routed through OPENAI_BASE_URL; normalizing runtime settings to use @elizaos/plugin-groq",
+    "[tokagent] Detected Groq routed through OPENAI_BASE_URL; normalizing runtime settings to use @elizaos/plugin-groq",
   );
 
   return true;
@@ -781,7 +781,7 @@ export async function shutdownRuntime(
     await runtime.stop();
   } catch (err) {
     firstError = err;
-    logger.warn(`[eliza] ${context}: runtime stop failed: ${formatError(err)}`);
+    logger.warn(`[tokagent] ${context}: runtime stop failed: ${formatError(err)}`);
   }
 
   if (adapter && typeof adapter.close === "function") {
@@ -792,7 +792,7 @@ export async function shutdownRuntime(
         firstError = err;
       }
       logger.warn(
-        `[eliza] ${context}: database adapter close failed: ${formatError(err)}`,
+        `[tokagent] ${context}: database adapter close failed: ${formatError(err)}`,
       );
     }
   }
@@ -807,7 +807,7 @@ export async function shutdownRuntime(
  *
  * When multiple plugins define an action with the same `name`, only the first
  * occurrence is kept.  This prevents "Action already registered" warnings from
- * elizaOS core.  The function mutates each plugin's `actions` array in-place.
+ * tokagentOS core.  The function mutates each plugin's `actions` array in-place.
  */
 export function deduplicatePluginActions(plugins: Plugin[]): void {
   const seen = new Set<string>();
@@ -816,7 +816,7 @@ export function deduplicatePluginActions(plugins: Plugin[]): void {
       plugin.actions = plugin.actions.filter((action) => {
         if (seen.has(action.name)) {
           logger.debug(
-            `[eliza] Skipping duplicate action "${action.name}" from plugin "${plugin.name}"`,
+            `[tokagent] Skipping duplicate action "${action.name}" from plugin "${plugin.name}"`,
           );
           return false;
         }
@@ -916,12 +916,12 @@ async function waitForTrajectoriesService(
     ]);
     if (timedOut) {
       logger.debug(
-        `[eliza] trajectories still ${registrationStatus} after ${timeoutMs}ms (${context})`,
+        `[tokagent] trajectories still ${registrationStatus} after ${timeoutMs}ms (${context})`,
       );
     }
   } catch (err) {
     logger.debug(
-      `[eliza] trajectories registration failed while waiting (${context}): ${formatError(err)}`,
+      `[tokagent] trajectories registration failed while waiting (${context}): ${formatError(err)}`,
     );
   } finally {
     if (timeoutHandle) clearTimeout(timeoutHandle);
@@ -933,7 +933,7 @@ function ensureTrajectoryLoggerEnabled(
   context: string,
 ): void {
   if (!runtimeTrajectoriesEnabled(runtime)) {
-    logger.info(`[eliza] Native trajectories disabled (${context})`);
+    logger.info(`[tokagent] Native trajectories disabled (${context})`);
     return;
   }
 
@@ -944,7 +944,7 @@ function ensureTrajectoryLoggerEnabled(
 
   if (!trajectoryLogger) {
     logger.warn(
-      `[eliza] trajectories service unavailable (${context}); trajectory capture disabled`,
+      `[tokagent] trajectories service unavailable (${context}); trajectory capture disabled`,
     );
     return;
   }
@@ -960,7 +960,7 @@ function ensureTrajectoryLoggerEnabled(
   ) {
     trajectoryLogger.setEnabled(shouldEnable);
     logger.info(
-      `[eliza] trajectories defaulted ${shouldEnable ? "on" : "off"} (${context})`,
+      `[tokagent] trajectories defaulted ${shouldEnable ? "on" : "off"} (${context})`,
     );
   }
 }
@@ -976,7 +976,7 @@ async function installPromptOptimizationLayer(
     installPromptOptimizations(runtime);
   } catch (err) {
     logger.warn(
-      `[eliza] Failed to install prompt optimizations (${context}): ${err instanceof Error ? err.message : err}`,
+      `[tokagent] Failed to install prompt optimizations (${context}): ${err instanceof Error ? err.message : err}`,
     );
   }
 }
@@ -995,11 +995,11 @@ async function prepareRuntimeForTrajectoryCapture(
 // ---------------------------------------------------------------------------
 
 /**
- * Maps Eliza channel config fields to the environment variable names
- * that elizaOS plugins expect.
+ * Maps Tokagent channel config fields to the environment variable names
+ * that tokagentOS plugins expect.
  *
- * Eliza stores channel credentials under `config.channels.<name>.<field>`,
- * while elizaOS plugins read them from process.env.
+ * Tokagent stores channel credentials under `config.channels.<name>.<field>`,
+ * while tokagentOS plugins read them from process.env.
  */
 const CHANNEL_ENV_MAP = CONNECTOR_ENV_MAP;
 
@@ -1051,23 +1051,23 @@ export function isEnvKeyAllowedForForwarding(key: string): boolean {
     return false;
   if (/(ACCESS_TOKEN|REFRESH_TOKEN|SESSION_TOKEN|AUTH_TOKEN)$/i.test(key))
     return false;
-  // Block elizaCloud connection keys — these must only come from config.cloud
+  // Block tokagentCloud connection keys — these must only come from config.cloud
   // via applyCloudConfigToEnv(). Forwarding them from config.env.vars into
   // runtime.settings would let a stale env-var shadow the live cloud key that
   // the app sets when the user connects through the UI.
   if (
-    upper === "ELIZAOS_CLOUD_API_KEY" ||
-    upper === "ELIZAOS_CLOUD_ENABLED" ||
-    upper === "ELIZAOS_CLOUD_BASE_URL" ||
-    upper === "ELIZAOS_CLOUD_NANO_MODEL" ||
-    upper === "ELIZAOS_CLOUD_MEDIUM_MODEL" ||
-    upper === "ELIZAOS_CLOUD_SMALL_MODEL" ||
-    upper === "ELIZAOS_CLOUD_LARGE_MODEL" ||
-    upper === "ELIZAOS_CLOUD_MEGA_MODEL" ||
-    upper === "ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL" ||
-    upper === "ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL" ||
-    upper === "ELIZAOS_CLOUD_ACTION_PLANNER_MODEL" ||
-    upper === "ELIZAOS_CLOUD_PLANNER_MODEL"
+    upper === "TOKAGENTOS_CLOUD_API_KEY" ||
+    upper === "TOKAGENTOS_CLOUD_ENABLED" ||
+    upper === "TOKAGENTOS_CLOUD_BASE_URL" ||
+    upper === "TOKAGENTOS_CLOUD_NANO_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_MEDIUM_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_SMALL_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_LARGE_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_MEGA_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_PLANNER_MODEL"
   )
     return false;
   return true;
@@ -1088,26 +1088,26 @@ function assertPersistentDatabaseRequired(
     normalized === "on"
   ) {
     throw new Error(
-      `Eliza requires persistent database storage and does not permit ALLOW_NO_DATABASE (agent ${runtime.agentId}). Remove ALLOW_NO_DATABASE from config/env and use @elizaos/plugin-sql.`,
+      `Tokagent requires persistent database storage and does not permit ALLOW_NO_DATABASE (agent ${runtime.agentId}). Remove ALLOW_NO_DATABASE from config/env and use @elizaos/plugin-sql.`,
     );
   }
 }
 
-function isElizaCloudManagedProcessEnvKey(key: string): boolean {
+function isTokagentCloudManagedProcessEnvKey(key: string): boolean {
   const upper = key.toUpperCase();
   return (
-    upper === "ELIZAOS_CLOUD_API_KEY" ||
-    upper === "ELIZAOS_CLOUD_ENABLED" ||
-    upper === "ELIZAOS_CLOUD_BASE_URL" ||
-    upper === "ELIZAOS_CLOUD_NANO_MODEL" ||
-    upper === "ELIZAOS_CLOUD_MEDIUM_MODEL" ||
-    upper === "ELIZAOS_CLOUD_SMALL_MODEL" ||
-    upper === "ELIZAOS_CLOUD_LARGE_MODEL" ||
-    upper === "ELIZAOS_CLOUD_MEGA_MODEL" ||
-    upper === "ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL" ||
-    upper === "ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL" ||
-    upper === "ELIZAOS_CLOUD_ACTION_PLANNER_MODEL" ||
-    upper === "ELIZAOS_CLOUD_PLANNER_MODEL"
+    upper === "TOKAGENTOS_CLOUD_API_KEY" ||
+    upper === "TOKAGENTOS_CLOUD_ENABLED" ||
+    upper === "TOKAGENTOS_CLOUD_BASE_URL" ||
+    upper === "TOKAGENTOS_CLOUD_NANO_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_MEDIUM_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_SMALL_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_LARGE_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_MEGA_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL" ||
+    upper === "TOKAGENTOS_CLOUD_PLANNER_MODEL"
   );
 }
 
@@ -1119,11 +1119,11 @@ function isElizaCloudManagedProcessEnvKey(key: string): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * Propagate channel credentials from Eliza config into process.env so
- * that elizaOS plugins can find them.
+ * Propagate channel credentials from Tokagent config into process.env so
+ * that tokagentOS plugins can find them.
  */
 /** @internal Exported for testing. */
-export function applyConnectorSecretsToEnv(config: ElizaConfig): void {
+export function applyConnectorSecretsToEnv(config: TokagentConfig): void {
   // Prefer config.connectors, fall back to config.channels for backward compatibility
   const connectors =
     config.connectors ?? (config as Record<string, unknown>).channels ?? {};
@@ -1232,7 +1232,7 @@ export async function autoResolveDiscordAppId(): Promise<void> {
 
     if (!res.ok) {
       logger.warn(
-        `[eliza] Failed to auto-resolve Discord Application ID: ${res.status}`,
+        `[tokagent] Failed to auto-resolve Discord Application ID: ${res.status}`,
       );
       return;
     }
@@ -1241,10 +1241,10 @@ export async function autoResolveDiscordAppId(): Promise<void> {
     if (!app.id) return;
 
     process.env.DISCORD_APPLICATION_ID = app.id;
-    logger.info(`[eliza] Auto-resolved Discord Application ID: ${app.id}`);
+    logger.info(`[tokagent] Auto-resolved Discord Application ID: ${app.id}`);
   } catch (err) {
     logger.warn(
-      `[eliza] Could not auto-resolve Discord Application ID: ${err}`,
+      `[tokagent] Could not auto-resolve Discord Application ID: ${err}`,
     );
   }
 }
@@ -1266,12 +1266,12 @@ export async function autoFetchCloudGithubToken(
   if (process.env.GITHUB_TOKEN || process.env.GITHUB_PAT) return;
 
   // Need cloud credentials and an agent ID
-  const cloudApiKey = process.env.ELIZAOS_CLOUD_API_KEY?.trim();
+  const cloudApiKey = process.env.TOKAGENTOS_CLOUD_API_KEY?.trim();
   const cloudBaseUrl =
-    process.env.ELIZAOS_CLOUD_BASE_URL?.trim() || "https://api.elizacloud.ai";
+    process.env.TOKAGENTOS_CLOUD_BASE_URL?.trim() || "https://api.tokagentcloud.ai";
   if (!cloudApiKey || !agentId) return;
 
-  const managedNs = process.env.ELIZA_CLOUD_MANAGED_AGENTS_API_SEGMENT?.trim();
+  const managedNs = process.env.TOKAGENT_CLOUD_MANAGED_AGENTS_API_SEGMENT?.trim();
   if (!managedNs) return;
 
   try {
@@ -1288,7 +1288,7 @@ export async function autoFetchCloudGithubToken(
       // 404 = no GitHub connection for this agent, which is fine
       if (res.status !== 404) {
         logger.warn(
-          `[eliza] Failed to fetch cloud GitHub token: ${res.status}`,
+          `[tokagent] Failed to fetch cloud GitHub token: ${res.status}`,
         );
       }
       return;
@@ -1302,29 +1302,29 @@ export async function autoFetchCloudGithubToken(
 
     process.env.GITHUB_TOKEN = body.data.accessToken;
     logger.info(
-      `[eliza] Fetched GitHub token from cloud for @${body.data.githubUsername || "unknown"}`,
+      `[tokagent] Fetched GitHub token from cloud for @${body.data.githubUsername || "unknown"}`,
     );
   } catch (err) {
-    logger.warn(`[eliza] Could not fetch cloud GitHub token: ${err}`);
+    logger.warn(`[tokagent] Could not fetch cloud GitHub token: ${err}`);
   }
 }
 
 /**
- * Propagate cloud config from Eliza config into process.env so the
- * ElizaCloud plugin can discover settings at startup.
+ * Propagate cloud config from Tokagent config into process.env so the
+ * TokagentCloud plugin can discover settings at startup.
  */
 /** @internal Exported for testing. */
-export function applyCloudConfigToEnv(config: ElizaConfig): void {
+export function applyCloudConfigToEnv(config: TokagentConfig): void {
   migrateLegacyRuntimeConfig(config as Record<string, unknown>);
   const cloud = config.cloud;
 
-  const isCloudContainer = process.env.ELIZA_CLOUD_PROVISIONED === "1";
+  const isCloudContainer = process.env.TOKAGENT_CLOUD_PROVISIONED === "1";
   if (!cloud && !isCloudContainer) return;
-  const topology = resolveElizaCloudTopology(config as Record<string, unknown>);
+  const topology = resolveTokagentCloudTopology(config as Record<string, unknown>);
 
   // Cloud inference is selected from the canonical onboarding connection, not
   // just from raw cloud flags. This keeps linked cloud auth from re-enabling
-  // Eliza Cloud after the user has switched to a local or remote provider.
+  // Tokagent Cloud after the user has switched to a local or remote provider.
   const effectivelyEnabled = topology.services.inference || isCloudContainer;
   const shouldLoadCloudPlugin = topology.shouldLoadPlugin || isCloudContainer;
 
@@ -1336,65 +1336,65 @@ export function applyCloudConfigToEnv(config: ElizaConfig): void {
     }
   };
 
-  if (isElizaSettingsDebugEnabled()) {
+  if (isTokagentSettingsDebugEnabled()) {
     const c = (cloud ?? {}) as Record<string, unknown>;
     logger.debug(
-      `[eliza][settings][runtime] applyCloudConfigToEnv inference=${effectivelyEnabled} shouldLoadPlugin=${shouldLoadCloudPlugin} isCloudContainer=${isCloudContainer} cloud=${JSON.stringify(settingsDebugCloudSummary(c))}`,
+      `[tokagent][settings][runtime] applyCloudConfigToEnv inference=${effectivelyEnabled} shouldLoadPlugin=${shouldLoadCloudPlugin} isCloudContainer=${isCloudContainer} cloud=${JSON.stringify(settingsDebugCloudSummary(c))}`,
     );
   }
 
-  setCloudUsageEnv("ELIZAOS_CLOUD_USE_INFERENCE", effectivelyEnabled);
+  setCloudUsageEnv("TOKAGENTOS_CLOUD_USE_INFERENCE", effectivelyEnabled);
   setCloudUsageEnv(
-    "ELIZAOS_CLOUD_USE_TTS",
+    "TOKAGENTOS_CLOUD_USE_TTS",
     topology.services.tts || isCloudContainer,
   );
-  setCloudUsageEnv("ELIZAOS_CLOUD_USE_MEDIA", topology.services.media);
+  setCloudUsageEnv("TOKAGENTOS_CLOUD_USE_MEDIA", topology.services.media);
   setCloudUsageEnv(
-    "ELIZAOS_CLOUD_USE_EMBEDDINGS",
+    "TOKAGENTOS_CLOUD_USE_EMBEDDINGS",
     topology.services.embeddings,
   );
-  setCloudUsageEnv("ELIZAOS_CLOUD_USE_RPC", topology.services.rpc);
+  setCloudUsageEnv("TOKAGENTOS_CLOUD_USE_RPC", topology.services.rpc);
 
   if (effectivelyEnabled) {
-    process.env.ELIZAOS_CLOUD_ENABLED = "true";
+    process.env.TOKAGENTOS_CLOUD_ENABLED = "true";
   } else {
-    delete process.env.ELIZAOS_CLOUD_ENABLED;
+    delete process.env.TOKAGENTOS_CLOUD_ENABLED;
   }
 
   if (shouldLoadCloudPlugin) {
     logger.info(
-      `[eliza] Cloud config: inference=${topology.services.inference}, runtime=${topology.runtime}, hasApiKey=${Boolean(cloud?.apiKey || process.env.ELIZAOS_CLOUD_API_KEY)}, baseUrl=${cloud?.baseUrl ?? "(default)"}, isCloudContainer=${isCloudContainer}`,
+      `[tokagent] Cloud config: inference=${topology.services.inference}, runtime=${topology.runtime}, hasApiKey=${Boolean(cloud?.apiKey || process.env.TOKAGENTOS_CLOUD_API_KEY)}, baseUrl=${cloud?.baseUrl ?? "(default)"}, isCloudContainer=${isCloudContainer}`,
     );
     // Only propagate the API key when cloud is enabled AND it is a real
     // credential — never set the literal "[REDACTED]" placeholder (which can
     // leak into the config via UI round-trips through the redacted GET → PUT
     // cycle). WHY: when enabled is false (BYOK / disconnected), leaving the key
-    // in process.env still auto-loads @elizaos/plugin-elizacloud and steals
+    // in process.env still auto-loads @elizaos/plugin-tokagentcloud and steals
     // TEXT_LARGE even if the JSON says cloud is off.
     const isRealApiKey =
       cloud?.apiKey && cloud.apiKey.trim().toUpperCase() !== "[REDACTED]";
     if (isRealApiKey) {
-      process.env.ELIZAOS_CLOUD_API_KEY = cloud.apiKey;
+      process.env.TOKAGENTOS_CLOUD_API_KEY = cloud.apiKey;
     } else if (!isCloudContainer) {
-      delete process.env.ELIZAOS_CLOUD_API_KEY;
+      delete process.env.TOKAGENTOS_CLOUD_API_KEY;
     }
     if (cloud?.baseUrl) {
-      process.env.ELIZAOS_CLOUD_BASE_URL = cloud.baseUrl;
+      process.env.TOKAGENTOS_CLOUD_BASE_URL = cloud.baseUrl;
     } else if (!isCloudContainer) {
-      delete process.env.ELIZAOS_CLOUD_BASE_URL;
+      delete process.env.TOKAGENTOS_CLOUD_BASE_URL;
     }
   } else {
-    delete process.env.ELIZAOS_CLOUD_NANO_MODEL;
-    delete process.env.ELIZAOS_CLOUD_MEDIUM_MODEL;
-    delete process.env.ELIZAOS_CLOUD_SMALL_MODEL;
-    delete process.env.ELIZAOS_CLOUD_LARGE_MODEL;
-    delete process.env.ELIZAOS_CLOUD_MEGA_MODEL;
-    delete process.env.ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL;
-    delete process.env.ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL;
-    delete process.env.ELIZAOS_CLOUD_ACTION_PLANNER_MODEL;
-    delete process.env.ELIZAOS_CLOUD_PLANNER_MODEL;
-    delete process.env.ELIZAOS_CLOUD_API_KEY;
-    delete process.env.ELIZAOS_CLOUD_BASE_URL;
+    delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_API_KEY;
+    delete process.env.TOKAGENTOS_CLOUD_BASE_URL;
   }
 
   // Propagate model names so the cloud plugin picks them up. Falls back to
@@ -1433,36 +1433,36 @@ export function applyCloudConfigToEnv(config: ElizaConfig): void {
     process.env.LARGE_MODEL = large;
     process.env.MEGA_MODEL = mega;
     if (responseHandlerModel) {
-      process.env.ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL = responseHandlerModel;
-      process.env.ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL = responseHandlerModel;
+      process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL = responseHandlerModel;
+      process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL = responseHandlerModel;
     } else {
-      delete process.env.ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL;
-      delete process.env.ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
     }
     if (actionPlannerModel) {
-      process.env.ELIZAOS_CLOUD_ACTION_PLANNER_MODEL = actionPlannerModel;
-      process.env.ELIZAOS_CLOUD_PLANNER_MODEL = actionPlannerModel;
+      process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL = actionPlannerModel;
+      process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL = actionPlannerModel;
     } else {
-      delete process.env.ELIZAOS_CLOUD_ACTION_PLANNER_MODEL;
-      delete process.env.ELIZAOS_CLOUD_PLANNER_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
+      delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
     }
-    process.env.ELIZAOS_CLOUD_NANO_MODEL = nano;
-    process.env.ELIZAOS_CLOUD_MEDIUM_MODEL = medium;
-    process.env.ELIZAOS_CLOUD_SMALL_MODEL = small;
-    process.env.ELIZAOS_CLOUD_LARGE_MODEL = large;
-    process.env.ELIZAOS_CLOUD_MEGA_MODEL = mega;
+    process.env.TOKAGENTOS_CLOUD_NANO_MODEL = nano;
+    process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL = medium;
+    process.env.TOKAGENTOS_CLOUD_SMALL_MODEL = small;
+    process.env.TOKAGENTOS_CLOUD_LARGE_MODEL = large;
+    process.env.TOKAGENTOS_CLOUD_MEGA_MODEL = mega;
   } else if (shouldLoadCloudPlugin) {
     // Cloud plugin may still be active for non-inference services; keep model
     // routing local by clearing the cloud model aliases.
-    delete process.env.ELIZAOS_CLOUD_NANO_MODEL;
-    delete process.env.ELIZAOS_CLOUD_MEDIUM_MODEL;
-    delete process.env.ELIZAOS_CLOUD_SMALL_MODEL;
-    delete process.env.ELIZAOS_CLOUD_LARGE_MODEL;
-    delete process.env.ELIZAOS_CLOUD_MEGA_MODEL;
-    delete process.env.ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL;
-    delete process.env.ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL;
-    delete process.env.ELIZAOS_CLOUD_ACTION_PLANNER_MODEL;
-    delete process.env.ELIZAOS_CLOUD_PLANNER_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
+    delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
     delete process.env.NANO_MODEL;
     delete process.env.MEDIUM_MODEL;
     delete process.env.SMALL_MODEL;
@@ -1471,26 +1471,26 @@ export function applyCloudConfigToEnv(config: ElizaConfig): void {
   }
 
   // Propagate per-service disable flags so downstream code can check them
-  // without needing direct access to the ElizaConfig object.
+  // without needing direct access to the TokagentConfig object.
   if (!topology.services.tts) {
-    process.env.ELIZA_CLOUD_TTS_DISABLED = "true";
+    process.env.TOKAGENT_CLOUD_TTS_DISABLED = "true";
   } else {
-    delete process.env.ELIZA_CLOUD_TTS_DISABLED;
+    delete process.env.TOKAGENT_CLOUD_TTS_DISABLED;
   }
   if (!topology.services.media) {
-    process.env.ELIZA_CLOUD_MEDIA_DISABLED = "true";
+    process.env.TOKAGENT_CLOUD_MEDIA_DISABLED = "true";
   } else {
-    delete process.env.ELIZA_CLOUD_MEDIA_DISABLED;
+    delete process.env.TOKAGENT_CLOUD_MEDIA_DISABLED;
   }
   if (!topology.services.embeddings) {
-    process.env.ELIZA_CLOUD_EMBEDDINGS_DISABLED = "true";
+    process.env.TOKAGENT_CLOUD_EMBEDDINGS_DISABLED = "true";
   } else {
-    delete process.env.ELIZA_CLOUD_EMBEDDINGS_DISABLED;
+    delete process.env.TOKAGENT_CLOUD_EMBEDDINGS_DISABLED;
   }
   if (!topology.services.rpc) {
-    process.env.ELIZA_CLOUD_RPC_DISABLED = "true";
+    process.env.TOKAGENT_CLOUD_RPC_DISABLED = "true";
   } else {
-    delete process.env.ELIZA_CLOUD_RPC_DISABLED;
+    delete process.env.TOKAGENT_CLOUD_RPC_DISABLED;
   }
 }
 
@@ -1502,11 +1502,11 @@ export function applyCloudConfigToEnv(config: ElizaConfig): void {
  * credentials (or use the explicit `connectionString` field) and set
  * `POSTGRES_URL`. When the provider is "pglite" (the default), we set
  * `PGLITE_DATA_DIR` to either the configured value or the resolved default
- * workspace (`<workspace>/.eliza/.elizadb`) and remove any stale
+ * workspace (`<workspace>/.tokagent/.tokagentdb`) and remove any stale
  * `POSTGRES_URL`.
  */
 /** @internal Exported for testing. */
-export function applyX402ConfigToEnv(config: ElizaConfig): void {
+export function applyX402ConfigToEnv(config: TokagentConfig): void {
   const x402 = (config as Record<string, unknown>).x402 as
     | { enabled?: boolean; apiKey?: string; baseUrl?: string }
     | undefined;
@@ -1523,22 +1523,22 @@ export function applyX402ConfigToEnv(config: ElizaConfig): void {
  *
  * Precedence:
  *   1. Existing process.env values (user override) — respected as-is.
- *   2. Eliza Cloud authenticated (cloud.apiKey present AND cloud.enabled !== false):
+ *   2. Tokagent Cloud authenticated (cloud.apiKey present AND cloud.enabled !== false):
  *      N8N_HOST = `${cloudBaseUrl}/api/v1/agents/${agentId}/n8n`
  *      N8N_API_KEY = cloud.apiKey
  *   3. Local sidecar — the sidecar lifecycle writes `config.n8n.host` and
  *      `config.n8n.apiKey` when it reaches "ready". We pump those into
  *      process.env here when cloud did not fire. The authoritative shape is
- *      `N8nConfig` in types.eliza.ts.
+ *      `N8nConfig` in types.tokagent.ts.
  *   4. Otherwise: leave unset. The plugin's init() no-ops without credentials.
  *
- * Called from startEliza() after applyCloudConfigToEnv so cloud settings are
+ * Called from startTokagent() after applyCloudConfigToEnv so cloud settings are
  * already reflected in process.env.
  *
  * @internal Exported for testing.
  */
 export function applyN8nConfigToEnv(
-  config: ElizaConfig,
+  config: TokagentConfig,
   agentId: string,
 ): void {
   // 1. Respect existing process.env overrides.
@@ -1550,7 +1550,7 @@ export function applyN8nConfigToEnv(
   const cloud = config.cloud;
   const cloudAuthed = Boolean(cloud?.apiKey) && cloud?.enabled !== false;
   if (cloudAuthed && cloud?.apiKey) {
-    const rawBase = cloud.baseUrl ?? "https://www.elizacloud.ai";
+    const rawBase = cloud.baseUrl ?? "https://www.tokagentcloud.ai";
     // Strip trailing /api/v1 (or /api/v1/) plus any trailing slashes so we can
     // build `${siteUrl}/api/v1/agents/${agentId}/n8n` without duplication.
     const siteUrl = rawBase.replace(/\/api\/v1\/?$/, "").replace(/\/+$/, "");
@@ -1571,17 +1571,17 @@ export function applyN8nConfigToEnv(
   }
 
   // 3. Fallback — leave unset. Legacy `config.env.vars` entries (N8N_HOST /
-  //    N8N_API_KEY) still flow through the generic env-var pump in startEliza.
+  //    N8N_API_KEY) still flow through the generic env-var pump in startTokagent.
 }
 
-function resolveDefaultPgliteDataDir(config: ElizaConfig): string {
+function resolveDefaultPgliteDataDir(config: TokagentConfig): string {
   const workspaceDir =
     config.agents?.defaults?.workspace ?? resolveDefaultAgentWorkspaceDir();
-  return path.join(resolveUserPath(workspaceDir), ".eliza", ".elizadb");
+  return path.join(resolveUserPath(workspaceDir), ".tokagent", ".tokagentdb");
 }
 
 /** @internal Exported for testing. */
-export function applyDatabaseConfigToEnv(config: ElizaConfig): void {
+export function applyDatabaseConfigToEnv(config: TokagentConfig): void {
   const db = config.database;
   const provider = db?.provider ?? "pglite";
 
@@ -1624,7 +1624,7 @@ export function applyDatabaseConfigToEnv(config: ElizaConfig): void {
       const alreadyExisted = existsSync(dataDir);
       mkdirSync(dataDir, { recursive: true });
       logger.info(
-        `[eliza] PGlite data dir: ${dataDir} (${alreadyExisted ? "existed" : "created"})`,
+        `[tokagent] PGlite data dir: ${dataDir} (${alreadyExisted ? "existed" : "created"})`,
       );
 
       // Remove stale postmaster.pid left by a crashed process. Without this,
@@ -1661,7 +1661,7 @@ function reconcilePglitePidFile(dataDir: string): PglitePidFileStatus {
     if (Number.isNaN(pid) || pid <= 0) {
       // Malformed pid file — remove it
       unlinkSync(pidPath);
-      logger.info(`[eliza] Removed malformed PGlite postmaster.pid`);
+      logger.info(`[tokagent] Removed malformed PGlite postmaster.pid`);
       return "cleared-malformed";
     }
 
@@ -1670,7 +1670,7 @@ function reconcilePglitePidFile(dataDir: string): PglitePidFileStatus {
       process.kill(pid, 0); // signal 0 = existence check, doesn't kill
       // Process exists — pid file is NOT stale, leave it alone
       logger.info(
-        `[eliza] PGlite postmaster.pid references running process ${pid} — leaving intact`,
+        `[tokagent] PGlite postmaster.pid references running process ${pid} — leaving intact`,
       );
       return "active";
     } catch (killErr: unknown) {
@@ -1679,21 +1679,21 @@ function reconcilePglitePidFile(dataDir: string): PglitePidFileStatus {
         // Process doesn't exist — stale pid file, safe to remove
         unlinkSync(pidPath);
         logger.info(
-          `[eliza] Removed stale PGlite postmaster.pid (process ${pid} not running)`,
+          `[tokagent] Removed stale PGlite postmaster.pid (process ${pid} not running)`,
         );
         return "cleared-stale";
       } else {
         // EPERM or other — process may be alive under a different user,
         // leave the file alone to avoid data directory corruption
         logger.warn(
-          `[eliza] Cannot confirm postmaster.pid staleness (${code}) — leaving intact`,
+          `[tokagent] Cannot confirm postmaster.pid staleness (${code}) — leaving intact`,
         );
         return "active-unconfirmed";
       }
     }
   } catch (err) {
     logger.warn(
-      `[eliza] Failed to check PGlite postmaster.pid: ${formatError(err)}`,
+      `[tokagent] Failed to check PGlite postmaster.pid: ${formatError(err)}`,
     );
     return "check-failed";
   }
@@ -1707,7 +1707,7 @@ export function cleanStalePglitePid(dataDir: string): void {
   try {
     reconcilePglitePidFile(dataDir);
   } catch (err) {
-    logger.warn(`[eliza] PGlite PID reconciliation failed: ${err}`);
+    logger.warn(`[tokagent] PGlite PID reconciliation failed: ${err}`);
   }
 }
 
@@ -1846,7 +1846,7 @@ function createActivePgliteLockError(dataDir: string, err: unknown): Error {
   }
   return createPgliteInitError(
     PGLITE_ERROR_CODES.ACTIVE_LOCK,
-    `PGLite data dir is already in use at ${dataDir}. Close the other Eliza or Eliza process, or set a different PGLITE_DATA_DIR before retrying.`,
+    `PGLite data dir is already in use at ${dataDir}. Close the other Tokagent or Tokagent process, or set a different PGLITE_DATA_DIR before retrying.`,
     { cause: err, dataDir },
   );
 }
@@ -1878,7 +1878,7 @@ function createManualResetRequiredPgliteError(
 
   return createPgliteInitError(
     PGLITE_ERROR_CODES.MANUAL_RESET_REQUIRED,
-    `PGlite initialization failed for ${dataDir}: ${errorText}. Stop Eliza, then rename or delete only this directory before retrying: ${dataDir}`,
+    `PGlite initialization failed for ${dataDir}: ${errorText}. Stop Tokagent, then rename or delete only this directory before retrying: ${dataDir}`,
     { cause, dataDir },
   );
 }
@@ -1892,7 +1892,7 @@ export function isFatalPgliteStartupError(err: unknown): boolean {
   );
 }
 
-function resolveActivePgliteDataDir(config: ElizaConfig): string | null {
+function resolveActivePgliteDataDir(config: TokagentConfig): string | null {
   const provider = config.database?.provider ?? "pglite";
   if (provider === "postgres") return null;
 
@@ -1915,14 +1915,14 @@ async function callAdapterInit(
 
 async function initializeDatabaseAdapter(
   runtime: AgentRuntime,
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): Promise<void> {
   if (!runtime.adapter || (await runtime.adapter.isReady())) return;
 
   try {
     await callAdapterInit(runtime.adapter);
     logger.info(
-      "[eliza] Database adapter initialized early (before plugin inits)",
+      "[tokagent] Database adapter initialized early (before plugin inits)",
     );
   } catch (err) {
     const pgliteDataDir = resolveActivePgliteDataDir(config);
@@ -1942,12 +1942,12 @@ async function initializeDatabaseAdapter(
     }
 
     logger.warn(
-      `[eliza] PGLite init failed (${formatError(err)}). Cleared a stale PGLite lock in ${pgliteDataDir} and retrying without resetting data.`,
+      `[tokagent] PGLite init failed (${formatError(err)}). Cleared a stale PGLite lock in ${pgliteDataDir} and retrying without resetting data.`,
     );
 
     await callAdapterInit(runtime.adapter);
     logger.info(
-      "[eliza] Database adapter recovered after clearing a stale PGLite lock",
+      "[tokagent] Database adapter recovered after clearing a stale PGLite lock",
     );
   }
 
@@ -1960,22 +1960,22 @@ async function initializeDatabaseAdapter(
  * Verify PGlite data directory contains files after init.
  * Warns if the directory is empty (suggests ephemeral/in-memory fallback).
  */
-async function verifyPgliteDataDir(config: ElizaConfig): Promise<void> {
+async function verifyPgliteDataDir(config: TokagentConfig): Promise<void> {
   const pgliteDataDir = resolveActivePgliteDataDir(config);
   if (!pgliteDataDir || !existsSync(pgliteDataDir)) return;
 
   try {
     const files = await fs.readdir(pgliteDataDir);
     logger.info(
-      `[eliza] PGlite health check: ${files.length} file(s) in ${pgliteDataDir}`,
+      `[tokagent] PGlite health check: ${files.length} file(s) in ${pgliteDataDir}`,
     );
     if (files.length === 0) {
       logger.warn(
-        `[eliza] PGlite data directory is empty after init — data may not persist across restarts`,
+        `[tokagent] PGlite data directory is empty after init — data may not persist across restarts`,
       );
     }
   } catch (err) {
-    logger.warn(`[eliza] PGlite health check failed: ${formatError(err)}`);
+    logger.warn(`[tokagent] PGlite health check failed: ${formatError(err)}`);
   }
 }
 
@@ -1984,14 +1984,14 @@ function isPluginAlreadyRegisteredError(err: unknown): boolean {
 }
 
 interface RuntimeWithMethodBindings extends AgentRuntime {
-  __elizaMethodBindingsInstalled?: boolean;
-  __elizaComponentWriteDiagnosticsInstalled?: boolean;
-  __elizaEntityWriteDiagnosticsInstalled?: boolean;
-  __elizaEntityCreateMutex?: Promise<void>;
+  __tokagentMethodBindingsInstalled?: boolean;
+  __tokagentComponentWriteDiagnosticsInstalled?: boolean;
+  __tokagentEntityWriteDiagnosticsInstalled?: boolean;
+  __tokagentEntityCreateMutex?: Promise<void>;
 }
 
 interface RuntimeWithActionAliases extends Omit<AgentRuntime, "actions"> {
-  __elizaActionAliasesInstalled?: boolean;
+  __tokagentActionAliasesInstalled?: boolean;
   actions?: Array<{ name?: string; similes?: string[] }>;
 }
 
@@ -2056,9 +2056,9 @@ async function withEntityCreateMutex<T>(
   runtimeWithBindings: RuntimeWithMethodBindings,
   fn: () => Promise<T>,
 ): Promise<T> {
-  const previous = runtimeWithBindings.__elizaEntityCreateMutex;
+  const previous = runtimeWithBindings.__tokagentEntityCreateMutex;
   let release: () => void = () => {};
-  runtimeWithBindings.__elizaEntityCreateMutex = new Promise<void>(
+  runtimeWithBindings.__tokagentEntityCreateMutex = new Promise<void>(
     (resolve) => {
       release = resolve;
     },
@@ -2098,7 +2098,7 @@ function summarizeComponentWrite(input: unknown): Record<string, unknown> {
 
 export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
   const runtimeWithBindings = runtime as RuntimeWithMethodBindings;
-  if (runtimeWithBindings.__elizaMethodBindingsInstalled) {
+  if (runtimeWithBindings.__tokagentMethodBindingsInstalled) {
     return;
   }
 
@@ -2109,7 +2109,7 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
   runtime.getConversationLength = runtime.getConversationLength.bind(runtime);
 
   // Wrap getSetting() to fall back to process.env for known keys when the
-  // core returns null. elizaOS core returns null for missing keys, but some
+  // core returns null. tokagentOS core returns null for missing keys, but some
   // plugins (e.g. @elizaos/plugin-google-genai) check `!== undefined` and
   // convert null to the string "null", causing API calls like `models/null`.
   // Scoped to an allowlist to avoid leaking arbitrary env vars to plugins.
@@ -2158,7 +2158,7 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
   // Add targeted diagnostics around component writes. Relationships reflection and
   // relationship extraction rely heavily on components; when inserts fail,
   // upstream logs often hide the concrete DB cause/constraint.
-  if (!runtimeWithBindings.__elizaComponentWriteDiagnosticsInstalled) {
+  if (!runtimeWithBindings.__tokagentComponentWriteDiagnosticsInstalled) {
     type CreateComponentFn = (component: Component) => Promise<boolean>;
     type UpdateComponentFn = (component: Component) => Promise<void>;
     const runtimeWithComponentWrites = runtime as AgentRuntime & {
@@ -2186,7 +2186,7 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
               const fallbackWorldId = room?.worldId ?? null;
               if (fallbackWorldId !== input.worldId) {
                 logger.warn(
-                  `[eliza] createComponent retry with ${fallbackWorldId ? `room worldId (${fallbackWorldId})` : "null worldId"} after FK violation`,
+                  `[tokagent] createComponent retry with ${fallbackWorldId ? `room worldId (${fallbackWorldId})` : "null worldId"} after FK violation`,
                 );
                 const recovered: Component = {
                   ...input,
@@ -2196,17 +2196,17 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
               }
             } catch (retryLookupError) {
               logger.warn(
-                `[eliza] createComponent recovery lookup failed: ${formatError(retryLookupError)}`,
+                `[tokagent] createComponent recovery lookup failed: ${formatError(retryLookupError)}`,
               );
             }
           }
 
           const component = summarizeComponentWrite(input);
           logger.error(
-            `[eliza] createComponent failed: ${formatError(error)} | component=${JSON.stringify(component)}`,
+            `[tokagent] createComponent failed: ${formatError(error)} | component=${JSON.stringify(component)}`,
           );
           logger.error(
-            `[eliza] createComponent db details: ${JSON.stringify(toErrorDetails(error))}`,
+            `[tokagent] createComponent db details: ${JSON.stringify(toErrorDetails(error))}`,
           );
           throw error;
         }
@@ -2222,23 +2222,23 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
         } catch (error) {
           const component = summarizeComponentWrite(input);
           logger.error(
-            `[eliza] updateComponent failed: ${formatError(error)} | component=${JSON.stringify(component)}`,
+            `[tokagent] updateComponent failed: ${formatError(error)} | component=${JSON.stringify(component)}`,
           );
           logger.error(
-            `[eliza] updateComponent db details: ${JSON.stringify(toErrorDetails(error))}`,
+            `[tokagent] updateComponent db details: ${JSON.stringify(toErrorDetails(error))}`,
           );
           throw error;
         }
       };
     }
 
-    runtimeWithBindings.__elizaComponentWriteDiagnosticsInstalled = true;
+    runtimeWithBindings.__tokagentComponentWriteDiagnosticsInstalled = true;
   }
 
   // Proactive guard for plugin-sql entity creation. Some evaluators may attempt
   // to create the same entity in rapid succession; plugin-sql's batch insert is
   // non-idempotent and can fail entire writes on duplicate/conflicting rows.
-  if (!runtimeWithBindings.__elizaEntityWriteDiagnosticsInstalled) {
+  if (!runtimeWithBindings.__tokagentEntityWriteDiagnosticsInstalled) {
     type CreateEntitiesFn = (entities: Entity[]) => Promise<UUID[] | boolean>;
     type GetEntitiesByIdsFn = (entityIds: UUID[]) => Promise<Entity[]>;
     type EnsureEntityExistsFn = (entity: Entity) => Promise<boolean>;
@@ -2276,7 +2276,7 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
               );
             } catch (err) {
               logger.warn(
-                `[eliza] createEntities precheck failed; proceeding with guarded insert: ${formatError(err)}`,
+                `[tokagent] createEntities precheck failed; proceeding with guarded insert: ${formatError(err)}`,
               );
             }
           }
@@ -2298,7 +2298,7 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
               } catch (err) {
                 allRecovered = false;
                 logger.warn(
-                  `[eliza] ensureEntityExists recovery failed for ${String(entity.id)}: ${formatError(err)}`,
+                  `[tokagent] ensureEntityExists recovery failed for ${String(entity.id)}: ${formatError(err)}`,
                 );
               }
             }
@@ -2306,22 +2306,22 @@ export function installRuntimeMethodBindings(runtime: AgentRuntime): void {
           }
 
           logger.warn(
-            `[eliza] createEntities unresolved after guarded retries (requested=${entities.length}, deduped=${deduped.length}, missing=${missing.length})`,
+            `[tokagent] createEntities unresolved after guarded retries (requested=${entities.length}, deduped=${deduped.length}, missing=${missing.length})`,
           );
           return [];
         });
       };
     }
 
-    runtimeWithBindings.__elizaEntityWriteDiagnosticsInstalled = true;
+    runtimeWithBindings.__tokagentEntityWriteDiagnosticsInstalled = true;
   }
 
-  runtimeWithBindings.__elizaMethodBindingsInstalled = true;
+  runtimeWithBindings.__tokagentMethodBindingsInstalled = true;
 }
 
 function installActionAliases(runtime: AgentRuntime): void {
   const runtimeWithAliases = runtime as RuntimeWithActionAliases;
-  if (runtimeWithAliases.__elizaActionAliasesInstalled) {
+  if (runtimeWithAliases.__tokagentActionAliasesInstalled) {
     return;
   }
 
@@ -2336,7 +2336,7 @@ function installActionAliases(runtime: AgentRuntime): void {
   if (compactSessionIndex !== -1) {
     actions.splice(compactSessionIndex, 1);
     logger.info(
-      "[eliza] Disabled manual COMPACT_SESSION action; auto-compaction remains enabled",
+      "[tokagent] Disabled manual COMPACT_SESSION action; auto-compaction remains enabled",
     );
   }
 
@@ -2355,18 +2355,18 @@ function installActionAliases(runtime: AgentRuntime): void {
     if (!hasCodeTaskAlias) {
       createTaskAction.similes = [...similes, "CODE_TASK"];
       logger.info(
-        "[eliza] Added action alias CODE_TASK -> CREATE_TASK for agent-orchestrator",
+        "[tokagent] Added action alias CODE_TASK -> CREATE_TASK for agent-orchestrator",
       );
     }
   }
 
-  runtimeWithAliases.__elizaActionAliasesInstalled = true;
+  runtimeWithAliases.__tokagentActionAliasesInstalled = true;
 }
 
 async function registerSqlPluginWithRecovery(
   runtime: AgentRuntime,
   sqlPlugin: RuntimeResolvedPlugin,
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): Promise<void> {
   let registerError: unknown = null;
 
@@ -2397,7 +2397,7 @@ async function registerSqlPluginWithRecovery(
     }
 
     logger.warn(
-      `[eliza] SQL plugin registration failed (${formatError(registerError)}). Cleared a stale PGLite lock in ${pgliteDataDir} and retrying without resetting data.`,
+      `[tokagent] SQL plugin registration failed (${formatError(registerError)}). Cleared a stale PGLite lock in ${pgliteDataDir} and retrying without resetting data.`,
     );
 
     try {
@@ -2413,7 +2413,7 @@ async function registerSqlPluginWithRecovery(
 }
 
 /**
- * Build an elizaOS Character from the Eliza config.
+ * Build an tokagentOS Character from the Tokagent config.
  *
  * Resolves the agent name from `config.agents.list` (first entry) or
  * `config.ui.assistant.name`, falling back to the default bundled preset.
@@ -2423,7 +2423,7 @@ async function registerSqlPluginWithRecovery(
  * here for the initial setup.
  */
 /** @internal Exported for testing. */
-export function buildCharacterFromConfig(config: ElizaConfig): Character {
+export function buildCharacterFromConfig(config: TokagentConfig): Character {
   const agentEntry = config.agents?.list?.[0];
   const uiConfig = (config.ui ?? {}) as {
     assistant?: { name?: string };
@@ -2455,12 +2455,12 @@ export function buildCharacterFromConfig(config: ElizaConfig): Character {
   // still retain their default posts/messages.
   const bio = agentEntry?.bio ??
     bundledPreset?.bio ?? [
-      "{{name}} is an AI assistant powered by Eliza and elizaOS.",
+      "{{name}} is an AI assistant powered by Tokagent and tokagentOS.",
     ];
   const systemPrompt =
     agentEntry?.system ??
     bundledPreset?.system ??
-    "You are {{name}}, an autonomous AI agent powered by elizaOS.";
+    "You are {{name}}, an autonomous AI agent powered by tokagentOS.";
   const style = agentEntry?.style ?? bundledPreset?.style;
   const adjectives = agentEntry?.adjectives ?? bundledPreset?.adjectives;
   const topics =
@@ -2528,10 +2528,10 @@ export function buildCharacterFromConfig(config: ElizaConfig): Character {
     "MSTEAMS_APP_PASSWORD",
     "MATTERMOST_BOT_TOKEN",
     "MATTERMOST_BASE_URL",
-    // ElizaCloud secrets
-    "ELIZAOS_CLOUD_API_KEY",
-    "ELIZAOS_CLOUD_BASE_URL",
-    "ELIZAOS_CLOUD_ENABLED",
+    // TokagentCloud secrets
+    "TOKAGENTOS_CLOUD_API_KEY",
+    "TOKAGENTOS_CLOUD_BASE_URL",
+    "TOKAGENTOS_CLOUD_ENABLED",
     // Wallet / blockchain secrets
     "EVM_PRIVATE_KEY",
     "SOLANA_PRIVATE_KEY",
@@ -2564,9 +2564,9 @@ export function buildCharacterFromConfig(config: ElizaConfig): Character {
   }
 
   // Normalise messageExamples to the {examples: [{name,content}]} shape
-  // that @elizaos/core expects.  Config may contain EITHER format:
+  // that @tokagentos/core expects.  Config may contain EITHER format:
   //   OLD (preset/onboarding): [[{user, content}, ...], ...]
-  //   NEW (@elizaos/core):     [{examples: [{name, content}, ...]}, ...]
+  //   NEW (@tokagentos/core):     [{examples: [{name, content}, ...]}, ...]
   const mappedExamples = messageExamples?.map((item: unknown) => {
     // Already in new format — pass through
     if (
@@ -2635,15 +2635,15 @@ export function buildCharacterFromConfig(config: ElizaConfig): Character {
 }
 
 /**
- * Resolve the primary model identifier from Eliza config.
+ * Resolve the primary model identifier from Tokagent config.
  *
- * Eliza stores the model under `agents.defaults.model.primary` as an
+ * Tokagent stores the model under `agents.defaults.model.primary` as an
  * AgentModelListConfig object. Returns undefined when no model is
- * explicitly configured (elizaOS falls back to whichever model
+ * explicitly configured (tokagentOS falls back to whichever model
  * plugin is loaded).
  */
 /** @internal Exported for testing. */
-export function resolvePrimaryModel(config: ElizaConfig): string | undefined {
+export function resolvePrimaryModel(config: TokagentConfig): string | undefined {
   const modelConfig = config.agents?.defaults?.model;
   if (!modelConfig) return undefined;
 
@@ -2666,20 +2666,20 @@ function resolveProviderIdFromSelectionHint(
 
 /** @internal Exported for testing. */
 export function resolvePreferredProviderId(
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): string | undefined {
   const llmText = resolveServiceRoutingInConfig(
     config as Record<string, unknown>,
   )?.llmText;
   const backend = normalizeOnboardingProviderId(llmText?.backend);
 
-  if (llmText?.transport === "cloud-proxy" && backend === "elizacloud") {
-    return "elizacloud";
+  if (llmText?.transport === "cloud-proxy" && backend === "tokagentcloud") {
+    return "tokagentcloud";
   }
 
   if (llmText?.transport === "direct") {
     const directProvider =
-      backend && backend !== "elizacloud" ? backend : undefined;
+      backend && backend !== "tokagentcloud" ? backend : undefined;
     return (
       directProvider ?? resolveProviderIdFromSelectionHint(llmText.primaryModel)
     );
@@ -2687,7 +2687,7 @@ export function resolvePreferredProviderId(
 
   if (llmText?.transport === "remote") {
     const remoteProvider =
-      backend && backend !== "elizacloud" ? backend : undefined;
+      backend && backend !== "tokagentcloud" ? backend : undefined;
     return (
       remoteProvider ?? resolveProviderIdFromSelectionHint(llmText.primaryModel)
     );
@@ -2698,7 +2698,7 @@ export function resolvePreferredProviderId(
 
 /** @internal Exported for testing. */
 export function resolvePreferredProviderPluginName(
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): string | undefined {
   const providerId = resolvePreferredProviderId(config);
   return providerId
@@ -2707,12 +2707,12 @@ export function resolvePreferredProviderPluginName(
 }
 
 /**
- * Vision is a heavy optional plugin. When Eliza enables it, keep the service
+ * Vision is a heavy optional plugin. When Tokagent enables it, keep the service
  * loaded but idle until the user explicitly selects CAMERA, SCREEN, or BOTH.
  * This avoids background capture loops during normal app startup.
  */
 export function resolveVisionModeSetting(
-  config: ElizaConfig,
+  config: TokagentConfig,
   env: NodeJS.ProcessEnv = process.env,
 ): string | undefined {
   const explicitMode = env.VISION_MODE?.trim();
@@ -2723,7 +2723,7 @@ export function resolveVisionModeSetting(
 
 /** @internal Exported for testing. */
 export function resolveWalletRuntimeSettings(
-  config?: Partial<ElizaConfig>,
+  config?: Partial<TokagentConfig>,
   env: NodeJS.ProcessEnv = process.env,
 ): Record<string, string> {
   const directRpcUrl = trimEnvString(env.SOLANA_RPC_URL);
@@ -2777,8 +2777,8 @@ export function resolveWalletRuntimeSettings(
 // Entry point
 // ---------------------------------------------------------------------------
 
-/** Options accepted by {@link startEliza}. */
-export interface StartElizaOptions {
+/** Options accepted by {@link startTokagent}. */
+export interface StartTokagentOptions {
   /**
    * When true, skip the interactive CLI chat loop and return the
    * initialised {@link AgentRuntime} so it can be wired into the API
@@ -2798,9 +2798,9 @@ export interface StartElizaOptions {
   pgliteRecoveryAttempted?: boolean;
 }
 
-export interface BootElizaRuntimeOptions {
+export interface BootTokagentRuntimeOptions {
   /**
-   * When true, require an existing ~/.eliza/eliza.json config file.
+   * When true, require an existing ~/.tokagent/tokagent.json config file.
    * This is used by non-CLI UIs (like the @elizaos/tui interface) where interactive
    * onboarding prompts would break the alternate screen.
    */
@@ -2808,21 +2808,21 @@ export interface BootElizaRuntimeOptions {
 }
 
 /**
- * Boot the elizaOS runtime without starting the readline chat loop.
+ * Boot the tokagentOS runtime without starting the readline chat loop.
  *
- * This is a convenience wrapper around {@link startEliza} in headless mode,
+ * This is a convenience wrapper around {@link startTokagent} in headless mode,
  * with optional config guards.
  */
-export async function bootElizaRuntime(
-  opts: BootElizaRuntimeOptions = {},
+export async function bootTokagentRuntime(
+  opts: BootTokagentRuntimeOptions = {},
 ): Promise<AgentRuntime> {
   if (opts.requireConfig && !configFileExists()) {
     throw new Error(
-      "No config found. Run `eliza start` once to complete setup.",
+      "No config found. Run `tokagent start` once to complete setup.",
     );
   }
 
-  const runtime = await startEliza({ headless: true });
+  const runtime = await startTokagent({ headless: true });
   if (!runtime) {
     throw new Error("Failed to boot runtime");
   }
@@ -2877,13 +2877,13 @@ export const logToChatListener = (entry: LogEntry) => {
 };
 
 /**
- * Start the elizaOS runtime with Eliza's configuration.
+ * Start the tokagentOS runtime with Tokagent's configuration.
  *
  * In headless mode the runtime is returned instead of entering the
  * interactive readline loop.
  */
-export async function startEliza(
-  opts?: StartElizaOptions,
+export async function startTokagent(
+  opts?: StartTokagentOptions,
 ): Promise<AgentRuntime | undefined> {
   // Start buffering logs early so startup messages appear in the UI log viewer
   const { captureEarlyLogs } = await import("../api/early-logs.js");
@@ -2892,16 +2892,16 @@ export async function startEliza(
   // Register log listener for chat mirroring
   addLogListener(logToChatListener);
 
-  // 1. Load Eliza config from ~/.eliza/eliza.json
-  let config: ElizaConfig;
+  // 1. Load Tokagent config from ~/.tokagent/tokagent.json
+  let config: TokagentConfig;
   try {
-    config = loadElizaConfig();
+    config = loadTokagentConfig();
   } catch (err) {
     if ((err as NodeJS.ErrnoException).code === "ENOENT") {
-      logger.warn("[eliza] No config found, using defaults");
-      // All ElizaConfig fields are optional, so an empty object is
+      logger.warn("[tokagent] No config found, using defaults");
+      // All TokagentConfig fields are optional, so an empty object is
       // structurally valid. The `as` cast is safe here.
-      config = {} as ElizaConfig;
+      config = {} as TokagentConfig;
     } else {
       throw err;
     }
@@ -2916,7 +2916,7 @@ export async function startEliza(
   }
 
   // 1c. Apply logging level from config to process.env so the global
-  //     @elizaos/core logger (used by plugins) respects it.
+  //     @tokagentos/core logger (used by plugins) respects it.
   //     config.logging.level is guaranteed to be set (defaults to "error").
   //     Users can still opt into noisy logs via config.logging.level or
   //     an explicit LOG_LEVEL environment variable.
@@ -2928,7 +2928,7 @@ export async function startEliza(
   applyConnectorSecretsToEnv(config);
   await autoResolveDiscordAppId();
 
-  // 2b. Propagate cloud config into process.env for ElizaCloud plugin
+  // 2b. Propagate cloud config into process.env for TokagentCloud plugin
   applyCloudConfigToEnv(config);
 
   // 2c. Propagate x402 config into process.env
@@ -2938,9 +2938,9 @@ export async function startEliza(
   applyDatabaseConfigToEnv(config);
 
   // 2e. Propagate arbitrary env vars from config.env into process.env.
-  // Eliza stores user-defined env vars (plugin settings, API URLs, etc.)
-  // in config.env; elizaOS plugins read them via process.env / getSetting.
-  // Skip ELIZAOS_CLOUD_* — applyCloudConfigToEnv() owns those; otherwise a
+  // Tokagent stores user-defined env vars (plugin settings, API URLs, etc.)
+  // in config.env; tokagentOS plugins read them via process.env / getSetting.
+  // Skip TOKAGENTOS_CLOUD_* — applyCloudConfigToEnv() owns those; otherwise a
   // stale key in config.env refills process.env after disconnect cleared it.
   if (
     config.env &&
@@ -2948,7 +2948,7 @@ export async function startEliza(
     !Array.isArray(config.env)
   ) {
     for (const [key, value] of Object.entries(config.env)) {
-      if (isElizaCloudManagedProcessEnvKey(key)) continue;
+      if (isTokagentCloudManagedProcessEnvKey(key)) continue;
       if (typeof value === "string" && !process.env[key]) {
         process.env[key] = value;
       }
@@ -2962,7 +2962,7 @@ export async function startEliza(
       for (const [key, value] of Object.entries(
         vars as Record<string, unknown>,
       )) {
-        if (isElizaCloudManagedProcessEnvKey(key)) continue;
+        if (isTokagentCloudManagedProcessEnvKey(key)) continue;
         if (typeof value === "string" && !process.env[key]) {
           process.env[key] = value;
         }
@@ -2982,7 +2982,7 @@ export async function startEliza(
     const pgliteDir = process.env.PGLITE_DATA_DIR;
     const postgresUrl = process.env.POSTGRES_URL;
     logger.info(
-      `[eliza] Database provider: ${dbProvider}` +
+      `[tokagent] Database provider: ${dbProvider}` +
         (dbProvider === "pglite" && pgliteDir
           ? ` | data dir: ${pgliteDir}`
           : "") +
@@ -2994,7 +2994,7 @@ export async function startEliza(
 
   // 2d-iii. OG tracking code initialization
   try {
-    const { initializeOGCode } = await import("@elizaos/app-elizamaker");
+    const { initializeOGCode } = await import("@elizaos/app-tokagentmaker");
     initializeOGCode();
   } catch {
     // Silent — OG tracking is non-critical
@@ -3004,15 +3004,15 @@ export async function startEliza(
   //        plugin versions) so the runtime doesn't silently stall.  Without this
   //        the migration system throws an error that gets swallowed, leaving the
   //        app hanging indefinitely with no output.
-  if (!process.env.ELIZA_ALLOW_DESTRUCTIVE_MIGRATIONS) {
-    process.env.ELIZA_ALLOW_DESTRUCTIVE_MIGRATIONS = "true";
+  if (!process.env.TOKAGENT_ALLOW_DESTRUCTIVE_MIGRATIONS) {
+    process.env.TOKAGENT_ALLOW_DESTRUCTIVE_MIGRATIONS = "true";
   }
 
-  // 2e-ii. Ensure SECRET_SALT is set to suppress the @elizaos/core default
+  // 2e-ii. Ensure SECRET_SALT is set to suppress the @tokagentos/core default
   //        warning and avoid using a predictable value in production.
   if (!process.env.SECRET_SALT) {
     process.env.SECRET_SALT = crypto.randomBytes(32).toString("hex");
-    logger.info("[eliza] Generated random SECRET_SALT for this session");
+    logger.info("[tokagent] Generated random SECRET_SALT for this session");
   }
 
   // 2e-iii. Pre-flight validation for Google AI API keys.  If the key looks
@@ -3029,7 +3029,7 @@ export async function startEliza(
       (val.length < 20 || val === "your-key-here" || val.startsWith("sk-"))
     ) {
       logger.warn(
-        `[eliza] ${gkey} appears invalid (length/format), clearing to skip Google AI plugin`,
+        `[tokagent] ${gkey} appears invalid (length/format), clearing to skip Google AI plugin`,
       );
       delete process.env[gkey];
     }
@@ -3044,7 +3044,7 @@ export async function startEliza(
     await applySubscriptionCredentials(config);
   } catch (err) {
     logger.warn(
-      `[eliza] Failed to apply subscription credentials (agent will continue without them): ${formatError(err)}`,
+      `[tokagent] Failed to apply subscription credentials (agent will continue without them): ${formatError(err)}`,
     );
   }
 
@@ -3056,14 +3056,14 @@ export async function startEliza(
   );
   if (
     deploymentTarget.runtime === "cloud" &&
-    deploymentTarget.provider === "elizacloud" &&
+    deploymentTarget.provider === "tokagentcloud" &&
     config.cloud?.apiKey &&
     config.cloud?.agentId?.trim()
   ) {
     return startInCloudMode(config, config.cloud.agentId, opts);
   }
 
-  // 3. Build elizaOS Character from Eliza config
+  // 3. Build tokagentOS Character from Tokagent config
   const character = buildCharacterFromConfig(config);
 
   const primaryModel = resolvePrimaryModel(config);
@@ -3081,7 +3081,7 @@ export async function startEliza(
     recursive: true,
   });
 
-  // 5. Create the Eliza bridge plugin (workspace context + session keys + compaction)
+  // 5. Create the Tokagent bridge plugin (workspace context + session keys + compaction)
   const agentId = character.name?.toLowerCase().replace(/\s+/g, "-") ?? "main";
 
   // 5a. If cloud is configured and no local GitHub token, try fetching from cloud
@@ -3094,7 +3094,7 @@ export async function startEliza(
   //     fall back to the derived local agent slug.
   applyN8nConfigToEnv(config, config.cloud?.agentId?.trim() || agentId);
 
-  const elizaPlugin = createElizaPlugin({
+  const tokagentPlugin = createTokagentPlugin({
     workspaceDir,
 
     agentId,
@@ -3112,14 +3112,14 @@ export async function startEliza(
   if (resolvedPlugins.length === 0) {
     if (preOnboarding) {
       logger.info(
-        "[eliza] No plugins loaded yet — the onboarding wizard will configure a model provider",
+        "[tokagent] No plugins loaded yet — the onboarding wizard will configure a model provider",
       );
     } else {
       logger.error(
-        "[eliza] No plugins loaded — at least one model provider plugin is required",
+        "[tokagent] No plugins loaded — at least one model provider plugin is required",
       );
       logger.error(
-        "[eliza] Set an API key (e.g. ANTHROPIC_API_KEY, OPENAI_API_KEY) in your environment",
+        "[tokagent] Set an API key (e.g. ANTHROPIC_API_KEY, OPENAI_API_KEY) in your environment",
       );
       throw new Error("No plugins loaded");
     }
@@ -3160,12 +3160,12 @@ export async function startEliza(
         issues.push(`empty: ${contextValidation.emptyFields.join(", ")}`);
       }
       logger.warn(
-        `[eliza] Context validation issues detected: ${issues.join("; ")}`,
+        `[tokagent] Context validation issues detected: ${issues.join("; ")}`,
       );
     }
   }
 
-  // 7. Create the AgentRuntime with Eliza plugin + resolved plugins
+  // 7. Create the AgentRuntime with Tokagent plugin + resolved plugins
   //    All CORE_PLUGINS are pre-registered sequentially (in CORE_PLUGINS
   //    order) before runtime.initialize() so that cross-plugin getService()
   //    calls always resolve.  runtime.initialize() registers remaining
@@ -3187,24 +3187,24 @@ export async function startEliza(
   const runtimeLogLevel = (() => {
     // process.env.LOG_LEVEL is already resolved (set explicitly or from
     // config.logging.level above), so prefer it to honour the dev-mode
-    // LOG_LEVEL=error override set by eliza/packages/app-core/scripts/dev-ui.mjs.
+    // LOG_LEVEL=error override set by tokagent/packages/app-core/scripts/dev-ui.mjs.
     const lvl = process.env.LOG_LEVEL ?? config.logging?.level ?? "error";
     if (lvl === "silent") return "fatal" as const;
     return lvl as "trace" | "debug" | "info" | "warn" | "error" | "fatal";
   })();
 
-  // 7a. Resolve bundled skills directory from @elizaos/skills so
+  // 7a. Resolve bundled skills directory from @tokagentos/skills so
   //     plugin-agent-skills auto-loads them on startup.
   let bundledSkillsDir: string | null = null;
   try {
-    const { getSkillsDir } = (await import("@elizaos/skills")) as {
+    const { getSkillsDir } = (await import("@tokagentos/skills")) as {
       getSkillsDir: () => string;
     };
     bundledSkillsDir = getSkillsDir();
-    logger.info(`[eliza] Bundled skills dir: ${bundledSkillsDir}`);
+    logger.info(`[tokagent] Bundled skills dir: ${bundledSkillsDir}`);
   } catch {
     logger.debug(
-      "[eliza] @elizaos/skills not available — bundled skills will not be loaded",
+      "[tokagent] @tokagentos/skills not available — bundled skills will not be loaded",
     );
   }
 
@@ -3228,7 +3228,7 @@ export async function startEliza(
   let sandboxAuditLog: SandboxAuditLog | null = null;
 
   if (isSandboxActive) {
-    logger.info(`[eliza] Sandbox mode: ${sandboxMode}`);
+    logger.info(`[tokagent] Sandbox mode: ${sandboxMode}`);
     sandboxAuditLog = new SandboxAuditLog({ console: true });
 
     // Standard/max modes also start the container sandbox manager
@@ -3268,10 +3268,10 @@ export async function startEliza(
 
       try {
         await sandboxManager.start();
-        logger.info("[eliza] Sandbox manager started");
+        logger.info("[tokagent] Sandbox manager started");
       } catch (err) {
         logger.error(
-          `[eliza] Sandbox manager failed to start: ${err instanceof Error ? err.message : String(err)}`,
+          `[tokagent] Sandbox manager failed to start: ${err instanceof Error ? err.message : String(err)}`,
         );
         // Non-fatal: light mode fallback
       }
@@ -3286,7 +3286,7 @@ export async function startEliza(
   // ── End sandbox setup ───────────────────────────────────────────────────
 
   // ── Boost preferred provider plugin priority ──────────────────────────
-  // elizaOS selects the model handler with the highest `priority` for each
+  // tokagentOS selects the model handler with the highest `priority` for each
   // ModelType.  All provider plugins default to priority 0, so whichever
   // registers first wins — essentially random when using Promise.all.
   // When the user has explicitly selected a provider or model, prefer that
@@ -3298,7 +3298,7 @@ export async function startEliza(
       if (plugin.name === preferredProviderPluginName) {
         plugin.priority = (plugin.priority ?? 0) + 10;
         logger.info(
-          `[eliza] Boosted plugin "${plugin.name}" priority to ${plugin.priority} (preferred provider: ${preferredProviderId ?? "unknown"})`,
+          `[tokagent] Boosted plugin "${plugin.name}" priority to ${plugin.priority} (preferred provider: ${preferredProviderId ?? "unknown"})`,
         );
         break;
       }
@@ -3307,7 +3307,7 @@ export async function startEliza(
 
   // ── Strip upstream skill providers ──────────────────────────────────────
   // The upstream @elizaos/plugin-agent-skills registers providers that dump
-  // ALL loaded skills into every prompt (~2000-4000 tokens).  Eliza replaces
+  // ALL loaded skills into every prompt (~2000-4000 tokens).  Tokagent replaces
   // them with a BM25-lite dynamic provider (see providers/skill-provider.ts)
   // that injects only the most relevant skills per turn.
   //
@@ -3334,7 +3334,7 @@ export async function startEliza(
         const removed = before - plugin.providers.length;
         if (removed > 0) {
           logger.info(
-            `[eliza] Stripped ${removed} upstream skill provider(s) — using dynamic BM25-lite provider instead`,
+            `[tokagent] Stripped ${removed} upstream skill provider(s) — using dynamic BM25-lite provider instead`,
           );
         }
       }
@@ -3342,7 +3342,7 @@ export async function startEliza(
   }
 
   // Deduplicate actions across all plugins to avoid "Action already registered"
-  // warnings from elizaOS core. basic-capabilities is registered first by the
+  // warnings from tokagentOS core. basic-capabilities is registered first by the
   // runtime, so include it in deduplication so its actions take precedence.
   const settings = character.settings ?? {};
   const basicCapabilitiesPlugin = createBasicCapabilitiesPlugin({
@@ -3360,7 +3360,7 @@ export async function startEliza(
   });
   deduplicatePluginActions([
     basicCapabilitiesPlugin,
-    elizaPlugin,
+    tokagentPlugin,
     ...pluginsForRuntime,
   ]);
 
@@ -3369,7 +3369,7 @@ export async function startEliza(
     // advancedCapabilities: true,
     actionPlanning: true,
     // advancedMemory is enabled via character.advancedMemory
-    plugins: [elizaPlugin, ...pluginsForRuntime],
+    plugins: [tokagentPlugin, ...pluginsForRuntime],
     ...(runtimeLogLevel ? { logLevel: runtimeLogLevel } : {}),
     // Sandbox options — only active when mode != "off"
     ...(isSandboxActive
@@ -3388,7 +3388,7 @@ export async function startEliza(
       : {}),
     settings: {
       VALIDATION_LEVEL: "fast",
-      // Forward non-sensitive Eliza config.env vars as runtime settings so
+      // Forward non-sensitive Tokagent config.env vars as runtime settings so
       // plugins can access them via runtime.getSetting(). This fixes a bug where
       // plugins (e.g. @elizaos/plugin-google-genai) call runtime.getSetting()
       // which returns null for keys not in settings, but the plugin checks
@@ -3406,26 +3406,26 @@ export async function startEliza(
       // and plugins need access to secrets like passwords and tokens via
       // runtime.getSetting() for real transports to boot.
       ...collectConnectorEnvVars(config),
-      // Forward Eliza config env vars as runtime settings
+      // Forward Tokagent config env vars as runtime settings
       ...(preferredProviderId ? { MODEL_PROVIDER: preferredProviderId } : {}),
       ...(visionModeSetting ? { VISION_MODE: visionModeSetting } : {}),
       ...resolveWalletRuntimeSettings(config),
       ...(typeof config.agents?.defaults?.adminEntityId === "string" &&
       config.agents.defaults.adminEntityId.trim().length > 0
         ? {
-            ELIZA_ADMIN_ENTITY_ID: config.agents.defaults.adminEntityId.trim(),
+            TOKAGENT_ADMIN_ENTITY_ID: config.agents.defaults.adminEntityId.trim(),
           }
         : {}),
       ...(config.agents?.defaults?.ownerContacts
         ? {
-            ELIZA_OWNER_CONTACTS_JSON: JSON.stringify(
+            TOKAGENT_OWNER_CONTACTS_JSON: JSON.stringify(
               config.agents.defaults.ownerContacts,
             ),
           }
         : {}),
       ...(config.roles?.connectorAdmins
         ? {
-            ELIZA_ROLES_CONNECTOR_ADMINS_JSON: JSON.stringify(
+            TOKAGENT_ROLES_CONNECTOR_ADMINS_JSON: JSON.stringify(
               config.roles.connectorAdmins,
             ),
           }
@@ -3437,7 +3437,7 @@ export async function startEliza(
       ...(config.skills?.denyBundled
         ? { SKILLS_DENYLIST: config.skills.denyBundled.join(",") }
         : {}),
-      // Managed skills are stored in the Eliza state dir (~/.eliza/skills).
+      // Managed skills are stored in the Tokagent state dir (~/.tokagent/skills).
       SKILLS_DIR: managedSkillsDir,
       // Tell plugin-agent-skills where to find bundled + workspace skills
       ...(bundledSkillsDir ? { BUNDLED_SKILLS_DIRS: bundledSkillsDir } : {}),
@@ -3470,7 +3470,7 @@ export async function startEliza(
   } else {
     const loadedNames = resolvedPlugins.map((p) => p.name).join(", ");
     logger.error(
-      `[eliza] @elizaos/plugin-sql was NOT found among resolved plugins. ` +
+      `[tokagent] @elizaos/plugin-sql was NOT found among resolved plugins. ` +
         `Loaded: [${loadedNames}]`,
     );
     throw new Error(
@@ -3489,11 +3489,11 @@ export async function startEliza(
     configureLocalEmbeddingPlugin(localEmbeddingPlugin.plugin, config);
     await runtime.registerPlugin(localEmbeddingPlugin.plugin);
     logger.info(
-      "[eliza] plugin-local-embedding pre-registered (TEXT_EMBEDDING ready)",
+      "[tokagent] plugin-local-embedding pre-registered (TEXT_EMBEDDING ready)",
     );
   } else {
     logger.warn(
-      "[eliza] @elizaos/plugin-local-embedding not found — embeddings " +
+      "[tokagent] @elizaos/plugin-local-embedding not found — embeddings " +
         "will fall back to whatever TEXT_EMBEDDING handler is registered by " +
         "other plugins (may incur cloud API costs)",
     );
@@ -3504,12 +3504,12 @@ export async function startEliza(
   //     to the next, guaranteeing that cross-plugin getService() calls resolve.
   {
     try {
-      logger.info("[eliza] Pre-registering roles capability...");
+      logger.info("[tokagent] Pre-registering roles capability...");
       await runtime.registerPlugin(rolesPlugin);
-      logger.info("[eliza] ✓ roles capability pre-registered");
+      logger.info("[tokagent] ✓ roles capability pre-registered");
     } catch (err) {
       logger.warn(
-        `[eliza] Roles capability pre-registration failed: ${formatError(err)}`,
+        `[tokagent] Roles capability pre-registration failed: ${formatError(err)}`,
       );
     }
 
@@ -3522,13 +3522,13 @@ export async function startEliza(
       const resolved = resolvedPlugins.find((p) => p.name === name);
       if (!resolved) {
         logger.debug(
-          `[eliza] Core plugin ${name} not resolved — skipping pre-registration`,
+          `[tokagent] Core plugin ${name} not resolved — skipping pre-registration`,
         );
         continue;
       }
       try {
         const regStart = Date.now();
-        logger.info(`[eliza] Pre-registering core plugin: ${name}...`);
+        logger.info(`[tokagent] Pre-registering core plugin: ${name}...`);
         const PLUGIN_REG_TIMEOUT_MS = 30_000;
         await Promise.race([
           runtime.registerPlugin(resolved.plugin),
@@ -3543,11 +3543,11 @@ export async function startEliza(
           ),
         ]);
         logger.info(
-          `[eliza] ✓ ${name} pre-registered (${Date.now() - regStart}ms)`,
+          `[tokagent] ✓ ${name} pre-registered (${Date.now() - regStart}ms)`,
         );
       } catch (err) {
         logger.warn(
-          `[eliza] Core plugin ${name} pre-registration failed: ${formatError(err)}`,
+          `[tokagent] Core plugin ${name} pre-registration failed: ${formatError(err)}`,
         );
       }
     }
@@ -3584,7 +3584,7 @@ export async function startEliza(
       if (svc?.getCatalogStats) {
         const stats = svc.getCatalogStats();
         logger.info(
-          `[eliza] AgentSkills ready — ${stats.loaded} skills loaded, ` +
+          `[tokagent] AgentSkills ready — ${stats.loaded} skills loaded, ` +
             `${stats.total} in catalog (storage: ${stats.storageType})`,
         );
       }
@@ -3614,12 +3614,12 @@ export async function startEliza(
           }
           return skills;
         };
-        logger.debug("[eliza] Patched getLoadedSkills to guard descriptions");
+        logger.debug("[tokagent] Patched getLoadedSkills to guard descriptions");
       }
     } catch (err) {
       // Non-fatal — the agent can operate without skills. This warm-up runs
       // async so it doesn't block startup.
-      logger.debug(`[eliza] AgentSkillsService warm-up: ${formatError(err)}`);
+      logger.debug(`[tokagent] AgentSkillsService warm-up: ${formatError(err)}`);
     }
   };
 
@@ -3630,7 +3630,7 @@ export async function startEliza(
       );
       await stewardEvmPreBoot(runtime);
     } catch (err) {
-      logger.debug(`[eliza] Steward EVM pre-boot skipped: ${formatError(err)}`);
+      logger.debug(`[tokagent] Steward EVM pre-boot skipped: ${formatError(err)}`);
     }
 
     // 7f. Pre-register ConnectorSetupService so connector plugins can access
@@ -3642,7 +3642,7 @@ export async function startEliza(
       await runtime.registerService(ConnectorSetupService);
     } catch (err) {
       logger.debug(
-        `[eliza] ConnectorSetupService registration skipped: ${formatError(err)}`,
+        `[tokagent] ConnectorSetupService registration skipped: ${formatError(err)}`,
       );
     }
 
@@ -3656,7 +3656,7 @@ export async function startEliza(
       const { applyPluginRoleGating } = await import("./plugin-role-gating.js");
       applyPluginRoleGating(runtime.plugins ?? []);
     } catch (err) {
-      logger.debug(`[eliza] Plugin role gating skipped: ${formatError(err)}`);
+      logger.debug(`[tokagent] Plugin role gating skipped: ${formatError(err)}`);
     }
 
     // 8b. Register lightweight conversation-proximity evaluator.
@@ -3667,7 +3667,7 @@ export async function startEliza(
         "../services/conversation-proximity.js"
       );
       await runtime.registerPlugin({
-        name: "eliza-conversation-proximity",
+        name: "tokagent-conversation-proximity",
         description:
           "Lightweight relationship updates from conversation co-occurrence",
         evaluators: [
@@ -3690,10 +3690,10 @@ export async function startEliza(
           },
         ],
       });
-      logger.info("[eliza] ✓ conversation-proximity evaluator registered");
+      logger.info("[tokagent] ✓ conversation-proximity evaluator registered");
     } catch (err) {
       logger.debug(
-        `[eliza] Conversation-proximity evaluator skipped: ${formatError(err)}`,
+        `[tokagent] Conversation-proximity evaluator skipped: ${formatError(err)}`,
       );
     }
 
@@ -3702,12 +3702,12 @@ export async function startEliza(
         await seedBundledKnowledge(runtime);
       } else {
         logger.info(
-          "[eliza] Native knowledge disabled; skipping bundled knowledge seeding",
+          "[tokagent] Native knowledge disabled; skipping bundled knowledge seeding",
         );
       }
     } catch (err) {
       logger.warn(
-        `[eliza] Failed to seed bundled knowledge: ${formatError(err)}`,
+        `[tokagent] Failed to seed bundled knowledge: ${formatError(err)}`,
       );
     }
 
@@ -3718,7 +3718,7 @@ export async function startEliza(
       await stewardEvmPostBoot(runtime);
     } catch (err) {
       logger.debug(
-        `[eliza] Steward EVM post-boot skipped: ${formatError(err)}`,
+        `[tokagent] Steward EVM post-boot skipped: ${formatError(err)}`,
       );
     }
 
@@ -3729,7 +3729,7 @@ export async function startEliza(
       installAnthropicWebSearch(runtime);
     } catch (err) {
       logger.debug(
-        `[eliza] Anthropic web search setup skipped: ${formatError(err)}`,
+        `[tokagent] Anthropic web search setup skipped: ${formatError(err)}`,
       );
     }
 
@@ -3743,14 +3743,14 @@ export async function startEliza(
     if (autonomyEnabled && !runtime.getService("AUTONOMY")) {
       try {
         await AutonomyService.start(runtime);
-        logger.info("[eliza] AutonomyService started for trigger dispatch");
+        logger.info("[tokagent] AutonomyService started for trigger dispatch");
       } catch (err) {
         logger.warn(
-          `[eliza] AutonomyService failed to start: ${formatError(err)}`,
+          `[tokagent] AutonomyService failed to start: ${formatError(err)}`,
         );
       }
     } else if (!autonomyEnabled) {
-      logger.info("[eliza] AutonomyService skipped — ENABLE_AUTONOMY=false");
+      logger.info("[tokagent] AutonomyService skipped — ENABLE_AUTONOMY=false");
     }
 
     // Enable the autonomy loop so trigger/heartbeat instructions are
@@ -3762,11 +3762,11 @@ export async function startEliza(
         try {
           await autonomySvc.enableAutonomy();
           logger.info(
-            "[eliza] AutonomyService enabled — trigger instructions will be processed",
+            "[tokagent] AutonomyService enabled — trigger instructions will be processed",
           );
         } catch (err) {
           logger.warn(
-            `[eliza] Failed to enable autonomy loop: ${formatError(err)}`,
+            `[tokagent] Failed to enable autonomy loop: ${formatError(err)}`,
           );
         }
       }
@@ -3774,7 +3774,7 @@ export async function startEliza(
 
     // Do not block runtime startup on skills warm-up.
     void warmAgentSkillsService().catch((err) => {
-      logger.warn(`[eliza] Skills warm-up failed: ${formatError(err)}`);
+      logger.warn(`[tokagent] Skills warm-up failed: ${formatError(err)}`);
     });
   };
 
@@ -3798,7 +3798,7 @@ export async function startEliza(
     }
 
     logger.warn(
-      `[eliza] Runtime migrations failed (${formatError(err)}). Cleared a stale PGLite lock in ${pgliteDataDir} and retrying startup once without resetting data.`,
+      `[tokagent] Runtime migrations failed (${formatError(err)}). Cleared a stale PGLite lock in ${pgliteDataDir} and retrying startup once without resetting data.`,
     );
     try {
       await shutdownRuntime(runtime, "PGLite recovery");
@@ -3806,7 +3806,7 @@ export async function startEliza(
       // Ignore cleanup errors — retry creates a fresh runtime anyway.
     }
 
-    return await startEliza({
+    return await startTokagent({
       ...opts,
       pgliteRecoveryAttempted: true,
     });
@@ -3835,7 +3835,7 @@ export async function startEliza(
       await loadHooks({
         workspacePath: workspaceDir,
         internalConfig: internalHooksConfig,
-        elizaConfig: config as Record<string, unknown>,
+        tokagentConfig: config as Record<string, unknown>,
       });
 
       const startupEvent = createHookEvent("gateway", "startup", "system", {
@@ -3843,17 +3843,17 @@ export async function startEliza(
       });
       await triggerHook(startupEvent);
     } catch (err) {
-      logger.warn(`[eliza] Hooks system could not load: ${formatError(err)}`);
+      logger.warn(`[tokagent] Hooks system could not load: ${formatError(err)}`);
     }
   };
 
   // ── Headless mode — return runtime for API server wiring ──────────────
   if (opts?.headless) {
     void loadHooksSystem().catch((err) => {
-      logger.warn(`[eliza] Hooks system load failed: ${formatError(err)}`);
+      logger.warn(`[tokagent] Hooks system load failed: ${formatError(err)}`);
     });
     logger.info(
-      "[eliza] Runtime initialised in headless mode (autonomy enabled)",
+      "[tokagent] Runtime initialised in headless mode (autonomy enabled)",
     );
     return runtime;
   }
@@ -3864,7 +3864,7 @@ export async function startEliza(
   // ── Start API server for GUI access ──────────────────────────────────────
   // In CLI mode (non-headless), start the API server in the background so
   // the GUI can connect to the running agent.  This ensures full feature
-  // parity: whether started via `npx elizaos`, `bun run dev`, or the
+  // parity: whether started via `npx tokagentos`, `bun run dev`, or the
   // desktop app, the API server is always available for the GUI admin
   // surface.
   try {
@@ -3874,7 +3874,7 @@ export async function startEliza(
       port: apiPort,
       runtime,
       onRestart: async () => {
-        logger.info("[eliza] Hot-reload: Restarting runtime...");
+        logger.info("[tokagent] Hot-reload: Restarting runtime...");
         try {
           // Stop the old runtime to release resources (DB connections, timers, etc.)
 
@@ -3882,16 +3882,16 @@ export async function startEliza(
             await shutdownRuntime(runtime, "hot-reload cleanup");
           } catch (stopErr) {
             logger.warn(
-              `[eliza] Hot-reload: old runtime stop failed: ${formatError(stopErr)}`,
+              `[tokagent] Hot-reload: old runtime stop failed: ${formatError(stopErr)}`,
             );
           }
 
           // Reload config from disk (updated by API)
-          const freshConfig = loadElizaConfig();
+          const freshConfig = loadTokagentConfig();
 
           // Propagate secrets & cloud config into process.env so plugins
-          // (especially plugin-elizacloud) can discover them.  The initial
-          // startup does this in startEliza(); the hot-reload must repeat it
+          // (especially plugin-tokagentcloud) can discover them.  The initial
+          // startup does this in startTokagent(); the hot-reload must repeat it
           // because the config may have changed (e.g. cloud enabled during
           // onboarding).
           applyConnectorSecretsToEnv(freshConfig);
@@ -3916,7 +3916,7 @@ export async function startEliza(
             await applySubscriptionCredentials(freshConfig);
           } catch (subErr) {
             logger.warn(
-              `[eliza] Hot-reload: subscription credentials: ${formatError(subErr)}`,
+              `[tokagent] Hot-reload: subscription credentials: ${formatError(subErr)}`,
             );
           }
 
@@ -3927,8 +3927,8 @@ export async function startEliza(
           // (name, bio, style, etc.) are picked up on restart.
           const freshCharacter = buildCharacterFromConfig(freshConfig);
 
-          // Recreate Eliza plugin with fresh workspace
-          const freshElizaPlugin = createElizaPlugin({
+          // Recreate Tokagent plugin with fresh workspace
+          const freshTokagentPlugin = createTokagentPlugin({
             workspaceDir:
               freshConfig.agents?.defaults?.workspace ?? workspaceDir,
 
@@ -3960,7 +3960,7 @@ export async function startEliza(
           }
           const newRuntime = new AgentRuntime({
             character: freshCharacter,
-            plugins: [freshElizaPlugin, ...freshPluginsForRuntime],
+            plugins: [freshTokagentPlugin, ...freshPluginsForRuntime],
             ...(runtimeLogLevel ? { logLevel: runtimeLogLevel } : {}),
             settings: {
               ...(freshPreferredProviderId
@@ -4008,7 +4008,7 @@ export async function startEliza(
               await newRuntime.registerPlugin(rolesPlugin);
             } catch (err) {
               logger.warn(
-                `[eliza] Hot-reload: roles capability pre-registration failed: ${formatError(err)}`,
+                `[tokagent] Hot-reload: roles capability pre-registration failed: ${formatError(err)}`,
               );
             }
 
@@ -4024,7 +4024,7 @@ export async function startEliza(
                 await newRuntime.registerPlugin(resolved.plugin);
               } catch (err) {
                 logger.warn(
-                  `[eliza] Hot-reload: core plugin ${name} pre-registration failed: ${formatError(err)}`,
+                  `[tokagent] Hot-reload: core plugin ${name} pre-registration failed: ${formatError(err)}`,
                 );
               }
             }
@@ -4072,7 +4072,7 @@ export async function startEliza(
               await AutonomyService.start(newRuntime);
             } catch (err) {
               logger.warn(
-                `[eliza] AutonomyService failed to start after hot-reload: ${formatError(err)}`,
+                `[tokagent] AutonomyService failed to start after hot-reload: ${formatError(err)}`,
               );
             }
           }
@@ -4085,7 +4085,7 @@ export async function startEliza(
                 await svc.enableAutonomy();
               } catch (err) {
                 logger.warn(
-                  `[eliza] Failed to enable autonomy after hot-reload: ${formatError(err)}`,
+                  `[tokagent] Failed to enable autonomy after hot-reload: ${formatError(err)}`,
                 );
               }
             }
@@ -4093,21 +4093,21 @@ export async function startEliza(
 
           installActionAliases(newRuntime);
           runtime = newRuntime;
-          logger.info("[eliza] Hot-reload: Runtime restarted successfully");
+          logger.info("[tokagent] Hot-reload: Runtime restarted successfully");
           return newRuntime;
         } catch (err) {
-          logger.error(`[eliza] Hot-reload failed: ${formatError(err)}`);
+          logger.error(`[tokagent] Hot-reload failed: ${formatError(err)}`);
           return null;
         }
       },
     });
     const dashboardUrl = `http://localhost:${actualApiPort}`;
-    console.log(`[eliza] Control UI: ${dashboardUrl}`);
-    logger.info(`[eliza] API server listening on ${dashboardUrl}`);
+    console.log(`[tokagent] Control UI: ${dashboardUrl}`);
+    logger.info(`[tokagent] API server listening on ${dashboardUrl}`);
   } catch (apiErr) {
     // Log to both stderr (visible to Electrobun agent.ts) and the in-memory
     // logger so the error is never silently swallowed in packaged builds.
-    const apiErrMsg = `[eliza] Could not start API server: ${formatError(apiErr)}`;
+    const apiErrMsg = `[tokagent] Could not start API server: ${formatError(apiErr)}`;
     console.error(apiErrMsg);
     logger.warn(apiErrMsg);
 
@@ -4116,7 +4116,7 @@ export async function startEliza(
     // non-zero exit code instead of the misleading "Server running" message.
     if (opts?.serverOnly) {
       console.error(
-        "[eliza] Exiting: API server is required in server-only mode.",
+        "[tokagent] Exiting: API server is required in server-only mode.",
       );
       process.exit(1);
     }
@@ -4125,8 +4125,8 @@ export async function startEliza(
 
   // ── Server-only mode — keep running without chat loop ────────────────────
   if (opts?.serverOnly) {
-    logger.info("[eliza] Running in server-only mode (no interactive chat)");
-    console.log("[eliza] Server running. Press Ctrl+C to stop.");
+    logger.info("[tokagent] Running in server-only mode (no interactive chat)");
+    console.log("[tokagent] Server running. Press Ctrl+C to stop.");
 
     // Keep process alive — the API server handles all interaction
     const keepAlive = setInterval(() => {}, 1 << 30); // ~12 days
@@ -4143,7 +4143,7 @@ export async function startEliza(
   }
 
   // ── Interactive chat loop ────────────────────────────────────────────────
-  const agentName = character.name ?? "Eliza";
+  const agentName = character.name ?? "Tokagent";
   const userId = crypto.randomUUID() as UUID;
   // Use `let` so the fallback path can reassign to fresh IDs.
   let roomId = stringToUuid(`${agentName}-chat-room`);
@@ -4189,7 +4189,7 @@ export async function startEliza(
     }
   } catch (err) {
     logger.warn(
-      `[eliza] Could not establish chat room, retrying with fresh IDs: ${formatError(err)}`,
+      `[tokagent] Could not establish chat room, retrying with fresh IDs: ${formatError(err)}`,
     );
 
     // Fall back to unique IDs if deterministic ones conflict with stale data.
@@ -4232,7 +4232,7 @@ export async function startEliza(
       }
     } catch (retryErr) {
       logger.error(
-        `[eliza] Chat room setup failed after retry: ${formatError(retryErr)}`,
+        `[tokagent] Chat room setup failed after retry: ${formatError(retryErr)}`,
       );
       throw retryErr;
     }
@@ -4255,7 +4255,7 @@ export async function startEliza(
         try {
           await shutdownRuntime(runtime, "cli shutdown");
         } catch (err) {
-          logger.warn(`[eliza] Error stopping runtime: ${formatError(err)}`);
+          logger.warn(`[tokagent] Error stopping runtime: ${formatError(err)}`);
         }
         process.exit(0);
       }
@@ -4281,7 +4281,7 @@ export async function startEliza(
 
         if (!runtime.messageService) {
           logger.error(
-            "[eliza] runtime.messageService is not available — cannot process messages",
+            "[tokagent] runtime.messageService is not available — cannot process messages",
           );
           console.log("[Error: message service unavailable]\n");
           prompt();
@@ -4305,7 +4305,7 @@ export async function startEliza(
         // failed message kill the interactive session.
         console.log(`\n[Error: ${formatError(err)}]\n`);
         logger.error(
-          `[eliza] Chat message handling failed: ${formatError(err)}`,
+          `[tokagent] Chat message handling failed: ${formatError(err)}`,
         );
       }
       prompt();
@@ -4327,9 +4327,9 @@ export async function startEliza(
  * Skips all local runtime construction (plugins, database, etc.).
  */
 export async function startInCloudMode(
-  config: ElizaConfig,
+  config: TokagentConfig,
   agentId: string,
-  opts?: StartElizaOptions,
+  opts?: StartTokagentOptions,
 ): Promise<AgentRuntime | undefined> {
   const { CloudManager } = await import("../cloud/cloud-manager.js");
 
@@ -4340,12 +4340,12 @@ export async function startInCloudMode(
     );
   }
   logger.info(
-    `[eliza] Starting in cloud mode (agentId=${agentId}, baseUrl=${cloudConfig.baseUrl ?? "(default)"})`,
+    `[tokagent] Starting in cloud mode (agentId=${agentId}, baseUrl=${cloudConfig.baseUrl ?? "(default)"})`,
   );
 
   const manager = new CloudManager(cloudConfig, {
     onStatusChange: (status) => {
-      logger.info(`[eliza] Cloud connection: ${status}`);
+      logger.info(`[tokagent] Cloud connection: ${status}`);
     },
   });
 
@@ -4357,7 +4357,7 @@ export async function startInCloudMode(
       // In headless/server mode, start the API server with the cloud proxy.
       // The proxy exposes the same interface the API server needs.
       logger.info(
-        `[eliza] Cloud agent connected (headless). Agent: ${proxy.agentName}`,
+        `[tokagent] Cloud agent connected (headless). Agent: ${proxy.agentName}`,
       );
       // Return undefined here; GUI cloud mode is handled through the
       // dedicated cloud proxy routes instead of a local AgentRuntime.
@@ -4418,10 +4418,10 @@ export async function startInCloudMode(
     return undefined;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    logger.error(`[eliza] Failed to connect to cloud agent: ${msg}`);
+    logger.error(`[tokagent] Failed to connect to cloud agent: ${msg}`);
     throw new Error(
       `Failed to connect to cloud agent: ${msg}\n` +
-        "You can retry with `eliza start`, or switch to local mode by setting `deploymentTarget.runtime` to `local`",
+        "You can retry with `tokagent start`, or switch to local mode by setting `deploymentTarget.runtime` to `local`",
     );
   }
 }
@@ -4434,9 +4434,9 @@ const isDirectRun = (() => {
 })();
 
 if (isDirectRun) {
-  startEliza().catch((err) => {
+  startTokagent().catch((err) => {
     console.error(
-      "[eliza] Fatal error:",
+      "[tokagent] Fatal error:",
       err instanceof Error ? (err.stack ?? err.message) : err,
     );
     process.exit(1);

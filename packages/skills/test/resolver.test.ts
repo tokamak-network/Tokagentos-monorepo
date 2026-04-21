@@ -8,7 +8,7 @@ import { getSkillsDir, clearSkillsDirCache } from "../src/resolver.js";
 describe("getSkillsDir", () => {
   afterEach(() => {
     clearSkillsDirCache();
-    delete process.env.ELIZAOS_BUNDLED_SKILLS_DIR;
+    delete process.env.TOKAGENTOS_BUNDLED_SKILLS_DIR;
   });
 
   it("returns a non-empty string path", () => {
@@ -28,7 +28,7 @@ describe("getSkillsDir", () => {
     assert.strictEqual(first, second);
   });
 
-  it("respects ELIZAOS_BUNDLED_SKILLS_DIR environment variable", () => {
+  it("respects TOKAGENTOS_BUNDLED_SKILLS_DIR environment variable", () => {
     const tempDir = join(tmpdir(), `test-skills-resolver-${Date.now()}`);
     mkdirSync(tempDir, { recursive: true });
     writeFileSync(
@@ -37,7 +37,7 @@ describe("getSkillsDir", () => {
     );
 
     clearSkillsDirCache();
-    process.env.ELIZAOS_BUNDLED_SKILLS_DIR = tempDir;
+    process.env.TOKAGENTOS_BUNDLED_SKILLS_DIR = tempDir;
 
     const result = getSkillsDir();
     assert.strictEqual(result, tempDir);
@@ -47,7 +47,7 @@ describe("getSkillsDir", () => {
 
   it("ignores empty environment variable", () => {
     clearSkillsDirCache();
-    process.env.ELIZAOS_BUNDLED_SKILLS_DIR = "";
+    process.env.TOKAGENTOS_BUNDLED_SKILLS_DIR = "";
 
     // Should fall through to default resolution
     const dir = getSkillsDir();
@@ -59,7 +59,7 @@ describe("getSkillsDir", () => {
 describe("clearSkillsDirCache", () => {
   afterEach(() => {
     clearSkillsDirCache();
-    delete process.env.ELIZAOS_BUNDLED_SKILLS_DIR;
+    delete process.env.TOKAGENTOS_BUNDLED_SKILLS_DIR;
   });
 
   it("clears cache and re-resolves path", () => {
@@ -84,7 +84,7 @@ describe("clearSkillsDirCache", () => {
 
     // Clear cache and set env var
     clearSkillsDirCache();
-    process.env.ELIZAOS_BUNDLED_SKILLS_DIR = tempDir;
+    process.env.TOKAGENTOS_BUNDLED_SKILLS_DIR = tempDir;
 
     const overriddenDir = getSkillsDir();
     assert.strictEqual(overriddenDir, tempDir);

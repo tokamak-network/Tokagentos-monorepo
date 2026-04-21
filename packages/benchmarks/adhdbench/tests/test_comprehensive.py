@@ -16,19 +16,19 @@ from pathlib import Path
 
 import pytest
 
-from elizaos_adhdbench.baselines import (
+from tokagentos_adhdbench.baselines import (
     BOOTSTRAP_ACTION_NAMES,
     compute_always_reply_baseline,
     compute_random_baseline,
 )
-from elizaos_adhdbench.config import ADHDBenchConfig
-from elizaos_adhdbench.evaluator import (
+from tokagentos_adhdbench.config import ADHDBenchConfig
+from tokagentos_adhdbench.evaluator import (
     compute_scenario_score,
     compute_turn_score,
     evaluate_outcome,
 )
-from elizaos_adhdbench.reporting import ADHDBenchReporter
-from elizaos_adhdbench.scenarios import (
+from tokagentos_adhdbench.reporting import ADHDBenchReporter
+from tokagentos_adhdbench.scenarios import (
     ALL_SCENARIOS,
     L0_SCENARIOS,
     L1_SCENARIOS,
@@ -36,7 +36,7 @@ from elizaos_adhdbench.scenarios import (
     SCENARIO_BY_ID,
     get_scenarios,
 )
-from elizaos_adhdbench.types import (
+from tokagentos_adhdbench.types import (
     BenchmarkResults,
     ExpectedOutcome,
     OutcomeResult,
@@ -562,22 +562,22 @@ class TestReporting:
 class TestDistractorEdgeCases:
 
     def test_negative_count(self) -> None:
-        from elizaos_adhdbench.distractor_plugin import get_distractor_actions
+        from tokagentos_adhdbench.distractor_plugin import get_distractor_actions
         assert get_distractor_actions(-5) == []
 
     def test_count_one(self) -> None:
-        from elizaos_adhdbench.distractor_plugin import get_distractor_actions
+        from tokagentos_adhdbench.distractor_plugin import get_distractor_actions
         actions = get_distractor_actions(1)
         assert len(actions) == 1
 
     def test_count_49(self) -> None:
-        from elizaos_adhdbench.distractor_plugin import get_distractor_actions
+        from tokagentos_adhdbench.distractor_plugin import get_distractor_actions
         actions = get_distractor_actions(49)
         assert len(actions) == 49
 
     def test_count_51(self) -> None:
         """Boundary: first variant generated."""
-        from elizaos_adhdbench.distractor_plugin import get_distractor_actions
+        from tokagentos_adhdbench.distractor_plugin import get_distractor_actions
         actions = get_distractor_actions(51)
         assert len(actions) == 51
         names = [a.name for a in actions]
@@ -586,7 +586,7 @@ class TestDistractorEdgeCases:
         assert "_V2" in names[50] or "_PRO" in names[50] or any("_" in n for n in names[50:])
 
     def test_all_actions_have_handler_and_validator(self) -> None:
-        from elizaos_adhdbench.distractor_plugin import get_distractor_actions
+        from tokagentos_adhdbench.distractor_plugin import get_distractor_actions
         for action in get_distractor_actions(10):
             assert action.handler is not None
             assert action.validate is not None
@@ -595,13 +595,13 @@ class TestDistractorEdgeCases:
 
     def test_scale_exact_match(self) -> None:
         """When bootstrap exactly equals target, 0 distractors needed."""
-        from elizaos_adhdbench.distractor_plugin import get_distractor_plugin_actions_for_scale
+        from tokagentos_adhdbench.distractor_plugin import get_distractor_plugin_actions_for_scale
         actions = get_distractor_plugin_actions_for_scale(21, 21)
         assert len(actions) == 0
 
     def test_variant_names_never_collide_with_base(self) -> None:
         """Variant names should not equal any base spec name."""
-        from elizaos_adhdbench.distractor_plugin import ALL_DISTRACTOR_SPECS, get_distractor_actions
+        from tokagentos_adhdbench.distractor_plugin import ALL_DISTRACTOR_SPECS, get_distractor_actions
         base_names = {s.name for s in ALL_DISTRACTOR_SPECS}
         actions = get_distractor_actions(150)
         variant_actions = actions[len(ALL_DISTRACTOR_SPECS):]

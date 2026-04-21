@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Run the Context Benchmark against ElizaOS Python.
+Run the Context Benchmark against TokagentOS Python.
 
 This script runs a comprehensive context benchmark evaluation
 and generates results for comparison with published leaderboards.
@@ -9,9 +9,9 @@ Modes:
 - mock: Fast testing with heuristic-based mock LLM
 - openai: Direct OpenAI API calls
 - anthropic: Direct Anthropic API calls
-- eliza-mock: Eliza runtime with mock model
-- eliza-openai: Eliza runtime with OpenAI model plugin
-- eliza-agent: FULL Eliza agent loop (Provider -> Action -> Evaluator)
+- tokagent-mock: Tokagent runtime with mock model
+- tokagent-openai: Tokagent runtime with OpenAI model plugin
+- tokagent-agent: FULL Tokagent agent loop (Provider -> Action -> Evaluator)
 """
 
 import asyncio
@@ -23,7 +23,7 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from elizaos_context_bench import (
+from tokagentos_context_bench import (
     ContextBenchConfig,
     ContextBenchRunner,
     ContextBenchReporter,
@@ -180,7 +180,7 @@ def get_llm_query_fn(provider: str):
                 "ANTHROPIC_API_KEY is not set. Add it to the repo-root .env or export it."
             )
         return anthropic_llm_query
-    elif provider == "eliza-openai":
+    elif provider == "tokagent-openai":
         if not os.environ.get("OPENAI_API_KEY"):
             raise ValueError(
                 "OPENAI_API_KEY is not set. Add it to the repo-root .env or export it."
@@ -189,10 +189,10 @@ def get_llm_query_fn(provider: str):
         # Users can override with OPENAI_LARGE_MODEL / OPENAI_SMALL_MODEL in .env.
         os.environ.setdefault("OPENAI_LARGE_MODEL", "gpt-5-mini")
         os.environ.setdefault("OPENAI_SMALL_MODEL", "gpt-5-mini")
-        # Uses Eliza's runtime + the OpenAI model plugin (requires OPENAI_API_KEY).
-        from elizaos.runtime import AgentRuntime
-        from elizaos.types.model import ModelType
-        from elizaos_plugin_openai import get_openai_plugin
+        # Uses Tokagent's runtime + the OpenAI model plugin (requires OPENAI_API_KEY).
+        from tokagentos.runtime import AgentRuntime
+        from tokagentos.types.model import ModelType
+        from tokagentos_plugin_openai import get_openai_plugin
 
         runtime = AgentRuntime()
 
@@ -202,7 +202,7 @@ def get_llm_query_fn(provider: str):
             for model_type, handler in plugin.models.items():
                 runtime.register_model(model_type, handler, provider=plugin.name)
 
-        async def eliza_openai_query(context: str, question: str) -> str:
+        async def tokagent_openai_query(context: str, question: str) -> str:
             system = (
                 "You are a helpful assistant that answers questions based ONLY on the provided context. "
                 "Return ONLY the answer text (no extra words, no markdown)."
@@ -219,11 +219,11 @@ def get_llm_query_fn(provider: str):
             )
             return str(result)
 
-        return eliza_openai_query
-    elif provider == "eliza-mock":
-        # Uses the Eliza runtime model interface (runtime.use_model) with an in-process heuristic model.
-        from elizaos.runtime import AgentRuntime
-        from elizaos.types.model import ModelType
+        return tokagent_openai_query
+    elif provider == "tokagent-mock":
+        # Uses the Tokagent runtime model interface (runtime.use_model) with an in-process heuristic model.
+        from tokagentos.runtime import AgentRuntime
+        from tokagentos.types.model import ModelType
 
         runtime = AgentRuntime()
 
@@ -231,9 +231,9 @@ def get_llm_query_fn(provider: str):
             prompt = str(params.get("prompt", ""))
             return await mock_llm_query(prompt, "")
 
-        runtime.register_model(ModelType.TEXT_LARGE, model_handler, provider="eliza-mock")
+        runtime.register_model(ModelType.TEXT_LARGE, model_handler, provider="tokagent-mock")
 
-        async def eliza_mock_query(context: str, question: str) -> str:
+        async def tokagent_mock_query(context: str, question: str) -> str:
             prompt = (
                 "Given the following context, answer the question precisely and concisely.\n\n"
                 f"Context:\n{context}\n\n"
@@ -246,8 +246,8 @@ def get_llm_query_fn(provider: str):
             )
             return str(result)
 
-        return eliza_mock_query
-    elif provider == "eliza":
+        return tokagent_mock_query
+    elif provider == "tokagent":
         from milady_adapter.context_bench import make_milady_llm_query
 
         return make_milady_llm_query()
@@ -268,7 +268,7 @@ async def run_benchmark(
     _load_env_file(repo_root / ".env")
     
     print("=" * 60)
-    print("ElizaOS Context Benchmark")
+    print("TokagentOS Context Benchmark")
     print("=" * 60)
     print(f"Provider: {provider}")
     print(f"Mode: {'Quick' if quick else 'Full'}")
@@ -312,9 +312,9 @@ async def run_benchmark(
         bar = "█" * filled + "░" * (bar_len - filled)
         print(f"\r{suite}: [{bar}] {completed}/{total} ({pct:.1f}%)", end="", flush=True)
     
-    # Special handling for eliza-agent mode (FULL canonical agent loop)
-    if provider == "eliza-agent":
-        await run_eliza_agent_benchmark_mode(
+    # Special handling for tokagent-agent mode (FULL canonical agent loop)
+    if provider == "tokagent-agent":
+        await run_tokagent_agent_benchmark_mode(
             config=config,
             output_dir=output_dir,
             on_progress=on_progress,
@@ -358,14 +358,14 @@ async def run_benchmark(
     return results
 
 
-async def run_eliza_agent_benchmark_mode(
+async def run_tokagent_agent_benchmark_mode(
     config: ContextBenchConfig,
     output_dir: str,
     on_progress,
 ) -> None:
-    """Run the FULL Eliza agent loop benchmark.
+    """Run the FULL Tokagent agent loop benchmark.
 
-    This mode exercises the complete canonical Eliza flow:
+    This mode exercises the complete canonical Tokagent flow:
     1. CONTEXT_BENCH provider injects benchmark context
     2. MESSAGE_HANDLER_TEMPLATE generates response with actions
     3. REPLY action (from bootstrap) processes the response
@@ -373,27 +373,27 @@ async def run_eliza_agent_benchmark_mode(
 
     This tests the entire agent architecture, not just the model layer.
     """
-    from elizaos_context_bench.runner import setup_and_run_agent_benchmark
+    from tokagentos_context_bench.runner import setup_and_run_agent_benchmark
     
     # Check for OpenAI API key (required for model)
     if not os.environ.get("OPENAI_API_KEY"):
         raise ValueError(
             "OPENAI_API_KEY is not set. Add it to the repo-root .env or export it.\n"
-            "The eliza-agent mode requires a real LLM to run the full agent loop."
+            "The tokagent-agent mode requires a real LLM to run the full agent loop."
         )
     
     # Use cheaper models by default for benchmarking
     os.environ.setdefault("OPENAI_LARGE_MODEL", "gpt-5-mini")
     os.environ.setdefault("OPENAI_SMALL_MODEL", "gpt-5-mini")
     
-    print("Running FULL Eliza Agent Loop benchmark...")
+    print("Running FULL Tokagent Agent Loop benchmark...")
     print("This tests the complete canonical flow:")
     print("  Provider -> MESSAGE_HANDLER_TEMPLATE -> Actions -> Evaluators")
     print()
     
     # Import the OpenAI plugin factory
     def get_openai_plugin_factory():
-        from elizaos_plugin_openai import get_openai_plugin
+        from tokagentos_plugin_openai import get_openai_plugin
         return get_openai_plugin()
     
     results = await setup_and_run_agent_benchmark(
@@ -427,7 +427,7 @@ async def run_eliza_agent_benchmark_mode(
     
     # Save results
     os.makedirs(output_dir, exist_ok=True)
-    paths = save_results(results, output_dir, prefix="context_bench_eliza_agent")
+    paths = save_results(results, output_dir, prefix="context_bench_tokagent_agent")
     
     print("\nResults saved to:")
     for file_type, path in paths.items():
@@ -437,13 +437,13 @@ async def run_eliza_agent_benchmark_mode(
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Run ElizaOS Context Benchmark"
+        description="Run TokagentOS Context Benchmark"
     )
     parser.add_argument(
         "--provider",
-        choices=["mock", "openai", "anthropic", "eliza-mock", "eliza-openai", "eliza-agent", "eliza"],
+        choices=["mock", "openai", "anthropic", "tokagent-mock", "tokagent-openai", "tokagent-agent", "tokagent"],
         default="mock",
-        help="LLM provider to use (default: mock). 'eliza' uses the TS eliza agent."
+        help="LLM provider to use (default: mock). 'tokagent' uses the TS tokagent agent."
     )
     parser.add_argument(
         "--quick",

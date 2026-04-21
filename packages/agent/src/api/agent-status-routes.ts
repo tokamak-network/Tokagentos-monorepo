@@ -6,8 +6,8 @@
  */
 
 import type http from "node:http";
-import { logger } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import { logger } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import type { ReadJsonBodyOptions } from "./http-helpers.js";
 
 // ---------------------------------------------------------------------------
@@ -58,10 +58,10 @@ export interface AgentStatusRouteDeps {
     executionBlockedReason: string | null;
     automationMode: string;
   };
-  resolveWalletRpcReadiness: (config: ElizaConfig) => {
+  resolveWalletRpcReadiness: (config: TokagentConfig) => {
     managedBscRpcReady: boolean;
   };
-  resolveTradePermissionMode: (config: ElizaConfig) => string;
+  resolveTradePermissionMode: (config: TokagentConfig) => string;
   canUseLocalTradeExecution: (
     mode: string,
     isAgentRequest: boolean,
@@ -70,7 +70,7 @@ export interface AgentStatusRouteDeps {
   ) => boolean;
   detectRuntimeModel: (
     runtime: unknown,
-    config: ElizaConfig,
+    config: TokagentConfig,
   ) => string | undefined;
   resolveProviderFromModel: (model: string) => string | null;
   getGlobalAwarenessRegistry: () => AwarenessRegistryLike | null;
@@ -82,7 +82,7 @@ export interface AgentStatusRouteDeps {
 }
 
 export interface AgentStatusRouteState {
-  config: ElizaConfig;
+  config: TokagentConfig;
   runtime: {
     plugins: Array<{ name: string }>;
     character: { name?: string };
@@ -351,7 +351,7 @@ export async function handleAgentStatusRoutes(
     }>(req, res);
     if (!body) return true;
 
-    const agentName = body.name || state.agentName || "Eliza";
+    const agentName = body.name || state.agentName || "Tokagent";
     const endpoint = body.endpoint || "";
     const tokenURI = body.tokenURI || "";
 
@@ -392,7 +392,7 @@ export async function handleAgentStatusRoutes(
     }>(req, res);
     if (!body) return true;
 
-    const agentName = body.name || state.agentName || "Eliza";
+    const agentName = body.name || state.agentName || "Tokagent";
     const endpoint = body.endpoint || "";
     const tokenURI = body.tokenURI || "";
 

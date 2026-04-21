@@ -1,4 +1,4 @@
-//! Core types for elizaOS
+//! Core types for tokagentOS
 
 // Proto-generated types (single source of truth)
 pub mod generated;

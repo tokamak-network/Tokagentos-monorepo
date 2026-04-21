@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import type { ProjectTemplateMetadata } from "./types.js";
 
-const METADATA_DIR = ".elizaos";
+const METADATA_DIR = ".tokagentos";
 const METADATA_FILE = "template.json";
 
 export function getMetadataPath(projectRoot: string): string {

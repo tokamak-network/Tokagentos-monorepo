@@ -1,4 +1,4 @@
-import type { UUID } from "@elizaos/core";
+import type { UUID } from "@tokagentos/core";
 
 export interface AgentEventPayloadLike {
   runId: string;

@@ -9,7 +9,7 @@ use tracing::{debug, info};
 /// Generate a response to a message.
 ///
 /// This is a simple implementation. In production, you would
-/// integrate with an LLM through the elizaOS runtime.
+/// integrate with an LLM through the tokagentOS runtime.
 pub fn generate_response(content: &str, username: &str, character_name: &str) -> Option<String> {
     let content_lower = content.to_lowercase();
 
@@ -39,7 +39,7 @@ What would you like to know?"#
 
     if content_lower.contains("about") || content_lower.contains("who are you") {
         return Some(format!(
-            r#"👋 Hi! I'm **{}**, an AI assistant powered by elizaOS.
+            r#"👋 Hi! I'm **{}**, an AI assistant powered by tokagentOS.
 
 I'm a helpful and friendly assistant on Discord. I can answer questions, have conversations, and help with various tasks.
 
@@ -98,35 +98,35 @@ mod tests {
 
     #[test]
     fn test_generate_response_hello() {
-        let response = generate_response("hello there!", "testuser", "DiscordEliza");
+        let response = generate_response("hello there!", "testuser", "DiscordTokagent");
         assert!(response.is_some());
         assert!(response.unwrap().contains("Hello, testuser"));
     }
 
     #[test]
     fn test_generate_response_ping() {
-        let response = generate_response("ping", "testuser", "DiscordEliza");
+        let response = generate_response("ping", "testuser", "DiscordTokagent");
         assert!(response.is_some());
         assert!(response.unwrap().contains("Pong"));
     }
 
     #[test]
     fn test_generate_response_help() {
-        let response = generate_response("can you help me?", "testuser", "DiscordEliza");
+        let response = generate_response("can you help me?", "testuser", "DiscordTokagent");
         assert!(response.is_some());
         assert!(response.unwrap().contains("How I can help"));
     }
 
     #[test]
     fn test_generate_response_about() {
-        let response = generate_response("who are you?", "testuser", "DiscordEliza");
+        let response = generate_response("who are you?", "testuser", "DiscordTokagent");
         assert!(response.is_some());
-        assert!(response.unwrap().contains("DiscordEliza"));
+        assert!(response.unwrap().contains("DiscordTokagent"));
     }
 
     #[test]
     fn test_generate_response_default() {
-        let response = generate_response("random message", "testuser", "DiscordEliza");
+        let response = generate_response("random message", "testuser", "DiscordTokagent");
         assert!(response.is_some());
         assert!(response.unwrap().contains("testuser"));
     }

@@ -3,7 +3,7 @@ interface HeaderProps {
     subtitle?: string
 }
 
-export function Header({ title = 'Eliza', subtitle = 'Classic Chat (in-memory)' }: HeaderProps) {
+export function Header({ title = 'Tokagent', subtitle = 'Classic Chat (in-memory)' }: HeaderProps) {
     return (
         <header className="app-header">
             <div className="header-content">

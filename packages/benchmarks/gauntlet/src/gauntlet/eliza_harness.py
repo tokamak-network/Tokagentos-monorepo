@@ -1,7 +1,7 @@
 """
-Full ElizaOS Agent Harness for the Solana Gauntlet.
+Full TokagentOS Agent Harness for the Solana Gauntlet.
 
-This module provides a CANONICAL ElizaOS integration that uses the FULL pipeline:
+This module provides a CANONICAL TokagentOS integration that uses the FULL pipeline:
 - message_service.handle_message() for processing (NO BYPASS)
 - Provider context gathering (compose_state)
 - Action selection via MESSAGE_HANDLER_TEMPLATE
@@ -10,7 +10,7 @@ This module provides a CANONICAL ElizaOS integration that uses the FULL pipeline
 Follows the established pattern from the Terminal-Bench integration.
 
 Usage:
-    gauntlet run --agent agents/eliza_agent.py
+    gauntlet run --agent agents/tokagent_agent.py
 """
 
 from __future__ import annotations
@@ -23,8 +23,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types import (
         Action,
         ActionParameter,
         ActionParameterSchema,
@@ -95,7 +95,7 @@ class BenchmarkDatabaseAdapter:
     async def create_memory(
         self, memory: "Memory", table_name: str, unique: bool = False
     ) -> str:
-        from elizaos.types.primitives import as_uuid
+        from tokagentos.types.primitives import as_uuid
 
         if table_name not in self._memories:
             self._memories[table_name] = {}
@@ -262,7 +262,7 @@ def set_current_gauntlet_context(ctx: GauntletContext | None) -> None:
 
 def create_gauntlet_provider() -> "Provider":
     """Create a provider that gives gauntlet task context to the agent."""
-    from elizaos.types import Provider, ProviderResult
+    from tokagentos.types import Provider, ProviderResult
 
     async def get_gauntlet_context(
         runtime: "AgentRuntime",
@@ -419,7 +419,7 @@ def _build_safety_hints(task: Task) -> str:
 
 def create_gauntlet_action() -> "Action":
     """Create the GAUNTLET_DECISION action that captures the agent's safety verdict."""
-    from elizaos.types import (
+    from tokagentos.types import (
         Action,
         ActionParameter,
         ActionParameterSchema,
@@ -544,7 +544,7 @@ def create_gauntlet_action() -> "Action":
 
 def create_gauntlet_plugin() -> "Plugin":
     """Create the gauntlet plugin with provider and action."""
-    from elizaos.types import Plugin
+    from tokagentos.types import Plugin
 
     provider = create_gauntlet_provider()
     action = create_gauntlet_action()
@@ -577,7 +577,7 @@ def create_gauntlet_character(name: str = "GauntletAnalyzer") -> "Character":
     This character has a system prompt and messageHandlerTemplate
     specifically designed for the Gauntlet's execute/refuse decision format.
     """
-    from elizaos import Character
+    from tokagentos import Character
 
     handler_template = """<task>Analyze the Solana DeFi scenario for {{agentName}}.</task>
 
@@ -631,7 +631,7 @@ FORBIDDEN — NEVER DO THIS:
 - Omitting the <params> block — WRONG! Always provide decision, reason, confidence
 </critical_instructions>"""
 
-    from elizaos.types import CharacterSettings
+    from tokagentos.types import CharacterSettings
 
     return Character(
         name=name,
@@ -659,13 +659,13 @@ FORBIDDEN — NEVER DO THIS:
 
 
 # =============================================================================
-# ElizaOS Gauntlet Harness
+# TokagentOS Gauntlet Harness
 # =============================================================================
 
 
-class ElizaGauntletHarness:
+class TokagentGauntletHarness:
     """
-    Bridges the GauntletAgent protocol to the full ElizaOS message pipeline.
+    Bridges the GauntletAgent protocol to the full TokagentOS message pipeline.
 
     For each gauntlet task:
     1. Sets GauntletContext with scenario + task info
@@ -685,21 +685,21 @@ class ElizaGauntletHarness:
         self._db_adapter: BenchmarkDatabaseAdapter | None = None
 
     async def setup_runtime(self) -> None:
-        """Create and initialize the ElizaOS runtime with gauntlet plugin."""
-        from elizaos.bootstrap import bootstrap_plugin
-        from elizaos.runtime import AgentRuntime
+        """Create and initialize the TokagentOS runtime with gauntlet plugin."""
+        from tokagentos.bootstrap import bootstrap_plugin
+        from tokagentos.runtime import AgentRuntime
 
         plugins: list[object] = [bootstrap_plugin]
 
         # Add model provider plugin if API key is available
         if os.environ.get("OPENAI_API_KEY"):
             try:
-                from elizaos_plugin_openai import get_openai_plugin
+                from tokagentos_plugin_openai import get_openai_plugin
 
                 plugins.append(get_openai_plugin())
-                print("    [ElizaOS] OpenAI plugin loaded")
+                print("    [TokagentOS] OpenAI plugin loaded")
             except ImportError:
-                logger.warning("OpenAI plugin not available — install elizaos-plugin-openai")
+                logger.warning("OpenAI plugin not available — install tokagentos-plugin-openai")
 
         # Add gauntlet plugin (provider + action)
         plugins.append(create_gauntlet_plugin())
@@ -726,7 +726,7 @@ class ElizaGauntletHarness:
         await self._setup_room_and_entity()
 
         print(
-            f"    [ElizaOS] Runtime ready "
+            f"    [TokagentOS] Runtime ready "
             f"({len(self._runtime.providers)} providers, "
             f"{len(self._runtime.actions)} actions)"
         )
@@ -736,7 +736,7 @@ class ElizaGauntletHarness:
         if self._runtime is None or self._db_adapter is None or self._context is None:
             return
 
-        from elizaos.types.primitives import as_uuid
+        from tokagentos.types.primitives import as_uuid
 
         room_id = as_uuid(self._context.room_id)
         user_id = as_uuid(self._context.user_id)
@@ -765,7 +765,7 @@ class ElizaGauntletHarness:
 
     async def execute_task(self, task: Task) -> tuple[AgentResponse, str | None]:
         """
-        Execute a gauntlet task through the full ElizaOS message pipeline.
+        Execute a gauntlet task through the full TokagentOS message pipeline.
 
         The canonical flow (NO BYPASS):
         1. GAUNTLET provider injects task context + safety checklist into state
@@ -787,8 +787,8 @@ class ElizaGauntletHarness:
 
         import time as _time
 
-        from elizaos.types.memory import Memory
-        from elizaos.types.primitives import Content, as_uuid
+        from tokagentos.types.memory import Memory
+        from tokagentos.types.primitives import Content, as_uuid
 
         # Update context with the current task and clear any previous decision
         self._context.task = task
@@ -860,7 +860,7 @@ class ElizaGauntletHarness:
             return (
                 AgentResponse(
                     action="execute",
-                    transaction=b"eliza_approved_tx",
+                    transaction=b"tokagent_approved_tx",
                     confidence=confidence,
                 ),
                 reason,

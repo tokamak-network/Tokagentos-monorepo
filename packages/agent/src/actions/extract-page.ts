@@ -1,5 +1,5 @@
-import type { Action, ActionExample, HandlerOptions, IAgentRuntime, Memory, State } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { Action, ActionExample, HandlerOptions, IAgentRuntime, Memory, State } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { hasRoleAccess } from "../security/access.js";
 import {
   extractHostedCloudPage,
@@ -39,7 +39,7 @@ export const extractPageAction: Action = {
   name: "EXTRACT_PAGE",
   similes: ["SCRAPE_PAGE", "FETCH_PAGE", "READ_WEB_PAGE", "EXTRACT_WEB_PAGE"],
   description:
-    "Extract page content through Eliza Cloud hosted tools. Returns cleaned markdown plus optional HTML, links, screenshot data, and page metadata.",
+    "Extract page content through Tokagent Cloud hosted tools. Returns cleaned markdown plus optional HTML, links, screenshot data, and page metadata.",
   validate: async (
     runtime: IAgentRuntime,
     message: Memory,
@@ -53,7 +53,7 @@ export const extractPageAction: Action = {
   handler: async (_runtime, message, _state, options) => {
     if (!isHostedCloudToolingConfigured(process.env)) {
       return {
-        text: "Page extraction requires Eliza Cloud hosted tools to be configured.",
+        text: "Page extraction requires Tokagent Cloud hosted tools to be configured.",
         success: false,
         values: { success: false, error: "CLOUD_TOOLS_NOT_CONFIGURED" },
         data: { actionName: "EXTRACT_PAGE" },
@@ -167,13 +167,13 @@ export const extractPageAction: Action = {
       {
         name: "{{name1}}",
         content: {
-          text: "Give me the text off this docs page: https://docs.elizaos.ai/guide",
+          text: "Give me the text off this docs page: https://docs.tokagentos.ai/guide",
         },
       },
       {
         name: "{{agentName}}",
         content: {
-          text: "Extracted https://docs.elizaos.ai/guide\n\n# Guide — intro paragraph and first section.",
+          text: "Extracted https://docs.tokagentos.ai/guide\n\n# Guide — intro paragraph and first section.",
         },
       },
     ],

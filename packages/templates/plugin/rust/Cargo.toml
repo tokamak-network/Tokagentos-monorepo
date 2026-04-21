@@ -1,12 +1,12 @@
 [package]
-name = "elizaos-plugin-starter"
+name = "tokagentos-plugin-starter"
 version = "2.0.0"
 edition = "2021"
-authors = ["elizaOS Contributors"]
-description = "Starter template for elizaOS Rust plugins with cross-language support"
+authors = ["tokagentOS Contributors"]
+description = "Starter template for tokagentOS Rust plugins with cross-language support"
 license = "MIT"
-repository = "https://github.com/elizaos/eliza"
-keywords = ["elizaos", "plugin", "wasm", "ffi"]
+repository = "https://github.com/tokagentos/tokagent"
+keywords = ["tokagentos", "plugin", "wasm", "ffi"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]

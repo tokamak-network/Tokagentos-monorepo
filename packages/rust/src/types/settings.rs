@@ -1,4 +1,4 @@
-//! Settings types for elizaOS
+//! Settings types for tokagentOS
 //!
 //! Contains runtime settings and configuration types.
 

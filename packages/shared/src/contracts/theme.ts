@@ -297,4 +297,4 @@ export function validateThemeDefinition(data: unknown): ThemeValidationError[] {
 export const DEFAULT_THEME_ID = "bsc-gold";
 
 /** Data attribute used to identify the injected font <link> */
-export const THEME_FONT_LINK_ID = "eliza-theme-font";
+export const THEME_FONT_LINK_ID = "tokagent-theme-font";

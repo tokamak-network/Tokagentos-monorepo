@@ -1,10 +1,10 @@
-# elizaOS Polymarket Trading Agent (TypeScript)
+# tokagentOS Polymarket Trading Agent (TypeScript)
 
-An **AI-powered trading agent** that analyzes Polymarket prediction markets and makes strategic trading decisions using elizaOS.
+An **AI-powered trading agent** that analyzes Polymarket prediction markets and makes strategic trading decisions using tokagentOS.
 
 ## Features
 
-This demo showcases core elizaOS capabilities:
+This demo showcases core tokagentOS capabilities:
 
 - **AgentRuntime** with multiple plugins (SQL, OpenAI, EVM, Polymarket)
 - **Message Service Pipeline** for AI decision making via `handleMessage()`
@@ -123,17 +123,17 @@ The agent evaluates markets using:
 
 ```
 polymarket-demo.ts   → Entry point, CLI parsing
-runner.ts            → TradingAgent class with elizaOS integration
+runner.ts            → TradingAgent class with tokagentOS integration
 lib.ts               → Configuration and argument parsing
 
-Key elizaOS patterns:
+Key tokagentOS patterns:
 - AgentRuntime initialization with plugins
 - createMessageMemory() for market analysis messages
 - runtime.messageService.handleMessage() for AI decisions
 - runtime.createMemory() for persisting trading history
 ```
 
-## Advanced elizaOS Features
+## Advanced tokagentOS Features
 
 ### Advanced Planning (`advancedPlanning: true`)
 

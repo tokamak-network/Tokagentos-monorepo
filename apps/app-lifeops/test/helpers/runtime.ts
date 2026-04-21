@@ -10,8 +10,8 @@ export type { RealTestRuntimeOptions, RealTestRuntimeResult };
 export async function createLifeOpsTestRuntime(
   options?: RealTestRuntimeOptions,
 ): Promise<RealTestRuntimeResult> {
-  const previousDisableProactiveAgent = process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
-  process.env.ELIZA_DISABLE_PROACTIVE_AGENT =
+  const previousDisableProactiveAgent = process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
+  process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT =
     previousDisableProactiveAgent?.trim() || "1";
 
   try {
@@ -21,9 +21,9 @@ export async function createLifeOpsTestRuntime(
     });
   } finally {
     if (previousDisableProactiveAgent === undefined) {
-      delete process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
+      delete process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
     } else {
-      process.env.ELIZA_DISABLE_PROACTIVE_AGENT = previousDisableProactiveAgent;
+      process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = previousDisableProactiveAgent;
     }
   }
 }

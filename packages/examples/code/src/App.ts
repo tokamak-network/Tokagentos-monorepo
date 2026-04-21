@@ -1,4 +1,4 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CodeTaskService = any;
 import {
@@ -64,7 +64,7 @@ function normalizeSubAgentType(input: string | undefined): SubAgentType | null {
   const raw = (input ?? "").trim().toLowerCase();
   if (!raw) return null;
 
-  if (raw === "eliza") return "eliza";
+  if (raw === "tokagent") return "tokagent";
   if (raw === "claude" || raw === "claude-code" || raw === "claudecode")
     return "claude-code";
   if (raw === "codex") return "codex";
@@ -73,12 +73,12 @@ function normalizeSubAgentType(input: string | undefined): SubAgentType | null {
   if (raw === "sweagent" || raw === "swe-agent" || raw === "swe_agent")
     return "sweagent";
   if (
-    raw === "elizaos-native" ||
-    raw === "eliza-native" ||
+    raw === "tokagentos-native" ||
+    raw === "tokagent-native" ||
     raw === "native" ||
-    raw === "elizaosnative"
+    raw === "tokagentosnative"
   )
-    return "elizaos-native";
+    return "tokagentos-native";
 
   return null;
 }
@@ -469,7 +469,7 @@ export class App {
           addMessage(
             currentRoomId,
             "system",
-            `Active agent: ${state.selectedSubAgentType ?? "(not set)"}\n\nUsage: /agent <type>\nTypes:\n- eliza\n- claude-code\n- codex\n- opencode\n- sweagent\n- elizaos-native`,
+            `Active agent: ${state.selectedSubAgentType ?? "(not set)"}\n\nUsage: /agent <type>\nTypes:\n- tokagent\n- claude-code\n- codex\n- opencode\n- sweagent\n- tokagentos-native`,
           );
           this.tui.requestRender();
           return true;
@@ -481,14 +481,14 @@ export class App {
           addMessage(
             currentRoomId,
             "system",
-            `Unknown agent type: "${typeRaw}". Try: eliza, claude-code, codex, opencode, sweagent, elizaos-native`,
+            `Unknown agent type: "${typeRaw}". Try: tokagent, claude-code, codex, opencode, sweagent, tokagentos-native`,
           );
           this.tui.requestRender();
           return true;
         }
 
         state.setSelectedSubAgentType(next);
-        process.env.ELIZA_CODE_ACTIVE_SUB_AGENT = next;
+        process.env.TOKAGENT_CODE_ACTIVE_SUB_AGENT = next;
         addMessage(currentRoomId, "system", `Active agent: ${next}`);
         this.tui.requestRender();
         return true;

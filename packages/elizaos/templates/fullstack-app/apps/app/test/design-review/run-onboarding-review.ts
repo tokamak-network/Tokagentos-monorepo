@@ -6,7 +6,7 @@
  *
  * Usage:
  *   npx tsx apps/app/test/design-review/run-onboarding-review.ts
- *   ELIZA_DESIGN_REVIEW_HEADLESS=1 npx tsx apps/app/test/design-review/run-onboarding-review.ts
+ *   TOKAGENT_DESIGN_REVIEW_HEADLESS=1 npx tsx apps/app/test/design-review/run-onboarding-review.ts
  */
 
 import { mkdir, rm, writeFile } from "node:fs/promises";
@@ -79,7 +79,7 @@ interface Manifest {
 
 const READY_TIMEOUT_MS = 30_000;
 const SETTLE_MS = Number.parseInt(
-  process.env.ELIZA_DESIGN_REVIEW_SETTLE_MS ?? "1500",
+  process.env.TOKAGENT_DESIGN_REVIEW_SETTLE_MS ?? "1500",
   10,
 );
 
@@ -132,7 +132,7 @@ const viewports: ViewportSpec[] = [
 ];
 
 const ONBOARDING_PERMISSION_FLOW =
-  process.env.ELIZA_DESIGN_REVIEW_PERMISSIONS_PATH === "grant"
+  process.env.TOKAGENT_DESIGN_REVIEW_PERMISSIONS_PATH === "grant"
     ? "grant"
     : "skip";
 
@@ -183,9 +183,9 @@ async function clickVisibleTextFallback(
 const steps: StepSpec[] = [
   {
     id: "01-cloud-login",
-    label: "Eliza Cloud — Account",
+    label: "Tokagent Cloud — Account",
     setup: null, // First step, just navigate
-    expectedContent: [/Log in with Eliza Cloud/i, /^Skip$/i],
+    expectedContent: [/Log in with Tokagent Cloud/i, /^Skip$/i],
   },
   {
     id: "02-identity",
@@ -262,7 +262,7 @@ const steps: StepSpec[] = [
     label: "Activate — Ready",
     setup: async (page) => {
       // Default to the stable skip path. Grant-path captures can be enabled via
-      // ELIZA_DESIGN_REVIEW_PERMISSIONS_PATH=grant when needed.
+      // TOKAGENT_DESIGN_REVIEW_PERMISSIONS_PATH=grant when needed.
       if (ONBOARDING_PERMISSION_FLOW === "grant") {
         await clickVisibleTextFallback(page, [
           "Grant Permissions",
@@ -311,7 +311,7 @@ async function startAppServer(apiBaseUrl: string): Promise<{
   server: ViteDevServer;
   baseUrl: string;
 }> {
-  process.env.ELIZA_API_PORT = new URL(apiBaseUrl).port;
+  process.env.TOKAGENT_API_PORT = new URL(apiBaseUrl).port;
   const port = await getFreePort();
   const server = await createViteServer({
     configFile: path.join(appRoot, "vite.config.ts"),
@@ -351,14 +351,14 @@ async function createPage(
       try {
         window.localStorage.clear();
         window.sessionStorage.clear();
-        window.localStorage.setItem("eliza:ui-language", "en");
-        window.localStorage.setItem("eliza:ui-theme", "dark");
-        window.localStorage.setItem("eliza:ui-shell-mode", "native");
-        window.localStorage.setItem("eliza:ui-language", "en");
-        window.localStorage.setItem("eliza:ui-theme", "dark");
-        window.localStorage.setItem("eliza:ui-shell-mode", "native");
-        window.sessionStorage.setItem("eliza_api_base", init.apiBaseUrl);
-        Object.assign(window, { __ELIZA_API_BASE__: init.apiBaseUrl });
+        window.localStorage.setItem("tokagent:ui-language", "en");
+        window.localStorage.setItem("tokagent:ui-theme", "dark");
+        window.localStorage.setItem("tokagent:ui-shell-mode", "native");
+        window.localStorage.setItem("tokagent:ui-language", "en");
+        window.localStorage.setItem("tokagent:ui-theme", "dark");
+        window.localStorage.setItem("tokagent:ui-shell-mode", "native");
+        window.sessionStorage.setItem("tokagent_api_base", init.apiBaseUrl);
+        Object.assign(window, { __TOKAGENT_API_BASE__: init.apiBaseUrl });
       } catch {
         // Ignore storage setup failures on intermediate documents
       }
@@ -514,7 +514,7 @@ async function writeGallery(manifest: Manifest): Promise<void> {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Eliza Onboarding Review</title>
+    <title>Tokagent Onboarding Review</title>
     <style>
       :root { color-scheme: dark; --bg: #090b0f; --panel: #11161d; --panel-2: #171e28; --border: rgba(255, 255, 255, 0.08); --text: #edf2f7; --muted: #9aa8bc; --accent: #f0b232; }
       * { box-sizing: border-box; }
@@ -537,7 +537,7 @@ async function writeGallery(manifest: Manifest): Promise<void> {
     <main>
       <header>
         <div>
-          <h1>Eliza Onboarding Review</h1>
+          <h1>Tokagent Onboarding Review</h1>
           <p class="meta">${escapeHtml(
             `${dateLabel} · ${manifest.captures.length} screenshots · ${steps.length} steps`,
           )}</p>
@@ -593,11 +593,11 @@ async function captureOnboardingFlow(
     await waitForSettled(page);
 
     // Wait for loading screen to disappear and the first onboarding screen to appear.
-    // The flow now opens directly on Eliza Cloud login instead of a welcome CTA.
+    // The flow now opens directly on Tokagent Cloud login instead of a welcome CTA.
     await waitForSettled(page);
     try {
       await waitForVisibleTextFallback(page, [
-        "Log in with Eliza Cloud",
+        "Log in with Tokagent Cloud",
         "Continue Offline",
         "Skip",
       ]);
@@ -718,7 +718,7 @@ async function main(): Promise<void> {
   const api = await startMockApiServer({ onboardingComplete: false, port: 0 });
   const { server, baseUrl: appBaseUrl } = await startAppServer(api.baseUrl);
   const browser = await chromium.launch({
-    headless: process.env.ELIZA_DESIGN_REVIEW_HEADLESS === "1",
+    headless: process.env.TOKAGENT_DESIGN_REVIEW_HEADLESS === "1",
     args: [
       "--enable-webgl",
       "--ignore-gpu-blocklist",

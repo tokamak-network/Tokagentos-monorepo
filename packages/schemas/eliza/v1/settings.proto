@@ -1,7 +1,7 @@
-// settings.proto - Runtime and onboarding settings for elizaOS
+// settings.proto - Runtime and onboarding settings for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
 import "google/protobuf/struct.proto";
 

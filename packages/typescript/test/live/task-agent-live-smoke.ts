@@ -4,7 +4,7 @@ import fs from "node:fs";
 import { createServer, type Server } from "node:http";
 import net from "node:net";
 import path from "node:path";
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import {
 	cleanForChat,
 	listAgentsAction,
@@ -17,7 +17,7 @@ import { createTestRuntime } from "../helpers/pglite-runtime.ts";
 type Framework = "claude" | "codex";
 type Mode = "sequential" | "web";
 
-const KEEP_ARTIFACTS = process.env.ELIZA_KEEP_LIVE_ARTIFACTS === "1";
+const KEEP_ARTIFACTS = process.env.TOKAGENT_KEEP_LIVE_ARTIFACTS === "1";
 
 async function createRuntime(settings: Record<string, unknown> = {}): Promise<{
 	runtime: AgentRuntime;

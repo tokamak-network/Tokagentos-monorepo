@@ -1,4 +1,4 @@
-import { Button, Z_SYSTEM_BANNER } from "@elizaos/ui";
+import { Button, Z_SYSTEM_BANNER } from "@tokagentos/ui";
 import { useCallback, useState } from "react";
 import { useApp } from "../../state";
 

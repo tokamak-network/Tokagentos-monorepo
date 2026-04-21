@@ -6,8 +6,8 @@ import type {
   Memory,
   Room,
   UUID,
-} from "@elizaos/core";
-import { logger, ModelType } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger, ModelType } from "@tokagentos/core";
 import { formatSpeakerLabel } from "../providers/conversation-utils.js";
 import { hasAdminAccess } from "../security/access.js";
 import { hasContextSignalSyncForKey } from "./context-signal.js";

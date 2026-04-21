@@ -10,7 +10,7 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { LifeOpsService } from "../lifeops/service.js";
 import { hasLifeOpsAccess } from "./lifeops-google-helpers.js";
 import { looksLikeScreenTimeReflection } from "./non-actionable-request.js";

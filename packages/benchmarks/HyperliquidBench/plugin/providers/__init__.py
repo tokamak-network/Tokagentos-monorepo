@@ -1,4 +1,4 @@
-"""HyperliquidBench Providers for ElizaOS."""
+"""HyperliquidBench Providers for TokagentOS."""
 
 from .hl_context import hl_context_provider
 

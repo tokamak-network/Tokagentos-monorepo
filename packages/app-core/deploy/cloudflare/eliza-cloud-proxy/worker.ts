@@ -1,8 +1,8 @@
-const DEFAULT_UPSTREAM_ORIGIN = "https://www.elizacloud.ai";
+const DEFAULT_UPSTREAM_ORIGIN = "https://www.tokagentcloud.ai";
 const DEFAULT_ALLOWED_ORIGINS: string[] = [];
 
 type Env = {
-  ELIZA_CLOUD_ORIGIN?: string;
+  TOKAGENT_CLOUD_ORIGIN?: string;
   CF_ALLOWED_ORIGINS?: string;
   CF_PROXY_PATH_PREFIXES?: string;
   ALLOWED_ORIGINS?: string;
@@ -10,7 +10,7 @@ type Env = {
 };
 
 function resolveUpstreamOrigin(env: Env): string {
-  return (env.ELIZA_CLOUD_ORIGIN || DEFAULT_UPSTREAM_ORIGIN).replace(
+  return (env.TOKAGENT_CLOUD_ORIGIN || DEFAULT_UPSTREAM_ORIGIN).replace(
     /\/+$/,
     "",
   );

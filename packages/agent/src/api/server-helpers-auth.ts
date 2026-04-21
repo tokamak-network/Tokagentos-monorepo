@@ -13,7 +13,7 @@ import {
   resolveApiToken,
   setApiToken,
   stripOptionalHostPort,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import { isCloudProvisionedContainer } from "./cloud-provisioning.js";
 import { sweepExpiredEntries } from "./memory-bounds.js";
 
@@ -89,7 +89,7 @@ export function resolveCorsOrigin(origin?: string): string | null {
 
   // Cloud-provisioned containers default to allowing all origins so the
   // browser web UI can reach the agent API without extra config.
-  if (process.env.ELIZA_CLOUD_PROVISIONED === "1") {
+  if (process.env.TOKAGENT_CLOUD_PROVISIONED === "1") {
     return trimmed;
   }
 
@@ -153,7 +153,7 @@ export function applyCors(
     );
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Content-Type, Authorization, X-Eliza-Token, X-Api-Key, X-Eliza-Export-Token, X-Eliza-Client-Id, X-Eliza-Terminal-Token, X-Eliza-UI-Language, X-LifeOps-Browser-Companion-Id, X-Eliza-Browser-Companion-Id",
+      "Content-Type, Authorization, X-Tokagent-Token, X-Api-Key, X-Tokagent-Export-Token, X-Tokagent-Client-Id, X-Tokagent-Terminal-Token, X-Tokagent-UI-Language, X-LifeOps-Browser-Companion-Id, X-Tokagent-Browser-Companion-Id",
     );
   }
 
@@ -192,10 +192,10 @@ export function extractAuthToken(req: http.IncomingMessage): string | null {
   }
 
   const header =
-    (typeof req.headers["x-eliza-token"] === "string" &&
-      req.headers["x-eliza-token"]) ||
-    (typeof req.headers["x-eliza-token"] === "string" &&
-      req.headers["x-eliza-token"]) ||
+    (typeof req.headers["x-tokagent-token"] === "string" &&
+      req.headers["x-tokagent-token"]) ||
+    (typeof req.headers["x-tokagent-token"] === "string" &&
+      req.headers["x-tokagent-token"]) ||
     (typeof req.headers["x-api-key"] === "string" && req.headers["x-api-key"]);
   if (typeof header === "string" && header.trim()) return header.trim();
 
@@ -273,16 +273,16 @@ export function ensureApiTokenForBindHost(host: string): void {
 
   if (cloudProvisioned) {
     console.warn(
-      "[eliza-api] Steward-managed cloud container started without ELIZA_API_TOKEN/ELIZA_API_TOKEN; generated a temporary inbound API token for this process.",
+      "[tokagent-api] Steward-managed cloud container started without TOKAGENT_API_TOKEN/TOKAGENT_API_TOKEN; generated a temporary inbound API token for this process.",
     );
   } else {
     console.warn(
-      `[eliza-api] ELIZA_API_BIND/ELIZA_API_BIND=${host} is non-loopback and ELIZA_API_TOKEN/ELIZA_API_TOKEN is unset.`,
+      `[tokagent-api] TOKAGENT_API_BIND/TOKAGENT_API_BIND=${host} is non-loopback and TOKAGENT_API_TOKEN/TOKAGENT_API_TOKEN is unset.`,
     );
   }
   const tokenFingerprint = `${generated.slice(0, 4)}...${generated.slice(-4)}`;
   console.warn(
-    `[eliza-api] Generated temporary API token (${tokenFingerprint}) for this process. Set ELIZA_API_TOKEN or ELIZA_API_TOKEN explicitly to override.`,
+    `[tokagent-api] Generated temporary API token (${tokenFingerprint}) for this process. Set TOKAGENT_API_TOKEN or TOKAGENT_API_TOKEN explicitly to override.`,
   );
 }
 
@@ -302,7 +302,7 @@ const pairingAttempts = new Map<string, { count: number; resetAt: number }>();
 export function pairingEnabled(): boolean {
   return (
     Boolean(getConfiguredApiToken()) &&
-    process.env.ELIZA_PAIRING_DISABLED !== "1"
+    process.env.TOKAGENT_PAIRING_DISABLED !== "1"
   );
 }
 
@@ -326,7 +326,7 @@ export function ensurePairingCode(): string | null {
     pairingCode = generatePairingCode();
     pairingExpiresAt = now + PAIRING_TTL_MS;
     console.warn(
-      `[eliza-api] Pairing code: ${pairingCode} (valid for 10 minutes)`,
+      `[tokagent-api] Pairing code: ${pairingCode} (valid for 10 minutes)`,
     );
   }
   return pairingCode;
@@ -383,7 +383,7 @@ export function resolveTerminalRunClientId(
   body: { clientId?: unknown } | null | undefined,
 ): string | null {
   const headerClientId = normalizeWsClientId(
-    firstHeaderValue(req.headers["x-eliza-client-id"]),
+    firstHeaderValue(req.headers["x-tokagent-client-id"]),
   );
   if (headerClientId) return headerClientId;
   return normalizeWsClientId(body?.clientId);
@@ -415,7 +415,7 @@ export function resolveTerminalRunRejection(
   req: http.IncomingMessage,
   body: TerminalRunRequestBody,
 ): TerminalRunRejection | null {
-  const expected = process.env.ELIZA_TERMINAL_RUN_TOKEN?.trim();
+  const expected = process.env.TOKAGENT_TERMINAL_RUN_TOKEN?.trim();
   const apiTokenEnabled = Boolean(getConfiguredApiToken());
 
   // Compatibility mode: local loopback sessions without API token keep
@@ -428,13 +428,13 @@ export function resolveTerminalRunRejection(
     return {
       status: 403,
       reason:
-        "Terminal run is disabled for token-authenticated API sessions. Set ELIZA_TERMINAL_RUN_TOKEN to enable command execution.",
+        "Terminal run is disabled for token-authenticated API sessions. Set TOKAGENT_TERMINAL_RUN_TOKEN to enable command execution.",
     };
   }
 
   const headerToken =
-    typeof req.headers["x-eliza-terminal-token"] === "string"
-      ? req.headers["x-eliza-terminal-token"].trim()
+    typeof req.headers["x-tokagent-terminal-token"] === "string"
+      ? req.headers["x-tokagent-terminal-token"].trim()
       : "";
   const bodyToken =
     typeof body.terminalToken === "string" ? body.terminalToken.trim() : "";
@@ -444,7 +444,7 @@ export function resolveTerminalRunRejection(
     return {
       status: 401,
       reason:
-        "Missing terminal token. Provide X-Eliza-Terminal-Token header or terminalToken in request body.",
+        "Missing terminal token. Provide X-Tokagent-Terminal-Token header or terminalToken in request body.",
     };
   }
 
@@ -463,7 +463,7 @@ export function resolveTerminalRunRejection(
 // ---------------------------------------------------------------------------
 
 function extractWsQueryToken(url: URL): string | null {
-  const allowQueryToken = process.env.ELIZA_ALLOW_WS_QUERY_TOKEN === "1";
+  const allowQueryToken = process.env.TOKAGENT_ALLOW_WS_QUERY_TOKEN === "1";
   if (!allowQueryToken) return null;
 
   const token =
@@ -530,7 +530,7 @@ export function resolveWebSocketUpgradeRejection(
   }
 
   if (
-    process.env.ELIZA_ALLOW_WS_QUERY_TOKEN !== "1" &&
+    process.env.TOKAGENT_ALLOW_WS_QUERY_TOKEN !== "1" &&
     hasWsQueryToken(wsUrl)
   ) {
     return { status: 401, reason: "Unauthorized" };

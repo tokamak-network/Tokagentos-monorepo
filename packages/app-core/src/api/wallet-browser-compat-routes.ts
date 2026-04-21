@@ -1,8 +1,8 @@
 import crypto from "node:crypto";
 import type http from "node:http";
-import { deriveSolanaAddress } from "@elizaos/agent/api/wallet";
-import { resolveWalletRpcReadiness } from "@elizaos/agent/api/wallet-rpc";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import { deriveSolanaAddress } from "@tokagentos/agent/api/wallet";
+import { resolveWalletRpcReadiness } from "@tokagentos/agent/api/wallet-rpc";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import type { StewardSignRequest } from "@elizaos/app-steward/types";
 import { ethers } from "ethers";
 
@@ -156,7 +156,7 @@ const RPC_CACHE_TTL_MS = 30_000;
 function resolvePreferredRpcUrl(chainId: number): string | null {
   const now = Date.now();
   if (!cachedRpcReadiness || now - cachedRpcReadinessAt > RPC_CACHE_TTL_MS) {
-    cachedRpcReadiness = resolveWalletRpcReadiness(loadElizaConfig());
+    cachedRpcReadiness = resolveWalletRpcReadiness(loadTokagentConfig());
     cachedRpcReadinessAt = now;
   }
   const readiness = cachedRpcReadiness;

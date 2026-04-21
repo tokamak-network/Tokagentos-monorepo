@@ -1,4 +1,4 @@
-import type { ElizaConfig } from "@elizaos/agent/config";
+import type { TokagentConfig } from "@tokagentos/agent/config";
 import type { Command } from "commander";
 import { theme } from "../../terminal/theme";
 import { getLogPrefix } from "../../utils/log-prefix";
@@ -12,17 +12,17 @@ export function registerConfigCli(program: Command) {
     .command("get <key>")
     .description("Get a config value")
     .action(async (key: string) => {
-      const { loadElizaConfig } = await import("@elizaos/agent/config/config");
-      let elizaConfig: ReturnType<typeof loadElizaConfig> | undefined;
+      const { loadTokagentConfig } = await import("@tokagentos/agent/config/config");
+      let tokagentConfig: ReturnType<typeof loadTokagentConfig> | undefined;
       try {
-        elizaConfig = loadElizaConfig();
+        tokagentConfig = loadTokagentConfig();
       } catch (err) {
         const detail = err instanceof Error ? err.message : String(err);
         console.error(`${getLogPrefix()} Could not load config: ${detail}`);
         process.exit(1);
       }
       const parts = key.split(".");
-      let value: unknown = elizaConfig;
+      let value: unknown = tokagentConfig;
       for (const part of parts) {
         if (value && typeof value === "object") {
           value = (value as Record<string, unknown>)[part];
@@ -46,7 +46,7 @@ export function registerConfigCli(program: Command) {
     .command("path")
     .description("Print the resolved config file path")
     .action(async () => {
-      const { resolveConfigPath } = await import("@elizaos/agent/config/paths");
+      const { resolveConfigPath } = await import("@tokagentos/agent/config/paths");
       console.log(resolveConfigPath());
     });
 
@@ -56,14 +56,14 @@ export function registerConfigCli(program: Command) {
     .option("-a, --all", "Include advanced/hidden fields")
     .option("--json", "Output as raw JSON")
     .action(async (opts: { all?: boolean; json?: boolean }) => {
-      const { loadElizaConfig } = await import("@elizaos/agent/config/config");
+      const { loadTokagentConfig } = await import("@tokagentos/agent/config/config");
       const { buildConfigSchema } = await import(
-        "@elizaos/agent/config/schema"
+        "@tokagentos/agent/config/schema"
       );
 
-      let config: ElizaConfig | undefined;
+      let config: TokagentConfig | undefined;
       try {
-        config = loadElizaConfig();
+        config = loadTokagentConfig();
       } catch (err) {
         console.error(
           theme.error(

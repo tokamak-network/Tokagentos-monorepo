@@ -29,7 +29,7 @@ vi.mock(
         options: { mcpServers: Record<string, JsonValue> };
       }) => {
         const servers = input.options.mcpServers;
-        const serverVal = servers.eliza_tools;
+        const serverVal = servers.tokagent_tools;
         const server =
           typeof serverVal === "object" && serverVal !== null
             ? (serverVal as Record<string, JsonValue>)
@@ -112,7 +112,7 @@ function createContext(tools: SubAgentTool[]): {
 describe("ClaudeAgentSdkSubAgent", () => {
   afterEach(() => {
     vi.clearAllMocks();
-    delete process.env.ELIZA_CODE_CLAUDE_AGENT_SDK_MAX_TURNS;
+    delete process.env.TOKAGENT_CODE_CLAUDE_AGENT_SDK_MAX_TURNS;
   });
 
   test("wires tools via MCP server and returns filesCreated/filesModified", async () => {

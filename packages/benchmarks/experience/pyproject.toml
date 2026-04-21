@@ -3,17 +3,17 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "elizaos-experience-bench"
+name = "tokagentos-experience-bench"
 version = "2.0.0"
-description = "Experience plugin benchmark for ElizaOS - evaluating experience retrieval, reranking, and learning cycle"
+description = "Experience plugin benchmark for TokagentOS - evaluating experience retrieval, reranking, and learning cycle"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
 keywords = [
-    "elizaos",
+    "tokagentos",
     "benchmark",
     "experience",
     "learning",
@@ -35,9 +35,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-eliza = [
-    "elizaos",
-    "elizaos-plugin-openai",
+tokagent = [
+    "tokagentos",
+    "tokagentos-plugin-openai",
 ]
 dev = [
     "pytest>=7.0.0",
@@ -46,12 +46,12 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/elizaos/eliza"
-Repository = "https://github.com/elizaos/eliza"
+Homepage = "https://github.com/tokagentos/tokagent"
+Repository = "https://github.com/tokagentos/tokagent"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["elizaos_experience_bench*"]
+include = ["tokagentos_experience_bench*"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

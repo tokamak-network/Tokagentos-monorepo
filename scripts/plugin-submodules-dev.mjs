@@ -13,7 +13,7 @@
  *     4. Run `scripts/fix-workspace-deps.mjs` when `--check` fails (otherwise skip)
  *
  * Idempotent: safe to run repeatedly; skips submodule update, workspace/self-dep edits, and fix-deps when already satisfied.
- * Writes `.eliza/plugin-dev-needs-install` when anything changed so `scripts/dev.mjs` can run `bun install` only then.
+ * Writes `.tokagent/plugin-dev-needs-install` when anything changed so `scripts/dev.mjs` can run `bun install` only then.
  *
  *   RESTORE (--restore):
  *     1. Run `scripts/fix-workspace-deps.mjs --restore` (parent-repo package.json only)
@@ -40,10 +40,10 @@ const DEV = !process.argv.includes("--restore");
 const QUIET = process.argv.includes("--quiet");
 
 /** Written when package.json / workspace state changed; dev.mjs runs `bun install` then deletes it. */
-const INSTALL_STAMP = join(ROOT, ".eliza", "plugin-dev-needs-install");
+const INSTALL_STAMP = join(ROOT, ".tokagent", "plugin-dev-needs-install");
 
 function touchInstallStamp() {
-	mkdirSync(join(ROOT, ".eliza"), { recursive: true });
+	mkdirSync(join(ROOT, ".tokagent"), { recursive: true });
 	writeFileSync(INSTALL_STAMP, `${Date.now()}\n`);
 }
 

@@ -5,5 +5,5 @@ export type {
   RoleName,
   RolesConfig,
   RolesWorldMetadata,
-} from "@elizaos/core";
-export { ROLE_RANK } from "@elizaos/core";
+} from "@tokagentos/core";
+export { ROLE_RANK } from "@tokagentos/core";

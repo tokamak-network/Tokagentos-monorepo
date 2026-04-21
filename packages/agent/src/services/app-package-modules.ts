@@ -2,8 +2,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import type { Plugin } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   type AppLaunchDiagnostic,
   type AppLaunchPreparation,
@@ -104,8 +104,8 @@ function sanitiseInstalledPackageDirName(packageName: string): string {
  * Matches `packages/app-core/src/services/plugin-installer.ts::pluginsBaseDir`.
  */
 function installedPluginsBaseDir(): string {
-  const stateDir = process.env.ELIZA_STATE_DIR?.trim();
-  const base = stateDir || path.join(os.homedir(), ".eliza");
+  const stateDir = process.env.TOKAGENT_STATE_DIR?.trim();
+  const base = stateDir || path.join(os.homedir(), ".tokagent");
   return path.join(base, "plugins", "installed");
 }
 
@@ -223,7 +223,7 @@ interface ResolvedAppModuleTarget {
 }
 
 interface LocalPackageJson {
-  elizaos?: {
+  tokagentos?: {
     app?: {
       bridgeExport?: unknown;
     };
@@ -251,9 +251,9 @@ async function readLocalBridgeExport(
     path.join(packageDir, "package.json"),
   );
   const manifest = await readJsonFile<LocalPluginManifest>(
-    path.join(packageDir, "elizaos.plugin.json"),
+    path.join(packageDir, "tokagentos.plugin.json"),
   );
-  const packageBridgeExport = packageJson?.elizaos?.app?.bridgeExport;
+  const packageBridgeExport = packageJson?.tokagentos?.app?.bridgeExport;
   if (typeof packageBridgeExport === "string") {
     return packageBridgeExport;
   }

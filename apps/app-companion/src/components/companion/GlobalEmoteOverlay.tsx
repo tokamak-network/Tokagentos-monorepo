@@ -1,5 +1,5 @@
-import { APP_EMOTE_EVENT, type AppEmoteEventDetail } from "@elizaos/app-core";
-import { Z_GLOBAL_EMOTE } from "@elizaos/ui/lib/floating-layers";
+import { APP_EMOTE_EVENT, type AppEmoteEventDetail } from "@tokagentos/app-core";
+import { Z_GLOBAL_EMOTE } from "@tokagentos/ui/lib/floating-layers";
 import { useEffect, useRef, useState } from "react";
 
 const OVERLAY_LIFETIME_MS = 2400;
@@ -82,7 +82,7 @@ export function GlobalEmoteOverlay() {
   return (
     <>
       <style>{`
-        @keyframes eliza-emote-burst {
+        @keyframes tokagent-emote-burst {
           0% {
             opacity: 0;
             transform: translateY(32px) scale(0.42) rotate(-10deg);
@@ -101,7 +101,7 @@ export function GlobalEmoteOverlay() {
           }
         }
 
-        @keyframes eliza-emote-aura {
+        @keyframes tokagent-emote-aura {
           0% {
             opacity: 0;
             transform: scale(0.5);
@@ -130,7 +130,7 @@ export function GlobalEmoteOverlay() {
                 background:
                   "radial-gradient(circle, rgba(255,255,255,0.35) 0%, rgba(255,214,102,0.18) 34%, rgba(255,214,102,0) 72%)",
                 filter: "blur(6px)",
-                animation: "eliza-emote-aura 2400ms ease-out forwards",
+                animation: "tokagent-emote-aura 2400ms ease-out forwards",
               }}
             />
             <div
@@ -138,7 +138,7 @@ export function GlobalEmoteOverlay() {
               className="relative flex h-32 w-32 items-center justify-center rounded-full border border-white/18 bg-black/18 text-[88px] shadow-[0_20px_54px_rgba(0,0,0,0.24)] backdrop-blur-md"
               style={{
                 animation:
-                  "eliza-emote-burst 2400ms cubic-bezier(.2,.8,.2,1) forwards",
+                  "tokagent-emote-burst 2400ms cubic-bezier(.2,.8,.2,1) forwards",
               }}
             >
               <span className="select-none leading-none">

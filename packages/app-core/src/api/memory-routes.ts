@@ -1,6 +1,6 @@
-import type { RouteRequestContext } from "@elizaos/agent/api";
-import { handleMemoryRoutes as handleAutonomousMemoryRoutes } from "@elizaos/agent/api/memory-routes";
-import type { AgentRuntime } from "@elizaos/core";
+import type { RouteRequestContext } from "@tokagentos/agent/api";
+import { handleMemoryRoutes as handleAutonomousMemoryRoutes } from "@tokagentos/agent/api/memory-routes";
+import type { AgentRuntime } from "@tokagentos/core";
 
 export interface MemoryRouteContext extends RouteRequestContext {
   url: URL;

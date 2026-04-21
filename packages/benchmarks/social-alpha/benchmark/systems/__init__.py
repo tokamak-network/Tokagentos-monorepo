@@ -1,8 +1,8 @@
-"""Benchmark systems — baseline, smart, full (LLM), eliza, and oracle implementations."""
+"""Benchmark systems — baseline, smart, full (LLM), tokagent, and oracle implementations."""
 
 from .oracle import OracleSystem
 from .smart_baseline import SmartBaselineSystem
 from .full_system import FullSystem
-from .eliza_system import ElizaSystem
+from .tokagent_system import TokagentSystem
 
-__all__ = ["OracleSystem", "SmartBaselineSystem", "FullSystem", "ElizaSystem"]
+__all__ = ["OracleSystem", "SmartBaselineSystem", "FullSystem", "TokagentSystem"]

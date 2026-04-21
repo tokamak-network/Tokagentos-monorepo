@@ -11,9 +11,9 @@ import { getRegistryEntry } from "./pluginRegistryService.ts";
 
 const execAsync = promisify(exec);
 
-const CORE_GIT_URL = "https://github.com/elizaos/eliza.git";
+const CORE_GIT_URL = "https://github.com/tokagentos/tokagent.git";
 const CORE_BRANCH = "develop";
-const CORE_PACKAGE_NAME = "@elizaos/core";
+const CORE_PACKAGE_NAME = "@tokagentos/core";
 const _DEFAULT_CORE_PATHS = ["../packages/typescript/src/index.node.ts"];
 const _DEFAULT_CORE_SUBPATHS = ["../packages/typescript/src/*"];
 
@@ -81,7 +81,7 @@ interface TsConfig {
 export class CoreManagerService extends Service {
 	static override serviceType: ServiceTypeName = CORE_MANAGER_SERVICE_TYPE;
 	override capabilityDescription =
-		"Manages the core ElizaOS installation (eject, sync, reinject)";
+		"Manages the core TokagentOS installation (eject, sync, reinject)";
 
 	private ejectLock: Promise<void> = Promise.resolve();
 
@@ -108,7 +108,7 @@ export class CoreManagerService extends Service {
 	}
 
 	private coreMonorepoDir(): string {
-		return path.join(this.coreBaseDir(), "eliza");
+		return path.join(this.coreBaseDir(), "tokagent");
 	}
 
 	private corePackageDir(): string {
@@ -208,7 +208,7 @@ export class CoreManagerService extends Service {
 				source:
 					typeof parsed.source === "string"
 						? parsed.source
-						: "github:elizaos/eliza",
+						: "github:tokagentos/tokagent",
 				gitUrl: parsed.gitUrl,
 				branch: parsed.branch,
 				commitHash: parsed.commitHash,
@@ -367,7 +367,7 @@ export class CoreManagerService extends Service {
 				);
 				const metadata: UpstreamMetadata = {
 					$schema: "milaidy-upstream-v1",
-					source: "github:elizaos/eliza",
+					source: "github:tokagentos/tokagent",
 					gitUrl: CORE_GIT_URL,
 					branch: CORE_BRANCH,
 					commitHash,

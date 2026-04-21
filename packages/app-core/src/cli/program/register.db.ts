@@ -8,8 +8,8 @@ import { runCommandWithRuntime } from "../cli-utils";
 const defaultRuntime = { error: console.error, exit: process.exit };
 
 function resolveDbDir(env = process.env): string {
-  const stateDir = env.ELIZA_STATE_DIR ?? path.join(os.homedir(), ".eliza");
-  return path.join(stateDir, "workspace", ".eliza", ".elizadb");
+  const stateDir = env.TOKAGENT_STATE_DIR ?? path.join(os.homedir(), ".tokagent");
+  return path.join(stateDir, "workspace", ".tokagent", ".tokagentdb");
 }
 
 export function registerDbCommand(program: Command) {
@@ -56,7 +56,7 @@ export function registerDbCommand(program: Command) {
         fs.rmSync(dbDir, { recursive: true, force: true });
         console.log(`${theme.success("✓")} Database deleted: ${dbDir}`);
         console.log(
-          `${theme.muted("→")} Run ${theme.command("eliza start")} to initialize a fresh database.`,
+          `${theme.muted("→")} Run ${theme.command("tokagent start")} to initialize a fresh database.`,
         );
       });
     });

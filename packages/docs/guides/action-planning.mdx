@@ -15,13 +15,13 @@ Each of these requires **multiple actions** executed in sequence, with results f
 
 <Tip>
   **Action planning lets your agent think in steps.** The LLM decides the
-  sequence, and ElizaOS executes each action, passing results forward
+  sequence, and TokagentOS executes each action, passing results forward
   automatically.
 </Tip>
 
 ## How It Works
 
-When the LLM returns multiple actions, ElizaOS creates an **ActionPlan**:
+When the LLM returns multiple actions, TokagentOS creates an **ActionPlan**:
 
 ```typescript
 interface ActionPlan {

@@ -6,8 +6,8 @@ import {
   type HandlerOptions,
   type IAgentRuntime,
   type Memory,
-} from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import { broadcastIntent } from "../lifeops/intent-sync.js";
 
 /**

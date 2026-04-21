@@ -4,7 +4,7 @@
  * Tests the form plugin lifecycle: registration, builder API,
  * session management, and field validation through a real runtime.
  *
- * Gated on ELIZA_LIVE_TEST=1.
+ * Gated on TOKAGENT_LIVE_TEST=1.
  */
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { describeIf } from "../../../../test/helpers/conditional-tests";
@@ -14,7 +14,7 @@ import {
 } from "../../../../test/helpers/real-runtime";
 
 const LIVE =
-  process.env.ELIZA_LIVE_TEST === "1" ||
+  process.env.TOKAGENT_LIVE_TEST === "1" ||
   process.env.MILADY_LIVE_TEST === "1";
 
 describeIf(LIVE)("App-Form: Plugin e2e", () => {

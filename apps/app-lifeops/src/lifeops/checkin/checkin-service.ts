@@ -1,5 +1,5 @@
-import type { IAgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { executeRawSql, sqlQuote, toText } from "../sql.js";
 import type {
   CheckinKind,

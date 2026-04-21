@@ -6,14 +6,14 @@ import { fileURLToPath } from "node:url";
 import {
   applyPluginRuntimeMutation,
   type PluginRuntimeApplyResult,
-} from "@elizaos/agent/api/plugin-runtime-apply";
+} from "@tokagentos/agent/api/plugin-runtime-apply";
 import {
   findPrimaryEnvKey,
   readBundledPluginPackageMetadata,
-} from "@elizaos/agent/api/server";
-import { loadElizaConfig, saveElizaConfig } from "@elizaos/agent/config/config";
-import { type AgentRuntime, logger } from "@elizaos/core";
-import { asRecord } from "@elizaos/shared/type-guards";
+} from "@tokagentos/agent/api/server";
+import { loadTokagentConfig, saveTokagentConfig } from "@tokagentos/agent/config/config";
+import { type AgentRuntime, logger } from "@tokagentos/core";
+import { asRecord } from "@tokagentos/shared/type-guards";
 import { CONNECTOR_ENV_MAP } from "../config/env-vars";
 import {
   CONNECTOR_PLUGINS,
@@ -195,8 +195,8 @@ const REVEALABLE_KEY_PREFIXES = [
   "AWS_",
   "AZURE_",
   "CLOUDFLARE_",
-  "ELIZA_",
-  "ELIZA_",
+  "TOKAGENT_",
+  "TOKAGENT_",
   "PLUGIN_",
   "XAI_",
   "DEEPSEEK_",
@@ -527,7 +527,7 @@ function buildPluginDriftDiagnostics(
   runtime: AgentRuntime | null,
 ): PluginDriftDiagnosticsReport {
   const pluginList = buildPluginListResponse(runtime).plugins;
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const configRecord = config as Record<string, unknown>;
   const configEntries = config.plugins?.entries ?? {};
   const allowList = new Set(config.plugins?.allow ?? []);
@@ -586,7 +586,7 @@ function reconcilePluginEnabledStates(): void {
   if (_enabledStateReconciled) return;
   _enabledStateReconciled = true;
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const configRecord = config as Record<string, unknown>;
   const entries = (config.plugins?.entries ?? {}) as Record<
     string,
@@ -644,7 +644,7 @@ function reconcilePluginEnabledStates(): void {
   }
 
   if (dirty) {
-    saveElizaConfig(config);
+    saveTokagentConfig(config);
     logger.info("[plugins] Reconciled drifted plugin enabled states in config");
   }
 }
@@ -688,8 +688,8 @@ async function applyCompatRuntimeMutation(options: {
   pluginId: string;
   plugin: CompatPluginRecord;
   body: Record<string, unknown>;
-  previousConfig: ReturnType<typeof loadElizaConfig>;
-  nextConfig: ReturnType<typeof loadElizaConfig>;
+  previousConfig: ReturnType<typeof loadTokagentConfig>;
+  nextConfig: ReturnType<typeof loadTokagentConfig>;
 }): Promise<PluginRuntimeApplyResult> {
   const { state, pluginId, plugin, body, previousConfig, nextConfig } = options;
   const reason =
@@ -918,7 +918,7 @@ export function buildPluginListResponse(runtime: AgentRuntime | null): {
   plugins: CompatPluginRecord[];
 } {
   reconcilePluginEnabledStates();
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const configRecord = config as Record<string, unknown>;
   const loadedNames = resolveLoadedPluginNames(runtime);
   const manifestPath = resolvePluginManifestPath();
@@ -1143,7 +1143,7 @@ export function persistCompatPluginMutation(
   status: number;
   payload: Record<string, unknown>;
 } {
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const configRecord = config as Record<string, unknown>;
   config.plugins ??= {};
   config.plugins.entries ??= {};
@@ -1229,7 +1229,7 @@ export function persistCompatPluginMutation(
       );
     }
 
-    saveElizaConfig(config);
+    saveTokagentConfig(config);
 
     for (const [key, value] of Object.entries(values)) {
       try {
@@ -1244,7 +1244,7 @@ export function persistCompatPluginMutation(
       }
     }
   } else {
-    saveElizaConfig(config);
+    saveTokagentConfig(config);
   }
 
   const refreshed = buildPluginListResponse(null).plugins.find(
@@ -1337,10 +1337,10 @@ export async function handlePluginsCompatRoutes(
       return true;
     }
 
-    const previousConfig = structuredClone(loadElizaConfig());
+    const previousConfig = structuredClone(loadTokagentConfig());
     const result = persistCompatPluginMutation(pluginId, body, plugin);
     if (result.status === 200) {
-      const nextConfig = loadElizaConfig();
+      const nextConfig = loadTokagentConfig();
       const runtimeApply = await applyCompatRuntimeMutation({
         state,
         pluginId,
@@ -1457,7 +1457,7 @@ export async function handlePluginsCompatRoutes(
     if (SENSITIVE_KEY_PREFIXES.some((prefix) => upperKey.startsWith(prefix))) {
       if (!ensureCompatSensitiveRouteAuthorized(req, res)) return true;
     }
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const value =
       process.env[key] ??
       (config.env as Record<string, string> | undefined)?.[key] ??

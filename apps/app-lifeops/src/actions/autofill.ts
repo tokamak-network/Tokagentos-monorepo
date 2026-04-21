@@ -26,8 +26,8 @@ import {
   type HandlerOptions,
   type IAgentRuntime,
   type Memory,
-} from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import {
   DEFAULT_AUTOFILL_WHITELIST,
   extractRegistrableDomain,
@@ -40,7 +40,7 @@ import { FeatureNotEnabledError } from "../lifeops/feature-flags.types.js";
 const FIELD_PURPOSES = ["email", "password", "name", "phone", "custom"] as const;
 type FieldPurpose = (typeof FIELD_PURPOSES)[number];
 
-const WHITELIST_CACHE_KEY = "eliza:lifeops-autofill-whitelist";
+const WHITELIST_CACHE_KEY = "tokagent:lifeops-autofill-whitelist";
 const DEVICE_BUS_URL_ENV = "MILADY_DEVICE_BUS_URL";
 const DEVICE_BUS_TOKEN_ENV = "MILADY_DEVICE_BUS_TOKEN";
 

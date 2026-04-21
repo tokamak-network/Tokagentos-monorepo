@@ -16,11 +16,11 @@ import {
   recentConversationTexts as collectRecentConversationTexts,
   recentConversationTextsFromState,
 } from "./recent-conversation-texts.js";
-import type { Memory, State } from "@elizaos/core";
+import type { Memory, State } from "@tokagentos/core";
 import {
   collectKeywordTermMatches,
   textIncludesKeywordTerm,
-} from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/shared/validation-keywords";
 import {
   type ContextSignalKey,
   getContextSignalTerms,

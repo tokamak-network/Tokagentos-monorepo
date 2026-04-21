@@ -37,8 +37,8 @@ def test_wallet_derivation_matches(monkeypatch: pytest.MonkeyPatch) -> None:
     key = "0x" + "11" * 32
     monkeypatch.setenv("EVM_PRIVATE_KEY", key)
     monkeypatch.setenv("POLYMARKET_PRIVATE_KEY", key)
-    from elizaos_plugin_evm.providers.wallet import EVMWalletProvider
-    from elizaos_plugin_polymarket.providers.clob import ClobClientProvider
+    from tokagentos_plugin_evm.providers.wallet import EVMWalletProvider
+    from tokagentos_plugin_polymarket.providers.clob import ClobClientProvider
 
     evm = EVMWalletProvider(key)
     poly = ClobClientProvider()

@@ -30,7 +30,7 @@ afterEach(() => {
 describe("template value builders", () => {
   test("builds plugin naming defaults", () => {
     const values = buildPluginTemplateValues({
-      elizaVersion: "2.0.0-alpha.139",
+      tokagentVersion: "2.0.0-alpha.139",
       githubUsername: "octocat",
       pluginDescription: "Plugin Foo",
       projectName: "foo",
@@ -69,10 +69,10 @@ describe("template value builders", () => {
 describe("managed file upgrades", () => {
   test("renders replacement values into file paths as well as file contents", () => {
     const sourceDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "elizaos-render-src-"),
+      path.join(os.tmpdir(), "tokagentos-render-src-"),
     );
     const destinationDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "elizaos-render-dest-"),
+      path.join(os.tmpdir(), "tokagentos-render-dest-"),
     );
     tempDirs.push(sourceDir, destinationDir);
 
@@ -83,7 +83,7 @@ describe("managed file upgrades", () => {
     );
 
     const values = buildPluginTemplateValues({
-      elizaVersion: "2.0.0-alpha.139",
+      tokagentVersion: "2.0.0-alpha.139",
       githubUsername: "octocat",
       pluginDescription: "Plugin Foo",
       projectName: "plugin-foo",
@@ -109,7 +109,7 @@ describe("managed file upgrades", () => {
 
   test("adds missing workspace entries without duplicating existing ones", () => {
     const projectRoot = fs.mkdtempSync(
-      path.join(os.tmpdir(), "elizaos-workspaces-"),
+      path.join(os.tmpdir(), "tokagentos-workspaces-"),
     );
     tempDirs.push(projectRoot);
 
@@ -130,7 +130,7 @@ describe("managed file upgrades", () => {
     expect(
       ensurePackageJsonWorkspaces(packageJsonPath, [
         "plugins/plugin-sql/typescript",
-        "plugins/plugin-elizacloud/typescript",
+        "plugins/plugin-tokagentcloud/typescript",
       ]),
     ).toBe(true);
 
@@ -140,13 +140,13 @@ describe("managed file upgrades", () => {
     expect(next.workspaces).toEqual([
       "packages/*",
       "plugins/plugin-sql/typescript",
-      "plugins/plugin-elizacloud/typescript",
+      "plugins/plugin-tokagentcloud/typescript",
     ]);
   });
 
   test("materializes required upstream compatibility shims", () => {
     const submoduleRoot = fs.mkdtempSync(
-      path.join(os.tmpdir(), "elizaos-upstream-compat-"),
+      path.join(os.tmpdir(), "tokagentos-upstream-compat-"),
     );
     tempDirs.push(submoduleRoot);
 
@@ -178,10 +178,10 @@ describe("managed file upgrades", () => {
 
   test("updates untouched managed files and reports conflicts", () => {
     const projectRoot = fs.mkdtempSync(
-      path.join(os.tmpdir(), "elizaos-upgrade-project-"),
+      path.join(os.tmpdir(), "tokagentos-upgrade-project-"),
     );
     const renderedDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "elizaos-upgrade-render-"),
+      path.join(os.tmpdir(), "tokagentos-upgrade-render-"),
     );
     tempDirs.push(projectRoot, renderedDir);
 

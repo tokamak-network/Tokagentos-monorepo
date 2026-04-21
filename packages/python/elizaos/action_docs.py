@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.generated.action_docs import all_action_docs, all_evaluator_docs
+from tokagentos.generated.action_docs import all_action_docs, all_evaluator_docs
 
 if TYPE_CHECKING:
-    from elizaos.types import Action, Evaluator
+    from tokagentos.types import Action, Evaluator
 
 
 def _action_doc_by_name() -> dict[str, dict[str, object]]:
@@ -45,7 +45,7 @@ def _coerce_action_parameters(values: object) -> list[object]:
     # Local import to avoid import cycles during package init.
     from google.protobuf.json_format import ParseDict
 
-    from elizaos.types import ActionParameter  # noqa: PLC0415
+    from tokagentos.types import ActionParameter  # noqa: PLC0415
 
     out: list[object] = []
     for item in values:

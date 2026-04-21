@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="console-application">
-  <id>ai.elizaos.App</id>
+  <id>ai.tokagentos.App</id>
   <metadata_license>MIT</metadata_license>
   <project_license>MIT</project_license>
-  <name>elizaOS App</name>
-  <summary>Personal AI assistant built on elizaOS</summary>
+  <name>tokagentOS App</name>
+  <summary>Personal AI assistant built on tokagentOS</summary>
 
-  <developer id="ai.elizaos">
-    <name>elizaOS</name>
+  <developer id="ai.tokagentos">
+    <name>tokagentOS</name>
   </developer>
 
   <description>
     <p>
-      elizaOS App is a personal AI assistant that runs on your own devices, built on
-      elizaOS. It provides zero-config onboarding, multi-provider AI support,
+      tokagentOS App is a personal AI assistant that runs on your own devices, built on
+      tokagentOS. It provides zero-config onboarding, multi-provider AI support,
       a web dashboard, and a plugin system for extensibility.
     </p>
     <p>Features:</p>
@@ -27,13 +27,13 @@
     </ul>
   </description>
 
-  <url type="homepage">https://app.elizaos.ai</url>
-  <url type="bugtracker">https://github.com/elizaos/elizaos-app/issues</url>
-  <url type="vcs-browser">https://github.com/elizaos/elizaos-app</url>
-  <url type="help">https://docs.app.elizaos.ai</url>
+  <url type="homepage">https://app.tokagentos.ai</url>
+  <url type="bugtracker">https://github.com/tokagentos/tokagentos-app/issues</url>
+  <url type="vcs-browser">https://github.com/tokagentos/tokagentos-app</url>
+  <url type="help">https://docs.app.tokagentos.ai</url>
 
   <provides>
-    <binary>elizaos-app</binary>
+    <binary>tokagentos-app</binary>
   </provides>
 
   <categories>
@@ -41,7 +41,7 @@
     <category>Utility</category>
   </categories>
 
-  <launchable type="desktop-id">ai.elizaos.App.desktop</launchable>
+  <launchable type="desktop-id">ai.tokagentos.App.desktop</launchable>
 
   <!--
   Screenshots are required by Flathub but not by `appstream-util
@@ -52,8 +52,8 @@
 
     <screenshots>
       <screenshot type="default">
-        <caption>elizaOS App web dashboard showing agent management</caption>
-        <image type="source">https://app.elizaos.ai/screenshots/dashboard.png</image>
+        <caption>tokagentOS App web dashboard showing agent management</caption>
+        <image type="source">https://app.tokagentos.ai/screenshots/dashboard.png</image>
       </screenshot>
     </screenshots>
   -->
@@ -61,7 +61,7 @@
   <releases>
     <release version="2.0.0-alpha.7" date="2026-02-07">
       <description>
-        <p>Initial Flatpak release of elizaOS App.</p>
+        <p>Initial Flatpak release of tokagentOS App.</p>
       </description>
     </release>
   </releases>
@@ -74,7 +74,7 @@
     <keyword>ai</keyword>
     <keyword>assistant</keyword>
     <keyword>agent</keyword>
-    <keyword>elizaos</keyword>
+    <keyword>tokagentos</keyword>
     <keyword>llm</keyword>
     <keyword>chatbot</keyword>
   </keywords>

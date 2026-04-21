@@ -6,30 +6,30 @@ from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
 
-from elizaos.logger import Logger
-from elizaos.types.database import IDatabaseAdapter
-from elizaos.types.primitives import UUID, Content
+from tokagentos.logger import Logger
+from tokagentos.types.database import IDatabaseAdapter
+from tokagentos.types.primitives import UUID, Content
 
 if TYPE_CHECKING:
-    from elizaos.types.agent import Character, TemplateType
-    from elizaos.types.components import (
+    from tokagentos.types.agent import Character, TemplateType
+    from tokagentos.types.components import (
         Action,
         ActionResult,
         Evaluator,
         HandlerCallback,
         Provider,
     )
-    from elizaos.types.environment import Entity, Room, World
-    from elizaos.types.memory import Memory
-    from elizaos.types.model import (
+    from tokagentos.types.environment import Entity, Room, World
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.model import (
         GenerateTextOptions,
         GenerateTextResult,
         ModelType,
     )
-    from elizaos.types.plugin import Plugin, Route
-    from elizaos.types.service import Service
-    from elizaos.types.state import State
-    from elizaos.types.task import TaskWorker
+    from tokagentos.types.plugin import Plugin, Route
+    from tokagentos.types.service import Service
+    from tokagentos.types.state import State
+    from tokagentos.types.task import TaskWorker
 
 
 # Type alias for streaming model handlers

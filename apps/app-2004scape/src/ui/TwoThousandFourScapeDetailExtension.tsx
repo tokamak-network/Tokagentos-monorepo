@@ -1,5 +1,5 @@
 import { TwoThousandFourScapeOperatorSurface } from "./TwoThousandFourScapeOperatorSurface";
-import type { AppDetailExtensionProps } from "@elizaos/app-core/components/apps/extensions/types";
+import type { AppDetailExtensionProps } from "@tokagentos/app-core/components/apps/extensions/types";
 
 export function TwoThousandFourScapeDetailExtension({
   app,

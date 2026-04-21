@@ -1,6 +1,6 @@
-import { useApp, type AgentPreflightResult } from "@elizaos/app-core";
-import { Button } from "@elizaos/ui/components/ui/button";
-import { SettingsControls } from "@elizaos/ui/components/ui/settings-controls";
+import { useApp, type AgentPreflightResult } from "@tokagentos/app-core";
+import { Button } from "@tokagentos/ui/components/ui/button";
+import { SettingsControls } from "@tokagentos/ui/components/ui/settings-controls";
 import {
   AGENT_LABELS,
   AGENT_TABS,

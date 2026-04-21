@@ -1,5 +1,5 @@
-import { ONBOARDING_PROVIDER_CATALOG } from "@elizaos/shared/contracts/onboarding";
-import { Button, Input } from "@elizaos/ui";
+import { ONBOARDING_PROVIDER_CATALOG } from "@tokagentos/shared/contracts/onboarding";
+import { Button, Input } from "@tokagentos/ui";
 import type { ChangeEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { OpenRouterModelOption, ProviderOption } from "../../../api";
@@ -44,7 +44,7 @@ import {
   onboardingSecondaryActionTextShadowStyle,
   spawnOnboardingRipple,
 } from "../onboarding-step-chrome";
-import { useAdvanceOnboardingWhenElizaCloudOAuthConnected } from "./useAdvanceOnboardingWhenElizaCloudOAuthConnected";
+import { useAdvanceOnboardingWhenTokagentCloudOAuthConnected } from "./useAdvanceOnboardingWhenTokagentCloudOAuthConnected";
 
 const providerOverrides: Record<
   string,
@@ -55,11 +55,11 @@ const providerOverrides: Record<
     descriptionKey?: string;
   }
 > = {
-  elizacloud: {
-    nameDefault: "Eliza Cloud",
+  tokagentcloud: {
+    nameDefault: "Tokagent Cloud",
     descriptionDefault: "LLMs, RPCs & more included",
-    nameKey: "onboarding.providerElizaCloud",
-    descriptionKey: "onboarding.providerElizaCloudDetailDescription",
+    nameKey: "onboarding.providerTokagentCloud",
+    descriptionKey: "onboarding.providerTokagentCloudDetailDescription",
   },
   "anthropic-subscription": {
     nameDefault: "Claude Sub",
@@ -156,11 +156,11 @@ export function ConnectionProviderDetailScreen({
     onboardingCloudApiKey,
     onboardingApiKey,
     onboardingPrimaryModel,
-    onboardingElizaCloudTab,
+    onboardingTokagentCloudTab,
     onboardingOpenRouterModel,
-    elizaCloudConnected,
-    elizaCloudLoginBusy,
-    elizaCloudLoginError,
+    tokagentCloudConnected,
+    tokagentCloudLoginBusy,
+    tokagentCloudLoginError,
     handleCloudLogin,
     handleOnboardingNext,
     setState,
@@ -184,8 +184,8 @@ export function ConnectionProviderDetailScreen({
 
   const [apiKeyFormatWarning, setApiKeyFormatWarning] = useState("");
 
-  const elizaCloudApiKeyRef = useRef<HTMLInputElement>(null);
-  const elizaCloudStatusRef = useRef<HTMLDivElement>(null);
+  const tokagentCloudApiKeyRef = useRef<HTMLInputElement>(null);
+  const tokagentCloudStatusRef = useRef<HTMLDivElement>(null);
   const anthropicTokenRef = useRef<HTMLInputElement>(null);
   const anthropicCodeRef = useRef<HTMLInputElement>(null);
   const anthropicStatusRef = useRef<HTMLDivElement>(null);
@@ -255,7 +255,7 @@ export function ConnectionProviderDetailScreen({
     setApiKeyFormatWarning(validateApiKeyFormat(newKey, onboardingProvider));
   };
 
-  const handleElizaCloudApiKeyChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleTokagentCloudApiKeyChange = (e: ChangeEvent<HTMLInputElement>) => {
     setState("onboardingCloudApiKey", e.target.value);
   };
 
@@ -420,42 +420,42 @@ export function ConnectionProviderDetailScreen({
     onboardingProvider === "anthropic-subscription" &&
     requiresAdditionalRuntimeProvider(onboardingProvider);
 
-  useAdvanceOnboardingWhenElizaCloudOAuthConnected({
-    active: onboardingProvider === "elizacloud",
-    elizaCloudConnected,
-    elizaCloudTab: onboardingElizaCloudTab,
+  useAdvanceOnboardingWhenTokagentCloudOAuthConnected({
+    active: onboardingProvider === "tokagentcloud",
+    tokagentCloudConnected,
+    tokagentCloudTab: onboardingTokagentCloudTab,
     handleOnboardingNext,
   });
 
   const isConfirmDisabled = isProviderConfirmDisabled({
     provider: onboardingProvider,
     apiKey:
-      onboardingProvider === "elizacloud"
+      onboardingProvider === "tokagentcloud"
         ? onboardingCloudApiKey
         : onboardingApiKey,
-    elizaCloudTab: onboardingElizaCloudTab,
-    elizaCloudConnected,
+    tokagentCloudTab: onboardingTokagentCloudTab,
+    tokagentCloudConnected,
     subscriptionTab: onboardingSubscriptionTab,
   });
 
   useEffect(() => {
     if (
-      onboardingProvider === "elizacloud" &&
-      onboardingElizaCloudTab === "apikey"
+      onboardingProvider === "tokagentcloud" &&
+      onboardingTokagentCloudTab === "apikey"
     ) {
-      elizaCloudApiKeyRef.current?.focus();
+      tokagentCloudApiKeyRef.current?.focus();
     }
-  }, [onboardingElizaCloudTab, onboardingProvider]);
+  }, [onboardingTokagentCloudTab, onboardingProvider]);
 
   useEffect(() => {
     if (
-      onboardingProvider === "elizacloud" &&
-      onboardingElizaCloudTab === "login" &&
-      elizaCloudConnected
+      onboardingProvider === "tokagentcloud" &&
+      onboardingTokagentCloudTab === "login" &&
+      tokagentCloudConnected
     ) {
-      elizaCloudStatusRef.current?.focus();
+      tokagentCloudStatusRef.current?.focus();
     }
-  }, [elizaCloudConnected, onboardingElizaCloudTab, onboardingProvider]);
+  }, [tokagentCloudConnected, onboardingTokagentCloudTab, onboardingProvider]);
 
   useEffect(() => {
     if (
@@ -509,7 +509,7 @@ export function ConnectionProviderDetailScreen({
       onboardingProvider &&
       onboardingProvider !== "anthropic-subscription" &&
       onboardingProvider !== "openai-subscription" &&
-      onboardingProvider !== "elizacloud" &&
+      onboardingProvider !== "tokagentcloud" &&
       onboardingProvider !== "ollama"
     ) {
       genericApiKeyRef.current?.focus();
@@ -539,22 +539,22 @@ export function ConnectionProviderDetailScreen({
         descriptionClassName="mx-auto max-w-[32ch]"
       />
 
-      {onboardingProvider === "elizacloud" && (
+      {onboardingProvider === "tokagentcloud" && (
         <div className={onboardingDetailStackClassName}>
           <OnboardingTabs
             tabs={[
               { id: "login" as const, label: t("onboarding.login") },
               { id: "apikey" as const, label: t("onboarding.apiKey") },
             ]}
-            active={onboardingElizaCloudTab}
-            onChange={(tab) => dispatch({ type: "setElizaCloudTab", tab })}
+            active={onboardingTokagentCloudTab}
+            onChange={(tab) => dispatch({ type: "setTokagentCloudTab", tab })}
           />
 
-          {onboardingElizaCloudTab === "login" ? (
+          {onboardingTokagentCloudTab === "login" ? (
             <div className={onboardingCenteredStackClassName}>
-              {elizaCloudConnected ? (
+              {tokagentCloudConnected ? (
                 <OnboardingStatusBanner
-                  ref={elizaCloudStatusRef}
+                  ref={tokagentCloudStatusRef}
                   tone="success"
                 >
                   <ConnectedIcon title={t("onboarding.connected")} />
@@ -572,16 +572,16 @@ export function ConnectionProviderDetailScreen({
                     });
                     void handleCloudLogin();
                   }}
-                  disabled={elizaCloudLoginBusy}
+                  disabled={tokagentCloudLoginBusy}
                 >
-                  {elizaCloudLoginBusy
+                  {tokagentCloudLoginBusy
                     ? t("onboarding.connecting")
                     : t("onboarding.connectAccount")}
                 </Button>
               )}
-              {elizaCloudLoginError &&
+              {tokagentCloudLoginError &&
                 (() => {
-                  const urlMatch = elizaCloudLoginError.match(
+                  const urlMatch = tokagentCloudLoginError.match(
                     /^Open this link to log in: (.+)$/,
                   );
                   if (urlMatch) {
@@ -606,7 +606,7 @@ export function ConnectionProviderDetailScreen({
                   return (
                     <div className={onboardingCenteredStackClassName}>
                       <OnboardingStatusBanner tone="error" live="assertive">
-                        {elizaCloudLoginError}
+                        {tokagentCloudLoginError}
                       </OnboardingStatusBanner>
                       <Button
                         variant="ghost"
@@ -627,13 +627,13 @@ export function ConnectionProviderDetailScreen({
             <div className={onboardingDetailStackClassName}>
               <div className={onboardingInfoPanelClassName}>
                 <OnboardingField
-                  controlId="elizacloud-apikey-detail"
+                  controlId="tokagentcloud-apikey-detail"
                   label={t("onboarding.apiKey")}
                   description={
                     <>
                       {t("onboarding.useExistingKey")}{" "}
                       <a
-                        href="https://elizacloud.ai/dashboard/settings"
+                        href="https://tokagentcloud.ai/dashboard/settings"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-[var(--onboarding-link)] underline underline-offset-2 transition-colors duration-200 hover:text-[var(--onboarding-text-strong)]"
@@ -645,15 +645,15 @@ export function ConnectionProviderDetailScreen({
                 >
                   {({ describedBy, invalid }) => (
                     <Input
-                      id="elizacloud-apikey-detail"
-                      ref={elizaCloudApiKeyRef}
+                      id="tokagentcloud-apikey-detail"
+                      ref={tokagentCloudApiKeyRef}
                       type="password"
                       aria-describedby={describedBy}
                       aria-invalid={invalid}
                       className={onboardingInputClassName}
                       placeholder="ec-..."
                       value={onboardingCloudApiKey}
-                      onChange={handleElizaCloudApiKeyChange}
+                      onChange={handleTokagentCloudApiKeyChange}
                     />
                   )}
                 </OnboardingField>
@@ -934,7 +934,7 @@ export function ConnectionProviderDetailScreen({
       {onboardingProvider &&
         onboardingProvider !== "anthropic-subscription" &&
         onboardingProvider !== "openai-subscription" &&
-        onboardingProvider !== "elizacloud" &&
+        onboardingProvider !== "tokagentcloud" &&
         onboardingProvider !== "ollama" && (
           <div className={onboardingInfoPanelClassName}>
             <OnboardingField

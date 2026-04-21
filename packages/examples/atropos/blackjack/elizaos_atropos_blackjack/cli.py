@@ -47,10 +47,10 @@ async def run_auto_mode(
     """Run automatic play mode with optional trajectory logging."""
     _load_dotenv()
 
-    from elizaos_atropos_blackjack import BlackjackAgent, BlackjackEnvironment
-    from elizaos_atropos_blackjack.types import EpisodeResult
+    from tokagentos_atropos_blackjack import BlackjackAgent, BlackjackEnvironment
+    from tokagentos_atropos_blackjack.types import EpisodeResult
 
-    print("\n🃏 ElizaOS Atropos - Blackjack")
+    print("\n🃏 TokagentOS Atropos - Blackjack")
     print("=" * 40)
     print(f"Mode: {'LLM-based' if use_llm else 'Optimal Strategy'}")
     print(f"Episodes: {num_episodes}")
@@ -66,28 +66,28 @@ async def run_auto_mode(
     runtime = None
     if use_llm:
         try:
-            from elizaos.runtime import AgentRuntime
-            from elizaos.bootstrap import bootstrap_plugin
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos.runtime import AgentRuntime
+            from tokagentos.bootstrap import bootstrap_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             plugins = [bootstrap_plugin, get_openai_plugin()]
 
             # Optional: register trajectory logger plugin for end-to-end capture
             if log_trajectories:
                 try:
-                    from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+                    from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
                     plugins.append(get_trajectory_logger_plugin())
                 except ImportError:
                     print("⚠️ Trajectory logger plugin not installed; disabling trajectory logging")
                     log_trajectories = False
 
-            from elizaos_atropos_blackjack.eliza_plugin import (
+            from tokagentos_atropos_blackjack.tokagent_plugin import (
                 create_blackjack_character,
-                get_blackjack_eliza_plugin,
+                get_blackjack_tokagent_plugin,
             )
 
-            plugins.append(get_blackjack_eliza_plugin())
+            plugins.append(get_blackjack_tokagent_plugin())
             runtime = AgentRuntime(character=create_blackjack_character(), plugins=plugins)
             await runtime.initialize()
             print("✅ LLM initialized")
@@ -158,13 +158,13 @@ async def run_auto_mode(
             token = None
             if step_id is not None:
                 try:
-                    from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+                    from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
                     token = CURRENT_TRAJECTORY_STEP_ID.set(step_id)
                 except Exception:
                     token = None
 
-            # Decide action (canonical ElizaOS pipeline)
+            # Decide action (canonical TokagentOS pipeline)
             action = await agent.decide(
                 state,
                 env.get_available_actions(),
@@ -173,7 +173,7 @@ async def run_auto_mode(
 
             if token is not None:
                 try:
-                    from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+                    from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
                     CURRENT_TRAJECTORY_STEP_ID.reset(token)
                 except Exception:
@@ -257,7 +257,7 @@ async def run_auto_mode(
     # Export trajectories if logging was enabled
     if log_trajectories and traj_svc is not None:
         try:
-            from elizaos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
+            from tokagentos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
 
             export_cfg = TrajectoryExportConfig(
                 dataset_name="atropos_blackjack_trajectories",
@@ -279,10 +279,10 @@ async def run_auto_mode(
 
 async def run_interactive_mode(use_llm: bool = False) -> None:
     """Run interactive play mode."""
-    from elizaos_atropos_blackjack import BlackjackEnvironment, BlackjackAction
-    from elizaos_atropos_blackjack.strategy import BasicStrategy
+    from tokagentos_atropos_blackjack import BlackjackEnvironment, BlackjackAction
+    from tokagentos_atropos_blackjack.strategy import BasicStrategy
 
-    print("\n🃏 ElizaOS Atropos - Blackjack (Interactive)")
+    print("\n🃏 TokagentOS Atropos - Blackjack (Interactive)")
     print("=" * 40)
     print("Commands: h=hit, s=stand, q=quit, r=reset")
     print("=" * 40)
@@ -352,11 +352,11 @@ async def run_interactive_mode(use_llm: bool = False) -> None:
 
 async def run_benchmark_mode(num_episodes: int = 10000) -> None:
     """Run benchmark comparing strategies."""
-    from elizaos_atropos_blackjack import BlackjackEnvironment, BlackjackAgent
-    from elizaos_atropos_blackjack.agent import create_optimal_policy, create_random_policy
-    from elizaos_atropos_blackjack.strategy import SimpleStrategy, ConservativeStrategy, AggressiveStrategy
+    from tokagentos_atropos_blackjack import BlackjackEnvironment, BlackjackAgent
+    from tokagentos_atropos_blackjack.agent import create_optimal_policy, create_random_policy
+    from tokagentos_atropos_blackjack.strategy import SimpleStrategy, ConservativeStrategy, AggressiveStrategy
 
-    print("\n🃏 ElizaOS Atropos - Blackjack Benchmark")
+    print("\n🃏 TokagentOS Atropos - Blackjack Benchmark")
     print("=" * 50)
     print(f"Episodes per strategy: {num_episodes}")
     print("=" * 50)
@@ -411,15 +411,15 @@ async def run_benchmark_mode(num_episodes: int = 10000) -> None:
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="ElizaOS Atropos Blackjack Environment",
+        description="TokagentOS Atropos Blackjack Environment",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  elizaos-blackjack --mode auto             # Watch AI play 100 hands
-  elizaos-blackjack --mode interactive      # Play interactively
-  elizaos-blackjack --mode benchmark        # Compare strategies
-  elizaos-blackjack --mode auto --llm       # Use LLM for decisions
-  elizaos-blackjack --trajectories          # Export trajectories for RL training
+  tokagentos-blackjack --mode auto             # Watch AI play 100 hands
+  tokagentos-blackjack --mode interactive      # Play interactively
+  tokagentos-blackjack --mode benchmark        # Compare strategies
+  tokagentos-blackjack --mode auto --llm       # Use LLM for decisions
+  tokagentos-blackjack --trajectories          # Export trajectories for RL training
         """,
     )
 

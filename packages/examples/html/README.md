@@ -1,10 +1,10 @@
-# ELIZA - elizaOS Browser Demo
+# TOKAGENT - tokagentOS Browser Demo
 
-A browser-based demo of the **full elizaOS AgentRuntime** using:
+A browser-based demo of the **full tokagentOS AgentRuntime** using:
 
-- **@elizaos/core** - AgentRuntime, ModelType
+- **@tokagentos/core** - AgentRuntime, ModelType
 - **@elizaos/plugin-localdb** - localStorage persistence (no SQL needed)
-- **@elizaos/plugin-eliza-classic** - Classic ELIZA pattern matching (no API keys needed)
+- **@elizaos/plugin-tokagent-classic** - Classic TOKAGENT pattern matching (no API keys needed)
 
 This demo mirrors the structure of `examples/chat/typescript/chat.ts` exactly, but runs in the browser.
 
@@ -17,7 +17,7 @@ This demo mirrors the structure of `examples/chat/typescript/chat.ts` exactly, b
 │  ┌─────────────────────────────────────────────────────┐    │
 │  │                   AgentRuntime                       │    │
 │  │  ┌──────────────────┐  ┌──────────────────────┐     │    │
-│  │  │ plugin-eliza-    │  │  plugin-localdb      │     │    │
+│  │  │ plugin-tokagent-    │  │  plugin-localdb      │     │    │
 │  │  │ classic          │  │  (localStorage)      │     │    │
 │  │  │ (TEXT_LARGE)     │  │                      │     │    │
 │  │  └──────────────────┘  └──────────────────────┘     │    │
@@ -33,11 +33,11 @@ This demo mirrors the structure of `examples/chat/typescript/chat.ts` exactly, b
 
 ## Quick Start
 
-**Important**: This demo must be served from the monorepo root because it uses import maps to resolve the elizaOS packages.
+**Important**: This demo must be served from the monorepo root because it uses import maps to resolve the tokagentOS packages.
 
 ```bash
 # From the monorepo root
-cd /path/to/eliza
+cd /path/to/tokagent
 
 # Option 1: Using Python (built into most systems)
 python3 -m http.server 3000
@@ -55,14 +55,14 @@ Then open: **http://localhost:3000/examples/html/**
 
 ### Import Maps
 
-The demo uses native ES module import maps to resolve the elizaOS packages to their browser builds:
+The demo uses native ES module import maps to resolve the tokagentOS packages to their browser builds:
 
 ```html
 <script type="importmap">
   {
     "imports": {
-      "@elizaos/core": "../../packages/typescript/dist/browser/index.browser.js",
-      "@elizaos/plugin-eliza-classic": "../../plugins/plugin-eliza-classic/typescript/dist/browser/index.browser.js",
+      "@tokagentos/core": "../../packages/typescript/dist/browser/index.browser.js",
+      "@elizaos/plugin-tokagent-classic": "../../plugins/plugin-tokagent-classic/typescript/dist/browser/index.browser.js",
       "@elizaos/plugin-localdb": "../../plugins/plugin-localdb/dist/browser/index.browser.js",
       "uuid": "https://esm.sh/uuid@11"
     }
@@ -78,15 +78,15 @@ import {
   ChannelType,
   stringToUuid,
   ModelType,
-} from "@elizaos/core";
-import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+} from "@tokagentos/core";
+import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
 import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
 import { v4 as uuidv4 } from "uuid";
 
 // Create runtime with plugins (browser version)
 const runtime = new AgentRuntime({
   character,
-  plugins: [localdbPlugin, elizaClassicPlugin],
+  plugins: [localdbPlugin, tokagentClassicPlugin],
 });
 await runtime.initialize();
 
@@ -122,7 +122,7 @@ await runtime.messageService.handleMessage(runtime, message, callback);
 | -------- | ------------------- | ----------------------------- |
 | Runtime  | AgentRuntime        | AgentRuntime                  |
 | Database | plugin-sql (PGLite) | plugin-localdb (localStorage) |
-| Model    | plugin-openai       | plugin-eliza-classic          |
+| Model    | plugin-openai       | plugin-tokagent-classic          |
 | UI       | readline (CLI)      | HTML/CSS Terminal             |
 | API Keys | Required (OpenAI)   | Not required                  |
 
@@ -130,14 +130,14 @@ await runtime.messageService.handleMessage(runtime, message, callback);
 
 ```
 examples/html/
-├── index.html      # Complete demo with elizaOS runtime
+├── index.html      # Complete demo with tokagentOS runtime
 ├── package.json    # Serve scripts
 └── README.md       # This file
 ```
 
 ## Prerequisites
 
-Make sure the elizaOS packages are built:
+Make sure the tokagentOS packages are built:
 
 ```bash
 # From monorepo root

@@ -1,8 +1,8 @@
 """
-Canonical ElizaOS integration for Atropos Blackjack.
+Canonical TokagentOS integration for Atropos Blackjack.
 
 This provides a provider + action pair so the agent can make decisions via the
-full ElizaOS message pipeline:
+full TokagentOS message pipeline:
 
 - providers → compose_state()
 - message_service.handle_message()
@@ -18,19 +18,19 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from elizaos.types import (
+from tokagentos.types import (
     ActionParameterSchema,
     Character,
     Plugin,
     ProviderResult,
 )
 
-from elizaos_atropos_blackjack.types import BlackjackAction, BlackjackState
+from tokagentos_atropos_blackjack.types import BlackjackAction, BlackjackState
 
 if TYPE_CHECKING:
-    from elizaos.types import Action, Provider
+    from tokagentos.types import Action, Provider
 
-from elizaos_atropos_shared.canonical_eliza import (
+from tokagentos_atropos_shared.canonical_tokagent import (
     ContextStore,
     CaptureActionResponse,
     create_action_only_template,
@@ -129,7 +129,7 @@ def create_blackjack_character(name: str = "BlackjackAgent") -> Character:
         instructions=(
             "You must choose ONE action from the allowed actions.\n\n"
             "CRITICAL:\n"
-            "- Output ONLY one ElizaOS action: ATROPOS_BLACKJACK_ACTION\n"
+            "- Output ONLY one TokagentOS action: ATROPOS_BLACKJACK_ACTION\n"
             "- Put the chosen action in params.action as either HIT or STAND"
         ),
         action_name="ATROPOS_BLACKJACK_ACTION",
@@ -148,7 +148,7 @@ def create_blackjack_character(name: str = "BlackjackAgent") -> Character:
     )
 
 
-def get_blackjack_eliza_plugin() -> Plugin:
+def get_blackjack_tokagent_plugin() -> Plugin:
     return create_simple_plugin(
         name="atropos-blackjack",
         description="Atropos blackjack canonical provider/action integration.",

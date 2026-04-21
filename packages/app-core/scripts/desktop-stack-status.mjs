@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * One-shot probe for local Eliza desktop dev (Vite/UI port + API port).
+ * One-shot probe for local Tokagent desktop dev (Vite/UI port + API port).
  *
  * **Why this exists:** `GET /api/dev/stack` alone requires a running API; this script also checks
  * TCP listeners and merges health/status so CI and agents get one exit code and one JSON blob.
@@ -8,8 +8,8 @@
  * For Cursor agents and humans verifying `bun run dev:desktop` / `dev:desktop:watch`.
  *
  * Usage:
- *   node eliza/packages/app-core/scripts/desktop-stack-status.mjs
- *   node eliza/packages/app-core/scripts/desktop-stack-status.mjs --json
+ *   node tokagent/packages/app-core/scripts/desktop-stack-status.mjs
+ *   node tokagent/packages/app-core/scripts/desktop-stack-status.mjs --json
  */
 
 import { gatherDesktopStackStatus } from "./lib/desktop-stack-status.mjs";

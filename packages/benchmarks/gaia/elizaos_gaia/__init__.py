@@ -1,5 +1,5 @@
 """
-GAIA Benchmark Implementation for ElizaOS
+GAIA Benchmark Implementation for TokagentOS
 
 A comprehensive implementation of the GAIA (General AI Assistants) benchmark
 for evaluating AI systems on real-world tasks requiring reasoning, multimodal
@@ -9,19 +9,19 @@ Reference: https://gaiabenchmark.com/
 Paper: https://proceedings.iclr.cc/paper_files/paper/2024/hash/25ae35b5b1738d80f1f03a8713e405ec-Abstract-Conference.html
 """
 
-from elizaos_gaia.agent import GAIAAgent
-from elizaos_gaia.dataset import GAIADataset
-from elizaos_gaia.evaluator import GAIAEvaluator
-from elizaos_gaia.metrics import MetricsCalculator
-from elizaos_gaia.plugin import create_gaia_plugin, gaia_plugin
-from elizaos_gaia.orchestrator.runner import OrchestratedGAIARunner
-from elizaos_gaia.orchestrator.types import (
+from tokagentos_gaia.agent import GAIAAgent
+from tokagentos_gaia.dataset import GAIADataset
+from tokagentos_gaia.evaluator import GAIAEvaluator
+from tokagentos_gaia.metrics import MetricsCalculator
+from tokagentos_gaia.plugin import create_gaia_plugin, gaia_plugin
+from tokagentos_gaia.orchestrator.runner import OrchestratedGAIARunner
+from tokagentos_gaia.orchestrator.types import (
     ExecutionMode,
     OrchestratedGAIAReport,
     ProviderQuestionResult,
     ProviderType as OrchestratedProviderType,
 )
-from elizaos_gaia.providers import (
+from tokagentos_gaia.providers import (
     PRESETS,
     SUPPORTED_MODELS,
     ModelConfig,
@@ -31,8 +31,8 @@ from elizaos_gaia.providers import (
     get_default_config,
     list_models,
 )
-from elizaos_gaia.runner import GAIARunner, run_quick_test
-from elizaos_gaia.types import (
+from tokagentos_gaia.runner import GAIARunner, run_quick_test
+from tokagentos_gaia.types import (
     LEADERBOARD_SCORES,
     AnnotatorMetadata,
     GAIABenchmarkResults,

@@ -22,7 +22,7 @@ from art.rewards import ruler_score_group
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from elizaos_art.base import (
+from tokagentos_art.base import (
     Action,
     BaseAgent,
     BaseEnvironment,
@@ -171,7 +171,7 @@ class GRPOTrainer(Generic[S, A]):
         self.model = art.TrainableModel(
             name=self.config.model_name,
             base_model=self.config.model_name,
-            project=f"elizaos-art-{self.env.name}",
+            project=f"tokagentos-art-{self.env.name}",
         )
 
         # Register with backend

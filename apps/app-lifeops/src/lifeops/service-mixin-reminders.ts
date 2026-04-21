@@ -1,6 +1,6 @@
 // @ts-nocheck — mixin: type safety is enforced on the composed class
 import crypto from "node:crypto";
-import { type IAgentRuntime, ModelType } from "@elizaos/core";
+import { type IAgentRuntime, ModelType } from "@tokagentos/core";
 import type {
   AcknowledgeLifeOpsReminderRequest,
   CaptureLifeOpsActivitySignalRequest,
@@ -25,10 +25,10 @@ import type {
   LifeOpsWorkflowRun,
   SetLifeOpsReminderPreferenceRequest,
   UpsertLifeOpsChannelPolicyRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_CHANNEL_TYPES,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   getSelfControlStatus,
   startSelfControlBlock,
@@ -40,8 +40,8 @@ import {
   loadOwnerContactsConfig,
   type OwnerContactRoutingHint,
   resolveOwnerContactWithFallback,
-} from "@elizaos/agent/config";
-import { registerEscalationChannel } from "@elizaos/agent/services/escalation";
+} from "@tokagentos/agent/config";
+import { registerEscalationChannel } from "@tokagentos/agent/services/escalation";
 import {
   buildNativeAppleReminderMetadata,
   createNativeAppleReminderLikeItem,

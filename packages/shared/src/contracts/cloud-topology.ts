@@ -5,18 +5,18 @@ import {
   resolveServiceRoutingInConfig,
 } from "./onboarding.js";
 
-export type ElizaCloudService =
+export type TokagentCloudService =
   | "inference"
   | "tts"
   | "media"
   | "embeddings"
   | "rpc";
 
-export type ResolvedElizaCloudTopology = {
+export type ResolvedTokagentCloudTopology = {
   linked: boolean;
-  provider: "elizacloud" | null;
+  provider: "tokagentcloud" | null;
   runtime: "cloud" | "local";
-  services: Record<ElizaCloudService, boolean>;
+  services: Record<TokagentCloudService, boolean>;
   shouldLoadPlugin: boolean;
 };
 
@@ -51,11 +51,11 @@ function normalizeSecretString(value: unknown): string | undefined {
   return trimmed;
 }
 
-export function isElizaCloudLinkedInConfig(
+export function isTokagentCloudLinkedInConfig(
   config: Record<string, unknown> | null | undefined,
 ): boolean {
   const linkedAccounts = resolveLinkedAccountsInConfig(config);
-  const linkedCloudAccount = linkedAccounts?.elizacloud;
+  const linkedCloudAccount = linkedAccounts?.tokagentcloud;
   if (linkedCloudAccount?.status === "linked") {
     return true;
   }
@@ -64,47 +64,47 @@ export function isElizaCloudLinkedInConfig(
   return Boolean(normalizeSecretString(cloud?.apiKey));
 }
 
-export function resolveElizaCloudTopology(
+export function resolveTokagentCloudTopology(
   config: Record<string, unknown> | null | undefined,
-): ResolvedElizaCloudTopology {
+): ResolvedTokagentCloudTopology {
   const deploymentTarget = resolveDeploymentTargetInConfig(config);
   const routing = resolveServiceRoutingInConfig(config);
   const provider =
-    (normalizeOnboardingProviderId(routing?.llmText?.backend) === "elizacloud"
-      ? "elizacloud"
+    (normalizeOnboardingProviderId(routing?.llmText?.backend) === "tokagentcloud"
+      ? "tokagentcloud"
       : null) ??
-    (deploymentTarget.provider === "elizacloud" ? "elizacloud" : null);
+    (deploymentTarget.provider === "tokagentcloud" ? "tokagentcloud" : null);
   const runtime = deploymentTarget.runtime === "cloud" ? "cloud" : "local";
   const resolvedServices = {
     inference: Boolean(
       routing?.llmText?.transport === "cloud-proxy" &&
-        normalizeOnboardingProviderId(routing.llmText.backend) === "elizacloud",
+        normalizeOnboardingProviderId(routing.llmText.backend) === "tokagentcloud",
     ),
     tts: Boolean(
       routing?.tts?.transport === "cloud-proxy" &&
-        normalizeOnboardingProviderId(routing.tts.backend) === "elizacloud",
+        normalizeOnboardingProviderId(routing.tts.backend) === "tokagentcloud",
     ),
     media: Boolean(
       routing?.media?.transport === "cloud-proxy" &&
-        normalizeOnboardingProviderId(routing.media.backend) === "elizacloud",
+        normalizeOnboardingProviderId(routing.media.backend) === "tokagentcloud",
     ),
     embeddings: Boolean(
       routing?.embeddings?.transport === "cloud-proxy" &&
         normalizeOnboardingProviderId(routing.embeddings.backend) ===
-          "elizacloud",
+          "tokagentcloud",
     ),
     rpc: Boolean(
       routing?.rpc?.transport === "cloud-proxy" &&
-        normalizeOnboardingProviderId(routing.rpc.backend) === "elizacloud",
+        normalizeOnboardingProviderId(routing.rpc.backend) === "tokagentcloud",
     ),
-  } satisfies Record<ElizaCloudService, boolean>;
+  } satisfies Record<TokagentCloudService, boolean>;
   const cloudDeploymentSelected =
     deploymentTarget.runtime === "cloud" &&
-    deploymentTarget.provider === "elizacloud";
+    deploymentTarget.provider === "tokagentcloud";
 
   return {
-    linked: isElizaCloudLinkedInConfig(config),
-    provider: provider === "elizacloud" ? "elizacloud" : null,
+    linked: isTokagentCloudLinkedInConfig(config),
+    provider: provider === "tokagentcloud" ? "tokagentcloud" : null,
     runtime,
     services: resolvedServices,
     shouldLoadPlugin:
@@ -112,15 +112,15 @@ export function resolveElizaCloudTopology(
   };
 }
 
-export function isElizaCloudServiceSelectedInConfig(
+export function isTokagentCloudServiceSelectedInConfig(
   config: Record<string, unknown> | null | undefined,
-  service: ElizaCloudService,
+  service: TokagentCloudService,
 ): boolean {
-  return resolveElizaCloudTopology(config).services[service];
+  return resolveTokagentCloudTopology(config).services[service];
 }
 
-export function shouldLoadElizaCloudPluginInConfig(
+export function shouldLoadTokagentCloudPluginInConfig(
   config: Record<string, unknown> | null | undefined,
 ): boolean {
-  return resolveElizaCloudTopology(config).shouldLoadPlugin;
+  return resolveTokagentCloudTopology(config).shouldLoadPlugin;
 }

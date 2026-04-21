@@ -1,11 +1,11 @@
-import { useApp } from "@elizaos/app-core";
+import { useApp } from "@tokagentos/app-core";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@elizaos/ui/components/ui/select";
-import { SettingsControls } from "@elizaos/ui/components/ui/settings-controls";
+} from "@tokagentos/ui/components/ui/select";
+import { SettingsControls } from "@tokagentos/ui/components/ui/settings-controls";
 import { useState } from "react";
 import {
   type AgentSelectionStrategy,
@@ -181,7 +181,7 @@ export function GlobalPrefsSection({
         <SettingsControls.FieldDescription>
           {t("codingagentsettingssection.CodingDirectoryDesc", {
             defaultValue:
-              "Where scratch task code is saved. Leave empty for default (~/.eliza/workspaces/).",
+              "Where scratch task code is saved. Leave empty for default (~/.tokagent/workspaces/).",
           })}
         </SettingsControls.FieldDescription>
       </SettingsControls.Field>

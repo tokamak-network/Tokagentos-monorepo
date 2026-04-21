@@ -22,7 +22,7 @@ class TestBlueSkyClientIntegration:
     @pytest.mark.asyncio
     async def test_authenticate(self):
         """Should authenticate with Bluesky."""
-        from elizaos_plugin_bluesky import BlueSkyClient, BlueSkyConfig
+        from tokagentos_plugin_bluesky import BlueSkyClient, BlueSkyConfig
 
         config = BlueSkyConfig.from_env()
         config = BlueSkyConfig(
@@ -41,8 +41,8 @@ class TestBlueSkyClientIntegration:
     @pytest.mark.asyncio
     async def test_fetch_timeline(self):
         """Should fetch timeline."""
-        from elizaos_plugin_bluesky import BlueSkyClient, BlueSkyConfig
-        from elizaos_plugin_bluesky.types import TimelineRequest
+        from tokagentos_plugin_bluesky import BlueSkyClient, BlueSkyConfig
+        from tokagentos_plugin_bluesky.types import TimelineRequest
 
         config = BlueSkyConfig.from_env()
         config = BlueSkyConfig(
@@ -61,7 +61,7 @@ class TestBlueSkyClientIntegration:
     @pytest.mark.asyncio
     async def test_fetch_notifications(self):
         """Should fetch notifications."""
-        from elizaos_plugin_bluesky import BlueSkyClient, BlueSkyConfig
+        from tokagentos_plugin_bluesky import BlueSkyClient, BlueSkyConfig
 
         config = BlueSkyConfig.from_env()
         config = BlueSkyConfig(
@@ -80,7 +80,7 @@ class TestBlueSkyClientIntegration:
     @pytest.mark.asyncio
     async def test_dry_run_post(self):
         """Should simulate post creation in dry run mode."""
-        from elizaos_plugin_bluesky import (
+        from tokagentos_plugin_bluesky import (
             BlueSkyClient,
             BlueSkyConfig,
             CreatePostRequest,
@@ -108,7 +108,7 @@ class TestBlueSkyClientIntegration:
     @pytest.mark.asyncio
     async def test_fetch_profile(self):
         """Should fetch own profile."""
-        from elizaos_plugin_bluesky import BlueSkyClient, BlueSkyConfig
+        from tokagentos_plugin_bluesky import BlueSkyClient, BlueSkyConfig
 
         handle = os.environ.get("BLUESKY_HANDLE", "")
         config = BlueSkyConfig.from_env()

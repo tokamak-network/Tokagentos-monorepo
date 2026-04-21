@@ -15,7 +15,7 @@
  * Requirements:
  *   - Telegram Bot Token (TELEGRAM_BOT_TOKEN environment variable)
  *   - Test Chat ID (TELEGRAM_TEST_CHAT_ID environment variable)
- *   - ELIZA_LIVE_TEST=1 for live API tests
+ *   - TOKAGENT_LIVE_TEST=1 for live API tests
  *
  * NO MOCKS for live tests — all tests use real Telegram Bot API.
  */
@@ -25,14 +25,14 @@ import { fileURLToPath } from "node:url";
 import {
   extractPlugin,
   resolveTelegramPluginImportSpecifier,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import {
   AgentRuntime,
   createCharacter,
   logger,
   type Plugin,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { describeIf } from "../../../../../test/helpers/conditional-tests.ts";
@@ -44,13 +44,13 @@ import { describeIf } from "../../../../../test/helpers/conditional-tests.ts";
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(testDir, "..");
 dotenv.config({ path: path.resolve(packageRoot, ".env") });
-dotenv.config({ path: path.resolve(packageRoot, "..", "eliza", ".env") });
+dotenv.config({ path: path.resolve(packageRoot, "..", "tokagent", ".env") });
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN ?? "";
 const CHAT_ID = process.env.TELEGRAM_TEST_CHAT_ID ?? "";
 const hasTelegramToken = Boolean(BOT_TOKEN);
 const hasChatId = Boolean(CHAT_ID);
-const liveTestsEnabled = process.env.ELIZA_LIVE_TEST === "1";
+const liveTestsEnabled = process.env.TOKAGENT_LIVE_TEST === "1";
 const runLiveTests = hasTelegramToken && hasChatId && liveTestsEnabled;
 const TELEGRAM_PLUGIN_IMPORT = resolveTelegramPluginImportSpecifier();
 const hasTelegramPlugin = TELEGRAM_PLUGIN_IMPORT !== null;
@@ -59,7 +59,7 @@ const describeIfLive = describeIf(hasTelegramPlugin && runLiveTests);
 const describeIfPluginAvailable = describeIf(hasTelegramPlugin);
 
 logger.info(
-  `[telegram-connector] Live tests ${runLiveTests ? "ENABLED" : "DISABLED"} (TELEGRAM_BOT_TOKEN=${hasTelegramToken}, TELEGRAM_TEST_CHAT_ID=${hasChatId}, ELIZA_LIVE_TEST=${liveTestsEnabled})`,
+  `[telegram-connector] Live tests ${runLiveTests ? "ENABLED" : "DISABLED"} (TELEGRAM_BOT_TOKEN=${hasTelegramToken}, TELEGRAM_TEST_CHAT_ID=${hasChatId}, TOKAGENT_LIVE_TEST=${liveTestsEnabled})`,
 );
 logger.info(
   `[telegram-connector] Plugin import ${TELEGRAM_PLUGIN_IMPORT ?? "UNAVAILABLE"}`,
@@ -789,7 +789,7 @@ describeIfLive("Telegram Connector - Enhanced Features", () => {
 
 describe("Telegram Connector - Integration", () => {
   it("Telegram connector is mapped in plugin auto-enable", async () => {
-    const mod = await import("@elizaos/app-core");
+    const mod = await import("@tokagentos/app-core");
     expect(mod.CONNECTOR_PLUGINS.telegram).toBe("@elizaos/plugin-telegram");
   });
 });

@@ -1,14 +1,14 @@
 /**
- * Cross-language interop types for elizaOS
+ * Cross-language interop types for tokagentOS
  *
  * These types define the wire format for communication between
  * different language runtimes (Rust, TypeScript, Python).
  *
- * Standalone definitions matching proto schemas in /schemas/eliza/v1/ipc.proto.
+ * Standalone definitions matching proto schemas in /schemas/tokagent/v1/ipc.proto.
  * For full proto-generated types, import from @elizaos/core.
  */
 
-import type { Content, Memory, State } from "@elizaos/core";
+import type { Content, Memory, State } from "@tokagentos/core";
 
 /**
  * Supported interop protocols

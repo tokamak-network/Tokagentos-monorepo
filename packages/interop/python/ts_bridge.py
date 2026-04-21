@@ -1,5 +1,5 @@
 """
-TypeScript Plugin Bridge for elizaOS
+TypeScript Plugin Bridge for tokagentOS
 
 This module provides utilities for loading TypeScript plugins into the Python runtime
 via subprocess IPC communication.
@@ -14,10 +14,10 @@ import subprocess
 from pathlib import Path
 from typing import Callable, Awaitable
 
-from elizaos.types.plugin import Plugin
-from elizaos.types.memory import Memory
-from elizaos.types.state import State
-from elizaos.types.components import (
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.memory import Memory
+from tokagentos.types.state import State
+from tokagentos.types.components import (
     Action,
     ActionResult,
     Provider,
@@ -69,8 +69,8 @@ class TypeScriptPluginBridge:
         if env:
             base_env.update(env)
         # Also pass sizing limits to the runner so it can fail-closed.
-        base_env.setdefault("ELIZA_INTEROP_MAX_MESSAGE_BYTES", str(max_message_bytes))
-        base_env.setdefault("ELIZA_INTEROP_MAX_BUFFER_BYTES", str(max_buffer_bytes))
+        base_env.setdefault("TOKAGENT_INTEROP_MAX_MESSAGE_BYTES", str(max_message_bytes))
+        base_env.setdefault("TOKAGENT_INTEROP_MAX_BUFFER_BYTES", str(max_buffer_bytes))
         self.env = base_env
         self.timeout = timeout
         self.max_pending_requests = max_pending_requests
@@ -254,7 +254,7 @@ async def load_typescript_plugin(
     timeout: float = 30.0,
 ) -> Plugin:
     """
-    Load a TypeScript plugin and return an elizaOS Plugin interface.
+    Load a TypeScript plugin and return an tokagentOS Plugin interface.
 
     Args:
         plugin_path: Path to the TypeScript plugin.
@@ -263,7 +263,7 @@ async def load_typescript_plugin(
         timeout: Request timeout in seconds.
 
     Returns:
-        elizaOS Plugin instance.
+        tokagentOS Plugin instance.
     """
     bridge = TypeScriptPluginBridge(
         plugin_path,

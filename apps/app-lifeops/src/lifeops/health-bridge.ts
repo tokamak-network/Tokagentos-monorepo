@@ -9,7 +9,7 @@
  *     configured backend throws `HealthBridgeError("no health backend
  *     available", "none")` so the caller can surface a clear status.
  *   - Google Fit REST API as a cross-platform fallback, authenticated via an
- *     OAuth access token supplied through config or `ELIZA_GOOGLE_FIT_ACCESS_TOKEN`.
+ *     OAuth access token supplied through config or `TOKAGENT_GOOGLE_FIT_ACCESS_TOKEN`.
  *
  * Never log raw health values in plaintext.
  */
@@ -17,7 +17,7 @@
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { accessSync, constants as fsConstants } from "node:fs";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 const execFileAsync = promisify(execFile);
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -256,7 +256,7 @@ function isExecutable(path: string): boolean {
 function resolveHealthKitCliPath(config?: HealthBridgeConfig): string | null {
   const configured =
     config?.healthKitCliPath?.trim() ||
-    process.env.ELIZA_HEALTHKIT_CLI_PATH?.trim();
+    process.env.TOKAGENT_HEALTHKIT_CLI_PATH?.trim();
   if (!configured) return null;
   if (!isExecutable(configured)) return null;
   return configured;
@@ -267,7 +267,7 @@ function resolveGoogleFitAccessToken(
 ): string | null {
   const token =
     config?.googleFitAccessToken?.trim() ||
-    process.env.ELIZA_GOOGLE_FIT_ACCESS_TOKEN?.trim();
+    process.env.TOKAGENT_GOOGLE_FIT_ACCESS_TOKEN?.trim();
   return token ? token : null;
 }
 

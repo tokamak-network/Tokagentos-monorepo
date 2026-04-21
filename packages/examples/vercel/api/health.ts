@@ -15,7 +15,7 @@ interface HealthResponse {
 export default function handler(_request: Request): Response {
   const response: HealthResponse = {
     status: "healthy",
-    runtime: "elizaos-typescript",
+    runtime: "tokagentos-typescript",
     version: "1.0.0",
   };
 

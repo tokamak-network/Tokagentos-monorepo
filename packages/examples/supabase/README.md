@@ -1,15 +1,15 @@
-# Supabase Edge Functions elizaOS Worker Examples
+# Supabase Edge Functions tokagentOS Worker Examples
 
-Deploy AI chat agents as serverless Supabase Edge Functions. These examples show how to run an elizaOS agent as a stateless worker that processes chat messages via HTTP.
+Deploy AI chat agents as serverless Supabase Edge Functions. These examples show how to run an tokagentOS agent as a stateless worker that processes chat messages via HTTP.
 
-All handlers use the full **elizaOS runtime** with OpenAI as the LLM provider, providing the same capabilities as the AWS Lambda and chat demo examples.
+All handlers use the full **tokagentOS runtime** with OpenAI as the LLM provider, providing the same capabilities as the AWS Lambda and chat demo examples.
 
 ## Architecture
 
 ```
 ┌──────────────┐     ┌─────────────────┐     ┌────────────────┐
 │  Test Client │────▶│  Supabase Edge  │────▶│  Edge Function │
-│  (curl/deno) │◀────│  Functions      │◀────│  (elizaOS)     │
+│  (curl/deno) │◀────│  Functions      │◀────│  (tokagentOS)     │
 └──────────────┘     └─────────────────┘     └────────────────┘
                                                     │
                                                     ▼
@@ -67,20 +67,20 @@ cp -r examples/supabase/functions/* supabase/functions/
 supabase start
 
 # Serve edge functions locally
-supabase functions serve eliza-chat --env-file .env
+supabase functions serve tokagent-chat --env-file .env
 
 # Test with curl (in another terminal)
-curl -X POST http://localhost:54321/functions/v1/eliza-chat \
+curl -X POST http://localhost:54321/functions/v1/tokagent-chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_ANON_KEY" \
-  -d '{"message": "Hello, Eliza!"}'
+  -d '{"message": "Hello, Tokagent!"}'
 ```
 
 ### 4. Deploy
 
 ```bash
 # Deploy to Supabase
-supabase functions deploy eliza-chat
+supabase functions deploy tokagent-chat
 
 # Set secrets (if not already set)
 supabase secrets set OPENAI_API_KEY=your-openai-api-key
@@ -90,10 +90,10 @@ supabase secrets set OPENAI_API_KEY=your-openai-api-key
 
 ```bash
 # Get your project URL from Supabase Dashboard
-curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/eliza-chat \
+curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/tokagent-chat \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_ANON_KEY" \
-  -d '{"message": "Hello, Eliza!"}'
+  -d '{"message": "Hello, Tokagent!"}'
 ```
 
 ## Project Structure
@@ -102,13 +102,13 @@ curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/eliza-chat \
 examples/supabase/
 ├── README.md                       # This file
 ├── functions/
-│   ├── eliza-chat/                 # TypeScript Edge Function
+│   ├── tokagent-chat/                 # TypeScript Edge Function
 │   │   ├── index.ts                # Main handler
 │   │   ├── lib/
-│   │   │   ├── runtime.ts          # elizaOS runtime manager
+│   │   │   ├── runtime.ts          # tokagentOS runtime manager
 │   │   │   └── types.ts            # Type definitions
 │   │   └── deno.json               # Deno configuration
-│   └── eliza-chat-wasm/            # Rust WASM Edge Function
+│   └── tokagent-chat-wasm/            # Rust WASM Edge Function
 │       ├── index.ts                # Deno wrapper
 │       └── wasm/                   # Compiled WASM module
 ├── rust/                           # Rust source for WASM
@@ -124,9 +124,9 @@ examples/supabase/
 
 ## API Reference
 
-### POST /functions/v1/eliza-chat
+### POST /functions/v1/tokagent-chat
 
-Send a message to the elizaOS agent.
+Send a message to the tokagentOS agent.
 
 **Request:**
 
@@ -155,7 +155,7 @@ Send a message to the elizaOS agent.
 | `Authorization` | Yes      | `Bearer YOUR_ANON_KEY` or `Bearer YOUR_SERVICE_ROLE_KEY` |
 | `Content-Type`  | Yes      | `application/json`                                       |
 
-### GET /functions/v1/eliza-chat/health
+### GET /functions/v1/tokagent-chat/health
 
 Health check endpoint.
 
@@ -164,7 +164,7 @@ Health check endpoint.
 ```json
 {
   "status": "healthy",
-  "runtime": "elizaos-deno",
+  "runtime": "tokagentos-deno",
   "version": "2.0.0-alpha"
 }
 ```
@@ -178,7 +178,7 @@ Health check endpoint.
 | `OPENAI_API_KEY`     | Yes      | -                         | Your OpenAI API key |
 | `OPENAI_SMALL_MODEL` | No       | `gpt-5-mini`              | Small model to use  |
 | `OPENAI_LARGE_MODEL` | No       | `gpt-5`                   | Large model to use  |
-| `CHARACTER_NAME`     | No       | `Eliza`                   | Agent's name        |
+| `CHARACTER_NAME`     | No       | `Tokagent`                   | Agent's name        |
 | `CHARACTER_BIO`      | No       | `A helpful AI assistant.` | Agent's bio         |
 | `CHARACTER_SYSTEM`   | No       | (default)                 | System prompt       |
 
@@ -197,7 +197,7 @@ supabase secrets set OPENAI_API_KEY=sk-xxx CHARACTER_NAME=MyAgent
 The TypeScript implementation uses the Deno runtime natively:
 
 ```typescript
-// functions/eliza-chat/index.ts
+// functions/tokagent-chat/index.ts
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { handleChat, handleHealth } from "./lib/runtime.ts";
 
@@ -223,10 +223,10 @@ For performance-critical operations, you can use Rust compiled to WebAssembly:
 ```bash
 # Build WASM module
 cd examples/supabase/rust
-wasm-pack build --target web --out-dir ../functions/eliza-chat-wasm/wasm
+wasm-pack build --target web --out-dir ../functions/tokagent-chat-wasm/wasm
 
 # Deploy
-supabase functions deploy eliza-chat-wasm
+supabase functions deploy tokagent-chat-wasm
 ```
 
 ## Performance
@@ -248,10 +248,10 @@ Edge Functions run on Deno Deploy's global edge network, providing low-latency r
 
 ```bash
 # Stream logs
-supabase functions logs eliza-chat --scroll
+supabase functions logs tokagent-chat --scroll
 
 # Get recent logs
-supabase functions logs eliza-chat
+supabase functions logs tokagent-chat
 ```
 
 ### Supabase Dashboard
@@ -287,7 +287,7 @@ Ensure the function is deployed:
 
 ```bash
 supabase functions list
-supabase functions deploy eliza-chat
+supabase functions deploy tokagent-chat
 ```
 
 ### "Unauthorized" Error
@@ -315,7 +315,7 @@ The function includes CORS headers by default. For custom domains, update the `A
 
 ```bash
 # Delete function
-supabase functions delete eliza-chat
+supabase functions delete tokagent-chat
 
 # Remove secrets
 supabase secrets unset OPENAI_API_KEY
@@ -323,7 +323,7 @@ supabase secrets unset OPENAI_API_KEY
 
 ## See Also
 
-- [elizaOS Documentation](https://elizaos.ai/docs)
+- [tokagentOS Documentation](https://tokagentos.ai/docs)
 - [Supabase Edge Functions Docs](https://supabase.com/docs/guides/functions)
 - [Deno Documentation](https://deno.land/manual)
 - [AWS Lambda Example](../aws/README.md) - Same pattern for AWS

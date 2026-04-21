@@ -1,11 +1,11 @@
 """Tests for the deterministic evaluator."""
 
-from elizaos_adhdbench.evaluator import (
+from tokagentos_adhdbench.evaluator import (
     compute_scenario_score,
     compute_turn_score,
     evaluate_outcome,
 )
-from elizaos_adhdbench.types import (
+from tokagentos_adhdbench.types import (
     ExpectedOutcome,
     OutcomeType,
     TurnResult,
@@ -176,7 +176,7 @@ def test_providers_requested_fail() -> None:
 # -- Scoring --
 
 def test_turn_score_all_pass() -> None:
-    from elizaos_adhdbench.types import OutcomeResult
+    from tokagentos_adhdbench.types import OutcomeResult
     results = [
         OutcomeResult(
             outcome=ExpectedOutcome(OutcomeType.ACTION_MATCH, "REPLY", weight=1.0),
@@ -191,7 +191,7 @@ def test_turn_score_all_pass() -> None:
 
 
 def test_turn_score_partial() -> None:
-    from elizaos_adhdbench.types import OutcomeResult
+    from tokagentos_adhdbench.types import OutcomeResult
     results = [
         OutcomeResult(
             outcome=ExpectedOutcome(OutcomeType.ACTION_MATCH, "REPLY", weight=1.0),
@@ -206,7 +206,7 @@ def test_turn_score_partial() -> None:
 
 
 def test_turn_score_weighted() -> None:
-    from elizaos_adhdbench.types import OutcomeResult
+    from tokagentos_adhdbench.types import OutcomeResult
     results = [
         OutcomeResult(
             outcome=ExpectedOutcome(OutcomeType.ACTION_MATCH, "REPLY", weight=3.0),

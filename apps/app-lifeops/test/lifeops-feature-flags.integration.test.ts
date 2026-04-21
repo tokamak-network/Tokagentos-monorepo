@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import { createFeatureFlagService } from "../src/lifeops/feature-flags.ts";
 import {
   ALL_FEATURE_KEYS,
@@ -146,7 +146,7 @@ describe("parseX402Response", () => {
           payTo: "0xabc123",
           scheme: "exact",
           expiresAt: "2026-04-19T12:00:00Z",
-          description: "Eliza Cloud credit top-up",
+          description: "Tokagent Cloud credit top-up",
         },
       ],
     });
@@ -165,7 +165,7 @@ describe("parseX402Response", () => {
     expect(req.payTo).toBe("0xabc123");
     expect(req.scheme).toBe("exact");
     expect(req.expiresAt).toBe("2026-04-19T12:00:00Z");
-    expect(req.description).toBe("Eliza Cloud credit top-up");
+    expect(req.description).toBe("Tokagent Cloud credit top-up");
   });
 
   it("parses a WWW-Authenticate header form", async () => {

@@ -12,8 +12,8 @@ import type {
   RouteRequest,
   RouteResponse,
   State,
-} from "@elizaos/core";
-import { logger, ModelType, Service } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger, ModelType, Service } from "@tokagentos/core";
 import { z } from "zod";
 import { StarterPluginTestSuite } from "./e2e/plugin-starter.e2e";
 
@@ -160,7 +160,7 @@ export class StarterService extends Service {
 
 export const starterPlugin: Plugin = {
   name: "plugin-starter",
-  description: "Plugin starter for elizaOS",
+  description: "Plugin starter for tokagentOS",
   config: {
     EXAMPLE_PLUGIN_VARIABLE: process.env.EXAMPLE_PLUGIN_VARIABLE ?? null,
   },

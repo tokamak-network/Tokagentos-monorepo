@@ -22,14 +22,14 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
-import type { LifeOpsCalendarEvent } from "@elizaos/shared/contracts/lifeops";
-import { hasAdminAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import type { LifeOpsCalendarEvent } from "@tokagentos/shared/contracts/lifeops";
+import { hasAdminAccess } from "@tokagentos/agent/security";
 import { hasLifeOpsAccess, INTERNAL_URL } from "./lifeops-google-helpers.js";
 import {
   LifeOpsService,

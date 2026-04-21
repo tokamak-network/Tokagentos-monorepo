@@ -1,10 +1,10 @@
-import type { ElizaConfig } from "./types.js";
+import type { TokagentConfig } from "./types.js";
 
 /**
  * Environment variable keys that must NEVER be synced from config → process.env.
  *
  * Mirrors the BLOCKED_ENV_KEYS set in server.ts.  This is a defense-in-depth
- * gate: even if a blocked key is somehow persisted into eliza.config.json
+ * gate: even if a blocked key is somehow persisted into tokagent.config.json
  * (e.g. via an API bypass or manual file edit), it will not be loaded into the
  * process environment on startup.
  *
@@ -12,7 +12,7 @@ import type { ElizaConfig } from "./types.js";
  *   - Process-level code injection (NODE_OPTIONS, LD_PRELOAD, …)
  *   - TLS / proxy hijack (NODE_TLS_REJECT_UNAUTHORIZED, HTTP_PROXY, …)
  *   - Module resolution (NODE_PATH)
- *   - Privilege escalation tokens (ELIZA_API_TOKEN, …)
+ *   - Privilege escalation tokens (TOKAGENT_API_TOKEN, …)
  *   - Wallet private keys
  *   - System paths
  */
@@ -35,12 +35,12 @@ const BLOCKED_STARTUP_ENV_KEYS = new Set([
   "PATH",
   "HOME",
   "SHELL",
-  "ELIZA_API_TOKEN",
-  "ELIZA_API_TOKEN",
-  "ELIZA_WALLET_EXPORT_TOKEN",
-  "ELIZA_WALLET_EXPORT_TOKEN",
-  "ELIZA_TERMINAL_RUN_TOKEN",
-  "ELIZA_TERMINAL_RUN_TOKEN",
+  "TOKAGENT_API_TOKEN",
+  "TOKAGENT_API_TOKEN",
+  "TOKAGENT_WALLET_EXPORT_TOKEN",
+  "TOKAGENT_WALLET_EXPORT_TOKEN",
+  "TOKAGENT_TERMINAL_RUN_TOKEN",
+  "TOKAGENT_TERMINAL_RUN_TOKEN",
   "HYPERSCAPE_AUTH_TOKEN",
   "EVM_PRIVATE_KEY",
   "SOLANA_PRIVATE_KEY",
@@ -54,7 +54,7 @@ const BLOCKED_STARTUP_ENV_KEYS = new Set([
 
 /**
  * Maps connector config fields to the environment variables expected by
- * elizaOS plugins. Keep this aligned with runtime/eliza.ts.
+ * tokagentOS plugins. Keep this aligned with runtime/tokagent.ts.
  */
 export const CONNECTOR_ENV_MAP: Readonly<
   Record<string, Readonly<Record<string, string>>>
@@ -147,7 +147,7 @@ export const CONNECTOR_ENV_MAP: Readonly<
 };
 
 export function collectConfigEnvVars(
-  cfg?: ElizaConfig,
+  cfg?: TokagentConfig,
 ): Record<string, string> {
   const envConfig = cfg?.env;
   if (!envConfig) {
@@ -185,7 +185,7 @@ export function collectConfigEnvVars(
 }
 
 export function collectConnectorEnvVars(
-  cfg?: ElizaConfig,
+  cfg?: TokagentConfig,
 ): Record<string, string> {
   const rawConnectors =
     cfg?.connectors ?? (cfg as Record<string, unknown> | undefined)?.channels;

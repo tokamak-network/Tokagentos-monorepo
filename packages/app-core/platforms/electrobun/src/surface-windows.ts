@@ -96,10 +96,10 @@ function isManagedSurface(value: string): value is ManagedSurface {
 }
 
 function ordinalTitle(surface: ManagedSurface, ordinal: number): string {
-  // Cloud windows reference "Eliza Cloud" (the service), not the app brand.
+  // Cloud windows reference "Tokagent Cloud" (the service), not the app brand.
   const base =
     surface === "cloud"
-      ? "Eliza Cloud"
+      ? "Tokagent Cloud"
       : `${getBrandConfig().appName} ${SURFACE_LABELS[surface]}`;
   return ordinal <= 1 ? base : `${base} ${ordinal}`;
 }

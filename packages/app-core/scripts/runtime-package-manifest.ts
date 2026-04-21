@@ -3,7 +3,7 @@ import path from "node:path";
 import {
   BASELINE_BUNDLED_RUNTIME_PACKAGES,
   getBundledRuntimePackages,
-} from "@elizaos/agent/runtime/release-plugin-policy";
+} from "@tokagentos/agent/runtime/release-plugin-policy";
 
 const JS_FILE_RE = /\.(?:[cm]?js)$/i;
 const IMPORT_SPECIFIER_RE =

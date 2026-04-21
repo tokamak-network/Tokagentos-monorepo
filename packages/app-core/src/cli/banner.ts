@@ -18,8 +18,8 @@ export function formatCliBannerLine(
   const commitLabel = commit ?? "unknown";
   const rich = options.richTty ?? isRich();
   const title =
-    (options.env?.APP_CLI_NAME ?? "eliza").charAt(0).toUpperCase() +
-    (options.env?.APP_CLI_NAME ?? "eliza").slice(1);
+    (options.env?.APP_CLI_NAME ?? "tokagent").charAt(0).toUpperCase() +
+    (options.env?.APP_CLI_NAME ?? "tokagent").slice(1);
   if (rich) {
     return `${theme.heading(title)} ${theme.info(version)} ${theme.muted(`(${commitLabel})`)}`;
   }

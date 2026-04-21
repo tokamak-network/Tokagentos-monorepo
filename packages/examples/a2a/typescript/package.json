@@ -1,15 +1,15 @@
 {
   "name": "@elizaos/example-a2a-server",
   "version": "2.0.0-alpha",
-  "description": "elizaOS A2A (Agent-to-Agent) Server - HTTP API for agent communication",
+  "description": "tokagentOS A2A (Agent-to-Agent) Server - HTTP API for agent communication",
   "type": "module",
   "scripts": {
     "start": "bun run server.ts",
     "test": "bun run test-runner.ts"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
-    "@elizaos/plugin-eliza-classic": "alpha",
+    "@tokagentos/core": "alpha",
+    "@elizaos/plugin-tokagent-classic": "alpha",
     "@elizaos/plugin-inmemorydb": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",

@@ -1,37 +1,37 @@
 #!/usr/bin/env python3
 """
-Run OSWorld benchmark with the Eliza agent.
+Run OSWorld benchmark with the Tokagent agent.
 
-Uses Eliza's message_service.handle_message() for all decision-making.
+Uses Tokagent's message_service.handle_message() for all decision-making.
 Supports both single-task and multi-env parallel execution.
 
 Usage:
     # Single task (Chrome - Enable Do Not Track)
-    python scripts/python/run_multienv_eliza.py \
+    python scripts/python/run_multienv_tokagent.py \
         --provider_name docker \
         --observation_type screenshot_a11y_tree \
         --model qwen/qwen3-32b \
         --max_steps 15 \
-        --result_dir ./results/eliza \
+        --result_dir ./results/tokagent \
         --task_id 030eeff7-b492-4218-b312-701ec99ee0cc
 
     # All tasks
-    python scripts/python/run_multienv_eliza.py \
+    python scripts/python/run_multienv_tokagent.py \
         --provider_name docker \
         --observation_type screenshot_a11y_tree \
         --model qwen/qwen3-32b \
         --max_steps 15 \
         --num_envs 5 \
-        --result_dir ./results/eliza
+        --result_dir ./results/tokagent
 
     # VMware on macOS
-    python scripts/python/run_multienv_eliza.py \
+    python scripts/python/run_multienv_tokagent.py \
         --provider_name vmware \
         --path_to_vm ~/Virtual\\ Machines.localized/Ubuntu.vmwarevm/Ubuntu.vmx \
         --observation_type screenshot_a11y_tree \
         --model qwen/qwen3-32b \
         --max_steps 15 \
-        --result_dir ./results/eliza
+        --result_dir ./results/tokagent
 """
 from __future__ import annotations
 
@@ -49,10 +49,10 @@ OSWORLD_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 if OSWORLD_ROOT not in sys.path:
     sys.path.insert(0, OSWORLD_ROOT)
 
-# Ensure protobuf generated modules are importable (Eliza Python package)
+# Ensure protobuf generated modules are importable (Tokagent Python package)
 _generated_dir = os.path.normpath(os.path.join(
-    OSWORLD_ROOT, "..", "..", "eliza", "packages", "python",
-    "elizaos", "types", "generated",
+    OSWORLD_ROOT, "..", "..", "tokagent", "packages", "python",
+    "tokagentos", "types", "generated",
 ))
 if os.path.isdir(_generated_dir) and _generated_dir not in sys.path:
     sys.path.insert(0, _generated_dir)
@@ -60,11 +60,11 @@ if os.path.isdir(_generated_dir) and _generated_dir not in sys.path:
 from desktop_env.desktop_env import DesktopEnv
 from lib_run_single import run_single_example, setup_logger
 
-logger = logging.getLogger("osworld.eliza.runner")
+logger = logging.getLogger("osworld.tokagent.runner")
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run OSWorld with Eliza agent")
+    parser = argparse.ArgumentParser(description="Run OSWorld with Tokagent agent")
 
     # VM / Environment
     parser.add_argument("--provider_name", type=str, default="docker",
@@ -96,7 +96,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--a11y_tree_max_tokens", type=int, default=10000)
 
     # Execution
-    parser.add_argument("--result_dir", type=str, default="./results/eliza",
+    parser.add_argument("--result_dir", type=str, default="./results/tokagent",
                         help="Directory to store results")
     parser.add_argument("--task_id", type=str, default=None,
                         help="Run a specific task by ID")
@@ -163,11 +163,11 @@ def load_tasks(args: argparse.Namespace) -> list[dict[str, object]]:
     return tasks
 
 
-def create_eliza_agent(args: argparse.Namespace) -> object:
-    """Create and initialize the Eliza OSWorld agent."""
-    from mm_agents.eliza_agent import ElizaOSWorldAgent
+def create_tokagent_agent(args: argparse.Namespace) -> object:
+    """Create and initialize the Tokagent OSWorld agent."""
+    from mm_agents.tokagent_agent import TokagentOSWorldAgent
 
-    agent = ElizaOSWorldAgent(
+    agent = TokagentOSWorldAgent(
         platform="ubuntu",
         model=args.model,
         max_tokens=args.max_tokens,
@@ -191,12 +191,12 @@ def create_eliza_agent(args: argparse.Namespace) -> object:
 
 
 def run_benchmark(args: argparse.Namespace) -> dict[str, object]:
-    """Run the OSWorld benchmark with the Eliza agent."""
+    """Run the OSWorld benchmark with the Tokagent agent."""
     tasks = load_tasks(args)
     logger.info("Loaded %d tasks", len(tasks))
 
     # Create agent
-    agent = create_eliza_agent(args)
+    agent = create_tokagent_agent(args)
 
     # Create environment
     env_kwargs = {
@@ -280,7 +280,7 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, object]:
 
     summary = {
         "model": args.model,
-        "agent": "eliza",
+        "agent": "tokagent",
         "observation_type": args.observation_type,
         "action_space": args.action_space,
         "total_tasks": total,
@@ -291,7 +291,7 @@ def run_benchmark(args: argparse.Namespace) -> dict[str, object]:
     }
 
     # Save summary
-    summary_path = os.path.join(args.result_dir, f"osworld-eliza-results-{timestamp}.json")
+    summary_path = os.path.join(args.result_dir, f"osworld-tokagent-results-{timestamp}.json")
     os.makedirs(os.path.dirname(summary_path), exist_ok=True)
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2, default=str)

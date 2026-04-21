@@ -1,19 +1,19 @@
 import {
   getOnboardingProviderOption,
-  isElizaCloudLinkedInConfig,
-  resolveElizaCloudTopology,
-} from "@elizaos/shared/contracts";
+  isTokagentCloudLinkedInConfig,
+  resolveTokagentCloudTopology,
+} from "@tokagentos/shared/contracts";
 import {
   resolveDeploymentTargetInConfig,
   resolveServiceRoutingInConfig,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import { asRecord, readString } from "../state/config-readers";
 import type {
   CloudPreferenceClientLike as ClientLike,
   CloudPreferencePatchState as PatchState,
 } from "./types";
 
-const PATCH_STATE = Symbol.for("elizaos.cloudPreferencePatch");
+const PATCH_STATE = Symbol.for("tokagentos.cloudPreferencePatch");
 type PatchableClient = ClientLike & { [PATCH_STATE]?: PatchState };
 
 type StorageConfig = Record<string, unknown>;
@@ -30,14 +30,14 @@ function hasRemoteConnection(
 function cloudHandlesInference(
   config: StorageConfig | null | undefined,
 ): boolean {
-  return resolveElizaCloudTopology(config as Record<string, unknown>).services
+  return resolveTokagentCloudTopology(config as Record<string, unknown>).services
     .inference;
 }
 
 function hasInactiveCloudSignals(
   config: StorageConfig | null | undefined,
 ): boolean {
-  return isElizaCloudLinkedInConfig(config as Record<string, unknown>);
+  return isTokagentCloudLinkedInConfig(config as Record<string, unknown>);
 }
 
 export function shouldPreferLocalProviderConfig(

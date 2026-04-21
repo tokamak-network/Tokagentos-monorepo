@@ -25,7 +25,7 @@
             "exported": true,
             "file": "scripts/copy-runtime-node-modules.ts",
             "line": 569,
-            "packageName": "@elizaos/app-core",
+            "packageName": "@tokagentos/app-core",
             "packageDir": "",
             "sourceName": "isExactVersionSpecifier"
           },
@@ -35,7 +35,7 @@
             "exported": true,
             "file": "scripts/release-check.ts",
             "line": 507,
-            "packageName": "@elizaos/app-core",
+            "packageName": "@tokagentos/app-core",
             "packageDir": "",
             "sourceName": "isExactVersionSpecifier"
           }

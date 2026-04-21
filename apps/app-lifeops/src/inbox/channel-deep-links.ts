@@ -1,4 +1,4 @@
-import type { IAgentRuntime, UUID } from "@elizaos/core";
+import type { IAgentRuntime, UUID } from "@tokagentos/core";
 
 // ---------------------------------------------------------------------------
 // Per-connector deep link generation

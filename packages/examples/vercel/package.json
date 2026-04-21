@@ -3,7 +3,7 @@
   "version": "2.0.0-alpha",
   "private": true,
   "type": "module",
-  "description": "elizaOS Vercel Edge Function examples in TypeScript, Python, and Rust",
+  "description": "tokagentOS Vercel Edge Function examples in TypeScript, Python, and Rust",
   "scripts": {
     "dev": "vercel dev",
     "build": "bun run build:ts && bun run build:rust",
@@ -20,7 +20,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
     "uuid": "^13.0.0"

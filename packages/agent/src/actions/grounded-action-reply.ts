@@ -1,13 +1,13 @@
 import { recentConversationTexts } from "./recent-conversation-texts.js";
-import type { ActionResult, IAgentRuntime, Memory, State } from "@elizaos/core";
+import type { ActionResult, IAgentRuntime, Memory, State } from "@tokagentos/core";
 import {
   getTrajectoryContext,
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
-import { getRecentMessagesData } from "@elizaos/shared/recent-messages-state";
-import { asRecord } from "@elizaos/shared/type-guards";
+} from "@tokagentos/core";
+import { getRecentMessagesData } from "@tokagentos/shared/recent-messages-state";
+import { asRecord } from "@tokagentos/shared/type-guards";
 import { loadTrajectoryByStepId } from "../runtime/trajectory-internals.js";
 
 type GroundedReplyDomain = "lifeops" | "gmail" | "calendar";

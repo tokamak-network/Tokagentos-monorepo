@@ -72,12 +72,12 @@ async function resolveProviderEnv() {
 }
 
 function skip(reason) {
-	console.log(`[eliza/typescript] Skipping e2e smoke because ${reason}.`);
+	console.log(`[tokagent/typescript] Skipping e2e smoke because ${reason}.`);
 	process.exit(0);
 }
 
-if (envFlagEnabled("ELIZA_SKIP_ELIZA_LIVE_SMOKE")) {
-	skip("ELIZA_SKIP_ELIZA_LIVE_SMOKE=1");
+if (envFlagEnabled("TOKAGENT_SKIP_TOKAGENT_LIVE_SMOKE")) {
+	skip("TOKAGENT_SKIP_TOKAGENT_LIVE_SMOKE=1");
 }
 
 if (!fs.existsSync(specPath)) {

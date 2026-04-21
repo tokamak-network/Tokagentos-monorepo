@@ -8,8 +8,8 @@ from collections.abc import Mapping
 from google.protobuf.json_format import MessageToDict
 from google.protobuf.message import Message
 
-from elizaos.types.agent import TemplateType
-from elizaos.types.state import State
+from tokagentos.types.agent import TemplateType
+from tokagentos.types.state import State
 
 # Re-export from spec_examples for convenience
 from .spec_examples import convert_spec_examples

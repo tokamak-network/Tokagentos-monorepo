@@ -7,7 +7,7 @@ from collections.abc import Callable
 
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parents[4] / "plugins" / "plugin-experience" / "python"))
 
-from elizaos_plugin_experience.service import ExperienceService
+from tokagentos_plugin_experience.service import ExperienceService
 
 ServiceFactory = Callable[[], ExperienceService]
 

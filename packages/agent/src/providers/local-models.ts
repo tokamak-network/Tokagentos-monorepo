@@ -232,7 +232,7 @@ export class LocalModelManager {
 
   constructor(options?: { cacheDir?: string; ollamaUrl?: string }) {
     this.cacheDir =
-      options?.cacheDir ?? join(homedir(), ".cache", "eliza", "models");
+      options?.cacheDir ?? join(homedir(), ".cache", "tokagent", "models");
     this.ollamaUrl = options?.ollamaUrl ?? "http://localhost:11434";
     this.manifestPath = join(this.cacheDir, "manifest.json");
     this.loadManifest();

@@ -15,7 +15,7 @@
     "allowImportingTsExtensions": false,
     "composite": false,
     "paths": {
-      "@elizaos/core": ["../typescript/dist/index.node.d.ts"]
+      "@tokagentos/core": ["../typescript/dist/index.node.d.ts"]
     }
   },
   "include": ["typescript/**/*.ts"],

@@ -346,7 +346,7 @@ jobs:
             MAX_RETRIES=3
             for i in $(seq 1 $MAX_RETRIES); do
               # Check if this version already exists on npm
-              if npm view "@elizaos/core@${VERSION}" version >/dev/null 2>&1; then
+              if npm view "@tokagentos/core@${VERSION}" version >/dev/null 2>&1; then
                 echo "⚠️ Version ${VERSION} already exists on npm — bumping again (attempt ${i}/${MAX_RETRIES})"
                 bunx lerna version prerelease \
                   --preid "${RELEASE_TYPE}" \
@@ -364,7 +364,7 @@ jobs:
             done
 
             # Final check — if still colliding after retries, fail loudly
-            if npm view "@elizaos/core@${VERSION}" version >/dev/null 2>&1; then
+            if npm view "@tokagentos/core@${VERSION}" version >/dev/null 2>&1; then
               echo "❌ Version ${VERSION} still exists on npm after ${MAX_RETRIES} bumps — aborting"
               exit 1
             fi
@@ -522,7 +522,7 @@ jobs:
           echo "Building WASM packages..."
 
           # Build core WASM
-          echo "Building @elizaos/core WASM..."
+          echo "Building @tokagentos/core WASM..."
           cd packages/rust
           wasm-pack build --target web --out-dir pkg/web --features wasm --no-default-features || echo "WASM web build skipped"
           wasm-pack build --target nodejs --out-dir pkg/node --features wasm --no-default-features || echo "WASM node build skipped"
@@ -547,15 +547,15 @@ jobs:
           # Build only the publish-critical package graph so unrelated plugin cycles
           # do not block alpha/beta releases.
           RELEASE_BUILD_FILTERS=(
-            --filter=@elizaos/agent
-            --filter=@elizaos/app-core
-            --filter=elizaos
-            --filter=@elizaos/interop
-            --filter=@elizaos/prompts
-            --filter=@elizaos/shared
-            --filter=@elizaos/skills
-            --filter=@elizaos/core
-            --filter=@elizaos/ui
+            --filter=@tokagentos/agent
+            --filter=@tokagentos/app-core
+            --filter=tokagentos
+            --filter=@tokagentos/interop
+            --filter=@tokagentos/prompts
+            --filter=@tokagentos/shared
+            --filter=@tokagentos/skills
+            --filter=@tokagentos/core
+            --filter=@tokagentos/ui
           )
           bunx turbo run build --continue "${RELEASE_BUILD_FILTERS[@]}" || \
             echo "Some packages had build errors — checking critical packages..."
@@ -564,7 +564,7 @@ jobs:
           for artifact in \
             packages/agent/dist/package.json \
             packages/app-core/dist/package.json \
-            packages/elizaos/dist/index.js \
+            packages/tokagentos/dist/index.js \
             packages/interop/dist/index.d.ts \
             packages/prompts/dist/typescript/index.ts \
             packages/shared/dist/package.json \
@@ -590,13 +590,13 @@ jobs:
 
       # Publish to NPM (only after git operations succeed)
       - name: Skip NPM publish on forks
-        if: github.repository != 'elizaOS/eliza'
+        if: github.repository != 'tokagentOS/tokagent'
         run: |
-          echo "Skipping npm publish outside elizaOS/eliza."
+          echo "Skipping npm publish outside tokagentOS/tokagent."
           echo "Fork workflows still validate the release build, but only the canonical upstream publishes packages."
 
       - name: Publish to NPM
-        if: github.repository == 'elizaOS/eliza'
+        if: github.repository == 'tokagentOS/tokagent'
         id: publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -658,7 +658,7 @@ jobs:
           echo "Verifying dist-tag '${DIST_TAG}' points to ${VERSION}..."
 
           get_actual_tag() {
-            npm view "@elizaos/core@${DIST_TAG}" version 2>/dev/null || echo "unknown"
+            npm view "@tokagentos/core@${DIST_TAG}" version 2>/dev/null || echo "unknown"
           }
 
           wait_for_dist_tag() {
@@ -693,13 +693,13 @@ jobs:
           echo "⚠️ dist-tag '${DIST_TAG}' points to ${ACTUAL}, expected ${VERSION}"
           echo "Forcing dist-tag update for all published packages..."
 
-          # Get list of public packages from lerna, plus @elizaos/core
+          # Get list of public packages from lerna, plus @tokagentos/core
           # which is published from packages/typescript but may not appear
           # in lerna ls if the workspace config changed.
           PACKAGES=$(bunx lerna ls --json --no-private 2>/dev/null | node -e "
             const pkgs = JSON.parse(require('fs').readFileSync('/dev/stdin','utf8'));
             const names = new Set(pkgs.map(p => p.name));
-            names.add('@elizaos/core');
+            names.add('@tokagentos/core');
             names.forEach(n => console.log(n));
           ")
 
@@ -761,7 +761,7 @@ jobs:
 
             Or add packages to your project:
             ```bash
-            bun add @elizaos/core@${{ steps.release_type.outputs.dist_tag }}
+            bun add @tokagentos/core@${{ steps.release_type.outputs.dist_tag }}
             ```
 
             ---
@@ -795,7 +795,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "Or add to your project:" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "bun add @elizaos/core@${{ steps.release_type.outputs.dist_tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "bun add @tokagentos/core@${{ steps.release_type.outputs.dist_tag }}" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
 
       # Sync version back to develop after production release

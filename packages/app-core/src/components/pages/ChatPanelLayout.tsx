@@ -1,4 +1,4 @@
-import { cn } from "@elizaos/ui";
+import { cn } from "@tokagentos/ui";
 import * as React from "react";
 
 export type ChatPanelLayoutVariant = "full-overlay" | "companion-dock";

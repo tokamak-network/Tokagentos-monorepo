@@ -177,7 +177,7 @@ export function validateIntentActionMap(
     for (const action of actions) {
       if (!registered.has(action)) {
         logger?.warn(
-          `[eliza] INTENT_ACTION_MAP["${category}"] references "${action}" which is not a registered action — may be renamed or removed upstream`,
+          `[tokagent] INTENT_ACTION_MAP["${category}"] references "${action}" which is not a registered action — may be renamed or removed upstream`,
         );
       }
     }
@@ -231,8 +231,8 @@ export function buildFullParamActionSet(
  * coordinator can see its previous reasoning chain.
  *
  * Targets lines like:
- *   (Eliza's internal thought: User wants me to spawn...)
- *   (Eliza's actions: REPLY, CREATE_TASK)
+ *   (Tokagent's internal thought: User wants me to spawn...)
+ *   (Tokagent's actions: REPLY, CREATE_TASK)
  *   12:53 (17 minutes ago) [b850bc30-45f8-0041-a00a-83df46d8555d]
  *                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ UUID
  */

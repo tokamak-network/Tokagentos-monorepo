@@ -1,14 +1,14 @@
 import type http from "node:http";
 import {
-  type ElizaConfig,
-  loadElizaConfig,
-} from "@elizaos/agent/config/config";
-import type { AgentRuntime } from "@elizaos/core";
+  type TokagentConfig,
+  loadTokagentConfig,
+} from "@tokagentos/agent/config/config";
+import type { AgentRuntime } from "@tokagentos/core";
 import {
   normalizeOnboardingProviderId,
   resolveDeploymentTargetInConfig,
   resolveServiceRoutingInConfig,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import { sendJsonError as sendJsonErrorResponse } from "./response";
 
 const MAX_BODY_BYTES = 1_048_576;
@@ -101,7 +101,7 @@ export async function readCompatJsonBody(
 }
 
 export function hasCompatPersistedOnboardingState(
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): boolean {
   if ((config.meta as Record<string, unknown>)?.onboardingComplete === true) {
     return true;
@@ -118,10 +118,10 @@ export function hasCompatPersistedOnboardingState(
     llmText?.remoteApiBase?.trim() ?? deploymentTarget.remoteApiBase?.trim();
   const hasCompleteCanonicalRouting =
     (llmText?.transport === "direct" &&
-      Boolean(backend && backend !== "elizacloud")) ||
+      Boolean(backend && backend !== "tokagentcloud")) ||
     (llmText?.transport === "remote" && Boolean(remoteApiBase)) ||
     (llmText?.transport === "cloud-proxy" &&
-      backend === "elizacloud" &&
+      backend === "tokagentcloud" &&
       Boolean(llmText.smallModel?.trim() && llmText.largeModel?.trim())) ||
     (deploymentTarget.runtime === "remote" &&
       Boolean(deploymentTarget.remoteApiBase?.trim()));
@@ -141,7 +141,7 @@ export function hasCompatPersistedOnboardingState(
 }
 
 export function getConfiguredCompatAgentName(): string | null {
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const listAgent = config.agents?.list?.[0];
   const listAgentName =
     typeof listAgent?.name === "string" ? listAgent.name.trim() : "";

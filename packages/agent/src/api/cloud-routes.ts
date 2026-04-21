@@ -1,11 +1,11 @@
 import fs from "node:fs/promises";
 import type http from "node:http";
 import path from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import {
   isCloudInferenceSelectedInConfig,
   migrateLegacyRuntimeConfig,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import { normalizeCloudSiteUrl } from "../cloud/base-url.js";
 import type {
   CloudChainType,
@@ -309,11 +309,11 @@ export async function handleCloudRoute(
     } catch (err) {
       if (isTimeoutError(err)) {
         loginCreateSpan.failure({ error: err, statusCode: 504 });
-        sendJsonError(res, "Eliza Cloud login request timed out", 504);
+        sendJsonError(res, "Tokagent Cloud login request timed out", 504);
         return true;
       }
       loginCreateSpan.failure({ error: err, statusCode: 502 });
-      sendJsonError(res, "Failed to reach Eliza Cloud", 502);
+      sendJsonError(res, "Failed to reach Tokagent Cloud", 502);
       return true;
     }
 
@@ -324,7 +324,7 @@ export async function handleCloudRoute(
       });
       sendJsonError(
         res,
-        "Eliza Cloud login request was redirected; redirects are not allowed",
+        "Tokagent Cloud login request was redirected; redirects are not allowed",
         502,
       );
       return true;
@@ -335,7 +335,7 @@ export async function handleCloudRoute(
         statusCode: createRes.status,
         errorKind: "http_error",
       });
-      sendJsonError(res, "Failed to create auth session with Eliza Cloud", 502);
+      sendJsonError(res, "Failed to create auth session with Tokagent Cloud", 502);
       return true;
     }
 
@@ -384,7 +384,7 @@ export async function handleCloudRoute(
           res,
           {
             status: "error",
-            error: "Eliza Cloud status request timed out",
+            error: "Tokagent Cloud status request timed out",
           },
           504,
         );
@@ -395,7 +395,7 @@ export async function handleCloudRoute(
         res,
         {
           status: "error",
-          error: "Failed to reach Eliza Cloud",
+          error: "Failed to reach Tokagent Cloud",
         },
         502,
       );
@@ -412,7 +412,7 @@ export async function handleCloudRoute(
         {
           status: "error",
           error:
-            "Eliza Cloud status request was redirected; redirects are not allowed",
+            "Tokagent Cloud status request was redirected; redirects are not allowed",
         },
         502,
       );
@@ -430,7 +430,7 @@ export async function handleCloudRoute(
           ? { status: "expired", error: "Session not found or expired" }
           : {
               status: "error",
-              error: `Eliza Cloud returned HTTP ${pollRes.status}`,
+              error: `Tokagent Cloud returned HTTP ${pollRes.status}`,
             },
       );
       return true;
@@ -447,7 +447,7 @@ export async function handleCloudRoute(
       loginPollSpan.failure({ error: parseErr, statusCode: pollRes.status });
       sendJson(
         res,
-        { status: "error", error: "Eliza Cloud returned invalid JSON" },
+        { status: "error", error: "Tokagent Cloud returned invalid JSON" },
         502,
       );
       return true;
@@ -463,7 +463,7 @@ export async function handleCloudRoute(
       (state.config as Record<string, unknown>).cloud = cloud;
       applyCanonicalOnboardingConfig(state.config as never, {
         linkedAccounts: {
-          elizacloud: {
+          tokagentcloud: {
             status: "linked",
             source: "api-key",
           },
@@ -492,11 +492,11 @@ export async function handleCloudRoute(
         return true;
       }
 
-      process.env.ELIZAOS_CLOUD_API_KEY = data.apiKey;
+      process.env.TOKAGENTOS_CLOUD_API_KEY = data.apiKey;
       if (cloudInferenceSelected) {
-        process.env.ELIZAOS_CLOUD_ENABLED = "true";
+        process.env.TOKAGENTOS_CLOUD_ENABLED = "true";
       } else {
-        delete process.env.ELIZAOS_CLOUD_ENABLED;
+        delete process.env.TOKAGENTOS_CLOUD_ENABLED;
       }
 
       if (state.runtime) {
@@ -506,11 +506,11 @@ export async function handleCloudRoute(
           character.secrets = {};
         }
         const secrets = character.secrets as Record<string, string>;
-        secrets.ELIZAOS_CLOUD_API_KEY = data.apiKey;
+        secrets.TOKAGENTOS_CLOUD_API_KEY = data.apiKey;
         if (cloudInferenceSelected) {
-          secrets.ELIZAOS_CLOUD_ENABLED = "true";
+          secrets.TOKAGENTOS_CLOUD_ENABLED = "true";
         } else {
-          delete secrets.ELIZAOS_CLOUD_ENABLED;
+          delete secrets.TOKAGENTOS_CLOUD_ENABLED;
         }
 
         if (typeof state.runtime.updateAgent === "function") {
@@ -667,7 +667,7 @@ export async function handleCloudRoute(
   if (method === "GET" && pathname === "/api/cloud/agents") {
     const client = state.cloudManager?.getClient();
     if (!client) {
-      sendJsonError(res, "Not connected to Eliza Cloud", 401);
+      sendJsonError(res, "Not connected to Tokagent Cloud", 401);
       return true;
     }
     sendJson(res, { ok: true, agents: await client.listAgents() });
@@ -677,7 +677,7 @@ export async function handleCloudRoute(
   if (method === "POST" && pathname === "/api/cloud/agents") {
     const client = state.cloudManager?.getClient();
     if (!client) {
-      sendJsonError(res, "Not connected to Eliza Cloud", 401);
+      sendJsonError(res, "Not connected to Tokagent Cloud", 401);
       return true;
     }
 
@@ -756,7 +756,7 @@ export async function handleCloudRoute(
     }
     const client = state.cloudManager.getClient();
     if (!client) {
-      sendJsonError(res, "Not connected to Eliza Cloud", 401);
+      sendJsonError(res, "Not connected to Tokagent Cloud", 401);
       return true;
     }
     try {
@@ -823,7 +823,7 @@ export async function handleCloudRoute(
     applyCanonicalOnboardingConfig(state.config as never, {
       deploymentTarget: { runtime: "local" },
       linkedAccounts: {
-        elizacloud: {
+        tokagentcloud: {
           status: "unlinked",
           source: "api-key",
         },
@@ -852,8 +852,8 @@ export async function handleCloudRoute(
       return true;
     }
 
-    delete process.env.ELIZAOS_CLOUD_API_KEY;
-    delete process.env.ELIZAOS_CLOUD_ENABLED;
+    delete process.env.TOKAGENTOS_CLOUD_API_KEY;
+    delete process.env.TOKAGENTOS_CLOUD_ENABLED;
 
     if (state.runtime) {
       const character = state.runtime.character ?? {};
@@ -865,8 +865,8 @@ export async function handleCloudRoute(
         string,
         string | number | boolean
       >;
-      delete secrets.ELIZAOS_CLOUD_API_KEY;
-      delete secrets.ELIZAOS_CLOUD_ENABLED;
+      delete secrets.TOKAGENTOS_CLOUD_API_KEY;
+      delete secrets.TOKAGENTOS_CLOUD_ENABLED;
       if (typeof state.runtime.updateAgent === "function") {
         await state.runtime.updateAgent(state.runtime.agentId, {
           secrets: { ...secrets },

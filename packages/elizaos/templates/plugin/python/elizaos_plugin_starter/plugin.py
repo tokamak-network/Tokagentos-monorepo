@@ -1,31 +1,31 @@
 """
-elizaOS Python Plugin Starter Implementation
+tokagentOS Python Plugin Starter Implementation
 
-This module provides a template for creating elizaOS plugins in Python.
+This module provides a template for creating tokagentOS plugins in Python.
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types.plugin import Plugin
-from elizaos.types.components import (
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.components import (
     Action,
     ActionResult,
     Provider,
     ProviderResult,
     HandlerOptions,
 )
-from elizaos.types.memory import Memory
-from elizaos.types.state import State
-from elizaos.types.service import Service
-from elizaos.logger import create_logger
+from tokagentos.types.memory import Memory
+from tokagentos.types.state import State
+from tokagentos.types.service import Service
+from tokagentos.logger import create_logger
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 # Import test suite for E2E tests
-from elizaos_plugin_starter.tests import python_plugin_starter_test_suite
+from tokagentos_plugin_starter.tests import python_plugin_starter_test_suite
 
 logger = create_logger(namespace="python-plugin-starter")
 
@@ -112,7 +112,7 @@ async def python_info_get(
     import platform
 
     return ProviderResult(
-        text="This is a Python plugin running via the elizaOS runtime!",
+        text="This is a Python plugin running via the tokagentOS runtime!",
         values={
             "language": "python",
             "version": sys.version,
@@ -213,7 +213,7 @@ async def plugin_init(
 
 plugin = Plugin(
     name="python-plugin-starter",
-    description="Starter template for elizaOS Python plugins",
+    description="Starter template for tokagentOS Python plugins",
     # Initialization function
     init=plugin_init,
     # Configuration (loaded from environment)

@@ -1,11 +1,11 @@
 /**
  * Shared PGLite runtime helper for live scripts under `test/live/`.
  *
- * Duplicated from app-core test helpers so `@elizaos/core` live scenarios
+ * Duplicated from app-core test helpers so `@tokagentos/core` live scenarios
  * stay colocated with the orchestrator implementation.
  */
-import type { Plugin } from "@elizaos/core";
-import { AgentRuntime } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
+import { AgentRuntime } from "@tokagentos/core";
 export interface TestRuntimeOptions {
 	characterName?: string;
 	plugins?: Plugin[];

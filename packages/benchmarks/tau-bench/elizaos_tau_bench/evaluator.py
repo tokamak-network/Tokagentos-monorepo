@@ -5,7 +5,7 @@ Evaluator for Tau-bench benchmark results.
 import logging
 from typing import Any, Optional, Protocol, runtime_checkable
 
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauBenchTask,
     TauBenchResult,
     ToolCall,
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 @runtime_checkable
 class IAgentRuntime(Protocol):
-    """Protocol for ElizaOS agent runtime."""
+    """Protocol for TokagentOS agent runtime."""
     
     async def generate_text(
         self, input_text: str, options: dict[str, str]
@@ -263,7 +263,7 @@ class TauBenchEvaluator:
         Returns a dictionary mapping model names to the difference
         between our score and their score (positive = we're better).
         """
-        from elizaos_tau_bench.types import TauDomain
+        from tokagentos_tau_bench.types import TauDomain
 
         # Calculate our scores by domain
         our_scores: dict[str, float] = {}

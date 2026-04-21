@@ -24,15 +24,15 @@ const UI_SMOKE_STUB_SCRIPT = path.join(
 const READY_TIMEOUT_MS = 180_000;
 const API_PORT = Number(
   process.env.MILADY_UI_SMOKE_API_PORT ??
-    process.env.ELIZA_UI_SMOKE_API_PORT ??
+    process.env.TOKAGENT_UI_SMOKE_API_PORT ??
     "31337",
 );
 const UI_PORT = Number(
-  process.env.MILADY_UI_SMOKE_PORT ?? process.env.ELIZA_UI_SMOKE_PORT ?? "2138",
+  process.env.MILADY_UI_SMOKE_PORT ?? process.env.TOKAGENT_UI_SMOKE_PORT ?? "2138",
 );
 const LIVE_PROVIDER = selectLiveProvider();
 const FORCE_STUB_STACK =
-  process.env.ELIZA_UI_SMOKE_FORCE_STUB === "1" ||
+  process.env.TOKAGENT_UI_SMOKE_FORCE_STUB === "1" ||
   process.env.CI === "true";
 
 type StartedStack = {
@@ -413,7 +413,7 @@ async function ensureUiDistReady(): Promise<void> {
 async function submitOnboarding(apiBase: string): Promise<void> {
   if (!LIVE_PROVIDER) {
     throw new Error(
-      "UI smoke needs a real provider. Set OPENAI_API_KEY, GROQ_API_KEY, ANTHROPIC_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, OPENROUTER_API_KEY, or ELIZAOS_CLOUD_API_KEY.",
+      "UI smoke needs a real provider. Set OPENAI_API_KEY, GROQ_API_KEY, ANTHROPIC_API_KEY, GOOGLE_GENERATIVE_AI_API_KEY, OPENROUTER_API_KEY, or TOKAGENTOS_CLOUD_API_KEY.",
     );
   }
 
@@ -472,14 +472,14 @@ async function submitOnboarding(apiBase: string): Promise<void> {
 }
 
 async function startStubStack(): Promise<StartedStack> {
-  const stateDir = await mkdtemp(path.join(os.tmpdir(), "eliza-ui-smoke-stub-"));
+  const stateDir = await mkdtemp(path.join(os.tmpdir(), "tokagent-ui-smoke-stub-"));
   const apiBase = `http://127.0.0.1:${API_PORT}`;
   const apiChild = spawn("node", [UI_SMOKE_STUB_SCRIPT], {
     cwd: REPO_ROOT,
     env: {
       ...process.env,
       FORCE_COLOR: "0",
-      ELIZA_UI_SMOKE_API_PORT: String(API_PORT),
+      TOKAGENT_UI_SMOKE_API_PORT: String(API_PORT),
       MILADY_UI_SMOKE_API_PORT: String(API_PORT),
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -503,7 +503,7 @@ async function startStubStack(): Promise<StartedStack> {
     apiBase,
     port: UI_PORT,
   });
-  process.env.ELIZA_API_PORT = String(API_PORT);
+  process.env.TOKAGENT_API_PORT = String(API_PORT);
   process.env.MILADY_API_PORT = String(API_PORT);
 
   return {
@@ -522,13 +522,13 @@ async function startRealStack(): Promise<StartedStack> {
     return startStubStack();
   }
 
-  const stateDir = await mkdtemp(path.join(os.tmpdir(), "eliza-ui-smoke-live-"));
+  const stateDir = await mkdtemp(path.join(os.tmpdir(), "tokagent-ui-smoke-live-"));
   const apiBase = `http://127.0.0.1:${API_PORT}`;
   const apiChild = spawn(
     "node",
     [
-      path.join(REPO_ROOT, "eliza/packages/app-core/scripts/run-node-tsx.mjs"),
-      path.join(REPO_ROOT, "eliza/packages/app-core/src/runtime/eliza.ts"),
+      path.join(REPO_ROOT, "tokagent/packages/app-core/scripts/run-node-tsx.mjs"),
+      path.join(REPO_ROOT, "tokagent/packages/app-core/src/runtime/tokagent.ts"),
     ],
     {
       cwd: REPO_ROOT,
@@ -536,10 +536,10 @@ async function startRealStack(): Promise<StartedStack> {
         ...process.env,
         ALLOW_NO_DATABASE: "",
         FORCE_COLOR: "0",
-        ELIZA_API_PORT: String(API_PORT),
-        ELIZA_HOME_PORT: String(UI_PORT),
-        ELIZA_PORT: String(API_PORT),
-        ELIZA_STATE_DIR: stateDir,
+        TOKAGENT_API_PORT: String(API_PORT),
+        TOKAGENT_HOME_PORT: String(UI_PORT),
+        TOKAGENT_PORT: String(API_PORT),
+        TOKAGENT_STATE_DIR: stateDir,
         MILADY_API_PORT: String(API_PORT),
         MILADY_STATE_DIR: stateDir,
       },
@@ -577,7 +577,7 @@ async function startRealStack(): Promise<StartedStack> {
     apiBase,
     port: UI_PORT,
   });
-  process.env.ELIZA_API_PORT = String(API_PORT);
+  process.env.TOKAGENT_API_PORT = String(API_PORT);
   process.env.MILADY_API_PORT = String(API_PORT);
 
   return {

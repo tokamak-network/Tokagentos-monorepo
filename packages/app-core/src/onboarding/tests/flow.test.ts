@@ -57,7 +57,7 @@ describe("onboarding flow", () => {
     expect(
       inferOnboardingResumeStep({
         config: {
-          deploymentTarget: { runtime: "cloud", provider: "elizacloud" },
+          deploymentTarget: { runtime: "cloud", provider: "tokagentcloud" },
         },
       }),
     ).toBe("providers");

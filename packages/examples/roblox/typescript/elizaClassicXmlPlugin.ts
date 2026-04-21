@@ -1,6 +1,6 @@
-import type { GenerateTextParams, IAgentRuntime, Plugin } from "@elizaos/core";
-import { ModelType } from "@elizaos/core";
-import { generateElizaResponse } from "@elizaos/plugin-eliza-classic";
+import type { GenerateTextParams, IAgentRuntime, Plugin } from "@tokagentos/core";
+import { ModelType } from "@tokagentos/core";
+import { generateTokagentResponse } from "@elizaos/plugin-tokagent-classic";
 
 function escapeXml(text: string): string {
   return text
@@ -18,9 +18,9 @@ function extractUserMessage(prompt: string): string {
 
 async function handle(runtime: IAgentRuntime, params: GenerateTextParams): Promise<string> {
   const input = extractUserMessage(params.prompt);
-  const reply = generateElizaResponse(input);
+  const reply = generateTokagentResponse(input);
 
-  // The elizaOS runtime expects an XML <response> block.
+  // The tokagentOS runtime expects an XML <response> block.
   // Keep it minimal: no actions, just text.
   return [
     "<response>",
@@ -32,9 +32,9 @@ async function handle(runtime: IAgentRuntime, params: GenerateTextParams): Promi
   ].join("");
 }
 
-export const elizaClassicXmlPlugin: Plugin = {
-  name: "eliza-classic-xml",
-  description: "Wrap ELIZA classic responses in elizaOS XML format",
+export const tokagentClassicXmlPlugin: Plugin = {
+  name: "tokagent-classic-xml",
+  description: "Wrap TOKAGENT classic responses in tokagentOS XML format",
   priority: 200,
   models: {
     [ModelType.TEXT_LARGE]: handle,

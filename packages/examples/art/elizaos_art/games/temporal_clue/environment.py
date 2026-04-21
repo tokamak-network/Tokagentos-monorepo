@@ -7,8 +7,8 @@ Implements temporal reasoning puzzles where events must be ordered.
 import random
 from typing import ClassVar
 
-from elizaos_art.base import BaseEnvironment
-from elizaos_art.games.temporal_clue.types import (
+from tokagentos_art.base import BaseEnvironment
+from tokagentos_art.games.temporal_clue.types import (
     Difficulty,
     PUZZLE_SCENARIOS,
     TemporalClue,

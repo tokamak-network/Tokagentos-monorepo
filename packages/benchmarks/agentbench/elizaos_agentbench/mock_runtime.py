@@ -14,7 +14,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import re
 
-from elizaos_agentbench.types import GenerateTextResult
+from tokagentos_agentbench.types import GenerateTextResult
 
 
 @dataclass(frozen=True)

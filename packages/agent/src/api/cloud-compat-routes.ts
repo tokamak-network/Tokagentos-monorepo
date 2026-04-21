@@ -1,6 +1,6 @@
 import type http from "node:http";
-import type { AgentRuntime, Service } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime, Service } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { normalizeCloudSiteUrl } from "../cloud/base-url.js";
 import { validateCloudBaseUrl } from "../cloud/validate-url.js";
 import type { CloudProxyConfigLike } from "../types/config-like.js";
@@ -131,7 +131,7 @@ function sendUpstreamNotFound(
       res,
       upstreamBody ?? {
         success: false,
-        error: "Eliza Cloud returned 404 for this API route.",
+        error: "Tokagent Cloud returned 404 for this API route.",
         code: "CLOUD_ROUTE_NOT_FOUND",
       },
       404,
@@ -189,11 +189,11 @@ function handleUpstreamError(error: unknown, res: http.ServerResponse): void {
   if (error instanceof Error) {
     const errorCode = (error as { code?: string }).code;
     if (errorCode === "REDIRECT") {
-      sendJsonError(res, "Eliza Cloud returned an unexpected redirect.", 502);
+      sendJsonError(res, "Tokagent Cloud returned an unexpected redirect.", 502);
       return;
     }
     if (error.name === "TimeoutError" || error.name === "AbortError") {
-      sendJsonError(res, "Eliza Cloud request timed out.", 504);
+      sendJsonError(res, "Tokagent Cloud request timed out.", 504);
       return;
     }
     if (error.message === "Request body too large") {
@@ -202,13 +202,13 @@ function handleUpstreamError(error: unknown, res: http.ServerResponse): void {
     }
     sendJsonError(
       res,
-      `Failed to reach Eliza Cloud: ${error.message || "Unknown error"}`,
+      `Failed to reach Tokagent Cloud: ${error.message || "Unknown error"}`,
       502,
     );
     return;
   }
 
-  sendJsonError(res, "Failed to reach Eliza Cloud.", 502);
+  sendJsonError(res, "Failed to reach Tokagent Cloud.", 502);
 }
 
 /** Paths under /api/cloud/v1/ are forwarded directly as /api/v1/ on the cloud backend. */
@@ -229,7 +229,7 @@ export async function handleCloudCompatRoute(
   if (!apiKey) {
     sendJsonError(
       res,
-      "Not connected to Eliza Cloud. Please log in first.",
+      "Not connected to Tokagent Cloud. Please log in first.",
       401,
     );
     return true;
@@ -243,7 +243,7 @@ export async function handleCloudCompatRoute(
   }
 
   // /api/cloud/compat/* → /api/compat/*  (existing mapping)
-  // /api/cloud/v1/*    → /api/v1/*       (eliza v1 endpoints, e.g. pairing-token)
+  // /api/cloud/v1/*    → /api/v1/*       (tokagent v1 endpoints, e.g. pairing-token)
   const compatPath = isV1Route
     ? pathname.slice("/api/cloud".length)
     : pathname.replace("/api/cloud", "/api");
@@ -285,16 +285,16 @@ export async function handleCloudCompatRoute(
     const upstreamStatus = upstreamRes.ok ? 502 : upstreamRes.status;
     if (parsed.kind === "empty") {
       const message = upstreamRes.ok
-        ? "Eliza Cloud returned an empty response."
-        : `Eliza Cloud returned HTTP ${upstreamRes.status} with an empty response body.`;
+        ? "Tokagent Cloud returned an empty response."
+        : `Tokagent Cloud returned HTTP ${upstreamRes.status} with an empty response body.`;
       sendJsonError(res, message, upstreamStatus);
       return true;
     }
 
     const message =
       parsed.kind === "invalid-json"
-        ? "Eliza Cloud returned malformed JSON."
-        : "Eliza Cloud returned a non-JSON response.";
+        ? "Tokagent Cloud returned malformed JSON."
+        : "Tokagent Cloud returned a non-JSON response.";
     const detail = summarizeUpstreamBody(parsed.bodyText);
     logger.warn(
       `[cloud-compat] ${message} ${method} ${compatPath} (${upstreamRes.status})${detail ? `: ${detail}` : ""}`,

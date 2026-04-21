@@ -1,7 +1,7 @@
 /**
  * Tail read for `GET /api/dev/console-log`.
  *
- * **Why basename allow-list:** `ELIZA_DESKTOP_DEV_LOG_PATH` is process env; a malicious or mistaken
+ * **Why basename allow-list:** `TOKAGENT_DESKTOP_DEV_LOG_PATH` is process env; a malicious or mistaken
  * value could otherwise point at arbitrary files. Only `desktop-dev-console.log` is accepted.
  *
  * **Why byte window + line cap:** agents should not load multi-hour logs into context; reading the
@@ -12,15 +12,15 @@ import path from "node:path";
 
 /**
  * Limits which file the API may tail (env is untrusted even on loopback).
- * Requires both the correct basename AND a `.eliza` parent directory to
+ * Requires both the correct basename AND a `.tokagent` parent directory to
  * prevent reading arbitrary files named `desktop-dev-console.log`.
  */
 export function isAllowedDevConsoleLogPath(absPath: string): boolean {
   if (path.basename(absPath) !== "desktop-dev-console.log") return false;
-  // Require the file to live under a `.eliza` directory
+  // Require the file to live under a `.tokagent` directory
   const normalized = path.resolve(absPath);
   const parts = normalized.split(path.sep);
-  return parts.some((part) => part === ".eliza");
+  return parts.some((part) => part === ".tokagent");
 }
 
 export type ReadDevConsoleLogResult =

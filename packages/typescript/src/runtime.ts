@@ -167,7 +167,7 @@ const RUNTIME_TEMPLATE_CACHE = new Map<
 	Handlebars.TemplateDelegate<Record<string, unknown>>
 >();
 const RUNTIME_TEMPLATE_CACHE_LIMIT = 256;
-const PROVIDERS_PROMPT_MARKER = "__ELIZA_PROMPT_SEGMENT_PROVIDERS__";
+const PROVIDERS_PROMPT_MARKER = "__TOKAGENT_PROMPT_SEGMENT_PROVIDERS__";
 const COMPOSE_STATE_PROVIDER_TIMEOUT_MS = 30_000;
 const STABLE_PROMPT_TEMPLATE_KEYS = new Set([
 	"agentName",
@@ -1567,7 +1567,7 @@ export class AgentRuntime implements IAgentRuntime {
 				{
 					id: this.agentId,
 					name: this.character.name,
-					source: "elizaos",
+					source: "tokagentos",
 					type: ChannelType.SELF,
 					channelId: this.agentId,
 					messageServerId: this.agentId,
@@ -1725,7 +1725,7 @@ export class AgentRuntime implements IAgentRuntime {
 
 		const isProduction = process.env.NODE_ENV === "production";
 		const forceDestructive =
-			process.env.ELIZA_ALLOW_DESTRUCTIVE_MIGRATIONS === "true";
+			process.env.TOKAGENT_ALLOW_DESTRUCTIVE_MIGRATIONS === "true";
 
 		await this.adapter.runPluginMigrations(pluginsWithSchemas, {
 			verbose: !isProduction,
@@ -5358,7 +5358,7 @@ ${section_end}`;
 
 				// WHY accumulated is forwarded: the VSE tracks the full extracted text
 				// per field internally (`content` in emitFieldContent). Surfacing it
-				// here means consumers like first-sentence voice detection or Eliza's
+				// here means consumers like first-sentence voice detection or Tokagent's
 				// streaming-text resolver can use the authoritative value instead of
 				// Note: this design prevents dual extractor conflicts by providing authoritative accumulated data
 				// re-accumulating from deltas — which broke when two extractors ran

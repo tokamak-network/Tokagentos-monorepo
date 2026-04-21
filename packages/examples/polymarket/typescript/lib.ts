@@ -400,7 +400,7 @@ export function resolveLlmProvider(
   getValue: (key: string) => string | undefined
 ): LlmProvider | null {
   const explicit = normalizeEnvValue(
-    getValue("ELIZA_LLM_PROVIDER") ?? getValue("LLM_PROVIDER")
+    getValue("TOKAGENT_LLM_PROVIDER") ?? getValue("LLM_PROVIDER")
   );
   if (explicit) {
     if (LLM_PROVIDER_ORDER.includes(explicit as LlmProvider)) {
@@ -422,7 +422,7 @@ export function resolveLlmModel(
   provider: LlmProvider | null,
   getValue: (key: string) => string | undefined
 ): string | null {
-  const explicit = normalizeEnvValue(getValue("ELIZA_LLM_MODEL") ?? getValue("LLM_MODEL"));
+  const explicit = normalizeEnvValue(getValue("TOKAGENT_LLM_MODEL") ?? getValue("LLM_MODEL"));
   if (explicit) return explicit;
   if (!provider) return null;
   for (const key of LLM_MODEL_KEYS[provider]) {

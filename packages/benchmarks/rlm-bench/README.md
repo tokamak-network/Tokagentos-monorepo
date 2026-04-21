@@ -142,19 +142,19 @@ This benchmark suite implements evaluations from:
 
 ```bash
 # Run tests
-pytest elizaos_rlm_bench/tests/ -v
+pytest tokagentos_rlm_bench/tests/ -v
 
 # Run specific test
-pytest elizaos_rlm_bench/tests/test_benchmark.py::TestGenerator -v
+pytest tokagentos_rlm_bench/tests/test_benchmark.py::TestGenerator -v
 ```
 
-## Integration with elizaOS
+## Integration with tokagentOS
 
 The benchmark integrates with the RLM plugin (`plugin-rlm`) for full trajectory logging and cost tracking:
 
 ```python
-from elizaos_plugin_rlm import RLMTrajectoryIntegration
-from elizaos_plugin_trajectory_logger.service import TrajectoryLoggerService
+from tokagentos_plugin_rlm import RLMTrajectoryIntegration
+from tokagentos_plugin_trajectory_logger.service import TrajectoryLoggerService
 
 # Setup integration
 logger = TrajectoryLoggerService()

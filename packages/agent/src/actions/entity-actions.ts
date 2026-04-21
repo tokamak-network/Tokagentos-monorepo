@@ -4,8 +4,8 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   UUID,
-} from "@elizaos/core";
-import { logger, ModelType, parseKeyValueXml } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger, ModelType, parseKeyValueXml } from "@tokagentos/core";
 import { hasAdminAccess } from "../security/access.js";
 import type {
   RelationshipsGraphService,

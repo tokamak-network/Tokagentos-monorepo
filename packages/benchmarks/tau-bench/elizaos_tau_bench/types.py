@@ -269,7 +269,7 @@ class TauBenchConfig:
     enable_memory_tracking: bool = True
     use_llm_judge: bool = True  # Use LLM to evaluate response quality
     verbose: bool = False
-    # ElizaOS integration settings
+    # TokagentOS integration settings
     use_mock: bool = False  # Use real LLM by default - set True or --mock for testing
     temperature: float = 0.0  # LLM temperature for generation
     model_provider: Optional[str] = None  # Force specific provider: openai, anthropic, google, ollama

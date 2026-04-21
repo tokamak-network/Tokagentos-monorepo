@@ -1,5 +1,5 @@
 """
-ElizaOS Plugin for OSWorld desktop automation benchmark.
+TokagentOS Plugin for OSWorld desktop automation benchmark.
 
 Packages all desktop actions and the observation provider into a proper
 Plugin object so the agent can register them via the canonical plugin pattern
@@ -7,11 +7,11 @@ instead of individual register_action / register_provider calls.
 """
 from __future__ import annotations
 
-from elizaos.types import Plugin
-from elizaos.types.components import Action, ActionResult
+from tokagentos.types import Plugin
+from tokagentos.types.components import Action, ActionResult
 
-from mm_agents.eliza_desktop_actions import ALL_DESKTOP_ACTIONS
-from mm_agents.eliza_observation import OBSERVATION_PROVIDER
+from mm_agents.tokagent_desktop_actions import ALL_DESKTOP_ACTIONS
+from mm_agents.tokagent_observation import OBSERVATION_PROVIDER
 
 __all__ = ["osworld_plugin", "create_osworld_plugin"]
 
@@ -19,7 +19,7 @@ __all__ = ["osworld_plugin", "create_osworld_plugin"]
 # ---------------------------------------------------------------------------
 # No-op REPLY action
 # ---------------------------------------------------------------------------
-# The Eliza message service always tries to call REPLY as the default response
+# The Tokagent message service always tries to call REPLY as the default response
 # action. OSWorld doesn't need it, but we register a no-op so the runtime
 # doesn't log "Action not found: REPLY" warnings.
 
@@ -60,7 +60,7 @@ def create_osworld_plugin() -> Plugin:
     return Plugin(
         name="osworld-bench",
         description=(
-            "OSWorld desktop automation benchmark plugin for ElizaOS - "
+            "OSWorld desktop automation benchmark plugin for TokagentOS - "
             "provides desktop operation actions (DESKTOP_CLICK, DESKTOP_TYPE, "
             "DESKTOP_HOTKEY, DESKTOP_SCROLL, DESKTOP_DRAG, etc.) and an "
             "observation provider for VM screenshot / accessibility-tree context."

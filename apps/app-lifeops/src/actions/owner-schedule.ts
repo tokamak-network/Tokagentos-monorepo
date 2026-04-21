@@ -5,7 +5,7 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { resolveDefaultTimeZone } from "../lifeops/defaults.js";
 import type { LifeOpsScheduleInspection } from "../lifeops/schedule-insight.js";
 import { LifeOpsService } from "../lifeops/service.js";

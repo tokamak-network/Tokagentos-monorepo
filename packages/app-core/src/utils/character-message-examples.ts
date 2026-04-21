@@ -1,4 +1,4 @@
-import type { Content, MessageExampleGroup } from "@elizaos/core";
+import type { Content, MessageExampleGroup } from "@tokagentos/core";
 
 type MessageRecord = {
   content?: Content | string;

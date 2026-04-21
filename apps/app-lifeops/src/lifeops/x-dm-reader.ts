@@ -24,7 +24,7 @@
  *   requiredEnvVars: ["TWITTER_API_KEY", "TWITTER_API_SECRET", "TWITTER_ACCESS_TOKEN", "TWITTER_ACCESS_TOKEN_SECRET"]
  */
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import {
   readXDms,
   XReadError,

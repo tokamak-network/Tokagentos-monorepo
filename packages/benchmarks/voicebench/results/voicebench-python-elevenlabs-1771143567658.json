@@ -23,7 +23,7 @@
     {
       "mode": "simple",
       "sampleId": "single-audio",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/greeting_short.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/greeting_short.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": null,
@@ -71,7 +71,7 @@
     {
       "mode": "non-simple",
       "sampleId": "single-audio",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/elevenlabs/greeting_short.mp3",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/elevenlabs/greeting_short.mp3",
       "iteration": 1,
       "profile": "elevenlabs",
       "expectedTranscript": null,

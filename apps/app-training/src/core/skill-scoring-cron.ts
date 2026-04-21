@@ -12,7 +12,7 @@
 
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { resolveStateDir } from "@elizaos/core";
+import { resolveStateDir } from "@tokagentos/core";
 import { scoreSkill, type ScoreableTrajectory } from "./replay-validator.js";
 import {
   ensureNamedCronJob,

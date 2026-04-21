@@ -1,10 +1,10 @@
 """
-Main entry point for elizaos-art CLI.
+Main entry point for tokagentos-art CLI.
 
-Usage: python -m elizaos_art [command]
+Usage: python -m tokagentos_art [command]
 """
 
-from elizaos_art.cli import app
+from tokagentos_art.cli import app
 
 if __name__ == "__main__":
     app()

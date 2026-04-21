@@ -13,7 +13,7 @@ from typing import Iterator, Optional
 import aiofiles
 import httpx
 
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.types import (
     SAMPLE_TASKS,
     TaskCategory,
     TaskDifficulty,

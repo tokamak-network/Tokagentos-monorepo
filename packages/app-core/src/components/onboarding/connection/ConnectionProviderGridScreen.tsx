@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import type { ProviderOption } from "../../../api";
 import { appNameInterpolationVars, useBranding } from "../../../config";
 import type {
@@ -81,9 +81,9 @@ export function ConnectionProviderGridScreen({
           <button
             type="button"
             className="text-3xs uppercase tracking-[0.1em] text-[var(--onboarding-text-subtle)] hover:text-[var(--onboarding-text-strong)] transition-colors hover:underline"
-            onClick={() => dispatch({ type: "selectElizaCloudHosting" })}
+            onClick={() => dispatch({ type: "selectTokagentCloudHosting" })}
           >
-            {t("onboarding.useElizaCloud", { defaultValue: "Deploy to Cloud" })}
+            {t("onboarding.useTokagentCloud", { defaultValue: "Deploy to Cloud" })}
           </button>
           <span
             className="text-3xs text-[var(--onboarding-text-faint)]"

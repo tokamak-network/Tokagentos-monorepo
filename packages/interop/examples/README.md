@@ -1,4 +1,4 @@
-# elizaOS Cross-Language Interop Examples
+# tokagentOS Cross-Language Interop Examples
 
 This directory demonstrates how **any runtime** can load **any plugin** regardless of what language it was written in.
 
@@ -18,10 +18,10 @@ This directory demonstrates how **any runtime** can load **any plugin** regardle
 ### 1. TypeScript Loading Rust Plugin (WASM)
 
 ```typescript
-import { loadWasmPlugin } from "@elizaos/interop";
+import { loadWasmPlugin } from "@tokagentos/interop";
 
 // Load the compiled WASM module
-const plugin = await loadWasmPlugin("./eliza_classic.wasm");
+const plugin = await loadWasmPlugin("./tokagent_classic.wasm");
 
 console.log("Plugin:", plugin.name);
 console.log(
@@ -42,7 +42,7 @@ console.log("Response:", result.text);
 ### 2. TypeScript Loading Python Plugin (IPC)
 
 ```typescript
-import { loadPythonPlugin } from "@elizaos/interop";
+import { loadPythonPlugin } from "@tokagentos/interop";
 
 // Load Python plugin via subprocess
 const plugin = await loadPythonPlugin("./python_plugin.py");
@@ -54,10 +54,10 @@ const result = await plugin.actions[0].handler(runtime, memory, state, {});
 ### 3. Python Loading Rust Plugin (FFI)
 
 ```python
-from elizaos.interop import load_rust_plugin
+from tokagentos.interop import load_rust_plugin
 
 # Load the shared library
-plugin = load_rust_plugin('./libelizaos_plugin_eliza_classic.so')
+plugin = load_rust_plugin('./libtokagentos_plugin_tokagent_classic.so')
 
 print(f'Plugin: {plugin.name}')
 print(f'Actions: {[a.name for a in plugin.actions]}')
@@ -75,7 +75,7 @@ print(f'Response: {result.text}')
 ### 4. Python Loading TypeScript Plugin (IPC)
 
 ```python
-from elizaos.interop import load_ts_plugin
+from tokagentos.interop import load_ts_plugin
 
 # Load TypeScript plugin via subprocess
 plugin = load_ts_plugin('./typescript_plugin.ts')
@@ -87,7 +87,7 @@ result = await plugin.actions[0].handler(runtime, memory, state, {})
 ### 5. Rust Loading TypeScript Plugin (IPC)
 
 ```rust
-use elizaos::interop::TypeScriptPluginLoader;
+use tokagentos::interop::TypeScriptPluginLoader;
 
 let loader = TypeScriptPluginLoader::new();
 let plugin = loader.load("./typescript_plugin.ts")?;
@@ -99,7 +99,7 @@ let result = plugin.invoke_action("generate-response", &memory, &state, &options
 ### 6. Rust Loading Python Plugin (IPC)
 
 ```rust
-use elizaos::interop::PythonPluginLoader;
+use tokagentos::interop::PythonPluginLoader;
 
 let loader = PythonPluginLoader::new();
 let plugin = loader.load("./python_plugin.py")?;
@@ -113,19 +113,19 @@ let result = plugin.invoke_action("generate-response", &memory, &state, &options
 ### Rust Plugin (WASM + FFI)
 
 ```bash
-cd plugins/plugin-eliza-classic/rust
+cd plugins/plugin-tokagent-classic/rust
 
 # Build for WASM (TypeScript interop)
 cargo build --release --target wasm32-unknown-unknown --features wasm
-wasm-bindgen target/wasm32-unknown-unknown/release/elizaos_plugin_eliza_classic.wasm --out-dir ./pkg
+wasm-bindgen target/wasm32-unknown-unknown/release/tokagentos_plugin_tokagent_classic.wasm --out-dir ./pkg
 
 # Build for FFI (Python interop)
 cargo build --release --features ffi
-# Result: target/release/libelizaos_plugin_eliza_classic.so
+# Result: target/release/libtokagentos_plugin_tokagent_classic.so
 
 # Build IPC server (any language)
-cargo build --release --features ipc --bin eliza-classic-ipc
-# Result: target/release/eliza-classic-ipc
+cargo build --release --features ipc --bin tokagent-classic-ipc
+# Result: target/release/tokagent-classic-ipc
 ```
 
 ### Python Plugin (IPC)
@@ -134,7 +134,7 @@ Python plugins use the bridge server for IPC:
 
 ```python
 # my_plugin/__init__.py
-from elizaos import Plugin, Action
+from tokagentos import Plugin, Action
 
 async def my_handler(runtime, memory, state, options):
     return {"success": True, "text": "Hello from Python!"}
@@ -154,7 +154,7 @@ plugin = Plugin(
 Run as IPC server:
 
 ```bash
-python -m elizaos.interop.bridge_server my_plugin
+python -m tokagentos.interop.bridge_server my_plugin
 ```
 
 ### TypeScript Plugin (IPC)
@@ -163,7 +163,7 @@ TypeScript plugins use a similar bridge pattern:
 
 ```typescript
 // my-plugin/index.ts
-import { Plugin, Action } from "@elizaos/core";
+import { Plugin, Action } from "@tokagentos/core";
 
 export const plugin: Plugin = {
   name: "my-ts-plugin",
@@ -236,14 +236,14 @@ Rust WASM plugins export these functions:
 
 Rust FFI plugins export these C functions:
 
-- `elizaos_get_manifest() -> *mut c_char`
-- `elizaos_init(config: *const c_char) -> c_int`
-- `elizaos_validate_action(name, memory, state) -> c_int`
-- `elizaos_invoke_action(name, memory, state, options) -> *mut c_char`
-- `elizaos_get_provider(name, memory, state) -> *mut c_char`
-- `elizaos_validate_evaluator(name, memory, state) -> c_int`
-- `elizaos_invoke_evaluator(name, memory, state) -> *mut c_char`
-- `elizaos_free_string(ptr: *mut c_char)` - Free returned strings
+- `tokagentos_get_manifest() -> *mut c_char`
+- `tokagentos_init(config: *const c_char) -> c_int`
+- `tokagentos_validate_action(name, memory, state) -> c_int`
+- `tokagentos_invoke_action(name, memory, state, options) -> *mut c_char`
+- `tokagentos_get_provider(name, memory, state) -> *mut c_char`
+- `tokagentos_validate_evaluator(name, memory, state) -> c_int`
+- `tokagentos_invoke_evaluator(name, memory, state) -> *mut c_char`
+- `tokagentos_free_string(ptr: *mut c_char)` - Free returned strings
 
 ## Performance Considerations
 

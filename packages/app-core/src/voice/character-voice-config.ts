@@ -1,7 +1,7 @@
 import {
   resolveStylePresetByAvatarIndex,
   resolveStylePresetById,
-} from "@elizaos/shared/onboarding-presets";
+} from "@tokagentos/shared/onboarding-presets";
 import type { VoiceConfig } from "../api/client";
 import { asRecord } from "../state/config-readers";
 import { PREMADE_VOICES } from "./types";

@@ -6,8 +6,8 @@ import {
   type HandlerOptions,
   type IAgentRuntime,
   type Memory,
-} from "@elizaos/core";
-import { hasAdminAccess, hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasAdminAccess, hasOwnerAccess } from "@tokagentos/agent/security";
 import {
   readTwilioCredentialsFromEnv,
   sendTwilioVoiceCall,

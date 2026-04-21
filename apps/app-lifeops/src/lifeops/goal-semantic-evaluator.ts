@@ -1,10 +1,10 @@
-import type { IAgentRuntime } from "@elizaos/core";
-import { ModelType, logger, parseJSONObjectFromText } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { ModelType, logger, parseJSONObjectFromText } from "@tokagentos/core";
 import type {
   LifeOpsGoalDefinition,
   LifeOpsGoalReviewState,
   LifeOpsGoalSuggestionKind,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   buildGoalSemanticReviewMetadata,
   type GoalSemanticReviewMetadata,

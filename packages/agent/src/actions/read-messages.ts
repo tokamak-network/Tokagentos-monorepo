@@ -10,8 +10,8 @@
  * @module actions/read-messages
  */
 
-import type { Action, ActionExample, HandlerOptions } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { Action, ActionExample, HandlerOptions } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { hasAdminAccess } from "../security/access.js";
 import {
   type CrossPlatformConversationView,

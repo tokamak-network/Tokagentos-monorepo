@@ -23,7 +23,7 @@
  *
  * The on-disk format intentionally mirrors `OptimizedPromptArtifact` from
  * `apps/app-training/src/optimizers/types.ts`. We re-declare the type here
- * (instead of importing) because `@elizaos/core` is upstream of
+ * (instead of importing) because `@tokagentos/core` is upstream of
  * `@elizaos/app-training` and adding the dependency would invert the layering.
  */
 

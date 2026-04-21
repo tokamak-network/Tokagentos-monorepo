@@ -2,19 +2,19 @@ import { useEffect, useRef } from "react";
 import type {
   CaptureLifeOpsActivitySignalRequest,
   LifeOpsActivitySignal,
-} from "@elizaos/shared/contracts/lifeops";
-import { client } from "@elizaos/app-core/api";
-import { isApiError } from "@elizaos/app-core/api/client-types-core";
-import { isElectrobunRuntime } from "@elizaos/app-core/bridge/electrobun-runtime";
-import { APP_PAUSE_EVENT, APP_RESUME_EVENT } from "@elizaos/app-core/events";
-import { isNative } from "@elizaos/app-core/platform";
-import { loadDesktopWorkspaceSnapshot } from "@elizaos/app-core/utils/desktop-workspace";
+} from "@tokagentos/shared/contracts/lifeops";
+import { client } from "@tokagentos/app-core/api";
+import { isApiError } from "@tokagentos/app-core/api/client-types-core";
+import { isElectrobunRuntime } from "@tokagentos/app-core/bridge/electrobun-runtime";
+import { APP_PAUSE_EVENT, APP_RESUME_EVENT } from "@tokagentos/app-core/events";
+import { isNative } from "@tokagentos/app-core/platform";
+import { loadDesktopWorkspaceSnapshot } from "@tokagentos/app-core/utils/desktop-workspace";
 import {
   getMobileSignalsPlugin,
   type MobileSignalsSnapshot,
   type MobileSignalsHealthSnapshot,
   type MobileSignalsSignal,
-} from "@elizaos/app-core/bridge/native-plugins";
+} from "@tokagentos/app-core/bridge/native-plugins";
 
 const APP_SIGNAL_DEDUP_WINDOW_MS = 5_000;
 const RUNTIME_READY_POLL_MS = 5_000;

@@ -12,7 +12,7 @@
 import type {
   AppBlockerSettingsCardProps,
   WebsiteBlockerSettingsCardProps,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import type {
   StewardApprovalActionResponse,
   StewardPendingApproval,
@@ -88,10 +88,10 @@ export type CompanionInferenceNotice =
   | { kind: "settings"; variant: "warn"; tooltip: string };
 
 export interface ResolveCompanionInferenceNoticeArgs {
-  elizaCloudConnected: boolean;
-  elizaCloudAuthRejected: boolean;
-  elizaCloudCreditsError: string | null | undefined;
-  elizaCloudEnabled: boolean;
+  tokagentCloudConnected: boolean;
+  tokagentCloudAuthRejected: boolean;
+  tokagentCloudCreditsError: string | null | undefined;
+  tokagentCloudEnabled: boolean;
   chatLastUsageModel?: string;
   hasInterruptedAssistant: boolean;
   t: (key: string) => string;
@@ -190,17 +190,17 @@ export interface AppBootConfig {
   branding: Partial<BrandingConfig>;
   /** Static asset base URL for CDN-backed runtime assets. */
   assetBaseUrl?: string;
-  /** API base URL — replaces window.__ELIZAOS_API_BASE__. */
+  /** API base URL — replaces window.__TOKAGENTOS_API_BASE__. */
   apiBase?: string;
-  /** API auth token — replaces window.__ELIZAOS_API_TOKEN__. */
+  /** API auth token — replaces window.__TOKAGENTOS_API_TOKEN__. */
   apiToken?: string;
-  /** Cloud API base URL — replaces window.__ELIZA_CLOUD_API_BASE__. */
+  /** Cloud API base URL — replaces window.__TOKAGENT_CLOUD_API_BASE__. */
   cloudApiBase?: string;
   /** VRM avatar assets — replaces window.__APP_VRM_ASSETS__. */
   vrmAssets?: BundledVrmAsset[];
   /** Onboarding style presets — replaces window.__APP_ONBOARDING_STYLES__. */
   onboardingStyles?: unknown[];
-  /** Character editor component — replaces window.__ELIZAOS_CHARACTER_EDITOR__. */
+  /** Character editor component — replaces window.__TOKAGENTOS_CHARACTER_EDITOR__. */
   characterEditor?: ComponentType<Record<string, unknown>>;
   /** Companion shell implementation provided by the host app. */
   companionShell?: ComponentType<CompanionShellComponentProps>;
@@ -251,8 +251,8 @@ export interface AppBootConfig {
   /** Character catalog data — replaces cross-package import of catalog.json. */
   characterCatalog?: CharacterCatalogData;
   /**
-   * Env var alias pairs for brand compatibility (e.g. ELIZA_* ↔ ELIZA_*).
-   * Each pair is [brandKey, elizaKey]. Called at server startup.
+   * Env var alias pairs for brand compatibility (e.g. TOKAGENT_* ↔ TOKAGENT_*).
+   * Each pair is [brandKey, tokagentKey]. Called at server startup.
    */
   envAliases?: readonly (readonly [string, string])[];
   /** Client middleware flags — replaces the post-construction patches. */
@@ -265,7 +265,7 @@ export interface AppBootConfig {
 
 export const DEFAULT_BOOT_CONFIG: AppBootConfig = {
   branding: {},
-  cloudApiBase: "https://www.elizacloud.ai",
+  cloudApiBase: "https://www.tokagentcloud.ai",
 };
 
 // ---------------------------------------------------------------------------
@@ -274,8 +274,8 @@ export const DEFAULT_BOOT_CONFIG: AppBootConfig = {
 // still read/write the same live boot config.
 // ---------------------------------------------------------------------------
 
-const BOOT_CONFIG_STORE_KEY = Symbol.for("elizaos.app.boot-config");
-const BOOT_CONFIG_WINDOW_KEY = "__ELIZAOS_APP_BOOT_CONFIG__";
+const BOOT_CONFIG_STORE_KEY = Symbol.for("tokagentos.app.boot-config");
+const BOOT_CONFIG_WINDOW_KEY = "__TOKAGENTOS_APP_BOOT_CONFIG__";
 
 interface BootConfigStore {
   current: AppBootConfig;
@@ -390,7 +390,7 @@ export function resolveCharacterCatalog(catalog: CharacterCatalogData): {
 // ---------------------------------------------------------------------------
 
 const mirroredBrandKeys = new Set<string>();
-const mirroredElizaKeys = new Set<string>();
+const mirroredTokagentKeys = new Set<string>();
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const getProcessEnv = (): Record<string, string | undefined> | null => {
@@ -405,32 +405,32 @@ const getProcessEnv = (): Record<string, string | undefined> | null => {
   }
 };
 
-/** Sync brand env vars → Eliza equivalents. Server-side only. */
-export function syncBrandEnvToEliza(
+/** Sync brand env vars → Tokagent equivalents. Server-side only. */
+export function syncBrandEnvToTokagent(
   aliases: readonly (readonly [string, string])[],
 ): void {
   const env = getProcessEnv();
   if (!env) return;
-  for (const [brandKey, elizaKey] of aliases) {
+  for (const [brandKey, tokagentKey] of aliases) {
     const value = env[brandKey];
     if (typeof value === "string") {
-      env[elizaKey] = value;
-      mirroredElizaKeys.add(elizaKey);
-    } else if (mirroredElizaKeys.has(elizaKey)) {
-      delete env[elizaKey];
-      mirroredElizaKeys.delete(elizaKey);
+      env[tokagentKey] = value;
+      mirroredTokagentKeys.add(tokagentKey);
+    } else if (mirroredTokagentKeys.has(tokagentKey)) {
+      delete env[tokagentKey];
+      mirroredTokagentKeys.delete(tokagentKey);
     }
   }
 }
 
-/** Sync Eliza env vars → brand equivalents. Server-side only. */
-export function syncElizaEnvToBrand(
+/** Sync Tokagent env vars → brand equivalents. Server-side only. */
+export function syncTokagentEnvToBrand(
   aliases: readonly (readonly [string, string])[],
 ): void {
   const env = getProcessEnv();
   if (!env) return;
-  for (const [brandKey, elizaKey] of aliases) {
-    const value = env[elizaKey];
+  for (const [brandKey, tokagentKey] of aliases) {
+    const value = env[tokagentKey];
     if (typeof value === "string") {
       env[brandKey] = value;
       mirroredBrandKeys.add(brandKey);

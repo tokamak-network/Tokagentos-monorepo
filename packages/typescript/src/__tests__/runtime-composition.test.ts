@@ -188,7 +188,7 @@ describe("runtime-composition", () => {
 		});
 
 		it("loads character from a JSON file path", async () => {
-			const dir = mkdtempSync(join(tmpdir(), "eliza-load-chars-"));
+			const dir = mkdtempSync(join(tmpdir(), "tokagent-load-chars-"));
 			const file = join(dir, "character.json");
 			writeFileSync(
 				file,
@@ -208,12 +208,12 @@ describe("runtime-composition", () => {
 
 		it("throws when character file path does not exist", async () => {
 			await expect(
-				loadCharacters(["/nonexistent/eliza-character-xyz.json"]),
+				loadCharacters(["/nonexistent/tokagent-character-xyz.json"]),
 			).rejects.toThrow(/not found/);
 		});
 
 		it("resolves relative paths against options.cwd", async () => {
-			const root = mkdtempSync(join(tmpdir(), "eliza-load-chars-cwd-"));
+			const root = mkdtempSync(join(tmpdir(), "tokagent-load-chars-cwd-"));
 			const sub = join(root, "characters");
 			mkdirSync(sub, { recursive: true });
 			const file = join(sub, "bot.json");

@@ -1,18 +1,18 @@
 /**
- * Cloud onboarding flow for Eliza Cloud integration.
+ * Cloud onboarding flow for Tokagent Cloud integration.
  *
  * Handles availability check → browser-based auth → agent provisioning
- * during `runFirstTimeSetup()`. Extracted to keep `eliza.ts` manageable.
+ * during `runFirstTimeSetup()`. Extracted to keep `tokagent.ts` manageable.
  *
  * @module cloud-onboarding
  */
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { type CloudLoginResult, cloudLogin } from "../cloud/auth.js";
 import { normalizeCloudSiteUrl } from "../cloud/base-url.js";
 import {
   type CloudAgentCreateParams,
-  ElizaCloudClient,
+  TokagentCloudClient,
 } from "../cloud/bridge-client.js";
 import type { StylePreset } from "../contracts/onboarding.js";
 
@@ -20,7 +20,7 @@ import type { StylePreset } from "../contracts/onboarding.js";
 // Types
 // ---------------------------------------------------------------------------
 
-/** Lazy-loaded @clack/prompts module type (matches eliza.ts pattern). */
+/** Lazy-loaded @clack/prompts module type (matches tokagent.ts pattern). */
 type ClackModule = typeof import("@clack/prompts");
 
 /** Result of a successful cloud onboarding flow. */
@@ -35,7 +35,7 @@ export interface CloudOnboardingResult {
 // Constants
 // ---------------------------------------------------------------------------
 
-const DEFAULT_CLOUD_BASE_URL = "https://www.elizacloud.ai";
+const DEFAULT_CLOUD_BASE_URL = "https://www.tokagentcloud.ai";
 const PROVISION_TIMEOUT_MS = 120_000; // 2 minutes
 const PROVISION_POLL_INTERVAL_MS = 3_000;
 
@@ -44,7 +44,7 @@ const PROVISION_POLL_INTERVAL_MS = 3_000;
 // ---------------------------------------------------------------------------
 
 /**
- * Quick pre-flight check: is Eliza Cloud accepting new agents?
+ * Quick pre-flight check: is Tokagent Cloud accepting new agents?
  * Returns null if available, or an error message string if not.
  */
 export async function checkCloudAvailability(
@@ -68,16 +68,16 @@ export async function checkCloudAvailability(
     };
 
     if (!body.success || !body.data?.acceptingNewAgents) {
-      return "Eliza Cloud is currently at capacity. Try again later or run locally.";
+      return "Tokagent Cloud is currently at capacity. Try again later or run locally.";
     }
 
     return null; // Available!
   } catch (err) {
     const msg = String(err);
     if (msg.includes("timed out") || msg.includes("timeout")) {
-      return "Could not reach Eliza Cloud (request timed out). Check your internet connection.";
+      return "Could not reach Tokagent Cloud (request timed out). Check your internet connection.";
     }
-    return `Could not reach Eliza Cloud: ${msg}`;
+    return `Could not reach Tokagent Cloud: ${msg}`;
   }
 }
 
@@ -86,7 +86,7 @@ export async function checkCloudAvailability(
 // ---------------------------------------------------------------------------
 
 /**
- * Run the Eliza Cloud browser-based login, wrapped with clack spinners.
+ * Run the Tokagent Cloud browser-based login, wrapped with clack spinners.
  * Returns the API key/result or null if the user wants to fall back.
  */
 async function runCloudAuth(
@@ -94,7 +94,7 @@ async function runCloudAuth(
   baseUrl: string,
 ): Promise<CloudLoginResult | null> {
   const spinner = clack.spinner();
-  spinner.start("Connecting to Eliza Cloud...");
+  spinner.start("Connecting to Tokagent Cloud...");
 
   try {
     const result = await cloudLogin({
@@ -119,7 +119,7 @@ async function runCloudAuth(
       },
     });
 
-    spinner.stop("✓ Logged in to Eliza Cloud!");
+    spinner.stop("✓ Logged in to Tokagent Cloud!");
     return result;
   } catch (err) {
     const msg = String(err);
@@ -138,7 +138,7 @@ async function runCloudAuth(
  */
 async function provisionCloudAgent(
   clack: ClackModule,
-  client: ElizaCloudClient,
+  client: TokagentCloudClient,
   agentName: string,
   preset?: StylePreset,
 ): Promise<{ agentId: string; bridgeUrl?: string } | null> {
@@ -315,7 +315,7 @@ async function finishProvisioning(
   preset?: StylePreset,
 ): Promise<CloudOnboardingResult | null> {
   // ── Step 3: Create + provision agent ──────────────────────────────
-  const client = new ElizaCloudClient(baseUrl, authResult.apiKey);
+  const client = new TokagentCloudClient(baseUrl, authResult.apiKey);
   const provisionResult = await provisionCloudAgent(
     clack,
     client,
@@ -325,7 +325,7 @@ async function finishProvisioning(
 
   if (!provisionResult) {
     clack.log.warn(
-      "Cloud provisioning did not complete. You can try `eliza cloud connect` later.",
+      "Cloud provisioning did not complete. You can try `tokagent cloud connect` later.",
     );
 
     const runLocal = await clack.confirm({

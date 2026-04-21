@@ -9,7 +9,7 @@ import {
   type TriggerType,
   type TriggerWakeMode,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   TriggerExecutionOptions,
   TriggerExecutionResult,

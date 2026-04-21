@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CLI entry point for Eliza.
+ * CLI entry point for Tokagent.
  *
  * This file is built by tsdown into dist/entry.js and invoked by the app entry script.
  * It bootstraps the CLI: normalizes env, applies profile settings,
@@ -11,15 +11,15 @@ import process from "node:process";
 import { applyCliProfileEnv, parseCliProfileArgs } from "./cli/profile";
 import { getLogPrefix } from "./utils/log-prefix";
 
-process.title = process.env.APP_CLI_NAME?.trim() || "eliza";
+process.title = process.env.APP_CLI_NAME?.trim() || "tokagent";
 
 if (process.argv.includes("--no-color")) {
   process.env.NO_COLOR = "1";
   process.env.FORCE_COLOR = "0";
 }
 
-// Keep `npx elizaai` startup readable by default.
-// This runs before CLI/runtime imports so @elizaos/core logger picks it up.
+// Keep `npx tokagentai` startup readable by default.
+// This runs before CLI/runtime imports so @tokagentos/core logger picks it up.
 if (!process.env.LOG_LEVEL) {
   if (process.argv.includes("--debug")) {
     process.env.LOG_LEVEL = "debug";
@@ -30,7 +30,7 @@ if (!process.env.LOG_LEVEL) {
   }
 }
 
-// Keep llama.cpp backend output aligned with Eliza's log level defaults.
+// Keep llama.cpp backend output aligned with Tokagent's log level defaults.
 // This suppresses noisy tokenizer warnings in normal startup while still
 // allowing verbose/debug visibility when explicitly requested.
 if (!process.env.NODE_LLAMA_CPP_LOG_LEVEL) {

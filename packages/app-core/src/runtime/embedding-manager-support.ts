@@ -39,7 +39,7 @@ export interface EmbeddingManagerConfig {
   contextSize?: number;
   /** Idle timeout in ms before unloading model (default: 1800000 = 30 min, 0 = never unload) */
   idleTimeoutMs?: number;
-  /** Models directory (default: ~/.eliza/models) */
+  /** Models directory (default: ~/.tokagent/models) */
   modelsDir?: string;
   /** Optional callback for reporting initialization progress phases. */
   onProgress?: EmbeddingProgressCallback;
@@ -54,15 +54,15 @@ export interface EmbeddingManagerStats {
 }
 
 export const DEFAULT_IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-export const DEFAULT_MODELS_DIR = path.join(os.homedir(), ".eliza", "models");
+export const DEFAULT_MODELS_DIR = path.join(os.homedir(), ".tokagent", "models");
 
 const EMBEDDING_META_DIR =
-  process.env.ELIZA_EMBEDDING_META_DIR ??
-  process.env.ELIZA_EMBEDDING_META_DIR ??
-  path.join(os.homedir(), ".eliza", "state");
+  process.env.TOKAGENT_EMBEDDING_META_DIR ??
+  process.env.TOKAGENT_EMBEDDING_META_DIR ??
+  path.join(os.homedir(), ".tokagent", "state");
 export const EMBEDDING_META_PATH =
-  process.env.ELIZA_EMBEDDING_META_PATH ??
-  process.env.ELIZA_EMBEDDING_META_PATH ??
+  process.env.TOKAGENT_EMBEDDING_META_PATH ??
+  process.env.TOKAGENT_EMBEDDING_META_PATH ??
   path.join(EMBEDDING_META_DIR, "embedding-meta.json");
 
 let _logger:
@@ -78,7 +78,7 @@ export function getLogger() {
   if (_logger) return _logger;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const core = require("@elizaos/core");
+    const core = require("@tokagentos/core");
     if (core?.logger) {
       _logger = core.logger;
       return _logger as NonNullable<typeof _logger>;
@@ -294,7 +294,7 @@ export function findExistingEmbeddingModelForWarmupReuse(
 
 export function isEmbeddingWarmupReuseDisabled(): boolean {
   const raw =
-    process.env.ELIZA_EMBEDDING_WARMUP_NO_REUSE?.trim().toLowerCase() ?? "";
+    process.env.TOKAGENT_EMBEDDING_WARMUP_NO_REUSE?.trim().toLowerCase() ?? "";
   return raw === "1" || raw === "true" || raw === "yes";
 }
 
@@ -360,7 +360,7 @@ function downloadFile(
       https
         .get(
           validatedUrl.toString(),
-          { headers: { "User-Agent": "eliza" } },
+          { headers: { "User-Agent": "tokagent" } },
           (res) => {
             expectedBytes = parseContentLength(res.headers["content-length"]);
             if (

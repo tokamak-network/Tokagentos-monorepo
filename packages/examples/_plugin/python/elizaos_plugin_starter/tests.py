@@ -1,8 +1,8 @@
 """
-E2E (End-to-End) Test Suite for elizaOS Python Plugin Starter
+E2E (End-to-End) Test Suite for tokagentOS Python Plugin Starter
 ==============================================================
 
-This file contains end-to-end tests that run within a real elizaOS runtime environment.
+This file contains end-to-end tests that run within a real tokagentOS runtime environment.
 Unlike unit tests that test individual components in isolation, e2e tests validate
 the entire plugin behavior in a production-like environment.
 """
@@ -11,10 +11,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos.types.plugin import TestCase, TestSuite
+from tokagentos.types.plugin import TestCase, TestSuite
 
 # Import IAgentRuntime to resolve forward references
-from elizaos.types.runtime import IAgentRuntime
+from tokagentos.types.runtime import IAgentRuntime
 
 # Rebuild Pydantic models to resolve forward references
 TestCase.model_rebuild()
@@ -71,8 +71,8 @@ def create_test_suite() -> TestSuite:
         This is a key pattern for testing agent behaviors - you simulate
         a user message and verify the agent's response.
         """
-        from elizaos.types.memory import Memory
-        from elizaos.types.state import State
+        from tokagentos.types.memory import Memory
+        from tokagentos.types.state import State
 
         # Create a test message asking the agent to say hello
         test_message = Memory(
@@ -110,7 +110,7 @@ def create_test_suite() -> TestSuite:
 
         # Create a callback that captures the agent's response
         # This simulates how the runtime would handle the action's response
-        from elizaos.types.primitives import Content
+        from tokagentos.types.primitives import Content
 
         async def callback(response: Content) -> list:
             nonlocal response_received, response_text
@@ -167,8 +167,8 @@ def create_test_suite() -> TestSuite:
         Tests that providers can supply data to the agent when needed.
         Providers are used to fetch external data or compute values.
         """
-        from elizaos.types.memory import Memory
-        from elizaos.types.state import State
+        from tokagentos.types.memory import Memory
+        from tokagentos.types.state import State
 
         # Create a test message
         test_message = Memory(

@@ -1,6 +1,6 @@
-# elizaOS Python Plugin Starter
+# tokagentOS Python Plugin Starter
 
-A template for creating elizaOS plugins in Python that can be loaded by both the Python and TypeScript runtimes.
+A template for creating tokagentOS plugins in Python that can be loaded by both the Python and TypeScript runtimes.
 
 ## Features
 
@@ -21,7 +21,7 @@ pip install -e ".[dev]"
 ### For Production
 
 ```bash
-pip install elizaos-plugin-starter
+pip install tokagentos-plugin-starter
 ```
 
 ## Usage
@@ -29,7 +29,7 @@ pip install elizaos-plugin-starter
 ### In Python Runtime
 
 ```python
-from elizaos_plugin_starter import plugin
+from tokagentos_plugin_starter import plugin
 
 # Register with runtime
 await runtime.register_plugin(plugin)
@@ -42,10 +42,10 @@ await runtime.register_plugin(plugin)
 The TypeScript runtime can load Python plugins via IPC:
 
 ```typescript
-import { loadPythonPlugin } from "@elizaos/interop";
+import { loadPythonPlugin } from "@tokagentos/interop";
 
 const plugin = await loadPythonPlugin({
-  moduleName: "elizaos_plugin_starter",
+  moduleName: "tokagentos_plugin_starter",
   pythonPath: "python3",
 });
 
@@ -57,7 +57,7 @@ await runtime.registerPlugin(plugin);
 ```
 python-plugin-starter/
 ├── pyproject.toml                    # Python package configuration
-├── elizaos_plugin_starter/
+├── tokagentos_plugin_starter/
 │   ├── __init__.py                   # Package exports
 │   └── plugin.py                     # Main plugin implementation
 ├── tests/
@@ -70,7 +70,7 @@ python-plugin-starter/
 ### 1. Define Actions
 
 ```python
-from elizaos.types.components import Action, ActionResult
+from tokagentos.types.components import Action, ActionResult
 
 async def my_action_validate(runtime, message, state):
     """Decide if this action should run."""
@@ -99,7 +99,7 @@ my_action = Action(
 ### 2. Define Providers
 
 ```python
-from elizaos.types.components import Provider, ProviderResult
+from tokagentos.types.components import Provider, ProviderResult
 
 async def my_provider_get(runtime, message, state):
     """Provide context data."""
@@ -119,7 +119,7 @@ my_provider = Provider(
 ### 3. Define Services
 
 ```python
-from elizaos.types.service import Service
+from tokagentos.types.service import Service
 
 class MyService(Service):
     service_type = "my-service"
@@ -141,7 +141,7 @@ class MyService(Service):
 ### 4. Create the Plugin
 
 ```python
-from elizaos.types.plugin import Plugin
+from tokagentos.types.plugin import Plugin
 
 plugin = Plugin(
     name="my-python-plugin",
@@ -159,10 +159,10 @@ plugin = Plugin(
 pytest
 
 # Run with coverage
-pytest --cov=elizaos_plugin_starter
+pytest --cov=tokagentos_plugin_starter
 
 # Type checking
-mypy elizaos_plugin_starter
+mypy tokagentos_plugin_starter
 ```
 
 ## API Reference

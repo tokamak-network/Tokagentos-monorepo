@@ -61,9 +61,9 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             packages/rust/target
-          key: ${{ runner.os }}-cargo-elizaos-core-${{ hashFiles('packages/rust/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-tokagentos-core-${{ hashFiles('packages/rust/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-elizaos-core-
+            ${{ runner.os }}-cargo-tokagentos-core-
 
       - name: Check formatting
         working-directory: packages/rust
@@ -97,7 +97,7 @@ jobs:
         env:
           POSTGRES_USER: test
           POSTGRES_PASSWORD: test
-          POSTGRES_DB: eliza_test
+          POSTGRES_DB: tokagent_test
         ports:
           - 5432:5432
         options: >-
@@ -133,9 +133,9 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             plugins/plugin-sql/rust/target
-          key: ${{ runner.os }}-cargo-elizaos-plugin-sql-${{ hashFiles('plugins/plugin-sql/rust/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-tokagentos-plugin-sql-${{ hashFiles('plugins/plugin-sql/rust/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-elizaos-plugin-sql-
+            ${{ runner.os }}-cargo-tokagentos-plugin-sql-
 
       - name: Check formatting
         if: steps.check.outputs.exists == 'true'
@@ -152,7 +152,7 @@ jobs:
         if: steps.check.outputs.exists == 'true'
         working-directory: plugins/plugin-sql/rust
         env:
-          DATABASE_URL: postgres://test:test@localhost:5432/eliza_test
+          DATABASE_URL: postgres://test:test@localhost:5432/tokagent_test
           RUST_TEST_THREADS: 1
         run: cargo test --features native
 
@@ -186,9 +186,9 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-elizaos-${{ matrix.python-version }}-${{ hashFiles('packages/python/pyproject.toml') }}
+          key: ${{ runner.os }}-pip-tokagentos-${{ matrix.python-version }}-${{ hashFiles('packages/python/pyproject.toml') }}
           restore-keys: |
-            ${{ runner.os }}-pip-elizaos-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-tokagentos-${{ matrix.python-version }}-
 
       - name: Install dependencies
         working-directory: packages/python
@@ -259,9 +259,9 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-elizaos-plugin-sql-${{ matrix.python-version }}-${{ hashFiles('plugins/plugin-sql/python/pyproject.toml') }}
+          key: ${{ runner.os }}-pip-tokagentos-plugin-sql-${{ matrix.python-version }}-${{ hashFiles('plugins/plugin-sql/python/pyproject.toml') }}
           restore-keys: |
-            ${{ runner.os }}-pip-elizaos-plugin-sql-${{ matrix.python-version }}-
+            ${{ runner.os }}-pip-tokagentos-plugin-sql-${{ matrix.python-version }}-
 
       - name: Install core package first
         if: steps.check.outputs.exists == 'true'
@@ -304,9 +304,9 @@ jobs:
       fail-fast: false
       matrix:
         package:
-          - name: elizaos-core
+          - name: tokagentos-core
             path: packages/rust
-          - name: elizaos-plugin-sql
+          - name: tokagentos-plugin-sql
             path: plugins/plugin-sql/rust
 
     steps:

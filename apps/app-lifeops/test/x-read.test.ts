@@ -121,9 +121,9 @@ describe("searchX", () => {
       return jsonResponse({ data: [] });
     }) as unknown as typeof fetch;
 
-    await searchX(CREDS, "elizaOS");
+    await searchX(CREDS, "tokagentOS");
     expect(capturedUrl).toContain("/2/tweets/search/recent");
-    expect(capturedUrl).toContain("query=elizaOS");
+    expect(capturedUrl).toContain("query=tokagentOS");
   });
 });
 

@@ -1,11 +1,11 @@
 """Trajectory logging integration for context-bench (Python).
 
-This module integrates the Python `elizaos_plugin_trajectory_logger` utilities with
-the canonical Eliza agent loop by instrumenting an `AgentRuntime` instance.
+This module integrates the Python `tokagentos_plugin_trajectory_logger` utilities with
+the canonical Tokagent agent loop by instrumenting an `AgentRuntime` instance.
 
 Design goals:
 - Capture **end-to-end** flow: provider composition, model calls, actions, evaluators.
-- Keep the Eliza runtime canonical (no bypass of message handling/action execution).
+- Keep the Tokagent runtime canonical (no bypass of message handling/action execution).
 - Produce ART / GRPO-compatible artifacts via plugin-trajectory-logger exporters.
 """
 
@@ -18,20 +18,20 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from typing import TYPE_CHECKING
 
-from elizaos_plugin_trajectory_logger.types import (
+from tokagentos_plugin_trajectory_logger.types import (
     ActionAttempt,
     EnvironmentState,
     LLMCall,
     ProviderAccess,
     RewardComponents,
 )
-from elizaos_plugin_trajectory_logger.service import TrajectoryLoggerService
+from tokagentos_plugin_trajectory_logger.service import TrajectoryLoggerService
 
 if TYPE_CHECKING:
-    from elizaos.types.components import ActionResult, Evaluator
-    from elizaos.types.memory import Memory
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State
+    from tokagentos.types.components import ActionResult, Evaluator
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State
 
 # Contextvars so concurrent tasks don't trample each other.
 _CURRENT_TRAJECTORY_ID: ContextVar[str | None] = ContextVar("_CURRENT_TRAJECTORY_ID", default=None)

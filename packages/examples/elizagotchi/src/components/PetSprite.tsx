@@ -1,7 +1,7 @@
 /**
  * Pet Sprite Component
  *
- * Cute SVG art for the Elizagotchi pet at all life stages and moods.
+ * Cute SVG art for the Tokagentgotchi pet at all life stages and moods.
  * Uses pixel-art style graphics with smooth animations.
  */
 

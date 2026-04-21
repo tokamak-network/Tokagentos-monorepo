@@ -5,7 +5,7 @@ import type {
   LifeOpsReminderStep,
   LifeOpsReminderUrgency,
   LifeOpsWorkflowPermissionPolicy,
-} from "@elizaos/shared/contracts/lifeops"
+} from "@tokagentos/shared/contracts/lifeops"
 
 export const MAX_OVERVIEW_OCCURRENCES = 8
 export const MAX_OVERVIEW_REMINDERS = 6

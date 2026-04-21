@@ -1,14 +1,14 @@
 /**
  * Bluesky Event Handlers
  *
- * These handlers process Bluesky events through the FULL elizaOS pipeline:
+ * These handlers process Bluesky events through the FULL tokagentOS pipeline:
  * - State composition with providers (CHARACTER, RECENT_MESSAGES, ACTIONS, etc.)
  * - shouldRespond evaluation
  * - Action planning and execution
  * - Response generation via messageHandlerTemplate
  * - Evaluators
  *
- * This is the canonical way to handle messages in elizaOS - NO bypassing the pipeline.
+ * This is the canonical way to handle messages in tokagentOS - NO bypassing the pipeline.
  */
 
 import {
@@ -20,7 +20,7 @@ import {
   type Memory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 
 const BLUESKY_SERVICE_NAME = "bluesky";
@@ -115,7 +115,7 @@ function hasMessageService(runtime: IAgentRuntime): boolean {
 /**
  * Handler for bluesky.mention_received and bluesky.should_respond events
  *
- * This processes incoming mentions through the FULL elizaOS pipeline:
+ * This processes incoming mentions through the FULL tokagentOS pipeline:
  * 1. Creates a proper Memory using createMessageMemory()
  * 2. Ensures connection/room exists
  * 3. Calls messageService.handleMessage() which runs:
@@ -156,7 +156,7 @@ export async function handleMentionReceived(
       reason: notification.reason,
       text: mentionText.substring(0, 50),
     },
-    "Processing Bluesky mention through elizaOS pipeline",
+    "Processing Bluesky mention through tokagentOS pipeline",
   );
 
   // Create unique IDs for this conversation
@@ -295,10 +295,10 @@ export async function handleMentionReceived(
     }
   };
 
-  // Process through the FULL elizaOS pipeline
+  // Process through the FULL tokagentOS pipeline
   if (!hasMessageService(runtime)) {
     runtime.logger.error(
-      "MessageService not available - cannot process through elizaOS pipeline",
+      "MessageService not available - cannot process through tokagentOS pipeline",
     );
     return;
   }
@@ -317,13 +317,13 @@ export async function handleMentionReceived(
           mode: result.mode,
           actionsExecuted: result.state?.data?.actionResults?.length || 0,
         },
-        "elizaOS pipeline completed",
+        "tokagentOS pipeline completed",
       );
     }
   } catch (error) {
     runtime.logger.error(
       { error: error instanceof Error ? error.message : String(error) },
-      "Error processing message through elizaOS pipeline",
+      "Error processing message through tokagentOS pipeline",
     );
   }
 }
@@ -347,7 +347,7 @@ export async function handleShouldRespond(
  * Handler for bluesky.create_post events (automated posting)
  *
  * For automated posts, we use the POST_GENERATED event flow which also
- * goes through the elizaOS pipeline for content generation.
+ * goes through the tokagentOS pipeline for content generation.
  */
 export async function handleCreatePost(
   payload: BlueSkyCreatePostEventPayload,
@@ -358,7 +358,7 @@ export async function handleCreatePost(
     return;
   }
 
-  runtime.logger.info("Generating automated Bluesky post via elizaOS pipeline");
+  runtime.logger.info("Generating automated Bluesky post via tokagentOS pipeline");
 
   // Get the BlueSky service
   const blueskyService = getBlueSkyService(runtime);
@@ -389,7 +389,7 @@ export async function handleCreatePost(
   });
 
   // Create a trigger message for post generation
-  // The elizaOS pipeline will compose state and generate appropriate content
+  // The tokagentOS pipeline will compose state and generate appropriate content
   const triggerMessage = createMessageMemory({
     id: stringToUuid(uuidv4()) as UUID,
     entityId: runtime.agentId,
@@ -490,7 +490,7 @@ export function registerBlueskyHandlers(runtime: IAgentRuntime): void {
 
   runtime.logger.info(
     { src: "bluesky" },
-    "Registered Bluesky event handlers (full elizaOS pipeline)",
+    "Registered Bluesky event handlers (full tokagentOS pipeline)",
   );
 }
 

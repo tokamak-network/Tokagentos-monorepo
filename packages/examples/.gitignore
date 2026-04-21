@@ -11,7 +11,7 @@ target/
 *.tsbuildinfo
 
 # Runtime data
-.eliza/
+.tokagent/
 
 # ICP
 .dfx/

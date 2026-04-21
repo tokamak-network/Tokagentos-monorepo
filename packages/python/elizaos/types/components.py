@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Any, TypeAlias
 
 from pydantic import BaseModel, Field
 
-from elizaos.types.generated.eliza.v1 import components_pb2
-from elizaos.types.primitives import Content
+from tokagentos.types.generated.tokagent.v1 import components_pb2
+from tokagentos.types.primitives import Content
 
 if TYPE_CHECKING:
-    from elizaos.types.memory import Memory
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State
 
 JsonPrimitive: TypeAlias = str | int | float | bool | None
 

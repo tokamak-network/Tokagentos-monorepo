@@ -1,5 +1,5 @@
-import type { IAgentRuntime, Task, TaskMetadata, UUID } from "@elizaos/core";
-import { logger, runPluginMigrations, stringToUuid } from "@elizaos/core";
+import type { IAgentRuntime, Task, TaskMetadata, UUID } from "@tokagentos/core";
+import { logger, runPluginMigrations, stringToUuid } from "@tokagentos/core";
 import { loadLifeOpsAppState } from "./app-state.js";
 import { LifeOpsService } from "./service.js";
 import { readTwilioCredentialsFromEnv } from "./twilio.js";

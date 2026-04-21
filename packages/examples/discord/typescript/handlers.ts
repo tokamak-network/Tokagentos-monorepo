@@ -5,8 +5,8 @@
  * reactions, and member events.
  */
 
-import type { AgentRuntime, EventPayload, Service } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { AgentRuntime, EventPayload, Service } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type { GuildMember, Interaction, Message } from "discord.js";
 
 // Type definitions for Discord events
@@ -57,7 +57,7 @@ export function registerDiscordHandlers(runtime: AgentRuntime): void {
 
         case "about":
           await interaction.reply({
-            content: `👋 Hi! I'm **DiscordEliza**, an AI assistant powered by elizaOS.
+            content: `👋 Hi! I'm **DiscordTokagent**, an AI assistant powered by tokagentOS.
             
 I use:
 • \`@elizaos/plugin-discord\` for Discord integration

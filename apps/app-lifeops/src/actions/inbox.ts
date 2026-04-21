@@ -7,9 +7,9 @@ import type {
   Memory,
   State,
   UUID,
-} from "@elizaos/core";
-import { logger, ModelType, parseJSONObjectFromText } from "@elizaos/core";
-import { getRecentMessagesData } from "@elizaos/shared/recent-messages-state";
+} from "@tokagentos/core";
+import { logger, ModelType, parseJSONObjectFromText } from "@tokagentos/core";
+import { getRecentMessagesData } from "@tokagentos/shared/recent-messages-state";
 import { loadInboxTriageConfig } from "../inbox/config.js";
 import { fetchAllMessages } from "../inbox/message-fetcher.js";
 import {
@@ -25,8 +25,8 @@ import type {
   TriageEntry,
   TriageResult,
 } from "../inbox/types.js";
-import { hasAdminAccess } from "@elizaos/agent/security";
-import { resolveAdminEntityId } from "@elizaos/agent/actions/send-message";
+import { hasAdminAccess } from "@tokagentos/agent/security";
+import { resolveAdminEntityId } from "@tokagentos/agent/actions/send-message";
 import { INTERNAL_URL } from "./lifeops-google-helpers.js";
 import { looksLikeEmailVenting } from "./non-actionable-request.js";
 import { createApprovalQueue } from "../lifeops/approval-queue.js";
@@ -612,7 +612,7 @@ async function handleTriage(
     // 6. Escalate urgent items
     if (result.classification === "urgent") {
       try {
-        const { EscalationService } = await import("@elizaos/agent/services/escalation");
+        const { EscalationService } = await import("@tokagentos/agent/services/escalation");
         const linkText = msg.deepLink ? `\n${msg.deepLink}` : "";
         await EscalationService.startEscalation(
           runtime,

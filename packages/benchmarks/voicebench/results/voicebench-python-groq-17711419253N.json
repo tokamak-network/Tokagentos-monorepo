@@ -5,7 +5,7 @@
   "timestamp": "17711419253N",
   "iterations": 1,
   "datasetName": "voicebench-ground-truth-groq",
-  "datasetPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/manifest-groq.json",
+  "datasetPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/manifest-groq.json",
   "sampleCount": 10,
   "modes": [
     {
@@ -23,7 +23,7 @@
     {
       "mode": "simple",
       "sampleId": "greeting_short",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/greeting_short.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/greeting_short.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Hello there. This is a short voice benchmark sample.",
@@ -71,7 +71,7 @@
     {
       "mode": "simple",
       "sampleId": "weather_city",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/weather_city.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/weather_city.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Today in Austin, skies are clear and temperatures are mild.",
@@ -119,7 +119,7 @@
     {
       "mode": "simple",
       "sampleId": "finance_brief",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/finance_brief.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/finance_brief.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "The quarterly report shows revenue growth and improving margins.",
@@ -167,7 +167,7 @@
     {
       "mode": "simple",
       "sampleId": "support_reset",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/support_reset.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/support_reset.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "To reset your password, open settings, choose security, then tap reset.",
@@ -215,7 +215,7 @@
     {
       "mode": "simple",
       "sampleId": "calendar_note",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/calendar_note.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/calendar_note.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Your next meeting starts at three fifteen PM and lasts forty five minutes.",
@@ -263,7 +263,7 @@
     {
       "mode": "simple",
       "sampleId": "navigation_turn",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/navigation_turn.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/navigation_turn.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "In five hundred feet, turn right and continue for two miles.",
@@ -311,7 +311,7 @@
     {
       "mode": "simple",
       "sampleId": "medical_disclaimer",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/medical_disclaimer.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/medical_disclaimer.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "This information is educational and does not replace medical advice from a clinician.",
@@ -359,7 +359,7 @@
     {
       "mode": "simple",
       "sampleId": "multisentence_long",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/multisentence_long.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/multisentence_long.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Latency depends on model size, region distance, and network jitter. Caching first sentence audio can reduce perceived delay.",
@@ -407,7 +407,7 @@
     {
       "mode": "simple",
       "sampleId": "list_format",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/list_format.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/list_format.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Checklist: one, capture audio; two, transcribe; three, generate response; four, synthesize speech.",
@@ -455,7 +455,7 @@
     {
       "mode": "simple",
       "sampleId": "numbers_dates",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/numbers_dates.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/numbers_dates.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "On January fifteenth twenty twenty six, the average response time was one point four seconds.",
@@ -503,7 +503,7 @@
     {
       "mode": "non-simple",
       "sampleId": "greeting_short",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/greeting_short.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/greeting_short.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Hello there. This is a short voice benchmark sample.",
@@ -551,7 +551,7 @@
     {
       "mode": "non-simple",
       "sampleId": "weather_city",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/weather_city.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/weather_city.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Today in Austin, skies are clear and temperatures are mild.",
@@ -599,7 +599,7 @@
     {
       "mode": "non-simple",
       "sampleId": "finance_brief",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/finance_brief.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/finance_brief.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "The quarterly report shows revenue growth and improving margins.",
@@ -647,7 +647,7 @@
     {
       "mode": "non-simple",
       "sampleId": "support_reset",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/support_reset.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/support_reset.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "To reset your password, open settings, choose security, then tap reset.",
@@ -695,7 +695,7 @@
     {
       "mode": "non-simple",
       "sampleId": "calendar_note",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/calendar_note.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/calendar_note.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Your next meeting starts at three fifteen PM and lasts forty five minutes.",
@@ -743,7 +743,7 @@
     {
       "mode": "non-simple",
       "sampleId": "navigation_turn",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/navigation_turn.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/navigation_turn.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "In five hundred feet, turn right and continue for two miles.",
@@ -791,7 +791,7 @@
     {
       "mode": "non-simple",
       "sampleId": "medical_disclaimer",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/medical_disclaimer.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/medical_disclaimer.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "This information is educational and does not replace medical advice from a clinician.",
@@ -839,7 +839,7 @@
     {
       "mode": "non-simple",
       "sampleId": "multisentence_long",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/multisentence_long.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/multisentence_long.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Latency depends on model size, region distance, and network jitter. Caching first sentence audio can reduce perceived delay.",
@@ -887,7 +887,7 @@
     {
       "mode": "non-simple",
       "sampleId": "list_format",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/list_format.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/list_format.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "Checklist: one, capture audio; two, transcribe; three, generate response; four, synthesize speech.",
@@ -935,7 +935,7 @@
     {
       "mode": "non-simple",
       "sampleId": "numbers_dates",
-      "sampleAudioPath": "/Users/shawwalters/eliza-workspace/benchmarks/voicebench/fixtures/groq/numbers_dates.wav",
+      "sampleAudioPath": "/Users/shawwalters/tokagent-workspace/benchmarks/voicebench/fixtures/groq/numbers_dates.wav",
       "iteration": 1,
       "profile": "groq",
       "expectedTranscript": "On January fifteenth twenty twenty six, the average response time was one point four seconds.",

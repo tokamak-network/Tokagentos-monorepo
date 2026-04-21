@@ -458,7 +458,7 @@ def _score_from_osworld_json(data: JSONValue) -> ScoreExtraction:
             "total_tasks": root.get("total_tasks") or 0,
             "passed_tasks": root.get("passed_tasks") or 0,
             "model": root.get("model") or "",
-            "agent": root.get("agent") or "eliza",
+            "agent": root.get("agent") or "tokagent",
             "observation_type": root.get("observation_type") or "",
             "action_space": root.get("action_space") or "",
         },
@@ -564,10 +564,10 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
             args.extend(["--max-tasks", str(max_tasks)])
         # Agent runtime selection
         agent = extra.get("agent")
-        if agent == "eliza":
-            args.append("--eliza")
-        elif extra.get("elizaos") is True:
-            args.append("--elizaos")
+        if agent == "tokagent":
+            args.append("--tokagent")
+        elif extra.get("tokagentos") is True:
+            args.append("--tokagentos")
         _ = model
         return args
 
@@ -576,8 +576,8 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
 
     def _contextbench_cmd(output_dir: Path, model: ModelSpec, extra: Mapping[str, JSONValue]) -> list[str]:
         agent = extra.get("agent")
-        if agent == "eliza":
-            provider_str = "eliza"
+        if agent == "tokagent":
+            provider_str = "tokagent"
         else:
             provider = extra.get("provider")
             provider_name = ""
@@ -586,9 +586,9 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
             elif model.provider:
                 provider_name = model.provider.strip().lower()
             provider_map: dict[str, str] = {
-                "openai": "eliza-openai",
-                "groq": "eliza-openai",
-                "openrouter": "eliza-openai",
+                "openai": "tokagent-openai",
+                "groq": "tokagent-openai",
+                "openrouter": "tokagent-openai",
                 "anthropic": "anthropic",
             }
             provider_str = provider_map.get(provider_name, "mock")
@@ -615,7 +615,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
         args = [
             python,
             "-m",
-            "elizaos_terminal_bench.cli",
+            "tokagentos_terminal_bench.cli",
             "--output-dir",
             str(output_dir),
         ]
@@ -643,7 +643,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
         args = [
             python,
             "-m",
-            "elizaos_gaia.cli",
+            "tokagentos_gaia.cli",
             "--output",
             str(output_dir),
         ]
@@ -678,7 +678,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
         args = [
             python,
             "-m",
-            "elizaos_gaia.cli",
+            "tokagentos_gaia.cli",
             "--output",
             str(output_dir),
             "--orchestrated",
@@ -745,13 +745,13 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
         args = [
             python,
             "-m",
-            "elizaos_tau_bench.cli",
+            "tokagentos_tau_bench.cli",
             "--output",
             str(output_dir),
         ]
         agent = extra.get("agent")
-        if agent == "eliza":
-            args.extend(["--real-llm", "--model-provider", "eliza"])
+        if agent == "tokagent":
+            args.extend(["--real-llm", "--model-provider", "tokagent"])
         else:
             real = extra.get("real_llm")
             if real is True:
@@ -775,7 +775,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
         return output_dir / "tau-bench-results.json"
 
     def _vending_cmd(output_dir: Path, model: ModelSpec, extra: Mapping[str, JSONValue]) -> list[str]:
-        args = [python, "-m", "elizaos_vending_bench.cli", "run", "--output-dir", str(output_dir)]
+        args = [python, "-m", "tokagentos_vending_bench.cli", "run", "--output-dir", str(output_dir)]
         if model.model:
             args.extend(["--model", model.model])
         if model.temperature is not None:
@@ -912,8 +912,8 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
     def _mind2web_cmd(output_dir: Path, model: ModelSpec, extra: Mapping[str, JSONValue]) -> list[str]:
         args = [python, "-m", "benchmarks.mind2web", "--output", str(output_dir)]
         agent = extra.get("agent")
-        if agent == "eliza":
-            args.extend(["--real-llm", "--provider", "eliza"])
+        if agent == "tokagent":
+            args.extend(["--real-llm", "--provider", "tokagent"])
         else:
             if model.provider:
                 args.extend(["--provider", model.provider])
@@ -946,7 +946,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
             str(output_dir),
         ]
         mode = extra.get("mode")
-        if isinstance(mode, str) and mode in ("stub", "rlm", "eliza", "custom"):
+        if isinstance(mode, str) and mode in ("stub", "rlm", "tokagent", "custom"):
             args.extend(["--mode", mode])
         else:
             args.extend(["--mode", "stub"])  # Default to stub for testing
@@ -985,7 +985,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
     def _solana_cmd(output_dir: Path, model: ModelSpec, extra: Mapping[str, JSONValue]) -> list[str]:
         """Build command for Solana gym benchmark."""
         args = [
-            python, "-m", "benchmarks.solana.eliza_explorer",
+            python, "-m", "benchmarks.solana.tokagent_explorer",
         ]
         if model.model:
             # Pass as env override — the explorer reads MODEL_NAME
@@ -1002,13 +1002,13 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
 
     def _solana_result(output_dir: Path) -> Path:
         gym_metrics = repo_root / "benchmarks" / "solana" / "solana-gym-env" / "metrics"
-        return find_latest_file(gym_metrics, glob_pattern="eliza_*_metrics.json")
+        return find_latest_file(gym_metrics, glob_pattern="tokagent_*_metrics.json")
 
     def _osworld_cmd(output_dir: Path, model: ModelSpec, extra: Mapping[str, JSONValue]) -> list[str]:
         """Build command for OSWorld benchmark."""
         args = [
             python,
-            repo("benchmarks/OSWorld/scripts/python/run_multienv_eliza.py"),
+            repo("benchmarks/OSWorld/scripts/python/run_multienv_tokagent.py"),
             "--result_dir",
             str(output_dir),
         ]
@@ -1049,17 +1049,17 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
         return args
 
     def _osworld_result(output_dir: Path) -> Path:
-        return find_latest_file(output_dir, glob_pattern="osworld-eliza-results-*.json")
+        return find_latest_file(output_dir, glob_pattern="osworld-tokagent-results-*.json")
 
     def _gauntlet_cmd(output_dir: Path, model: ModelSpec, extra: Mapping[str, JSONValue]) -> list[str]:
-        """Build command for Solana Gauntlet benchmark with ElizaOS agent."""
+        """Build command for Solana Gauntlet benchmark with TokagentOS agent."""
         args = [
             python,
             "-m",
             "gauntlet.cli",
             "run",
             "--agent",
-            repo("benchmarks/gauntlet/agents/eliza_agent.py"),
+            repo("benchmarks/gauntlet/agents/tokagent_agent.py"),
             "--scenarios",
             repo("benchmarks/gauntlet/scenarios"),
             "--programs",
@@ -1233,7 +1233,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
             requirements=BenchmarkRequirements(
                 env_vars=(),
                 paths=(),
-                notes="By default runs with mock runtime; --elizaos path is not fully model-wired yet.",
+                notes="By default runs with mock runtime; --tokagentos path is not fully model-wired yet.",
             ),
             build_command=_agentbench_cmd,
             locate_result=_agentbench_result,
@@ -1406,7 +1406,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
                 paths=(),
                 notes=(
                     "Requires VM provider: Docker (with KVM), VMware, or VirtualBox. "
-                    "Uses Eliza agent with message_service.handle_message(). "
+                    "Uses Tokagent agent with message_service.handle_message(). "
                     "Set provider_name, path_to_vm (VMware), observation_type, domain, task_id via extra config."
                 ),
             ),
@@ -1423,7 +1423,7 @@ def get_benchmark_registry(repo_root: Path) -> list[BenchmarkDefinition]:
                 env_vars=("OPENAI_API_KEY",),
                 paths=("benchmarks/gauntlet/scenarios",),
                 notes=(
-                    "Uses ElizaOS agent with full message pipeline. "
+                    "Uses TokagentOS agent with full message pipeline. "
                     "Runs in mock mode by default (no Surfpool needed). "
                     "Set clone_mainnet=true for real program testing (requires surfpool). "
                     "Scores: Task Completion (30%), Safety (40%), Efficiency (20%), Capital (10%)."

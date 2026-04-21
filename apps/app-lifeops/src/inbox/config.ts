@@ -1,4 +1,4 @@
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import type { InboxTriageConfig } from "./types.js";
 
 /**
@@ -7,7 +7,7 @@ import type { InboxTriageConfig } from "./types.js";
  */
 export function loadInboxTriageConfig(): InboxTriageConfig {
   try {
-    const cfg = loadElizaConfig();
+    const cfg = loadTokagentConfig();
     const raw = cfg.agents?.defaults?.inboxTriage as
       | Partial<InboxTriageConfig>
       | undefined;

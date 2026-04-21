@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import type { UUID } from "@elizaos/core";
+import type { UUID } from "@tokagentos/core";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { ensureSessionIdentity } from "../lib/identity.js";
 import {
@@ -22,7 +22,7 @@ import type { ChatRoom, Message } from "../types.js";
 // Test Fixtures
 // ============================================================================
 
-const TEST_SESSION_DIR = ".eliza-code-test";
+const TEST_SESSION_DIR = ".tokagent-code-test";
 
 function createTestMessage(overrides: Partial<Message> = {}): Message {
   return {
@@ -42,7 +42,7 @@ function createTestRoom(overrides: Partial<ChatRoom> = {}): ChatRoom {
     messages: [createTestMessage()],
     createdAt: new Date("2024-01-15T10:00:00Z"),
     taskIds: ["task-1"],
-    elizaRoomId: "eliza-room-1" as UUID,
+    tokagentRoomId: "tokagent-room-1" as UUID,
     ...overrides,
   };
 }
@@ -177,7 +177,7 @@ describe("serializeRoom", () => {
       messages: [],
       createdAt: new Date(),
       taskIds: [],
-      elizaRoomId: "test" as UUID,
+      tokagentRoomId: "test" as UUID,
     } as ChatRoom;
 
     const result = serializeRoom(partialRoom);
@@ -202,7 +202,7 @@ describe("deserializeRoom", () => {
       ],
       createdAt: 1705315800000,
       taskIds: ["task-1"],
-      elizaRoomId: "eliza-1",
+      tokagentRoomId: "tokagent-1",
     };
 
     const result = deserializeRoom(serialized);
@@ -222,7 +222,7 @@ describe("deserializeRoom", () => {
       messages: [],
       createdAt: 1705315800000,
       taskIds: [],
-      elizaRoomId: "eliza-1",
+      tokagentRoomId: "tokagent-1",
     };
 
     const result = deserializeRoom(serialized);
@@ -387,7 +387,7 @@ describe("saveSession and loadSession", () => {
 
   test("should handle corrupted session file", async () => {
     // Write invalid JSON
-    const sessionPath = path.join(testDir, ".eliza-code", "session.json");
+    const sessionPath = path.join(testDir, ".tokagent-code", "session.json");
     await fs.mkdir(path.dirname(sessionPath), { recursive: true });
     await fs.writeFile(sessionPath, "{ invalid json }", "utf-8");
 
@@ -396,7 +396,7 @@ describe("saveSession and loadSession", () => {
   });
 
   test("should handle session with wrong version", async () => {
-    const sessionPath = path.join(testDir, ".eliza-code", "session.json");
+    const sessionPath = path.join(testDir, ".tokagent-code", "session.json");
     await fs.mkdir(path.dirname(sessionPath), { recursive: true });
     await fs.writeFile(
       sessionPath,

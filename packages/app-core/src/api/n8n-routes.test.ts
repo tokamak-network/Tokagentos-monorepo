@@ -1,4 +1,4 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { N8nSidecar, N8nSidecarState } from "../services/n8n-sidecar";
 import {
@@ -356,7 +356,7 @@ describe("n8n mobile platform", () => {
     expect(handled).toBe(true);
     expect(status).toBe(409);
     expect(payload).toEqual({
-      error: "Local n8n not supported on mobile. Use Eliza Cloud.",
+      error: "Local n8n not supported on mobile. Use Tokagent Cloud.",
       platform: "mobile",
     });
   });

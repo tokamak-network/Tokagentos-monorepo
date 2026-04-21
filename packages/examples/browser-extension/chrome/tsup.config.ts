@@ -55,18 +55,18 @@ export default defineConfig([
     sourcemap: true,
     clean: false,
     noExternal: [/.*/], // Bundle everything
-    globalName: "ElizaOSBackground",
+    globalName: "TokagentOSBackground",
     esbuildOptions(options) {
       options.define = {
         "process.env.NODE_ENV": '"production"',
       };
       options.alias = {
-        "@elizaos/core": resolvePackage("@elizaos/core"),
+        "@tokagentos/core": resolvePackage("@tokagentos/core"),
         "@elizaos/plugin-openai": resolvePackage("@elizaos/plugin-openai"),
         "@elizaos/plugin-anthropic": resolvePackage("@elizaos/plugin-anthropic"),
         "@elizaos/plugin-groq": resolvePackage("@elizaos/plugin-groq"),
         "@elizaos/plugin-google-genai": resolvePackage("@elizaos/plugin-google-genai"),
-        "@elizaos/plugin-eliza-classic": resolvePackage("@elizaos/plugin-eliza-classic"),
+        "@elizaos/plugin-tokagent-classic": resolvePackage("@elizaos/plugin-tokagent-classic"),
         "@elizaos/plugin-localdb": resolvePackage("@elizaos/plugin-localdb"),
       };
     },
@@ -87,7 +87,7 @@ export default defineConfig([
 if (typeof globalThis.process === 'undefined') {
   globalThis.process = { env: { NODE_ENV: 'production' }, cwd: () => '/', versions: {}, browser: true };
 }
-console.log("[ElizaOS] Offscreen bundle starting...");`,
+console.log("[TokagentOS] Offscreen bundle starting...");`,
     },
     esbuildOptions(options) {
       options.define = {
@@ -99,12 +99,12 @@ console.log("[ElizaOS] Offscreen bundle starting...");`,
         global: "globalThis",
       };
       options.alias = {
-        "@elizaos/core": resolvePackage("@elizaos/core", "dist/browser/index.browser.js"),
+        "@tokagentos/core": resolvePackage("@tokagentos/core", "dist/browser/index.browser.js"),
         "@elizaos/plugin-openai": resolvePackage("@elizaos/plugin-openai", "dist/browser/index.browser.js"),
         "@elizaos/plugin-anthropic": resolvePackage("@elizaos/plugin-anthropic", "dist/browser/index.browser.js"),
         "@elizaos/plugin-groq": resolvePackage("@elizaos/plugin-groq", "dist/browser/index.browser.js"),
         "@elizaos/plugin-google-genai": resolvePackage("@elizaos/plugin-google-genai", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-eliza-classic": resolvePackage("@elizaos/plugin-eliza-classic", "dist/browser/index.browser.js"),
+        "@elizaos/plugin-tokagent-classic": resolvePackage("@elizaos/plugin-tokagent-classic", "dist/browser/index.browser.js"),
         "@elizaos/plugin-localdb": resolvePackage("@elizaos/plugin-localdb", "dist/browser/index.browser.js"),
         "@vercel/oidc": path.join(__dirname, "src/stubs/empty.js"),
         dotenv: path.join(__dirname, "src/stubs/empty.js"),
@@ -123,9 +123,9 @@ console.log("[ElizaOS] Offscreen bundle starting...");`,
     sourcemap: true,
     clean: false,
     noExternal: [/.*/],
-    globalName: "ElizaOSContent",
+    globalName: "TokagentOSContent",
   },
-  // Popup script - full ElizaOS version
+  // Popup script - full TokagentOS version
   {
     entry: { popup: "src/popup-full.ts" },
     outDir: "dist",
@@ -141,7 +141,7 @@ console.log("[ElizaOS] Offscreen bundle starting...");`,
 if (typeof globalThis.process === 'undefined') {
   globalThis.process = { env: { NODE_ENV: 'production' }, cwd: () => '/', versions: {}, browser: true };
 }
-console.log("[ElizaOS] Bundle starting...");`,
+console.log("[TokagentOS] Bundle starting...");`,
     },
     esbuildOptions(options) {
       options.define = {
@@ -154,12 +154,12 @@ console.log("[ElizaOS] Bundle starting...");`,
       };
       // Use browser builds of @elizaos packages
       options.alias = {
-        "@elizaos/core": resolvePackage("@elizaos/core", "dist/browser/index.browser.js"),
+        "@tokagentos/core": resolvePackage("@tokagentos/core", "dist/browser/index.browser.js"),
         "@elizaos/plugin-openai": resolvePackage("@elizaos/plugin-openai", "dist/browser/index.browser.js"),
         "@elizaos/plugin-anthropic": resolvePackage("@elizaos/plugin-anthropic", "dist/browser/index.browser.js"),
         "@elizaos/plugin-groq": resolvePackage("@elizaos/plugin-groq", "dist/browser/index.browser.js"),
         "@elizaos/plugin-google-genai": resolvePackage("@elizaos/plugin-google-genai", "dist/browser/index.browser.js"),
-        "@elizaos/plugin-eliza-classic": resolvePackage("@elizaos/plugin-eliza-classic", "dist/browser/index.browser.js"),
+        "@elizaos/plugin-tokagent-classic": resolvePackage("@elizaos/plugin-tokagent-classic", "dist/browser/index.browser.js"),
         "@elizaos/plugin-localdb": resolvePackage("@elizaos/plugin-localdb", "dist/browser/index.browser.js"),
         // Stub Node.js packages
         "@vercel/oidc": path.join(__dirname, "src/stubs/empty.js"),

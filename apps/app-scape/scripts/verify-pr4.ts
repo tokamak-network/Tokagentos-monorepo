@@ -16,12 +16,12 @@
  *        - Wait for perception
  *        - Call each provider against a mock runtime that returns the
  *          live service → verify each produces a TOON string
- *      This exercises the full read path without booting the eliza
+ *      This exercises the full read path without booting the tokagent
  *      runtime.
  */
 
 import { encode } from "@toon-format/toon";
-import type { IAgentRuntime, Memory } from "@elizaos/core";
+import type { IAgentRuntime, Memory } from "@tokagentos/core";
 import appScapePlugin, {
     BotManager,
     type PerceptionSnapshot,
@@ -60,7 +60,7 @@ async function delay(ms: number): Promise<void> {
 
 /**
  * Mock runtime that just returns a mocked "scape_game" service with a
- * preset perception. No elizaOS runtime needed.
+ * preset perception. No tokagentOS runtime needed.
  */
 function mockRuntime(perception: PerceptionSnapshot | null): IAgentRuntime {
     return {

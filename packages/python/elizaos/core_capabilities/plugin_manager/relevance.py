@@ -11,7 +11,7 @@ import re
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.types import Memory, State
+    from tokagentos.types import Memory, State
 
 # Tokens stripped when extracting keywords from plugin names — they are too
 # generic to be useful for relevance matching.
@@ -19,8 +19,8 @@ _IGNORED_PLUGIN_NAME_TOKENS: frozenset[str] = frozenset(
     {
         "app",
         "core",
-        "eliza",
-        "elizaos",
+        "tokagent",
+        "tokagentos",
         "manager",
         "plugin",
         "plugins",

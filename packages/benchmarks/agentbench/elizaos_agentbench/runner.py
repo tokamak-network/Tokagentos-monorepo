@@ -4,11 +4,11 @@ AgentBench benchmark runner.
 Orchestrates benchmark execution across all environments and generates reports.
 
 This runner supports two modes:
-1. Full ElizaOS pipeline: Uses message_service.handle_message() with Memory objects,
+1. Full TokagentOS pipeline: Uses message_service.handle_message() with Memory objects,
    provider context, and the complete agent flow. This is the canonical way.
 2. Direct mode: Uses runtime.generate_text() directly for mock/test runtimes.
 
-The full ElizaOS mode is used when the runtime has a message_service attribute.
+The full TokagentOS mode is used when the runtime has a message_service attribute.
 """
 
 import asyncio
@@ -19,7 +19,7 @@ import tracemalloc
 from datetime import datetime
 from pathlib import Path
 
-from elizaos_agentbench.types import (
+from tokagentos_agentbench.types import (
     AgentBenchConfig,
     AgentBenchEnvironment,
     AgentBenchReport,
@@ -37,21 +37,21 @@ from elizaos_agentbench.types import (
     SummaryType,
     TaskDifficulty,
 )
-from elizaos_agentbench.adapters.base import EnvironmentAdapter
-from elizaos_agentbench.adapters.os_adapter import OSEnvironmentAdapter
-from elizaos_agentbench.adapters.db_adapter import DatabaseEnvironmentAdapter
-from elizaos_agentbench.adapters.webshop_adapter import WebShopEnvironmentAdapter
-from elizaos_agentbench.adapters.kg_adapter import KnowledgeGraphAdapter
-from elizaos_agentbench.adapters.lateral_thinking_adapter import LateralThinkingAdapter
+from tokagentos_agentbench.adapters.base import EnvironmentAdapter
+from tokagentos_agentbench.adapters.os_adapter import OSEnvironmentAdapter
+from tokagentos_agentbench.adapters.db_adapter import DatabaseEnvironmentAdapter
+from tokagentos_agentbench.adapters.webshop_adapter import WebShopEnvironmentAdapter
+from tokagentos_agentbench.adapters.kg_adapter import KnowledgeGraphAdapter
+from tokagentos_agentbench.adapters.lateral_thinking_adapter import LateralThinkingAdapter
 
 logger = logging.getLogger(__name__)
 
 
-def _is_full_elizaos_runtime(runtime: AgentRuntimeProtocol | None) -> bool:
-    """Check if the runtime is a full ElizaOS runtime with message service."""
+def _is_full_tokagentos_runtime(runtime: AgentRuntimeProtocol | None) -> bool:
+    """Check if the runtime is a full TokagentOS runtime with message service."""
     if runtime is None:
         return False
-    # Check for message_service attribute which indicates full ElizaOS runtime
+    # Check for message_service attribute which indicates full TokagentOS runtime
     return hasattr(runtime, "message_service") and runtime.message_service is not None
 
 
@@ -106,8 +106,8 @@ class AgentBenchRunner:
 
     This runner supports two execution modes:
 
-    1. **Full ElizaOS Pipeline** (recommended):
-       When a real ElizaOS AgentRuntime is provided, uses the complete message
+    1. **Full TokagentOS Pipeline** (recommended):
+       When a real TokagentOS AgentRuntime is provided, uses the complete message
        processing pipeline with:
        - Memory objects for all messages
        - Provider context gathering (compose_state)
@@ -116,11 +116,11 @@ class AgentBenchRunner:
 
     2. **Direct Mode** (for testing):
        When a mock runtime is provided, directly calls generate_text() on the
-       runtime. This is useful for testing the harness without a full ElizaOS
+       runtime. This is useful for testing the harness without a full TokagentOS
        setup.
 
     Usage:
-        # Full ElizaOS mode
+        # Full TokagentOS mode
         runtime = AgentRuntime(character=character, plugins=[...])
         await runtime.initialize()
         runner = AgentBenchRunner(config=config, runtime=runtime)
@@ -140,20 +140,20 @@ class AgentBenchRunner:
         self._adapters: dict[AgentBenchEnvironment, EnvironmentAdapter] = {}
         self._start_time = 0.0
         self._results: list[AgentBenchResult] = []
-        self._harness: "ElizaAgentHarness | None" = None
+        self._harness: "TokagentAgentHarness | None" = None
 
-        # Allow external harness injection (used by the Eliza TS bridge).
+        # Allow external harness injection (used by the Tokagent TS bridge).
         external_harness = getattr(runtime, "_app_harness", None) if runtime is not None else None
         if external_harness is not None:
             self._harness = external_harness  # type: ignore[assignment]
             logger.info("[AgentBenchRunner] Using externally supplied benchmark harness")
 
-        # Initialize harness if we have a full ElizaOS runtime
-        elif _is_full_elizaos_runtime(runtime):
-            from elizaos_agentbench.eliza_harness import ElizaAgentHarness
+        # Initialize harness if we have a full TokagentOS runtime
+        elif _is_full_tokagentos_runtime(runtime):
+            from tokagentos_agentbench.tokagent_harness import TokagentAgentHarness
 
-            self._harness = ElizaAgentHarness(runtime)  # type: ignore[arg-type]
-            logger.info("[AgentBenchRunner] Using full ElizaOS pipeline with message_service")
+            self._harness = TokagentAgentHarness(runtime)  # type: ignore[arg-type]
+            logger.info("[AgentBenchRunner] Using full TokagentOS pipeline with message_service")
 
     def _create_adapter(
         self,
@@ -207,9 +207,9 @@ class AgentBenchRunner:
                 env_config = self.config.get_env_config(env)
 
                 for task in tasks[: env_config.max_tasks]:
-                    # Use harness for full ElizaOS pipeline, otherwise use adapter directly
+                    # Use harness for full TokagentOS pipeline, otherwise use adapter directly
                     if self._harness is not None:
-                        # Full ElizaOS mode: uses message_service.handle_message()
+                        # Full TokagentOS mode: uses message_service.handle_message()
                         result = await self._harness.run_task(task, adapter)
                         # Clear conversation between tasks for fresh context
                         await self._harness.clear_conversation()
@@ -609,13 +609,13 @@ class AgentBenchRunner:
 
         if total_success_rate > 0.6:
             status = "strong"
-            key_findings.append("ElizaOS demonstrates strong agent capabilities across tested environments")
+            key_findings.append("TokagentOS demonstrates strong agent capabilities across tested environments")
         elif total_success_rate > 0.3:
             status = "moderate"
-            key_findings.append("ElizaOS shows moderate agent capabilities with room for improvement")
+            key_findings.append("TokagentOS shows moderate agent capabilities with room for improvement")
         else:
             status = "needs_improvement"
-            key_findings.append("ElizaOS agent capabilities need significant improvement")
+            key_findings.append("TokagentOS agent capabilities need significant improvement")
 
         # Analyze per-environment performance
         strong_envs = [e.value for e, r in env_reports.items() if r.success_rate > 0.5]
@@ -744,7 +744,7 @@ class AgentBenchRunner:
 
     def _generate_markdown_report(self, report: AgentBenchReport) -> str:
         """Generate markdown report."""
-        md = f"""# AgentBench Evaluation Results - ElizaOS Python
+        md = f"""# AgentBench Evaluation Results - TokagentOS Python
 
 ## Executive Summary
 
@@ -781,7 +781,7 @@ class AgentBenchRunner:
 
 ### vs GPT-4
 
-| Environment | ElizaOS | GPT-4 | Difference |
+| Environment | TokagentOS | GPT-4 | Difference |
 |-------------|---------|-------|------------|
 """
         gpt4_comp = report.comparison_to_baseline.get("gpt4_comparison", {})
@@ -793,7 +793,7 @@ class AgentBenchRunner:
         md += """
 ### vs GPT-3.5
 
-| Environment | ElizaOS | GPT-3.5 | Difference |
+| Environment | TokagentOS | GPT-3.5 | Difference |
 |-------------|---------|---------|------------|
 """
         gpt35_comp = report.comparison_to_baseline.get("gpt35_comparison", {})
@@ -819,7 +819,7 @@ class AgentBenchRunner:
 ---
 *Generated on {report.summary.get('timestamp', datetime.now().isoformat())}*
 *Benchmark: AgentBench (ICLR 2024)*
-*Framework: ElizaOS Python*
+*Framework: TokagentOS Python*
 """
         return md
 
@@ -843,7 +843,7 @@ async def run_agentbench(
 
     Args:
         config: Benchmark configuration. If None, uses default config.
-        runtime: ElizaOS runtime instance. If None, uses mock responses.
+        runtime: TokagentOS runtime instance. If None, uses mock responses.
 
     Returns:
         AgentBenchReport with full benchmark results.

@@ -1,4 +1,4 @@
-export type ProviderMode = "elizaClassic" | "openai" | "xai";
+export type ProviderMode = "tokagentClassic" | "openai" | "xai";
 
 export type ProviderSettings = {
   openaiApiKey: string;
@@ -18,7 +18,7 @@ export type AppConfig = {
 };
 
 export const DEFAULT_CONFIG: AppConfig = {
-  mode: "elizaClassic",
+  mode: "tokagentClassic",
   provider: {
     openaiApiKey: "",
     openaiBaseUrl: "https://api.openai.com/v1",
@@ -41,14 +41,14 @@ export type ChatMessage = {
 
 export function getModeLabel(mode: ProviderMode): string {
   switch (mode) {
-    case "elizaClassic":
-      return "ELIZA (offline)";
+    case "tokagentClassic":
+      return "TOKAGENT (offline)";
     case "openai":
       return "OpenAI";
     case "xai":
       return "Grok (xAI)";
     default:
-      return "ELIZA (offline)";
+      return "TOKAGENT (offline)";
   }
 }
 

@@ -1,16 +1,16 @@
 import type http from "node:http";
-import { applyCanonicalOnboardingConfig } from "@elizaos/agent/api/provider-switch-config";
-import { loadElizaConfig, saveElizaConfig } from "@elizaos/agent/config/config";
-import { logger } from "@elizaos/core";
+import { applyCanonicalOnboardingConfig } from "@tokagentos/agent/api/provider-switch-config";
+import { loadTokagentConfig, saveTokagentConfig } from "@tokagentos/agent/config/config";
+import { logger } from "@tokagentos/core";
 import {
   migrateLegacyRuntimeConfig,
   normalizeOnboardingProviderId,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import {
   normalizeDeploymentTargetConfig,
   normalizeLinkedAccountsConfig,
   normalizeServiceRoutingConfig,
-} from "@elizaos/shared/contracts/service-routing";
+} from "@tokagentos/shared/contracts/service-routing";
 import { ensureCompatApiAuthorized } from "./auth";
 import { getCloudSecret } from "./cloud-secrets";
 import type { CompatRuntimeState } from "./compat-route-shared";
@@ -76,14 +76,14 @@ async function syncCompatOnboardingConfigState(
 function scheduleCloudApiKeyResave(apiKey: string): void {
   setTimeout(() => {
     try {
-      const freshConfig = loadElizaConfig();
+      const freshConfig = loadTokagentConfig();
       if (!freshConfig.cloud?.apiKey) {
         if (!freshConfig.cloud) {
           (freshConfig as Record<string, unknown>).cloud = {};
         }
         (freshConfig.cloud as Record<string, unknown>).apiKey = apiKey;
         migrateLegacyRuntimeConfig(freshConfig as Record<string, unknown>);
-        saveElizaConfig(freshConfig);
+        saveTokagentConfig(freshConfig);
         logger.info(
           "[api] Re-saved cloud.apiKey after upstream handler clobbered it",
         );
@@ -154,12 +154,12 @@ export async function handleOnboardingCompatRoute(
     const cloudInferenceSelected = Boolean(
       replayServiceRouting?.llmText?.transport === "cloud-proxy" &&
         normalizeOnboardingProviderId(replayServiceRouting.llmText.backend) ===
-          "elizacloud",
+          "tokagentcloud",
     );
     const shouldResolveCloudApiKey =
       replayDeploymentTarget?.runtime === "cloud" ||
       cloudInferenceSelected ||
-      replayLinkedAccounts?.elizacloud?.status === "linked";
+      replayLinkedAccounts?.tokagentcloud?.status === "linked";
 
     // Resolve the cloud API key so the upstream handler can write it
     // into state.config before saving. Without this, the upstream uses
@@ -168,7 +168,7 @@ export async function handleOnboardingCompatRoute(
     let resolvedCloudApiKey: string | undefined;
 
     try {
-      const config = loadElizaConfig();
+      const config = loadTokagentConfig();
       if (!config.meta) {
         (config as Record<string, unknown>).meta = {};
       }
@@ -189,7 +189,7 @@ export async function handleOnboardingCompatRoute(
 
         if (!resolvedCloudApiKey) {
           resolvedCloudApiKey =
-            getCloudSecret("ELIZAOS_CLOUD_API_KEY") ?? undefined;
+            getCloudSecret("TOKAGENTOS_CLOUD_API_KEY") ?? undefined;
           if (resolvedCloudApiKey) {
             (config.cloud as Record<string, unknown>).apiKey =
               resolvedCloudApiKey;
@@ -197,7 +197,7 @@ export async function handleOnboardingCompatRoute(
         }
 
         if (!resolvedCloudApiKey) {
-          resolvedCloudApiKey = process.env.ELIZAOS_CLOUD_API_KEY;
+          resolvedCloudApiKey = process.env.TOKAGENTOS_CLOUD_API_KEY;
           if (resolvedCloudApiKey) {
             (config.cloud as Record<string, unknown>).apiKey =
               resolvedCloudApiKey;
@@ -217,7 +217,7 @@ export async function handleOnboardingCompatRoute(
 
         capturedCloudApiKey = resolvedCloudApiKey;
       }
-      saveElizaConfig(config);
+      saveTokagentConfig(config);
       await syncCompatOnboardingConfigState(
         req,
         config as Record<string, unknown>,

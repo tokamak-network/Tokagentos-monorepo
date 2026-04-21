@@ -18,7 +18,7 @@ async function createHostsConfig(): Promise<{
   config: SelfControlPluginConfig;
   hostsFilePath: string;
 }> {
-  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "eliza-selfcontrol-"));
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "tokagent-selfcontrol-"));
   tempRoots.push(tempRoot);
   const hostsFilePath = path.join(tempRoot, "hosts");
   await writeFile(hostsFilePath, "127.0.0.1 localhost\n", "utf8");
@@ -89,7 +89,7 @@ describe("website blocker engine", () => {
       endsAt: null,
       websites: ["x.com"],
       requestedWebsites: ["x.com"],
-      managedBy: "eliza-selfcontrol",
+      managedBy: "tokagent-selfcontrol",
       metadata: null,
       scheduledByAgentId: null,
     });
@@ -118,7 +118,7 @@ describe("website blocker engine", () => {
       endsAt: null,
       websites: ["x.com"],
       requestedWebsites: ["x.com"],
-      managedBy: "eliza-selfcontrol",
+      managedBy: "tokagent-selfcontrol",
       metadata: null,
       scheduledByAgentId: null,
     });

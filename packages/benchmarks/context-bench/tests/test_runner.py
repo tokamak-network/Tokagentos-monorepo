@@ -2,8 +2,8 @@
 
 import pytest
 
-from elizaos_context_bench.runner import ContextBenchRunner
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.runner import ContextBenchRunner
+from tokagentos_context_bench.types import (
     ContextBenchConfig,
     NeedlePosition,
 )

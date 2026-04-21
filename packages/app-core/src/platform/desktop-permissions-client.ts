@@ -5,7 +5,7 @@ import type {
   PermissionsPatchState as PatchState,
 } from "./types";
 
-const PATCH_STATE = Symbol.for("elizaos.desktopPermissionsPatch");
+const PATCH_STATE = Symbol.for("tokagentos.desktopPermissionsPatch");
 type PatchableClient = ClientLike & { [PATCH_STATE]?: PatchState };
 
 type SystemPermissionId = Parameters<typeof appClient.getPermission>[0];

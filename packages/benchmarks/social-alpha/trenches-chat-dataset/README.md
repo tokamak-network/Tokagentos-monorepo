@@ -1,6 +1,6 @@
-# ElizaOS Trenches Chat Dataset
+# TokagentOS Trenches Chat Dataset
 
-A comprehensive dataset of Discord trading discussions from the ElizaOS Trenches community, featuring enriched trading calls with price performance metrics and user trust scores.
+A comprehensive dataset of Discord trading discussions from the TokagentOS Trenches community, featuring enriched trading calls with price performance metrics and user trust scores.
 
 **Note:** The native token AI16Z has been filtered from this dataset to prevent overrepresentation and allow better analysis of other tokens.
 

@@ -2,7 +2,7 @@
 """
 Discord Agent - A full-featured AI agent running on Discord
 
-This agent uses the COMPLETE elizaOS runtime pipeline:
+This agent uses the COMPLETE tokagentOS runtime pipeline:
 - Full message processing through message_service.handle_message()
 - State composition with all registered providers
 - Action planning and execution
@@ -10,7 +10,7 @@ This agent uses the COMPLETE elizaOS runtime pipeline:
 - Evaluator execution
 - basicCapabilities enabled by default (REPLY, IGNORE, NONE actions)
 
-NO shortcuts, NO bypassing the pipeline - this is canonical elizaOS.
+NO shortcuts, NO bypassing the pipeline - this is canonical tokagentOS.
 """
 
 from __future__ import annotations
@@ -29,12 +29,12 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent.parent / ".env")
 load_dotenv()
 
-from elizaos import Character, ChannelType, Content, Memory
-from elizaos.types.primitives import string_to_uuid, UUID
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_discord import DiscordConfig, DiscordService, DiscordEventType
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_plugin_sql import sql_plugin
+from tokagentos import Character, ChannelType, Content, Memory
+from tokagentos.types.primitives import string_to_uuid, UUID
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_discord import DiscordConfig, DiscordService, DiscordEventType
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_plugin_sql import sql_plugin
 from uuid6 import uuid7
 
 from character import character
@@ -74,7 +74,7 @@ def create_unique_uuid(runtime: AgentRuntime, base_id: str) -> UUID:
 
 
 class DiscordAgent:
-    """Main agent class that coordinates the Discord service with elizaOS runtime."""
+    """Main agent class that coordinates the Discord service with tokagentOS runtime."""
 
     def __init__(self) -> None:
         self.runtime: AgentRuntime | None = None
@@ -83,7 +83,7 @@ class DiscordAgent:
         self._service_task: asyncio.Task | None = None
 
     async def start(self) -> None:
-        """Initialize and start the agent with full elizaOS runtime."""
+        """Initialize and start the agent with full tokagentOS runtime."""
         logger.info("🤖 Starting Discord Agent...")
 
         # Create the runtime with all required plugins
@@ -108,10 +108,10 @@ class DiscordAgent:
             self.runtime.services["discord"] = []
         self.runtime.services["discord"].append(self.service)
 
-        # Set up event handlers that use the FULL elizaOS pipeline
+        # Set up event handlers that use the FULL tokagentOS pipeline
         @self.service.on_event
         async def event_handler(event_type: DiscordEventType, payload: dict) -> None:
-            """Handle Discord events through elizaOS pipeline."""
+            """Handle Discord events through tokagentOS pipeline."""
             if event_type == DiscordEventType.MESSAGE_RECEIVED:
                 await self._handle_message_received(payload)
             elif event_type == DiscordEventType.REACTION_RECEIVED:
@@ -128,7 +128,7 @@ class DiscordAgent:
         logger.info("✅ Agent '%s' is now running on Discord!", character.name)
         logger.info("   Application ID: %s", os.environ.get("DISCORD_APPLICATION_ID"))
         logger.info("   Responds to: @mentions and replies")
-        logger.info("\n   Using FULL elizaOS pipeline:")
+        logger.info("\n   Using FULL tokagentOS pipeline:")
         logger.info("   - State composition with providers")
         logger.info("   - shouldRespond evaluation")
         logger.info("   - Action planning & execution")
@@ -145,7 +145,7 @@ class DiscordAgent:
             self.running = False
 
     async def _handle_message_received(self, payload: dict) -> None:
-        """Handle incoming Discord messages through the FULL elizaOS pipeline."""
+        """Handle incoming Discord messages through the FULL tokagentOS pipeline."""
         if self.runtime is None or self.service is None:
             return
 
@@ -251,9 +251,9 @@ class DiscordAgent:
                 logger.error("Error sending message: %s", e)
                 return []
 
-        # Process through the FULL elizaOS pipeline
+        # Process through the FULL tokagentOS pipeline
         if not self.runtime.message_service:
-            logger.error("MessageService not available - cannot process through elizaOS pipeline")
+            logger.error("MessageService not available - cannot process through tokagentOS pipeline")
             return
 
         try:
@@ -262,13 +262,13 @@ class DiscordAgent:
             )
 
             logger.debug(
-                "elizaOS pipeline completed: did_respond=%s, mode=%s",
+                "tokagentOS pipeline completed: did_respond=%s, mode=%s",
                 result.did_respond if result else None,
                 result.mode if result else None,
             )
 
         except Exception as e:
-            logger.error("Error processing message through elizaOS pipeline: %s", e)
+            logger.error("Error processing message through tokagentOS pipeline: %s", e)
 
     async def _handle_reaction_added(self, payload: dict) -> None:
         """Handle reaction events."""

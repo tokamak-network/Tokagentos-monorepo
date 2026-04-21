@@ -6,7 +6,7 @@ Each game provides:
 - Agent: LLM-based decision making
 - CLI: Command-line interface for play/train/benchmark
 
-All environments use the canonical ElizaOS agent pattern:
+All environments use the canonical TokagentOS agent pattern:
 - Full AgentRuntime with character and plugins
 - Message processing through message_service
 - Actions registered and invoked
@@ -14,24 +14,24 @@ All environments use the canonical ElizaOS agent pattern:
 - basicCapabilities enabled by default
 """
 
-from elizaos_art.games.codenames import (
+from tokagentos_art.games.codenames import (
     CodenamesAgent,
     CodenamesEnvironment,
     CodenamesGuesserAgent,
     CodenamesSpymasterAgent,
 )
-from elizaos_art.games.game_2048 import (
+from tokagentos_art.games.game_2048 import (
     Game2048Agent,
     Game2048Environment,
     Game2048HeuristicAgent,
     Game2048RandomAgent,
 )
-from elizaos_art.games.temporal_clue import (
+from tokagentos_art.games.temporal_clue import (
     TemporalClueAgent,
     TemporalClueEnvironment,
     TemporalClueHeuristicAgent,
 )
-from elizaos_art.games.tic_tac_toe import (
+from tokagentos_art.games.tic_tac_toe import (
     TicTacToeAgent,
     TicTacToeEnvironment,
     TicTacToeHeuristicAgent,

@@ -1,6 +1,6 @@
-## Roblox agent examples (elizaOS)
+## Roblox agent examples (tokagentOS)
 
-This folder shows how to run an **elizaOS agent** that can talk to a Roblox experience and trigger in-game behaviors.
+This folder shows how to run an **tokagentOS agent** that can talk to a Roblox experience and trigger in-game behaviors.
 
 ### What `@elizaos/plugin-roblox` can do (today)
 
@@ -54,6 +54,6 @@ See `examples/roblox/roblox-studio/` for a minimal server-side script that:
 - executes example actions like `teleport` and `move_npc`
 
 **Recommended defaults** (already enabled in the script):
-- Only forward chat that **mentions the agent** (e.g. `eliza`, `@eliza`, `/eliza`) to avoid spamming your bridge.
+- Only forward chat that **mentions the agent** (e.g. `tokagent`, `@eliza`, `/tokagent`) to avoid spamming your bridge.
 - Basic per-player throttling to reduce rate limits/cost.
 

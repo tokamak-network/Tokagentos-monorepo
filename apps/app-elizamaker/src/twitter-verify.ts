@@ -9,12 +9,12 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { logger } from "@elizaos/core";
-import { resolveStateDir } from "@elizaos/agent/config/paths";
-import type { VerificationResult } from "@elizaos/agent/contracts/verification";
-import { createIntegrationTelemetrySpan } from "@elizaos/agent/diagnostics";
+import { logger } from "@tokagentos/core";
+import { resolveStateDir } from "@tokagentos/agent/config/paths";
+import type { VerificationResult } from "@tokagentos/agent/contracts/verification";
+import { createIntegrationTelemetrySpan } from "@tokagentos/agent/diagnostics";
 
-export type { VerificationResult } from "@elizaos/agent/contracts/verification";
+export type { VerificationResult } from "@tokagentos/agent/contracts/verification";
 
 const WHITELIST_FILE = "whitelist.json";
 
@@ -37,7 +37,7 @@ export function generateVerificationMessage(
   walletAddress: string,
 ): string {
   const shortAddr = `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-  return `Verifying my Eliza agent "${agentName}" | ${shortAddr} #ElizaAgent`;
+  return `Verifying my Tokagent agent "${agentName}" | ${shortAddr} #TokagentAgent`;
 }
 
 // ── Tweet Verification ───────────────────────────────────────────────────
@@ -74,7 +74,7 @@ export async function verifyTweet(
   let response: Response;
   try {
     response = await fetch(apiUrl, {
-      headers: { "User-Agent": "ElizaVerifier/1.0" },
+      headers: { "User-Agent": "TokagentVerifier/1.0" },
       signal: AbortSignal.timeout(15_000),
     });
   } catch (err) {
@@ -146,7 +146,7 @@ export async function verifyTweet(
   const hasAddress =
     tweetText.includes(shortAddr) ||
     tweetText.toLowerCase().includes(walletAddress.toLowerCase().slice(0, 10));
-  const hasHashtag = tweetText.includes("#ElizaAgent");
+  const hasHashtag = tweetText.includes("#TokagentAgent");
 
   if (!hasAddress) {
     return {
@@ -159,7 +159,7 @@ export async function verifyTweet(
   if (!hasHashtag) {
     return {
       verified: false,
-      error: "Tweet is missing #ElizaAgent hashtag.",
+      error: "Tweet is missing #TokagentAgent hashtag.",
       handle,
     };
   }

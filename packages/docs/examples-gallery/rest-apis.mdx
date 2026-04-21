@@ -1,9 +1,9 @@
 ---
 title: "REST API Examples"
-description: "HTTP endpoints for elizaOS using 8 different web frameworks"
+description: "HTTP endpoints for tokagentOS using 8 different web frameworks"
 ---
 
-Build REST APIs for your elizaOS agents using your preferred framework.
+Build REST APIs for your tokagentOS agents using your preferred framework.
 
 ## Available Frameworks
 
@@ -77,7 +77,7 @@ Agent information.
 
 ```json
 {
-  "name": "Eliza",
+  "name": "Tokagent",
   "bio": "A Rogerian psychotherapist simulation",
   "status": "ready"
 }
@@ -90,7 +90,7 @@ Health check.
 ```json
 {
   "status": "healthy",
-  "runtime": "elizaos-typescript",
+  "runtime": "tokagentos-typescript",
   "uptime": 12345.67
 }
 ```
@@ -113,7 +113,7 @@ Send a message.
 ```json
 {
   "response": "Tell me more about what's making you feel anxious.",
-  "character": "Eliza",
+  "character": "Tokagent",
   "userId": "550e8400-e29b-41d4-a716-446655440000"
 }
 ```
@@ -139,15 +139,15 @@ Send a message.
 
 ```typescript
 import express from "express";
-import { AgentRuntime, ModelType } from "@elizaos/core";
-import { elizaClassicPlugin } from "@elizaos/plugin-eliza-classic";
+import { AgentRuntime, ModelType } from "@tokagentos/core";
+import { tokagentClassicPlugin } from "@elizaos/plugin-tokagent-classic";
 
 const app = express();
 app.use(express.json());
 
 const runtime = new AgentRuntime({
-  character: { name: "Eliza", bio: "A helpful AI." },
-  plugins: [elizaClassicPlugin],
+  character: { name: "Tokagent", bio: "A helpful AI." },
+  plugins: [tokagentClassicPlugin],
 });
 
 await runtime.initialize();
@@ -170,14 +170,14 @@ app.listen(3000);
 ```python
 from fastapi import FastAPI
 from pydantic import BaseModel
-from elizaos import AgentRuntime, Character
-from elizaos.plugin_eliza_classic import eliza_classic_plugin
+from tokagentos import AgentRuntime, Character
+from tokagentos.plugin_tokagent_classic import tokagent_classic_plugin
 
 app = FastAPI()
 
 runtime = AgentRuntime(
-    character=Character(name="Eliza", bio="A helpful AI."),
-    plugins=[eliza_classic_plugin],
+    character=Character(name="Tokagent", bio="A helpful AI."),
+    plugins=[tokagent_classic_plugin],
 )
 
 class ChatRequest(BaseModel):
@@ -201,8 +201,8 @@ async def chat(request: ChatRequest):
 
 ```rust
 use actix_web::{web, App, HttpServer, HttpResponse};
-use elizaos::{AgentRuntime, RuntimeOptions, parse_character};
-use elizaos_plugin_eliza_classic::create_eliza_classic_plugin;
+use tokagentos::{AgentRuntime, RuntimeOptions, parse_character};
+use tokagentos_plugin_tokagent_classic::create_tokagent_classic_plugin;
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize)]
@@ -225,10 +225,10 @@ async fn chat(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let character = parse_character(r#"{"name": "Eliza", "bio": "A helpful AI."}"#)?;
+    let character = parse_character(r#"{"name": "Tokagent", "bio": "A helpful AI."}"#)?;
     let runtime = AgentRuntime::new(RuntimeOptions {
         character: Some(character),
-        plugins: vec![create_eliza_classic_plugin()],
+        plugins: vec![create_tokagent_classic_plugin()],
         ..Default::default()
     }).await?;
 
@@ -264,7 +264,7 @@ plugins: [sqlPlugin, openaiPlugin],
   </Tab>
   <Tab title="Python">
 ```python
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos_plugin_openai import get_openai_plugin
 
 runtime = AgentRuntime(
     character=character,
@@ -275,7 +275,7 @@ runtime = AgentRuntime(
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos_plugin_openai::create_openai_plugin;
+use tokagentos_plugin_openai::create_openai_plugin;
 
 let runtime = AgentRuntime::new(RuntimeOptions {
 character: Some(character),

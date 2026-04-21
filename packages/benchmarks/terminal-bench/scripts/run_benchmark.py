@@ -28,7 +28,7 @@ from pathlib import Path
 # Add parent directory to path for local development
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from elizaos_terminal_bench import (
+from tokagentos_terminal_bench import (
     TerminalBenchRunner,
     TerminalBenchConfig,
     TaskCategory,

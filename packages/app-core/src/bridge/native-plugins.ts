@@ -352,7 +352,7 @@ export function getMobileSignalsPlugin(): MobileSignalsPluginLike {
 
 export function getAppBlockerPlugin(): AppBlockerPluginLike {
   const plugins = getCapacitorPlugins();
-  return (plugins.ElizaAppBlocker ??
+  return (plugins.TokagentAppBlocker ??
     plugins.AppBlocker ??
     {}) as AppBlockerPluginLike;
 }
@@ -380,7 +380,7 @@ export function getDesktopPlugin(): GenericNativePlugin {
 
 export function getWebsiteBlockerPlugin(): WebsiteBlockerPluginLike {
   const plugins = getCapacitorPlugins();
-  return (plugins.ElizaWebsiteBlocker ??
+  return (plugins.TokagentWebsiteBlocker ??
     plugins.WebsiteBlocker ??
     {}) as WebsiteBlockerPluginLike;
 }

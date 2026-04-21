@@ -29,7 +29,7 @@ import { buildOnboardingRuntimeConfig } from "../../src/onboarding-config";
 import { resolveNodeCmd } from "../scripts/managed-test-command.mjs";
 
 const LIVE_TESTS_ENABLED =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const LIVE_PROVIDER =
   (LIVE_TESTS_ENABLED && selectLiveProvider("openai")) ||
   (LIVE_TESTS_ENABLED ? selectLiveProvider() : null);
@@ -497,7 +497,7 @@ async function startRealStack(): Promise<StartedStack> {
   await mkdir(SCREENSHOT_DIR, { recursive: true });
 
   const stateDir = await mkdtemp(
-    path.join(os.tmpdir(), "eliza-onboarding-live-"),
+    path.join(os.tmpdir(), "tokagent-onboarding-live-"),
   );
   const apiPort = await getFreePort();
   const uiPort = await getFreePort();
@@ -508,7 +508,7 @@ async function startRealStack(): Promise<StartedStack> {
     [
       "--import",
       "tsx",
-      path.join(REPO_ROOT, "eliza/packages/app-core/src/runtime/dev-server.ts"),
+      path.join(REPO_ROOT, "tokagent/packages/app-core/src/runtime/dev-server.ts"),
     ],
     {
       cwd: REPO_ROOT,
@@ -518,10 +518,10 @@ async function startRealStack(): Promise<StartedStack> {
         CHECK_SHOULD_RESPOND: "false",
         CONVERSATION_LENGTH: "20",
         FORCE_COLOR: "0",
-        ELIZA_API_PORT: String(apiPort),
-        ELIZA_HOME_PORT: String(uiPort),
-        ELIZA_PORT: String(apiPort),
-        ELIZA_STATE_DIR: stateDir,
+        TOKAGENT_API_PORT: String(apiPort),
+        TOKAGENT_HOME_PORT: String(uiPort),
+        TOKAGENT_PORT: String(apiPort),
+        TOKAGENT_STATE_DIR: stateDir,
       },
       stdio: ["ignore", "pipe", "pipe"],
     },
@@ -547,11 +547,11 @@ async function startRealStack(): Promise<StartedStack> {
     apiBase,
     port: uiPort,
   });
-  process.env.ELIZA_API_PORT = String(apiPort);
+  process.env.TOKAGENT_API_PORT = String(apiPort);
 
   if (!CHROME_PATH || !existsSync(CHROME_PATH)) {
     throw new Error(
-      `Browser executable unavailable via ${LIVE_BROWSER.source}; set ELIZA_CHROME_PATH to a valid browser executable.`,
+      `Browser executable unavailable via ${LIVE_BROWSER.source}; set TOKAGENT_CHROME_PATH to a valid browser executable.`,
     );
   }
 
@@ -639,14 +639,14 @@ async function newLivePage(
   await context.addInitScript(() => {
     localStorage.clear();
     sessionStorage.clear();
-    localStorage.setItem("eliza:ui-language", "en");
-    localStorage.setItem("eliza:ui-language", "en");
-    localStorage.setItem("eliza:ui-theme", "dark");
-    localStorage.setItem("eliza:ui-theme", "dark");
-    localStorage.setItem("eliza:onboarding-complete", "1");
-    localStorage.setItem("eliza:onboarding:step", "activate");
+    localStorage.setItem("tokagent:ui-language", "en");
+    localStorage.setItem("tokagent:ui-language", "en");
+    localStorage.setItem("tokagent:ui-theme", "dark");
+    localStorage.setItem("tokagent:ui-theme", "dark");
+    localStorage.setItem("tokagent:onboarding-complete", "1");
+    localStorage.setItem("tokagent:onboarding:step", "activate");
     localStorage.setItem(
-      "elizaos:active-server",
+      "tokagentos:active-server",
       JSON.stringify({
         id: "local:embedded",
         kind: "local",
@@ -796,7 +796,7 @@ describeLive("real onboarding handoff to companion mode", () => {
   beforeAll(async () => {
     if (!LIVE_PROVIDER || !LIVE_PROVIDER_LABEL) {
       throw new Error(
-        "ELIZA_LIVE_TEST=1 requires a configured live model provider",
+        "TOKAGENT_LIVE_TEST=1 requires a configured live model provider",
       );
     }
     stack = await startRealStack();

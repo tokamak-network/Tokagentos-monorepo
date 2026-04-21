@@ -1,4 +1,4 @@
-import { Button, Label } from "@elizaos/ui";
+import { Button, Label } from "@tokagentos/ui";
 import { DAY_NAMES, TIMEZONES } from "./constants";
 import { formatHour } from "./helpers";
 import type { TimeWindowConfig } from "./types";

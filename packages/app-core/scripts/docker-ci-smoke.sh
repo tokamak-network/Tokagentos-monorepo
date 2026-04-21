@@ -10,7 +10,7 @@ set -euo pipefail
 #   4. Optionally boots the container and probes /api/health or /api/status
 #
 # Usage:
-#   bash eliza/packages/app-core/scripts/docker-ci-smoke.sh [--tag TAG] [--version VERSION] [--skip-smoke]
+#   bash tokagent/packages/app-core/scripts/docker-ci-smoke.sh [--tag TAG] [--version VERSION] [--skip-smoke]
 #
 # Environment:
 #   BUN_VERSION          Bun version to install/use in CI (default: 1.3.9)
@@ -86,21 +86,21 @@ REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 cd "$REPO_ROOT"
 
 [[ -f package.json ]] || fail "Run from the repo root"
-[[ -f eliza/packages/app-core/deploy/Dockerfile.ci ]] || fail "eliza/packages/app-core/deploy/Dockerfile.ci not found"
-[[ -f eliza/packages/app-core/deploy/.dockerignore.ci ]] || fail "eliza/packages/app-core/deploy/.dockerignore.ci not found"
+[[ -f tokagent/packages/app-core/deploy/Dockerfile.ci ]] || fail "tokagent/packages/app-core/deploy/Dockerfile.ci not found"
+[[ -f tokagent/packages/app-core/deploy/.dockerignore.ci ]] || fail "tokagent/packages/app-core/deploy/.dockerignore.ci not found"
 [[ -f deploy/deploy.env ]] || fail "deploy/deploy.env not found"
 
-load_env_file "eliza/packages/app-core/deploy/deploy.defaults.env"
+load_env_file "tokagent/packages/app-core/deploy/deploy.defaults.env"
 load_env_file "deploy/deploy.env"
 
-APP_IMAGE="${APP_IMAGE:-eliza/agent}"
+APP_IMAGE="${APP_IMAGE:-tokagent/agent}"
 APP_ENTRYPOINT="${APP_ENTRYPOINT:-app.mjs}"
 APP_CMD_START="${APP_CMD_START:-node --import ./node_modules/tsx/dist/loader.mjs ${APP_ENTRYPOINT} start}"
 APP_PORT="${APP_PORT:-2138}"
 APP_API_BIND="${APP_API_BIND:-127.0.0.1}"
 OCI_SOURCE="${OCI_SOURCE:-}"
-OCI_TITLE="${OCI_TITLE:-elizaOS Agent}"
-OCI_DESCRIPTION="${OCI_DESCRIPTION:-elizaOS agent runtime}"
+OCI_TITLE="${OCI_TITLE:-tokagentOS Agent}"
+OCI_DESCRIPTION="${OCI_DESCRIPTION:-tokagentOS agent runtime}"
 OCI_LICENSES="${OCI_LICENSES:-MIT}"
 
 if [[ -z "$VERSION" ]]; then
@@ -109,7 +109,7 @@ fi
 VERSION_CLEAN="${VERSION#v}"
 SOURCE_SHA="$(git rev-parse HEAD)"
 DOCKER_IMAGE="${DOCKER_IMAGE:-${APP_IMAGE}:${TAG}}"
-CONTAINER_NAME="eliza-docker-smoke-${TAG//[^a-zA-Z0-9_.-]/-}"
+CONTAINER_NAME="tokagent-docker-smoke-${TAG//[^a-zA-Z0-9_.-]/-}"
 mkdir -p "$REPO_ROOT/.tmp/qa"
 SMOKE_ARTIFACT_DIR="$(mktemp -d "$REPO_ROOT/.tmp/qa/docker-ci-smoke-XXXXXX")"
 
@@ -155,20 +155,20 @@ trap cleanup EXIT
 
 log "Installing dependencies"
 node scripts/init-submodules.mjs
-MILADY_SKIP_LOCAL_UPSTREAMS=1 ELIZA_SKIP_LOCAL_UPSTREAMS=1 node scripts/disable-local-eliza-workspace.mjs
-MILADY_SKIP_LOCAL_UPSTREAMS=1 ELIZA_SKIP_LOCAL_UPSTREAMS=1 bun install --ignore-scripts --no-frozen-lockfile
-if [[ -d "$REPO_ROOT/.eliza.ci-disabled" && ! -d "$REPO_ROOT/eliza" ]]; then
-  log "Restoring eliza/ from .eliza.ci-disabled for downstream build steps"
-  mv "$REPO_ROOT/.eliza.ci-disabled" "$REPO_ROOT/eliza"
+MILADY_SKIP_LOCAL_UPSTREAMS=1 TOKAGENT_SKIP_LOCAL_UPSTREAMS=1 node scripts/disable-local-tokagent-workspace.mjs
+MILADY_SKIP_LOCAL_UPSTREAMS=1 TOKAGENT_SKIP_LOCAL_UPSTREAMS=1 bun install --ignore-scripts --no-frozen-lockfile
+if [[ -d "$REPO_ROOT/.tokagent.ci-disabled" && ! -d "$REPO_ROOT/tokagent" ]]; then
+  log "Restoring tokagent/ from .tokagent.ci-disabled for downstream build steps"
+  mv "$REPO_ROOT/.tokagent.ci-disabled" "$REPO_ROOT/tokagent"
 fi
 export MILADY_SKIP_LOCAL_UPSTREAMS=1
-export ELIZA_SKIP_LOCAL_UPSTREAMS=1
+export TOKAGENT_SKIP_LOCAL_UPSTREAMS=1
 
 log "Installing published-workspace fallback dependencies"
 bash "$REPO_ROOT/scripts/install-published-workspace-fallback-deps.sh"
 
 log "Running repository postinstall"
-SKIP_AVATAR_CLONE=1 ELIZA_NO_VISION_DEPS=1 node eliza/packages/app-core/scripts/run-repo-setup.mjs
+SKIP_AVATAR_CLONE=1 TOKAGENT_NO_VISION_DEPS=1 node tokagent/packages/app-core/scripts/run-repo-setup.mjs
 
 log "Building Capacitor plugins"
 pushd apps/app >/dev/null
@@ -176,15 +176,15 @@ bun scripts/plugin-build.mjs
 popd >/dev/null
 
 log "Building agent workspace"
-pushd eliza/packages/agent >/dev/null
+pushd tokagent/packages/agent >/dev/null
 bun run build:docker-dist
 popd >/dev/null
 
 if [[ "${MILADY_SKIP_LOCAL_UPSTREAMS:-0}" == "1" ]]; then
-  log "Skipping @elizaos/core source build in published-only mode"
+  log "Skipping @tokagentos/core source build in published-only mode"
 else
-  log "Building @elizaos/core and @elizaos/plugin-agent-orchestrator"
-  pushd eliza/packages/typescript >/dev/null
+  log "Building @tokagentos/core and @elizaos/plugin-agent-orchestrator"
+  pushd tokagent/packages/typescript >/dev/null
   bun run build:node
   popd >/dev/null
 fi
@@ -200,23 +200,23 @@ NODE_ENV=production npx vite build
 popd >/dev/null
 
 log "Preparing CI dockerignore"
-cp eliza/packages/app-core/deploy/.dockerignore.ci .dockerignore
+cp tokagent/packages/app-core/deploy/.dockerignore.ci .dockerignore
 
-log "Re-adding eliza/packages/agent to workspaces for Docker relink"
+log "Re-adding tokagent/packages/agent to workspaces for Docker relink"
 node -e "
 const fs = require('fs');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 if (!pkg.workspaces) pkg.workspaces = [];
-if (!pkg.workspaces.includes('eliza/packages/agent')) {
-  pkg.workspaces.push('eliza/packages/agent');
+if (!pkg.workspaces.includes('tokagent/packages/agent')) {
+  pkg.workspaces.push('tokagent/packages/agent');
 }
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
-console.log('Re-added eliza/packages/agent to workspaces');
+console.log('Re-added tokagent/packages/agent to workspaces');
 "
 
 log "Building Docker image"
 "$DOCKER_BIN" build \
-  --file eliza/packages/app-core/deploy/Dockerfile.ci \
+  --file tokagent/packages/app-core/deploy/Dockerfile.ci \
   --tag "$DOCKER_IMAGE" \
   --build-arg "BUN_VERSION=$BUN_VERSION" \
   --build-arg "APP_ENTRYPOINT=$APP_ENTRYPOINT" \
@@ -243,8 +243,8 @@ log "Starting container smoke boot"
   --name "$CONTAINER_NAME" \
   -e PORT="$CONTAINER_PORT" \
   -e APP_API_BIND=0.0.0.0 \
-  -e ELIZA_DISABLE_LOCAL_EMBEDDINGS=1 \
-  -e ELIZA_API_BIND=0.0.0.0 \
+  -e TOKAGENT_DISABLE_LOCAL_EMBEDDINGS=1 \
+  -e TOKAGENT_API_BIND=0.0.0.0 \
   -p "${SMOKE_PORT}:${CONTAINER_PORT}" \
   "$DOCKER_IMAGE" >/dev/null
 

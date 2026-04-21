@@ -10,7 +10,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type { StreamingDestination } from "./streaming-types.js";
 
 // ---------------------------------------------------------------------------
@@ -34,7 +34,7 @@ export interface StreamVisualSettings {
 // ---------------------------------------------------------------------------
 
 const OVERLAY_DIR = path.join(
-  process.env.ELIZA_DATA_DIR || path.join(process.cwd(), "data"),
+  process.env.TOKAGENT_DATA_DIR || path.join(process.cwd(), "data"),
   "stream",
 );
 

@@ -47,11 +47,11 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@elizaos/ui": "workspace:*",
-    "@elizaos/core": "workspace:*"
+    "@tokagentos/ui": "workspace:*",
+    "@tokagentos/core": "workspace:*"
   },
   "agentConfig": {
-    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginType": "tokagentos:plugin:1.0.0",
     "pluginParameters": {}
   }
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Link Checker and Fixer for elizaOS Documentation
+Link Checker and Fixer for tokagentOS Documentation
 Scans MDX files for broken links and applies automatic fixes
 """
 

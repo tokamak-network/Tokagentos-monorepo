@@ -1,5 +1,5 @@
-"""Entry point for python -m elizaos_art.games.codenames"""
-from elizaos_art.games.codenames.cli import app
+"""Entry point for python -m tokagentos_art.games.codenames"""
+from tokagentos_art.games.codenames.cli import app
 
 if __name__ == "__main__":
     app()

@@ -1,27 +1,27 @@
-import "@elizaos/app-core/styles/styles.css";
-import "@elizaos/app-core/styles/brand-gold.css";
+import "@tokagentos/app-core/styles/styles.css";
+import "@tokagentos/app-core/styles/brand-gold.css";
 
-import "@elizaos/app-core/platform/native-plugin-entrypoints";
+import "@tokagentos/app-core/platform/native-plugin-entrypoints";
 
 import { App as CapacitorApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
 import { StatusBar, Style } from "@capacitor/status-bar";
-import { App } from "@elizaos/app-core/App";
-import { client } from "@elizaos/app-core/api";
+import { App } from "@tokagentos/app-core/App";
+import { client } from "@tokagentos/app-core/api";
 import {
   initializeCapacitorBridge,
   initializeStorageBridge,
   isElectrobunRuntime,
   subscribeDesktopBridgeEvent,
-} from "@elizaos/app-core/bridge";
-import { CharacterEditor } from "@elizaos/app-core/components/character/CharacterEditor";
-import type { AppBootConfig, BrandingConfig } from "@elizaos/app-core/config";
+} from "@tokagentos/app-core/bridge";
+import { CharacterEditor } from "@tokagentos/app-core/components/character/CharacterEditor";
+import type { AppBootConfig, BrandingConfig } from "@tokagentos/app-core/config";
 import {
   getBootConfig,
   setBootConfig,
   shouldUseCloudOnlyBranding,
-} from "@elizaos/app-core/config";
+} from "@tokagentos/app-core/config";
 import {
   AGENT_READY_EVENT,
   APP_PAUSE_EVENT,
@@ -31,7 +31,7 @@ import {
   dispatchAppEvent,
   SHARE_TARGET_EVENT,
   TRAY_ACTION_EVENT,
-} from "@elizaos/app-core/events";
+} from "@tokagentos/app-core/events";
 import {
   applyForceFreshOnboardingReset,
   applyLaunchConnectionFromUrl,
@@ -42,7 +42,7 @@ import {
   resolveWindowShellRoute,
   shouldInstallMainWindowOnboardingPatches,
   syncDetachedShellLocation,
-} from "@elizaos/app-core/platform";
+} from "@tokagentos/app-core/platform";
 import { dispatchQueuedLifeOpsGithubCallbackFromUrl } from "@elizaos/app-lifeops/platform";
 import { LifeOpsActivitySignalsEffect } from "@elizaos/app-lifeops/components/LifeOpsActivitySignalsEffect";
 // Side-effect: register LifeOps sidebar widgets into the app-core widget registry.
@@ -59,21 +59,21 @@ import {
   DesktopSurfaceNavigationRuntime,
   DesktopTrayRuntime,
   DetachedShellRoot,
-} from "@elizaos/app-core/shell";
+} from "@tokagentos/app-core/shell";
 import {
   AppProvider,
   applyUiTheme,
   loadUiTheme,
-} from "@elizaos/app-core/state";
+} from "@tokagentos/app-core/state";
 import { Agent } from "@elizaos/capacitor-agent";
 import { Desktop } from "@elizaos/capacitor-desktop";
-import { ErrorBoundary } from "@elizaos/ui";
+import { ErrorBoundary } from "@tokagentos/ui";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { ELIZA_ENV_ALIASES } from "./brand-env";
-import { ELIZA_CHARACTER_CATALOG } from "./character-catalog";
+import { TOKAGENT_ENV_ALIASES } from "./brand-env";
+import { TOKAGENT_CHARACTER_CATALOG } from "./character-catalog";
 
-const ELIZA_BRANDING: Partial<BrandingConfig> = {
+const TOKAGENT_BRANDING: Partial<BrandingConfig> = {
   appName: "__APP_NAME__",
   orgName: "__ORG_NAME__",
   repoName: "__REPO_NAME__",
@@ -89,7 +89,7 @@ const ELIZA_BRANDING: Partial<BrandingConfig> = {
   cloudOnly: shouldUseCloudOnlyBranding({
     isDev: import.meta.env.DEV ?? false,
     injectedApiBase:
-      typeof window === "undefined" ? undefined : window.__ELIZA_API_BASE__,
+      typeof window === "undefined" ? undefined : window.__TOKAGENT_API_BASE__,
     isNativePlatform: Capacitor.isNativePlatform(),
   }),
 };
@@ -125,16 +125,16 @@ interface ShareTargetPayload {
 
 declare global {
   interface Window {
-    __ELIZA_SHARE_QUEUE__?: ShareTargetPayload[];
-    __ELIZA_CHARACTER_EDITOR__?: typeof CharacterEditor;
-    __ELIZA_API_BASE__?: string;
+    __TOKAGENT_SHARE_QUEUE__?: ShareTargetPayload[];
+    __TOKAGENT_CHARACTER_EDITOR__?: typeof CharacterEditor;
+    __TOKAGENT_API_BASE__?: string;
   }
 }
 
 const windowShellRoute = resolveWindowShellRoute();
 
 /**
- * Adds `eliza-electrobun-frameless` for CSS `-webkit-app-region` (Chromium/CEF).
+ * Adds `tokagent-electrobun-frameless` for CSS `-webkit-app-region` (Chromium/CEF).
  * macOS WKWebView move/resize are still driven by native overlays in
  * window-effects.mm; this class mainly marks the shell and helps non-WK engines.
  */
@@ -147,7 +147,7 @@ function shouldEnableElectrobunMacWindowDrag(): boolean {
 }
 
 if (shouldEnableElectrobunMacWindowDrag()) {
-  document.documentElement.classList.add("eliza-electrobun-frameless");
+  document.documentElement.classList.add("tokagent-electrobun-frameless");
 }
 
 // Dev escape hatch: ?reset forces a truly fresh onboarding session by clearing
@@ -160,29 +160,29 @@ installLocalProviderCloudPreferencePatch(client as never);
 installDesktopPermissionsClientPatch(client as never);
 
 // Register custom character editor for app-core's ViewRouter to pick up
-window.__ELIZA_CHARACTER_EDITOR__ = CharacterEditor;
+window.__TOKAGENT_CHARACTER_EDITOR__ = CharacterEditor;
 
-import { getStylePresets } from "@elizaos/shared/onboarding-presets";
+import { getStylePresets } from "@tokagentos/shared/onboarding-presets";
 
 // Derive VRM roster from STYLE_PRESETS so character names stay in one place.
-const ELIZA_STYLE_PRESETS = getStylePresets();
+const TOKAGENT_STYLE_PRESETS = getStylePresets();
 
-const ELIZA_VRM_ASSETS = ELIZA_STYLE_PRESETS.slice()
+const TOKAGENT_VRM_ASSETS = TOKAGENT_STYLE_PRESETS.slice()
   .sort((a, b) => a.avatarIndex - b.avatarIndex)
-  .map((p) => ({ title: p.name, slug: `eliza-${p.avatarIndex}` }));
+  .map((p) => ({ title: p.name, slug: `tokagent-${p.avatarIndex}` }));
 
-const elizaBootConfig: AppBootConfig = {
-  branding: ELIZA_BRANDING,
+const tokagentBootConfig: AppBootConfig = {
+  branding: TOKAGENT_BRANDING,
   assetBaseUrl:
     (import.meta.env.VITE_ASSET_BASE_URL as string | undefined)?.trim() ||
     undefined,
   cloudApiBase:
-    (import.meta.env.VITE_CLOUD_BASE as string) ?? "https://www.elizacloud.ai",
-  vrmAssets: ELIZA_VRM_ASSETS,
-  onboardingStyles: ELIZA_STYLE_PRESETS,
+    (import.meta.env.VITE_CLOUD_BASE as string) ?? "https://www.tokagentcloud.ai",
+  vrmAssets: TOKAGENT_VRM_ASSETS,
+  onboardingStyles: TOKAGENT_STYLE_PRESETS,
   characterEditor: CharacterEditor,
-  characterCatalog: ELIZA_CHARACTER_CATALOG,
-  envAliases: ELIZA_ENV_ALIASES,
+  characterCatalog: TOKAGENT_CHARACTER_CATALOG,
+  envAliases: TOKAGENT_ENV_ALIASES,
   clientMiddleware: {
     forceFreshOnboarding:
       shouldInstallMainWindowOnboardingPatches(windowShellRoute),
@@ -191,13 +191,13 @@ const elizaBootConfig: AppBootConfig = {
   },
 };
 
-setBootConfig(elizaBootConfig);
+setBootConfig(tokagentBootConfig);
 
 function dispatchShareTarget(payload: ShareTargetPayload): void {
-  if (!window.__ELIZA_SHARE_QUEUE__) {
-    window.__ELIZA_SHARE_QUEUE__ = [];
+  if (!window.__TOKAGENT_SHARE_QUEUE__) {
+    window.__TOKAGENT_SHARE_QUEUE__ = [];
   }
-  window.__ELIZA_SHARE_QUEUE__.push(payload);
+  window.__TOKAGENT_SHARE_QUEUE__.push(payload);
   dispatchAppEvent(SHARE_TARGET_EVENT, payload);
 }
 
@@ -207,7 +207,7 @@ async function initializeAgent(): Promise<void> {
     dispatchAppEvent(AGENT_READY_EVENT, status);
   } catch (err) {
     console.warn(
-      "[Eliza] Agent not available:",
+      "[Tokagent] Agent not available:",
       err instanceof Error ? err.message : err,
     );
   }
@@ -292,7 +292,7 @@ function handleDeepLink(url: string): void {
     return;
   }
 
-  if (parsed.protocol !== "eliza:") return;
+  if (parsed.protocol !== "tokagent:") return;
   const path = (parsed.pathname || parsed.host || "").replace(/^\/+/, "");
 
   switch (path) {
@@ -317,7 +317,7 @@ function handleDeepLink(url: string): void {
             validatedUrl.protocol !== "http:"
           ) {
             console.error(
-              "[Eliza] Invalid gateway URL protocol:",
+              "[Tokagent] Invalid gateway URL protocol:",
               validatedUrl.protocol,
             );
             break;
@@ -326,7 +326,7 @@ function handleDeepLink(url: string): void {
             gatewayUrl: validatedUrl.href,
           });
         } catch {
-          console.error("[Eliza] Invalid gateway URL format");
+          console.error("[Tokagent] Invalid gateway URL format");
         }
       }
       break;
@@ -358,7 +358,7 @@ function handleDeepLink(url: string): void {
       break;
     }
     default:
-      console.warn("[Eliza] Unknown deep link path:", path);
+      console.warn("[Tokagent] Unknown deep link path:", path);
       break;
   }
 }
@@ -436,7 +436,7 @@ function mountReactApp(): void {
   createRoot(rootEl).render(
     <ErrorBoundary>
       <StrictMode>
-        <AppProvider branding={ELIZA_BRANDING}>
+        <AppProvider branding={TOKAGENT_BRANDING}>
           {isDetachedWindowShell(windowShellRoute) ? (
             <div className="flex h-screen min-h-0 w-screen flex-col overflow-hidden">
               <DetachedShellRoot route={windowShellRoute} />
@@ -490,13 +490,13 @@ function validateAndSetApiBase(apiBase: string): void {
     ) {
       setBootConfig({ ...getBootConfig(), apiBase });
     } else {
-      console.warn("[Eliza] Rejected non-local apiBase:", host);
+      console.warn("[Tokagent] Rejected non-local apiBase:", host);
     }
   } catch {
     if (apiBase.startsWith("/") && !apiBase.startsWith("//")) {
       setBootConfig({ ...getBootConfig(), apiBase });
     } else {
-      console.warn("[Eliza] Rejected invalid relative apiBase:", apiBase);
+      console.warn("[Tokagent] Rejected invalid relative apiBase:", apiBase);
     }
   }
 }
@@ -525,7 +525,7 @@ async function main(): Promise<void> {
     await applyLaunchConnectionFromUrl();
   } catch (err) {
     console.error(
-      "[Eliza] Failed to apply managed cloud launch session:",
+      "[Tokagent] Failed to apply managed cloud launch session:",
       err instanceof Error ? err.message : err,
     );
   }

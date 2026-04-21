@@ -1,12 +1,12 @@
 #!/bin/bash
-# Quick test script for elizaOS AWS Lambda worker
+# Quick test script for tokagentOS AWS Lambda worker
 # Usage: ./scripts/test-curl.sh <endpoint>
 
 set -e
 
 ENDPOINT="${1:-http://localhost:3000}"
 
-echo "🧪 Testing elizaOS AWS Lambda Worker"
+echo "🧪 Testing tokagentOS AWS Lambda Worker"
 echo "📡 Endpoint: $ENDPOINT"
 echo ""
 

@@ -6,7 +6,7 @@ import type {
   LifeOpsGoogleConnectorStatus,
   StartLifeOpsGoogleConnectorRequest,
   StartLifeOpsGoogleConnectorResponse,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   GoogleApiError,
   googleErrorLooksLikeAdminPolicyBlock,

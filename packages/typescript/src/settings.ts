@@ -81,7 +81,7 @@ export function getSalt(): string {
 	const nodeEnv = (getEnv("NODE_ENV", "") || "").toLowerCase();
 	const isProduction = nodeEnv === "production";
 	const allowDefaultSaltRaw =
-		getEnv("ELIZA_ALLOW_DEFAULT_SECRET_SALT", "") || "";
+		getEnv("TOKAGENT_ALLOW_DEFAULT_SECRET_SALT", "") || "";
 	const allowDefaultSalt = allowDefaultSaltRaw.toLowerCase() === "true";
 	const now = Date.now();
 
@@ -96,7 +96,7 @@ export function getSalt(): string {
 	if (isProduction && currentEnvSalt === "secretsalt" && !allowDefaultSalt) {
 		throw new Error(
 			"SECRET_SALT must be set to a non-default value in production. " +
-				"Set ELIZA_ALLOW_DEFAULT_SECRET_SALT=true to override (not recommended).",
+				"Set TOKAGENT_ALLOW_DEFAULT_SECRET_SALT=true to override (not recommended).",
 		);
 	}
 
@@ -158,7 +158,7 @@ export function encryptStringValue(value: string, salt: string): string {
 		.slice(0, 32);
 	const iv = BufferUtils.randomBytes(12);
 
-	const aad = new TextEncoder().encode("elizaos:settings:v2");
+	const aad = new TextEncoder().encode("tokagentos:settings:v2");
 	const plaintextBytes = BufferUtils.fromString(value, "utf8");
 	const { ciphertext, tag } = cryptoUtils.encryptAes256Gcm(
 		key,
@@ -193,7 +193,7 @@ export function decryptStringValue(value: string, salt: string): string {
 				.update(salt)
 				.digest()
 				.slice(0, 32);
-			const aad = new TextEncoder().encode("elizaos:settings:v2");
+			const aad = new TextEncoder().encode("tokagentos:settings:v2");
 			const plaintextBytes = cryptoUtils.decryptAes256Gcm(
 				key,
 				iv,

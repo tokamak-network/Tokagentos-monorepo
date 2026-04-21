@@ -74,7 +74,7 @@ export interface GatewayConnectOptions {
   token?: string;
   /** Optional password for password-based auth */
   password?: string;
-  /** Client name identifier (defaults to 'eliza-capacitor') */
+  /** Client name identifier (defaults to 'tokagent-capacitor') */
   clientName?: string;
   /** Client version string */
   clientVersion?: string;
@@ -179,7 +179,7 @@ export interface GatewayErrorEvent {
 /**
  * Gateway Plugin Interface
  *
- * Provides WebSocket connectivity to an Eliza Gateway server.
+ * Provides WebSocket connectivity to an Tokagent Gateway server.
  * Handles authentication, reconnection, and RPC-style request/response
  * as well as event streaming. Also supports gateway discovery via
  * Bonjour/mDNS and wide-area DNS-SD.

@@ -4,8 +4,8 @@ import pytest
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.padding import PKCS7
 
-from elizaos import AgentRuntime, Character
-from elizaos.settings import (
+from tokagentos import AgentRuntime, Character
+from tokagentos.settings import (
     _derive_key,
     decrypt_string_value,
     encrypt_string_value,

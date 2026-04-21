@@ -5,7 +5,7 @@ version = 0.1
 
 [default]
 [default.global.parameters]
-stack_name = "eliza-worker"
+stack_name = "tokagent-worker"
 
 [default.build.parameters]
 cached = true
@@ -18,7 +18,7 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
-s3_prefix = "eliza-worker"
+s3_prefix = "tokagent-worker"
 region = "us-east-1"
 
 [default.package.parameters]

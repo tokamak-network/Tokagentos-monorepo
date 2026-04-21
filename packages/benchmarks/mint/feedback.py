@@ -41,7 +41,7 @@ class FeedbackGenerator:
         Initialize the feedback generator.
 
         Args:
-            runtime: Optional ElizaOS runtime for LLM-based feedback
+            runtime: Optional TokagentOS runtime for LLM-based feedback
             use_llm: Whether to use LLM for feedback generation
             feedback_model: Model to use for feedback generation
         """
@@ -302,7 +302,7 @@ Feedback:"""
 
         try:
             # Use runtime's model for feedback generation
-            from elizaos.types.model import ModelType
+            from tokagentos.types.model import ModelType
 
             response = await self._runtime.use_model(
                 ModelType.TEXT_LARGE,

@@ -61,7 +61,7 @@ export function createApiServer() {
       }
 
       if (method === "GET" && url === "/health") {
-        sendJson(res, 200, { ok: true, name: "eliza-capacitor-backend" });
+        sendJson(res, 200, { ok: true, name: "tokagent-capacitor-backend" });
         return;
       }
 

@@ -1,10 +1,10 @@
-//! elizaOS A2A (Agent-to-Agent) Server - Rust
+//! tokagentOS A2A (Agent-to-Agent) Server - Rust
 //!
-//! An HTTP server that exposes an elizaOS agent for agent-to-agent communication.
-//! Uses real elizaOS runtime.
+//! An HTTP server that exposes an tokagentOS agent for agent-to-agent communication.
+//! Uses real tokagentOS runtime.
 //!
 //! - With `OPENAI_API_KEY`: uses OpenAI plugin
-//! - Without `OPENAI_API_KEY`: registers a classic ELIZA model handler (no API keys required)
+//! - Without `OPENAI_API_KEY`: registers a classic TOKAGENT model handler (no API keys required)
 
 use anyhow::Result;
 use axum::{
@@ -14,16 +14,16 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use elizaos::{
+use tokagentos::{
     Agent, Entity, GetMemoriesParams,
     parse_character,
     runtime::{AgentRuntime, DatabaseAdapter, RuntimeOptions},
     types::{Content, HandlerCallback, Memory, UUID},
     Room, SearchMemoriesParams, Task, World,
 };
-use elizaos::services::IMessageService;
-use elizaos_plugin_eliza_classic::ElizaClassicPlugin;
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos::services::IMessageService;
+use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
@@ -39,12 +39,12 @@ use tracing::info;
 // ============================================================================
 
 const CHARACTER_JSON: &str = r#"{
-    "name": "Eliza",
+    "name": "Tokagent",
     "settings": {
         "model": "gpt-4o",
         "embeddingModel": "text-embedding-3-small"
     },
-    "bio": "A helpful AI assistant powered by elizaOS, available via A2A protocol.",
+    "bio": "A helpful AI assistant powered by tokagentOS, available via A2A protocol.",
     "system": "You are a helpful, friendly AI assistant participating in agent-to-agent communication. Be concise, informative, and cooperative."
 }"#;
 
@@ -75,7 +75,7 @@ fn extract_user_text(prompt: &str) -> &str {
 // In-memory DatabaseAdapter (plugin-inmemorydb-backed) for multi-turn state
 // ============================================================================
 
-use elizaos_plugin_inmemorydb::{IStorage, MemoryStorage, COLLECTIONS as IM_COLLECTIONS};
+use tokagentos_plugin_inmemorydb::{IStorage, MemoryStorage, COLLECTIONS as IM_COLLECTIONS};
 
 #[derive(Clone)]
 struct InMemoryDbAdapter {
@@ -296,7 +296,7 @@ impl DatabaseAdapter for InMemoryDbAdapter {
         let table_name = memory.metadata
             .as_ref()
             .and_then(|m| match m {
-                elizaos::MemoryMetadata::Custom(v) => v.get("type").and_then(|t| t.as_str()),
+                tokagentos::MemoryMetadata::Custom(v) => v.get("type").and_then(|t| t.as_str()),
             })
             .unwrap_or("messages");
         let value = insert_table_name(serde_json::to_value(memory)?, table_name);
@@ -539,8 +539,8 @@ impl AppState {
         Self {
             runtime: OnceCell::const_new(),
             sessions: tokio::sync::RwLock::new(HashMap::new()),
-            character_name: "Eliza".to_string(),
-            character_bio: "A helpful AI assistant powered by elizaOS, available via A2A protocol."
+            character_name: "Tokagent".to_string(),
+            character_bio: "A helpful AI assistant powered by tokagentOS, available via A2A protocol."
                 .to_string(),
         }
     }
@@ -548,26 +548,26 @@ impl AppState {
     async fn get_runtime(&self) -> Result<Arc<AgentRuntime>> {
         self.runtime
             .get_or_try_init(|| async {
-                info!("🚀 Initializing elizaOS runtime...");
+                info!("🚀 Initializing tokagentOS runtime...");
 
                 let character = parse_character(CHARACTER_JSON)?;
 
                 let adapter: Arc<dyn DatabaseAdapter> = Arc::new(InMemoryDbAdapter::default());
 
-                let mut plugins: Vec<elizaos::Plugin> = Vec::new();
+                let mut plugins: Vec<tokagentos::Plugin> = Vec::new();
                 
                 if has_openai_key() {
-                   if let Ok(plugin) = create_openai_elizaos_plugin() {
+                   if let Ok(plugin) = create_openai_tokagentos_plugin() {
                        // The OpenAI plugin might return struct or impl Plugin. 
                        // We assume it's compatible or we need Arc<dyn Plugin>?
                        // NOTE: AgentRuntime likely takes concrete struct if possible, or we need to be careful.
-                       // create_openai_elizaos_plugin returns elizaos::Plugin struct usually.
+                       // create_openai_tokagentos_plugin returns tokagentos::Plugin struct usually.
                        plugins.push(plugin);
                    }
                 }
 
                 // Register local bootstrap actions
-                let mut bootstrap = elizaos::Plugin::new("local-bootstrap", "Core actions");
+                let mut bootstrap = tokagentos::Plugin::new("local-bootstrap", "Core actions");
                 bootstrap = bootstrap
                     .with_action(std::sync::Arc::new(local_bootstrap::SimpleAction {
                         name: "REPLY".to_string(),
@@ -592,22 +592,22 @@ impl AppState {
                 runtime.initialize().await?;
 
                 if !has_openai_key() {
-                    // Register a deterministic, no-API-keys model handler (classic ELIZA).
-                    let eliza = Arc::new(ElizaClassicPlugin::new());
+                    // Register a deterministic, no-API-keys model handler (classic TOKAGENT).
+                    let tokagent = Arc::new(TokagentClassicPlugin::new());
 
-                    let eliza_large = eliza.clone();
+                    let tokagent_large = tokagent.clone();
                     runtime
                         .register_model(
                             "TEXT_LARGE",
                             Box::new(move |params: serde_json::Value| {
-                                let eliza = eliza_large.clone();
+                                let tokagent = tokagent_large.clone();
                                 Box::pin(async move {
                                     let prompt = params
                                         .get("prompt")
                                         .and_then(|v| v.as_str())
                                         .unwrap_or("");
                                     let user_text = extract_user_text(prompt);
-                                    let response = eliza.generate_response(user_text);
+                                    let response = tokagent.generate_response(user_text);
                                     // Wrap in JSON as the runtime typically expects structured output for chat
                                     let json_response = serde_json::json!({
                                         "text": response, // The actual message content
@@ -619,19 +619,19 @@ impl AppState {
                         )
                         .await;
 
-                    let eliza_small = eliza.clone();
+                    let tokagent_small = tokagent.clone();
                     runtime
                         .register_model(
                             "TEXT_SMALL",
                             Box::new(move |params: serde_json::Value| {
-                                let eliza = eliza_small.clone();
+                                let tokagent = tokagent_small.clone();
                                 Box::pin(async move {
                                     let prompt = params
                                         .get("prompt")
                                         .and_then(|v| v.as_str())
                                         .unwrap_or("");
                                     let user_text = extract_user_text(prompt);
-                                    let response = eliza.generate_response(user_text);
+                                    let response = tokagent.generate_response(user_text);
                                     // Wrap in JSON as the runtime typically expects structured output for chat
                                     let json_response = serde_json::json!({
                                         "text": response, // The actual message content
@@ -644,7 +644,7 @@ impl AppState {
                         .await;
                 }
 
-                info!("✅ elizaOS runtime initialized");
+                info!("✅ tokagentOS runtime initialized");
                 Ok(runtime)
             })
             .await
@@ -718,11 +718,11 @@ async fn agent_info(State(state): State<Arc<AppState>>) -> impl IntoResponse {
             "reasoning".to_string(),
             "multi-turn".to_string(),
         ],
-        powered_by: "elizaOS".to_string(),
+        powered_by: "tokagentOS".to_string(),
         mode: if has_openai_key() {
             "openai".to_string()
         } else {
-            "eliza-classic".to_string()
+            "tokagent-classic".to_string()
         },
         endpoints,
     })
@@ -987,8 +987,8 @@ async fn chat_stream(
 
 mod local_bootstrap {
     use async_trait::async_trait;
-    use elizaos::types::components::{ActionHandler, ActionDefinition, ActionResult, HandlerOptions};
-    use elizaos::types::{Memory, State};
+    use tokagentos::types::components::{ActionHandler, ActionDefinition, ActionResult, HandlerOptions};
+    use tokagentos::types::{Memory, State};
     use anyhow::Result;
 
     pub struct SimpleAction {
@@ -1048,7 +1048,7 @@ async fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive("eliza_a2a_server=info".parse().unwrap()),
+                .add_directive("tokagent_a2a_server=info".parse().unwrap()),
         )
         .init();
 
@@ -1062,7 +1062,7 @@ async fn main() -> Result<()> {
     // Pre-initialize runtime
     state.get_runtime().await?;
 
-    println!("\n🌐 elizaOS A2A Server (Axum)");
+    println!("\n🌐 tokagentOS A2A Server (Axum)");
     println!("   http://localhost:{}\n", port);
     println!("📚 Endpoints:");
     println!("   GET  /            - Agent info");
@@ -1105,7 +1105,7 @@ mod tests {
 
     #[tokio::test]
     async fn a2a_endpoints_work_without_openai() {
-        // Ensure we run in eliza-classic mode for deterministic tests.
+        // Ensure we run in tokagent-classic mode for deterministic tests.
         std::env::remove_var("OPENAI_API_KEY");
 
         let state = Arc::new(AppState::new());
@@ -1120,7 +1120,7 @@ mod tests {
         assert_eq!(res.status(), StatusCode::OK);
         let body = res.into_body().collect().await.unwrap().to_bytes();
         let v: Value = serde_json::from_slice(&body).unwrap();
-        assert_eq!(v.get("name").and_then(|x| x.as_str()), Some("Eliza"));
+        assert_eq!(v.get("name").and_then(|x| x.as_str()), Some("Tokagent"));
 
         // GET /health
         let res = app

@@ -1,4 +1,4 @@
-"""Terminal-Bench Actions for ElizaOS."""
+"""Terminal-Bench Actions for TokagentOS."""
 
 from .execute import execute_action
 from .list_dir import list_dir_action

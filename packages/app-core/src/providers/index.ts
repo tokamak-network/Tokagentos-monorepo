@@ -16,7 +16,7 @@ export {
   SUBSCRIPTION_PROVIDER_SELECTIONS,
   type SubscriptionProviderSelectionId,
   sortOnboardingProviders,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 
 import { resolveAppAssetUrl } from "../utils/asset-url";
 
@@ -32,7 +32,7 @@ const PROVIDER_LOGO_MAP_DARK: Record<string, string> = {
   xai: "logos/grok-icon-white.png",
   grok: "logos/grok-icon-white.png",
   openrouter: "logos/openrouter-icon-white.png",
-  elizacloud: "logos/elizaos-icon.png",
+  tokagentcloud: "logos/tokagentos-icon.png",
   deepseek: "logos/deepseek-icon.png",
   mistral: "logos/mistral-icon.png",
   together: "logos/together-ai-icon.png",
@@ -53,7 +53,7 @@ const PROVIDER_LOGO_MAP_LIGHT: Record<string, string> = {
   xai: "logos/grok-icon.png",
   grok: "logos/grok-icon.png",
   openrouter: "logos/openrouter-icon.png",
-  elizacloud: "logos/elizaos-icon.png",
+  tokagentcloud: "logos/tokagentos-icon.png",
   deepseek: "logos/deepseek-icon.png",
   mistral: "logos/mistral-icon.png",
   together: "logos/together-ai-icon.png",

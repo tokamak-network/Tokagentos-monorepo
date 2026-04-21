@@ -203,8 +203,8 @@ async def test_evaluator() -> bool:
 async def test_context_and_provider() -> bool:
     """Test Mind2Web context and provider functionality."""
     from benchmarks.mind2web.dataset import Mind2WebDataset
-    from benchmarks.mind2web.eliza_agent import (
-        ELIZAOS_AVAILABLE,
+    from benchmarks.mind2web.tokagent_agent import (
+        TOKAGENTOS_AVAILABLE,
         get_mind2web_context,
         get_mind2web_context_provider,
         set_mind2web_context,
@@ -240,8 +240,8 @@ async def test_context_and_provider() -> bool:
     assert result.values.get("mind2web_step") == 0
     assert result.values.get("mind2web_done") is False
 
-    # Only check for detailed elements when ElizaOS is available
-    if ELIZAOS_AVAILABLE:
+    # Only check for detailed elements when TokagentOS is available
+    if TOKAGENTOS_AVAILABLE:
         assert "Available Elements" in result.text, "Full provider should include elements"
 
     logger.info("✓ Context and provider test passed")
@@ -251,8 +251,8 @@ async def test_context_and_provider() -> bool:
 async def test_action_handler() -> bool:
     """Test Mind2Web action handler."""
     from benchmarks.mind2web.dataset import Mind2WebDataset
-    from benchmarks.mind2web.eliza_agent import (
-        ELIZAOS_AVAILABLE,
+    from benchmarks.mind2web.tokagent_agent import (
+        TOKAGENTOS_AVAILABLE,
         Mind2WebActionHandler,
         get_mind2web_context,
         set_mind2web_context,
@@ -279,7 +279,7 @@ async def test_action_handler() -> bool:
     assert "CLICK" in handler.similes or "BROWSER_ACTION" in handler.similes
     assert "operation" in handler.description
 
-    if ELIZAOS_AVAILABLE:
+    if TOKAGENTOS_AVAILABLE:
         # Test parameters
         params = handler.parameters
         assert len(params) == 3
@@ -300,7 +300,7 @@ async def test_action_handler() -> bool:
 async def test_mock_agent() -> bool:
     """Test mock agent processing."""
     from benchmarks.mind2web.dataset import Mind2WebDataset
-    from benchmarks.mind2web.eliza_agent import MockMind2WebAgent
+    from benchmarks.mind2web.tokagent_agent import MockMind2WebAgent
     from benchmarks.mind2web.types import Mind2WebConfig, Mind2WebSplit
 
     # Load sample tasks

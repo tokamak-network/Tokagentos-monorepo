@@ -1,5 +1,5 @@
-import type { IAgentRuntime, Memory, Room } from "@elizaos/core";
-import { asNonEmptyString, asRecord } from "@elizaos/shared/type-guards";
+import type { IAgentRuntime, Memory, Room } from "@tokagentos/core";
+import { asNonEmptyString, asRecord } from "@tokagentos/shared/type-guards";
 
 const readString = asNonEmptyString;
 

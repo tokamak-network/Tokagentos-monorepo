@@ -85,18 +85,18 @@ export function registerDashboardCommand(program: Command) {
 
       const path = await import("node:path");
       const fs = await import("node:fs");
-      const { resolveElizaPackageRootSync } = await import(
-        "../../utils/eliza-root"
+      const { resolveTokagentPackageRootSync } = await import(
+        "../../utils/tokagent-root"
       );
 
-      const pkgRoot = resolveElizaPackageRootSync({
+      const pkgRoot = resolveTokagentPackageRootSync({
         cwd: process.cwd(),
         argv1: process.argv[1],
         moduleUrl: import.meta.url,
       });
 
       if (!pkgRoot) {
-        console.log(theme.error("Could not locate eliza package root."));
+        console.log(theme.error("Could not locate tokagent package root."));
         process.exitCode = 1;
         return;
       }
@@ -111,7 +111,7 @@ export function registerDashboardCommand(program: Command) {
         );
         console.log(
           theme.muted(
-            "Start the agent with `eliza start` and use the API at http://localhost:31337",
+            "Start the agent with `tokagent start` and use the API at http://localhost:31337",
           ),
         );
         process.exitCode = 1;

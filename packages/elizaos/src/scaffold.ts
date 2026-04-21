@@ -148,7 +148,7 @@ export function toDisplayName(value: string): string {
 }
 
 export function buildPluginTemplateValues(input: {
-  elizaVersion: string;
+  tokagentVersion: string;
   githubUsername: string;
   pluginDescription: string;
   projectName: string;
@@ -158,7 +158,7 @@ export function buildPluginTemplateValues(input: {
   const pluginBaseName = slug.startsWith("plugin-") ? slug : `plugin-${slug}`;
   return {
     displayName: toDisplayName(pluginBaseName.replace(/^plugin-/, "")),
-    elizaVersion: input.elizaVersion,
+    tokagentVersion: input.tokagentVersion,
     githubUsername: input.githubUsername,
     pluginBaseName,
     pluginDescription: input.pluginDescription,
@@ -201,11 +201,11 @@ export function getPluginReplacementEntries(
     [`\${PLUGINDESCRIPTION}`, values.pluginDescription],
     [`\${GITHUB_USERNAME}`, values.githubUsername],
     [`\${REPO_URL}`, values.repoUrl],
-    ["__ELIZAOS_VERSION__", values.elizaVersion],
+    ["__TOKAGENTOS_VERSION__", values.tokagentVersion],
     ["@elizaos/rust-plugin-starter", `@elizaos/${rustPluginName}`],
     ["@elizaos/plugin-starter", `@elizaos/${values.pluginBaseName}`],
-    ["elizaos_plugin_starter", `elizaos_${values.pluginSnake}`],
-    ["elizaos-plugin-starter", `elizaos-${values.pluginBaseName}`],
+    ["tokagentos_plugin_starter", `tokagentos_${values.pluginSnake}`],
+    ["tokagentos-plugin-starter", `tokagentos-${values.pluginBaseName}`],
     ["rust_plugin_starter", `rust_${values.pluginSnake}`],
     ["python_plugin_starter", pythonSnake],
     ["rust-plugin-starter", rustPluginName],
@@ -332,7 +332,7 @@ export function createRenderedTempDir(options: {
   replacements: Array<[string, string]>;
   sourceDir: string;
 }): { dir: string; managedFiles: Record<string, string> } {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "elizaos-template-"));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tokagentos-template-"));
   const managedFiles = renderTemplateTree({
     destinationDir: dir,
     replacements: options.replacements,
@@ -344,9 +344,9 @@ export function createRenderedTempDir(options: {
 export function resolveTemplateUpstream(
   upstream: TemplateUpstream,
 ): TemplateUpstream {
-  const hasEnvBranch = Object.hasOwn(process.env, "ELIZAOS_UPSTREAM_BRANCH");
-  const envRepo = process.env.ELIZAOS_UPSTREAM_REPO?.trim();
-  const envBranch = process.env.ELIZAOS_UPSTREAM_BRANCH?.trim();
+  const hasEnvBranch = Object.hasOwn(process.env, "TOKAGENTOS_UPSTREAM_BRANCH");
+  const envRepo = process.env.TOKAGENTOS_UPSTREAM_REPO?.trim();
+  const envBranch = process.env.TOKAGENTOS_UPSTREAM_BRANCH?.trim();
   return {
     ...upstream,
     branch: hasEnvBranch ? envBranch || undefined : upstream.branch,

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ELIZA on ICP - elizaOS</title>
+  <title>TOKAGENT on ICP - tokagentOS</title>
   <style>
     :root {
       --bg-primary: #0a0a0a;
@@ -18,7 +18,7 @@
       --accent-hover: #0052cc;
       --accent-glow: rgba(0, 102, 255, 0.15);
       --user-bubble: #1a1a2e;
-      --eliza-bubble: #0d1117;
+      --tokagent-bubble: #0d1117;
       --success: #10b981;
       --error: #ef4444;
       --icp-purple: #29ABE2;
@@ -216,7 +216,7 @@
     }
 
     .message.assistant .message-text {
-      background: var(--eliza-bubble);
+      background: var(--tokagent-bubble);
       border: 1px solid var(--border-color);
       border-radius: 16px 16px 16px 4px;
     }
@@ -459,13 +459,13 @@
         <div class="logo">
           <div class="logo-icon">E</div>
           <div class="logo-text">
-            <h1>ELIZA <span class="icp-badge">ICP</span></h1>
-            <span>elizaOS on the Internet Computer</span>
+            <h1>TOKAGENT <span class="icp-badge">ICP</span></h1>
+            <span>tokagentOS on the Internet Computer</span>
           </div>
         </div>
         <div class="header-right">
           <div class="mode-switcher" id="mode-switcher">
-            <button class="mode-btn" data-mode="ElizaClassic" id="mode-classic" disabled>Classic</button>
+            <button class="mode-btn" data-mode="TokagentClassic" id="mode-classic" disabled>Classic</button>
             <button class="mode-btn" data-mode="DfinityLLM" id="mode-dfinity" disabled>DFINITY</button>
             <button class="mode-btn" data-mode="OpenAI" id="mode-openai" disabled>GPT-4o</button>
             <button class="mode-btn" data-mode="OnChainLLM" id="mode-onchain" disabled>On-Chain</button>
@@ -504,7 +504,7 @@
         </button>
       </form>
       <div class="footer-meta">
-        Powered by <a href="https://elizaos.ai" target="_blank">elizaOS</a> • 
+        Powered by <a href="https://tokagentos.ai" target="_blank">tokagentOS</a> • 
         Running on <a href="https://internetcomputer.org" target="_blank">Internet Computer</a> •
         VetKeys Enabled
       </div>

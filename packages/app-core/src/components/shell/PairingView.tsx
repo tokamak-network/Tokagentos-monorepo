@@ -7,7 +7,7 @@ import {
   CardTitle,
   Input,
   Label,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { appNameInterpolationVars, useBranding } from "../../config/branding";
 import { useApp } from "../../state";
 

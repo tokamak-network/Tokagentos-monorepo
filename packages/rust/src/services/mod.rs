@@ -1,6 +1,6 @@
-//! Services for elizaOS
+//! Services for tokagentOS
 //!
-//! This module contains service implementations for the elizaOS runtime.
+//! This module contains service implementations for the tokagentOS runtime.
 
 pub mod hook_service;
 pub mod message_service;

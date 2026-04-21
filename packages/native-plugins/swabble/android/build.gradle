@@ -10,7 +10,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
-    namespace "ai.eliza.plugins.swabble"
+    namespace "ai.tokagent.plugins.swabble"
     compileSdk project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 34
 
     defaultConfig {

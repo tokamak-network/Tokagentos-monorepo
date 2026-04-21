@@ -395,7 +395,7 @@ class _UserState:
         archetype = self.classify_archetype()
 
         # Use the balanced calculator logic (ported from Python plugin)
-        from elizaos_plugin_social_alpha.trust_score import (
+        from tokagentos_plugin_social_alpha.trust_score import (
             TrustScoreMetrics, calculate_balanced_trust_score,
         )
 

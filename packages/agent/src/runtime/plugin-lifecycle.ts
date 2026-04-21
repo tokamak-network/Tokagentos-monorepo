@@ -10,14 +10,14 @@ import type {
   Service,
   ServiceClass,
   ServiceTypeName,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   resolveActionContexts,
   resolveProviderContexts,
 } from "../../../typescript/src/utils/context-catalog.ts";
 
-/** elizaOS runtime plugin lifecycle bookkeeping (not exported from @elizaos/core). */
-type ElizaPluginOwnership = {
+/** tokagentOS runtime plugin lifecycle bookkeeping (not exported from @tokagentos/core). */
+type TokagentPluginOwnership = {
   pluginName: string;
   plugin: Plugin;
   registeredPlugin: Plugin | null;
@@ -25,26 +25,26 @@ type ElizaPluginOwnership = {
   providers: Provider[];
   evaluators: Evaluator[];
   routes: Route[];
-  events: ElizaPluginEventRegistration[];
-  models: ElizaPluginModelRegistration[];
-  services: ElizaPluginServiceRegistration[];
+  events: TokagentPluginEventRegistration[];
+  models: TokagentPluginModelRegistration[];
+  services: TokagentPluginServiceRegistration[];
   sendHandlerSources: string[];
   hasAdapter: boolean;
   registeredAt: number;
 };
 
-type ElizaPluginEventRegistration = {
+type TokagentPluginEventRegistration = {
   eventName: string;
   handler: (params: unknown) => Promise<void>;
 };
 
-type ElizaPluginModelRegistration = {
+type TokagentPluginModelRegistration = {
   modelType: string;
   handler: PluginModelRegistration["handler"];
   provider: string;
 };
 
-type ElizaPluginServiceRegistration = {
+type TokagentPluginServiceRegistration = {
   serviceType: ServiceTypeName;
   serviceClass: ServiceClass;
 };
@@ -58,10 +58,10 @@ type RuntimeProvider = NonNullable<Plugin["providers"]>[number] & ContextScoped;
 type RuntimeEvaluator = NonNullable<Plugin["evaluators"]>[number];
 type RuntimeRoute = NonNullable<Plugin["routes"]>[number];
 type RuntimeServiceClass = NonNullable<Plugin["services"]>[number];
-type RuntimeEventHandler = ElizaPluginEventRegistration["handler"];
-type RuntimeEventRegistration = ElizaPluginEventRegistration;
-type RuntimeModelRegistration = ElizaPluginModelRegistration;
-type RuntimeServiceRegistration = ElizaPluginServiceRegistration;
+type RuntimeEventHandler = TokagentPluginEventRegistration["handler"];
+type RuntimeEventRegistration = TokagentPluginEventRegistration;
+type RuntimeModelRegistration = TokagentPluginModelRegistration;
+type RuntimeServiceRegistration = TokagentPluginServiceRegistration;
 
 type RuntimeSendHandler = (
   runtime: unknown,
@@ -109,11 +109,11 @@ type RuntimePluginServiceStartCapture = {
   pluginName: string;
 };
 
-export type RuntimePluginOwnership = ElizaPluginOwnership;
+export type RuntimePluginOwnership = TokagentPluginOwnership;
 
 type RuntimeWithPluginLifecycle = AgentRuntime & {
-  __elizaPluginLifecycleInstalled?: boolean;
-  __elizaPluginOwnership?: Map<string, RuntimePluginOwnership>;
+  __tokagentPluginLifecycleInstalled?: boolean;
+  __tokagentPluginOwnership?: Map<string, RuntimePluginOwnership>;
   unloadPlugin?: (pluginName: string) => Promise<RuntimePluginOwnership | null>;
   reloadPlugin?: (plugin: Plugin) => Promise<void>;
   applyPluginConfig?: (
@@ -156,10 +156,10 @@ function getRuntimePrivateState(runtime: AgentRuntime): RuntimePrivateState {
 function getPluginOwnershipStore(
   runtime: RuntimeWithPluginLifecycle,
 ): Map<string, RuntimePluginOwnership> {
-  if (!runtime.__elizaPluginOwnership) {
-    runtime.__elizaPluginOwnership = new Map();
+  if (!runtime.__tokagentPluginOwnership) {
+    runtime.__tokagentPluginOwnership = new Map();
   }
-  return runtime.__elizaPluginOwnership;
+  return runtime.__tokagentPluginOwnership;
 }
 
 function getOwnershipTarget(
@@ -619,7 +619,7 @@ function trackRoutesAndPluginRef(
 
 export function installRuntimePluginLifecycle(runtime: AgentRuntime): void {
   const runtimeWithLifecycle = runtime as RuntimeWithPluginLifecycle;
-  if (runtimeWithLifecycle.__elizaPluginLifecycleInstalled) {
+  if (runtimeWithLifecycle.__tokagentPluginLifecycleInstalled) {
     return;
   }
 
@@ -911,7 +911,7 @@ export function installRuntimePluginLifecycle(runtime: AgentRuntime): void {
   runtimeWithLifecycle.getAllPluginOwnership = () =>
     Array.from(getPluginOwnershipStore(runtimeWithLifecycle).values());
 
-  runtimeWithLifecycle.__elizaPluginLifecycleInstalled = true;
+  runtimeWithLifecycle.__tokagentPluginLifecycleInstalled = true;
 }
 
 export function supportsRuntimePluginLifecycle(

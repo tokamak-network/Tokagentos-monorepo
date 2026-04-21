@@ -1,4 +1,4 @@
-declare module "@elizaos/scenario-schema" {
+declare module "@tokagentos/scenario-schema" {
   export type CapturedAction = {
     actionName: string;
     parameters?: unknown;

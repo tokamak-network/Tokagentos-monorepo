@@ -4,14 +4,14 @@ import {
   EMOTE_BY_ID,
   EMOTE_CATALOG,
 } from "@elizaos/app-companion/emotes/catalog";
-import { type AgentRuntime, logger, ModelType, type UUID } from "@elizaos/core";
-import { asRecord } from "@elizaos/shared/type-guards";
-import type { ElizaConfig } from "../config/config.js";
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
+import { type AgentRuntime, logger, ModelType, type UUID } from "@tokagentos/core";
+import { asRecord } from "@tokagentos/shared/type-guards";
+import type { TokagentConfig } from "../config/config.js";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
 import type {
   CustomActionDef,
   CustomActionHandler,
-} from "../config/types.eliza.js";
+} from "../config/types.tokagent.js";
 import {
   buildTestHandler,
   registerCustomActionLive,
@@ -89,7 +89,7 @@ export interface MiscRouteContext {
   pathname: string;
   url: URL;
   state: {
-    config: ElizaConfig;
+    config: TokagentConfig;
     runtime: AgentRuntime | null;
     agentState: string;
     agentName: string;
@@ -314,7 +314,7 @@ export async function handleMiscRoutes(
     if (!targetClientId) {
       error(
         res,
-        "Missing client id. Provide X-Eliza-Client-Id header or clientId in the request body.",
+        "Missing client id. Provide X-Tokagent-Client-Id header or clientId in the request body.",
         400,
       );
       return true;
@@ -477,7 +477,7 @@ export async function handleMiscRoutes(
   // ── Custom Actions CRUD ──────────────────────────────────────────────
 
   if (method === "GET" && pathname === "/api/custom-actions") {
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     json(res, { actions: config.customActions ?? [] });
     return true;
   }
@@ -564,10 +564,10 @@ export async function handleMiscRoutes(
       updatedAt: now,
     };
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     if (!config.customActions) config.customActions = [];
     config.customActions.push(actionDef);
-    saveElizaConfig(config);
+    saveTokagentConfig(config);
 
     if (actionDef.enabled) {
       registerCustomActionLive(actionDef);
@@ -652,7 +652,7 @@ export async function handleMiscRoutes(
     );
     if (!body) return true;
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const def = (config.customActions ?? []).find((a) => a.id === actionId);
     if (!def) {
       error(res, "Action not found", 404);
@@ -700,7 +700,7 @@ export async function handleMiscRoutes(
     const body = await readJsonBody<Record<string, unknown>>(req, res);
     if (!body) return true;
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const actions = config.customActions ?? [];
     const idx = actions.findIndex((a) => a.id === actionId);
     if (idx === -1) {
@@ -764,7 +764,7 @@ export async function handleMiscRoutes(
 
     actions[idx] = updated;
     config.customActions = actions;
-    saveElizaConfig(config);
+    saveTokagentConfig(config);
 
     json(res, { ok: true, action: updated });
     return true;
@@ -773,7 +773,7 @@ export async function handleMiscRoutes(
   if (method === "DELETE" && customActionMatch) {
     const actionId = decodeURIComponent(customActionMatch[1]);
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const actions = config.customActions ?? [];
     const idx = actions.findIndex((a) => a.id === actionId);
     if (idx === -1) {
@@ -783,7 +783,7 @@ export async function handleMiscRoutes(
 
     actions.splice(idx, 1);
     config.customActions = actions;
-    saveElizaConfig(config);
+    saveTokagentConfig(config);
 
     json(res, { ok: true });
     return true;

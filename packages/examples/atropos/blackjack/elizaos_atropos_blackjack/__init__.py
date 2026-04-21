@@ -1,19 +1,19 @@
 """
-ElizaOS Atropos Blackjack Environment
+TokagentOS Atropos Blackjack Environment
 
-A Blackjack environment for training ElizaOS agents using reinforcement learning.
+A Blackjack environment for training TokagentOS agents using reinforcement learning.
 Integrates with OpenAI Gymnasium's Blackjack environment.
 """
 
-from elizaos_atropos_blackjack.types import (
+from tokagentos_atropos_blackjack.types import (
     BlackjackAction,
     BlackjackState,
     BlackjackResult,
     EpisodeResult,
 )
-from elizaos_atropos_blackjack.environment import BlackjackEnvironment
-from elizaos_atropos_blackjack.agent import BlackjackAgent
-from elizaos_atropos_blackjack.strategy import BasicStrategy, optimal_action
+from tokagentos_atropos_blackjack.environment import BlackjackEnvironment
+from tokagentos_atropos_blackjack.agent import BlackjackAgent
+from tokagentos_atropos_blackjack.strategy import BasicStrategy, optimal_action
 
 __version__ = "1.0.0"
 

@@ -23,8 +23,8 @@ export type CharacterDefinition = {
 
 export const CHARACTER_DEFINITIONS: CharacterDefinition[] = [
   {
-    id: "eliza",
-    name: "Eliza",
+    id: "tokagent",
+    name: "Tokagent",
     avatarIndex: 1,
     voicePresetId: "sarah",
     greetingAnimation: "animations/greetings/greeting1.fbx.gz",

@@ -4,7 +4,7 @@
       "mode": "quick"
     },
     "agentbench": {
-      "elizaos": true,
+      "tokagentos": true,
       "max_tasks": 1,
       "env": [
         "os"
@@ -20,7 +20,7 @@
       "max_messages": 5
     },
     "experience": {
-      "mode": "eliza-agent",
+      "mode": "tokagent-agent",
       "experiences": 10,
       "queries": 2,
       "learning_cycles": 1
@@ -53,7 +53,7 @@
       "max_tasks": 1
     },
     "rlm_bench": {
-      "mode": "eliza",
+      "mode": "tokagent",
       "tasks_per_config": 1,
       "context_lengths": [
         1000,
@@ -91,7 +91,7 @@
       "max_tasks": 2
     },
     "trust": {
-      "handler": "eliza",
+      "handler": "tokagent",
       "categories": [
         "prompt_injection"
       ],

@@ -1,6 +1,6 @@
-# elizaOS MCP Agent Server - Python
+# tokagentOS MCP Agent Server - Python
 
-Exposes an elizaOS agent as an MCP (Model Context Protocol) server using Python.
+Exposes an tokagentOS agent as an MCP (Model Context Protocol) server using Python.
 
 ## Requirements
 

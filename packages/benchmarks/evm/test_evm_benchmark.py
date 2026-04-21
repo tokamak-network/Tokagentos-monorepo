@@ -5,7 +5,7 @@ Covers:
   - contract_catalog: data integrity, selector uniqueness, boundary values
   - skill_templates: template generation, TypeScript validity
   - exploration_strategy: state tracking, phase transitions, edge cases
-  - eliza_explorer: construction, code pattern extraction
+  - tokagent_explorer: construction, code pattern extraction
   - anvil_env: environment creation, reward calculation
 """
 
@@ -553,14 +553,14 @@ class TestAnvilEnv:
 
 
 # =========================================================================
-# eliza_explorer tests
+# tokagent_explorer tests
 # =========================================================================
 
-class TestElizaExplorerConstruction:
+class TestTokagentExplorerConstruction:
 
     def test_default_construction(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=3)
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=3)
         assert explorer.max_messages == 3
         assert explorer.model_name == "qwen/qwen3-32b"
         assert explorer.chain == "general"
@@ -569,13 +569,13 @@ class TestElizaExplorerConstruction:
         assert explorer._llm is None
 
     def test_construction_with_chain(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(chain="hyperliquid", max_messages=5)
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(chain="hyperliquid", max_messages=5)
         assert explorer.chain == "hyperliquid"
 
     def test_construction_with_env_config(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(
             environment_config="general_env.json",
             max_messages=5,
         )
@@ -583,20 +583,20 @@ class TestElizaExplorerConstruction:
         assert explorer.env_config["name"] == "general_evm_benchmark"
 
     def test_timeout_default(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         assert explorer._timeout_ms == 30000
 
     def test_timeout_from_config(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(
             environment_config="hyperliquid_env.json",
         )
         assert explorer._timeout_ms == 60000
 
     def test_ensure_llm_raises_without_key(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         # Remove all possible API keys
         saved: dict[str, str] = {}
         for var in ("GROQ_API_KEY", "OPENROUTER_API_KEY", "OPENAI_API_KEY"):
@@ -610,8 +610,8 @@ class TestElizaExplorerConstruction:
             os.environ.update(saved)
 
     def test_metrics_structure(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1, run_index=42)
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1, run_index=42)
         m = explorer.metrics
         assert m["run_index"] == 42
         assert m["model"] == "qwen/qwen3-32b"
@@ -620,16 +620,16 @@ class TestElizaExplorerConstruction:
         assert isinstance(m["contracts_discovered"], dict)
 
     def test_code_pattern_extracts_typescript(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         text = "here is code:\n```typescript\nconst x = 1;\n```\nand more"
         matches = explorer.code_pattern.findall(text)
         assert len(matches) == 1
         assert "const x = 1;" in matches[0]
 
     def test_code_pattern_extracts_multiple_blocks(self):
-        from benchmarks.evm.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.evm.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         text = "```ts\nblock1\n```\ntext\n```javascript\nblock2\n```"
         matches = explorer.code_pattern.findall(text)
         assert len(matches) == 2

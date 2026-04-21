@@ -15,9 +15,9 @@ import argparse
 import re
 from pathlib import Path
 
-# elizaOS Python packages that can be dependencies (auto-discovered)
+# tokagentOS Python packages that can be dependencies (auto-discovered)
 # These are package names that appear in dependencies
-ELIZAOS_PACKAGE_PREFIXES = ["elizaos", "elizaos-plugin-"]
+TOKAGENTOS_PACKAGE_PREFIXES = ["tokagentos", "tokagentos-plugin-"]
 
 
 def discover_package_dirs(workspace_root: Path) -> list[Path]:
@@ -40,8 +40,8 @@ def discover_package_dirs(workspace_root: Path) -> list[Path]:
     return dirs
 
 
-def get_elizaos_package_names(workspace_root: Path) -> set[str]:
-    """Get all elizaos package names from pyproject.toml files."""
+def get_tokagentos_package_names(workspace_root: Path) -> set[str]:
+    """Get all tokagentos package names from pyproject.toml files."""
     names = set()
     for pkg_dir in discover_package_dirs(workspace_root):
         pyproject = pkg_dir / "pyproject.toml"
@@ -50,7 +50,7 @@ def get_elizaos_package_names(workspace_root: Path) -> set[str]:
             match = re.search(r'^name\s*=\s*"([^"]+)"', content, re.MULTILINE)
             if match:
                 name = match.group(1)
-                if name.startswith("elizaos"):
+                if name.startswith("tokagentos"):
                     names.add(name)
     return names
 
@@ -94,9 +94,9 @@ def update_pyproject_version(pyproject_path: Path, version: str, dry_run: bool) 
 
 
 def update_pyproject_dependencies(
-    pyproject_path: Path, version: str, elizaos_packages: set[str], dry_run: bool
+    pyproject_path: Path, version: str, tokagentos_packages: set[str], dry_run: bool
 ) -> int:
-    """Update elizaos dependency constraints in pyproject.toml."""
+    """Update tokagentos dependency constraints in pyproject.toml."""
     if not pyproject_path.exists():
         return 0
 
@@ -104,9 +104,9 @@ def update_pyproject_dependencies(
     original = content
     changes = 0
 
-    # Update dependencies like "elizaos>=1.0.0" to "elizaos>=2.0.0"
-    for pkg in elizaos_packages:
-        # Match patterns like "elizaos>=1.0.0" or "elizaos-plugin-mcp>=2.0.0"
+    # Update dependencies like "tokagentos>=1.0.0" to "tokagentos>=2.0.0"
+    for pkg in tokagentos_packages:
+        # Match patterns like "tokagentos>=1.0.0" or "tokagentos-plugin-mcp>=2.0.0"
         pattern = rf'("{pkg})([><=!~]+)([^"]+)"'
 
         def replace_version(m: re.Match) -> str:
@@ -183,10 +183,10 @@ def main():
 
     # Auto-discover packages
     package_dirs = discover_package_dirs(workspace_root)
-    elizaos_packages = get_elizaos_package_names(workspace_root)
+    tokagentos_packages = get_tokagentos_package_names(workspace_root)
 
     print(f"📂 Found {len(package_dirs)} Python packages")
-    print(f"🏷️  Found {len(elizaos_packages)} elizaos package names\n")
+    print(f"🏷️  Found {len(tokagentos_packages)} tokagentos package names\n")
 
     total_packages = 0
     total_deps = 0
@@ -203,7 +203,7 @@ def main():
 
         # Update dependencies
         deps_updated = update_pyproject_dependencies(
-            pyproject, version, elizaos_packages, args.dry_run
+            pyproject, version, tokagentos_packages, args.dry_run
         )
         total_deps += deps_updated
 

@@ -1,6 +1,6 @@
 ---
 title: "Batch queue subsystem"
-description: "Why @elizaos/core ships utils/batch-queue and how PriorityQueue, BatchProcessor, TaskDrain, and BatchQueue fit together"
+description: "Why @tokagentos/core ships utils/batch-queue and how PriorityQueue, BatchProcessor, TaskDrain, and BatchQueue fit together"
 ---
 
 This page mirrors the contributor-oriented markdown in the core package (`packages/typescript/docs/BATCH_QUEUE.md`) so the public docs stay aligned with source.
@@ -15,7 +15,7 @@ Several subsystems need overlapping concerns:
 
 - **Ordering** — e.g. high / normal / low priority before processing.
 - **Bounded parallelism** — avoid unbounded `Promise.all` against model APIs.
-- **Retries and backoff** — align with the rest of the runtime (`utils/retry` in `@elizaos/core`).
+- **Retries and backoff** — align with the rest of the runtime (`utils/retry` in `@tokagentos/core`).
 - **Scheduling** — repeat tasks with `tags: ["queue", "repeat"]`, stable metadata (`maxFailures: -1`, etc.).
 
 It is tempting to fix **only** the worst hot path (for example a three-line semaphore in one service). That is often correct for a **single** bottleneck. The risk is **proliferation**: each new feature copies a slightly different queue, drain loop, or `createTask` + `registerTaskWorker` pair. Those copies drift, disagree on edge cases (pause, dispose, retry), and make review harder (“is this the same pattern as embedding or a new one?”).
@@ -67,9 +67,9 @@ Anything other than `high`, `normal`, or `low` is logged **once** per queue (via
 
 ## Where to read code
 
-- Module rationale (reviewer-oriented): [`batch-queue.ts` (core source)](https://github.com/elizaos/eliza/blob/main/packages/typescript/src/utils/batch-queue.ts)
-- Composition and `BatchQueue` behavior: [`batch-queue/index.ts`](https://github.com/elizaos/eliza/blob/main/packages/typescript/src/utils/batch-queue/index.ts)
-- Canonical markdown (stays in sync with this page): [`BATCH_QUEUE.md`](https://github.com/elizaos/eliza/blob/main/packages/typescript/docs/BATCH_QUEUE.md)
+- Module rationale (reviewer-oriented): [`batch-queue.ts` (core source)](https://github.com/tokagentos/tokagent/blob/main/packages/typescript/src/utils/batch-queue.ts)
+- Composition and `BatchQueue` behavior: [`batch-queue/index.ts`](https://github.com/tokagentos/tokagent/blob/main/packages/typescript/src/utils/batch-queue/index.ts)
+- Canonical markdown (stays in sync with this page): [`BATCH_QUEUE.md`](https://github.com/tokagentos/tokagent/blob/main/packages/typescript/docs/BATCH_QUEUE.md)
 - Tests: `batch-queue.test.ts`, `task-drain.test.ts` under `packages/typescript/src/__tests__/`
 
 ## Related docs

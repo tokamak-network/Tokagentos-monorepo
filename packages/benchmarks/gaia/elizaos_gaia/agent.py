@@ -1,7 +1,7 @@
 """
 GAIA Agent Implementation
 
-An agent specialized for solving GAIA benchmark tasks using ElizaOS runtime.
+An agent specialized for solving GAIA benchmark tasks using TokagentOS runtime.
 Supports multiple LLM providers: Groq (default), OpenAI, Anthropic, Ollama,
 LocalAI, OpenRouter, Google GenAI, and XAI.
 """
@@ -14,20 +14,20 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
+    from tokagentos.runtime import AgentRuntime
 
-from elizaos_gaia.providers import (
+from tokagentos_gaia.providers import (
     ModelConfig,
     call_provider,
 )
-from elizaos_gaia.tools import (
+from tokagentos_gaia.tools import (
     Calculator,
     CodeExecutor,
     FileProcessor,
     WebBrowserTool,
     WebSearchTool,
 )
-from elizaos_gaia.types import (
+from tokagentos_gaia.types import (
     GAIAConfig,
     GAIAQuestion,
     GAIAResult,
@@ -83,7 +83,7 @@ The answer should be concise and match what is being asked (a number, name, date
 
         Args:
             config: GAIA benchmark configuration
-            runtime: Optional ElizaOS runtime for LLM access
+            runtime: Optional TokagentOS runtime for LLM access
         """
         if not isinstance(config, GAIAConfig):
             raise TypeError(f"config must be GAIAConfig, got {type(config).__name__}")
@@ -153,9 +153,9 @@ The answer should be concise and match what is being asked (a number, name, date
         Returns:
             GAIAResult with the predicted answer and metrics
         """
-        # Canonical Eliza runtime path: route through AgentRuntime.message_service
-        if self.runtime is not None and self.config.use_eliza_runtime:
-            return await self._solve_with_eliza_runtime(question)
+        # Canonical Tokagent runtime path: route through AgentRuntime.message_service
+        if self.runtime is not None and self.config.use_tokagent_runtime:
+            return await self._solve_with_tokagent_runtime(question)
 
         start_time = time.time()
         steps: list[StepRecord] = []
@@ -284,14 +284,14 @@ The answer should be concise and match what is being asked (a number, name, date
             error=error_message,
         )
 
-    async def _solve_with_eliza_runtime(self, question: GAIAQuestion) -> GAIAResult:
-        """Solve a question using the canonical Eliza runtime message loop."""
-        from elizaos.types.memory import Memory
-        from elizaos.types.primitives import Content, as_uuid, string_to_uuid
+    async def _solve_with_tokagent_runtime(self, question: GAIAQuestion) -> GAIAResult:
+        """Solve a question using the canonical Tokagent runtime message loop."""
+        from tokagentos.types.memory import Memory
+        from tokagentos.types.primitives import Content, as_uuid, string_to_uuid
 
         runtime = self.runtime
         if runtime is None:
-            raise RuntimeError("runtime is required for Eliza runtime mode")
+            raise RuntimeError("runtime is required for Tokagent runtime mode")
 
         start_time = time.time()
         steps: list[StepRecord] = []
@@ -348,7 +348,7 @@ The answer should be concise and match what is being asked (a number, name, date
                 steps.append(
                     StepRecord(
                         step_number=iteration + 1,
-                        action="eliza_message",
+                        action="tokagent_message",
                         reasoning=response_text,
                         timestamp_ms=time.time() * 1000,
                         duration_ms=(time.time() - step_start) * 1000,
@@ -480,8 +480,8 @@ The answer should be concise and match what is being asked (a number, name, date
     async def _get_llm_response(self) -> tuple[str, int]:
         """Get response from LLM using configured provider."""
         if self.runtime:
-            # Use ElizaOS runtime
-            from elizaos.types.model import ModelType
+            # Use TokagentOS runtime
+            from tokagentos.types.model import ModelType
 
             result = await self.runtime.use_model(
                 ModelType.TEXT_LARGE,

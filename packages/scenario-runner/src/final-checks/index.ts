@@ -5,11 +5,11 @@
  * check types are introduced.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   ScenarioContext,
   ScenarioFinalCheck,
-} from "@elizaos/scenario-schema";
+} from "@tokagentos/scenario-schema";
 import type { FinalCheckReport, FinalCheckStatus } from "../types.ts";
 
 export interface FinalCheckHandlerContext {

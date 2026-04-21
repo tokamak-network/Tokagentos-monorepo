@@ -15,7 +15,7 @@
  * Requires at least one LLM provider API key. Skips when unavailable.
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect } from "vitest";
 import { selectLiveProvider } from "../../../../test/helpers/live-provider";
 import { stochasticTest } from "../../../packages/app-core/test/helpers/stochastic-test";

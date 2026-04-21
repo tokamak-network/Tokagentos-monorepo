@@ -1,6 +1,6 @@
 import { DEFAULT_CONFIG, type AppConfig } from "./types";
 
-const CONFIG_KEY = "eliza:cap-config";
+const CONFIG_KEY = "tokagent:cap-config";
 
 export function loadConfig(): AppConfig {
   try {

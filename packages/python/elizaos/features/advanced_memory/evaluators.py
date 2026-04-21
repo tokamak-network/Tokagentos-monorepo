@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from elizaos.types import Evaluator, HandlerOptions
+from tokagentos.types import Evaluator, HandlerOptions
 
 
 async def _summarization_validate(runtime, message, _state=None) -> bool:

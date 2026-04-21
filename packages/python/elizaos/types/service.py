@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 
 class ServiceTypeRegistry:

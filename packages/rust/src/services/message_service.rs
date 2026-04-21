@@ -1,4 +1,4 @@
-//! Message service for elizaOS
+//! Message service for tokagentOS
 //!
 //! This module provides the message handling service that processes incoming messages
 //! and generates responses using the agent's character, providers, and model handlers.

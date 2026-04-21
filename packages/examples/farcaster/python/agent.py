@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Farcaster Agent - OpenAI + Neynar API using the full elizaOS pipeline.
+Farcaster Agent - OpenAI + Neynar API using the full tokagentOS pipeline.
 
 This example:
-- Uses OpenAI for TEXT_SMALL/TEXT_LARGE/TEXT_EMBEDDING via elizaos-plugin-openai
+- Uses OpenAI for TEXT_SMALL/TEXT_LARGE/TEXT_EMBEDDING via tokagentos-plugin-openai
 - Polls Farcaster mentions and replies via the callback pattern
-- Persists memories via elizaos-plugin-sql
+- Persists memories via tokagentos-plugin-sql
 
 Safety:
 - Set FARCASTER_DRY_RUN=true to avoid posting.
@@ -25,13 +25,13 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from elizaos import Content, Memory, MentionContext, string_to_uuid
-from elizaos.runtime import AgentRuntime
-from elizaos.types.environment import ChannelType, Entity, Room, World
-from elizaos.types.primitives import UUID
-from elizaos_plugin_sql import sql_plugin
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_plugin_farcaster import (
+from tokagentos import Content, Memory, MentionContext, string_to_uuid
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.environment import ChannelType, Entity, Room, World
+from tokagentos.types.primitives import UUID
+from tokagentos_plugin_sql import sql_plugin
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_plugin_farcaster import (
     FarcasterClient,
     FarcasterConfig,
     FarcasterError,

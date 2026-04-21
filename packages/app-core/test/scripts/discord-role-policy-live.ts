@@ -13,7 +13,7 @@ import {
   type Room,
   setConnectorAdminWhitelist,
   type World,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   PTYService,
   sendToAgentAction,

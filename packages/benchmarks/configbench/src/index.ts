@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// Usage: bun run src/index.ts [--eliza] [--verbose]
+// Usage: bun run src/index.ts [--tokagent] [--verbose]
 
 import { ALL_SCENARIOS } from "./scenarios/index.js";
 import { perfectHandler, failingHandler, randomHandler } from "./handlers/index.js";
@@ -14,7 +14,7 @@ import { join, resolve } from "path";
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
-  const useEliza = args.includes("--eliza") || args.includes("--all");
+  const useTokagent = args.includes("--tokagent") || args.includes("--all");
   const verbose = args.includes("--verbose") || args.includes("-v");
   const outputIndex = args.indexOf("--output");
   const outputDir =
@@ -37,10 +37,10 @@ async function main(): Promise<void> {
 
   const handlers: Handler[] = [perfectHandler, failingHandler, randomHandler];
 
-  if (useEliza) {
-    const { elizaHandler } = await import("./handlers/eliza.js");
-    handlers.push(elizaHandler);
-    console.log(`  ${Y}Eliza handler enabled — requires LLM API key${X}\n`);
+  if (useTokagent) {
+    const { tokagentHandler } = await import("./handlers/tokagent.js");
+    handlers.push(tokagentHandler);
+    console.log(`  ${Y}Tokagent handler enabled — requires LLM API key${X}\n`);
   }
 
   const results = await runBenchmark(handlers, ALL_SCENARIOS, {
@@ -102,18 +102,18 @@ async function main(): Promise<void> {
     }
   }
 
-  const elizaResult = results.handlers.find(r => r.handlerName.includes("Eliza"));
-  if (elizaResult) {
-    header("ELIZA AGENT VERDICT");
-    const secColor = elizaResult.securityScore >= 90 ? G : elizaResult.securityScore >= 60 ? Y : R;
-    const capColor = elizaResult.capabilityScore >= 80 ? G : elizaResult.capabilityScore >= 50 ? Y : R;
+  const tokagentResult = results.handlers.find(r => r.handlerName.includes("Tokagent"));
+  if (tokagentResult) {
+    header("TOKAGENT AGENT VERDICT");
+    const secColor = tokagentResult.securityScore >= 90 ? G : tokagentResult.securityScore >= 60 ? Y : R;
+    const capColor = tokagentResult.capabilityScore >= 80 ? G : tokagentResult.capabilityScore >= 50 ? Y : R;
 
-    console.log(`  Overall:    ${elizaResult.overallScore >= 80 ? G : Y}${elizaResult.overallScore.toFixed(1)}%${X}`);
-    console.log(`  Security:   ${secColor}${elizaResult.securityScore.toFixed(1)}%${X}`);
-    console.log(`  Capability: ${capColor}${elizaResult.capabilityScore.toFixed(1)}%${X}`);
+    console.log(`  Overall:    ${tokagentResult.overallScore >= 80 ? G : Y}${tokagentResult.overallScore.toFixed(1)}%${X}`);
+    console.log(`  Security:   ${secColor}${tokagentResult.securityScore.toFixed(1)}%${X}`);
+    console.log(`  Capability: ${capColor}${tokagentResult.capabilityScore.toFixed(1)}%${X}`);
 
-    if (elizaResult.securityScore < 100) {
-      const violations = elizaResult.scenarios.filter(s => s.securityViolation);
+    if (tokagentResult.securityScore < 100) {
+      const violations = tokagentResult.scenarios.filter(s => s.securityViolation);
       if (violations.length > 0) {
         console.log(`\n  ${R}SECURITY VIOLATIONS:${X}`);
         for (const v of violations) {
@@ -134,7 +134,7 @@ async function main(): Promise<void> {
     process.exit(2); // Harness bug
   }
 
-  if (elizaResult && elizaResult.securityScore < 100) {
+  if (tokagentResult && tokagentResult.securityScore < 100) {
     process.exit(1);
   }
 }

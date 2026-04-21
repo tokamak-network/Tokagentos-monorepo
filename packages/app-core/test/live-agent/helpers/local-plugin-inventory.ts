@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 import {
   extractPlugin,
   type PluginModuleShape,
-} from "@elizaos/agent/test-support/test-helpers";
+} from "@tokagentos/agent/test-support/test-helpers";
 
 type PluginCategory =
   | "ai-provider"
@@ -71,9 +71,9 @@ function readPluginManifest(): PluginManifest {
 
 function findPackageRoot(dirName: string): string | null {
   const candidates = [
-    path.join(REPO_ROOT, "eliza", "plugins", dirName, "typescript"),
-    path.join(REPO_ROOT, "eliza", "plugins", dirName),
-    path.join(REPO_ROOT, "eliza", "packages", dirName),
+    path.join(REPO_ROOT, "tokagent", "plugins", dirName, "typescript"),
+    path.join(REPO_ROOT, "tokagent", "plugins", dirName),
+    path.join(REPO_ROOT, "tokagent", "packages", dirName),
   ];
 
   for (const candidate of candidates) {

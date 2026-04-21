@@ -1,4 +1,4 @@
-import { Button, Input } from "@elizaos/ui";
+import { Button, Input } from "@tokagentos/ui";
 import type { CSSProperties } from "react";
 import type { PluginInfo, PluginParamDef } from "../../api";
 import {

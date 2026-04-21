@@ -2,7 +2,7 @@
 name = "bluesky-agent"
 version = "0.1.0"
 edition = "2021"
-description = "elizaOS Bluesky Agent - Full-featured AI agent using the complete elizaOS pipeline"
+description = "tokagentOS Bluesky Agent - Full-featured AI agent using the complete tokagentOS pipeline"
 publish = false
 
 [[bin]]
@@ -10,12 +10,12 @@ name = "bluesky-agent"
 path = "src/main.rs"
 
 [dependencies]
-# elizaOS Core
-elizaos = "2.0.0"
+# tokagentOS Core
+tokagentos = "2.0.0"
 
-# elizaOS Plugins
-elizaos-plugin-openai = "2.0.0"
-elizaos-plugin-bluesky = "2.0.0"
+# tokagentOS Plugins
+tokagentos-plugin-openai = "2.0.0"
+tokagentos-plugin-bluesky = "2.0.0"
 
 # Async runtime
 tokio = { version = "1.42", features = ["rt-multi-thread", "macros", "signal", "time"] }

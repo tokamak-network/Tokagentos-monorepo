@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class MiladyMind2WebAgent:
     """Mind2Web agent backed by the milady TypeScript agent.
 
-    Drop-in replacement for ``ElizaOSMind2WebAgent`` — same ``process_task``
+    Drop-in replacement for ``TokagentOSMind2WebAgent`` — same ``process_task``
     interface but routes through the milady benchmark server.
     """
 

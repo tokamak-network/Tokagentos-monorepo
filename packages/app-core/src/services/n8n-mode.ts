@@ -13,7 +13,7 @@
  *     cannot run regardless of user setting
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 
 export type N8nMode = "cloud" | "local" | "disabled";
 

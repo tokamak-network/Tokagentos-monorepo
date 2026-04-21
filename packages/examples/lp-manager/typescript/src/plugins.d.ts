@@ -5,13 +5,13 @@
  */
 
 declare module "@elizaos/plugin-lp-manager" {
-  import type { Plugin } from "@elizaos/core";
+  import type { Plugin } from "@tokagentos/core";
   const plugin: Plugin;
   export default plugin;
 }
 
 declare module "@elizaos/plugin-sql" {
-  import type { Plugin } from "@elizaos/core";
+  import type { Plugin } from "@tokagentos/core";
   const plugin: Plugin;
   export default plugin;
 }

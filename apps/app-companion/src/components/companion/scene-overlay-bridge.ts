@@ -1,4 +1,4 @@
-import { useApp, usePtySessions } from "@elizaos/app-core";
+import { useApp, usePtySessions } from "@tokagentos/app-core";
 import { useCallback, useEffect, useRef } from "react";
 import type { SceneOverlayManager } from "../avatar/SceneOverlayManager";
 import type {
@@ -12,9 +12,9 @@ import type { VrmEngine } from "../avatar/VrmEngine";
 function findOverlayManager(): SceneOverlayManager | null {
   const registry = (
     window as {
-      __ELIZA_VRM_ENGINES__?: Array<{ engine: VrmEngine }>;
+      __TOKAGENT_VRM_ENGINES__?: Array<{ engine: VrmEngine }>;
     }
-  ).__ELIZA_VRM_ENGINES__;
+  ).__TOKAGENT_VRM_ENGINES__;
   if (!registry) return null;
   for (const entry of registry) {
     const overlay = entry.engine.getOverlayManager();

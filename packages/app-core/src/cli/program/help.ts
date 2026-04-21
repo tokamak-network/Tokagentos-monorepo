@@ -7,15 +7,15 @@ import { replaceCliName, resolveCliName } from "../cli-name";
 const CLI_NAME = resolveCliName();
 
 const EXAMPLES = [
-  ["eliza", "Start Eliza in the interactive TUI."],
-  ["eliza start", "Start the classic runtime/chat loop."],
-  ["eliza dashboard", "Open the Control UI in your browser."],
-  ["eliza setup", "Initialize ~/.eliza/eliza.json and the agent workspace."],
-  ["eliza config get agents.defaults.model.primary", "Read a config value."],
-  ["eliza models", "Show configured model providers."],
-  ["eliza plugins list", "List available plugins."],
-  ["eliza update", "Check for and install the latest version."],
-  ["eliza update channel beta", "Switch to the beta release channel."],
+  ["tokagent", "Start Tokagent in the interactive TUI."],
+  ["tokagent start", "Start the classic runtime/chat loop."],
+  ["tokagent dashboard", "Open the Control UI in your browser."],
+  ["tokagent setup", "Initialize ~/.tokagent/tokagent.json and the agent workspace."],
+  ["tokagent config get agents.defaults.model.primary", "Read a config value."],
+  ["tokagent models", "Show configured model providers."],
+  ["tokagent plugins list", "List available plugins."],
+  ["tokagent update", "Check for and install the latest version."],
+  ["tokagent update channel beta", "Switch to the beta release channel."],
 ] as const;
 
 export function configureProgramHelp(program: Command, programVersion: string) {
@@ -27,11 +27,11 @@ export function configureProgramHelp(program: Command, programVersion: string) {
     .option("--debug", "Enable debug-level runtime logs")
     .option(
       "--dev",
-      "Dev profile: isolate state under ~/.eliza-dev with separate config and ports",
+      "Dev profile: isolate state under ~/.tokagent-dev with separate config and ports",
     )
     .option(
       "--profile <name>",
-      "Use a named profile (isolates state and config under ~/.eliza-<name>)",
+      "Use a named profile (isolates state and config under ~/.tokagent-<name>)",
     );
 
   program.option("--no-color", "Disable ANSI colors", false);
@@ -71,7 +71,7 @@ export function configureProgramHelp(program: Command, programVersion: string) {
     if (command !== program) {
       return "";
     }
-    const docs = formatDocsLink("/cli", "docs.eliza.ai/cli");
+    const docs = formatDocsLink("/cli", "docs.tokagent.ai/cli");
     return `\n${theme.heading("Examples:")}\n${fmtExamples}\n\n${theme.muted("Docs:")} ${docs}\n`;
   });
 }

@@ -5,9 +5,9 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
-import { ModelType, parseJSONObjectFromText } from "@elizaos/core";
-import { getRecentMessagesData } from "@elizaos/shared/recent-messages-state";
+} from "@tokagentos/core";
+import { ModelType, parseJSONObjectFromText } from "@tokagentos/core";
+import { getRecentMessagesData } from "@tokagentos/shared/recent-messages-state";
 import type {
   CreateLifeOpsDefinitionRequest,
   CreateLifeOpsGoalRequest,
@@ -22,7 +22,7 @@ import type {
   SetLifeOpsReminderPreferenceRequest,
   UpdateLifeOpsDefinitionRequest,
   UpdateLifeOpsGoalRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   buildNativeAppleReminderMetadata,
   type NativeAppleReminderLikeKind,
@@ -38,7 +38,7 @@ import {
   getZonedDateParts,
 } from "../lifeops/time.js";
 import { gmailAction } from "./gmail.js";
-import { renderGroundedActionReply } from "@elizaos/agent/actions";
+import { renderGroundedActionReply } from "@tokagentos/agent/actions";
 import {
   type ExtractedLifeMissingField,
   type ExtractedLifeOperation,
@@ -487,7 +487,7 @@ function stateActionResults(state: State | undefined): ActionResult[] {
           {
             success: content.actionStatus !== "failed",
             text: typeof content.text === "string" ? content.text : undefined,
-            data: contentData as import("@elizaos/core").ProviderDataRecord,
+            data: contentData as import("@tokagentos/core").ProviderDataRecord,
             error:
               typeof content.error === "string" ? content.error : undefined,
           },

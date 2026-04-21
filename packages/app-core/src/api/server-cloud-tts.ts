@@ -1,14 +1,14 @@
 /**
- * Cloud TTS helpers — proxy to Eliza Cloud (`elizacloud.ai`).
+ * Cloud TTS helpers — proxy to Tokagent Cloud (`tokagentcloud.ai`).
  *
- * Upstream routes (see eliza-cloud-v2): `POST /api/v1/voice/tts` and legacy
+ * Upstream routes (see tokagent-cloud-v2): `POST /api/v1/voice/tts` and legacy
  * `POST /api/elevenlabs/tts`. Both accept `{ text, voiceId?, modelId? }` with
  * **ElevenLabs** voice and model ids; the cloud runs ElevenLabs server-side.
  */
 import type http from "node:http";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
-import { isElizaCloudServiceSelectedInConfig } from "@elizaos/shared/contracts";
-import { sanitizeSpeechText } from "@elizaos/shared/spoken-text";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
+import { isTokagentCloudServiceSelectedInConfig } from "@tokagentos/shared/contracts";
+import { sanitizeSpeechText } from "@tokagentos/shared/spoken-text";
 import { ttsDebug, ttsDebugTextPreview } from "../utils/tts-debug";
 import { getCloudSecret } from "./cloud-secrets";
 
@@ -16,7 +16,7 @@ import { getCloudSecret } from "./cloud-secrets";
 // Internal helpers (not exported)
 // ---------------------------------------------------------------------------
 
-/** Browser → API correlation (never forwarded to Eliza Cloud). */
+/** Browser → API correlation (never forwarded to Tokagent Cloud). */
 export function readTtsDebugClientHeaders(
   req: Pick<http.IncomingMessage, "headers">,
 ): {
@@ -39,9 +39,9 @@ export function readTtsDebugClientHeaders(
     }
   };
   return {
-    messageId: decode(pick("x-elizaos-tts-message-id")),
-    clipSegment: decode(pick("x-elizaos-tts-clip-segment")),
-    hearingFull: decode(pick("x-elizaos-tts-full-preview")),
+    messageId: decode(pick("x-tokagentos-tts-message-id")),
+    clipSegment: decode(pick("x-tokagentos-tts-clip-segment")),
+    hearingFull: decode(pick("x-tokagentos-tts-full-preview")),
   };
 }
 
@@ -83,12 +83,12 @@ const OPENAI_STYLE_VOICE_ALIASES = new Set([
   "verse",
 ]);
 
-/** Eliza Cloud default premade voice (matches eliza-cloud-v2 ElevenLabs service). */
-const DEFAULT_ELIZA_CLOUD_TTS_VOICE_ID = "EXAVITQu4vr4xnSDxMaL";
-const DEFAULT_ELIZA_CLOUD_TTS_MODEL_ID = "eleven_flash_v2_5";
+/** Tokagent Cloud default premade voice (matches tokagent-cloud-v2 ElevenLabs service). */
+const DEFAULT_TOKAGENT_CLOUD_TTS_VOICE_ID = "EXAVITQu4vr4xnSDxMaL";
+const DEFAULT_TOKAGENT_CLOUD_TTS_MODEL_ID = "eleven_flash_v2_5";
 
-/** Matches `MAX_TEXT_LENGTH` in eliza-cloud-v2 `app/api/v1/voice/tts/route.ts`. */
-export const ELIZA_CLOUD_TTS_MAX_TEXT_CHARS = 5000;
+/** Matches `MAX_TEXT_LENGTH` in tokagent-cloud-v2 `app/api/v1/voice/tts/route.ts`. */
+export const TOKAGENT_CLOUD_TTS_MAX_TEXT_CHARS = 5000;
 
 /** Edge / Azure neural ids (e.g. `en-US-AriaNeural`) are not ElevenLabs `voiceId`s. */
 function isLikelyEdgeOrAzureNeuralVoiceId(raw: string): boolean {
@@ -96,47 +96,47 @@ function isLikelyEdgeOrAzureNeuralVoiceId(raw: string): boolean {
   return /^[a-z]{2}-[A-Z]{2}-/i.test(t) && /Neural$/i.test(t);
 }
 
-function normalizeElizaCloudVoiceId(raw: string): string {
+function normalizeTokagentCloudVoiceId(raw: string): string {
   const trimmed = raw.trim();
-  if (!trimmed) return DEFAULT_ELIZA_CLOUD_TTS_VOICE_ID;
+  if (!trimmed) return DEFAULT_TOKAGENT_CLOUD_TTS_VOICE_ID;
   const lower = trimmed.toLowerCase();
   if (OPENAI_STYLE_VOICE_ALIASES.has(lower)) {
-    return DEFAULT_ELIZA_CLOUD_TTS_VOICE_ID;
+    return DEFAULT_TOKAGENT_CLOUD_TTS_VOICE_ID;
   }
   if (isLikelyEdgeOrAzureNeuralVoiceId(trimmed)) {
-    return DEFAULT_ELIZA_CLOUD_TTS_VOICE_ID;
+    return DEFAULT_TOKAGENT_CLOUD_TTS_VOICE_ID;
   }
   return trimmed;
 }
 
 /**
- * Resolve `voiceId` for Eliza Cloud TTS (ElevenLabs ids). OpenAI-style names
+ * Resolve `voiceId` for Tokagent Cloud TTS (ElevenLabs ids). OpenAI-style names
  * in the request are replaced with the default premade voice.
  */
-export function resolveElizaCloudTtsVoiceId(
+export function resolveTokagentCloudTtsVoiceId(
   bodyVoiceId: unknown,
   env: NodeJS.ProcessEnv = process.env,
 ): string {
   if (typeof bodyVoiceId === "string" && bodyVoiceId.trim()) {
-    return normalizeElizaCloudVoiceId(bodyVoiceId);
+    return normalizeTokagentCloudVoiceId(bodyVoiceId);
   }
-  const envVoice = env.ELIZAOS_CLOUD_TTS_VOICE?.trim() ?? "";
+  const envVoice = env.TOKAGENTOS_CLOUD_TTS_VOICE?.trim() ?? "";
   if (envVoice) {
-    return normalizeElizaCloudVoiceId(envVoice);
+    return normalizeTokagentCloudVoiceId(envVoice);
   }
-  return DEFAULT_ELIZA_CLOUD_TTS_VOICE_ID;
+  return DEFAULT_TOKAGENT_CLOUD_TTS_VOICE_ID;
 }
 
 function resolveCloudApiKey(
   env: NodeJS.ProcessEnv = process.env,
 ): string | null {
-  const envKey = normalizeSecretEnvValue(env.ELIZAOS_CLOUD_API_KEY);
+  const envKey = normalizeSecretEnvValue(env.TOKAGENTOS_CLOUD_API_KEY);
   if (envKey) {
     return envKey;
   }
 
   try {
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const configKey = normalizeSecretEnvValue(
       typeof config.cloud?.apiKey === "string"
         ? config.cloud.apiKey
@@ -150,7 +150,7 @@ function resolveCloudApiKey(
   }
 
   const sealedKey = normalizeSecretEnvValue(
-    getCloudSecret("ELIZAOS_CLOUD_API_KEY"),
+    getCloudSecret("TOKAGENTOS_CLOUD_API_KEY"),
   );
   if (sealedKey) {
     return sealedKey;
@@ -173,7 +173,7 @@ function resolveCloudBaseUrlFromConfig(): string | null {
   }
 
   try {
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const raw =
       typeof config.cloud?.baseUrl === "string"
         ? config.cloud.baseUrl.trim()
@@ -258,44 +258,44 @@ function forwardCloudTtsUpstreamError(
   res.statusCode = status;
   res.setHeader("content-type", "application/json; charset=utf-8");
   res.end(
-    JSON.stringify({ error: trimmed || "Eliza Cloud TTS request failed" }),
+    JSON.stringify({ error: trimmed || "Tokagent Cloud TTS request failed" }),
   );
 }
 
 /**
- * Coerce stored/configured values to an ElevenLabs model id Eliza Cloud accepts.
+ * Coerce stored/configured values to an ElevenLabs model id Tokagent Cloud accepts.
  * Maps OpenAI TTS ids and common copy-paste mistakes; passes through real `eleven_*` ids.
  */
-export function normalizeElizaCloudTtsModelId(raw: string): string {
+export function normalizeTokagentCloudTtsModelId(raw: string): string {
   const trimmed = raw.trim();
-  if (!trimmed) return DEFAULT_ELIZA_CLOUD_TTS_MODEL_ID;
+  if (!trimmed) return DEFAULT_TOKAGENT_CLOUD_TTS_MODEL_ID;
   const lower = trimmed.toLowerCase();
   if (OPENAI_STYLE_VOICE_ALIASES.has(lower)) {
-    return DEFAULT_ELIZA_CLOUD_TTS_MODEL_ID;
+    return DEFAULT_TOKAGENT_CLOUD_TTS_MODEL_ID;
   }
   if (/^gpt-/i.test(trimmed)) {
-    return DEFAULT_ELIZA_CLOUD_TTS_MODEL_ID;
+    return DEFAULT_TOKAGENT_CLOUD_TTS_MODEL_ID;
   }
   if (/^tts-1/i.test(trimmed)) {
-    return DEFAULT_ELIZA_CLOUD_TTS_MODEL_ID;
+    return DEFAULT_TOKAGENT_CLOUD_TTS_MODEL_ID;
   }
   if (/mini-tts/i.test(trimmed)) {
-    return DEFAULT_ELIZA_CLOUD_TTS_MODEL_ID;
+    return DEFAULT_TOKAGENT_CLOUD_TTS_MODEL_ID;
   }
   return trimmed;
 }
 
-/** Eliza Cloud TTS `modelId` (ElevenLabs), from body or env or default. */
+/** Tokagent Cloud TTS `modelId` (ElevenLabs), from body or env or default. */
 export function resolveCloudProxyTtsModel(
   bodyModel: unknown,
   env: NodeJS.ProcessEnv = process.env,
 ): string {
-  const envModel = env.ELIZAOS_CLOUD_TTS_MODEL?.trim() ?? "";
+  const envModel = env.TOKAGENTOS_CLOUD_TTS_MODEL?.trim() ?? "";
   const raw =
     typeof bodyModel === "string" && bodyModel.trim() ? bodyModel.trim() : "";
   const chosen = raw || envModel;
-  if (!chosen) return DEFAULT_ELIZA_CLOUD_TTS_MODEL_ID;
-  return normalizeElizaCloudTtsModelId(chosen);
+  if (!chosen) return DEFAULT_TOKAGENT_CLOUD_TTS_MODEL_ID;
+  return normalizeTokagentCloudTtsModelId(chosen);
 }
 
 // ---------------------------------------------------------------------------
@@ -311,20 +311,20 @@ export function resolveElevenLabsApiKeyForCloudMode(
   }
   let configWantsCloudTts = false;
   try {
-    configWantsCloudTts = isElizaCloudServiceSelectedInConfig(
-      loadElizaConfig() as Record<string, unknown>,
+    configWantsCloudTts = isTokagentCloudServiceSelectedInConfig(
+      loadTokagentConfig() as Record<string, unknown>,
       "tts",
     );
   } catch {
     configWantsCloudTts = false;
   }
   const cloudTtsEnabled =
-    env.ELIZAOS_CLOUD_USE_TTS === "true" ||
-    (env.ELIZAOS_CLOUD_USE_TTS === undefined && configWantsCloudTts);
+    env.TOKAGENTOS_CLOUD_USE_TTS === "true" ||
+    (env.TOKAGENTOS_CLOUD_USE_TTS === undefined && configWantsCloudTts);
   if (!cloudTtsEnabled) {
     return null;
   }
-  if (env.ELIZA_CLOUD_TTS_DISABLED === "true") {
+  if (env.TOKAGENT_CLOUD_TTS_DISABLED === "true") {
     return null;
   }
   return resolveCloudApiKey(env);
@@ -348,11 +348,11 @@ export function ensureCloudTtsApiKeyAlias(
 export function resolveCloudTtsBaseUrl(
   env: NodeJS.ProcessEnv = process.env,
 ): string {
-  const fromEnv = env.ELIZAOS_CLOUD_BASE_URL?.trim() ?? "";
+  const fromEnv = env.TOKAGENTOS_CLOUD_BASE_URL?.trim() ?? "";
   const fromConfig =
     fromEnv.length > 0 ? null : resolveCloudBaseUrlFromConfig();
   const configured = fromEnv.length > 0 ? fromEnv : (fromConfig?.trim() ?? "");
-  const fallback = "https://www.elizacloud.ai/api/v1";
+  const fallback = "https://www.tokagentcloud.ai/api/v1";
   const base = configured.length > 0 ? configured : fallback;
 
   try {
@@ -423,7 +423,7 @@ export async function handleCloudTtsPreviewRoute(
     sendJsonErrorResponse(
       res,
       401,
-      "Eliza Cloud is not connected. Connect your Eliza Cloud account first.",
+      "Tokagent Cloud is not connected. Connect your Tokagent Cloud account first.",
     );
     return true;
   }
@@ -445,11 +445,11 @@ export async function handleCloudTtsPreviewRoute(
     return true;
   }
 
-  if (text.length > ELIZA_CLOUD_TTS_MAX_TEXT_CHARS) {
+  if (text.length > TOKAGENT_CLOUD_TTS_MAX_TEXT_CHARS) {
     sendJsonErrorResponse(
       res,
       400,
-      `Text too long. Maximum length is ${ELIZA_CLOUD_TTS_MAX_TEXT_CHARS} characters`,
+      `Text too long. Maximum length is ${TOKAGENT_CLOUD_TTS_MAX_TEXT_CHARS} characters`,
     );
     return true;
   }
@@ -457,7 +457,7 @@ export async function handleCloudTtsPreviewRoute(
   const cloudModel = resolveCloudProxyTtsModel(
     pickBodyString(body, "modelId", "model_id"),
   );
-  const cloudVoice = resolveElizaCloudTtsVoiceId(
+  const cloudVoice = resolveTokagentCloudTtsVoiceId(
     pickBodyString(body, "voiceId", "voice_id"),
   );
   const cloudUrls = resolveCloudTtsCandidateUrls();
@@ -538,7 +538,7 @@ export async function handleCloudTtsPreviewRoute(
       sendJsonErrorResponse(
         res,
         502,
-        `Eliza Cloud TTS failed (${lastStatus || 502}): ${lastDetails}`,
+        `Tokagent Cloud TTS failed (${lastStatus || 502}): ${lastDetails}`,
       );
       return true;
     }
@@ -558,7 +558,7 @@ export async function handleCloudTtsPreviewRoute(
     sendJsonErrorResponse(
       res,
       502,
-      `Eliza Cloud TTS request failed: ${err instanceof Error ? err.message : String(err)}`,
+      `Tokagent Cloud TTS request failed: ${err instanceof Error ? err.message : String(err)}`,
     );
     return true;
   }
@@ -568,24 +568,24 @@ export function mirrorCompatHeaders(
   req: Pick<http.IncomingMessage, "headers">,
 ): void {
   const HEADER_ALIASES = [
-    ["x-elizaos-token", "x-eliza-token"],
-    ["x-elizaos-export-token", "x-eliza-export-token"],
-    ["x-elizaos-client-id", "x-eliza-client-id"],
-    ["x-elizaos-terminal-token", "x-eliza-terminal-token"],
-    ["x-elizaos-ui-language", "x-eliza-ui-language"],
-    ["x-elizaos-agent-action", "x-eliza-agent-action"],
+    ["x-tokagentos-token", "x-tokagent-token"],
+    ["x-tokagentos-export-token", "x-tokagent-export-token"],
+    ["x-tokagentos-client-id", "x-tokagent-client-id"],
+    ["x-tokagentos-terminal-token", "x-tokagent-terminal-token"],
+    ["x-tokagentos-ui-language", "x-tokagent-ui-language"],
+    ["x-tokagentos-agent-action", "x-tokagent-agent-action"],
   ] as const;
 
-  for (const [appHeader, elizaHeader] of HEADER_ALIASES) {
+  for (const [appHeader, tokagentHeader] of HEADER_ALIASES) {
     const appValue = req.headers[appHeader];
-    const elizaValue = req.headers[elizaHeader];
+    const tokagentValue = req.headers[tokagentHeader];
 
-    if (appValue != null && elizaValue == null) {
-      req.headers[elizaHeader] = appValue;
+    if (appValue != null && tokagentValue == null) {
+      req.headers[tokagentHeader] = appValue;
     }
 
-    if (elizaValue != null && appValue == null) {
-      req.headers[appHeader] = elizaValue;
+    if (tokagentValue != null && appValue == null) {
+      req.headers[appHeader] = tokagentValue;
     }
   }
 }

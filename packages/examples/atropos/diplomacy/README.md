@@ -1,6 +1,6 @@
-# ElizaOS Atropos - Diplomacy Environment
+# TokagentOS Atropos - Diplomacy Environment
 
-A multi-agent Diplomacy game environment for training ElizaOS agents using the Atropos RL framework.
+A multi-agent Diplomacy game environment for training TokagentOS agents using the Atropos RL framework.
 
 ## Overview
 
@@ -26,13 +26,13 @@ pip install -e examples/atropos/diplomacy
 
 ```bash
 # Watch AI play (no-press mode)
-python -m elizaos_atropos_diplomacy --mode auto
+python -m tokagentos_atropos_diplomacy --mode auto
 
 # Interactive mode (play as one nation)
-python -m elizaos_atropos_diplomacy --mode interactive --nation france
+python -m tokagentos_atropos_diplomacy --mode interactive --nation france
 
 # Full press (with negotiations)
-python -m elizaos_atropos_diplomacy --mode press
+python -m tokagentos_atropos_diplomacy --mode press
 ```
 
 ## Environment Details
@@ -62,12 +62,12 @@ python -m elizaos_atropos_diplomacy --mode press
 ### Victory Condition
 Control 18 of the 34 supply centers to win.
 
-## Usage with ElizaOS
+## Usage with TokagentOS
 
 ```python
-from elizaos import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_atropos_diplomacy import DiplomacyEnvironment, DiplomacyAgent
+from tokagentos import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_atropos_diplomacy import DiplomacyEnvironment, DiplomacyAgent
 
 # Create environment
 env = DiplomacyEnvironment(press_mode=True)
@@ -106,7 +106,7 @@ while not env.is_game_over():
 
 ```python
 from atropos import AtroposClient
-from elizaos_atropos_diplomacy import DiplomacyEnvironment
+from tokagentos_atropos_diplomacy import DiplomacyEnvironment
 
 # Register with Atropos for distributed training
 client = AtroposClient()
@@ -137,17 +137,17 @@ trajectories = await client.collect_multiagent_rollouts(
 ## Architecture
 
 ```
-elizaos_atropos_diplomacy/
+tokagentos_atropos_diplomacy/
 ├── __init__.py           # Package exports
 ├── types.py              # Game types (Power, Province, Order, etc.)
 ├── map_data.py           # Map topology and supply centers
 ├── environment.py        # DiplomacyEnvironment class
 ├── adjudicator.py        # Order resolution logic
-├── agent.py              # ElizaOS agent integration
+├── agent.py              # TokagentOS agent integration
 ├── negotiation.py        # Press/negotiation system
 └── cli.py                # Command-line interface
 ```
 
 ## License
 
-MIT License - Part of the ElizaOS project.
+MIT License - Part of the TokagentOS project.

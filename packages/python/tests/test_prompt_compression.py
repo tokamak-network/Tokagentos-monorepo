@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from elizaos.prompt_compression import (
+from tokagentos.prompt_compression import (
     compress_prompt_description,
     get_prompt_action_description,
     get_prompt_parameter_description,

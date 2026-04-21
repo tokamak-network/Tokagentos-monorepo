@@ -1,4 +1,4 @@
-import { logger, type IAgentRuntime, type Plugin } from "@elizaos/core";
+import { logger, type IAgentRuntime, type Plugin } from "@tokagentos/core";
 import { lifeOpsSchema } from "./lifeops/schema.js";
 import { LifeOpsRepository } from "./lifeops/repository.js";
 import { manageLifeOpsBrowserAction } from "./action.ts";
@@ -149,7 +149,7 @@ function isDisabledByEnv(disableKey: string, enableKey?: string): boolean {
 }
 
 const LIFEOPS_TASK_INIT_FAILURE_CACHE_KEY =
-  "eliza:lifeops:plugin:init-failures";
+  "tokagent:lifeops:plugin:init-failures";
 
 async function recordTaskInitFailure(
   runtime: IAgentRuntime,
@@ -278,7 +278,7 @@ const rawAppLifeOpsPlugin: Plugin = {
 
     // Register the proactive agent (activity-profile: GM/GN/nudges)
     const proactiveAgentDisabled = isDisabledByEnv(
-      "ELIZA_DISABLE_PROACTIVE_AGENT",
+      "TOKAGENT_DISABLE_PROACTIVE_AGENT",
       "ENABLE_PROACTIVE_AGENT",
     );
     if (!proactiveAgentDisabled) {
@@ -293,7 +293,7 @@ const rawAppLifeOpsPlugin: Plugin = {
       });
     } else {
       runtime.logger?.info(
-        "[proactive] Proactive agent task skipped — ELIZA_DISABLE_PROACTIVE_AGENT=1",
+        "[proactive] Proactive agent task skipped — TOKAGENT_DISABLE_PROACTIVE_AGENT=1",
       );
     }
 
@@ -305,7 +305,7 @@ const rawAppLifeOpsPlugin: Plugin = {
     registerBlockRuleReconcilerWorker(runtime);
 
     const lifeOpsSchedulerDisabled = isDisabledByEnv(
-      "ELIZA_DISABLE_LIFEOPS_SCHEDULER",
+      "TOKAGENT_DISABLE_LIFEOPS_SCHEDULER",
       "ENABLE_LIFEOPS_SCHEDULER",
     );
     if (!lifeOpsSchedulerDisabled) {
@@ -320,7 +320,7 @@ const rawAppLifeOpsPlugin: Plugin = {
       });
     } else {
       runtime.logger?.info(
-        "[lifeops] Scheduler task skipped — ELIZA_DISABLE_LIFEOPS_SCHEDULER=1",
+        "[lifeops] Scheduler task skipped — TOKAGENT_DISABLE_LIFEOPS_SCHEDULER=1",
       );
     }
   },

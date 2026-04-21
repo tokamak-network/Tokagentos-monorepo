@@ -9,7 +9,7 @@ import {
   stringToUuid,
   type UUID,
   type Plugin,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
 
@@ -96,7 +96,7 @@ function printAvailableProviders(): void {
 // ============================================================================
 
 async function main() {
-  console.log("🚀 Starting Eliza Chat...\n");
+  console.log("🚀 Starting Tokagent Chat...\n");
 
   // Load LLM plugin dynamically
   const llmResult = await loadLLMPlugin();
@@ -110,7 +110,7 @@ async function main() {
   console.log(`✅ Using ${llmResult.providerName} for language model\n`);
 
   const character: Character = createCharacter({
-    name: "Eliza",
+    name: "Tokagent",
     bio: "A helpful AI assistant.",
   });
 
@@ -142,7 +142,7 @@ async function main() {
     output: process.stdout,
   });
 
-  console.log("💬 Chat with Eliza (type 'exit' to quit)\n");
+  console.log("💬 Chat with Tokagent (type 'exit' to quit)\n");
 
   const prompt = () => {
     rl.question("You: ", async (input) => {
@@ -173,7 +173,7 @@ async function main() {
       });
 
       let _response = "";
-      process.stdout.write("Eliza: ");
+      process.stdout.write("Tokagent: ");
 
       await runtime?.messageService?.handleMessage(
         runtime,

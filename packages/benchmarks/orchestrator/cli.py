@@ -208,7 +208,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Benchmark IDs to run (default: all)",
     )
-    p_run.add_argument("--agent", default="eliza", help="Agent label for this run")
+    p_run.add_argument("--agent", default="tokagent", help="Agent label for this run")
     p_run.add_argument("--provider", default="groq", help="Model provider")
     p_run.add_argument("--model", default="qwen3", help="Model name")
     p_run.add_argument("--extra", default=None, help="JSON object with benchmark-specific options")

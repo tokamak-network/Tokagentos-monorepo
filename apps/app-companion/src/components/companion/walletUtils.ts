@@ -4,8 +4,8 @@ import {
   HEX_ADDRESS_RE,
   isAvaxChainName,
   isBscChainName,
-} from "@elizaos/app-core";
-import type { BscTradeTxStatusResponse } from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/app-core";
+import type { BscTradeTxStatusResponse } from "@tokagentos/shared/contracts/wallet";
 
 export {
   BSC_GAS_READY_THRESHOLD,
@@ -39,7 +39,7 @@ export function mapWalletTradeError(
 }
 
 export const BSC_SWAP_GAS_RESERVE = 0.002;
-export const ELIZA_BSC_TOKEN_ADDRESS =
+export const TOKAGENT_BSC_TOKEN_ADDRESS =
   "0xc20e45e49e0e79f0fc81e71f05fd2772d6587777";
 export const BSC_USDT_TOKEN_ADDRESS =
   "0x55d398326f99059fF775485246999027B3197955";

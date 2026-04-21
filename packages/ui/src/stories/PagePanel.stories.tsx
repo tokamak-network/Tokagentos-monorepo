@@ -61,7 +61,7 @@ export const Workspace: Story = {
                   Latest upload
                 </div>
                 <div className="mt-2 text-lg font-semibold text-txt">
-                  eliza-cloud-basics.txt
+                  tokagent-cloud-basics.txt
                 </div>
                 <div className="mt-1 text-sm text-muted">
                   Uploaded Apr 12, 2026

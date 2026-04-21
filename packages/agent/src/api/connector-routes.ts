@@ -1,6 +1,6 @@
 import type http from "node:http";
-import type { ElizaConfig } from "../config/config.js";
-import type { ConnectorConfig } from "../config/types.eliza.js";
+import type { TokagentConfig } from "../config/config.js";
+import type { ConnectorConfig } from "../config/types.tokagent.js";
 import type { ReadJsonBodyOptions } from "./http-helpers.js";
 
 // ---------------------------------------------------------------------------
@@ -13,7 +13,7 @@ export interface ConnectorRouteContext {
   method: string;
   pathname: string;
   state: {
-    config: ElizaConfig;
+    config: TokagentConfig;
   };
   json: (res: http.ServerResponse, data: unknown, status?: number) => void;
   error: (res: http.ServerResponse, message: string, status?: number) => void;
@@ -22,7 +22,7 @@ export interface ConnectorRouteContext {
     res: http.ServerResponse,
     options?: ReadJsonBodyOptions,
   ) => Promise<T | null>;
-  saveElizaConfig: (config: ElizaConfig) => void;
+  saveTokagentConfig: (config: TokagentConfig) => void;
   redactConfigSecrets: (
     config: Record<string, unknown>,
   ) => Record<string, unknown>;
@@ -46,7 +46,7 @@ export async function handleConnectorRoutes(
     json,
     error,
     readJsonBody,
-    saveElizaConfig,
+    saveTokagentConfig,
     redactConfigSecrets,
     isBlockedObjectKey,
     cloneWithoutBlockedObjectKeys,
@@ -92,7 +92,7 @@ export async function handleConnectorRoutes(
       config,
     ) as ConnectorConfig;
     try {
-      saveElizaConfig(state.config);
+      saveTokagentConfig(state.config);
     } catch {
       /* test envs */
     }
@@ -127,7 +127,7 @@ export async function handleConnectorRoutes(
     }
 
     try {
-      saveElizaConfig(state.config);
+      saveTokagentConfig(state.config);
     } catch {
       /* test envs */
     }

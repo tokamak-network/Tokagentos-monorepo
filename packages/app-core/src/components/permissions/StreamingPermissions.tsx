@@ -1,4 +1,4 @@
-import { Button, StatusBadge } from "@elizaos/ui";
+import { Button, StatusBadge } from "@tokagentos/ui";
 import { Check, Cloud } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useApp } from "../../state";
@@ -61,7 +61,7 @@ function getCameraPermissionPlugin(): CameraPermissionPlugin | null {
     | undefined;
   if (!cap?.Plugins) return null;
   return (
-    (cap.Plugins.ElizaCamera as CameraPermissionPlugin | undefined) ?? null
+    (cap.Plugins.TokagentCamera as CameraPermissionPlugin | undefined) ?? null
   );
 }
 

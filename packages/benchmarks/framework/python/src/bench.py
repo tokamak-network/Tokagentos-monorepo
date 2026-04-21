@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Eliza Framework Benchmark — Python Runtime
+Tokagent Framework Benchmark — Python Runtime
 
 Measures core agent framework performance with mock LLM handlers
 and in-memory database. No real LLM calls, no disk I/O, no network.
@@ -10,16 +10,16 @@ This is useful for end-to-end testing but results will include network
 latency and are NOT suitable for framework overhead measurement.
 
 STATUS: UNVERIFIED — This benchmark has been written to match the Python
-elizaos runtime API but has not yet been executed end-to-end. The following
+tokagentos runtime API but has not yet been executed end-to-end. The following
 API assumptions need verification when first run:
-- elizaos.runtime.AgentRuntime constructor (agent_id, character, plugins, adapter)
+- tokagentos.runtime.AgentRuntime constructor (agent_id, character, plugins, adapter)
 - runtime.message_service.handle_message(runtime, message, callback) signature
 - runtime._adapter access pattern for DB setup
-- elizaos_plugin_inmemorydb.adapter.InMemoryDatabaseAdapter existence and API
-- Plugin/Provider/ModelType class constructors from elizaos.types
+- tokagentos_plugin_inmemorydb.adapter.InMemoryDatabaseAdapter existence and API
+- Plugin/Provider/ModelType class constructors from tokagentos.types
 
 If this benchmark fails on first run, check these assumptions against the
-actual Python elizaos package API.
+actual Python tokagentos package API.
 """
 
 from __future__ import annotations
@@ -41,13 +41,13 @@ SCRIPT_DIR = Path(__file__).parent
 SHARED_DIR = SCRIPT_DIR.parent.parent / "shared"
 RESULTS_DIR = SCRIPT_DIR.parent.parent / "results"
 
-# ─── Imports from eliza packages ─────────────────────────────────────────────
+# ─── Imports from tokagent packages ─────────────────────────────────────────────
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types.agent import Character
-from elizaos.types.memory import Memory
-from elizaos.types.plugin import Plugin
-from elizaos.types.primitives import Content
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.agent import Character
+from tokagentos.types.memory import Memory
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.primitives import Content
 
 from .metrics import (
     MemoryMonitor,
@@ -82,9 +82,9 @@ def resolve_llm_plugin(use_real_llm: bool) -> tuple[Plugin, bool]:
         )
         sys.exit(1)
 
-    from elizaos_plugin_openai import create_openai_elizaos_plugin
+    from tokagentos_plugin_openai import create_openai_tokagentos_plugin
 
-    plugin = create_openai_elizaos_plugin()
+    plugin = create_openai_tokagentos_plugin()
     return plugin, True
 
 
@@ -162,7 +162,7 @@ async def create_benchmark_runtime(
     """Create an AgentRuntime with the given LLM plugin and in-memory DB."""
     # Attempt to import the in-memory DB adapter
     try:
-        from elizaos_plugin_inmemorydb.plugin import create_database_adapter
+        from tokagentos_plugin_inmemorydb.plugin import create_database_adapter
 
         adapter = create_database_adapter(AGENT_ID)
         await adapter.init()
@@ -174,7 +174,7 @@ async def create_benchmark_runtime(
     # Add dummy providers if requested
     dummy_count = config.get("dummyProviders", 0)
     if dummy_count and dummy_count > 0:
-        from elizaos.types.plugin import Plugin
+        from tokagentos.types.plugin import Plugin
         dummy_providers = create_dummy_providers(dummy_count)
         plugins.append(Plugin(
             name="benchmark-dummy-providers",
@@ -514,7 +514,7 @@ async def main() -> None:
         selected = [s for s in all_scenarios if s["id"] in default_ids]
 
     print("╔══════════════════════════════════════════════════════════╗")
-    print("║          Eliza Framework Benchmark — Python             ║")
+    print("║          Tokagent Framework Benchmark — Python             ║")
     print("╚══════════════════════════════════════════════════════════╝")
     print()
 

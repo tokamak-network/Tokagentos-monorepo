@@ -1,6 +1,6 @@
-# elizaOS Protocol Buffer Schemas
+# tokagentOS Protocol Buffer Schemas
 
-This directory contains the **single source of truth** for all elizaOS types. These Protocol Buffer schemas are compiled to generate type definitions for TypeScript, Python, and Rust.
+This directory contains the **single source of truth** for all tokagentOS types. These Protocol Buffer schemas are compiled to generate type definitions for TypeScript, Python, and Rust.
 
 ## Architecture
 
@@ -8,7 +8,7 @@ This directory contains the **single source of truth** for all elizaOS types. Th
 schemas/
 ├── buf.yaml              # Buf module configuration
 ├── buf.gen.yaml          # Code generation configuration
-├── eliza/v1/             # Proto definitions (versioned)
+├── tokagent/v1/             # Proto definitions (versioned)
 │   ├── primitives.proto  # UUID, Content, Media, Metadata
 │   ├── memory.proto      # Memory, MemoryMetadata
 │   ├── state.proto       # State, ActionPlan, WorkingMemory
@@ -27,7 +27,7 @@ schemas/
 
 Generated output:
 ├── packages/typescript/src/types/generated/  # TypeScript
-├── packages/python/elizaos/types/generated/  # Python
+├── packages/python/tokagentos/types/generated/  # Python
 └── packages/rust/src/types/generated/        # Rust
 ```
 
@@ -67,7 +67,7 @@ npm run generate:types
 
 ### Development Workflow
 
-1. **Edit proto files** in `eliza/v1/`
+1. **Edit proto files** in `tokagent/v1/`
 2. **Run `buf lint`** to check for errors
 3. **Run `buf generate`** to regenerate types
 4. **Commit both** proto changes and generated code
@@ -76,7 +76,7 @@ npm run generate:types
 
 ### 1. Versioning
 
-All schemas are under `eliza/v1/`. When breaking changes are needed, create `eliza/v2/` and maintain both during migration.
+All schemas are under `tokagent/v1/`. When breaking changes are needed, create `tokagent/v2/` and maintain both during migration.
 
 ### 2. JSON Compatibility
 
@@ -126,24 +126,24 @@ message Content {
 ### TypeScript
 
 - Generated with `@bufbuild/protobuf`
-- Import from `@elizaos/core/types/generated`
+- Import from `@tokagentos/core/types/generated`
 - Full TypeScript types with proper inference
 
 ### Python
 
 - Generated with `betterproto` for clean, Pythonic code
 - Dataclass-style types with type hints
-- Import from `elizaos.types.generated`
+- Import from `tokagentos.types.generated`
 
 ### Rust
 
 - Generated with `prost` (WASM-compatible)
 - Includes `serde` support for JSON serialization
-- Import from `elizaos::types::generated`
+- Import from `tokagentos::types::generated`
 
 ## Adding New Types
 
-1. Create or edit a `.proto` file in `eliza/v1/`
+1. Create or edit a `.proto` file in `tokagent/v1/`
 2. Follow naming conventions:
    - Messages: `PascalCase`
    - Fields: `snake_case`
@@ -158,7 +158,7 @@ message Content {
 The generated types replace the manual type definitions in:
 
 - `packages/typescript/src/types/*.ts`
-- `packages/python/elizaos/types/*.py`
+- `packages/python/tokagentos/types/*.py`
 - `packages/rust/src/types/*.rs`
 
 ### Compatibility Layer
@@ -168,7 +168,7 @@ During migration, a compatibility layer re-exports generated types with the orig
 ```typescript
 // packages/typescript/src/types/index.ts
 export * from "./generated";
-export { Memory as MemoryType } from "./generated/eliza/v1/memory_pb";
+export { Memory as MemoryType } from "./generated/tokagent/v1/memory_pb";
 ```
 
 ## Buf Commands Reference

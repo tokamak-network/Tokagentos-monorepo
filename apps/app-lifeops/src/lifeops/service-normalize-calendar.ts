@@ -4,10 +4,10 @@ import type {
   LifeOpsConnectorGrant,
   LifeOpsGmailMessageSummary,
   LifeOpsNextCalendarEventContext,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_CALENDAR_WINDOW_PRESETS,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   fail,
   normalizeEnumValue,

@@ -1,11 +1,11 @@
-# ElizaOS Atropos - Blackjack Environment
+# TokagentOS Atropos - Blackjack Environment
 
-A Blackjack environment for training ElizaOS agents using the Atropos RL framework.
+A Blackjack environment for training TokagentOS agents using the Atropos RL framework.
 Integrates with OpenAI Gymnasium's Blackjack environment.
 
 ## Overview
 
-This environment wraps the Gymnasium Blackjack environment, allowing ElizaOS agents
+This environment wraps the Gymnasium Blackjack environment, allowing TokagentOS agents
 to learn optimal blackjack strategy through reinforcement learning.
 
 ## Installation
@@ -19,13 +19,13 @@ pip install -e examples/atropos/blackjack
 
 ```bash
 # Watch AI play automatically
-python -m elizaos_atropos_blackjack --mode auto
+python -m tokagentos_atropos_blackjack --mode auto
 
 # Interactive mode
-python -m elizaos_atropos_blackjack --mode interactive
+python -m tokagentos_atropos_blackjack --mode interactive
 
 # Run benchmark
-python -m elizaos_atropos_blackjack --mode benchmark
+python -m tokagentos_atropos_blackjack --mode benchmark
 ```
 
 ## Environment Details
@@ -45,18 +45,18 @@ python -m elizaos_atropos_blackjack --mode benchmark
 - `-1.0`: Loss (bust or dealer closer to 21)
 - `0.0`: Draw (push)
 
-## Usage with ElizaOS
+## Usage with TokagentOS
 
 ```python
-from elizaos import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_atropos_blackjack import BlackjackEnvironment, BlackjackAgent
+from tokagentos import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_atropos_blackjack import BlackjackEnvironment, BlackjackAgent
 
 # Create environment
 env = BlackjackEnvironment()
 await env.initialize()
 
-# Create ElizaOS agent
+# Create TokagentOS agent
 runtime = AgentRuntime(plugins=[get_openai_plugin()])
 await runtime.initialize()
 agent = BlackjackAgent(runtime)
@@ -81,7 +81,7 @@ trajectory collection and model training:
 
 ```python
 from atropos import AtroposClient
-from elizaos_atropos_blackjack import BlackjackEnvironment
+from tokagentos_atropos_blackjack import BlackjackEnvironment
 
 # Register environment with Atropos
 client = AtroposClient()
@@ -105,4 +105,4 @@ The optimal basic strategy for blackjack depends on the player's hand and dealer
 
 ## License
 
-MIT License - Part of the ElizaOS project.
+MIT License - Part of the TokagentOS project.

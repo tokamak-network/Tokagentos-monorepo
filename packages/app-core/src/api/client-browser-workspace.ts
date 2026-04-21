@@ -3,11 +3,11 @@ import type {
   BrowserWorkspaceTab,
   NavigateBrowserWorkspaceTabRequest,
   OpenBrowserWorkspaceTabRequest,
-} from "@elizaos/agent/services/browser-workspace";
-import { ElizaClient } from "./client-base";
+} from "@tokagentos/agent/services/browser-workspace";
+import { TokagentClient } from "./client-base";
 
 declare module "./client-base" {
-  interface ElizaClient {
+  interface TokagentClient {
     getBrowserWorkspace(): Promise<BrowserWorkspaceSnapshot>;
     openBrowserWorkspaceTab(request: OpenBrowserWorkspaceTabRequest): Promise<{
       tab: BrowserWorkspaceTab;
@@ -23,12 +23,12 @@ declare module "./client-base" {
   }
 }
 
-ElizaClient.prototype.getBrowserWorkspace = async function (this: ElizaClient) {
+TokagentClient.prototype.getBrowserWorkspace = async function (this: TokagentClient) {
   return this.fetch("/api/browser-workspace");
 };
 
-ElizaClient.prototype.openBrowserWorkspaceTab = async function (
-  this: ElizaClient,
+TokagentClient.prototype.openBrowserWorkspaceTab = async function (
+  this: TokagentClient,
   request,
 ) {
   return this.fetch("/api/browser-workspace/tabs", {
@@ -37,8 +37,8 @@ ElizaClient.prototype.openBrowserWorkspaceTab = async function (
   });
 };
 
-ElizaClient.prototype.navigateBrowserWorkspaceTab = async function (
-  this: ElizaClient,
+TokagentClient.prototype.navigateBrowserWorkspaceTab = async function (
+  this: TokagentClient,
   id,
   url,
 ) {
@@ -54,8 +54,8 @@ ElizaClient.prototype.navigateBrowserWorkspaceTab = async function (
   );
 };
 
-ElizaClient.prototype.showBrowserWorkspaceTab = async function (
-  this: ElizaClient,
+TokagentClient.prototype.showBrowserWorkspaceTab = async function (
+  this: TokagentClient,
   id,
 ) {
   return this.fetch(
@@ -66,8 +66,8 @@ ElizaClient.prototype.showBrowserWorkspaceTab = async function (
   );
 };
 
-ElizaClient.prototype.hideBrowserWorkspaceTab = async function (
-  this: ElizaClient,
+TokagentClient.prototype.hideBrowserWorkspaceTab = async function (
+  this: TokagentClient,
   id,
 ) {
   return this.fetch(
@@ -78,8 +78,8 @@ ElizaClient.prototype.hideBrowserWorkspaceTab = async function (
   );
 };
 
-ElizaClient.prototype.closeBrowserWorkspaceTab = async function (
-  this: ElizaClient,
+TokagentClient.prototype.closeBrowserWorkspaceTab = async function (
+  this: TokagentClient,
   id,
 ) {
   return this.fetch(`/api/browser-workspace/tabs/${encodeURIComponent(id)}`, {
@@ -87,8 +87,8 @@ ElizaClient.prototype.closeBrowserWorkspaceTab = async function (
   });
 };
 
-ElizaClient.prototype.snapshotBrowserWorkspaceTab = async function (
-  this: ElizaClient,
+TokagentClient.prototype.snapshotBrowserWorkspaceTab = async function (
+  this: TokagentClient,
   id,
 ) {
   return this.fetch(

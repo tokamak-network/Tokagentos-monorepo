@@ -24,7 +24,7 @@ export interface CoordinatorEvalConversation {
 function ensureAbsoluteBaseUrl(baseUrl: string): string {
   const normalized = baseUrl.trim().replace(/\/+$/, "");
   if (!/^https?:\/\//i.test(normalized)) {
-    throw new Error(`Invalid Eliza base URL: ${baseUrl}`);
+    throw new Error(`Invalid Tokagent base URL: ${baseUrl}`);
   }
   return normalized;
 }
@@ -39,8 +39,8 @@ export function resolveCoordinatorEvalBaseUrl(explicit?: string): string {
     return ensureAbsoluteBaseUrl(explicit);
   }
   const port =
-    process.env.ELIZA_API_PORT?.trim() ||
-    process.env.ELIZA_PORT?.trim() ||
+    process.env.TOKAGENT_API_PORT?.trim() ||
+    process.env.TOKAGENT_PORT?.trim() ||
     "31337";
   return ensureAbsoluteBaseUrl(`http://127.0.0.1:${port}`);
 }

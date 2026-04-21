@@ -1,6 +1,6 @@
-//! elizaOS Rust Plugin Starter
+//! tokagentOS Rust Plugin Starter
 //!
-//! This is a template for creating elizaOS plugins in Rust that can be loaded by:
+//! This is a template for creating tokagentOS plugins in Rust that can be loaded by:
 //! - TypeScript runtime (via WASM)
 //! - Python runtime (via FFI)
 //!
@@ -8,7 +8,7 @@
 //!
 //! ```bash
 //! cargo build --target wasm32-unknown-unknown --release --features wasm
-//! wasm-bindgen target/wasm32-unknown-unknown/release/elizaos_plugin_starter.wasm --out-dir dist
+//! wasm-bindgen target/wasm32-unknown-unknown/release/tokagentos_plugin_starter.wasm --out-dir dist
 //! ```
 //!
 //! ## Building for Python (FFI)
@@ -283,14 +283,14 @@ mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn elizaos_get_manifest() -> *mut c_char {
+    pub extern "C" fn tokagentos_get_manifest() -> *mut c_char {
         let plugin = ensure_plugin();
         let manifest = plugin.as_ref().unwrap().manifest();
         string_to_cstr(serde_json::to_string(&manifest).unwrap_or_default())
     }
 
     #[no_mangle]
-    pub extern "C" fn elizaos_init(config_json: *const c_char) -> c_int {
+    pub extern "C" fn tokagentos_init(config_json: *const c_char) -> c_int {
         let config = cstr_to_string(config_json).unwrap_or_else(|| "{}".to_string());
         let mut plugin = ensure_plugin();
         match plugin.as_mut().unwrap().init(&config) {
@@ -300,7 +300,7 @@ mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn elizaos_validate_action(
+    pub extern "C" fn tokagentos_validate_action(
         name: *const c_char,
         memory_json: *const c_char,
         state_json: *const c_char,
@@ -322,7 +322,7 @@ mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn elizaos_invoke_action(
+    pub extern "C" fn tokagentos_invoke_action(
         name: *const c_char,
         memory_json: *const c_char,
         state_json: *const c_char,
@@ -349,7 +349,7 @@ mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn elizaos_get_provider(
+    pub extern "C" fn tokagentos_get_provider(
         name: *const c_char,
         memory_json: *const c_char,
         state_json: *const c_char,
@@ -370,7 +370,7 @@ mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn elizaos_validate_evaluator(
+    pub extern "C" fn tokagentos_validate_evaluator(
         name: *const c_char,
         memory_json: *const c_char,
         state_json: *const c_char,
@@ -392,7 +392,7 @@ mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn elizaos_invoke_evaluator(
+    pub extern "C" fn tokagentos_invoke_evaluator(
         name: *const c_char,
         memory_json: *const c_char,
         state_json: *const c_char,
@@ -414,7 +414,7 @@ mod ffi {
     }
 
     #[no_mangle]
-    pub extern "C" fn elizaos_free_string(ptr: *mut c_char) {
+    pub extern "C" fn tokagentos_free_string(ptr: *mut c_char) {
         if !ptr.is_null() {
             unsafe {
                 let _ = CString::from_raw(ptr);

@@ -170,19 +170,19 @@ function readJsonFile(filePath: string): Record<string, unknown> | null {
   }
 }
 
-function resolveElizaConfigPath(): string {
+function resolveTokagentConfigPath(): string {
   const explicit =
-    process.env.ELIZA_CONFIG_PATH?.trim() ||
-    process.env.ELIZA_CONFIG_PATH?.trim();
+    process.env.TOKAGENT_CONFIG_PATH?.trim() ||
+    process.env.TOKAGENT_CONFIG_PATH?.trim();
   if (explicit) return explicit;
 
   const stateDir =
-    process.env.ELIZA_STATE_DIR?.trim() ||
-    process.env.ELIZA_STATE_DIR?.trim() ||
-    path.join(getHomeDir(), ".eliza");
-  const namespace = process.env.ELIZA_NAMESPACE?.trim();
+    process.env.TOKAGENT_STATE_DIR?.trim() ||
+    process.env.TOKAGENT_STATE_DIR?.trim() ||
+    path.join(getHomeDir(), ".tokagent");
+  const namespace = process.env.TOKAGENT_NAMESPACE?.trim();
   const filename =
-    !namespace || namespace === "eliza" ? "eliza.json" : `${namespace}.json`;
+    !namespace || namespace === "tokagent" ? "tokagent.json" : `${namespace}.json`;
   return path.join(stateDir, filename);
 }
 
@@ -277,7 +277,7 @@ function buildChannelReadiness(params: {
       configReady: true,
       healthStatuses: {},
       available: true,
-      reason: "App chat is always available when the Eliza API is reachable.",
+      reason: "App chat is always available when the Tokagent API is reachable.",
     },
   ];
 
@@ -306,9 +306,9 @@ function buildChannelReadiness(params: {
 
     let reason: string;
     if (available) {
-      reason = "Eliza reported a live connector runtime for this channel.";
+      reason = "Tokagent reported a live connector runtime for this channel.";
     } else if (configuredKeys.length === 0) {
-      reason = "This channel is not configured in Eliza.";
+      reason = "This channel is not configured in Tokagent.";
     } else if (!configReady) {
       reason =
         "This channel is present in config but is missing required credentials or auth state.";
@@ -317,13 +317,13 @@ function buildChannelReadiness(params: {
         "This channel is configured, but the runtime did not load its connector plugin.";
     } else if (Object.values(healthStatuses).includes("configured")) {
       reason =
-        "This channel is configured, but Eliza has not confirmed a live connector runtime yet.";
+        "This channel is configured, but Tokagent has not confirmed a live connector runtime yet.";
     } else if (Object.values(healthStatuses).includes("unknown")) {
       reason =
         "This channel is configured, but the connector health monitor could not classify its runtime state.";
     } else if (Object.keys(healthStatuses).length === 0) {
       reason =
-        "This channel is configured, but Eliza did not report runtime health for it.";
+        "This channel is configured, but Tokagent did not report runtime health for it.";
     } else {
       reason = "This channel is not currently available for live evaluation.";
     }
@@ -347,7 +347,7 @@ export async function runCoordinatorPreflight(options?: {
 }): Promise<CoordinatorPreflightResult> {
   const baseUrl = resolveCoordinatorEvalBaseUrl(options?.baseUrl);
   const client = new CoordinatorEvalClient(baseUrl);
-  const configPath = resolveElizaConfigPath();
+  const configPath = resolveTokagentConfigPath();
   const config = readJsonFile(configPath);
   const checks: CoordinatorPreflightCheck[] = [];
 
@@ -412,9 +412,9 @@ export async function runCoordinatorPreflight(options?: {
     }>("/api/coding-agents/coordinator/status");
   } catch (error) {
     addCheck(
-      "eliza-api",
+      "tokagent-api",
       "fail",
-      "Eliza API is not reachable at the configured base URL.",
+      "Tokagent API is not reachable at the configured base URL.",
       {
         baseUrl,
         error: error instanceof Error ? error.message : String(error),

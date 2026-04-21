@@ -15,8 +15,8 @@
 target
 **/data/**
 data
-.eliza
-**/.eliza/**
+.tokagent
+**/.tokagent/**
 .cursor
 **/.cursor/**
 .next

@@ -16,7 +16,7 @@ import {
   DialogTitle,
   Spinner,
   StatusBadge,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   Background,
   Controls,
@@ -319,7 +319,7 @@ function buildEditorUrl(
   }
   if (status.mode === "cloud" && cloudAgentId) {
     const cloudBase =
-      getBootConfig().cloudApiBase ?? "https://www.elizacloud.ai";
+      getBootConfig().cloudApiBase ?? "https://www.tokagentcloud.ai";
     return `${cloudBase}/agents/${encodeURIComponent(cloudAgentId)}/n8n/workflow/${encodeURIComponent(workflow.id)}`;
   }
   return null;

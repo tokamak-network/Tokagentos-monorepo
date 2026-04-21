@@ -6,10 +6,10 @@ import {
   MemoryType,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 const KNOWLEDGE_BATCH_SIZE = 100;
-const DEFAULT_KNOWLEDGE_SOURCE = "eliza-default-knowledge";
+const DEFAULT_KNOWLEDGE_SOURCE = "tokagent-default-knowledge";
 
 type SeededMemory = Memory & { id: UUID };
 
@@ -28,62 +28,62 @@ export interface DefaultKnowledgeDocumentDefinition {
   metadata?: Record<string, unknown>;
 }
 
-export const ELIZA_OVERVIEW_TEXT =
-  "Eliza is an autonomous agent powered by elizaOS, the agent framework. Users can ask Eliza to write code, add new skills, and trigger recurring workflows with heartbeats that run at regular intervals. Eliza Cloud is an open source cloud backend that simplifies deploying and delivering Eliza.";
+export const TOKAGENT_OVERVIEW_TEXT =
+  "Tokagent is an autonomous agent powered by tokagentOS, the agent framework. Users can ask Tokagent to write code, add new skills, and trigger recurring workflows with heartbeats that run at regular intervals. Tokagent Cloud is an open source cloud backend that simplifies deploying and delivering Tokagent.";
 
-export const ELIZA_HISTORY_TEXT =
-  "ELIZA was created by Joseph Weizenbaum at MIT in the mid-1960s and is widely regarded as one of the earliest chatbots. Its best-known script, DOCTOR, used pattern matching to imitate a Rogerian psychotherapist and showed how simple language rules could feel surprisingly conversational. ELIZA helped define the history of chatbots and influenced later work on conversational agents.";
+export const TOKAGENT_HISTORY_TEXT =
+  "TOKAGENT was created by Joseph Weizenbaum at MIT in the mid-1960s and is widely regarded as one of the earliest chatbots. Its best-known script, DOCTOR, used pattern matching to imitate a Rogerian psychotherapist and showed how simple language rules could feel surprisingly conversational. TOKAGENT helped define the history of chatbots and influenced later work on conversational agents.";
 
-export const ELIZA_CLOUD_BASICS_TEXT =
-  "Eliza Cloud is the managed backend and app platform for Eliza when cloud mode is enabled. Builders can create an app, keep its appId, use Cloud login and redirect flows so app users can authenticate against Cloud, route chat and media APIs through Cloud, monetize app usage with inference markup and purchase-share settings, and deploy Docker containers when an app needs server-side execution.";
+export const TOKAGENT_CLOUD_BASICS_TEXT =
+  "Tokagent Cloud is the managed backend and app platform for Tokagent when cloud mode is enabled. Builders can create an app, keep its appId, use Cloud login and redirect flows so app users can authenticate against Cloud, route chat and media APIs through Cloud, monetize app usage with inference markup and purchase-share settings, and deploy Docker containers when an app needs server-side execution.";
 
 export const DEFAULT_KNOWLEDGE_DOCUMENTS: readonly DefaultKnowledgeDocumentDefinition[] =
   [
     {
-      key: "eliza-overview",
+      key: "tokagent-overview",
       version: 1,
-      filename: "eliza-overview.txt",
+      filename: "tokagent-overview.txt",
       contentType: "text/plain",
-      text: ELIZA_OVERVIEW_TEXT,
+      text: TOKAGENT_OVERVIEW_TEXT,
       fragments: [
         {
-          text: ELIZA_OVERVIEW_TEXT,
+          text: TOKAGENT_OVERVIEW_TEXT,
         },
       ],
     },
     {
-      key: "eliza-history",
+      key: "tokagent-history",
       version: 1,
-      filename: "eliza-history.txt",
+      filename: "tokagent-history.txt",
       contentType: "text/plain",
-      text: ELIZA_HISTORY_TEXT,
+      text: TOKAGENT_HISTORY_TEXT,
       fragments: [
         {
-          text: ELIZA_HISTORY_TEXT,
+          text: TOKAGENT_HISTORY_TEXT,
         },
       ],
     },
     {
-      key: "eliza-cloud-basics",
+      key: "tokagent-cloud-basics",
       version: 1,
-      filename: "eliza-cloud-basics.txt",
+      filename: "tokagent-cloud-basics.txt",
       contentType: "text/plain",
-      text: ELIZA_CLOUD_BASICS_TEXT,
+      text: TOKAGENT_CLOUD_BASICS_TEXT,
       fragments: [
         {
-          text: ELIZA_CLOUD_BASICS_TEXT,
+          text: TOKAGENT_CLOUD_BASICS_TEXT,
         },
       ],
     },
   ];
 
 function getDocumentId(agentId: UUID, key: string): UUID {
-  return stringToUuid(`eliza-default-knowledge:${agentId}:${key}:document`);
+  return stringToUuid(`tokagent-default-knowledge:${agentId}:${key}:document`);
 }
 
 function getFragmentId(agentId: UUID, key: string, index: number): UUID {
   return stringToUuid(
-    `eliza-default-knowledge:${agentId}:${key}:fragment:${index}`,
+    `tokagent-default-knowledge:${agentId}:${key}:fragment:${index}`,
   );
 }
 
@@ -112,7 +112,7 @@ function normalizeProvidedEmbedding(
 
   if (!embedding.every((value) => Number.isFinite(value))) {
     logger.warn(
-      `[eliza] Ignoring bundled knowledge embedding for ${document.filename} fragment ${index}: vector contains non-finite values.`,
+      `[tokagent] Ignoring bundled knowledge embedding for ${document.filename} fragment ${index}: vector contains non-finite values.`,
     );
     return undefined;
   }
@@ -123,7 +123,7 @@ function normalizeProvidedEmbedding(
     embedding.length !== expectedDimensions
   ) {
     logger.warn(
-      `[eliza] Ignoring bundled knowledge embedding for ${document.filename} fragment ${index}: expected ${expectedDimensions} dimensions, received ${embedding.length}.`,
+      `[tokagent] Ignoring bundled knowledge embedding for ${document.filename} fragment ${index}: expected ${expectedDimensions} dimensions, received ${embedding.length}.`,
     );
     return undefined;
   }
@@ -381,7 +381,7 @@ async function seedBundledKnowledgeDocument(
 
   if (changed) {
     logger.info(
-      `[eliza] Seeded bundled knowledge document "${document.filename}" (${document.fragments.length} fragment${document.fragments.length === 1 ? "" : "s"}).`,
+      `[tokagent] Seeded bundled knowledge document "${document.filename}" (${document.fragments.length} fragment${document.fragments.length === 1 ? "" : "s"}).`,
     );
   }
 }

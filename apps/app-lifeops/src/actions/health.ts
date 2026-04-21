@@ -13,12 +13,12 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { LifeOpsService } from "../lifeops/service.js";
 import type { HealthDataPoint } from "../lifeops/health-bridge.js";
 import { hasLifeOpsAccess } from "./lifeops-google-helpers.js";
@@ -329,7 +329,7 @@ export const healthAction: Action = {
     if (subaction === "status") {
       const text = connectorStatus.available
         ? `Health backend available: ${connectorStatus.backend}.`
-        : "No health backend available. Set ELIZA_HEALTHKIT_CLI_PATH or ELIZA_GOOGLE_FIT_ACCESS_TOKEN.";
+        : "No health backend available. Set TOKAGENT_HEALTHKIT_CLI_PATH or TOKAGENT_GOOGLE_FIT_ACCESS_TOKEN.";
       await callback?.({ text, source: "action", action: "HEALTH" });
       return {
         text,
@@ -344,7 +344,7 @@ export const healthAction: Action = {
     // not deliver it — text remains truthful about the missing backend.
     if (!connectorStatus.available) {
       const text =
-        "I don't have a health data source connected yet. To share daily summaries, trends, or per-metric details, connect Apple Health (ELIZA_HEALTHKIT_CLI_PATH) or Google Fit (ELIZA_GOOGLE_FIT_ACCESS_TOKEN) and I'll pick it up.";
+        "I don't have a health data source connected yet. To share daily summaries, trends, or per-metric details, connect Apple Health (TOKAGENT_HEALTHKIT_CLI_PATH) or Google Fit (TOKAGENT_GOOGLE_FIT_ACCESS_TOKEN) and I'll pick it up.";
       await callback?.({ text, source: "action", action: "HEALTH" });
       return {
         text,

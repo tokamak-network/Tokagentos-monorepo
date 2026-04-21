@@ -1,12 +1,12 @@
-# elizaOS Atropos - TextWorld Environment
+# tokagentOS Atropos - TextWorld Environment
 
-A TextWorld environment for training elizaOS agents using the Atropos RL framework.
+A TextWorld environment for training tokagentOS agents using the Atropos RL framework.
 Integrates with Microsoft's TextWorld framework for procedurally generated text adventure games.
 
 ## Overview
 
 TextWorld is a sandbox learning environment for training agents to play text-based games.
-This integration allows elizaOS agents to:
+This integration allows tokagentOS agents to:
 - Learn language understanding through interactive fiction
 - Develop planning and reasoning capabilities
 - Practice multi-step problem solving
@@ -21,7 +21,7 @@ pip install -e examples/atropos/textworld
 # With Atropos support (for training data generation)
 pip install -e "examples/atropos/textworld[atropos]"
 
-# With OpenAI support (for elizaOS agent)
+# With OpenAI support (for tokagentOS agent)
 pip install -e "examples/atropos/textworld[openai]"
 ```
 
@@ -29,19 +29,19 @@ pip install -e "examples/atropos/textworld[openai]"
 
 ```bash
 # Watch AI play a simple game
-python -m elizaos_atropos_textworld --mode auto
+python -m tokagentos_atropos_textworld --mode auto
 
 # Interactive mode (play yourself)
-python -m elizaos_atropos_textworld --mode interactive
+python -m tokagentos_atropos_textworld --mode interactive
 
 # Custom difficulty
-python -m elizaos_atropos_textworld --mode auto --difficulty hard
+python -m tokagentos_atropos_textworld --mode auto --difficulty hard
 
 # Run benchmark comparing heuristic vs random
-python -m elizaos_atropos_textworld --mode benchmark --episodes 100
+python -m tokagentos_atropos_textworld --mode benchmark --episodes 100
 
 # Generate Atropos training data
-python -m elizaos_atropos_textworld --mode atropos-gen --episodes 100 -o trajectories.jsonl
+python -m tokagentos_atropos_textworld --mode atropos-gen --episodes 100 -o trajectories.jsonl
 ```
 
 ## Environment Details
@@ -70,19 +70,19 @@ Text commands such as:
 - `-0.1`: Invalid commands
 - `0`: Neutral actions
 
-## Usage with elizaOS
+## Usage with tokagentOS
 
-### Using the Full elizaOS Agent
+### Using the Full tokagentOS Agent
 
 ```python
-from elizaos_atropos_textworld import TextWorldEnvironment, ElizaOSAgent
+from tokagentos_atropos_textworld import TextWorldEnvironment, TokagentOSAgent
 
 # Create environment
 env = TextWorldEnvironment(game_type="treasure_hunt", difficulty="medium")
 await env.initialize()
 
-# Create elizaOS agent (uses OpenAI plugin internally)
-agent = ElizaOSAgent()
+# Create tokagentOS agent (uses OpenAI plugin internally)
+agent = TokagentOSAgent()
 await agent.initialize()
 
 # Game loop
@@ -108,7 +108,7 @@ await env.close()
 ### Using the Heuristic Agent (No LLM)
 
 ```python
-from elizaos_atropos_textworld import TextWorldEnvironment, create_heuristic_policy
+from tokagentos_atropos_textworld import TextWorldEnvironment, create_heuristic_policy
 
 env = TextWorldEnvironment(game_type="treasure_hunt", difficulty="medium")
 await env.initialize()
@@ -121,15 +121,15 @@ print(f"Score: {result.score}/{result.max_score} | Won: {result.won}")
 ### Using Custom Runtime
 
 ```python
-from elizaos import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_atropos_textworld import TextWorldEnvironment, TextWorldAgent
+from tokagentos import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_atropos_textworld import TextWorldEnvironment, TextWorldAgent
 
 # Create environment
 env = TextWorldEnvironment(game_type="treasure_hunt", difficulty="medium")
 await env.initialize()
 
-# Create custom elizaOS runtime
+# Create custom tokagentOS runtime
 runtime = AgentRuntime(plugins=[get_openai_plugin()])
 await runtime.initialize()
 
@@ -155,20 +155,20 @@ on text adventure gameplay.
 ### Generating Training Data (CLI)
 
 ```bash
-# Generate training data with elizaOS agent
-python -m elizaos_atropos_textworld --mode atropos-gen --episodes 500 -o train.jsonl
+# Generate training data with tokagentOS agent
+python -m tokagentos_atropos_textworld --mode atropos-gen --episodes 500 -o train.jsonl
 
 # Generate baseline with heuristic agent (no LLM calls)
-python -m elizaos_atropos_textworld --mode atropos-gen --episodes 500 --no-use-elizaos -o baseline.jsonl
+python -m tokagentos_atropos_textworld --mode atropos-gen --episodes 500 --no-use-tokagentos -o baseline.jsonl
 
 # Specify tokenizer (default: meta-llama/Llama-3.2-3B-Instruct)
-python -m elizaos_atropos_textworld --mode atropos-gen --episodes 100 --tokenizer gpt2 -o test.jsonl
+python -m tokagentos_atropos_textworld --mode atropos-gen --episodes 100 --tokenizer gpt2 -o test.jsonl
 ```
 
 ### Generating Training Data (Python API)
 
 ```python
-from elizaos_atropos_textworld.atropos_integration import (
+from tokagentos_atropos_textworld.atropos_integration import (
     generate_training_data,
     AtroposConfig,
 )
@@ -179,7 +179,7 @@ config = AtroposConfig(
     game_type="treasure_hunt",
     difficulty="medium",
     max_tokens=4096,
-    use_elizaos=True,  # Use elizaOS agent (requires OPENAI_API_KEY)
+    use_tokagentos=True,  # Use tokagentOS agent (requires OPENAI_API_KEY)
     win_bonus=0.3,     # Bonus for winning
     efficiency_weight=0.2,  # Reward for efficient play
 )
@@ -208,7 +208,7 @@ Each trajectory is a JSON object compatible with Atropos `ScoredDataItem`:
     {"role": "assistant", "content": "take key"}
   ],
   "overrides": {
-    "agent": "elizaos",
+    "agent": "tokagentos",
     "seed": 42,
     "won": true
   }
@@ -225,7 +225,7 @@ Each trajectory is a JSON object compatible with Atropos `ScoredDataItem`:
 For live training integration with Atropos:
 
 ```python
-from elizaos_atropos_textworld.atropos_integration import create_atropos_env_class
+from tokagentos_atropos_textworld.atropos_integration import create_atropos_env_class
 
 # Create and run as Atropos server
 EnvClass = create_atropos_env_class()
@@ -279,12 +279,12 @@ You take the bread.
 ## Architecture
 
 ```
-elizaos_atropos_textworld/
+tokagentos_atropos_textworld/
 ├── __init__.py              # Package exports
 ├── types.py                 # Game types (GameState, Turn, Trajectory, etc.)
 ├── environment.py           # TextWorldEnvironment class
 ├── game_generator.py        # Procedural game generation
-├── agent.py                 # elizaOS agent (ElizaOSAgent, TextWorldAgent)
+├── agent.py                 # tokagentOS agent (TokagentOSAgent, TextWorldAgent)
 ├── atropos_integration.py   # Atropos RL integration
 ├── parser.py                # Natural language parser
 └── cli.py                   # Command-line interface
@@ -379,4 +379,4 @@ This keeps data generation running and produces valid (if suboptimal) trajectori
 
 ## License
 
-MIT License - Part of the elizaOS project.
+MIT License - Part of the tokagentOS project.

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from enum import IntEnum, Enum
 from typing import ClassVar
 
-from elizaos_art.base import Action, State
+from tokagentos_art.base import Action, State
 
 
 class CardColor(IntEnum):

@@ -286,7 +286,7 @@ describe("crypto-compat", () => {
 			const key = await createHashAsync("sha256", "test-key-seed-gcm");
 			const iv = new Uint8Array(12);
 			for (let i = 0; i < iv.length; i++) iv[i] = i;
-			const aad = new TextEncoder().encode("elizaos:settings:v2");
+			const aad = new TextEncoder().encode("tokagentos:settings:v2");
 			const plaintext = new TextEncoder().encode("Secret message");
 
 			const { ciphertext, tag } = encryptAes256Gcm(key, iv, plaintext, aad);

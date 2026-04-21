@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from elizaos.types.generated.eliza.v1 import agent_pb2
+from tokagentos.types.generated.tokagent.v1 import agent_pb2
 
 Agent = agent_pb2.Agent
 AgentStatus = agent_pb2.AgentStatus

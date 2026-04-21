@@ -1,9 +1,9 @@
 {
-  "name": "@elizaos/schemas",
+  "name": "@tokagentos/schemas",
   "version": "2.0.0-alpha.223",
-  "description": "Protocol Buffer schemas for elizaOS - single source of truth for all types",
+  "description": "Protocol Buffer schemas for tokagentOS - single source of truth for all types",
   "files": [
-    "eliza",
+    "tokagent",
     "buf.yaml",
     "buf.gen.yaml",
     "README.md"
@@ -19,7 +19,7 @@
     "generate:ts": "buf generate --template buf.gen.ts.yaml",
     "generate:py": "buf generate --template buf.gen.py.yaml",
     "generate:rs": "buf generate --template buf.gen.rs.yaml",
-    "clean": "rm -rf ../typescript/src/types/generated ../python/elizaos/types/generated ../rust/src/types/generated",
+    "clean": "rm -rf ../typescript/src/types/generated ../python/tokagentos/types/generated ../rust/src/types/generated",
     "build": "npm run lint && npm run generate",
     "test": "buf lint"
   },

@@ -1,7 +1,7 @@
 """Embedding support for Context Benchmark.
 
 Provides real embedding functions using either:
-1. ElizaOS runtime's embedding model (if available)
+1. TokagentOS runtime's embedding model (if available)
 2. Sentence-transformers (if installed)
 3. Simple hash-based fallback (for testing)
 """
@@ -14,7 +14,7 @@ from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 
 # Type alias for async embedding functions
@@ -181,24 +181,24 @@ class EmbeddingProvider:
         self._cache.clear()
 
 
-def create_eliza_embedding_fn(runtime: "IAgentRuntime") -> AsyncEmbeddingFn | None:
-    """Create an async embedding function using Eliza's runtime.
+def create_tokagent_embedding_fn(runtime: "IAgentRuntime") -> AsyncEmbeddingFn | None:
+    """Create an async embedding function using Tokagent's runtime.
 
     Args:
-        runtime: ElizaOS runtime instance.
+        runtime: TokagentOS runtime instance.
 
     Returns:
         Async embedding function, or None if not available.
 
     """
-    from elizaos.types.model import ModelType
+    from tokagentos.types.model import ModelType
 
     # Check if embedding model is available
     if not runtime.has_model(ModelType.TEXT_EMBEDDING):
         return None
 
     async def embed(text: str) -> list[float]:
-        """Generate embedding using Eliza runtime.
+        """Generate embedding using Tokagent runtime.
 
         Args:
             text: Text to embed.
@@ -298,21 +298,21 @@ def get_embedding_fn(
     """Get an appropriate embedding function.
 
     Tries in order:
-    1. Eliza runtime embedding (if runtime provided and has model)
+    1. Tokagent runtime embedding (if runtime provided and has model)
     2. Sentence-transformers (if installed)
     3. Hash-based fallback
 
     Args:
         prefer_real: Whether to prefer real embeddings over hash-based.
-        runtime: Optional Eliza runtime for embeddings.
+        runtime: Optional Tokagent runtime for embeddings.
 
     Returns:
         Sync embedding function.
 
     """
-    # Try Eliza runtime first
+    # Try Tokagent runtime first
     if runtime is not None:
-        async_fn = create_eliza_embedding_fn(runtime)
+        async_fn = create_tokagent_embedding_fn(runtime)
         if async_fn is not None:
             return create_sync_wrapper(async_fn)
 

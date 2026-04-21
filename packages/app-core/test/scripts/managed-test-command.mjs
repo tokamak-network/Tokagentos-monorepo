@@ -45,7 +45,7 @@ function resolveSavedCloudApiKey() {
 
   for (const candidate of [
     path.join(homeDir, ".milady", "milady.json"),
-    path.join(homeDir, ".eliza", "eliza.json"),
+    path.join(homeDir, ".tokagent", "tokagent.json"),
   ]) {
     const config = readJson(candidate);
     const apiKey = config?.cloud?.apiKey;
@@ -98,13 +98,13 @@ export function buildTestEnv(cwd) {
     }
   }
   env.NODE_NO_WARNINGS = env.NODE_NO_WARNINGS || "1";
-  env.ELIZA_LIVE_TEST = "0";
-  env.ELIZA_LIVE_TEST = "0";
+  env.TOKAGENT_LIVE_TEST = "0";
+  env.TOKAGENT_LIVE_TEST = "0";
   env.PWD = path.resolve(cwd);
-  if (!env.ELIZAOS_CLOUD_API_KEY) {
+  if (!env.TOKAGENTOS_CLOUD_API_KEY) {
     const savedCloudApiKey = resolveSavedCloudApiKey();
     if (savedCloudApiKey) {
-      env.ELIZAOS_CLOUD_API_KEY = savedCloudApiKey;
+      env.TOKAGENTOS_CLOUD_API_KEY = savedCloudApiKey;
     }
   }
   return env;

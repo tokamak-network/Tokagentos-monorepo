@@ -12,7 +12,7 @@ import time
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
-from elizaos_plugin_agent_orchestrator import (
+from tokagentos_plugin_agent_orchestrator import (
     AgentOrchestratorPluginOptions,
     AgentOrchestratorService,
     TaskEvent,
@@ -26,7 +26,7 @@ from .providers import (
     BaseSWEBenchProvider,
     ClaudeCodeProvider,
     CodexProvider,
-    ElizaCodeProvider,
+    TokagentCodeProvider,
     SWEAgentProvider,
 )
 from .trace import RunTraceRecorder
@@ -38,7 +38,7 @@ from .types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
+    from tokagentos.runtime import AgentRuntime
 
 logger = logging.getLogger(__name__)
 
@@ -117,9 +117,9 @@ class OrchestratingAgent:
                 max_steps=self.config.provider_max_steps,
                 model=model,
             )
-        if provider_type == ProviderType.ELIZA_CODE:
-            model = self.config.provider_models.get("eliza-code", self.config.model_name)
-            return ElizaCodeProvider(
+        if provider_type == ProviderType.TOKAGENT_CODE:
+            model = self.config.provider_models.get("tokagent-code", self.config.model_name)
+            return TokagentCodeProvider(
                 runtime=self.runtime,
                 repo_manager=self.repo_manager,
                 max_steps=self.config.provider_max_steps,
@@ -734,7 +734,7 @@ class OrchestratingAgent:
         By default this fails hard when orchestration model execution fails,
         so a run cannot silently degrade into non-orchestrated behavior.
         """
-        from elizaos.types.model import ModelType
+        from tokagentos.types.model import ModelType
 
         system_prompt = (
             "You are an expert software engineering manager. Your job is to analyze "

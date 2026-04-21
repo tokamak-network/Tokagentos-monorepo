@@ -2,12 +2,12 @@ import { createRequire } from "node:module";
 import process from "node:process";
 
 function printHelp(): void {
-  console.log(`eliza-autonomous
+  console.log(`tokagent-autonomous
 
 Usage:
-  eliza-autonomous serve
-  eliza-autonomous runtime
-  eliza-autonomous benchmark [options]
+  tokagent-autonomous serve
+  tokagent-autonomous runtime
+  tokagent-autonomous benchmark [options]
 
 Commands:
   serve      Start the autonomous backend in server-only mode
@@ -43,14 +43,14 @@ export async function runAutonomousCli(
   }
 
   if (command === "runtime") {
-    const { bootElizaRuntime } = await import("../runtime/index.js");
-    await bootElizaRuntime();
+    const { bootTokagentRuntime } = await import("../runtime/index.js");
+    await bootTokagentRuntime();
     return;
   }
 
   if (command === "serve" || command === "start") {
-    const { startEliza } = await import("../runtime/index.js");
-    await startEliza({ serverOnly: true });
+    const { startTokagent } = await import("../runtime/index.js");
+    await startTokagent({ serverOnly: true });
     return;
   }
 

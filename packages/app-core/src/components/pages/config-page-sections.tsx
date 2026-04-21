@@ -3,9 +3,9 @@
  * Extracted from ConfigPageView.tsx.
  */
 
-import { normalizeOnboardingProviderId } from "@elizaos/shared/contracts";
-import { WALLET_RPC_PROVIDER_OPTIONS } from "@elizaos/shared/contracts/wallet";
-import { Button, Switch } from "@elizaos/ui";
+import { normalizeOnboardingProviderId } from "@tokagentos/shared/contracts";
+import { WALLET_RPC_PROVIDER_OPTIONS } from "@tokagentos/shared/contracts/wallet";
+import { Button, Switch } from "@tokagentos/ui";
 import { useCallback, useEffect, useState } from "react";
 import { client } from "../../api";
 import {
@@ -69,8 +69,8 @@ export function CloudRpcStatus({
       <div className="flex items-center gap-2 text-xs">
         <span className="inline-block w-2 h-2 rounded-full bg-ok" />
         <span className="font-semibold">
-          {t("configpageview.ConnectedToElizaCloud", {
-            defaultValue: "Connected to Eliza Cloud",
+          {t("configpageview.ConnectedToTokagentCloud", {
+            defaultValue: "Connected to Tokagent Cloud",
           })}
         </span>
         {credits !== null && (
@@ -109,8 +109,8 @@ export function CloudRpcStatus({
       <div className="flex items-center gap-2 text-xs">
         <span className="inline-block w-2 h-2 rounded-full bg-muted" />
         <span className="text-muted">
-          {t("configpageview.RequiresElizaCloud", {
-            defaultValue: "Requires Eliza Cloud",
+          {t("configpageview.RequiresTokagentCloud", {
+            defaultValue: "Requires Tokagent Cloud",
           })}
         </span>
       </div>
@@ -234,14 +234,14 @@ export function RpcConfigSection<T extends string>({
         containerClassName,
         (key: string) => {
           // hack to get t function without breaking hook rules
-          return key === "providerswitcher.elizaCloud"
-            ? t("providerswitcher.elizaCloud", { defaultValue: "Eliza Cloud" })
+          return key === "providerswitcher.tokagentCloud"
+            ? t("providerswitcher.tokagentCloud", { defaultValue: "Tokagent Cloud" })
             : key;
         },
       )}
 
       <div className="mt-3">
-        {selectedProvider === "eliza-cloud" ? (
+        {selectedProvider === "tokagent-cloud" ? (
           <CloudRpcStatus
             connected={cloud.connected}
             credits={cloud.credits}
@@ -291,8 +291,8 @@ export function renderRpcProviderButtons<T extends string>(
             onClick={() => onSelect(provider.id)}
           >
             <div className="leading-tight">
-              {provider.id === "eliza-cloud" && tFallback
-                ? tFallback("providerswitcher.elizaCloud")
+              {provider.id === "tokagent-cloud" && tFallback
+                ? tFallback("providerswitcher.tokagentCloud")
                 : provider.label}
             </div>
           </Button>
@@ -353,7 +353,7 @@ function isCloudServiceRouteSelected(route: unknown): boolean {
   const routeRecord = route as Record<string, unknown>;
   return (
     routeRecord.transport === "cloud-proxy" &&
-    normalizeOnboardingProviderId(routeRecord.backend) === "elizacloud"
+    normalizeOnboardingProviderId(routeRecord.backend) === "tokagentcloud"
   );
 }
 
@@ -414,9 +414,9 @@ export function CloudServicesSection() {
             ...existingRouting,
             [key]: newValue
               ? {
-                  backend: "elizacloud",
+                  backend: "tokagentcloud",
                   transport: "cloud-proxy",
-                  accountId: "elizacloud",
+                  accountId: "tokagentcloud",
                 }
               : null,
           },
@@ -452,7 +452,7 @@ export function CloudServicesSection() {
       </div>
       <p className="text-xs text-muted mb-4 leading-snug">
         {t("configpageview.CloudServicesDesc", {
-          defaultValue: "Toggle Eliza Cloud services",
+          defaultValue: "Toggle Tokagent Cloud services",
         })}
       </p>
       <div className="flex flex-col gap-2">

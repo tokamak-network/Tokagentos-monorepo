@@ -37,7 +37,7 @@ const CHARACTERS_VRM = join(ROOT, "apps", "app", "characters", "vrm");
 const PUBLIC_VRMS = join(ROOT, "apps", "app", "public", "vrms");
 const PUBLIC_SRC_VRMS = join(
   ROOT,
-  "eliza",
+  "tokagent",
   "apps",
   "app-companion",
   "public_src",
@@ -45,7 +45,7 @@ const PUBLIC_SRC_VRMS = join(
 );
 const TAG = "[process-vrms]";
 
-// Character name -> eliza index (1-based). Order determines avatar order in UI.
+// Character name -> tokagent index (1-based). Order determines avatar order in UI.
 const CHARACTER_TO_INDEX = [
   ["Chen", 1],
   ["Jin", 2],
@@ -115,7 +115,7 @@ function main() {
     `${TAG} Processing ${placeholdersOnly ? "placeholders only" : `${available.length} VRMs from characters/vrm`} (dryRun=${dryRun})`,
   );
 
-  // Remove old VRMs and previews/backgrounds not in our character set (eliza-1..8)
+  // Remove old VRMs and previews/backgrounds not in our character set (tokagent-1..8)
   const keepIds = new Set(CHARACTER_TO_INDEX.map(([, i]) => i));
   const dirsToClean = [
     PUBLIC_VRMS,
@@ -128,7 +128,7 @@ function main() {
   for (const dir of dirsToClean) {
     if (existsSync(dir) && !dryRun) {
       for (const f of readdirSync(dir)) {
-        const m = f.match(/^eliza-(\d+)\.(vrm|png)(\.gz)?$/);
+        const m = f.match(/^tokagent-(\d+)\.(vrm|png)(\.gz)?$/);
         if (m && !keepIds.has(Number(m[1]))) {
           const p = join(dir, f);
           try {
@@ -158,7 +158,7 @@ function main() {
         console.warn(`${TAG} Skipping ${vrmFile} (not found)`);
         continue;
       }
-      const destBaseName = `eliza-${index}`;
+      const destBaseName = `tokagent-${index}`;
       console.log(`${TAG} ${charName}.vrm -> ${destBaseName}.vrm.gz`);
       processVrm(srcPath, destBaseName, dryRun);
       processed += 1;
@@ -172,22 +172,22 @@ function main() {
     let srcPreview = null;
     let srcBg = null;
     for (const [, index] of CHARACTER_TO_INDEX) {
-      const p = join(PUBLIC_VRMS, "previews", `eliza-${index}.png`);
-      const b = join(PUBLIC_VRMS, "backgrounds", `eliza-${index}.png`);
+      const p = join(PUBLIC_VRMS, "previews", `tokagent-${index}.png`);
+      const b = join(PUBLIC_VRMS, "backgrounds", `tokagent-${index}.png`);
       if (!srcPreview && existsSync(p)) srcPreview = p;
       if (!srcBg && existsSync(b)) srcBg = b;
       if (srcPreview && srcBg) break;
     }
     for (const [, index] of CHARACTER_TO_INDEX) {
-      const dstPreview = join(PUBLIC_VRMS, "previews", `eliza-${index}.png`);
-      const dstBg = join(PUBLIC_VRMS, "backgrounds", `eliza-${index}.png`);
+      const dstPreview = join(PUBLIC_VRMS, "previews", `tokagent-${index}.png`);
+      const dstBg = join(PUBLIC_VRMS, "backgrounds", `tokagent-${index}.png`);
       if (!existsSync(dstPreview) && srcPreview) {
         cpSync(srcPreview, dstPreview);
-        console.log(`${TAG} Copied placeholder preview eliza-${index}.png`);
+        console.log(`${TAG} Copied placeholder preview tokagent-${index}.png`);
       }
       if (!existsSync(dstBg) && srcBg) {
         cpSync(srcBg, dstBg);
-        console.log(`${TAG} Copied placeholder background eliza-${index}.png`);
+        console.log(`${TAG} Copied placeholder background tokagent-${index}.png`);
       }
     }
   }

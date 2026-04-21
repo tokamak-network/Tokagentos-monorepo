@@ -15,15 +15,15 @@ describe("routing preferences (real file I/O)", () => {
 
   beforeEach(async () => {
     tmp = await fs.mkdtemp(path.join(os.tmpdir(), "milady-routing-prefs-"));
-    origStateDir = process.env.ELIZA_STATE_DIR;
-    process.env.ELIZA_STATE_DIR = tmp;
+    origStateDir = process.env.TOKAGENT_STATE_DIR;
+    process.env.TOKAGENT_STATE_DIR = tmp;
   });
 
   afterEach(async () => {
     if (origStateDir === undefined) {
-      delete process.env.ELIZA_STATE_DIR;
+      delete process.env.TOKAGENT_STATE_DIR;
     } else {
-      process.env.ELIZA_STATE_DIR = origStateDir;
+      process.env.TOKAGENT_STATE_DIR = origStateDir;
     }
     await fs.rm(tmp, { recursive: true, force: true });
   });

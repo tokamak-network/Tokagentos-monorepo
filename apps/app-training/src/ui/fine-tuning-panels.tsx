@@ -7,8 +7,8 @@ import {
   type TrainingStreamEvent,
   type TrainingTrajectoryDetail,
   type TrainingTrajectoryList,
-} from "@elizaos/app-core";
-import { Button, Select, SelectContent, SelectItem, SelectValue, SettingsControls } from "@elizaos/ui";
+} from "@tokagentos/app-core";
+import { Button, Select, SelectContent, SelectItem, SelectValue, SettingsControls } from "@tokagentos/ui";
 
 /* ── Constants ─────────────────────────────────────────────────────── */
 

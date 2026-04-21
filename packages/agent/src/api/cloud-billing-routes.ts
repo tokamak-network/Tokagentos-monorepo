@@ -1,5 +1,5 @@
 import type http from "node:http";
-import type { AgentRuntime, Service } from "@elizaos/core";
+import type { AgentRuntime, Service } from "@tokagentos/core";
 import { normalizeCloudSiteUrl } from "../cloud/base-url.js";
 import { validateCloudBaseUrl } from "../cloud/validate-url.js";
 import type { CloudProxyConfigLike } from "../types/config-like.js";
@@ -382,7 +382,7 @@ export async function handleCloudBillingRoute(
   if (!apiKey) {
     sendJsonError(
       res,
-      "Not connected to Eliza Cloud. Please log in first.",
+      "Not connected to Tokagent Cloud. Please log in first.",
       401,
     );
     return true;
@@ -451,10 +451,10 @@ export async function handleCloudBillingRoute(
     const upstreamBody = JSON.stringify({
       credits: amountUsd,
       success_url: buildRedirectUrl(baseUrl, "/dashboard/billing/success", {
-        from: "eliza",
+        from: "tokagent",
       }),
       cancel_url: buildRedirectUrl(baseUrl, "/dashboard/settings", {
-        from: "eliza",
+        from: "tokagent",
         tab: "billing",
         canceled: "1",
       }),

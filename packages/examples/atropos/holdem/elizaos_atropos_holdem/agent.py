@@ -1,5 +1,5 @@
 """
-ElizaOS agent for Texas Hold'em environment.
+TokagentOS agent for Texas Hold'em environment.
 """
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ import uuid
 import random
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_holdem.types import (
+from tokagentos_atropos_holdem.types import (
     Action,
     ActionType,
     GameState,
@@ -16,16 +16,16 @@ from elizaos_atropos_holdem.types import (
     HandRank,
     Chips,
 )
-from elizaos_atropos_holdem.hand_evaluator import evaluate_hand, get_hand_description
+from tokagentos_atropos_holdem.hand_evaluator import evaluate_hand, get_hand_description
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.primitives import UUID
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.primitives import UUID
 
 
 class HoldemAgent:
     """
-    ElizaOS-powered Texas Hold'em agent.
+    TokagentOS-powered Texas Hold'em agent.
     
     Uses LLM or heuristics to make poker decisions.
     
@@ -48,7 +48,7 @@ class HoldemAgent:
         Initialize the Hold'em agent.
         
         Args:
-            runtime: ElizaOS AgentRuntime
+            runtime: TokagentOS AgentRuntime
             position: Seat position at the table
             use_llm: Whether to use LLM for decisions
             agent_id: Optional agent ID
@@ -82,7 +82,7 @@ class HoldemAgent:
             The action to take
         """
         if self._use_llm and self._runtime is not None:
-            return await self._decide_with_eliza(state, trajectory_step_id=trajectory_step_id)
+            return await self._decide_with_tokagent(state, trajectory_step_id=trajectory_step_id)
         return self._decide_with_heuristics(state)
 
     def _decide_with_heuristics(self, state: GameState) -> Action:
@@ -131,14 +131,14 @@ class HoldemAgent:
         # Fold if we have to pay too much
         return Action(ActionType.FOLD)
 
-    async def _decide_with_eliza(self, state: GameState, *, trajectory_step_id: str | None = None) -> Action:
-        """Use canonical ElizaOS message pipeline for decision making."""
+    async def _decide_with_tokagent(self, state: GameState, *, trajectory_step_id: str | None = None) -> Action:
+        """Use canonical TokagentOS message pipeline for decision making."""
         if self._runtime is None:
             return self._decide_with_heuristics(state)
 
         try:
-            from elizaos_atropos_shared.canonical_eliza import run_with_context
-            from elizaos_atropos_holdem.eliza_plugin import (
+            from tokagentos_atropos_shared.canonical_tokagent import run_with_context
+            from tokagentos_atropos_holdem.tokagent_plugin import (
                 HOLDEM_STORE,
                 HoldemDecisionContext,
             )

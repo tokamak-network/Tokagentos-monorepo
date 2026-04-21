@@ -7,8 +7,8 @@ Implements the Codenames word association game.
 import random
 from typing import ClassVar
 
-from elizaos_art.base import BaseEnvironment
-from elizaos_art.games.codenames.types import (
+from tokagentos_art.base import BaseEnvironment
+from tokagentos_art.games.codenames.types import (
     CardColor,
     Clue,
     CodenamesAction,

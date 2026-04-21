@@ -40,14 +40,14 @@ describe("LifeOps Browser store metadata packaging", () => {
   it("writes Chrome and Safari store artifacts with configured release URLs", async () => {
     await run("bun", ["scripts/package-store-assets.mjs"], {
       ...process.env,
-      ELIZA_LIFEOPS_BROWSER_MARKETING_URL: "https://lifeops.example.com",
-      ELIZA_LIFEOPS_BROWSER_SUPPORT_URL:
+      TOKAGENT_LIFEOPS_BROWSER_MARKETING_URL: "https://lifeops.example.com",
+      TOKAGENT_LIFEOPS_BROWSER_SUPPORT_URL:
         "https://lifeops.example.com/support",
-      ELIZA_LIFEOPS_BROWSER_PRIVACY_POLICY_URL:
+      TOKAGENT_LIFEOPS_BROWSER_PRIVACY_POLICY_URL:
         "https://lifeops.example.com/privacy",
-      ELIZA_LIFEOPS_BROWSER_CHROME_STORE_URL:
+      TOKAGENT_LIFEOPS_BROWSER_CHROME_STORE_URL:
         "https://chromewebstore.google.com/detail/lifeops-browser/mockid",
-      ELIZA_LIFEOPS_BROWSER_SAFARI_STORE_URL:
+      TOKAGENT_LIFEOPS_BROWSER_SAFARI_STORE_URL:
         "https://apps.apple.com/us/app/lifeops-browser/id1234567890",
     });
 

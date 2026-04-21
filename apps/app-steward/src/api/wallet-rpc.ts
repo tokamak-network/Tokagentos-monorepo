@@ -1,8 +1,8 @@
-import type { ElizaConfig } from "@elizaos/agent/config/config";
+import type { TokagentConfig } from "@tokagentos/agent/config/config";
 import {
-  isElizaCloudServiceSelectedInConfig,
+  isTokagentCloudServiceSelectedInConfig,
   migrateLegacyRuntimeConfig,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 import {
   DEFAULT_WALLET_RPC_SELECTIONS,
   normalizeWalletRpcSelections,
@@ -10,10 +10,10 @@ import {
   type WalletRpcChain,
   type WalletRpcCredentialKey,
   type WalletRpcSelections,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 
-export const DEFAULT_CLOUD_API_BASE_URL = "https://elizacloud.ai/api/v1";
-// Multiple BSC public RPCs so we have working fallbacks when Eliza
+export const DEFAULT_CLOUD_API_BASE_URL = "https://tokagentcloud.ai/api/v1";
+// Multiple BSC public RPCs so we have working fallbacks when Tokagent
 // Cloud's proxy returns 401 (plan/account issue) AND the primary
 // Binance dataseed endpoint is blocked/rate-limited. Order matters —
 // the wallet resolver tries them in sequence, so put the most reliable
@@ -62,7 +62,7 @@ export const DEFAULT_PUBLIC_SOLANA_TESTNET_RPC_URLS = [
   "https://api.devnet.solana.com",
 ] as const;
 
-type WalletCapableConfig = Pick<ElizaConfig, "cloud" | "env"> & {
+type WalletCapableConfig = Pick<TokagentConfig, "cloud" | "env"> & {
   wallet?: {
     rpcProviders?: Partial<Record<keyof WalletRpcSelections, string>>;
     network?: "mainnet" | "testnet";
@@ -111,20 +111,20 @@ const PROVIDER_CREDENTIAL_KEYS: Record<
   Record<string, WalletRpcCredentialKey[]>
 > = {
   evm: {
-    "eliza-cloud": [],
+    "tokagent-cloud": [],
     alchemy: ["ALCHEMY_API_KEY"],
     infura: ["INFURA_API_KEY"],
     ankr: ["ANKR_API_KEY"],
   },
   bsc: {
-    "eliza-cloud": [],
+    "tokagent-cloud": [],
     alchemy: ["ALCHEMY_API_KEY"],
     ankr: ["ANKR_API_KEY"],
     nodereal: ["NODEREAL_BSC_RPC_URL"],
     quicknode: ["QUICKNODE_BSC_RPC_URL"],
   },
   solana: {
-    "eliza-cloud": [],
+    "tokagent-cloud": [],
     "helius-birdeye": ["HELIUS_API_KEY", "BIRDEYE_API_KEY"],
   },
 };
@@ -166,7 +166,7 @@ export function resolveWalletNetworkMode(
   const normalized = (
     fallback ??
     config?.wallet?.network ??
-    process.env.ELIZA_WALLET_NETWORK ??
+    process.env.TOKAGENT_WALLET_NETWORK ??
     ""
   )
     .trim()
@@ -218,11 +218,11 @@ function inferSelectedRpcProviders(): WalletRpcSelections {
   };
 }
 
-function walletSelectionsUseElizaCloud(
+function walletSelectionsUseTokagentCloud(
   selections: WalletRpcSelections,
 ): boolean {
   return Object.values(selections).some(
-    (provider) => provider === "eliza-cloud",
+    (provider) => provider === "tokagent-cloud",
   );
 }
 
@@ -261,7 +261,7 @@ export function resolveCloudApiBaseUrl(
   rawBaseUrl?: string | null,
 ): string | null {
   const candidate =
-    normalizeSecret(rawBaseUrl ?? process.env.ELIZAOS_CLOUD_BASE_URL) ??
+    normalizeSecret(rawBaseUrl ?? process.env.TOKAGENTOS_CLOUD_BASE_URL) ??
     DEFAULT_CLOUD_API_BASE_URL;
   try {
     const parsed = new URL(candidate);
@@ -280,10 +280,10 @@ export function resolveCloudApiBaseUrl(
 }
 
 export function resolveCloudApiKey(
-  config?: Pick<ElizaConfig, "cloud"> | null,
+  config?: Pick<TokagentConfig, "cloud"> | null,
 ): string | null {
   return normalizeSecret(
-    config?.cloud?.apiKey ?? process.env.ELIZAOS_CLOUD_API_KEY,
+    config?.cloud?.apiKey ?? process.env.TOKAGENTOS_CLOUD_API_KEY,
   );
 }
 
@@ -292,7 +292,7 @@ function buildCloudRpcProxyUrl(
   options: WalletRpcResolutionOptions = {},
 ): string | null {
   const cloudApiKey = normalizeSecret(
-    options.cloudApiKey ?? process.env.ELIZAOS_CLOUD_API_KEY,
+    options.cloudApiKey ?? process.env.TOKAGENTOS_CLOUD_API_KEY,
   );
   const cloudManagedAccess = options.cloudManagedAccess ?? Boolean(cloudApiKey);
   if (!cloudManagedAccess || !cloudApiKey) {
@@ -325,7 +325,7 @@ export function buildCloudSolanaRpcUrl(
   return buildCloudRpcProxyUrl("proxy/solana-rpc", options);
 }
 
-export function hasElizaCloudRpcAccess(
+export function hasTokagentCloudRpcAccess(
   config?: WalletCapableConfig | null,
 ): boolean {
   const selectedRpcProviders = hasStoredSelections(config)
@@ -333,8 +333,8 @@ export function hasElizaCloudRpcAccess(
     : inferSelectedRpcProviders();
   return Boolean(
     resolveCloudApiKey(config) &&
-      (walletSelectionsUseElizaCloud(selectedRpcProviders) ||
-        isElizaCloudServiceSelectedInConfig(
+      (walletSelectionsUseTokagentCloud(selectedRpcProviders) ||
+        isTokagentCloudServiceSelectedInConfig(
           (config ?? {}) as Record<string, unknown>,
           "rpc",
         )),
@@ -355,8 +355,8 @@ export function getInventoryProviderOptions(): InventoryProviderOption[] {
       description: "Ethereum, Base, Arbitrum, Optimism, Polygon.",
       rpcProviders: [
         {
-          id: "eliza-cloud",
-          name: "Eliza Cloud",
+          id: "tokagent-cloud",
+          name: "Tokagent Cloud",
           description: "Managed RPC. No setup needed.",
           envKey: null,
           requiresKey: false,
@@ -390,8 +390,8 @@ export function getInventoryProviderOptions(): InventoryProviderOption[] {
       description: "BNB Smart Chain tokens, NFTs, and trades.",
       rpcProviders: [
         {
-          id: "eliza-cloud",
-          name: "Eliza Cloud",
+          id: "tokagent-cloud",
+          name: "Tokagent Cloud",
           description: "Managed RPC. No setup needed.",
           envKey: null,
           requiresKey: false,
@@ -432,8 +432,8 @@ export function getInventoryProviderOptions(): InventoryProviderOption[] {
       description: "Solana mainnet tokens and NFTs.",
       rpcProviders: [
         {
-          id: "eliza-cloud",
-          name: "Eliza Cloud",
+          id: "tokagent-cloud",
+          name: "Tokagent Cloud",
           description: "Managed RPC. No setup needed.",
           envKey: null,
           requiresKey: false,
@@ -551,8 +551,8 @@ export function applyWalletRpcConfigUpdate(
     update.walletNetwork === "testnet" ||
     update.walletNetwork === "mainnet"
   ) {
-    env.ELIZA_WALLET_NETWORK = update.walletNetwork;
-    process.env.ELIZA_WALLET_NETWORK = update.walletNetwork;
+    env.TOKAGENT_WALLET_NETWORK = update.walletNetwork;
+    process.env.TOKAGENT_WALLET_NETWORK = update.walletNetwork;
   }
 
   for (const key of WALLET_RPC_CONFIG_KEYS) {
@@ -596,8 +596,8 @@ export function resolveWalletRpcReadiness(
     ? getStoredWalletRpcSelections(config)
     : inferSelectedRpcProviders();
   const cloudRpcSelected =
-    walletSelectionsUseElizaCloud(selectedRpcProviders) ||
-    isElizaCloudServiceSelectedInConfig(
+    walletSelectionsUseTokagentCloud(selectedRpcProviders) ||
+    isTokagentCloudServiceSelectedInConfig(
       (config ?? {}) as Record<string, unknown>,
       "rpc",
     );

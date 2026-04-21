@@ -18,20 +18,20 @@ import sys
 # Ensure the parent directory is importable
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent.parent))
 
-from elizaos_adhdbench.baselines import (
+from tokagentos_adhdbench.baselines import (
     BOOTSTRAP_ACTION_NAMES,
     compute_always_reply_baseline,
     compute_random_baseline,
 )
-from elizaos_adhdbench.config import ADHDBenchConfig
-from elizaos_adhdbench.scenarios import ALL_SCENARIOS, get_scenarios
-from elizaos_adhdbench.types import ScalePoint
+from tokagentos_adhdbench.config import ADHDBenchConfig
+from tokagentos_adhdbench.scenarios import ALL_SCENARIOS, get_scenarios
+from tokagentos_adhdbench.types import ScalePoint
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="adhdbench",
-        description="ADHDBench -- Attention & Context Scaling Benchmark for ElizaOS",
+        description="ADHDBench -- Attention & Context Scaling Benchmark for TokagentOS",
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -106,7 +106,7 @@ def cmd_run(args: argparse.Namespace) -> None:
     def progress(config_name: str, scale: str, current: int, total: int) -> None:
         print(f"  [{config_name}/{scale}] {current}/{total}", end="\r", flush=True)
 
-    from elizaos_adhdbench.runner import ADHDBenchRunner
+    from tokagentos_adhdbench.runner import ADHDBenchRunner
     runner = ADHDBenchRunner(config)
     results = asyncio.run(runner.run(progress_callback=progress))
 
@@ -119,7 +119,7 @@ def cmd_baselines(args: argparse.Namespace) -> None:
     levels = tuple(args.levels)
     scenarios = get_scenarios(levels=levels)
 
-    from elizaos_adhdbench.distractor_plugin import get_distractor_plugin_actions_for_scale
+    from tokagentos_adhdbench.distractor_plugin import get_distractor_plugin_actions_for_scale
     action_pool = BOOTSTRAP_ACTION_NAMES + [
         a.name for a in get_distractor_plugin_actions_for_scale(50, len(BOOTSTRAP_ACTION_NAMES))
     ]

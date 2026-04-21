@@ -25,13 +25,13 @@ function envValue(name) {
 }
 
 const marketingUrl =
-  envValue("ELIZA_LIFEOPS_BROWSER_MARKETING_URL") ??
+  envValue("TOKAGENT_LIFEOPS_BROWSER_MARKETING_URL") ??
   (repository ? `https://github.com/${repository}` : null);
 const supportUrl =
-  envValue("ELIZA_LIFEOPS_BROWSER_SUPPORT_URL") ??
+  envValue("TOKAGENT_LIFEOPS_BROWSER_SUPPORT_URL") ??
   (repository ? `https://github.com/${repository}/issues` : null);
 const privacyPolicyUrl =
-  envValue("ELIZA_LIFEOPS_BROWSER_PRIVACY_POLICY_URL") ?? null;
+  envValue("TOKAGENT_LIFEOPS_BROWSER_PRIVACY_POLICY_URL") ?? null;
 
 const chromePackageFile = versionedArtifactName(
   "lifeops-browser-chrome",
@@ -158,8 +158,8 @@ const checklistLines = [
   "",
   `- Upload package: \`${chromePackageFile}\``,
   `- Version: \`${metadata.chromeVersion}\` (\`${metadata.chromeVersionName}\`)`,
-  `- Support URL: ${supportUrl ?? "REQUIRED: set ELIZA_LIFEOPS_BROWSER_SUPPORT_URL"}`,
-  `- Privacy policy URL: ${privacyPolicyUrl ?? "REQUIRED: set ELIZA_LIFEOPS_BROWSER_PRIVACY_POLICY_URL"}`,
+  `- Support URL: ${supportUrl ?? "REQUIRED: set TOKAGENT_LIFEOPS_BROWSER_SUPPORT_URL"}`,
+  `- Privacy policy URL: ${privacyPolicyUrl ?? "REQUIRED: set TOKAGENT_LIFEOPS_BROWSER_PRIVACY_POLICY_URL"}`,
   `- Marketing URL: ${marketingUrl ?? "Optional"}`,
   `- Store listing URL: ${storeUrls.chromeWebStoreUrl ?? "Not configured yet"}`,
   "",
@@ -170,8 +170,8 @@ const checklistLines = [
   `- Marketing version: \`${metadata.safariMarketingVersion}\``,
   `- Build version: \`${metadata.safariBuildVersion}\``,
   `- Bundle identifier: \`ai.lifeops.browser\``,
-  `- Support URL: ${supportUrl ?? "REQUIRED: set ELIZA_LIFEOPS_BROWSER_SUPPORT_URL"}`,
-  `- Privacy policy URL: ${privacyPolicyUrl ?? "REQUIRED: set ELIZA_LIFEOPS_BROWSER_PRIVACY_POLICY_URL"}`,
+  `- Support URL: ${supportUrl ?? "REQUIRED: set TOKAGENT_LIFEOPS_BROWSER_SUPPORT_URL"}`,
+  `- Privacy policy URL: ${privacyPolicyUrl ?? "REQUIRED: set TOKAGENT_LIFEOPS_BROWSER_PRIVACY_POLICY_URL"}`,
   `- App Store URL: ${storeUrls.safariAppStoreUrl ?? "Not configured yet"}`,
   "",
   "## Notes",

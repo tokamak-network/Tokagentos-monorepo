@@ -1,6 +1,6 @@
 """Tests for the synthetic experience generator."""
 
-from elizaos_experience_bench.generator import ExperienceGenerator
+from tokagentos_experience_bench.generator import ExperienceGenerator
 
 
 def test_generate_experiences_count():

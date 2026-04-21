@@ -1,11 +1,11 @@
 import type {
   RouteHelpers,
   RouteRequestContext,
-} from "@elizaos/agent/api/route-helpers";
-import { handleTrainingRoutes as handleAutonomousTrainingRoutes } from "@elizaos/agent/api/training-routes";
-import type { TrainingServiceLike } from "@elizaos/agent/api/training-service-like";
-import { isLoopbackHost } from "@elizaos/agent/security/network-policy";
-import type { AgentRuntime } from "@elizaos/core";
+} from "@tokagentos/agent/api/route-helpers";
+import { handleTrainingRoutes as handleAutonomousTrainingRoutes } from "@tokagentos/agent/api/training-routes";
+import type { TrainingServiceLike } from "@tokagentos/agent/api/training-service-like";
+import { isLoopbackHost } from "@tokagentos/agent/security/network-policy";
+import type { AgentRuntime } from "@tokagentos/core";
 
 export type TrainingRouteHelpers = RouteHelpers;
 

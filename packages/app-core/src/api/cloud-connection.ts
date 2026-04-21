@@ -1,15 +1,15 @@
-import { applyCanonicalOnboardingConfig } from "@elizaos/agent/api/provider-switch-config";
-import { resolveCloudApiBaseUrl as resolveCanonicalCloudApiBaseUrl } from "@elizaos/agent/cloud/base-url";
-import { validateCloudBaseUrl } from "@elizaos/agent/cloud/validate-url";
-import type { ElizaConfig } from "@elizaos/agent/config/types";
-import type { AgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import { applyCanonicalOnboardingConfig } from "@tokagentos/agent/api/provider-switch-config";
+import { resolveCloudApiBaseUrl as resolveCanonicalCloudApiBaseUrl } from "@tokagentos/agent/cloud/base-url";
+import { validateCloudBaseUrl } from "@tokagentos/agent/cloud/validate-url";
+import type { TokagentConfig } from "@tokagentos/agent/config/types";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
-  isElizaSettingsDebugEnabled,
+  isTokagentSettingsDebugEnabled,
   migrateLegacyRuntimeConfig,
   settingsDebugCloudSummary,
-} from "@elizaos/shared";
-import { isCloudInferenceSelectedInConfig } from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared";
+import { isCloudInferenceSelectedInConfig } from "@tokagentos/shared/contracts/onboarding";
 import { normalizeEnvValue } from "../utils/env";
 import {
   clearCloudSecrets,
@@ -17,52 +17,52 @@ import {
   scrubCloudSecretsFromEnv,
 } from "./cloud-secrets";
 
-const DEFAULT_CLOUD_API_BASE_URL = "https://www.elizacloud.ai/api/v1";
+const DEFAULT_CLOUD_API_BASE_URL = "https://www.tokagentcloud.ai/api/v1";
 export const CLOUD_BILLING_URL =
-  "https://www.elizacloud.ai/dashboard/settings?tab=billing";
+  "https://www.tokagentcloud.ai/dashboard/settings?tab=billing";
 
 const CLOUD_ENV_KEYS = [
-  "ELIZAOS_CLOUD_API_KEY",
-  "ELIZAOS_CLOUD_ENABLED",
-  "ELIZAOS_CLOUD_BASE_URL",
-  "ELIZAOS_CLOUD_NANO_MODEL",
-  "ELIZAOS_CLOUD_MEDIUM_MODEL",
-  "ELIZAOS_CLOUD_SMALL_MODEL",
-  "ELIZAOS_CLOUD_LARGE_MODEL",
-  "ELIZAOS_CLOUD_MEGA_MODEL",
-  "ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL",
-  "ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL",
-  "ELIZAOS_CLOUD_ACTION_PLANNER_MODEL",
-  "ELIZAOS_CLOUD_PLANNER_MODEL",
-  "ELIZAOS_CLOUD_USE_INFERENCE",
-  "ELIZAOS_CLOUD_USE_TTS",
-  "ELIZAOS_CLOUD_USE_MEDIA",
-  "ELIZAOS_CLOUD_USE_EMBEDDINGS",
-  "ELIZAOS_CLOUD_USE_RPC",
+  "TOKAGENTOS_CLOUD_API_KEY",
+  "TOKAGENTOS_CLOUD_ENABLED",
+  "TOKAGENTOS_CLOUD_BASE_URL",
+  "TOKAGENTOS_CLOUD_NANO_MODEL",
+  "TOKAGENTOS_CLOUD_MEDIUM_MODEL",
+  "TOKAGENTOS_CLOUD_SMALL_MODEL",
+  "TOKAGENTOS_CLOUD_LARGE_MODEL",
+  "TOKAGENTOS_CLOUD_MEGA_MODEL",
+  "TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL",
+  "TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL",
+  "TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL",
+  "TOKAGENTOS_CLOUD_PLANNER_MODEL",
+  "TOKAGENTOS_CLOUD_USE_INFERENCE",
+  "TOKAGENTOS_CLOUD_USE_TTS",
+  "TOKAGENTOS_CLOUD_USE_MEDIA",
+  "TOKAGENTOS_CLOUD_USE_EMBEDDINGS",
+  "TOKAGENTOS_CLOUD_USE_RPC",
 ] as const;
 
 const CLOUD_RUNTIME_SECRET_KEYS = [
-  "ELIZAOS_CLOUD_API_KEY",
-  "ELIZAOS_CLOUD_ENABLED",
-  "ELIZAOS_CLOUD_BASE_URL",
-  "ELIZAOS_CLOUD_NANO_MODEL",
-  "ELIZAOS_CLOUD_MEDIUM_MODEL",
-  "ELIZAOS_CLOUD_SMALL_MODEL",
-  "ELIZAOS_CLOUD_LARGE_MODEL",
-  "ELIZAOS_CLOUD_MEGA_MODEL",
-  "ELIZAOS_CLOUD_RESPONSE_HANDLER_MODEL",
-  "ELIZAOS_CLOUD_SHOULD_RESPOND_MODEL",
-  "ELIZAOS_CLOUD_ACTION_PLANNER_MODEL",
-  "ELIZAOS_CLOUD_PLANNER_MODEL",
-  "ELIZA_CLOUD_AUTH_TOKEN",
-  "ELIZA_CLOUD_USER_ID",
-  "ELIZA_CLOUD_ORGANIZATION_ID",
+  "TOKAGENTOS_CLOUD_API_KEY",
+  "TOKAGENTOS_CLOUD_ENABLED",
+  "TOKAGENTOS_CLOUD_BASE_URL",
+  "TOKAGENTOS_CLOUD_NANO_MODEL",
+  "TOKAGENTOS_CLOUD_MEDIUM_MODEL",
+  "TOKAGENTOS_CLOUD_SMALL_MODEL",
+  "TOKAGENTOS_CLOUD_LARGE_MODEL",
+  "TOKAGENTOS_CLOUD_MEGA_MODEL",
+  "TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL",
+  "TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL",
+  "TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL",
+  "TOKAGENTOS_CLOUD_PLANNER_MODEL",
+  "TOKAGENT_CLOUD_AUTH_TOKEN",
+  "TOKAGENT_CLOUD_USER_ID",
+  "TOKAGENT_CLOUD_ORGANIZATION_ID",
 ] as const;
 
 const CLOUD_RUNTIME_SETTING_KEYS = [
-  "ELIZA_CLOUD_AUTH_TOKEN",
-  "ELIZA_CLOUD_USER_ID",
-  "ELIZA_CLOUD_ORGANIZATION_ID",
+  "TOKAGENT_CLOUD_AUTH_TOKEN",
+  "TOKAGENT_CLOUD_USER_ID",
+  "TOKAGENT_CLOUD_ORGANIZATION_ID",
 ] as const;
 
 const CLOUD_AUTH_CLEAR_METHODS = [
@@ -134,7 +134,7 @@ type CloudCreditsResponse = {
 /** Thrown when the credits endpoint returns 401 — same credential path as chat completions. */
 export class CloudCreditsAuthRejectedError extends Error {
   override readonly name = "CloudCreditsAuthRejectedError";
-  constructor(message = "Eliza Cloud API key was rejected") {
+  constructor(message = "Tokagent Cloud API key was rejected") {
     super(message);
   }
 }
@@ -179,7 +179,7 @@ export function resolveCloudApiBaseUrl(rawBaseUrl?: string): string {
 }
 
 export function resolveCloudApiKey(
-  config: Pick<ElizaConfig, "cloud"> | Record<string, unknown>,
+  config: Pick<TokagentConfig, "cloud"> | Record<string, unknown>,
   runtime?: {
     character?: { secrets?: Record<string, unknown> };
     getSetting?: (key: string) => unknown;
@@ -200,22 +200,22 @@ export function resolveCloudApiKey(
   }
 
   // 2. Sealed in-process secret store
-  const sealedKey = normalizeEnvValue(getCloudSecret("ELIZAOS_CLOUD_API_KEY"));
+  const sealedKey = normalizeEnvValue(getCloudSecret("TOKAGENTOS_CLOUD_API_KEY"));
   if (sealedKey) return sealedKey;
 
   // 3. Process environment (may not be scrubbed yet)
-  const envKey = normalizeEnvValue(process.env.ELIZAOS_CLOUD_API_KEY);
+  const envKey = normalizeEnvValue(process.env.TOKAGENTOS_CLOUD_API_KEY);
   if (envKey) return envKey;
 
   // 4. Runtime settings (persisted in database, survives restarts)
   const runtimeSettingKey = normalizeEnvValue(
-    runtime?.getSetting?.("ELIZAOS_CLOUD_API_KEY") as string | undefined,
+    runtime?.getSetting?.("TOKAGENTOS_CLOUD_API_KEY") as string | undefined,
   );
   if (runtimeSettingKey) return runtimeSettingKey;
 
   // 5. Runtime character secrets (persisted in database, survives restarts)
   const runtimeKey = normalizeEnvValue(
-    runtime?.character?.secrets?.ELIZAOS_CLOUD_API_KEY as string | undefined,
+    runtime?.character?.secrets?.TOKAGENTOS_CLOUD_API_KEY as string | undefined,
   );
   if (runtimeKey) return runtimeKey;
 
@@ -223,7 +223,7 @@ export function resolveCloudApiKey(
 }
 
 export function resolveCloudConnectionSnapshot(
-  config: Partial<ElizaConfig>,
+  config: Partial<TokagentConfig>,
   runtime: AgentRuntime | null,
 ): CloudConnectionSnapshot {
   migrateLegacyRuntimeConfig(config as Record<string, unknown>);
@@ -310,10 +310,10 @@ async function fetchCloudCreditsByApiKey(
 
 /** Configurable credit thresholds. Override via env vars if defaults don't fit. */
 const CREDIT_LOW_THRESHOLD = Number(
-  process.env.ELIZA_CREDIT_LOW_THRESHOLD ?? "2.0",
+  process.env.TOKAGENT_CREDIT_LOW_THRESHOLD ?? "2.0",
 );
 const CREDIT_CRITICAL_THRESHOLD = Number(
-  process.env.ELIZA_CREDIT_CRITICAL_THRESHOLD ?? "0.5",
+  process.env.TOKAGENT_CREDIT_CRITICAL_THRESHOLD ?? "0.5",
 );
 
 function withCreditFlags(balance: number): CloudCreditsResponse {
@@ -327,7 +327,7 @@ function withCreditFlags(balance: number): CloudCreditsResponse {
 }
 
 export async function fetchUnifiedCloudCredits(
-  config: Partial<ElizaConfig>,
+  config: Partial<TokagentConfig>,
   runtime: AgentRuntime | null,
 ): Promise<CloudCreditsResponse> {
   const snapshot = resolveCloudConnectionSnapshot(config, runtime);
@@ -519,16 +519,16 @@ async function clearRuntimeCloudState(
 
 export async function disconnectUnifiedCloudConnection(args: {
   cloudManager?: CloudManagerLike;
-  config: Partial<ElizaConfig>;
+  config: Partial<TokagentConfig>;
   runtime: AgentRuntime | null;
-  saveConfig?: (config: Partial<ElizaConfig>) => void;
+  saveConfig?: (config: Partial<TokagentConfig>) => void;
 }): Promise<void> {
   const { cloudManager = null, config, runtime, saveConfig } = args;
 
-  if (isElizaSettingsDebugEnabled()) {
+  if (isTokagentSettingsDebugEnabled()) {
     const c = config.cloud as Record<string, unknown> | undefined;
     logger.debug(
-      `[eliza][settings][cloud] disconnectUnifiedCloudConnection start cloud=${JSON.stringify(settingsDebugCloudSummary(c))}`,
+      `[tokagent][settings][cloud] disconnectUnifiedCloudConnection start cloud=${JSON.stringify(settingsDebugCloudSummary(c))}`,
     );
   }
 
@@ -549,10 +549,10 @@ export async function disconnectUnifiedCloudConnection(args: {
   const nextCloud = { ...(config.cloud ?? {}) };
   delete nextCloud.apiKey;
   config.cloud = nextCloud;
-  applyCanonicalOnboardingConfig(config as ElizaConfig, {
+  applyCanonicalOnboardingConfig(config as TokagentConfig, {
     deploymentTarget: { runtime: "local" },
     linkedAccounts: {
-      elizacloud: {
+      tokagentcloud: {
         status: "unlinked",
         source: "api-key",
       },
@@ -563,10 +563,10 @@ export async function disconnectUnifiedCloudConnection(args: {
 
   try {
     saveConfig?.(config);
-    if (isElizaSettingsDebugEnabled()) {
+    if (isTokagentSettingsDebugEnabled()) {
       const c = config.cloud as Record<string, unknown> | undefined;
       logger.debug(
-        `[eliza][settings][cloud] disconnectUnifiedCloudConnection saveConfig OK cloud=${JSON.stringify(settingsDebugCloudSummary(c))}`,
+        `[tokagent][settings][cloud] disconnectUnifiedCloudConnection saveConfig OK cloud=${JSON.stringify(settingsDebugCloudSummary(c))}`,
       );
     }
   } catch (err) {
@@ -580,9 +580,9 @@ export async function disconnectUnifiedCloudConnection(args: {
   clearCloudEnv();
   await clearRuntimeCloudState(runtime);
 
-  if (isElizaSettingsDebugEnabled()) {
+  if (isTokagentSettingsDebugEnabled()) {
     logger.debug(
-      "[eliza][settings][cloud] disconnectUnifiedCloudConnection done (env cleared + runtime cloud state cleared)",
+      "[tokagent][settings][cloud] disconnectUnifiedCloudConnection done (env cleared + runtime cloud state cleared)",
     );
   }
 }

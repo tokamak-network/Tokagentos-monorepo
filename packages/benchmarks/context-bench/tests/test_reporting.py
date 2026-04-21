@@ -1,8 +1,8 @@
 """Tests for reporting module."""
 
 
-from elizaos_context_bench.reporting import ContextBenchReporter
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.reporting import ContextBenchReporter
+from tokagentos_context_bench.types import (
     ContextBenchConfig,
     ContextBenchMetrics,
     ContextBenchResult,

@@ -1,4 +1,4 @@
-//! elizaOS Cross-Language Interop - Rust
+//! tokagentOS Cross-Language Interop - Rust
 //!
 //! This module provides utilities for:
 //! - Exporting Rust plugins via FFI for Python

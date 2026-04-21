@@ -1,8 +1,8 @@
 /**
- * LifeOps API methods on ElizaClient.
+ * LifeOps API methods on TokagentClient.
  *
- * Uses TypeScript declaration merging to augment the `ElizaClient` class in
- * `@elizaos/app-core/api/client-base` with LifeOps-specific methods.
+ * Uses TypeScript declaration merging to augment the `TokagentClient` class in
+ * `@tokagentos/app-core/api/client-base` with LifeOps-specific methods.
  *
  * Side-effect import — include once at startup to register the methods:
  *
@@ -81,11 +81,11 @@ import type {
   UpdateLifeOpsBrowserSettingsRequest,
   UpdateLifeOpsDefinitionRequest,
   UpdateLifeOpsGoalRequest,
-} from "@elizaos/shared/contracts/lifeops";
-import { ElizaClient } from "@elizaos/app-core/api/client-base";
+} from "@tokagentos/shared/contracts/lifeops";
+import { TokagentClient } from "@tokagentos/app-core/api/client-base";
 
-declare module "@elizaos/app-core/api/client-base" {
-  interface ElizaClient {
+declare module "@tokagentos/app-core/api/client-base" {
+  interface TokagentClient {
     getLifeOpsAppState(): Promise<{ enabled: boolean }>;
     updateLifeOpsAppState(data: {
       enabled: boolean;
@@ -297,12 +297,12 @@ declare module "@elizaos/app-core/api/client-base" {
   }
 }
 
-ElizaClient.prototype.getLifeOpsAppState = async function (this: ElizaClient) {
+TokagentClient.prototype.getLifeOpsAppState = async function (this: TokagentClient) {
   return this.fetch("/api/lifeops/app-state");
 };
 
-ElizaClient.prototype.updateLifeOpsAppState = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateLifeOpsAppState = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/app-state", {
@@ -311,18 +311,18 @@ ElizaClient.prototype.updateLifeOpsAppState = async function (
   });
 };
 
-ElizaClient.prototype.getLifeOpsOverview = async function (this: ElizaClient) {
+TokagentClient.prototype.getLifeOpsOverview = async function (this: TokagentClient) {
   return this.fetch("/api/lifeops/overview");
 };
 
-ElizaClient.prototype.getLifeOpsBrowserSettings = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsBrowserSettings = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/browser/settings");
 };
 
-ElizaClient.prototype.updateLifeOpsBrowserSettings = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateLifeOpsBrowserSettings = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/browser/settings", {
@@ -331,20 +331,20 @@ ElizaClient.prototype.updateLifeOpsBrowserSettings = async function (
   });
 };
 
-ElizaClient.prototype.listLifeOpsBrowserCompanions = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listLifeOpsBrowserCompanions = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/browser/companions");
 };
 
-ElizaClient.prototype.getLifeOpsBrowserPackageStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsBrowserPackageStatus = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/browser/packages");
 };
 
-ElizaClient.prototype.autoPairLifeOpsBrowserCompanion = async function (
-  this: ElizaClient,
+TokagentClient.prototype.autoPairLifeOpsBrowserCompanion = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/browser/companions/auto-pair", {
@@ -353,8 +353,8 @@ ElizaClient.prototype.autoPairLifeOpsBrowserCompanion = async function (
   });
 };
 
-ElizaClient.prototype.createLifeOpsBrowserCompanionPairing = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createLifeOpsBrowserCompanionPairing = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/browser/companions/pair", {
@@ -363,8 +363,8 @@ ElizaClient.prototype.createLifeOpsBrowserCompanionPairing = async function (
   });
 };
 
-ElizaClient.prototype.buildLifeOpsBrowserCompanionPackage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.buildLifeOpsBrowserCompanionPackage = async function (
+  this: TokagentClient,
   browser,
 ) {
   return this.fetch(
@@ -375,8 +375,8 @@ ElizaClient.prototype.buildLifeOpsBrowserCompanionPackage = async function (
   );
 };
 
-ElizaClient.prototype.openLifeOpsBrowserCompanionPackagePath = async function (
-  this: ElizaClient,
+TokagentClient.prototype.openLifeOpsBrowserCompanionPackagePath = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/browser/packages/open-path", {
@@ -385,8 +385,8 @@ ElizaClient.prototype.openLifeOpsBrowserCompanionPackagePath = async function (
   });
 };
 
-ElizaClient.prototype.openLifeOpsBrowserCompanionManager = async function (
-  this: ElizaClient,
+TokagentClient.prototype.openLifeOpsBrowserCompanionManager = async function (
+  this: TokagentClient,
   browser,
 ) {
   return this.fetch(
@@ -397,8 +397,8 @@ ElizaClient.prototype.openLifeOpsBrowserCompanionManager = async function (
   );
 };
 
-ElizaClient.prototype.downloadLifeOpsBrowserCompanionPackage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.downloadLifeOpsBrowserCompanionPackage = async function (
+  this: TokagentClient,
   browser,
 ) {
   const response = await this.rawRequest(
@@ -417,20 +417,20 @@ ElizaClient.prototype.downloadLifeOpsBrowserCompanionPackage = async function (
   };
 };
 
-ElizaClient.prototype.listLifeOpsBrowserTabs = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listLifeOpsBrowserTabs = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/browser/tabs");
 };
 
-ElizaClient.prototype.getLifeOpsBrowserCurrentPage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsBrowserCurrentPage = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/browser/current-page");
 };
 
-ElizaClient.prototype.syncLifeOpsBrowserState = async function (
-  this: ElizaClient,
+TokagentClient.prototype.syncLifeOpsBrowserState = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/browser/sync", {
@@ -439,14 +439,14 @@ ElizaClient.prototype.syncLifeOpsBrowserState = async function (
   });
 };
 
-ElizaClient.prototype.listLifeOpsBrowserSessions = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listLifeOpsBrowserSessions = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/browser/sessions");
 };
 
-ElizaClient.prototype.getLifeOpsBrowserSession = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsBrowserSession = async function (
+  this: TokagentClient,
   sessionId,
 ) {
   return this.fetch(
@@ -454,8 +454,8 @@ ElizaClient.prototype.getLifeOpsBrowserSession = async function (
   );
 };
 
-ElizaClient.prototype.createLifeOpsBrowserSession = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createLifeOpsBrowserSession = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/browser/sessions", {
@@ -464,8 +464,8 @@ ElizaClient.prototype.createLifeOpsBrowserSession = async function (
   });
 };
 
-ElizaClient.prototype.confirmLifeOpsBrowserSession = async function (
-  this: ElizaClient,
+TokagentClient.prototype.confirmLifeOpsBrowserSession = async function (
+  this: TokagentClient,
   sessionId,
   data,
 ) {
@@ -478,8 +478,8 @@ ElizaClient.prototype.confirmLifeOpsBrowserSession = async function (
   );
 };
 
-ElizaClient.prototype.updateLifeOpsBrowserSessionProgress = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateLifeOpsBrowserSessionProgress = async function (
+  this: TokagentClient,
   sessionId,
   data,
 ) {
@@ -492,8 +492,8 @@ ElizaClient.prototype.updateLifeOpsBrowserSessionProgress = async function (
   );
 };
 
-ElizaClient.prototype.completeLifeOpsBrowserSession = async function (
-  this: ElizaClient,
+TokagentClient.prototype.completeLifeOpsBrowserSession = async function (
+  this: TokagentClient,
   sessionId,
   data,
 ) {
@@ -506,8 +506,8 @@ ElizaClient.prototype.completeLifeOpsBrowserSession = async function (
   );
 };
 
-ElizaClient.prototype.captureLifeOpsActivitySignal = async function (
-  this: ElizaClient,
+TokagentClient.prototype.captureLifeOpsActivitySignal = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/activity-signals", {
@@ -516,8 +516,8 @@ ElizaClient.prototype.captureLifeOpsActivitySignal = async function (
   });
 };
 
-ElizaClient.prototype.getLifeOpsCalendarFeed = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsCalendarFeed = async function (
+  this: TokagentClient,
   options = {},
 ) {
   const params = new URLSearchParams();
@@ -546,8 +546,8 @@ ElizaClient.prototype.getLifeOpsCalendarFeed = async function (
   return this.fetch(`/api/lifeops/calendar/feed${query ? `?${query}` : ""}`);
 };
 
-ElizaClient.prototype.getLifeOpsGmailTriage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsGmailTriage = async function (
+  this: TokagentClient,
   options = {},
 ) {
   const params = new URLSearchParams();
@@ -567,8 +567,8 @@ ElizaClient.prototype.getLifeOpsGmailTriage = async function (
   return this.fetch(`/api/lifeops/gmail/triage${query ? `?${query}` : ""}`);
 };
 
-ElizaClient.prototype.getLifeOpsNextCalendarEventContext = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsNextCalendarEventContext = async function (
+  this: TokagentClient,
   options = {},
 ) {
   const params = new URLSearchParams();
@@ -596,8 +596,8 @@ ElizaClient.prototype.getLifeOpsNextCalendarEventContext = async function (
   );
 };
 
-ElizaClient.prototype.createLifeOpsCalendarEvent = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createLifeOpsCalendarEvent = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/calendar/events", {
@@ -606,8 +606,8 @@ ElizaClient.prototype.createLifeOpsCalendarEvent = async function (
   });
 };
 
-ElizaClient.prototype.createLifeOpsGmailReplyDraft = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createLifeOpsGmailReplyDraft = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/gmail/reply-drafts", {
@@ -616,8 +616,8 @@ ElizaClient.prototype.createLifeOpsGmailReplyDraft = async function (
   });
 };
 
-ElizaClient.prototype.sendLifeOpsGmailReply = async function (
-  this: ElizaClient,
+TokagentClient.prototype.sendLifeOpsGmailReply = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/gmail/reply-send", {
@@ -626,14 +626,14 @@ ElizaClient.prototype.sendLifeOpsGmailReply = async function (
   });
 };
 
-ElizaClient.prototype.listLifeOpsDefinitions = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listLifeOpsDefinitions = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/definitions");
 };
 
-ElizaClient.prototype.getLifeOpsDefinition = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsDefinition = async function (
+  this: TokagentClient,
   definitionId,
 ) {
   return this.fetch(
@@ -641,8 +641,8 @@ ElizaClient.prototype.getLifeOpsDefinition = async function (
   );
 };
 
-ElizaClient.prototype.createLifeOpsDefinition = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createLifeOpsDefinition = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/definitions", {
@@ -651,8 +651,8 @@ ElizaClient.prototype.createLifeOpsDefinition = async function (
   });
 };
 
-ElizaClient.prototype.updateLifeOpsDefinition = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateLifeOpsDefinition = async function (
+  this: TokagentClient,
   definitionId,
   data,
 ) {
@@ -665,26 +665,26 @@ ElizaClient.prototype.updateLifeOpsDefinition = async function (
   );
 };
 
-ElizaClient.prototype.listLifeOpsGoals = async function (this: ElizaClient) {
+TokagentClient.prototype.listLifeOpsGoals = async function (this: TokagentClient) {
   return this.fetch("/api/lifeops/goals");
 };
 
-ElizaClient.prototype.getLifeOpsGoal = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsGoal = async function (
+  this: TokagentClient,
   goalId,
 ) {
   return this.fetch(`/api/lifeops/goals/${encodeURIComponent(goalId)}`);
 };
 
-ElizaClient.prototype.reviewLifeOpsGoal = async function (
-  this: ElizaClient,
+TokagentClient.prototype.reviewLifeOpsGoal = async function (
+  this: TokagentClient,
   goalId,
 ) {
   return this.fetch(`/api/lifeops/goals/${encodeURIComponent(goalId)}/review`);
 };
 
-ElizaClient.prototype.createLifeOpsGoal = async function (
-  this: ElizaClient,
+TokagentClient.prototype.createLifeOpsGoal = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/goals", {
@@ -693,8 +693,8 @@ ElizaClient.prototype.createLifeOpsGoal = async function (
   });
 };
 
-ElizaClient.prototype.updateLifeOpsGoal = async function (
-  this: ElizaClient,
+TokagentClient.prototype.updateLifeOpsGoal = async function (
+  this: TokagentClient,
   goalId,
   data,
 ) {
@@ -704,8 +704,8 @@ ElizaClient.prototype.updateLifeOpsGoal = async function (
   });
 };
 
-ElizaClient.prototype.completeLifeOpsOccurrence = async function (
-  this: ElizaClient,
+TokagentClient.prototype.completeLifeOpsOccurrence = async function (
+  this: TokagentClient,
   occurrenceId,
   data = {},
 ) {
@@ -718,8 +718,8 @@ ElizaClient.prototype.completeLifeOpsOccurrence = async function (
   );
 };
 
-ElizaClient.prototype.skipLifeOpsOccurrence = async function (
-  this: ElizaClient,
+TokagentClient.prototype.skipLifeOpsOccurrence = async function (
+  this: TokagentClient,
   occurrenceId,
 ) {
   return this.fetch(
@@ -731,8 +731,8 @@ ElizaClient.prototype.skipLifeOpsOccurrence = async function (
   );
 };
 
-ElizaClient.prototype.snoozeLifeOpsOccurrence = async function (
-  this: ElizaClient,
+TokagentClient.prototype.snoozeLifeOpsOccurrence = async function (
+  this: TokagentClient,
   occurrenceId,
   data,
 ) {
@@ -745,8 +745,8 @@ ElizaClient.prototype.snoozeLifeOpsOccurrence = async function (
   );
 };
 
-ElizaClient.prototype.getLifeOpsOccurrenceExplanation = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsOccurrenceExplanation = async function (
+  this: TokagentClient,
   occurrenceId,
 ) {
   return this.fetch(
@@ -754,8 +754,8 @@ ElizaClient.prototype.getLifeOpsOccurrenceExplanation = async function (
   );
 };
 
-ElizaClient.prototype.inspectLifeOpsReminder = async function (
-  this: ElizaClient,
+TokagentClient.prototype.inspectLifeOpsReminder = async function (
+  this: TokagentClient,
   ownerType,
   ownerId,
 ) {
@@ -766,8 +766,8 @@ ElizaClient.prototype.inspectLifeOpsReminder = async function (
   return this.fetch(`/api/lifeops/reminders/inspection?${params.toString()}`);
 };
 
-ElizaClient.prototype.getGoogleLifeOpsConnectorStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getGoogleLifeOpsConnectorStatus = async function (
+  this: TokagentClient,
   mode,
   side,
 ) {
@@ -782,8 +782,8 @@ ElizaClient.prototype.getGoogleLifeOpsConnectorStatus = async function (
   return this.fetch(`/api/lifeops/connectors/google/status${query}`);
 };
 
-ElizaClient.prototype.selectGoogleLifeOpsConnectorMode = async function (
-  this: ElizaClient,
+TokagentClient.prototype.selectGoogleLifeOpsConnectorMode = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/connectors/google/preference", {
@@ -792,8 +792,8 @@ ElizaClient.prototype.selectGoogleLifeOpsConnectorMode = async function (
   });
 };
 
-ElizaClient.prototype.startGoogleLifeOpsConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startGoogleLifeOpsConnector = async function (
+  this: TokagentClient,
   data = {},
 ) {
   return this.fetch("/api/lifeops/connectors/google/start", {
@@ -802,8 +802,8 @@ ElizaClient.prototype.startGoogleLifeOpsConnector = async function (
   });
 };
 
-ElizaClient.prototype.disconnectGoogleLifeOpsConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.disconnectGoogleLifeOpsConnector = async function (
+  this: TokagentClient,
   data = {},
 ) {
   return this.fetch("/api/lifeops/connectors/google/disconnect", {
@@ -812,8 +812,8 @@ ElizaClient.prototype.disconnectGoogleLifeOpsConnector = async function (
   });
 };
 
-ElizaClient.prototype.getGoogleLifeOpsConnectorAccounts = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getGoogleLifeOpsConnectorAccounts = async function (
+  this: TokagentClient,
   mode,
   side,
 ) {
@@ -832,20 +832,20 @@ ElizaClient.prototype.getGoogleLifeOpsConnectorAccounts = async function (
 // iMessage connector
 // ---------------------------------------------------------------------------
 
-ElizaClient.prototype.getIMessageConnectorStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getIMessageConnectorStatus = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/connectors/imessage/status");
 };
 
-ElizaClient.prototype.listLifeOpsIMessageChats = async function (
-  this: ElizaClient,
+TokagentClient.prototype.listLifeOpsIMessageChats = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/lifeops/connectors/imessage/chats");
 };
 
-ElizaClient.prototype.getLifeOpsIMessageMessages = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLifeOpsIMessageMessages = async function (
+  this: TokagentClient,
   options = {},
 ) {
   const params = new URLSearchParams();
@@ -862,8 +862,8 @@ ElizaClient.prototype.getLifeOpsIMessageMessages = async function (
   return this.fetch(`/api/lifeops/connectors/imessage/messages${query}`);
 };
 
-ElizaClient.prototype.sendLifeOpsIMessage = async function (
-  this: ElizaClient,
+TokagentClient.prototype.sendLifeOpsIMessage = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/connectors/imessage/send", {
@@ -876,8 +876,8 @@ ElizaClient.prototype.sendLifeOpsIMessage = async function (
 // Signal connector
 // ---------------------------------------------------------------------------
 
-ElizaClient.prototype.getSignalConnectorStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getSignalConnectorStatus = async function (
+  this: TokagentClient,
   side,
 ) {
   const params = new URLSearchParams();
@@ -888,8 +888,8 @@ ElizaClient.prototype.getSignalConnectorStatus = async function (
   return this.fetch(`/api/lifeops/connectors/signal/status${query}`);
 };
 
-ElizaClient.prototype.startLifeOpsSignalPairing = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startLifeOpsSignalPairing = async function (
+  this: TokagentClient,
   data = {},
 ): Promise<StartLifeOpsSignalPairingResponse> {
   return this.fetch<StartLifeOpsSignalPairingResponse>(
@@ -901,8 +901,8 @@ ElizaClient.prototype.startLifeOpsSignalPairing = async function (
   );
 };
 
-ElizaClient.prototype.getSignalPairingStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getSignalPairingStatus = async function (
+  this: TokagentClient,
   sessionId,
 ) {
   const params = new URLSearchParams({ sessionId });
@@ -911,8 +911,8 @@ ElizaClient.prototype.getSignalPairingStatus = async function (
   );
 };
 
-ElizaClient.prototype.stopLifeOpsSignalPairing = async function (
-  this: ElizaClient,
+TokagentClient.prototype.stopLifeOpsSignalPairing = async function (
+  this: TokagentClient,
   sessionId,
 ): Promise<void> {
   return this.fetch<void>("/api/lifeops/connectors/signal/stop", {
@@ -921,8 +921,8 @@ ElizaClient.prototype.stopLifeOpsSignalPairing = async function (
   });
 };
 
-ElizaClient.prototype.disconnectSignalConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.disconnectSignalConnector = async function (
+  this: TokagentClient,
   data = { provider: "signal" },
 ) {
   return this.fetch("/api/lifeops/connectors/signal/disconnect", {
@@ -935,8 +935,8 @@ ElizaClient.prototype.disconnectSignalConnector = async function (
 // Discord connector
 // ---------------------------------------------------------------------------
 
-ElizaClient.prototype.getDiscordConnectorStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getDiscordConnectorStatus = async function (
+  this: TokagentClient,
   side,
 ) {
   const params = new URLSearchParams();
@@ -947,8 +947,8 @@ ElizaClient.prototype.getDiscordConnectorStatus = async function (
   return this.fetch(`/api/lifeops/connectors/discord/status${query}`);
 };
 
-ElizaClient.prototype.startDiscordConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startDiscordConnector = async function (
+  this: TokagentClient,
   data = {},
 ) {
   return this.fetch("/api/lifeops/connectors/discord/connect", {
@@ -957,8 +957,8 @@ ElizaClient.prototype.startDiscordConnector = async function (
   });
 };
 
-ElizaClient.prototype.disconnectDiscordConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.disconnectDiscordConnector = async function (
+  this: TokagentClient,
   data = { provider: "discord" },
 ) {
   return this.fetch("/api/lifeops/connectors/discord/disconnect", {
@@ -971,8 +971,8 @@ ElizaClient.prototype.disconnectDiscordConnector = async function (
 // Telegram connector
 // ---------------------------------------------------------------------------
 
-ElizaClient.prototype.getTelegramConnectorStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getTelegramConnectorStatus = async function (
+  this: TokagentClient,
   side,
 ) {
   const params = new URLSearchParams();
@@ -983,8 +983,8 @@ ElizaClient.prototype.getTelegramConnectorStatus = async function (
   return this.fetch(`/api/lifeops/connectors/telegram/status${query}`);
 };
 
-ElizaClient.prototype.startTelegramAuth = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startTelegramAuth = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/connectors/telegram/start", {
@@ -993,8 +993,8 @@ ElizaClient.prototype.startTelegramAuth = async function (
   });
 };
 
-ElizaClient.prototype.submitTelegramAuth = async function (
-  this: ElizaClient,
+TokagentClient.prototype.submitTelegramAuth = async function (
+  this: TokagentClient,
   data,
 ) {
   return this.fetch("/api/lifeops/connectors/telegram/submit", {
@@ -1003,8 +1003,8 @@ ElizaClient.prototype.submitTelegramAuth = async function (
   });
 };
 
-ElizaClient.prototype.cancelTelegramAuth = async function (
-  this: ElizaClient,
+TokagentClient.prototype.cancelTelegramAuth = async function (
+  this: TokagentClient,
   data = { provider: "telegram" },
 ) {
   return this.fetch("/api/lifeops/connectors/telegram/cancel", {
@@ -1013,8 +1013,8 @@ ElizaClient.prototype.cancelTelegramAuth = async function (
   });
 };
 
-ElizaClient.prototype.disconnectTelegramConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.disconnectTelegramConnector = async function (
+  this: TokagentClient,
   data = { provider: "telegram" },
 ) {
   return this.fetch("/api/lifeops/connectors/telegram/disconnect", {
@@ -1023,8 +1023,8 @@ ElizaClient.prototype.disconnectTelegramConnector = async function (
   });
 };
 
-ElizaClient.prototype.verifyTelegramConnector = async function (
-  this: ElizaClient,
+TokagentClient.prototype.verifyTelegramConnector = async function (
+  this: TokagentClient,
   data = {},
 ) {
   return this.fetch("/api/lifeops/connectors/telegram/verify", {

@@ -1,5 +1,5 @@
 /**
- * Session types for elizaOS.
+ * Session types for tokagentOS.
  *
  * Defines the core data structures for session management including
  * session entries, scopes, origins, and related metadata.
@@ -48,7 +48,7 @@ export type SessionDeliveryContext = {
 /**
  * Core session entry representing a conversation session.
  *
- * This is the primary data structure for session state in elizaOS.
+ * This is the primary data structure for session state in tokagentOS.
  */
 export type SessionEntry = {
 	// ---- Identity ----

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-elizaOS Python Plugin Bridge Server
+tokagentOS Python Plugin Bridge Server
 
 This server is spawned by the TypeScript runtime to load and execute
 Python plugins via JSON-RPC over stdin/stdout.
@@ -17,15 +17,15 @@ import sys
 import traceback
 from typing import Any
 
-# Import elizaos types (required). Fail closed if unavailable.
+# Import tokagentos types (required). Fail closed if unavailable.
 try:
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.memory import Memory
-    from elizaos.types.state import State
-    from elizaos.types.components import ActionResult, ProviderResult, HandlerOptions
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.state import State
+    from tokagentos.types.components import ActionResult, ProviderResult, HandlerOptions
 except ImportError as e:
     sys.stderr.write(
-        "elizaOS interop bridge_server requires the 'elizaos' python package in the environment.\n"
+        "tokagentOS interop bridge_server requires the 'tokagentos' python package in the environment.\n"
     )
     sys.stderr.write(f"ImportError: {e}\n")
     sys.exit(1)
@@ -37,7 +37,7 @@ def _include_error_details() -> bool:
 
     Default is off to avoid leaking secrets/PII via tracebacks over IPC.
     """
-    value = os.environ.get("ELIZA_INTEROP_DEBUG") or os.environ.get("LOG_DIAGNOSTIC") or ""
+    value = os.environ.get("TOKAGENT_INTEROP_DEBUG") or os.environ.get("LOG_DIAGNOSTIC") or ""
     normalized = value.strip().lower()
     return normalized in {"1", "true", "yes", "on"}
 
@@ -497,7 +497,7 @@ async def main(module_name: str) -> None:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="elizaOS Python Plugin Bridge Server")
+    parser = argparse.ArgumentParser(description="tokagentOS Python Plugin Bridge Server")
     parser.add_argument("--module", "-m", required=True, help="Python module name to load")
     args = parser.parse_args()
 

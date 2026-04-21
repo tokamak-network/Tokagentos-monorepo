@@ -1,4 +1,4 @@
-//! ICP Stable Memory Storage for elizaOS
+//! ICP Stable Memory Storage for tokagentOS
 //!
 //! This module provides the same interface as plugin-inmemorydb but uses
 //! ICP's stable memory for persistence across canister upgrades.

@@ -180,7 +180,7 @@ export function DesktopTrayRuntime() {
             (payload as { itemId?: string } | null | undefined)?.itemId ?? "";
           if (itemId === "menu-reset-app-applied") {
             console.info(
-              "[eliza][reset] menu: main-process reset finished — syncing renderer",
+              "[tokagent][reset] menu: main-process reset finished — syncing renderer",
               { itemId },
             );
             void handleResetAppliedFromMain(payload);
@@ -190,14 +190,14 @@ export function DesktopTrayRuntime() {
             return;
           }
           console.info(
-            "[eliza][reset] menu: Reset App clicked (legacy IPC — renderer confirm)",
+            "[tokagent][reset] menu: Reset App clicked (legacy IPC — renderer confirm)",
             { itemId },
           );
           void handleReset();
         },
       });
       console.info(
-        "[eliza][reset] tray: subscribed to desktopTrayMenuClick (menu Reset App path)",
+        "[tokagent][reset] tray: subscribed to desktopTrayMenuClick (menu Reset App path)",
       );
       return true;
     };
@@ -305,7 +305,7 @@ export function DesktopTrayRuntime() {
       };
 
       void run().catch((error) => {
-        console.warn("[eliza] Desktop tray action failed:", error);
+        console.warn("[tokagent] Desktop tray action failed:", error);
       });
     };
 

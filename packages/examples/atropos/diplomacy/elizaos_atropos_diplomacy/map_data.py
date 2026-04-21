@@ -4,7 +4,7 @@ Diplomacy map data - provinces, adjacencies, and supply centers.
 
 from __future__ import annotations
 
-from elizaos_atropos_diplomacy.types import Power, UnitType
+from tokagentos_atropos_diplomacy.types import Power, UnitType
 
 
 # Province types

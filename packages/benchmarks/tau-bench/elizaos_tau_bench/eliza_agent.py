@@ -1,7 +1,7 @@
 """
-ElizaOS-integrated agent for Tau-bench.
+TokagentOS-integrated agent for Tau-bench.
 
-This module provides proper integration with ElizaOS runtime using the FULL
+This module provides proper integration with TokagentOS runtime using the FULL
 canonical agent flow:
 - Messages processed through runtime.message_service.handle_message()
 - Actions registered and executed via process_actions()
@@ -9,7 +9,7 @@ canonical agent flow:
 - Uses MESSAGE_HANDLER_TEMPLATE for LLM responses
 
 Supported providers (Python):
-- OpenAI via elizaos-plugin-openai
+- OpenAI via tokagentos-plugin-openai
 - Groq/OpenRouter via OpenAI-compatible custom plugin
 """
 
@@ -23,17 +23,17 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Optional
 from uuid import uuid4
 
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauBenchTask,
     ToolCall,
     ToolDefinition,
     ConversationTurn,
 )
-from elizaos_tau_bench.executor import ToolExecutor
-from elizaos_tau_bench.trajectory_integration import TauBenchTrajectoryIntegration
+from tokagentos_tau_bench.executor import ToolExecutor
+from tokagentos_tau_bench.trajectory_integration import TauBenchTrajectoryIntegration
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         Action,
         ActionResult,
         HandlerCallback,
@@ -46,15 +46,15 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-# Try to import ElizaOS - optional dependency
+# Try to import TokagentOS - optional dependency
 try:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.primitives import Content, as_uuid
-    from elizaos.types.memory import Memory
-    from elizaos.types.state import State
-    from elizaos.types.components import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.primitives import Content, as_uuid
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.state import State
+    from tokagentos.types.components import (
         Action,
         ActionResult,
         ActionExample,
@@ -64,9 +64,9 @@ try:
         ProviderResult,
         HandlerOptions,
     )
-    from elizaos.types.model import ModelType
+    from tokagentos.types.model import ModelType
 
-    ELIZAOS_AVAILABLE = True
+    TOKAGENTOS_AVAILABLE = True
 except ImportError:
     AgentRuntime = None  # type: ignore[misc, assignment]
     Character = None  # type: ignore[misc, assignment]
@@ -84,8 +84,8 @@ except ImportError:
     HandlerOptions = None  # type: ignore[misc, assignment]
     ModelType = None  # type: ignore[misc, assignment]
     as_uuid = None  # type: ignore[misc, assignment]
-    ELIZAOS_AVAILABLE = False
-    logger.warning("ElizaOS not available, agent will use mock mode")
+    TOKAGENTOS_AVAILABLE = False
+    logger.warning("TokagentOS not available, agent will use mock mode")
 
 
 def _strip_model_prefix(model_name: str) -> str:
@@ -121,7 +121,7 @@ def get_model_provider_plugin(provider: Optional[str] = None) -> Optional["Plugi
     Returns:
         Plugin configured for the available model provider, or None if none available.
     """
-    if not ELIZAOS_AVAILABLE:
+    if not TOKAGENTOS_AVAILABLE:
         return None
 
     requested = (provider or os.environ.get("BENCHMARK_MODEL_PROVIDER", "")).strip().lower()
@@ -153,7 +153,7 @@ def get_model_provider_plugin(provider: Optional[str] = None) -> Optional["Plugi
         os.environ["OPENAI_SMALL_MODEL"] = clean_model
         os.environ["OPENAI_LARGE_MODEL"] = clean_model
         try:
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             logger.info("Using OpenAI model provider (%s)", clean_model)
             return get_openai_plugin()
@@ -162,7 +162,7 @@ def get_model_provider_plugin(provider: Optional[str] = None) -> Optional["Plugi
 
     if requested in {"groq", "openrouter"} and os.environ.get(provider_key_var[requested]):
         import aiohttp
-        from elizaos.types.model import ModelType
+        from tokagentos.types.model import ModelType
 
         api_key = os.environ.get(provider_key_var[requested], "")
         base_url = provider_base_url[requested]
@@ -226,7 +226,7 @@ def get_model_provider_plugin(provider: Optional[str] = None) -> Optional["Plugi
 
 
 # ---------------------------------------------------------------------------
-# TauBench Plugin: Actions and Providers for canonical ElizaOS integration
+# TauBench Plugin: Actions and Providers for canonical TokagentOS integration
 # ---------------------------------------------------------------------------
 
 
@@ -551,7 +551,7 @@ class ExecuteToolAction:
 
     @property
     def examples(self) -> list[list["ActionExample"]]:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             [
@@ -571,7 +571,7 @@ class ExecuteToolAction:
 
     @property
     def parameters(self) -> list["ActionParameter"]:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             ActionParameter(
@@ -597,8 +597,8 @@ def create_tau_bench_plugin(executor: ToolExecutor) -> "Plugin":
     - TAU_BENCH_CONTEXT provider: Injects task details, tools, policies into state
     - EXECUTE_TOOL action: Executes benchmark tools through canonical action system
     """
-    if not ELIZAOS_AVAILABLE:
-        raise RuntimeError("ElizaOS is required for tau-bench plugin")
+    if not TOKAGENTOS_AVAILABLE:
+        raise RuntimeError("TokagentOS is required for tau-bench plugin")
 
     # Create action instance
     execute_tool = ExecuteToolAction()
@@ -686,15 +686,15 @@ IMPORTANT: Start with <response> immediately. If you see tool results in the con
 
 
 # ---------------------------------------------------------------------------
-# ElizaOS Agent Implementation using canonical message_service.handle_message()
+# TokagentOS Agent Implementation using canonical message_service.handle_message()
 # ---------------------------------------------------------------------------
 
 
-class ElizaOSTauAgent:
+class TokagentOSTauAgent:
     """
-    Agent that processes Tau-bench tasks using the FULL ElizaOS runtime.
+    Agent that processes Tau-bench tasks using the FULL TokagentOS runtime.
 
-    This agent uses the canonical ElizaOS flow:
+    This agent uses the canonical TokagentOS flow:
     - Messages processed through runtime.message_service.handle_message()
     - Actions (EXECUTE_TOOL) registered via plugin and executed via process_actions()
     - Providers (TAU_BENCH_CONTEXT) inject context into the state
@@ -724,12 +724,12 @@ class ElizaOSTauAgent:
         self._trajectory = trajectory
 
     async def initialize(self) -> None:
-        """Initialize the ElizaOS runtime with model providers and tau-bench plugin."""
+        """Initialize the TokagentOS runtime with model providers and tau-bench plugin."""
         if self._initialized:
             return
 
-        if not ELIZAOS_AVAILABLE:
-            logger.warning("ElizaOS not available, running in mock mode")
+        if not TOKAGENTOS_AVAILABLE:
+            logger.warning("TokagentOS not available, running in mock mode")
             self._initialized = True
             return
 
@@ -776,7 +776,7 @@ class ElizaOSTauAgent:
         self._has_model_provider = self.runtime.has_model("TEXT_LARGE")
 
         if self._has_model_provider:
-            logger.info("Tau-bench agent initialized with CANONICAL ElizaOS flow")
+            logger.info("Tau-bench agent initialized with CANONICAL TokagentOS flow")
             logger.info(f"  - Actions: {[a.name for a in self.runtime.actions]}")
             logger.info(f"  - Providers: {[p.name for p in self.runtime.providers]}")
         else:
@@ -790,7 +790,7 @@ class ElizaOSTauAgent:
         self, task: TauBenchTask
     ) -> tuple[list[ToolCall], str, list[ConversationTurn]]:
         """
-        Process a Tau-bench task using the FULL ElizaOS message pipeline.
+        Process a Tau-bench task using the FULL TokagentOS message pipeline.
 
         Uses runtime.message_service.handle_message() for canonical flow.
 
@@ -826,18 +826,18 @@ class ElizaOSTauAgent:
             ConversationTurn(role="user", content=task.user_instruction)
         )
 
-        # Check if we can use full ElizaOS pipeline
-        if not ELIZAOS_AVAILABLE or not self.runtime or not self._has_model_provider:
+        # Check if we can use full TokagentOS pipeline
+        if not TOKAGENTOS_AVAILABLE or not self.runtime or not self._has_model_provider:
             logger.debug("Using mock mode for task processing")
             return await self._process_task_mock(task, ctx)
 
-        # Use CANONICAL ElizaOS pipeline via message_service.handle_message()
+        # Use CANONICAL TokagentOS pipeline via message_service.handle_message()
         return await self._process_task_canonical(task, ctx)
 
     async def _process_task_canonical(
         self, task: TauBenchTask, ctx: TauBenchContext
     ) -> tuple[list[ToolCall], str, list[ConversationTurn]]:
-        """Process task through the CANONICAL ElizaOS message service pipeline."""
+        """Process task through the CANONICAL TokagentOS message service pipeline."""
         assert self.runtime is not None
         user_id = as_uuid(str(uuid4()))
 
@@ -893,7 +893,7 @@ class ElizaOSTauAgent:
 
                 # ============================================================
                 # CANONICAL FLOW: Use message_service.handle_message()
-                # This is the correct way to process messages in ElizaOS:
+                # This is the correct way to process messages in TokagentOS:
                 # 1. Saves message to memory (if adapter available)
                 # 2. Composes state from ALL registered providers
                 # 3. Uses MESSAGE_HANDLER_TEMPLATE (or custom template)
@@ -1007,7 +1007,7 @@ class ElizaOSTauAgent:
 
 class MockTauAgent:
     """
-    Mock agent for testing benchmark infrastructure without ElizaOS.
+    Mock agent for testing benchmark infrastructure without TokagentOS.
 
     This agent returns expected tool calls to verify benchmark correctness.
     """
@@ -1088,27 +1088,27 @@ def create_tau_agent(
     model_provider: Optional[str] = None,
     temperature: float = 0.0,
     trajectory: TauBenchTrajectoryIntegration | None = None,
-) -> ElizaOSTauAgent | MockTauAgent:
+) -> TokagentOSTauAgent | MockTauAgent:
     """
     Factory function to create the appropriate agent.
 
     Args:
         executor: Tool executor for the environment
         max_turns: Maximum conversation turns
-        use_mock: Force mock mode even if ElizaOS is available
+        use_mock: Force mock mode even if TokagentOS is available
         runtime: Optional pre-configured runtime
         model_plugin: Optional model provider plugin
         model_provider: Provider name (e.g., "openai")
         temperature: LLM temperature setting
 
     Returns:
-        ElizaOSTauAgent if ElizaOS is available and not in mock mode,
+        TokagentOSTauAgent if TokagentOS is available and not in mock mode,
         otherwise MockTauAgent.
     """
-    if use_mock or not ELIZAOS_AVAILABLE:
+    if use_mock or not TOKAGENTOS_AVAILABLE:
         return MockTauAgent(executor=executor, max_turns=max_turns)
 
-    return ElizaOSTauAgent(
+    return TokagentOSTauAgent(
         executor=executor,
         max_turns=max_turns,
         runtime=runtime,

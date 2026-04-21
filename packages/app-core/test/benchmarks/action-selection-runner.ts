@@ -17,7 +17,7 @@ import {
   type Memory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 import {
   isTrajectoryCaptureEnabled,
@@ -121,7 +121,7 @@ const RETRYABLE_CASE_BACKOFF_MS = 5_000;
 const GENERIC_ACTION_NAMES = new Set(["REPLY", "IGNORE", "NONE"]);
 
 function resolveBenchmarkOwnerEntityId(runtime: AgentRuntime): UUID {
-  const configured = runtime.getSetting("ELIZA_ADMIN_ENTITY_ID");
+  const configured = runtime.getSetting("TOKAGENT_ADMIN_ENTITY_ID");
   if (typeof configured === "string" && configured.trim().length > 0) {
     return configured as UUID;
   }
@@ -384,7 +384,7 @@ function extractPlannerDecision(
 /**
  * Seed the per-case runtime with the fixtures the benchmark cases depend on:
  *   - A pre-existing relationship for "David" (used by rel-follow-up).
- *   - ELIZA_ADMIN_ENTITY_ID settings so hasAdminAccess/hasOwnerAccess return
+ *   - TOKAGENT_ADMIN_ENTITY_ID settings so hasAdminAccess/hasOwnerAccess return
  *     true for the benchmark user.
  *
  * Called once per case, before the user message is sent. All failures are
@@ -452,7 +452,7 @@ async function runSingleCaseWithRecording(
 ): Promise<ActionBenchmarkResult> {
   const started = Date.now();
   const userEntityId = resolveBenchmarkOwnerEntityId(runtime);
-  runtime.setSetting("ELIZA_ADMIN_ENTITY_ID", userEntityId, false);
+  runtime.setSetting("TOKAGENT_ADMIN_ENTITY_ID", userEntityId, false);
   await seedBenchmarkCaseFixtures(runtime, userEntityId);
   const harness = new RecordingHarness(runtime, {
     caseId: tc.id,
@@ -660,7 +660,7 @@ async function runSingleCase(
   });
 
   try {
-    runtime.setSetting("ELIZA_ADMIN_ENTITY_ID", entityId, false);
+    runtime.setSetting("TOKAGENT_ADMIN_ENTITY_ID", entityId, false);
     await seedBenchmarkCaseFixtures(runtime, entityId);
     await harness.setup();
 

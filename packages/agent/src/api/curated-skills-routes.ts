@@ -23,7 +23,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { resolveStateDir } from "../config/paths.js";
 import type { RouteRequestContext } from "./route-helpers.js";
 

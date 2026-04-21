@@ -7,7 +7,7 @@ import {
 	type ActionResult,
 	ChannelType,
 	type Content,
-	type Action as ElizaAction,
+	type Action as TokagentAction,
 	type HandlerCallback,
 	type IAgentRuntime,
 	type Memory,
@@ -552,7 +552,7 @@ async function generateErrorResponse(
 	}
 }
 
-export const updateSettingsAction: ElizaAction = {
+export const updateSettingsAction: TokagentAction = {
 	name: "UPDATE_SETTINGS",
 	similes: ["UPDATE_SETTING", "SAVE_SETTING", "SET_CONFIGURATION", "CONFIGURE"],
 	description:

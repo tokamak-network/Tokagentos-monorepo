@@ -1,8 +1,8 @@
 """
-AWS Lambda handler for elizaOS chat worker (Python)
+AWS Lambda handler for tokagentOS chat worker (Python)
 
 This Lambda function processes chat messages and returns AI responses
-using the elizaOS runtime with OpenAI as the LLM provider.
+using the tokagentOS runtime with OpenAI as the LLM provider.
 
 For local testing, run: python3 handler.py
 """
@@ -80,7 +80,7 @@ def load_env() -> None:
 def get_character() -> dict[str, str]:
     """Get character configuration from environment."""
     return {
-        "name": os.environ.get("CHARACTER_NAME", "Eliza"),
+        "name": os.environ.get("CHARACTER_NAME", "Tokagent"),
         "bio": os.environ.get("CHARACTER_BIO", "A helpful AI assistant."),
         "system": os.environ.get(
             "CHARACTER_SYSTEM",
@@ -95,17 +95,17 @@ _runtime_initialized = False
 
 
 async def get_runtime():
-    """Get or create the elizaOS runtime (singleton pattern)."""
+    """Get or create the tokagentOS runtime (singleton pattern)."""
     global _runtime, _runtime_initialized
     
     if _runtime_initialized:
         return _runtime
     
-    logger.info("Initializing elizaOS runtime...")
+    logger.info("Initializing tokagentOS runtime...")
     
-    from elizaos import Character
-    from elizaos.runtime import AgentRuntime
-    from elizaos_plugin_openai import get_openai_plugin
+    from tokagentos import Character
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_plugin_openai import get_openai_plugin
     
     character_config = get_character()
     character = Character(
@@ -122,7 +122,7 @@ async def get_runtime():
     await _runtime.initialize()
     _runtime_initialized = True
     
-    logger.info("elizaOS runtime initialized successfully")
+    logger.info("tokagentOS runtime initialized successfully")
     return _runtime
 
 
@@ -159,14 +159,14 @@ def parse_request_body(body: str | None) -> ChatRequest:
 
 
 async def handle_chat_async(request: ChatRequest) -> ChatResponse:
-    """Handle a chat message using elizaOS runtime."""
+    """Handle a chat message using tokagentOS runtime."""
     runtime = await get_runtime()
     
     # Generate IDs
     conversation_id = request.get("conversationId") or f"conv-{uuid.uuid4().hex[:12]}"
 
     # Route through the full message pipeline (planning/actions/providers/memory)
-    from elizaos import ChannelType, Content, Memory, string_to_uuid
+    from tokagentos import ChannelType, Content, Memory, string_to_uuid
 
     user_id_raw = request.get("userId") or f"user-{uuid.uuid4().hex}"
     user_id = string_to_uuid(user_id_raw)
@@ -217,7 +217,7 @@ def handler(event: dict[str, Any], context: Any) -> APIGatewayResponse:
         if method == "GET":
             response: HealthResponse = {
                 "status": "healthy",
-                "runtime": "elizaos-python",
+                "runtime": "tokagentos-python",
                 "version": "1.0.0",
             }
             return json_response(200, response)
@@ -260,7 +260,7 @@ if __name__ == "__main__":
         print("   Or create a .env file in the project root")
         sys.exit(1)
 
-    print("🧪 Testing elizaOS AWS Lambda Handler (Python)\n")
+    print("🧪 Testing tokagentOS AWS Lambda Handler (Python)\n")
 
     # Test 1: Health check
     print("1️⃣  Testing health check...")
@@ -275,7 +275,7 @@ if __name__ == "__main__":
     print("   ✅ Health check passed\n")
 
     # Test 2: Chat message
-    print("2️⃣  Testing chat endpoint with elizaOS runtime...")
+    print("2️⃣  Testing chat endpoint with tokagentOS runtime...")
     start = time.time()
     chat_event = {
         "rawPath": "/chat",
@@ -292,7 +292,7 @@ if __name__ == "__main__":
     response_data = json.loads(chat_result["body"])
     print(f"   Response: {response_data['response'][:100]}...")
     print(f"   Conversation ID: {response_data['conversationId']}")
-    print("   ✅ Chat endpoint passed (elizaOS runtime working!)\n")
+    print("   ✅ Chat endpoint passed (tokagentOS runtime working!)\n")
 
     # Test 3: Validation
     print("3️⃣  Testing validation (empty message)...")
@@ -317,4 +317,4 @@ if __name__ == "__main__":
     assert notfound_result["statusCode"] == 404, "404 test failed"
     print("   ✅ 404 handling passed\n")
 
-    print("🎉 All tests passed with elizaOS runtime!")
+    print("🎉 All tests passed with tokagentOS runtime!")

@@ -7,8 +7,8 @@ override_dh_auto_build:
 	# Use bun if available (installed by CI), fallback to npm
 	if command -v bun >/dev/null 2>&1; then \
 		node scripts/init-submodules.mjs || true; \
-		node scripts/disable-local-eliza-workspace.mjs || true; \
-		ELIZAOS_APP_SKIP_LOCAL_UPSTREAMS=1 bun install --ignore-scripts; \
+		node scripts/disable-local-tokagent-workspace.mjs || true; \
+		TOKAGENTOS_APP_SKIP_LOCAL_UPSTREAMS=1 bun install --ignore-scripts; \
 		bun run build; \
 	else \
 		npm install --ignore-scripts; \
@@ -17,23 +17,23 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	# Install the built distribution
-	install -d debian/elizaos-app/usr/lib/elizaos-app
-	cp -r dist/ debian/elizaos-app/usr/lib/elizaos-app/
-	cp elizaos-app.mjs debian/elizaos-app/usr/lib/elizaos-app/
-	cp package.json debian/elizaos-app/usr/lib/elizaos-app/
-	cp -r node_modules/ debian/elizaos-app/usr/lib/elizaos-app/ 2>/dev/null || true
+	install -d debian/tokagentos-app/usr/lib/tokagentos-app
+	cp -r dist/ debian/tokagentos-app/usr/lib/tokagentos-app/
+	cp tokagentos-app.mjs debian/tokagentos-app/usr/lib/tokagentos-app/
+	cp package.json debian/tokagentos-app/usr/lib/tokagentos-app/
+	cp -r node_modules/ debian/tokagentos-app/usr/lib/tokagentos-app/ 2>/dev/null || true
 
 	# Install the plugins manifest
-	install -m 644 plugins.json debian/elizaos-app/usr/lib/elizaos-app/
+	install -m 644 plugins.json debian/tokagentos-app/usr/lib/tokagentos-app/
 
 	# Create the CLI wrapper
-	install -d debian/elizaos-app/usr/bin
-	printf '#!/bin/sh\nexec /usr/bin/node /usr/lib/elizaos-app/elizaos-app.mjs "$$@"\n' \
-		> debian/elizaos-app/usr/bin/elizaos-app
-	chmod 755 debian/elizaos-app/usr/bin/elizaos-app
+	install -d debian/tokagentos-app/usr/bin
+	printf '#!/bin/sh\nexec /usr/bin/node /usr/lib/tokagentos-app/tokagentos-app.mjs "$$@"\n' \
+		> debian/tokagentos-app/usr/bin/tokagentos-app
+	chmod 755 debian/tokagentos-app/usr/bin/tokagentos-app
 
 	# Install systemd user service
-	install -m 644 packaging/debian/elizaos-app.service debian/elizaos-app/usr/lib/elizaos-app/elizaos-app.service
+	install -m 644 packaging/debian/tokagentos-app.service debian/tokagentos-app/usr/lib/tokagentos-app/tokagentos-app.service
 
 override_dh_auto_test:
 	# Skip tests during package build

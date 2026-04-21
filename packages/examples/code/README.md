@@ -1,6 +1,6 @@
-# Eliza Code
+# Tokagent Code
 
-An async coding agent terminal app built on ElizaOS - like Claude Code, but with fully asynchronous task execution and continuous conversation.
+An async coding agent terminal app built on TokagentOS - like Claude Code, but with fully asynchronous task execution and continuous conversation.
 
 ## Features
 
@@ -18,7 +18,7 @@ An async coding agent terminal app built on ElizaOS - like Claude Code, but with
 ## Installation
 
 ```bash
-cd eliza-code
+cd tokagent-code
 bun install
 ```
 
@@ -33,7 +33,7 @@ cp .env.example .env
 
 ## Usage
 
-Start Eliza Code:
+Start Tokagent Code:
 
 ```bash
 bun start
@@ -65,7 +65,7 @@ Once running, you can chat with the agent:
 ## Architecture
 
 ```
-eliza-code/
+tokagent-code/
 ├── src/
 │   ├── index.tsx          # Entry point
 │   ├── App.tsx            # Main layout
@@ -75,7 +75,7 @@ eliza-code/
 │   │   ├── StatusBar.tsx
 │   │   └── MessageBubble.tsx
 │   ├── lib/
-│   │   ├── agent.ts       # Eliza runtime setup
+│   │   ├── agent.ts       # Tokagent runtime setup
 │   │   ├── chat-manager.ts
 │   │   ├── task-manager.ts
 │   │   └── store.ts       # Zustand state
@@ -114,7 +114,7 @@ bun run tsc --noEmit
 
 ## Built With
 
-- [ElizaOS](https://elizaos.github.io/eliza/) - Agent framework
+- [TokagentOS](https://tokagentos.github.io/tokagent/) - Agent framework
 - [Ink](https://github.com/vadimdemedes/ink) - React for CLIs
 - [Zustand](https://zustand-demo.pmnd.rs/) - State management
 - [Claude](https://anthropic.com) - AI model via Anthropic plugin

@@ -2,10 +2,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import type { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
 import { PTYService } from "@elizaos/plugin-agent-orchestrator";
-import { elizaOSCloudPlugin } from "@elizaos/plugin-elizacloud";
+import { tokagentOSCloudPlugin } from "@elizaos/plugin-tokagentcloud";
 import { createTestRuntime } from "../helpers/pglite-runtime.ts";
 
 async function waitFor(
@@ -32,7 +32,7 @@ const FALLBACK_FRAMEWORK =
 	(PRIMARY_FRAMEWORK === "claude" ? "codex" : "claude");
 const USE_REAL_PRIMARY_FAILURE =
 	process.env.ORCHESTRATOR_LIVE_REAL_PRIMARY_FAILURE === "1";
-const KEEP_ARTIFACTS = process.env.ELIZA_KEEP_LIVE_ARTIFACTS === "1";
+const KEEP_ARTIFACTS = process.env.TOKAGENT_KEEP_LIVE_ARTIFACTS === "1";
 
 type AppConfig = {
 	cloud?: {
@@ -41,17 +41,17 @@ type AppConfig = {
 };
 
 function loadCloudApiKey(): string {
-	const fromEnv = process.env.ELIZAOS_CLOUD_API_KEY?.trim();
+	const fromEnv = process.env.TOKAGENTOS_CLOUD_API_KEY?.trim();
 	if (fromEnv) {
 		return fromEnv;
 	}
 
-	const configPath = path.join(os.homedir(), ".eliza", "eliza.json");
+	const configPath = path.join(os.homedir(), ".tokagent", "tokagent.json");
 	const parsed = JSON.parse(fs.readFileSync(configPath, "utf8")) as AppConfig;
 	const fromConfig = parsed.cloud?.apiKey?.trim();
 	if (!fromConfig) {
 		throw new Error(
-			"ELIZAOS_CLOUD_API_KEY is not configured in the environment or ~/.eliza/eliza.json",
+			"TOKAGENTOS_CLOUD_API_KEY is not configured in the environment or ~/.tokagent/tokagent.json",
 		);
 	}
 	return fromConfig;
@@ -93,9 +93,9 @@ async function cleanup(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-	process.env.ELIZAOS_CLOUD_API_KEY = loadCloudApiKey();
+	process.env.TOKAGENTOS_CLOUD_API_KEY = loadCloudApiKey();
 	({ runtime, cleanup: cleanupRuntime } = await createTestRuntime({
-		plugins: [elizaOSCloudPlugin],
+		plugins: [tokagentOSCloudPlugin],
 	}));
 	service = await PTYService.start(runtime as unknown as IAgentRuntime);
 	(runtime.services as Map<string, unknown[]>).set("PTY_SERVICE", [
@@ -120,7 +120,7 @@ async function main(): Promise<void> {
 		"Expected both live failover frameworks to be installed",
 	);
 
-	workdir = fs.mkdtempSync(path.join(os.tmpdir(), "eliza-live-failover-"));
+	workdir = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-live-failover-"));
 	const outputFile = path.join(workdir, "failover-proof.txt");
 	const sentinel = `LIVE_FAILOVER_${Date.now()}`;
 	const thread = await coordinator.createTaskThread({

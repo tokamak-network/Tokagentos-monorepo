@@ -1,22 +1,22 @@
 use anyhow::Result;
-use elizaos::{
+use tokagentos::{
     parse_character,
     runtime::{AgentRuntime, RuntimeOptions},
     services::IMessageService,
     types::{Content, Memory, UUID},
 };
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use std::io::{self, Write};
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let _ = dotenvy::dotenv();
 
-    let character = parse_character(r#"{"name": "Eliza", "bio": "A knowledgeable and direct AI assistant who gives substantive answers.", "system": "You are a helpful, knowledgeable assistant. Give direct, substantive answers. Do NOT act like a therapist or the classic ELIZA chatbot. Never reflect questions back at the user or ask 'Why do you say that?' - just answer their questions and engage with what they're actually saying."}"#)?;
+    let character = parse_character(r#"{"name": "Tokagent", "bio": "A knowledgeable and direct AI assistant who gives substantive answers.", "system": "You are a helpful, knowledgeable assistant. Give direct, substantive answers. Do NOT act like a therapist or the classic TOKAGENT chatbot. Never reflect questions back at the user or ask 'Why do you say that?' - just answer their questions and engage with what they're actually saying."}"#)?;
 
     let runtime = AgentRuntime::new(RuntimeOptions {
         character: Some(character.clone()),
-        plugins: vec![create_openai_elizaos_plugin()?],
+        plugins: vec![create_openai_tokagentos_plugin()?],
         ..Default::default()
     }).await?;
 

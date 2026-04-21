@@ -13,7 +13,7 @@ class handler(BaseHTTPRequestHandler):
         """Handle GET requests."""
         response = {
             "status": "healthy",
-            "runtime": "elizaos-python",
+            "runtime": "tokagentos-python",
             "version": "2.0.0-alpha",
         }
 

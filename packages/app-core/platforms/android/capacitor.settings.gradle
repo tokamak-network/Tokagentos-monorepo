@@ -11,32 +11,32 @@ project(':capacitor-keyboard').projectDir = new File('../node_modules/@capacitor
 include ':capacitor-preferences'
 project(':capacitor-preferences').projectDir = new File('../node_modules/@capacitor/preferences/android')
 
-include ':elizaos-capacitor-agent'
-project(':elizaos-capacitor-agent').projectDir = new File('../../../eliza/packages/native-plugins/agent/android')
+include ':tokagentos-capacitor-agent'
+project(':tokagentos-capacitor-agent').projectDir = new File('../../../tokagent/packages/native-plugins/agent/android')
 
-include ':elizaos-capacitor-camera'
-project(':elizaos-capacitor-camera').projectDir = new File('../../../eliza/packages/native-plugins/camera/android')
+include ':tokagentos-capacitor-camera'
+project(':tokagentos-capacitor-camera').projectDir = new File('../../../tokagent/packages/native-plugins/camera/android')
 
-include ':elizaos-capacitor-canvas'
-project(':elizaos-capacitor-canvas').projectDir = new File('../../../eliza/packages/native-plugins/canvas/android')
+include ':tokagentos-capacitor-canvas'
+project(':tokagentos-capacitor-canvas').projectDir = new File('../../../tokagent/packages/native-plugins/canvas/android')
 
-include ':elizaos-capacitor-gateway'
-project(':elizaos-capacitor-gateway').projectDir = new File('../../../eliza/packages/native-plugins/gateway/android')
+include ':tokagentos-capacitor-gateway'
+project(':tokagentos-capacitor-gateway').projectDir = new File('../../../tokagent/packages/native-plugins/gateway/android')
 
-include ':elizaos-capacitor-location'
-project(':elizaos-capacitor-location').projectDir = new File('../../../eliza/packages/native-plugins/location/android')
+include ':tokagentos-capacitor-location'
+project(':tokagentos-capacitor-location').projectDir = new File('../../../tokagent/packages/native-plugins/location/android')
 
-include ':elizaos-capacitor-mobile-signals'
-project(':elizaos-capacitor-mobile-signals').projectDir = new File('../../../eliza/packages/native-plugins/mobile-signals/android')
+include ':tokagentos-capacitor-mobile-signals'
+project(':tokagentos-capacitor-mobile-signals').projectDir = new File('../../../tokagent/packages/native-plugins/mobile-signals/android')
 
-include ':elizaos-capacitor-screencapture'
-project(':elizaos-capacitor-screencapture').projectDir = new File('../../../eliza/packages/native-plugins/screencapture/android')
+include ':tokagentos-capacitor-screencapture'
+project(':tokagentos-capacitor-screencapture').projectDir = new File('../../../tokagent/packages/native-plugins/screencapture/android')
 
-include ':elizaos-capacitor-swabble'
-project(':elizaos-capacitor-swabble').projectDir = new File('../../../eliza/packages/native-plugins/swabble/android')
+include ':tokagentos-capacitor-swabble'
+project(':tokagentos-capacitor-swabble').projectDir = new File('../../../tokagent/packages/native-plugins/swabble/android')
 
-include ':elizaos-capacitor-talkmode'
-project(':elizaos-capacitor-talkmode').projectDir = new File('../../../eliza/packages/native-plugins/talkmode/android')
+include ':tokagentos-capacitor-talkmode'
+project(':tokagentos-capacitor-talkmode').projectDir = new File('../../../tokagent/packages/native-plugins/talkmode/android')
 
-include ':elizaos-capacitor-websiteblocker'
-project(':elizaos-capacitor-websiteblocker').projectDir = new File('../../../eliza/packages/native-plugins/websiteblocker/android')
+include ':tokagentos-capacitor-websiteblocker'
+project(':tokagentos-capacitor-websiteblocker').projectDir = new File('../../../tokagent/packages/native-plugins/websiteblocker/android')

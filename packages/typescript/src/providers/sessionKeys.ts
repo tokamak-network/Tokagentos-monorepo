@@ -1,8 +1,8 @@
 /**
- * Bridges Eliza session keys with ElizaOS rooms.
+ * Bridges Tokagent session keys with TokagentOS rooms.
  *
- * Eliza keys: agent:{agentId}:main (DMs), agent:{agentId}:{channel}:group:{id} (groups)
- * ElizaOS rooms: per-agent UUIDs via createUniqueUuid(runtime, channelId)
+ * Tokagent keys: agent:{agentId}:main (DMs), agent:{agentId}:{channel}:group:{id} (groups)
+ * TokagentOS rooms: per-agent UUIDs via createUniqueUuid(runtime, channelId)
  */
 
 import {
@@ -17,7 +17,7 @@ import {
 
 // Internal helper to avoid circular dependency issues if needed,
 // though here we are in core so we can just implement logically.
-// The original code used `elizaCore as ElizaCoreSessionHelpers` which suggests
+// The original code used `tokagentCore as TokagentCoreSessionHelpers` which suggests
 // circular dependency workaround or loose typing.
 // For now, I will keep the logic but clean up the imports since we ARE in core.
 
@@ -42,7 +42,7 @@ function parseAgentSessionKey(key: string):
 }
 
 /**
- * Resolve an Eliza session key from an ElizaOS room.
+ * Resolve an Tokagent session key from an TokagentOS room.
  *
  * DMs -> agent:{agentId}:main
  * Groups -> agent:{agentId}:{channel}:group:{groupId}
@@ -78,8 +78,8 @@ export function createSessionKeyProvider(options?: {
 	const agentId = options?.defaultAgentId ?? "main";
 
 	return {
-		name: "elizaSessionKey",
-		description: "Eliza session key (DM/group/thread isolation)",
+		name: "tokagentSessionKey",
+		description: "Tokagent session key (DM/group/thread isolation)",
 		get: async (
 			runtime: IAgentRuntime,
 			message: Memory,

@@ -1,5 +1,5 @@
 /**
- * ElizaCloudDashboard — settings "Cloud" section.
+ * TokagentCloudDashboard — settings "Cloud" section.
  *
  * Two views:
  *   - "overview" (default): account id, balance, status, Top-up button
@@ -17,7 +17,7 @@ import {
   DialogTitle,
   Input,
   Switch,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   ArrowLeft,
   CreditCard,
@@ -42,8 +42,8 @@ import {
   buildAutoTopUpFormState,
   consumeManagedDiscordCallbackUrl,
   consumeManagedGithubCallbackUrl,
-  ELIZA_CLOUD_INSTANCES_URL,
-  ELIZA_CLOUD_WEB_URL,
+  TOKAGENT_CLOUD_INSTANCES_URL,
+  TOKAGENT_CLOUD_WEB_URL,
   getBillingAutoTopUp,
   getBillingLimits,
   isRecord,
@@ -59,19 +59,19 @@ import {
 export function CloudDashboard() {
   const {
     t,
-    elizaCloudConnected,
-    elizaCloudCredits,
-    elizaCloudCreditsLow,
-    elizaCloudCreditsCritical,
-    elizaCloudAuthRejected,
-    elizaCloudTopUpUrl,
-    elizaCloudUserId,
-    elizaCloudStatusReason,
+    tokagentCloudConnected,
+    tokagentCloudCredits,
+    tokagentCloudCreditsLow,
+    tokagentCloudCreditsCritical,
+    tokagentCloudAuthRejected,
+    tokagentCloudTopUpUrl,
+    tokagentCloudUserId,
+    tokagentCloudStatusReason,
     cloudDashboardView,
-    elizaCloudLoginBusy,
+    tokagentCloudLoginBusy,
     handleCloudLogin,
     handleCloudDisconnect,
-    elizaCloudDisconnecting: cloudDisconnecting,
+    tokagentCloudDisconnecting: cloudDisconnecting,
     setActionNotice,
     setState,
   } = useApp();
@@ -126,7 +126,7 @@ export function CloudDashboard() {
         throw err instanceof Error
           ? err
           : new Error(
-              t("elizaclouddashboard.BillingSummaryUnavailable", {
+              t("tokagentclouddashboard.BillingSummaryUnavailable", {
                 defaultValue: "Billing summary unavailable.",
               }),
             );
@@ -146,7 +146,7 @@ export function CloudDashboard() {
       setBillingError(
         err instanceof Error
           ? err.message
-          : t("elizaclouddashboard.FailedToLoadBillingData", {
+          : t("tokagentclouddashboard.FailedToLoadBillingData", {
               defaultValue: "Failed to load billing data.",
             }),
       );
@@ -185,7 +185,7 @@ export function CloudDashboard() {
 
     if (!Number.isFinite(amount) || amount < minAmount || amount > maxAmount) {
       setActionNotice(
-        t("elizaclouddashboard.AutoTopUpAmountRange", {
+        t("tokagentclouddashboard.AutoTopUpAmountRange", {
           defaultValue:
             "Auto top-up amount must be between ${{min}} and ${{max}}.",
           min: minAmount,
@@ -203,7 +203,7 @@ export function CloudDashboard() {
       threshold > maxThreshold
     ) {
       setActionNotice(
-        t("elizaclouddashboard.AutoTopUpThresholdRange", {
+        t("tokagentclouddashboard.AutoTopUpThresholdRange", {
           defaultValue:
             "Auto top-up threshold must be between ${{min}} and ${{max}}.",
           min: minThreshold,
@@ -217,7 +217,7 @@ export function CloudDashboard() {
 
     if (autoTopUpEnabled && !hasPaymentMethod) {
       setActionNotice(
-        t("elizaclouddashboard.SavePaymentMethodBeforeAutoTopUp", {
+        t("tokagentclouddashboard.SavePaymentMethodBeforeAutoTopUp", {
           defaultValue: "Add a card first",
         }),
         "info",
@@ -241,7 +241,7 @@ export function CloudDashboard() {
       });
       await fetchBillingData();
       setActionNotice(
-        t("elizaclouddashboard.BillingSettingsUpdated", {
+        t("tokagentclouddashboard.BillingSettingsUpdated", {
           defaultValue: "Billing settings updated.",
         }),
         "success",
@@ -251,7 +251,7 @@ export function CloudDashboard() {
       setActionNotice(
         err instanceof Error
           ? err.message
-          : t("elizaclouddashboard.FailedToUpdateBillingSettings", {
+          : t("tokagentclouddashboard.FailedToUpdateBillingSettings", {
               defaultValue: "Failed to update billing settings.",
             }),
         "error",
@@ -279,7 +279,7 @@ export function CloudDashboard() {
     const amountUsd = Number(billingAmount);
     if (!Number.isFinite(amountUsd) || amountUsd < minimumTopUp) {
       setActionNotice(
-        t("elizaclouddashboard.EnterTopUpAmountMinimum", {
+        t("tokagentclouddashboard.EnterTopUpAmountMinimum", {
           defaultValue: "Enter a top-up amount of at least ${{amount}}.",
           amount: minimumTopUp,
         }),
@@ -311,7 +311,7 @@ export function CloudDashboard() {
       }
 
       throw new Error(
-        t("elizaclouddashboard.CheckoutSessionMissing", {
+        t("tokagentclouddashboard.CheckoutSessionMissing", {
           defaultValue:
             "Checkout unavailable. Try again or use the billing portal.",
         }),
@@ -320,7 +320,7 @@ export function CloudDashboard() {
       setActionNotice(
         err instanceof Error
           ? err.message
-          : t("elizaclouddashboard.FailedToStartCheckout", {
+          : t("tokagentclouddashboard.FailedToStartCheckout", {
               defaultValue: "Failed to start checkout.",
             }),
         "error",
@@ -339,14 +339,14 @@ export function CloudDashboard() {
   }, []);
 
   useEffect(() => {
-    if (elizaCloudConnected) {
+    if (tokagentCloudConnected) {
       void fetchBillingData();
     }
-  }, [elizaCloudConnected, fetchBillingData]);
+  }, [tokagentCloudConnected, fetchBillingData]);
 
   // Drop cached billing on disconnect so we never show a stale balance.
   useEffect(() => {
-    if (elizaCloudConnected) return;
+    if (tokagentCloudConnected) return;
     setBillingSummary(null);
     setBillingSettings(null);
     setBillingError(null);
@@ -357,7 +357,7 @@ export function CloudDashboard() {
       next: buildAutoTopUpFormState(null, null),
       force: true,
     });
-  }, [elizaCloudConnected]);
+  }, [tokagentCloudConnected]);
 
   // Managed Discord / GitHub OAuth callbacks: server-side already linked the
   // connection — we just surface a toast and strip query params from the URL.
@@ -376,13 +376,13 @@ export function CloudDashboard() {
     if (callback.status === "connected") {
       setActionNotice(
         callback.guildName
-          ? t("elizaclouddashboard.ManagedDiscordConnectedNotice", {
+          ? t("tokagentclouddashboard.ManagedDiscordConnectedNotice", {
               defaultValue: callback.restarted
                 ? "Managed Discord connected to {{guild}}. The agent restarted and is ready."
                 : "Managed Discord connected to {{guild}}.",
               guild: callback.guildName,
             })
-          : t("elizaclouddashboard.ManagedDiscordConnectedNoticeFallback", {
+          : t("tokagentclouddashboard.ManagedDiscordConnectedNoticeFallback", {
               defaultValue: callback.restarted
                 ? "Managed Discord connected. The agent restarted and is ready."
                 : "Managed Discord connected.",
@@ -394,7 +394,7 @@ export function CloudDashboard() {
     }
     setActionNotice(
       callback.message ||
-        t("elizaclouddashboard.ManagedDiscordConnectFailed", {
+        t("tokagentclouddashboard.ManagedDiscordConnectFailed", {
           defaultValue: "Managed Discord setup did not complete.",
         }),
       "error",
@@ -416,7 +416,7 @@ export function CloudDashboard() {
     }
     if (callback.status === "connected") {
       setActionNotice(
-        t("elizaclouddashboard.ManagedGithubConnectedNotice", {
+        t("tokagentclouddashboard.ManagedGithubConnectedNotice", {
           defaultValue: "GitHub account connected to this agent.",
         }),
         "success",
@@ -426,7 +426,7 @@ export function CloudDashboard() {
     }
     setActionNotice(
       callback.message ||
-        t("elizaclouddashboard.ManagedGithubConnectFailed", {
+        t("tokagentclouddashboard.ManagedGithubConnectFailed", {
           defaultValue: "GitHub setup did not complete.",
         }),
       "error",
@@ -435,23 +435,23 @@ export function CloudDashboard() {
   }, [setActionNotice, t]);
 
   const summaryCritical =
-    elizaCloudAuthRejected ||
-    (billingSummary?.critical ?? elizaCloudCreditsCritical ?? false);
-  const summaryLow = billingSummary?.low ?? elizaCloudCreditsLow ?? false;
+    tokagentCloudAuthRejected ||
+    (billingSummary?.critical ?? tokagentCloudCreditsCritical ?? false);
+  const summaryLow = billingSummary?.low ?? tokagentCloudCreditsLow ?? false;
   const creditStatusColor = summaryCritical
     ? "text-danger"
     : summaryLow
       ? "text-warn"
       : "text-ok";
   const cloudBalanceNumber =
-    typeof elizaCloudCredits === "number"
-      ? elizaCloudCredits
+    typeof tokagentCloudCredits === "number"
+      ? tokagentCloudCredits
       : typeof billingSummary?.balance === "number"
         ? billingSummary.balance
         : null;
   const cloudCurrency = billingSummary?.currency ?? "USD";
   const fallbackBillingUrl =
-    billingSummary?.topUpUrl ?? elizaCloudTopUpUrl ?? null;
+    billingSummary?.topUpUrl ?? tokagentCloudTopUpUrl ?? null;
   const minimumTopUp =
     readNumber(
       (billingSummary as Record<string, unknown> | null)?.minimumTopUp,
@@ -469,21 +469,21 @@ export function CloudDashboard() {
   const autoTopUpMaxAmount = readNumber(billingLimits.maxAmount) ?? 1000;
   const autoTopUpMinThreshold = readNumber(billingLimits.minThreshold) ?? 0;
   const autoTopUpMaxThreshold = readNumber(billingLimits.maxThreshold) ?? 1000;
-  const creditStatusTone = elizaCloudAuthRejected
-    ? t("notice.elizaCloudAuthRejected")
+  const creditStatusTone = tokagentCloudAuthRejected
+    ? t("notice.tokagentCloudAuthRejected")
     : summaryCritical
-      ? t("elizaclouddashboard.CreditsCritical")
+      ? t("tokagentclouddashboard.CreditsCritical")
       : summaryLow
-        ? t("elizaclouddashboard.CreditsLow")
-        : t("elizaclouddashboard.CreditsHealthy");
+        ? t("tokagentclouddashboard.CreditsLow")
+        : t("tokagentclouddashboard.CreditsHealthy");
   const statusChipClass = summaryCritical
     ? "border-danger/30 bg-danger/10 text-danger"
     : summaryLow
       ? "border-warn/30 bg-warn/10 text-warn"
       : "border-ok/30 bg-ok/10 text-ok";
   const accountIdDisplay = resolveCloudAccountIdDisplay(
-    elizaCloudUserId,
-    elizaCloudStatusReason,
+    tokagentCloudUserId,
+    tokagentCloudStatusReason,
     t,
   );
   const formattedBalance =
@@ -491,37 +491,37 @@ export function CloudDashboard() {
   const currencyPrefix = cloudCurrency === "USD" ? "$" : `${cloudCurrency} `;
 
   /* ── Disconnected: single-button connect view ────────────────────────── */
-  if (!elizaCloudConnected) {
+  if (!tokagentCloudConnected) {
     return (
       <div className="mx-auto flex max-w-sm flex-col items-center px-4 py-10 text-center">
         <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl border border-accent/20 bg-accent/10">
           <Zap className="h-6 w-6 text-txt" />
         </div>
         <p className="mb-6 text-sm leading-relaxed text-muted">
-          {t("elizaclouddashboard.ScaleYourAgents")}
+          {t("tokagentclouddashboard.ScaleYourAgents")}
         </p>
         <Button
           variant="default"
           size="sm"
           className="rounded-xl px-6 py-2.5 text-sm font-semibold"
           onClick={() => void handleCloudLogin()}
-          disabled={elizaCloudLoginBusy}
+          disabled={tokagentCloudLoginBusy}
         >
-          {elizaCloudLoginBusy ? (
+          {tokagentCloudLoginBusy ? (
             <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
           ) : (
             <Zap className="mr-2 h-4 w-4" />
           )}
-          {elizaCloudLoginBusy
+          {tokagentCloudLoginBusy
             ? t("onboarding.connecting")
-            : t("elizaclouddashboard.ConnectElizaCloud")}
+            : t("tokagentclouddashboard.ConnectTokagentCloud")}
         </Button>
         <Button
           variant="link"
           className="mt-3 h-auto p-0 text-xs text-muted"
-          onClick={() => void openExternalUrl(ELIZA_CLOUD_WEB_URL)}
+          onClick={() => void openExternalUrl(TOKAGENT_CLOUD_WEB_URL)}
         >
-          {t("elizaclouddashboard.LearnMore")}
+          {t("tokagentclouddashboard.LearnMore")}
         </Button>
       </div>
     );
@@ -533,7 +533,7 @@ export function CloudDashboard() {
       <div className="mb-6 flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="mb-1 text-xs font-medium uppercase tracking-wider text-muted">
-            {t("elizaclouddashboard.Balance", { defaultValue: "Balance" })}
+            {t("tokagentclouddashboard.Balance", { defaultValue: "Balance" })}
           </div>
           <div className="flex items-baseline gap-2">
             <span
@@ -556,12 +556,12 @@ export function CloudDashboard() {
         </span>
       </div>
 
-      {elizaCloudAuthRejected && (
+      {tokagentCloudAuthRejected && (
         <div
           role="alert"
           className="mb-5 rounded-lg border border-danger/40 bg-danger/10 px-3 py-2 text-sm text-danger"
         >
-          {t("notice.elizaCloudAuthRejected")}
+          {t("notice.tokagentCloudAuthRejected")}
         </div>
       )}
 
@@ -577,7 +577,7 @@ export function CloudDashboard() {
       <dl className="mb-6 space-y-2 text-xs">
         <div className="flex items-center justify-between gap-3">
           <dt className="text-muted">
-            {t("elizaclouddashboard.Account", { defaultValue: "Account" })}
+            {t("tokagentclouddashboard.Account", { defaultValue: "Account" })}
           </dt>
           <dd className="min-w-0">
             {accountIdDisplay.mono ? (
@@ -591,18 +591,18 @@ export function CloudDashboard() {
         </div>
         <div className="flex items-center justify-between gap-3">
           <dt className="text-muted">
-            {t("elizaclouddashboard.AutoTopUp", {
+            {t("tokagentclouddashboard.AutoTopUp", {
               defaultValue: "Auto top-up",
             })}
           </dt>
           <dd className="text-txt">
             {billingAutoTopUp.enabled
-              ? t("elizaclouddashboard.OnAmount", {
+              ? t("tokagentclouddashboard.OnAmount", {
                   defaultValue: "On · ${{amount}} when below ${{threshold}}",
                   amount: Number(autoTopUpForm.amount).toFixed(0),
                   threshold: Number(autoTopUpForm.threshold).toFixed(0),
                 })
-              : t("elizaclouddashboard.Off", { defaultValue: "Off" })}
+              : t("tokagentclouddashboard.Off", { defaultValue: "Off" })}
           </dd>
         </div>
       </dl>
@@ -615,7 +615,7 @@ export function CloudDashboard() {
           onClick={goBilling}
         >
           <CreditCard className="mr-1.5 h-3.5 w-3.5" />
-          {t("elizaclouddashboard.TopUpCredits", {
+          {t("tokagentclouddashboard.TopUpCredits", {
             defaultValue: "Top up credits",
           })}
         </Button>
@@ -648,9 +648,9 @@ export function CloudDashboard() {
             variant="ghost"
             size="sm"
             className="h-auto p-0 text-xs text-muted hover:text-txt"
-            onClick={() => void openExternalUrl(ELIZA_CLOUD_INSTANCES_URL)}
+            onClick={() => void openExternalUrl(TOKAGENT_CLOUD_INSTANCES_URL)}
           >
-            {t("elizaclouddashboard.AdvancedDashboard")}
+            {t("tokagentclouddashboard.AdvancedDashboard")}
             <ExternalLink className="ml-1 h-3 w-3" />
           </Button>
         </div>
@@ -672,7 +672,7 @@ export function CloudDashboard() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <h3 className="text-sm font-semibold text-txt-strong">
-          {t("elizaclouddashboard.TopUpCredits", {
+          {t("tokagentclouddashboard.TopUpCredits", {
             defaultValue: "Top up credits",
           })}
         </h3>
@@ -694,7 +694,7 @@ export function CloudDashboard() {
       {/* Pay with card */}
       <div className="mb-6">
         <div className="mb-2 text-xs font-medium uppercase tracking-wider text-muted">
-          {t("elizaclouddashboard.PayWithCard")}
+          {t("tokagentclouddashboard.PayWithCard")}
         </div>
         <div className="mb-2 flex flex-wrap gap-1.5">
           {BILLING_PRESET_AMOUNTS.map((amount) => {
@@ -721,7 +721,7 @@ export function CloudDashboard() {
             value={billingAmount}
             onChange={(e) => setBillingAmount(e.target.value)}
             className="h-9 flex-1 rounded-lg bg-bg text-sm"
-            placeholder={t("elizaclouddashboard.MinAmountPlaceholder", {
+            placeholder={t("tokagentclouddashboard.MinAmountPlaceholder", {
               defaultValue: "Min ${{amount}}",
               amount: minimumTopUp.toFixed(2),
             })}
@@ -736,7 +736,7 @@ export function CloudDashboard() {
             {checkoutBusy ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              t("elizaclouddashboard.Pay", { defaultValue: "Pay" })
+              t("tokagentclouddashboard.Pay", { defaultValue: "Pay" })
             )}
           </Button>
         </div>
@@ -747,14 +747,14 @@ export function CloudDashboard() {
         <div className="mb-3 flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="text-xs font-medium uppercase tracking-wider text-muted">
-              {t("elizaclouddashboard.AutoTopUp")}
+              {t("tokagentclouddashboard.AutoTopUp")}
             </div>
             <p className="mt-0.5 text-xs-tight text-muted">
               {autoTopUpHasPaymentMethod
-                ? t("elizaclouddashboard.AutoTopUpPaymentReady", {
+                ? t("tokagentclouddashboard.AutoTopUpPaymentReady", {
                     defaultValue: "Card saved",
                   })
-                : t("elizaclouddashboard.AutoTopUpNeedsPaymentMethod", {
+                : t("tokagentclouddashboard.AutoTopUpNeedsPaymentMethod", {
                     defaultValue: "Add a card first",
                   })}
             </p>
@@ -764,7 +764,7 @@ export function CloudDashboard() {
             onCheckedChange={(v: boolean) =>
               dispatchAutoTopUpForm({ type: "setEnabled", value: v })
             }
-            aria-label={t("elizaclouddashboard.ToggleAutoTopUp")}
+            aria-label={t("tokagentclouddashboard.ToggleAutoTopUp")}
           />
         </div>
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
@@ -773,7 +773,7 @@ export function CloudDashboard() {
               htmlFor="cloud-auto-topup-threshold"
               className="text-xs-tight text-muted"
             >
-              {t("elizaclouddashboard.RefillWhenBelow", {
+              {t("tokagentclouddashboard.RefillWhenBelow", {
                 defaultValue: "Refill when below",
               })}
             </label>
@@ -798,7 +798,7 @@ export function CloudDashboard() {
               htmlFor="cloud-auto-topup-amount"
               className="text-xs-tight text-muted"
             >
-              {t("elizaclouddashboard.TopUpAmount", {
+              {t("tokagentclouddashboard.TopUpAmount", {
                 defaultValue: "Top-up amount",
               })}
             </label>
@@ -842,7 +842,7 @@ export function CloudDashboard() {
           className="h-auto p-0 text-xs text-muted hover:text-txt"
           onClick={() => void openExternalUrl(fallbackBillingUrl)}
         >
-          {t("elizaclouddashboard.OpenBrowserBilling")}
+          {t("tokagentclouddashboard.OpenBrowserBilling")}
           <ExternalLink className="ml-1 h-3 w-3" />
         </Button>
       )}
@@ -862,7 +862,7 @@ export function CloudDashboard() {
       >
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>{t("elizaclouddashboard.PayWithCard")}</DialogTitle>
+            <DialogTitle>{t("tokagentclouddashboard.PayWithCard")}</DialogTitle>
           </DialogHeader>
           {checkoutSession?.clientSecret && checkoutSession.publishableKey ? (
             <StripeEmbeddedCheckout
@@ -871,7 +871,7 @@ export function CloudDashboard() {
             />
           ) : (
             <div className="rounded-2xl border border-border/40 bg-bg/25 px-4 py-5 text-sm text-muted">
-              {t("elizaclouddashboard.CheckoutProviderNote")}
+              {t("tokagentclouddashboard.CheckoutProviderNote")}
             </div>
           )}
         </DialogContent>

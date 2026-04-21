@@ -9,7 +9,7 @@
     "dev": "bun --watch run autonomous.ts"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-inmemorydb": "alpha",
     "@elizaos/plugin-local-ai": "alpha",
     "@elizaos/plugin-shell": "alpha",

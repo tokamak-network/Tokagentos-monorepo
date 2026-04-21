@@ -1,10 +1,10 @@
 [package]
-name = "eliza_icp_backend"
+name = "tokagent_icp_backend"
 version = "0.1.0"
 edition = "2021"
-description = "elizaOS agent running as an ICP canister with OpenAI integration and vetKeys support"
+description = "tokagentOS agent running as an ICP canister with OpenAI integration and vetKeys support"
 license = "MIT"
-authors = ["elizaOS Contributors"]
+authors = ["tokagentOS Contributors"]
 
 [lib]
 crate-type = ["cdylib"]
@@ -30,12 +30,12 @@ sha2 = "0.10"
 # Getrandom with custom feature for WASM
 getrandom = { version = "0.2", features = ["custom"] }
 
-# ElizaOS core with sync runtime (no tokio needed)
+# TokagentOS core with sync runtime (no tokio needed)
 # Note: Using path for local development, would use crates.io version in production
-# elizaos = { version = "2.0", default-features = false, features = ["sync", "icp"] }
+# tokagentos = { version = "2.0", default-features = false, features = ["sync", "icp"] }
 
-# ELIZA Classic plugin - no API keys needed, pure pattern matching
-elizaos-plugin-eliza-classic = { path = "../../../../plugins/plugin-eliza-classic/rust" }
+# TOKAGENT Classic plugin - no API keys needed, pure pattern matching
+tokagentos-plugin-tokagent-classic = { path = "../../../../plugins/plugin-tokagent-classic/rust" }
 
 # DFINITY LLM canister client - Llama 3.1 8B, Qwen3 32B on ICP
 ic-llm = "1.1"

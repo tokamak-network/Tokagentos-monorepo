@@ -1,13 +1,13 @@
 /**
  * Hosted web search action.
  *
- * Prefers Eliza Cloud hosted Google-grounded Gemini search when cloud tooling
+ * Prefers Tokagent Cloud hosted Google-grounded Gemini search when cloud tooling
  * is configured. Falls back to the Brave Search API when cloud search is not
  * available locally.
  */
 
-import type { Action, HandlerOptions, Memory, State } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { Action, HandlerOptions, Memory, State } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { hasRoleAccess } from "../security/access.js";
 import { hasContextSignalSyncForKey } from "./context-signal.js";
 import {
@@ -149,7 +149,7 @@ export const webSearchAction: Action = {
     "SEARCH",
   ],
   description:
-    "Search the web for current information using Eliza Cloud hosted Google search when available, with Brave Search as a local fallback. " +
+    "Search the web for current information using Tokagent Cloud hosted Google search when available, with Brave Search as a local fallback. " +
     "Use when you need real-time or recent information that may not be in your training data.",
 
   validate: async (runtime, message, state) => {
@@ -165,7 +165,7 @@ export const webSearchAction: Action = {
     const hasHostedSearch = isHostedCloudToolingConfigured(process.env);
     if (!hasHostedSearch && !braveApiKey) {
       return {
-        text: "Web search is not configured. Connect Eliza Cloud hosted tools or set BRAVE_API_KEY to enable it.",
+        text: "Web search is not configured. Connect Tokagent Cloud hosted tools or set BRAVE_API_KEY to enable it.",
         success: false,
         values: { success: false, error: "NO_API_KEY" },
         data: { actionName: "WEB_SEARCH" },

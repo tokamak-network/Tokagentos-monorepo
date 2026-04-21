@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "elizaOS Documentation",
+  "name": "tokagentOS Documentation",
   "homepage": "index",
   "colors": {
     "primary": "#0B35F1",
@@ -21,7 +21,7 @@
         {
           "anchor": "Docs for LLMs",
           "icon": "robot",
-          "href": "https://docs.elizaos.ai/llms-full.txt"
+          "href": "https://docs.tokagentos.ai/llms-full.txt"
         }
       ]
     },
@@ -624,26 +624,26 @@
     ],
     "primary": {
       "type": "github",
-      "href": "https://github.com/elizaos/eliza"
+      "href": "https://github.com/tokagentos/tokagent"
     }
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/elizaos",
-      "github": "https://github.com/elizaos/eliza",
+      "x": "https://x.com/tokagentos",
+      "github": "https://github.com/tokagentos/tokagent",
       "discord": "https://discord.gg/ai16z",
-      "youtube": "https://www.youtube.com/@elizaOSDeveloper",
-      "linkedin": "https://www.linkedin.com/company/elizalabs"
+      "youtube": "https://www.youtube.com/@tokagentOSDeveloper",
+      "linkedin": "https://www.linkedin.com/company/tokagentlabs"
     }
   },
   "seo": {
     "indexHiddenPages": false,
     "metadata": {
-      "og:site_name": "elizaOS Documentation",
+      "og:site_name": "tokagentOS Documentation",
       "og:type": "website",
-      "og:image": "/images/eliza-og.png",
+      "og:image": "/images/tokagent-og.png",
       "x:card": "summary_large_image",
-      "x:image": "/images/eliza-og.png"
+      "x:image": "/images/tokagent-og.png"
     }
   },
   "analytics": {

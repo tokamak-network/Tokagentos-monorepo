@@ -29,8 +29,8 @@
   },
   "dependencies": {
     "@elizaos/app-task-coordinator": "workspace:*",
-    "@elizaos/ui": "workspace:*",
-    "@elizaos/core": "workspace:*",
+    "@tokagentos/ui": "workspace:*",
+    "@tokagentos/core": "workspace:*",
     "lucide-react": "^1.0.0"
   },
   "devDependencies": {
@@ -54,7 +54,7 @@
     "react-dom": "^19.0.0",
     "three": "^0.182.0"
   },
-  "elizaos": {
+  "tokagentos": {
     "app": {
       "displayName": "Milady Companion",
       "category": "game",

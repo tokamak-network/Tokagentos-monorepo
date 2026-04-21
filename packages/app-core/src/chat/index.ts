@@ -15,7 +15,7 @@ const ROUTINE_CODING_AGENT_RE =
 
 // ── Saved custom commands ────────────────────────────────────────────────
 
-export const CUSTOM_COMMANDS_STORAGE_KEY = "eliza:custom-commands";
+export const CUSTOM_COMMANDS_STORAGE_KEY = "tokagent:custom-commands";
 
 export interface SavedCustomCommand {
   name: string;

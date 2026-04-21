@@ -1,4 +1,4 @@
-import type { ActionResult, Memory } from "@elizaos/core";
+import type { ActionResult, Memory } from "@tokagentos/core";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { gmailAction } from "../src/actions/gmail.js";

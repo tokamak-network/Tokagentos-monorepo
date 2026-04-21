@@ -1,6 +1,6 @@
 # Telegram Agent Examples
 
-Telegram bots using elizaOS with the full message pipeline (providers → LLM → actions → evaluators).
+Telegram bots using tokagentOS with the full message pipeline (providers → LLM → actions → evaluators).
 
 ## Quick Start
 
@@ -37,7 +37,7 @@ The character defines personality, system prompt, and settings:
 
 ```typescript
 const character = {
-  name: "TelegramEliza",
+  name: "TelegramTokagent",
   bio: "A helpful AI assistant.",
   system: "Be friendly and concise...",
   settings: { model: "gpt-5-mini" },

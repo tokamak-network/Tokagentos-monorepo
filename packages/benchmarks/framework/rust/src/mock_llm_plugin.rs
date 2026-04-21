@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use std::future::Future;
 use std::pin::Pin;
 
-use elizaos::types::plugin::{ModelHandlerFn, Plugin, PluginDefinition};
+use tokagentos::types::plugin::{ModelHandlerFn, Plugin, PluginDefinition};
 
 // ─── Mock response constants ────────────────────────────────────────────────
 

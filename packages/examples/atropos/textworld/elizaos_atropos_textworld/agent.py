@@ -1,13 +1,13 @@
 """
-elizaOS agent for TextWorld environment.
+tokagentOS agent for TextWorld environment.
 
 This module provides different agent implementations for playing text adventure games:
 
 1. TextWorldAgent: Lightweight wrapper that can use an existing AgentRuntime
    or fall back to heuristics. Good for benchmarking and testing.
 
-2. ElizaOSAgent: Full elizaOS stack with its own runtime, character, and plugins.
-   Good for trajectory generation where you want the complete elizaOS experience.
+2. TokagentOSAgent: Full tokagentOS stack with its own runtime, character, and plugins.
+   Good for trajectory generation where you want the complete tokagentOS experience.
 
 3. Heuristic/Random policies: Baselines for comparison. No LLM calls, deterministic.
 
@@ -15,12 +15,12 @@ This module provides different agent implementations for playing text adventure 
 
 ### Why Multiple Agent Classes?
 
-TextWorldAgent and ElizaOSAgent serve different purposes:
+TextWorldAgent and TokagentOSAgent serve different purposes:
 
 - TextWorldAgent: "Bring your own runtime". You control the runtime lifecycle.
-  Useful when you're already using elizaOS and want to add game-playing capability.
+  Useful when you're already using tokagentOS and want to add game-playing capability.
 
-- ElizaOSAgent: Self-contained. Creates and manages its own runtime.
+- TokagentOSAgent: Self-contained. Creates and manages its own runtime.
   Useful for trajectory generation where you just want "play games, generate data".
 
 ### Why Heuristics as Fallback?
@@ -33,7 +33,7 @@ The heuristic priority (take > open > go > look) comes from how treasure hunt
 games work: you need to collect items (take), find items in containers (open),
 and explore (go). "look" is a no-op that wastes a turn.
 
-### Why Temperature 0.7 for ElizaOSAgent?
+### Why Temperature 0.7 for TokagentOSAgent?
 
 Temperature controls randomness in LLM outputs:
 - 0.0: Deterministic, always picks highest-probability token
@@ -51,22 +51,22 @@ import logging
 import uuid
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_textworld.types import (
+from tokagentos_atropos_textworld.types import (
     GameState,
     EpisodeResult,
     TrainingStats,
 )
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.primitives import UUID
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.primitives import UUID
 
 logger = logging.getLogger(__name__)
 
 
 class TextWorldAgent:
     """
-    ElizaOS-powered TextWorld agent.
+    TokagentOS-powered TextWorld agent.
     
     Uses LLM to understand game text and make decisions about
     which actions to take in text adventure games.
@@ -88,7 +88,7 @@ class TextWorldAgent:
         Initialize the TextWorld agent.
         
         Args:
-            runtime: ElizaOS AgentRuntime
+            runtime: TokagentOS AgentRuntime
             use_llm: Whether to use LLM for decisions
             agent_id: Optional agent ID
         """
@@ -119,7 +119,7 @@ class TextWorldAgent:
             The action to take as a string
         """
         if self._use_llm and self._runtime is not None:
-            return await self._decide_with_eliza(state, trajectory_step_id=trajectory_step_id)
+            return await self._decide_with_tokagent(state, trajectory_step_id=trajectory_step_id)
         return self._decide_with_heuristics(state)
 
     def _decide_with_heuristics(self, state: GameState) -> str:
@@ -142,14 +142,14 @@ class TextWorldAgent:
         # Default to look
         return "look"
 
-    async def _decide_with_eliza(self, state: GameState, *, trajectory_step_id: str | None = None) -> str:
-        """Use canonical ElizaOS message pipeline for decision making."""
+    async def _decide_with_tokagent(self, state: GameState, *, trajectory_step_id: str | None = None) -> str:
+        """Use canonical TokagentOS message pipeline for decision making."""
         if self._runtime is None:
             return self._decide_with_heuristics(state)
 
         try:
-            from elizaos_atropos_shared.canonical_eliza import run_with_context
-            from elizaos_atropos_textworld.eliza_plugin import (
+            from tokagentos_atropos_shared.canonical_tokagent import run_with_context
+            from tokagentos_atropos_textworld.tokagent_plugin import (
                 TEXTWORLD_STORE,
                 TextWorldDecisionContext,
             )
@@ -267,28 +267,28 @@ async def create_random_policy(state: GameState) -> str:
 
 
 # =============================================================================
-# Full elizaOS Agent with Runtime
+# Full tokagentOS Agent with Runtime
 # =============================================================================
 
 
-class ElizaOSAgent:
+class TokagentOSAgent:
     """
-    Full elizaOS agent with AgentRuntime, Character, and plugins.
+    Full tokagentOS agent with AgentRuntime, Character, and plugins.
     
     WHY THIS CLASS:
-    This is a self-contained elizaOS agent that manages its own runtime lifecycle.
+    This is a self-contained tokagentOS agent that manages its own runtime lifecycle.
     Use this when you want to generate training data without managing runtime
     details. The agent handles initialization, cleanup, and error recovery.
     
     WHY SEPARATE FROM TextWorldAgent:
     TextWorldAgent expects you to provide a runtime (dependency injection).
-    ElizaOSAgent creates its own runtime (self-contained). Different use cases:
+    TokagentOSAgent creates its own runtime (self-contained). Different use cases:
     
     - TextWorldAgent: "I have a runtime, let me use it for games"
-    - ElizaOSAgent: "I just want to play games, handle the runtime for me"
+    - TokagentOSAgent: "I just want to play games, handle the runtime for me"
     
     Example:
-        >>> agent = ElizaOSAgent()
+        >>> agent = TokagentOSAgent()
         >>> await agent.initialize()
         >>> action = await agent.decide(game_state)
         >>> await agent.cleanup()
@@ -296,7 +296,7 @@ class ElizaOSAgent:
 
     def __init__(self, character: "Character | None" = None):
         """
-        Initialize the elizaOS agent.
+        Initialize the tokagentOS agent.
         
         WHY LAZY INITIALIZATION:
         We don't initialize the runtime here because:
@@ -317,9 +317,9 @@ class ElizaOSAgent:
         Get or create the agent's character.
         
         WHY LAZY CHARACTER CREATION:
-        The Character import triggers elizaos module loading. By deferring
+        The Character import triggers tokagentos module loading. By deferring
         creation to first access, we keep __init__ fast and avoid import
-        errors if elizaos isn't properly installed.
+        errors if tokagentos isn't properly installed.
         
         WHY THIS DEFAULT CHARACTER:
         The system prompt is minimal but effective:
@@ -331,7 +331,7 @@ class ElizaOSAgent:
         models tend to add explanations that break command parsing.
         """
         if self._character is None:
-            from elizaos import Character
+            from tokagentos import Character
             self._character = Character(
                 name="Explorer",
                 bio="Expert text adventure player. Systematic, thorough, goal-oriented.",
@@ -344,7 +344,7 @@ Respond with ONLY the action command, nothing else.""",
 
     async def initialize(self) -> None:
         """
-        Initialize elizaOS runtime with plugins.
+        Initialize tokagentOS runtime with plugins.
         
         WHY IDEMPOTENT:
         Calling initialize() multiple times is safe (early return if already init).
@@ -352,16 +352,16 @@ Respond with ONLY the action command, nothing else.""",
         
         WHY THESE PLUGINS:
         - openai: Provides LLM capabilities (TEXT_SMALL model)
-        - inmemorydb: Required by elizaOS runtime for state management
+        - inmemorydb: Required by tokagentOS runtime for state management
           (even though we don't persist anything, the runtime needs an adapter)
         """
         if self._initialized:
             return
 
         try:
-            from elizaos import AgentRuntime
-            from elizaos_plugin_openai import get_openai_plugin
-            from elizaos_plugin_inmemorydb import plugin as inmemorydb_plugin
+            from tokagentos import AgentRuntime
+            from tokagentos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_inmemorydb import plugin as inmemorydb_plugin
 
             self._runtime = AgentRuntime(
                 character=self.character,
@@ -369,19 +369,19 @@ Respond with ONLY the action command, nothing else.""",
             )
             await self._runtime.initialize()
             self._initialized = True
-            logger.info("elizaOS agent initialized successfully")
+            logger.info("tokagentOS agent initialized successfully")
 
         except ImportError as e:
             # Clear error message for missing dependencies
-            logger.error(f"Failed to import elizaOS dependencies: {e}")
+            logger.error(f"Failed to import tokagentOS dependencies: {e}")
             raise
         except Exception as e:
-            logger.error(f"Failed to initialize elizaOS runtime: {e}")
+            logger.error(f"Failed to initialize tokagentOS runtime: {e}")
             raise
 
     async def decide(self, state: GameState) -> str:
         """
-        Get action from elizaOS runtime.
+        Get action from tokagentOS runtime.
         
         WHY AUTO-INITIALIZE:
         If you forget to call initialize(), we do it automatically.
@@ -408,7 +408,7 @@ Respond with ONLY the action command, nothing else.""",
         prompt = self._format_prompt(state)
 
         try:
-            from elizaos.types.model import ModelType
+            from tokagentos.types.model import ModelType
 
             result = await self._runtime.use_model(
                 ModelType.TEXT_SMALL.value,
@@ -493,7 +493,7 @@ Your action:"""
 
     async def cleanup(self) -> None:
         """
-        Cleanup elizaOS runtime.
+        Cleanup tokagentOS runtime.
         
         WHY TRY/FINALLY:
         Even if stop() fails, we must clear _runtime and _initialized.
@@ -508,7 +508,7 @@ Your action:"""
         if self._runtime:
             try:
                 await self._runtime.stop()
-                logger.info("elizaOS agent cleaned up")
+                logger.info("tokagentOS agent cleaned up")
             except Exception as e:
                 logger.warning(f"Error during cleanup: {e}")
             finally:

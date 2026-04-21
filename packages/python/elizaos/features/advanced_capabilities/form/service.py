@@ -10,7 +10,7 @@ import time
 import uuid
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import Service, ServiceType
+from tokagentos.types import Service, ServiceType
 
 from .builtins import ControlType, register_builtin_types
 from .types import (
@@ -30,7 +30,7 @@ from .types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 from . import storage as form_storage
 

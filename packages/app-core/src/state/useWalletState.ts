@@ -21,8 +21,8 @@ import type {
   WalletEntry,
   WalletPrimaryMap,
   WalletSource,
-} from "@elizaos/shared/contracts/wallet";
-import type { PromptOptions } from "@elizaos/ui";
+} from "@tokagentos/shared/contracts/wallet";
+import type { PromptOptions } from "@tokagentos/ui";
 import { useCallback, useRef, useState } from "react";
 import {
   client,
@@ -200,7 +200,7 @@ export function useWalletState({
       "",
     );
     if (/Invalid Solana address \(base58, 32–44 chars\)/i.test(detail)) {
-      return "the connected Eliza Cloud backend is still using the legacy Solana wallet contract";
+      return "the connected Tokagent Cloud backend is still using the legacy Solana wallet contract";
     }
     return detail;
   }, []);
@@ -299,9 +299,9 @@ export function useWalletState({
         await client.updateWalletConfig(config);
         const selectedProviders = config.selections;
         const shouldImportCloudWallets =
-          selectedProviders.evm === "eliza-cloud" &&
-          selectedProviders.bsc === "eliza-cloud" &&
-          selectedProviders.solana === "eliza-cloud";
+          selectedProviders.evm === "tokagent-cloud" &&
+          selectedProviders.bsc === "tokagent-cloud" &&
+          selectedProviders.solana === "tokagent-cloud";
 
         let walletConfigAfterSave: WalletConfigStatus | null | undefined;
         if (shouldImportCloudWallets) {
@@ -436,8 +436,8 @@ export function useWalletState({
     if (!confirmed) return;
     const exportToken = await promptModal({
       title: "Wallet Export Token",
-      message: "Enter your wallet export token (ELIZA_WALLET_EXPORT_TOKEN):",
-      placeholder: "ELIZA_WALLET_EXPORT_TOKEN",
+      message: "Enter your wallet export token (TOKAGENT_WALLET_EXPORT_TOKEN):",
+      placeholder: "TOKAGENT_WALLET_EXPORT_TOKEN",
       confirmLabel: "Export",
       cancelLabel: "Cancel",
     });

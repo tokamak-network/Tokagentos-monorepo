@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
   Switch,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { ChevronDown, X } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";

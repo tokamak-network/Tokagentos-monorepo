@@ -1,7 +1,7 @@
 """
-GAIA Benchmark ElizaOS Plugin
+GAIA Benchmark TokagentOS Plugin
 
-Provides proper ElizaOS integration for the GAIA benchmark with:
+Provides proper TokagentOS integration for the GAIA benchmark with:
 - Multi-provider model support (Groq, OpenAI, Anthropic, etc.)
 - Actions for tool execution (web_search, browse, calculate, etc.)
 - Provider for question context
@@ -14,13 +14,13 @@ import logging
 import os
 from typing import TYPE_CHECKING
 
-from elizaos_gaia.providers import (
+from tokagentos_gaia.providers import (
     ModelConfig,
     ModelProvider,
     call_provider,
     get_default_config,
 )
-from elizaos_gaia.tools import (
+from tokagentos_gaia.tools import (
     Calculator,
     CodeExecutor,
     FileProcessor,
@@ -29,8 +29,8 @@ from elizaos_gaia.tools import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.plugin import Plugin
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.plugin import Plugin
 
 logger = logging.getLogger(__name__)
 
@@ -205,12 +205,12 @@ async def multi_provider_model_handler(
 
 def create_gaia_actions() -> list:
     """
-    Create ElizaOS Action objects for GAIA tools.
+    Create TokagentOS Action objects for GAIA tools.
 
     These actions wrap the tool implementations and make them available
-    through the standard ElizaOS action framework.
+    through the standard TokagentOS action framework.
     """
-    from elizaos.types.components import (
+    from tokagentos.types.components import (
         Action,
         ActionParameter,
         ActionParameterSchema,
@@ -218,8 +218,8 @@ def create_gaia_actions() -> list:
         HandlerCallback,
         HandlerOptions,
     )
-    from elizaos.types.memory import Memory
-    from elizaos.types.state import State
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.state import State
 
     actions: list[Action] = []
 
@@ -459,7 +459,7 @@ def create_gaia_plugin(
     enable_calculator: bool = True,
 ) -> Plugin:
     """
-    Create the GAIA benchmark ElizaOS plugin.
+    Create the GAIA benchmark TokagentOS plugin.
 
     This plugin provides:
     - OpenAI model handler for TEXT_LARGE
@@ -474,8 +474,8 @@ def create_gaia_plugin(
     Returns:
         Plugin configured for GAIA benchmark
     """
-    from elizaos.types.model import ModelType
-    from elizaos.types.plugin import Plugin
+    from tokagentos.types.model import ModelType
+    from tokagentos.types.plugin import Plugin
 
     actions = create_gaia_actions()
 

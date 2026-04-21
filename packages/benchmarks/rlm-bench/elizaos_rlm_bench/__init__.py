@@ -13,8 +13,8 @@ Benchmarks included:
 
 Execution modes:
 - stub: Fast heuristic-based mock (for testing)
-- rlm: Direct RLM plugin inference (bypasses Eliza runtime)
-- eliza: Full Eliza agent loop (Provider -> Model -> Action -> Evaluator)
+- rlm: Direct RLM plugin inference (bypasses Tokagent runtime)
+- tokagent: Full Tokagent agent loop (Provider -> Model -> Action -> Evaluator)
 - custom: Custom LLM query function
 
 Reference:
@@ -33,7 +33,7 @@ from .types import (
     RLMBenchType,
     RLMStrategyMetrics,
 )
-from .runner import RLMBenchRunner, run_eliza_benchmark, setup_eliza_runner
+from .runner import RLMBenchRunner, run_tokagent_benchmark, setup_tokagent_runner
 from .generator import RLMBenchGenerator
 from .evaluator import RLMBenchEvaluator
 from .reporting import RLMBenchReporter, save_results
@@ -49,8 +49,8 @@ __all__ = [
     "RLMStrategyMetrics",
     # Runner
     "RLMBenchRunner",
-    "run_eliza_benchmark",
-    "setup_eliza_runner",
+    "run_tokagent_benchmark",
+    "setup_tokagent_runner",
     # Generator
     "RLMBenchGenerator",
     # Evaluator

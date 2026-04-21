@@ -3,7 +3,7 @@
 import pytest
 from datetime import datetime
 
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.types import (
     TaskCategory,
     TaskDifficulty,
     CommandStatus,

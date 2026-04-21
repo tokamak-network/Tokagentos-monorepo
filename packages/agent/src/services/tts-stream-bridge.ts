@@ -11,8 +11,8 @@
 
 import { spawn } from "node:child_process";
 import type { Writable } from "node:stream";
-import { logger } from "@elizaos/core";
-import { sanitizeSpeechText } from "@elizaos/shared/spoken-text";
+import { logger } from "@tokagentos/core";
+import { sanitizeSpeechText } from "@tokagentos/shared/spoken-text";
 import type { TtsConfig, TtsProvider } from "../config/types.messages.js";
 
 const TAG = "[TtsStreamBridge]";
@@ -355,7 +355,7 @@ function isRedactedSecret(val: string): boolean {
 }
 
 /**
- * Resolve TTS configuration from eliza config, finding the best available
+ * Resolve TTS configuration from tokagent config, finding the best available
  * provider with valid API keys.
  */
 export function resolveTtsConfig(
@@ -430,13 +430,13 @@ function resolveKey(
   const ev = process.env[envVar]?.trim();
   if (ev && !isRedactedSecret(ev)) return ev;
 
-  const explicitCloudTts = process.env.ELIZAOS_CLOUD_USE_TTS === "true";
+  const explicitCloudTts = process.env.TOKAGENTOS_CLOUD_USE_TTS === "true";
   const legacyCloudTts =
-    process.env.ELIZAOS_CLOUD_USE_TTS === undefined &&
-    process.env.ELIZAOS_CLOUD_ENABLED === "true" &&
-    process.env.ELIZA_CLOUD_TTS_DISABLED !== "true";
+    process.env.TOKAGENTOS_CLOUD_USE_TTS === undefined &&
+    process.env.TOKAGENTOS_CLOUD_ENABLED === "true" &&
+    process.env.TOKAGENT_CLOUD_TTS_DISABLED !== "true";
   if (explicitCloudTts || legacyCloudTts) {
-    const cloudKey = process.env.ELIZAOS_CLOUD_API_KEY?.trim();
+    const cloudKey = process.env.TOKAGENTOS_CLOUD_API_KEY?.trim();
     if (cloudKey && !isRedactedSecret(cloudKey)) {
       return cloudKey;
     }

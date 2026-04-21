@@ -1,4 +1,4 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 export interface CalendlyCredentials {
   personalAccessToken: string;
@@ -49,12 +49,12 @@ function getCalendlyBaseUrl(): string {
 export function readCalendlyCredentialsFromEnv(
   env: NodeJS.ProcessEnv = process.env,
 ): CalendlyCredentials | null {
-  const personalAccessToken = env.ELIZA_CALENDLY_TOKEN?.trim();
+  const personalAccessToken = env.TOKAGENT_CALENDLY_TOKEN?.trim();
   if (!personalAccessToken) {
     return null;
   }
-  const organizationUri = env.ELIZA_CALENDLY_ORG_URI?.trim() || undefined;
-  const userUri = env.ELIZA_CALENDLY_USER_URI?.trim() || undefined;
+  const organizationUri = env.TOKAGENT_CALENDLY_ORG_URI?.trim() || undefined;
+  const userUri = env.TOKAGENT_CALENDLY_USER_URI?.trim() || undefined;
   return {
     personalAccessToken,
     organizationUri,

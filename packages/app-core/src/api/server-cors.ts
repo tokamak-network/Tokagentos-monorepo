@@ -11,10 +11,10 @@
  */
 export function buildCorsAllowedPorts(): Set<string> {
   const ports = new Set([
-    String(process.env.ELIZA_API_PORT ?? process.env.ELIZA_PORT ?? "31337"),
-    String(process.env.ELIZA_PORT ?? "2138"),
-    String(process.env.ELIZA_GATEWAY_PORT ?? "18789"),
-    String(process.env.ELIZA_HOME_PORT ?? "2142"),
+    String(process.env.TOKAGENT_API_PORT ?? process.env.TOKAGENT_PORT ?? "31337"),
+    String(process.env.TOKAGENT_PORT ?? "2138"),
+    String(process.env.TOKAGENT_GATEWAY_PORT ?? "18789"),
+    String(process.env.TOKAGENT_HOME_PORT ?? "2142"),
   ]);
   // Electrobun renderer static server picks a free port in the 5174–5200
   // range. Allow the full range so cross-origin fetches from WKWebView

@@ -13,7 +13,7 @@ export function createBrowserWorkspacePdfBuffer(
   bodyText: string,
 ): Buffer {
   const lines = [
-    title.trim() || "Eliza Browser Workspace",
+    title.trim() || "Tokagent Browser Workspace",
     "",
     ...bodyText
       .split(/\r?\n/)
@@ -57,7 +57,7 @@ export function createBrowserWorkspaceSyntheticScreenshotData(
   const width = viewport?.width ?? 1280;
   const height = viewport?.height ?? 720;
   const lines = [
-    title || "Eliza Browser Workspace",
+    title || "Tokagent Browser Workspace",
     url,
     "",
     ...bodyText

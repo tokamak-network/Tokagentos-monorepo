@@ -5,13 +5,13 @@ import type {
   StorageLike,
 } from "./types";
 
-const ACTIVE_SERVER_STORAGE_KEY = "elizaos:active-server";
-const ONBOARDING_STEP_STORAGE_KEY = "eliza:onboarding:step";
-const LEGACY_ONBOARDING_STEP_STORAGE_KEY = "eliza:onboarding-step";
-const LEGACY_ONBOARDING_COMPLETE_STORAGE_KEY = "eliza:onboarding-complete";
-const FORCE_FRESH_ONBOARDING_STORAGE_KEY = "elizaos:onboarding:force-fresh";
+const ACTIVE_SERVER_STORAGE_KEY = "tokagentos:active-server";
+const ONBOARDING_STEP_STORAGE_KEY = "tokagent:onboarding:step";
+const LEGACY_ONBOARDING_STEP_STORAGE_KEY = "tokagent:onboarding-step";
+const LEGACY_ONBOARDING_COMPLETE_STORAGE_KEY = "tokagent:onboarding-complete";
+const FORCE_FRESH_ONBOARDING_STORAGE_KEY = "tokagentos:onboarding:force-fresh";
 const RESET_QUERY_PARAM = "reset";
-const PATCH_STATE = Symbol.for("elizaos.forceFreshOnboardingPatch");
+const PATCH_STATE = Symbol.for("tokagentos.forceFreshOnboardingPatch");
 type PatchableClient = ClientLike & { [PATCH_STATE]?: PatchState };
 
 type OnboardingStatus = { complete: boolean } & Record<string, unknown>;
@@ -99,8 +99,8 @@ export function applyForceFreshOnboardingReset(args?: {
 
   if (typeof window !== "undefined") {
     try {
-      window.localStorage.removeItem("elizaos_api_base");
-      window.sessionStorage.removeItem("elizaos_api_base");
+      window.localStorage.removeItem("tokagentos_api_base");
+      window.sessionStorage.removeItem("tokagentos_api_base");
     } catch {
       // Ignore storage failures during startup.
     }

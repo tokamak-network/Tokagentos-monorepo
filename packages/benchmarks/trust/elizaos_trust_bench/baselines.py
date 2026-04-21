@@ -17,8 +17,8 @@ from __future__ import annotations
 import os
 import random
 
-from elizaos_trust_bench.corpus import TEST_CORPUS
-from elizaos_trust_bench.types import TrustTestCase
+from tokagentos_trust_bench.corpus import TEST_CORPUS
+from tokagentos_trust_bench.types import TrustTestCase
 
 
 # ---------------------------------------------------------------------------

@@ -34,7 +34,7 @@ try:
 except ImportError:
     pass
 
-from elizaos_vending_bench import (
+from tokagentos_vending_bench import (
     LEADERBOARD_SCORES,
     CoherenceEvaluator,
     MockLLMProvider,
@@ -290,7 +290,7 @@ async def test_with_openai(results: TestResults):
         return
 
     try:
-        from elizaos_vending_bench.providers.openai import OpenAIProvider
+        from tokagentos_vending_bench.providers.openai import OpenAIProvider
 
         provider = OpenAIProvider(
             api_key=api_key,
@@ -319,17 +319,17 @@ async def test_with_openai(results: TestResults):
 
 
 async def test_plugin_structure(results: TestResults):
-    """Test the ElizaOS plugin structure."""
+    """Test the TokagentOS plugin structure."""
     print("\nTesting Plugin Structure...")
 
     try:
-        # Try importing the plugin (may fail if elizaos not installed)
+        # Try importing the plugin (may fail if tokagentos not installed)
         try:
-            from elizaos_vending_bench.plugin import create_vending_bench_plugin
+            from tokagentos_vending_bench.plugin import create_vending_bench_plugin
 
             results.pass_test("Plugin imports")
         except ImportError as e:
-            print(f"  SKIP elizaos not installed ({e})")
+            print(f"  SKIP tokagentos not installed ({e})")
             return
 
         # Test plugin creation
@@ -337,8 +337,8 @@ async def test_plugin_structure(results: TestResults):
         assert plugin.name == "vending-bench"
         results.pass_test("Plugin created")
 
-        # Check actions are defined (may be empty list if elizaos not available)
-        # The create_vending_actions function requires elizaos types
+        # Check actions are defined (may be empty list if tokagentos not available)
+        # The create_vending_actions function requires tokagentos types
 
     except Exception as e:
         results.fail_test("Plugin test", str(e))
@@ -364,7 +364,7 @@ async def main():
     if "--with-llm" in sys.argv or os.getenv("OPENAI_API_KEY"):
         await test_with_openai(results)
 
-    # Plugin test (may fail gracefully if elizaos not installed)
+    # Plugin test (may fail gracefully if tokagentos not installed)
     await test_plugin_structure(results)
 
     # Summary

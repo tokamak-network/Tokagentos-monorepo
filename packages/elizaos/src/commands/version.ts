@@ -4,11 +4,11 @@ import { readPackageJson } from "../package-info.js";
 export function version(): void {
   const packageJson = readPackageJson();
   console.log();
-  console.log(pc.bold(pc.cyan("elizaOS CLI")));
+  console.log(pc.bold(pc.cyan("tokagentOS CLI")));
   console.log();
   console.log(`  ${pc.dim("Version:")}  ${pc.green(packageJson.version)}`);
   console.log(`  ${pc.dim("Package:")}  ${packageJson.name}`);
   console.log();
-  console.log(pc.dim("  Create and upgrade elizaOS project templates."));
+  console.log(pc.dim("  Create and upgrade tokagentOS project templates."));
   console.log();
 }

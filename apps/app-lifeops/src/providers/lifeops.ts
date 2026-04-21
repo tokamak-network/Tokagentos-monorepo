@@ -5,11 +5,11 @@ import {
   type ProviderResult,
   type State,
   logger,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   LifeOpsGmailTriageSummary,
   LifeOpsNextCalendarEventContext,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { hasLifeOpsAccess } from "../actions/lifeops-google-helpers.js";
 import {
   type LifeOpsOwnerProfile,

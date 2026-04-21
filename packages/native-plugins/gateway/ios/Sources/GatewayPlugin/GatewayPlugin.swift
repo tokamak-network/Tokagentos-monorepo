@@ -5,7 +5,7 @@ import Network
 /**
  * Gateway Plugin for Capacitor
  *
- * Provides WebSocket connectivity to an Eliza Gateway server.
+ * Provides WebSocket connectivity to an Tokagent Gateway server.
  * This implementation handles authentication, reconnection, and RPC-style
  * request/response as well as event streaming. Also supports gateway
  * discovery via Bonjour/mDNS.
@@ -28,7 +28,7 @@ public class GatewayPlugin: CAPPlugin, CAPBridgedPlugin {
     // Discovery
     private var browser: NWBrowser?
     private var discoveredGateways: [String: JSObject] = [:]
-    private let serviceType = "_eliza-gw._tcp"
+    private let serviceType = "_tokagent-gw._tcp"
     private var isDiscovering = false
 
     private var webSocket: URLSessionWebSocketTask?
@@ -332,7 +332,7 @@ public class GatewayPlugin: CAPPlugin, CAPBridgedPlugin {
 
     private func sendConnectFrame(options: JSObject) async throws -> JSObject {
         return try await withCheckedThrowingContinuation { continuation in
-            let clientName = options["clientName"] as? String ?? "eliza-capacitor-ios"
+            let clientName = options["clientName"] as? String ?? "tokagent-capacitor-ios"
             let clientVersion = options["clientVersion"] as? String ?? "1.0.0"
             let roleParam = options["role"] as? String ?? "operator"
             let scopesParam = options["scopes"] as? [String] ?? ["operator.admin"]

@@ -8,10 +8,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 
 def _normalize_role(role: str | None) -> str:

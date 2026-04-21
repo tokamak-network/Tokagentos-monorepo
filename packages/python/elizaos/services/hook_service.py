@@ -2,7 +2,7 @@
 HookService - Unified Hook Management Service for Python
 
 This service provides a centralized hook management system that integrates
-with the Eliza event system. Hooks can be registered for specific event
+with the Tokagent event system. Hooks can be registered for specific event
 types and will be triggered when those events are emitted.
 
 Key Features:
@@ -24,10 +24,10 @@ from datetime import datetime
 from enum import StrEnum
 from typing import TYPE_CHECKING, Any
 
-from elizaos.types.service import Service, ServiceType
+from tokagentos.types.service import Service, ServiceType
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 
 class HookSource(StrEnum):
@@ -181,7 +181,7 @@ class HookService(Service):
     Unified hook management service.
 
     Provides centralized hook registration, discovery, eligibility checking,
-    and dispatch integrated with the Eliza event system.
+    and dispatch integrated with the Tokagent event system.
     """
 
     service_type = ServiceType.HOOKS

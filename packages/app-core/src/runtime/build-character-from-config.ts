@@ -1,17 +1,17 @@
-import { buildCharacterFromConfig as upstreamBuildCharacterFromConfig } from "@elizaos/agent/runtime/eliza";
+import { buildCharacterFromConfig as upstreamBuildCharacterFromConfig } from "@tokagentos/agent/runtime/tokagent";
 import {
   getDefaultStylePreset,
   normalizeCharacterLanguage,
   resolveStylePresetByAvatarIndex,
   resolveStylePresetById,
   resolveStylePresetByName,
-} from "@elizaos/shared/onboarding-presets";
+} from "@tokagentos/shared/onboarding-presets";
 import { normalizeCharacterMessageExamples } from "../utils/character-message-examples.js";
-import { syncAppEnvToEliza, syncElizaEnvAliases } from "../utils/env.js";
+import { syncAppEnvToTokagent, syncTokagentEnvAliases } from "../utils/env.js";
 
 function syncBrandEnvAliases(): void {
-  syncElizaEnvAliases();
-  syncAppEnvToEliza();
+  syncTokagentEnvAliases();
+  syncAppEnvToTokagent();
 }
 
 function resolveAppPreset(

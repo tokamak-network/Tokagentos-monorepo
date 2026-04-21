@@ -1,5 +1,5 @@
 // @ts-nocheck — mixin: type safety is enforced on the composed class
-import type { LifeOpsConnectorDegradation } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsConnectorDegradation } from "@tokagentos/shared/contracts/lifeops";
 import type { Constructor, LifeOpsServiceBase } from "./service-mixin-core.js";
 import {
   readNtfyConfigFromEnv,

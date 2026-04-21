@@ -3,11 +3,11 @@
  * Manages client, proxy, backup scheduler, and connection monitor lifecycle.
  */
 
-import { logger } from "@elizaos/core";
-import type { CloudConfig } from "../config/types.eliza.js";
+import { logger } from "@tokagentos/core";
+import type { CloudConfig } from "../config/types.tokagent.js";
 import { BackupScheduler } from "./backup.js";
 import { normalizeCloudSiteUrl } from "./base-url.js";
-import { ElizaCloudClient } from "./bridge-client.js";
+import { TokagentCloudClient } from "./bridge-client.js";
 import { CloudRuntimeProxy } from "./cloud-proxy.js";
 import { ConnectionMonitor } from "./reconnect.js";
 import { validateCloudBaseUrl } from "./validate-url.js";
@@ -24,7 +24,7 @@ export interface CloudManagerCallbacks {
 }
 
 export class CloudManager {
-  private client: ElizaCloudClient | null = null;
+  private client: TokagentCloudClient | null = null;
   private proxy: CloudRuntimeProxy | null = null;
   private backupScheduler: BackupScheduler | null = null;
   private connectionMonitor: ConnectionMonitor | null = null;
@@ -50,9 +50,9 @@ export class CloudManager {
     }
 
     // rawUrl is already normalized above — don't re-normalize, which would
-    // re-read ELIZAOS_CLOUD_BASE_URL and could produce a different URL than
+    // re-read TOKAGENTOS_CLOUD_BASE_URL and could produce a different URL than
     // the one we just validated.
-    this.client = new ElizaCloudClient(rawUrl, apiKey);
+    this.client = new TokagentCloudClient(rawUrl, apiKey);
     logger.info(`[cloud-manager] Client initialised (baseUrl=${rawUrl})`);
   }
 
@@ -132,7 +132,7 @@ export class CloudManager {
   getProxy(): CloudRuntimeProxy | null {
     return this.proxy;
   }
-  getClient(): ElizaCloudClient | null {
+  getClient(): TokagentCloudClient | null {
     return this.client;
   }
   getActiveAgentId(): string | null {

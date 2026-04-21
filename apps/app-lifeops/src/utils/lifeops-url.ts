@@ -1,4 +1,4 @@
-import { client } from "@elizaos/app-core/api";
+import { client } from "@tokagentos/app-core/api";
 
 function resolveLocationOrigin(): string | null {
   if (

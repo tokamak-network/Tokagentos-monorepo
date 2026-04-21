@@ -1,9 +1,9 @@
 import type {
   CloudConfigLike,
   CloudStatusRouteContext,
-} from "@elizaos/agent/api/cloud-status-routes";
-import type { ElizaConfig } from "@elizaos/agent/config/types";
-import { isElizaCloudServiceSelectedInConfig } from "@elizaos/shared/contracts";
+} from "@tokagentos/agent/api/cloud-status-routes";
+import type { TokagentConfig } from "@tokagentos/agent/config/types";
+import { isTokagentCloudServiceSelectedInConfig } from "@tokagentos/shared/contracts";
 import {
   CLOUD_BILLING_URL,
   fetchUnifiedCloudCredits,
@@ -16,11 +16,11 @@ export async function handleCloudStatusRoutes(
   ctx: CloudStatusRouteContext,
 ): Promise<boolean> {
   const { res, method, pathname, config, runtime, json } = ctx;
-  const typedConfig = config as ElizaConfig;
+  const typedConfig = config as TokagentConfig;
 
   if (method === "GET" && pathname === "/api/cloud/status") {
     const snapshot = resolveCloudConnectionSnapshot(typedConfig, runtime);
-    const cloudVoiceProxyAvailable = isElizaCloudServiceSelectedInConfig(
+    const cloudVoiceProxyAvailable = isTokagentCloudServiceSelectedInConfig(
       typedConfig as Record<string, unknown>,
       "tts",
     );

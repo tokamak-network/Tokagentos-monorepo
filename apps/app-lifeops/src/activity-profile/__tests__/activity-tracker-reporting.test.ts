@@ -1,7 +1,7 @@
 import { PGlite } from "@electric-sql/pglite";
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   insertActivityEvent,

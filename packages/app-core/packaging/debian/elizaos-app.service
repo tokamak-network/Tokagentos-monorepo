@@ -1,12 +1,12 @@
 [Unit]
-Description=elizaOS App — Personal AI Assistant
-Documentation=https://github.com/elizaos/elizaos-app
+Description=tokagentOS App — Personal AI Assistant
+Documentation=https://github.com/tokagentos/tokagentos-app
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/elizaos-app start
+ExecStart=/usr/bin/tokagentos-app start
 Restart=on-failure
 RestartSec=5
 Environment=NODE_ENV=production

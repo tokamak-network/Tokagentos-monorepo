@@ -1,8 +1,8 @@
-//! XML parsing utilities for elizaOS (core).
+//! XML parsing utilities for tokagentOS (core).
 //!
 //! This module provides utilities for parsing XML responses from LLM models.
 //! It is intentionally lightweight (string scanning) and tailored to the
-//! simple XML emitted by elizaOS prompts.
+//! simple XML emitted by tokagentOS prompts.
 
 use std::collections::HashMap;
 

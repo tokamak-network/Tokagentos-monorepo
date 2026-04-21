@@ -12,10 +12,10 @@ import sys
 from decimal import Decimal
 from pathlib import Path
 
-from elizaos_vending_bench.agent import LLMProvider
-from elizaos_vending_bench.reporting import VendingBenchReporter
-from elizaos_vending_bench.runner import VendingBenchRunner
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.agent import LLMProvider
+from tokagentos_vending_bench.reporting import VendingBenchReporter
+from tokagentos_vending_bench.runner import VendingBenchRunner
+from tokagentos_vending_bench.types import (
     CoherenceError,
     CoherenceErrorType,
     LeaderboardComparison,
@@ -50,7 +50,7 @@ def setup_logging(verbose: bool = False) -> None:
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
-        description="Run the Vending-Bench benchmark for ElizaOS",
+        description="Run the Vending-Bench benchmark for TokagentOS",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -190,7 +190,7 @@ async def run_benchmark(args: argparse.Namespace) -> int:
     llm_provider: LLMProvider | None = None
     if args.provider == "openai":
         try:
-            from elizaos_vending_bench.providers.openai import OpenAIProvider
+            from tokagentos_vending_bench.providers.openai import OpenAIProvider
 
             llm_provider = OpenAIProvider(
                 api_key=args.api_key,
@@ -204,7 +204,7 @@ async def run_benchmark(args: argparse.Namespace) -> int:
 
     elif args.provider == "anthropic":
         try:
-            from elizaos_vending_bench.providers.anthropic import AnthropicProvider
+            from tokagentos_vending_bench.providers.anthropic import AnthropicProvider
 
             llm_provider = AnthropicProvider(
                 api_key=args.api_key,
@@ -471,7 +471,7 @@ def generate_report_from_results(args: argparse.Namespace) -> int:
 def show_info() -> int:
     """Show benchmark information."""
     print("""
-Vending-Bench Benchmark for ElizaOS
+Vending-Bench Benchmark for TokagentOS
 ===================================
 
 Vending-Bench evaluates LLM agents on long-term coherence by simulating

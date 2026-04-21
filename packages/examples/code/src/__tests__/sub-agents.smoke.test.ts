@@ -1,6 +1,6 @@
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import { describe, expect, test } from "vitest";
-import { ElizaOSNativeSubAgent } from "../lib/sub-agents/elizaos-native-sub-agent.js";
+import { TokagentOSNativeSubAgent } from "../lib/sub-agents/tokagentos-native-sub-agent.js";
 import { OpenCodeSubAgent } from "../lib/sub-agents/opencode-sub-agent.js";
 import { SweAgentSubAgent } from "../lib/sub-agents/sweagent-sub-agent.js";
 import type { SubAgentContext, SubAgentTool } from "../lib/sub-agents/types.js";
@@ -56,7 +56,7 @@ function baseContext(
 
 describe("sub-agent smoke", () => {
   test("OpenCodeSubAgent completes on DONE response", async () => {
-    delete process.env.ELIZA_CODE_OPENCODE_PREFER_CLI;
+    delete process.env.TOKAGENT_CODE_OPENCODE_PREFER_CLI;
     const agent = new OpenCodeSubAgent({ maxIterations: 3, preferCli: false });
     const runtime = createRuntimeAlwaysDone();
     const result = await agent.execute(
@@ -67,8 +67,8 @@ describe("sub-agent smoke", () => {
     expect(result.summary.toLowerCase()).toContain("ok");
   });
 
-  test("ElizaOSNativeSubAgent completes on DONE response", async () => {
-    const agent = new ElizaOSNativeSubAgent({
+  test("TokagentOSNativeSubAgent completes on DONE response", async () => {
+    const agent = new TokagentOSNativeSubAgent({
       maxIterations: 3,
       enableThinking: false,
     });

@@ -1,7 +1,7 @@
 """Tests for context benchmark types."""
 
 
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.types import (
     LEADERBOARD_SCORES,
     ContextBenchConfig,
     ContextBenchResult,

@@ -2,7 +2,7 @@
  * @module form
  * @description Guardrails for agent-guided user journeys
  *
- * Conversational forms for data collection in elizaOS.
+ * Conversational forms for data collection in tokagentOS.
  */
 
 // ============================================================================
@@ -120,7 +120,7 @@ export { C, ControlBuilder, Form, FormBuilder } from "./builder.ts";
 // ============================================================================
 
 // FormService is lazy-loaded in advancedServices (advanced-capabilities/index.ts)
-// to avoid circular dependency with @elizaos/core
+// to avoid circular dependency with @tokagentos/core
 export type { FormService } from "./service.ts";
 
 // ============================================================================

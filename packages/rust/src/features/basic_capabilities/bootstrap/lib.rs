@@ -1,6 +1,6 @@
-//! elizaOS BasicCapabilities Plugin - Rust implementation.
+//! tokagentOS BasicCapabilities Plugin - Rust implementation.
 //!
-//! This crate provides the core basic_capabilities functionality for elizaOS agents,
+//! This crate provides the core basic_capabilities functionality for tokagentOS agents,
 //! including actions, providers, evaluators, and services.
 //!
 //! # Features
@@ -13,7 +13,7 @@
 //! # Usage
 //!
 //! ```rust,ignore
-//! use elizaos_plugin_basic_capabilities::{BasicCapabilitiesPlugin, CapabilityConfig};
+//! use tokagentos_plugin_basic_capabilities::{BasicCapabilitiesPlugin, CapabilityConfig};
 //!
 //! // Default (basic capabilities only)
 //! let plugin = BasicCapabilitiesPlugin::new();
@@ -76,7 +76,7 @@ impl BasicCapabilitiesPlugin {
 
         Self {
             name: "basic_capabilities",
-            description: "elizaOS BasicCapabilities Plugin - Rust implementation of core agent actions, providers, evaluators, and services",
+            description: "tokagentOS BasicCapabilities Plugin - Rust implementation of core agent actions, providers, evaluators, and services",
             actions,
             providers,
             evaluators,

@@ -16,7 +16,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import {
   BarChart3,
   ChevronLeft,
@@ -29,7 +29,7 @@ import {
   WifiOff,
 } from "lucide-react";
 import { useState } from "react";
-import type { OverlayAppContext } from "@elizaos/app-core";
+import type { OverlayAppContext } from "@tokagentos/app-core";
 import { CustomersPanel } from "./CustomersPanel";
 import { InventoryLevelsPanel } from "./InventoryLevelsPanel";
 import { OrdersPanel } from "./OrdersPanel";

@@ -10,13 +10,13 @@ describe("Cloud login persist real route coverage", () => {
   let runtimeResult: Awaited<ReturnType<typeof createRealTestRuntime>> | null =
     null;
   let server: Awaited<ReturnType<typeof startApiServer>> | null = null;
-  const previousCloudApiKey = process.env.ELIZAOS_CLOUD_API_KEY;
-  const previousCloudEnabled = process.env.ELIZAOS_CLOUD_ENABLED;
+  const previousCloudApiKey = process.env.TOKAGENTOS_CLOUD_API_KEY;
+  const previousCloudEnabled = process.env.TOKAGENTOS_CLOUD_ENABLED;
 
   beforeAll(async () => {
     configEnv = useIsolatedConfigEnv("cloud-login-persist-");
-    delete process.env.ELIZAOS_CLOUD_API_KEY;
-    delete process.env.ELIZAOS_CLOUD_ENABLED;
+    delete process.env.TOKAGENTOS_CLOUD_API_KEY;
+    delete process.env.TOKAGENTOS_CLOUD_ENABLED;
     runtimeResult = await createRealTestRuntime({
       characterName: "CloudLoginPersistLive",
     });
@@ -33,15 +33,15 @@ describe("Cloud login persist real route coverage", () => {
     await configEnv?.restore().catch(() => undefined);
 
     if (previousCloudApiKey === undefined) {
-      delete process.env.ELIZAOS_CLOUD_API_KEY;
+      delete process.env.TOKAGENTOS_CLOUD_API_KEY;
     } else {
-      process.env.ELIZAOS_CLOUD_API_KEY = previousCloudApiKey;
+      process.env.TOKAGENTOS_CLOUD_API_KEY = previousCloudApiKey;
     }
 
     if (previousCloudEnabled === undefined) {
-      delete process.env.ELIZAOS_CLOUD_ENABLED;
+      delete process.env.TOKAGENTOS_CLOUD_ENABLED;
     } else {
-      process.env.ELIZAOS_CLOUD_ENABLED = previousCloudEnabled;
+      process.env.TOKAGENTOS_CLOUD_ENABLED = previousCloudEnabled;
     }
   });
 
@@ -63,7 +63,7 @@ describe("Cloud login persist real route coverage", () => {
     };
     expect(savedConfig.cloud?.apiKey).toBe("cloud-api-key-test");
     expect(
-      runtimeResult?.runtime.character.secrets?.ELIZAOS_CLOUD_API_KEY,
+      runtimeResult?.runtime.character.secrets?.TOKAGENTOS_CLOUD_API_KEY,
     ).toBe("cloud-api-key-test");
   });
 });

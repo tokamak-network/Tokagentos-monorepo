@@ -24,8 +24,8 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 
 type RoleGate = "user" | "admin" | "owner";
 
@@ -63,7 +63,7 @@ const ROLE_GATED_PLUGINS: Readonly<Record<string, RoleGate>> = {
   cron: "admin",
 
   // Cloud — provisioning, billing, agent lifecycle
-  elizaOSCloud: "admin",
+  tokagentOSCloud: "admin",
 
   // Clipboard — floor is "user" for reads; writes elevated below
   clipboard: "user",
@@ -108,7 +108,7 @@ const ACTION_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
   DELETE_CRON: "owner",
   UPDATE_CRON: "owner",
 
-  // --- plugin-elizacloud: provisioning/billing are owner ---
+  // --- plugin-tokagentcloud: provisioning/billing are owner ---
   PROVISION_CLOUD_AGENT: "owner",
   FREEZE_CLOUD_AGENT: "owner",
   RESUME_CLOUD_AGENT: "owner",
@@ -169,10 +169,10 @@ const PROVIDER_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
   cronContext: "admin",
 
   // Cloud
-  elizacloud_status: "admin",
-  elizacloud_credits: "admin",
-  elizacloud_health: "admin",
-  elizacloud_models: "admin",
+  tokagentcloud_status: "admin",
+  tokagentcloud_credits: "admin",
+  tokagentcloud_health: "admin",
+  tokagentcloud_models: "admin",
 
   // Clipboard
   clipboard: "admin",

@@ -12,10 +12,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Proto files are in the @schemas package, relative to this crate
     let schemas_dir = PathBuf::from("../@schemas");
-    let proto_dir = schemas_dir.join("eliza/v1");
+    let proto_dir = schemas_dir.join("tokagent/v1");
 
     // Check for bundled proto files (included in crates.io package)
-    let bundled_proto_dir = PathBuf::from("proto/eliza/v1");
+    let bundled_proto_dir = PathBuf::from("proto/tokagent/v1");
 
     let (proto_files, include_dir): (Vec<PathBuf>, PathBuf) = if bundled_proto_dir.exists() {
         // Use bundled protos (crates.io build)
@@ -48,7 +48,7 @@ pub struct Uuid {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct DefaultUuid {}
 "#;
-        fs::write(out_dir.join("eliza.v1.rs"), stub)?;
+        fs::write(out_dir.join("tokagent.v1.rs"), stub)?;
         println!("cargo:warning=Proto files not found, using stub types");
         return Ok(());
     };

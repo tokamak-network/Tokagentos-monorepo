@@ -62,7 +62,7 @@ class MINTRunner:
 
         Args:
             config: Benchmark configuration
-            runtime: Optional ElizaOS runtime for model interactions
+            runtime: Optional TokagentOS runtime for model interactions
         """
         # Validate config
         if config.max_turns < 1:
@@ -75,12 +75,12 @@ class MINTRunner:
         if runtime is not None and isinstance(runtime, ModelRuntime):
             self._runtime = runtime
 
-        # Optional: elizaOS trajectory logger plugin service (Python)
+        # Optional: tokagentOS trajectory logger plugin service (Python)
         self._trajectory_logger_service: object | None = trajectory_logger_service
         self._trajectory_dataset: str = trajectory_dataset
         self._trajectory_ids: list[str] = []
 
-        # MINT uses the canonical Eliza runtime via message_service.handle_message().
+        # MINT uses the canonical Tokagent runtime via message_service.handle_message().
         # The MINT plugin (EXECUTE_CODE action + MINT_CONTEXT provider) is registered
         # at runtime creation time. Core runtime logs providers + LLM calls automatically.
 
@@ -222,16 +222,16 @@ class MINTRunner:
         if self.config.generate_report:
             await self._save_results(results)
 
-        # Export elizaOS trajectories (ART + GRPO) for training use.
+        # Export tokagentOS trajectories (ART + GRPO) for training use.
         if self._trajectory_logger_service is not None and self._trajectory_ids:
             try:
                 # Prefer the plugin service export API if available.
-                from elizaos_plugin_trajectory_logger.runtime_service import (
+                from tokagentos_plugin_trajectory_logger.runtime_service import (
                     TrajectoryExportConfig,
                     TrajectoryLoggerRuntimeService,
                 )
 
-                out_dir = Path(self.config.output_dir) / "eliza_trajectories"
+                out_dir = Path(self.config.output_dir) / "tokagent_trajectories"
                 out_dir.mkdir(parents=True, exist_ok=True)
 
                 svc = self._trajectory_logger_service
@@ -258,7 +258,7 @@ class MINTRunner:
                         f"art={art_res.dataset_url} grpo={grpo_res.dataset_url}"
                     )
             except Exception as e:
-                logger.warning(f"[MINTRunner] Failed to export elizaOS trajectories: {e}")
+                logger.warning(f"[MINTRunner] Failed to export tokagentOS trajectories: {e}")
 
         logger.info(
             f"[MINTRunner] Benchmark completed in {duration:.1f}s. "
@@ -284,7 +284,7 @@ class MINTRunner:
                     f"[MINTRunner] [{name}] Task {i + 1}/{len(tasks)}: {task.id}"
                 )
 
-                # Reset agent session for each task (canonical Eliza: new room per task)
+                # Reset agent session for each task (canonical Tokagent: new room per task)
                 self.agent.reset_session()
 
                 # Solve the task

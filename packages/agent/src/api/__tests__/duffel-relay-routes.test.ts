@@ -92,10 +92,10 @@ describe("duffel relay route", () => {
     globalThis.fetch = ORIGINAL_FETCH;
   });
 
-  it("returns 401 when no Eliza Cloud API key is available", async () => {
+  it("returns 401 when no Tokagent Cloud API key is available", async () => {
     const { res, readBody, getStatus } = makeResponseCollector();
     const state: DuffelRelayRouteState = {
-      config: { cloud: { baseUrl: "https://www.elizacloud.ai" } },
+      config: { cloud: { baseUrl: "https://www.tokagentcloud.ai" } },
       runtime: undefined,
     };
     const handled = await handleDuffelRelayRoute(
@@ -107,13 +107,13 @@ describe("duffel relay route", () => {
     );
     expect(handled).toBe(true);
     expect(getStatus()).toBe(401);
-    expect(readBody<{ error: string }>().error).toMatch(/Eliza Cloud/);
+    expect(readBody<{ error: string }>().error).toMatch(/Tokagent Cloud/);
   });
 
   it("returns 404 for unknown duffel relay subpaths", async () => {
     const { res, readBody, getStatus } = makeResponseCollector();
     const state: DuffelRelayRouteState = {
-      config: { cloud: { baseUrl: "https://www.elizacloud.ai" } },
+      config: { cloud: { baseUrl: "https://www.tokagentcloud.ai" } },
       runtime: makeRuntimeWithCloudAuth("k"),
     };
     const handled = await handleDuffelRelayRoute(
@@ -154,7 +154,7 @@ describe("duffel relay route", () => {
     const state: DuffelRelayRouteState = {
       config: {
         cloud: {
-          baseUrl: "https://www.elizacloud.ai",
+          baseUrl: "https://www.tokagentcloud.ai",
           serviceKey: "svc-key",
         },
       },
@@ -173,7 +173,7 @@ describe("duffel relay route", () => {
     expect(handled).toBe(true);
     expect(getStatus()).toBe(200);
     expect(capturedUrl).toBe(
-      "https://www.elizacloud.ai/api/v1/duffel/offer-requests",
+      "https://www.tokagentcloud.ai/api/v1/duffel/offer-requests",
     );
     const headers = (capturedInit?.headers ?? {}) as Record<string, string>;
     expect(headers.Authorization).toBe("Bearer user-session-key");
@@ -191,7 +191,7 @@ describe("duffel relay route", () => {
   it("forwards GET /offers/:id upstream and propagates upstream status on failure", async () => {
     const fetchMock = makeFetchMock(async (input) => {
       expect(String(input)).toBe(
-        "https://www.elizacloud.ai/api/v1/duffel/offers/off_xyz",
+        "https://www.tokagentcloud.ai/api/v1/duffel/offers/off_xyz",
       );
       return new Response(
         JSON.stringify({ error: "insufficient_credits" }),
@@ -202,7 +202,7 @@ describe("duffel relay route", () => {
 
     const { res, readBody, getStatus } = makeResponseCollector();
     const state: DuffelRelayRouteState = {
-      config: { cloud: { baseUrl: "https://www.elizacloud.ai" } },
+      config: { cloud: { baseUrl: "https://www.tokagentcloud.ai" } },
       runtime: makeRuntimeWithCloudAuth("k"),
     };
     const handled = await handleDuffelRelayRoute(
@@ -247,7 +247,7 @@ describe("duffel relay route", () => {
 
     const { res, headers, readBody, getStatus } = makeResponseCollector();
     const state: DuffelRelayRouteState = {
-      config: { cloud: { baseUrl: "https://www.elizacloud.ai" } },
+      config: { cloud: { baseUrl: "https://www.tokagentcloud.ai" } },
       runtime: makeRuntimeWithCloudAuth("k"),
     };
     const handled = await handleDuffelRelayRoute(
@@ -270,7 +270,7 @@ describe("duffel relay route", () => {
   it("returns false (does not handle) for unrelated cloud paths", async () => {
     const { res } = makeResponseCollector();
     const state: DuffelRelayRouteState = {
-      config: { cloud: { baseUrl: "https://www.elizacloud.ai" } },
+      config: { cloud: { baseUrl: "https://www.tokagentcloud.ai" } },
       runtime: makeRuntimeWithCloudAuth("k"),
     };
     const handled = await handleDuffelRelayRoute(

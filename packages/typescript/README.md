@@ -1,8 +1,8 @@
-# @elizaos/core
+# @tokagentos/core
 
 ## Overview
 
-The `@elizaos/core` package provides a robust foundation for building AI agents with dynamic interaction capabilities. It enables agents to manage entities, memories, and context, and to interact with external systems, going beyond simple message responses to handle complex scenarios and execute tasks effectively.
+The `@tokagentos/core` package provides a robust foundation for building AI agents with dynamic interaction capabilities. It enables agents to manage entities, memories, and context, and to interact with external systems, going beyond simple message responses to handle complex scenarios and execute tasks effectively.
 
 ## Key Features
 
@@ -16,12 +16,12 @@ The `@elizaos/core` package provides a robust foundation for building AI agents 
 
 ## Installation
 
-1.  Add `@elizaos/core` to your `agent/package.json` dependencies:
+1.  Add `@tokagentos/core` to your `agent/package.json` dependencies:
 
     ```json
     {
       "dependencies": {
-        "@elizaos/core": "workspace:*"
+        "@tokagentos/core": "workspace:*"
       }
     }
     ```
@@ -38,7 +38,7 @@ The `@elizaos/core` package provides a robust foundation for building AI agents 
 
 ## Browser and Node.js Compatibility
 
-The `@elizaos/core` package features a dual build system that provides optimized builds for both Node.js and browser environments:
+The `@tokagentos/core` package features a dual build system that provides optimized builds for both Node.js and browser environments:
 
 - **Node.js Build**: Full API surface with all features including server utilities
 - **Browser Build**: Optimized, minified build with browser-safe APIs and polyfills
@@ -53,7 +53,7 @@ The dual build system uses conditional exports in package.json to automatically 
 
 ## Configuration
 
-The following environment variables are used by `@elizaos/core`. Configure them in a `.env` file at your project root.
+The following environment variables are used by `@tokagentos/core`. Configure them in a `.env` file at your project root.
 
 - `LOG_LEVEL`: Logging verbosity (e.g., 'debug', 'info', 'error').
 - `LOG_DIAGNOSTIC`: Enable/disable diagnostic logging (`true`/`false`).
@@ -96,7 +96,7 @@ SENTRY_SEND_DEFAULT_PII=true
 Key behaviors and APIs are documented with their **reasons** so future changes stay consistent with intent:
 
 - **[docs/DESIGN.md](docs/DESIGN.md)** — Design decisions: message races, provider timeout, keepExistingResponses, JSON5, formatPosts fallbacks, HandlerCallback actionName, anxiety provider, file logging, batch-queue consolidation, and what we don’t do.
-- **[docs/BATCH_QUEUE.md](docs/BATCH_QUEUE.md)** — Why `utils/batch-queue` exists (forward-looking consolidation vs one-line fixes), layer breakdown (`PriorityQueue` / `BatchProcessor` / `TaskDrain` / `BatchQueue`), and where each is used. Published copy: [docs.elizaos.ai/runtime/batch-queue](https://docs.elizaos.ai/runtime/batch-queue).
+- **[docs/BATCH_QUEUE.md](docs/BATCH_QUEUE.md)** — Why `utils/batch-queue` exists (forward-looking consolidation vs one-line fixes), layer breakdown (`PriorityQueue` / `BatchProcessor` / `TaskDrain` / `BatchQueue`), and where each is used. Published copy: [docs.tokagentos.ai/runtime/batch-queue](https://docs.tokagentos.ai/runtime/batch-queue).
 - **[docs/PIPELINE_HOOKS.md](docs/PIPELINE_HOOKS.md)** — Unified pipeline hooks: phases, `outgoing_before_deliver` (sources, streaming, secrets), Node stream dedupe (`useModel` vs message service), DPE traces/score hooks, observability, contributor checklist.
 - **[CHANGELOG.md](CHANGELOG.md)** — Per-change notes with WHY for each addition or fix.
 - **[ROADMAP.md](ROADMAP.md)** — Planned work and rationale (observability, robustness, API consistency, performance). Shipped items remain documented in CHANGELOG and design docs.
@@ -105,7 +105,7 @@ When adding or changing behavior, update these docs so the WHY stays accurate.
 
 ### Shared config helpers (WHY)
 
-`@elizaos/core` now exports a small config-loading helper layer for the repeated setup work that many plugins need:
+`@tokagentos/core` now exports a small config-loading helper layer for the repeated setup work that many plugins need:
 
 - `resolveSettingRaw()`
 - `collectSettings()`
@@ -117,7 +117,7 @@ When adding or changing behavior, update these docs so the WHY stays accurate.
 - `formatConfigErrors()`
 - `loadPluginConfig()`
 
-These helpers live in `src/utils/plugin-config.ts` and are re-exported from `@elizaos/core`.
+These helpers live in `src/utils/plugin-config.ts` and are re-exported from `@tokagentos/core`.
 
 **Why this exists:** many plugins need the same boring plumbing:
 
@@ -145,7 +145,7 @@ import {
   collectSettings,
   loadPluginConfig,
   type SettingSourceOptions,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { z } from "zod";
 
 const schema = z.object({
@@ -211,11 +211,11 @@ For more detail, implementer pitfalls, and rollback, see [docs/PROMPT_CACHE_HINT
 
 ## Core Architecture
 
-`@elizaos/core` is built around a few key concepts that work together within the `AgentRuntime`.
+`@tokagentos/core` is built around a few key concepts that work together within the `AgentRuntime`.
 
 ### Unified Prompt Batcher
 
-`@elizaos/core` now includes a unified prompt batching subsystem on `runtime.promptBatcher`.
+`@tokagentos/core` now includes a unified prompt batching subsystem on `runtime.promptBatcher`.
 
 Why this exists:
 
@@ -331,10 +331,10 @@ The runtime talks to persistence through the `IDatabaseAdapter` interface. Adapt
 
 ### Initializing with `corePlugin`
 
-The `corePlugin` bundles essential actions, providers, and evaluators from `@elizaos/core`. To use it, add it to the `AgentRuntime` during initialization:
+The `corePlugin` bundles essential actions, providers, and evaluators from `@tokagentos/core`. To use it, add it to the `AgentRuntime` during initialization:
 
 ```typescript
-import { AgentRuntime, corePlugin } from "@elizaos/core";
+import { AgentRuntime, corePlugin } from "@tokagentos/core";
 
 const agentRuntime = new AgentRuntime({
   plugins: [
@@ -382,7 +382,7 @@ For detailed instructions on creating and registering plugins and actions, refer
 
 ### Running Tests
 
-The `@elizaos/core` package uses **vitest** for testing.
+The `@tokagentos/core` package uses **vitest** for testing.
 
 1.  **Prerequisites**:
     - Ensure `bun` is installed (`npm install -g bun`).
@@ -400,7 +400,7 @@ The `@elizaos/core` package uses **vitest** for testing.
 
 ### TODO Items
 
-The following improvements and features are planned for `@elizaos/core`:
+The following improvements and features are planned for `@tokagentos/core`:
 
 - **Feature**: Add ability for plugins to register their sources (Context: Exporting a default `sendMessageAction`).
 - **Enhancement**: Improve formatting of posts (Context: Returning formatted posts joined by a newline).

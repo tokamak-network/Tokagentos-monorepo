@@ -98,7 +98,7 @@ function collectWorkspaceVersions(rootDir) {
     path.join(rootDir, "packages"),
     path.join(rootDir, "plugins"),
     path.join(rootDir, "apps"),
-    path.join(rootDir, "eliza", "packages"),
+    path.join(rootDir, "tokagent", "packages"),
     path.join(rootDir, "apps", "app", "plugins"),
   ];
   const versions = new Map();

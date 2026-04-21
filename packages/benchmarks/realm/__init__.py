@@ -1,5 +1,5 @@
 """
-REALM-Bench: Real-World Planning Benchmark for ElizaOS
+REALM-Bench: Real-World Planning Benchmark for TokagentOS
 
 This benchmark evaluates the planning capabilities of LLM-based agents
 on complex, real-world tasks requiring multi-step reasoning and execution.
@@ -29,13 +29,13 @@ from benchmarks.realm.dataset import REALMDataset
 from benchmarks.realm.agent import (
     REALMAgent,
     MockREALMAgent,
-    ELIZAOS_AVAILABLE,
+    TOKAGENTOS_AVAILABLE,
     TRAJECTORY_LOGGER_AVAILABLE,
 )
 from benchmarks.realm.evaluator import REALMEvaluator, MetricsCalculator
 from benchmarks.realm.runner import REALMRunner
 
-# Plugin components (optional - requires ElizaOS)
+# Plugin components (optional - requires TokagentOS)
 try:
     from benchmarks.realm.plugin import realm_plugin, create_realm_plugin
     REALM_PLUGIN_AVAILABLE = True
@@ -69,7 +69,7 @@ __all__ = [
     "MetricsCalculator",
     "REALMRunner",
     # Availability flags
-    "ELIZAOS_AVAILABLE",
+    "TOKAGENTOS_AVAILABLE",
     "REALM_PLUGIN_AVAILABLE",
     "TRAJECTORY_LOGGER_AVAILABLE",
     # Plugin (optional)

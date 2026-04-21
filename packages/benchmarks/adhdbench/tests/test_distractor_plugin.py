@@ -1,6 +1,6 @@
 """Tests for the distractor plugin."""
 
-from elizaos_adhdbench.distractor_plugin import (
+from tokagentos_adhdbench.distractor_plugin import (
     ALL_DISTRACTOR_SPECS,
     DEFI_ACTIONS,
     SOCIAL_ACTIONS,

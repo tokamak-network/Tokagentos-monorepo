@@ -1,4 +1,4 @@
-import { getStylePresets } from "@elizaos/shared/onboarding-presets";
+import { getStylePresets } from "@tokagentos/shared/onboarding-presets";
 
 function normalizeGreetingAnimationPath(path: string | null | undefined) {
   const trimmed = path?.trim();

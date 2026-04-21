@@ -9,8 +9,8 @@ import type {
 
 export const coreStatusAction: Action = {
 	name: "CORE_STATUS",
-	description: "Check thestatus of the @elizaos/core package (ejected or npm)",
-	similes: ["core status", "check core", "is core ejected", "elizaos status"],
+	description: "Check thestatus of the @tokagentos/core package (ejected or npm)",
+	similes: ["core status", "check core", "is core ejected", "tokagentos status"],
 
 	examples: [
 		[

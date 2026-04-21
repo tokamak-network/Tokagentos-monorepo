@@ -6,8 +6,8 @@ import {
   type HandlerOptions,
   type IAgentRuntime,
   type Memory,
-} from "@elizaos/core";
-import { hasAdminAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasAdminAccess } from "@tokagentos/agent/security";
 import {
   CalendlyError,
   createCalendlySingleUseLink,
@@ -244,7 +244,7 @@ export const calendlyAction: Action = {
     const credentials = readCalendlyCredentialsFromEnv();
     if (!credentials) {
       return failure(
-        "Calendly is not configured. Set ELIZA_CALENDLY_TOKEN.",
+        "Calendly is not configured. Set TOKAGENT_CALENDLY_TOKEN.",
         "CALENDLY_NOT_CONFIGURED",
       );
     }

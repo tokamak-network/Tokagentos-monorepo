@@ -1,12 +1,12 @@
 param(
   [string]$ArtifactsDir = $(
     if ($env:MILADY_TEST_WINDOWS_ARTIFACTS_DIR) { $env:MILADY_TEST_WINDOWS_ARTIFACTS_DIR }
-    elseif ($env:ELIZA_TEST_WINDOWS_ARTIFACTS_DIR) { $env:ELIZA_TEST_WINDOWS_ARTIFACTS_DIR }
+    elseif ($env:TOKAGENT_TEST_WINDOWS_ARTIFACTS_DIR) { $env:TOKAGENT_TEST_WINDOWS_ARTIFACTS_DIR }
     else { Join-Path $PSScriptRoot "..\\artifacts" }
   ),
   [string]$BuildDir = $(
     if ($env:MILADY_TEST_WINDOWS_BUILD_DIR) { $env:MILADY_TEST_WINDOWS_BUILD_DIR }
-    elseif ($env:ELIZA_TEST_WINDOWS_BUILD_DIR) { $env:ELIZA_TEST_WINDOWS_BUILD_DIR }
+    elseif ($env:TOKAGENT_TEST_WINDOWS_BUILD_DIR) { $env:TOKAGENT_TEST_WINDOWS_BUILD_DIR }
     else { Join-Path $PSScriptRoot "..\\build" }
   ),
   [int]$BackendPort = 2138,
@@ -54,19 +54,19 @@ if ($env:GITHUB_ENV) {
   Add-Content -Path $env:GITHUB_ENV -Value "PGLITE_DATA_DIR=$pgliteDataDir"
 }
 # Milady writes its startup log to AppData\Roaming\Milady on Windows, but the
-# release workflow still exports the legacy Eliza paths/env vars for contract
+# release workflow still exports the legacy Tokagent paths/env vars for contract
 # compatibility.
-$legacyStartupLog = Join-Path $env:APPDATA "Eliza\\eliza-startup.log"
+$legacyStartupLog = Join-Path $env:APPDATA "Tokagent\\tokagent-startup.log"
 $startupLog = Join-Path $env:APPDATA "Milady\\milady-startup.log"
 $startupLogs = @($startupLog, $legacyStartupLog) | Select-Object -Unique
 $selfExtractionRoot = Join-Path $env:LOCALAPPDATA "com.miladyai.milady"
 $tempExtractDir = Join-Path $tempRoot ("milady-windows-smoke-" + [Guid]::NewGuid().ToString("N"))
 $persistLauncherDir = $env:MILADY_TEST_WINDOWS_LAUNCHER_DIR
-$persistLauncherPathFile = $env:ELIZA_TEST_WINDOWS_LAUNCHER_PATH_FILE
+$persistLauncherPathFile = $env:TOKAGENT_TEST_WINDOWS_LAUNCHER_PATH_FILE
 if ([string]::IsNullOrWhiteSpace($persistLauncherPathFile)) {
   $persistLauncherPathFile = $env:MILADY_TEST_WINDOWS_LAUNCHER_PATH_FILE
 }
-$startupSessionId = "eliza-windows-smoke-" + [Guid]::NewGuid().ToString("N")
+$startupSessionId = "tokagent-windows-smoke-" + [Guid]::NewGuid().ToString("N")
 $startupStateFile = Join-Path $tempRoot ($startupSessionId + ".state.json")
 $startupEventsFile = Join-Path $tempRoot ($startupSessionId + ".events.jsonl")
 $startupBootstrapFile = $null
@@ -143,7 +143,7 @@ function Stop-MiladyProcesses() {
       (
         $_.ProcessName -in @("launcher", "bun") -or
         $_.ProcessName -like "Milady*" -or
-        $_.ProcessName -like "ElizaOSApp-Setup*"
+        $_.ProcessName -like "TokagentOSApp-Setup*"
       )
     } |
     Stop-Process -Force
@@ -367,14 +367,14 @@ Write-Host "Smoke LOCALAPPDATA: $($env:LOCALAPPDATA)"
 Stop-MiladyProcesses
 $env:ELECTROBUN_CONSOLE = "1"
 $env:MILADY_FORCE_AUTOSTART_AGENT = "1"
-$env:ELIZA_STARTUP_SESSION_ID = $startupSessionId
+$env:TOKAGENT_STARTUP_SESSION_ID = $startupSessionId
 $env:MILADY_STARTUP_SESSION_ID = $startupSessionId
 $env:MILADY_STARTUP_STATE_FILE = $startupStateFile
 $env:MILADY_STARTUP_EVENTS_FILE = $startupEventsFile
 $BackendPort = Resolve-BackendPort $BackendPort
 $env:MILADY_API_PORT = "$BackendPort"
-$env:ELIZA_API_PORT = "$BackendPort"
-$env:ELIZA_PORT = "$BackendPort"
+$env:TOKAGENT_API_PORT = "$BackendPort"
+$env:TOKAGENT_PORT = "$BackendPort"
 Write-Host "Smoke backend port: $BackendPort"
 if ($env:GITHUB_ENV) {
   Add-Content -Path $env:GITHUB_ENV -Value "MILADY_TEST_WINDOWS_BACKEND_PORT=$BackendPort"
@@ -400,7 +400,7 @@ $installer = $null
 $installerProcess = $null
 $launcherProcess = $null
 $launcherStarted = $false
-$requireInstaller = $env:ELIZA_WINDOWS_SMOKE_REQUIRE_INSTALLER -eq "1"
+$requireInstaller = $env:TOKAGENT_WINDOWS_SMOKE_REQUIRE_INSTALLER -eq "1"
 if (-not $requireInstaller) {
   $requireInstaller = $env:MILADY_WINDOWS_SMOKE_REQUIRE_INSTALLER -eq "1"
 }
@@ -452,7 +452,7 @@ if (-not $requireInstaller -and -not $launcher) {
 
 # Installer-required runs skip build/tarball reuse and validate the installed package directly.
 if (-not $launcher) {
-  $installer = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "ElizaOSApp-Setup-*.exe" -ErrorAction SilentlyContinue |
+  $installer = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "TokagentOSApp-Setup-*.exe" -ErrorAction SilentlyContinue |
     Select-Object -First 1
 
   if (-not $installer) {
@@ -461,7 +461,7 @@ if (-not $launcher) {
   }
 
   if (-not $installer) {
-    $installerZip = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "ElizaOSApp-Setup-*.exe.zip" -ErrorAction SilentlyContinue |
+    $installerZip = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "TokagentOSApp-Setup-*.exe.zip" -ErrorAction SilentlyContinue |
       Select-Object -First 1
     if (-not $installerZip) {
       $installerZip = Get-ChildItem -Path $resolvedArtifactsDir -File -Filter "*Setup*.zip" -ErrorAction SilentlyContinue |
@@ -668,7 +668,7 @@ function Dump-FailureDiagnostics([int]$Port) {
     "NO_PROXY", "HTTP_PROXY", "HTTPS_PROXY",
     "ELECTROBUN_CONSOLE", "APPDATA", "LOCALAPPDATA",
     "MILADY_TEST_WINDOWS_APPDATA_PATH", "MILADY_TEST_WINDOWS_LOCALAPPDATA_PATH",
-    "MILADY_DESKTOP_TEST_PARTITION", "ELIZA_API_PORT", "ELIZA_PORT"
+    "MILADY_DESKTOP_TEST_PARTITION", "TOKAGENT_API_PORT", "TOKAGENT_PORT"
   )) {
     $val = [System.Environment]::GetEnvironmentVariable($varName)
     if ($varName -eq "ANTHROPIC_API_KEY" -and $val) {

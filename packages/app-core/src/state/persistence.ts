@@ -33,9 +33,9 @@ function tryLocalStorage<T>(fn: () => T, fallback: T): T {
 
 export type { UiTheme } from "./ui-preferences";
 
-const UI_THEME_STORAGE_KEY = "eliza:ui-theme";
-const LEGACY_UI_THEME_STORAGE_KEY = "elizaos:ui-theme";
-const THEME_ID_STORAGE_KEY = "eliza:theme-id";
+const UI_THEME_STORAGE_KEY = "tokagent:ui-theme";
+const LEGACY_UI_THEME_STORAGE_KEY = "tokagentos:ui-theme";
+const THEME_ID_STORAGE_KEY = "tokagent:theme-id";
 const THEME_SWITCHING_ATTRIBUTE = "data-theme-switching";
 let themeSwitchResetFrameId: number | null = null;
 
@@ -89,12 +89,12 @@ export function saveThemeId(themeId: string): void {
   }, undefined);
 }
 
-const COMPANION_VRM_POWER_STORAGE_KEY = "eliza:companion-vrm-power";
-/** Legacy; migrated into `eliza:companion-vrm-power` on first read. */
-const LEGACY_COMPANION_EFFICIENCY_KEY = "eliza:companion-efficiency";
-/** Legacy; migrated into `eliza:companion-vrm-power` on first read. */
+const COMPANION_VRM_POWER_STORAGE_KEY = "tokagent:companion-vrm-power";
+/** Legacy; migrated into `tokagent:companion-vrm-power` on first read. */
+const LEGACY_COMPANION_EFFICIENCY_KEY = "tokagent:companion-efficiency";
+/** Legacy; migrated into `tokagent:companion-vrm-power` on first read. */
 const LEGACY_COMPANION_QUALITY_ON_BATTERY_KEY =
-  "eliza:companion-quality-on-battery";
+  "tokagent:companion-quality-on-battery";
 
 export function normalizeCompanionVrmPowerMode(
   value: unknown,
@@ -150,7 +150,7 @@ export function saveCompanionVrmPowerMode(mode: CompanionVrmPowerMode): void {
   }
 }
 
-const COMPANION_ANIMATE_WHEN_HIDDEN_KEY = "eliza:companion-animate-when-hidden";
+const COMPANION_ANIMATE_WHEN_HIDDEN_KEY = "tokagent:companion-animate-when-hidden";
 
 /** When true, keep the VRM loop running when the document is hidden; 3D environment is hidden. */
 export function loadCompanionAnimateWhenHidden(): boolean {
@@ -172,7 +172,7 @@ export function saveCompanionAnimateWhenHidden(enabled: boolean): void {
   }
 }
 
-const COMPANION_HALF_FRAMERATE_STORAGE_KEY = "eliza:companion-half-framerate";
+const COMPANION_HALF_FRAMERATE_STORAGE_KEY = "tokagent:companion-half-framerate";
 
 const COMPANION_HALF_FRAMERATE_VALUES = new Set<CompanionHalfFramerateMode>([
   "off",
@@ -281,10 +281,10 @@ export function applyUiTheme(theme: UiTheme): void {
   }
 }
 
-const UI_LANGUAGE_STORAGE_KEY = "eliza:ui-language";
-const UI_SHELL_MODE_STORAGE_KEY = "eliza:ui-shell-mode";
-const LAST_NATIVE_TAB_STORAGE_KEY = "eliza:last-native-tab";
-const ONBOARDING_STEP_STORAGE_KEY = "eliza:onboarding:step";
+const UI_LANGUAGE_STORAGE_KEY = "tokagent:ui-language";
+const UI_SHELL_MODE_STORAGE_KEY = "tokagent:ui-shell-mode";
+const LAST_NATIVE_TAB_STORAGE_KEY = "tokagent:last-native-tab";
+const ONBOARDING_STEP_STORAGE_KEY = "tokagent:onboarding:step";
 
 function normalizeOnboardingStep(value: unknown): OnboardingStep | null {
   switch (value) {
@@ -346,7 +346,7 @@ export function clearPersistedOnboardingStep(): void {
 
 /* ── Onboarding completion persistence ────────────────────────────────── */
 
-const ONBOARDING_COMPLETE_STORAGE_KEY = "eliza:onboarding-complete";
+const ONBOARDING_COMPLETE_STORAGE_KEY = "tokagent:onboarding-complete";
 
 export function loadPersistedOnboardingComplete(): boolean {
   try {
@@ -370,8 +370,8 @@ export function savePersistedOnboardingComplete(complete: boolean): void {
 
 /* ── Content pack persistence ───────────────────────────────────────── */
 
-const ACTIVE_PACK_STORAGE_KEY = "elizaos:active-pack-id";
-const ACTIVE_PACK_URL_STORAGE_KEY = "elizaos:active-pack-url";
+const ACTIVE_PACK_STORAGE_KEY = "tokagentos:active-pack-id";
+const ACTIVE_PACK_URL_STORAGE_KEY = "tokagentos:active-pack-url";
 
 export function loadPersistedActivePackId(): string | null {
   return tryLocalStorage(
@@ -485,7 +485,7 @@ export function saveLastNativeTab(tab: Tab): void {
 }
 
 /* ── Avatar persistence ───────────────────────────────────────────────── */
-const AVATAR_INDEX_KEY = "eliza_avatar_index";
+const AVATAR_INDEX_KEY = "tokagent_avatar_index";
 
 export function loadAvatarIndex(): number {
   return tryLocalStorage(() => {
@@ -511,7 +511,7 @@ export function clearAvatarIndex(): void {
 }
 
 /* ── Favorite apps persistence ────────────────────────────────────────── */
-const FAVORITE_APPS_KEY = "eliza:favorite-apps";
+const FAVORITE_APPS_KEY = "tokagent:favorite-apps";
 
 export function loadFavoriteApps(): string[] {
   return tryLocalStorage(() => {
@@ -535,7 +535,7 @@ export function saveFavoriteApps(apps: string[]): void {
 }
 
 /* ── Wallet enabled persistence ─────────────────────────────────────── */
-const WALLET_ENABLED_KEY = "eliza:wallet:enabled";
+const WALLET_ENABLED_KEY = "tokagent:wallet:enabled";
 
 export function loadWalletEnabled(): boolean {
   return tryLocalStorage(() => {
@@ -551,7 +551,7 @@ export function saveWalletEnabled(value: boolean): void {
 }
 
 /* ── Browser enabled persistence ────────────────────────────────────── */
-const BROWSER_ENABLED_KEY = "eliza:browser:enabled";
+const BROWSER_ENABLED_KEY = "tokagent:browser:enabled";
 
 export function loadBrowserEnabled(): boolean {
   return tryLocalStorage(() => {
@@ -567,7 +567,7 @@ export function saveBrowserEnabled(value: boolean): void {
 }
 
 /* ── Computer Use enabled persistence ───────────────────────────────── */
-const COMPUTER_USE_ENABLED_KEY = "eliza:computeruse:enabled";
+const COMPUTER_USE_ENABLED_KEY = "tokagent:computeruse:enabled";
 
 export function loadComputerUseEnabled(): boolean {
   return tryLocalStorage(() => {
@@ -583,8 +583,8 @@ export function saveComputerUseEnabled(value: boolean): void {
 }
 
 /* ── Chat UI persistence ──────────────────────────────────────────────── */
-const CHAT_AVATAR_VISIBLE_KEY = "eliza:chat:avatarVisible";
-const CHAT_VOICE_MUTED_KEY = "eliza:chat:voiceMuted";
+const CHAT_AVATAR_VISIBLE_KEY = "tokagent:chat:avatarVisible";
+const CHAT_VOICE_MUTED_KEY = "tokagent:chat:voiceMuted";
 
 export function loadChatAvatarVisible(): boolean {
   return tryLocalStorage(() => {
@@ -613,9 +613,9 @@ export function saveChatVoiceMuted(value: boolean): void {
 }
 
 /* ── Chat mode persistence ─────────────────────────────────────────────── */
-const CHAT_MODE_KEY = "eliza:chat:mode";
-const ACTIVE_CONVERSATION_ID_KEY = "eliza:chat:activeConversationId";
-const COMPANION_MESSAGE_CUTOFF_TS_KEY = "eliza:chat:companionMessageCutoffTs";
+const CHAT_MODE_KEY = "tokagent:chat:mode";
+const ACTIVE_CONVERSATION_ID_KEY = "tokagent:chat:activeConversationId";
+const COMPANION_MESSAGE_CUTOFF_TS_KEY = "tokagent:chat:companionMessageCutoffTs";
 
 export function loadChatMode(): ConversationMode {
   return tryLocalStorage(() => {
@@ -677,7 +677,7 @@ export interface PersistedActiveServer {
   accessToken?: string;
 }
 
-const ACTIVE_SERVER_STORAGE_KEY = "elizaos:active-server";
+const ACTIVE_SERVER_STORAGE_KEY = "tokagentos:active-server";
 
 function trimPersistedValue(value: unknown): string | undefined {
   if (typeof value !== "string") {
@@ -713,7 +713,7 @@ export function createPersistedActiveServer(args: {
       return {
         id: `cloud:${apiBase ?? "managed"}`,
         kind: "cloud",
-        label: explicitLabel ?? "Eliza Cloud",
+        label: explicitLabel ?? "Tokagent Cloud",
         ...(apiBase ? { apiBase } : {}),
         ...(accessToken ? { accessToken } : {}),
       };

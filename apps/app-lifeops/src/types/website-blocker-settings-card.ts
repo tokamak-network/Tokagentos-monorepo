@@ -1,4 +1,4 @@
 export type {
   WebsiteBlockerSettingsCardProps,
   WebsiteBlockerSettingsMode,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";

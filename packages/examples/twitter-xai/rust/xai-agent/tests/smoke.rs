@@ -1,6 +1,6 @@
 use anyhow::Result;
-use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-use elizaos_plugin_xai::{create_xai_elizaos_plugin, start_x_service};
+use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+use tokagentos_plugin_xai::{create_xai_tokagentos_plugin, start_x_service};
 use std::sync::Arc;
 
 #[tokio::test]
@@ -15,7 +15,7 @@ async fn smoke_startup_without_network() -> Result<()> {
     let runtime = Arc::new(
         AgentRuntime::new(RuntimeOptions {
             check_should_respond: Some(false),
-            plugins: vec![create_xai_elizaos_plugin()?],
+            plugins: vec![create_xai_tokagentos_plugin()?],
             ..Default::default()
         })
         .await?,

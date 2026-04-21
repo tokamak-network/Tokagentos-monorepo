@@ -4,7 +4,7 @@
  * Thin fetch wrapper + WebSocket for real-time chat/events.
  * Replaces the gateway WebSocket protocol entirely.
  *
- * The ElizaClient class is defined in client-base.ts and re-exported here.
+ * The TokagentClient class is defined in client-base.ts and re-exported here.
  * Domain methods are defined via declaration merging + prototype augmentation
  * in the companion files: client-agent, client-chat, client-wallet,
  * client-cloud, client-skills, client-computeruse.
@@ -25,20 +25,20 @@ import type {
   VideoProvider,
   VisionConfig,
   VisionProvider,
-} from "@elizaos/agent/contracts/config";
-import type { DropStatus, MintResult } from "@elizaos/agent/contracts/drop";
+} from "@tokagentos/agent/contracts/config";
+import type { DropStatus, MintResult } from "@tokagentos/agent/contracts/drop";
 import type {
   AllPermissionsState,
   PermissionState,
   PermissionStatus,
   SystemPermissionDefinition,
   SystemPermissionId,
-} from "@elizaos/agent/contracts/permissions";
-import type { VerificationResult } from "@elizaos/agent/contracts/verification";
+} from "@tokagentos/agent/contracts/permissions";
+import type { VerificationResult } from "@tokagentos/agent/contracts/verification";
 import type {
   BrowserWorkspaceSnapshot,
   BrowserWorkspaceTab,
-} from "@elizaos/agent/services/browser-workspace";
+} from "@tokagentos/agent/services/browser-workspace";
 import type {
   StewardApprovalActionResponse,
   StewardApprovalInfo,
@@ -83,13 +83,13 @@ import type {
   WalletTradingProfileResponse,
   WalletTradingProfileSourceFilter,
   WalletTradingProfileWindow,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 import {
   DEFAULT_WALLET_RPC_SELECTIONS,
   normalizeWalletRpcProviderId,
   normalizeWalletRpcSelections,
   WALLET_RPC_PROVIDER_OPTIONS,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 import type {
   CloudProviderOption,
   OnboardingConnectorConfig as ConnectorConfig,
@@ -106,10 +106,10 @@ import type {
   StylePreset,
   SubscriptionProviderStatus,
   SubscriptionStatusResponse,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 
 // Re-export the class from client-base (no circular dependency issues)
-export { ElizaClient } from "./client-base";
+export { TokagentClient } from "./client-base";
 export type {
   ComputerUseApprovalMode,
   ComputerUseApprovalResolution,
@@ -216,7 +216,7 @@ export {
 
 // ---------------------------------------------------------------------------
 // Domain method augmentations (declaration merging + prototype assignment)
-// These import ElizaClient from client-base directly, avoiding circular deps.
+// These import TokagentClient from client-base directly, avoiding circular deps.
 // ---------------------------------------------------------------------------
 
 import "./client-agent";
@@ -235,5 +235,5 @@ import "@elizaos/app-vincent/client";
 // Singleton
 // ---------------------------------------------------------------------------
 
-import { ElizaClient as _ElizaClient } from "./client-base";
-export const client = new _ElizaClient();
+import { TokagentClient as _TokagentClient } from "./client-base";
+export const client = new _TokagentClient();

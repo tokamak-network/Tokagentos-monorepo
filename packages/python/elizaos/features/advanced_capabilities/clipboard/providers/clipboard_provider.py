@@ -5,12 +5,12 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 from ..services.task_clipboard_service import create_task_clipboard_service
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 logger = logging.getLogger(__name__)
 

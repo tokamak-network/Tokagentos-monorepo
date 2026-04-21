@@ -1,7 +1,7 @@
 """
-Full ElizaOS Runtime Integration for ART Training
+Full TokagentOS Runtime Integration for ART Training
 
-This is the CANONICAL integration that uses the full ElizaOS agent runtime:
+This is the CANONICAL integration that uses the full TokagentOS agent runtime:
 - Full AgentRuntime with character and plugins
 - Message processing through message_service.handle_message
 - Actions registered and invoked properly
@@ -21,7 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from elizaos import (
+from tokagentos import (
     Action,
     ActionResult,
     AgentRuntime,
@@ -38,7 +38,7 @@ from elizaos import (
     string_to_uuid,
 )
 
-from elizaos_art.base import (
+from tokagentos_art.base import (
     Action as GameAction,
     BaseAgent,
     BaseEnvironment,
@@ -46,13 +46,13 @@ from elizaos_art.base import (
     Trajectory,
     TrainingConfig,
 )
-from elizaos_art.eliza_integration.trajectory_plugin_integration import (
+from tokagentos_art.tokagent_integration.trajectory_plugin_integration import (
     TrajectoryBackend,
     create_trajectory_backend,
 )
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 S = TypeVar("S", bound=GameState)
 A = TypeVar("A", bound=GameAction)
@@ -60,7 +60,7 @@ A = TypeVar("A", bound=GameAction)
 
 @dataclass
 class ARTRuntimeConfig:
-    """Configuration for ART runtime with full ElizaOS integration."""
+    """Configuration for ART runtime with full TokagentOS integration."""
 
     # Agent identification
     agent_id: str = "art-training-agent"
@@ -101,7 +101,7 @@ def create_game_state_provider(
     """
     Create a Provider that supplies game state context to the agent.
 
-    This is registered with the ElizaOS runtime and called during compose_state().
+    This is registered with the TokagentOS runtime and called during compose_state().
     Automatically logs provider access to the trajectory logger.
     """
 
@@ -185,7 +185,7 @@ def create_game_action(
     """
     Create an Action that executes game moves.
 
-    This is the canonical way to handle actions in ElizaOS.
+    This is the canonical way to handle actions in TokagentOS.
     Automatically logs action execution to the trajectory logger.
     """
 
@@ -330,7 +330,7 @@ def create_art_plugin(
     """
     Create a Plugin that provides game-specific actions and providers.
 
-    This plugin is registered with the ElizaOS runtime alongside the bootstrap plugin.
+    This plugin is registered with the TokagentOS runtime alongside the bootstrap plugin.
     Includes trajectory logging for all interactions.
     """
 
@@ -360,7 +360,7 @@ def create_art_plugin(
 
 class ARTRuntime(Generic[S, A]):
     """
-    Full ElizaOS Runtime for ART Training.
+    Full TokagentOS Runtime for ART Training.
 
     This uses the REAL AgentRuntime with:
     - Full message processing through message_service.handle_message
@@ -369,7 +369,7 @@ class ARTRuntime(Generic[S, A]):
     - basicCapabilities enabled by default
     - End-to-end trajectory logging for RL training
 
-    NO SHORTCUTS - this is canonical ElizaOS agent usage with full telemetry.
+    NO SHORTCUTS - this is canonical TokagentOS agent usage with full telemetry.
     """
 
     def __init__(
@@ -386,7 +386,7 @@ class ARTRuntime(Generic[S, A]):
         self._current_state_holder: dict = {}
         self._action_result_holder: dict = {}
 
-        # ElizaOS runtime
+        # TokagentOS runtime
         self._runtime: AgentRuntime | None = None
         self._initialized = False
 
@@ -430,7 +430,7 @@ class ARTRuntime(Generic[S, A]):
         )
 
     async def initialize(self) -> None:
-        """Initialize the full ElizaOS runtime."""
+        """Initialize the full TokagentOS runtime."""
         if self._initialized:
             return
 
@@ -454,7 +454,7 @@ class ARTRuntime(Generic[S, A]):
 
         try:
             # Try to load OpenAI plugin if available
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             plugins.append(get_openai_plugin())
         except ImportError:
@@ -485,7 +485,7 @@ class ARTRuntime(Generic[S, A]):
         """
         Send a message to the agent and get response.
 
-        This goes through the FULL ElizaOS message handling pipeline:
+        This goes through the FULL TokagentOS message handling pipeline:
         1. Create message memory
         2. Call message_service.handle_message
         3. Actions are invoked
@@ -559,7 +559,7 @@ class ARTRuntime(Generic[S, A]):
         max_steps: int = 1000,
     ) -> Trajectory:
         """
-        Execute a single rollout using the FULL ElizaOS agent.
+        Execute a single rollout using the FULL TokagentOS agent.
 
         This is NOT a shortcut - it goes through proper message handling.
         All interactions are logged to trajectory for RL training.
@@ -623,7 +623,7 @@ class ARTRuntime(Generic[S, A]):
             user_prompt = self.agent.format_action_prompt(state, available_actions)
             messages.append({"role": "user", "content": user_prompt})
 
-            # Send message through FULL ElizaOS pipeline
+            # Send message through FULL TokagentOS pipeline
             response_text, action_results = await self._send_message_to_agent(user_prompt)
 
             messages.append({"role": "assistant", "content": response_text})
@@ -799,9 +799,9 @@ def create_art_runtime(
     config: ARTRuntimeConfig | None = None,
 ) -> ARTRuntime:
     """
-    Create an ART runtime with FULL ElizaOS integration and trajectory logging.
+    Create an ART runtime with FULL TokagentOS integration and trajectory logging.
 
-    This uses the canonical ElizaOS agent pattern:
+    This uses the canonical TokagentOS agent pattern:
     - Full AgentRuntime with character
     - Message processing through message_service
     - Actions registered and invoked
@@ -811,8 +811,8 @@ def create_art_runtime(
 
     Example:
         ```python
-        from elizaos_art.games.game_2048 import Game2048Environment, Game2048Agent
-        from elizaos_art.eliza_integration import create_art_runtime, ARTRuntimeConfig
+        from tokagentos_art.games.game_2048 import Game2048Environment, Game2048Agent
+        from tokagentos_art.tokagent_integration import create_art_runtime, ARTRuntimeConfig
 
         env = Game2048Environment()
         agent = Game2048Agent()
@@ -837,7 +837,7 @@ def create_art_runtime(
 
         # Export collected trajectories for training
         collected = runtime.get_collected_trajectories()
-        from elizaos_art.eliza_integration.export import export_trajectories_art_format
+        from tokagentos_art.tokagent_integration.export import export_trajectories_art_format
         await export_trajectories_art_format(collected, "training_data.jsonl")
         ```
     """

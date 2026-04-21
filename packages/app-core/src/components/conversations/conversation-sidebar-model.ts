@@ -1,5 +1,5 @@
-import { normalizeConnectorSource } from "@elizaos/shared/connectors";
-import { getChatSourceMeta } from "@elizaos/ui";
+import { normalizeConnectorSource } from "@tokagentos/shared/connectors";
+import { getChatSourceMeta } from "@tokagentos/ui";
 import type * as React from "react";
 import type { Conversation } from "../../api/client-types-chat";
 import {
@@ -7,7 +7,7 @@ import {
   getLocalizedConversationTitle,
 } from "./conversation-utils";
 
-export const ELIZA_SOURCE_SCOPE = "eliza";
+export const TOKAGENT_SOURCE_SCOPE = "tokagent";
 export const ALL_CONNECTORS_SOURCE_SCOPE = "__all_connectors__";
 export const ALL_WORLDS_SCOPE = "__all_worlds__";
 
@@ -107,7 +107,7 @@ function buildConversationRows(
       id: conversation.id,
       kind: "conversation" as const,
       sortKey: new Date(conversation.updatedAt).getTime(),
-      sourceKey: ELIZA_SOURCE_SCOPE,
+      sourceKey: TOKAGENT_SOURCE_SCOPE,
       title: getLocalizedConversationTitle(conversation.title, t),
       updatedAtLabel: formatRelativeTime(conversation.updatedAt, t),
       worldKey: null,
@@ -166,9 +166,9 @@ function buildSourceOptions(
   const options: ConversationsSidebarOption[] = [
     {
       count: appRows.length,
-      icon: getChatSourceMeta("eliza").Icon,
+      icon: getChatSourceMeta("tokagent").Icon,
       label: t("conversations.scopeApp", { defaultValue: "Terminal" }),
-      value: ELIZA_SOURCE_SCOPE,
+      value: TOKAGENT_SOURCE_SCOPE,
     },
   ];
 
@@ -192,7 +192,7 @@ function buildWorldOptions(
   t: TranslateFn,
 ): ConversationsSidebarOption[] {
   if (
-    sourceScope === ELIZA_SOURCE_SCOPE ||
+    sourceScope === TOKAGENT_SOURCE_SCOPE ||
     sourceScope === ALL_CONNECTORS_SOURCE_SCOPE
   ) {
     return [];
@@ -244,7 +244,7 @@ function filterRowsByScope(
   sourceScope: string,
   worldScope: string,
 ): ConversationsSidebarRow[] {
-  if (sourceScope === ELIZA_SOURCE_SCOPE) {
+  if (sourceScope === TOKAGENT_SOURCE_SCOPE) {
     return appRows;
   }
 
@@ -339,7 +339,7 @@ export function buildConversationsSidebarModel({
   );
   const normalizedSourceScope = availableSourceValues.has(sourceScope)
     ? sourceScope
-    : ELIZA_SOURCE_SCOPE;
+    : TOKAGENT_SOURCE_SCOPE;
   const worldOptions = buildWorldOptions(
     connectorRows,
     normalizedSourceScope,

@@ -17,7 +17,7 @@ import {
   type HandlerOptions,
   type IAgentRuntime,
   type Memory,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { hasOwnerAccess } from "../security/access.js";
 
 type AgentInboxSubaction =
@@ -43,7 +43,7 @@ function notConfigured(subaction: string | undefined): ActionResult {
     success: false,
     text:
       "The agent's own inbox is not configured yet. Wire an agent-scoped " +
-      "mailbox (e.g. an Eliza Cloud inbox or a dedicated IMAP/SMTP account) " +
+      "mailbox (e.g. an Tokagent Cloud inbox or a dedicated IMAP/SMTP account) " +
       "before using AGENT_INBOX. For the OWNER's inbox, use OWNER_INBOX.",
     values: { success: false, error: "AGENT_INBOX_NOT_CONFIGURED" },
     data: {
@@ -135,7 +135,7 @@ export const agentInboxAction: Action = {
       {
         name: "{{user1}}",
         content: {
-          text: "Check the agent's own inbox for anything new from the Eliza Cloud notifications address.",
+          text: "Check the agent's own inbox for anything new from the Tokagent Cloud notifications address.",
         },
       },
       {

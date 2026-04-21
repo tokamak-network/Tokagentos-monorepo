@@ -4,8 +4,8 @@ import {
   type InstallProgressLike,
   isPluginManagerLike,
   type PluginManagerLike,
-} from "@elizaos/agent/services/plugin-manager-types";
-import type { IAgentRuntime } from "@elizaos/core";
+} from "@tokagentos/agent/services/plugin-manager-types";
+import type { IAgentRuntime } from "@tokagentos/core";
 import chalk from "chalk";
 import type { Command } from "commander";
 import { parseClampedInteger } from "../utils/number-parsing";
@@ -125,9 +125,9 @@ function displayPluginConfig(
 }
 
 async function getPluginManager(): Promise<PluginManagerLike> {
-  // plugin-manager is now built into @elizaos/core features
+  // plugin-manager is now built into @tokagentos/core features
   const { PluginManagerService } = await import(
-    "@elizaos/core/features/plugin-manager/index"
+    "@tokagentos/core/features/plugin-manager/index"
   );
   const mockRuntime: Partial<IAgentRuntime> = {
     plugins: [],
@@ -153,7 +153,7 @@ export function registerPluginsCli(program: Command): void {
   const pluginsCommand = program
     .command("plugins")
     .description(
-      "Browse, search, install, and manage elizaOS plugins from the registry",
+      "Browse, search, install, and manage tokagentOS plugins from the registry",
     );
 
   // ── list ─────────────────────────────────────────────────────────────
@@ -250,10 +250,10 @@ export function registerPluginsCli(program: Command): void {
         }
 
         console.log(
-          chalk.dim("Install a plugin: eliza plugins install <name>"),
+          chalk.dim("Install a plugin: tokagent plugins install <name>"),
         );
         console.log(
-          chalk.dim("Search:           eliza plugins list -q <keyword>"),
+          chalk.dim("Search:           tokagent plugins list -q <keyword>"),
         );
         console.log();
       } catch (err) {
@@ -326,7 +326,7 @@ export function registerPluginsCli(program: Command): void {
           console.log(`\n${chalk.red("Not found:")} ${normalizedName}`);
           console.log(
             chalk.dim(
-              "Run 'eliza plugins search <keyword>' to find plugins.\n",
+              "Run 'tokagent plugins search <keyword>' to find plugins.\n",
             ),
           );
           return;
@@ -374,7 +374,7 @@ export function registerPluginsCli(program: Command): void {
         }
 
         console.log(
-          `\n  Install: ${chalk.cyan(`eliza plugins install ${info.name}`)}\n`,
+          `\n  Install: ${chalk.cyan(`tokagent plugins install ${info.name}`)}\n`,
         );
       } catch (err) {
         console.error(
@@ -424,7 +424,7 @@ export function registerPluginsCli(program: Command): void {
               chalk.dim("Agent is restarting to load the new plugin..."),
             );
             const { requestRestart } = await import(
-              "@elizaos/agent/runtime/restart"
+              "@tokagentos/agent/runtime/restart"
             );
             await Promise.resolve(
               requestRestart(`Plugin ${result.pluginName} installed`),
@@ -487,7 +487,7 @@ export function registerPluginsCli(program: Command): void {
 
         if (plugins.length === 0) {
           console.log("\nNo plugins installed from the registry.\n");
-          console.log(chalk.dim("Install one: eliza plugins install <name>\n"));
+          console.log(chalk.dim("Install one: tokagent plugins install <name>\n"));
           return;
         }
 
@@ -530,21 +530,21 @@ export function registerPluginsCli(program: Command): void {
   // ── test ─────────────────────────────────────────────────────────────
   pluginsCommand
     .command("test")
-    .description("Validate custom drop-in plugins in ~/.eliza/plugins/custom/")
+    .description("Validate custom drop-in plugins in ~/.tokagent/plugins/custom/")
     .action(async () => {
       try {
         const nodePath = await import("node:path");
         const { pathToFileURL } = await import("node:url");
         const fsPromises = await import("node:fs/promises");
         const { resolveStateDir, resolveUserPath } = await import(
-          "@elizaos/agent/config/paths"
+          "@tokagentos/agent/config/paths"
         );
-        const { loadElizaConfig } = await import("../config/config");
+        const { loadTokagentConfig } = await import("../config/config");
         const {
           CUSTOM_PLUGINS_DIRNAME,
           scanDropInPlugins,
           resolvePackageEntry,
-        } = await import("../runtime/eliza");
+        } = await import("../runtime/tokagent");
 
         const customDir = nodePath.join(
           resolveStateDir(),
@@ -552,13 +552,13 @@ export function registerPluginsCli(program: Command): void {
         );
         const scanDirs = [customDir];
 
-        let config: ReturnType<typeof loadElizaConfig> | null = null;
+        let config: ReturnType<typeof loadTokagentConfig> | null = null;
         try {
-          config = loadElizaConfig();
+          config = loadTokagentConfig();
         } catch (err) {
           console.log(
             chalk.dim(
-              `  (Could not read eliza.json: ${err instanceof Error ? err.message : String(err)} — scanning default directory only)\n`,
+              `  (Could not read tokagent.json: ${err instanceof Error ? err.message : String(err)} — scanning default directory only)\n`,
             ),
           );
         }
@@ -691,8 +691,8 @@ export function registerPluginsCli(program: Command): void {
       try {
         const _nodePath = await import("node:path");
         const nodeFs = await import("node:fs");
-        const { resolveUserPath } = await import("@elizaos/agent/config/paths");
-        const { loadElizaConfig, saveElizaConfig } = await import(
+        const { resolveUserPath } = await import("@tokagentos/agent/config/paths");
+        const { loadTokagentConfig, saveTokagentConfig } = await import(
           "../config/config"
         );
 
@@ -710,11 +710,11 @@ export function registerPluginsCli(program: Command): void {
           return;
         }
 
-        let config: ReturnType<typeof loadElizaConfig>;
+        let config: ReturnType<typeof loadTokagentConfig>;
         try {
-          config = loadElizaConfig();
+          config = loadTokagentConfig();
         } catch {
-          config = {} as ReturnType<typeof loadElizaConfig>;
+          config = {} as ReturnType<typeof loadTokagentConfig>;
         }
 
         if (!config.plugins) config.plugins = {};
@@ -732,7 +732,7 @@ export function registerPluginsCli(program: Command): void {
         }
 
         config.plugins.load.paths.push(rawPath);
-        saveElizaConfig(config);
+        saveTokagentConfig(config);
 
         console.log(`\n${chalk.green("Added:")} ${rawPath} → ${resolved}`);
         console.log(
@@ -754,16 +754,16 @@ export function registerPluginsCli(program: Command): void {
       try {
         const nodePath = await import("node:path");
         const { resolveStateDir, resolveUserPath } = await import(
-          "@elizaos/agent/config/paths"
+          "@tokagentos/agent/config/paths"
         );
-        const { loadElizaConfig } = await import("../config/config");
+        const { loadTokagentConfig } = await import("../config/config");
         const { CUSTOM_PLUGINS_DIRNAME, scanDropInPlugins } = await import(
-          "../runtime/eliza"
+          "../runtime/tokagent"
         );
 
-        let config: ReturnType<typeof loadElizaConfig> | null = null;
+        let config: ReturnType<typeof loadTokagentConfig> | null = null;
         try {
-          config = loadElizaConfig();
+          config = loadTokagentConfig();
         } catch {
           // No config
         }
@@ -843,7 +843,7 @@ export function registerPluginsCli(program: Command): void {
         if (!plugin) {
           console.log(`\n${chalk.red("Not found:")} ${name}`);
           console.log(
-            chalk.dim("Run 'eliza plugins list' to see available plugins.\n"),
+            chalk.dim("Run 'tokagent plugins list' to see available plugins.\n"),
           );
           process.exitCode = 1;
           return;
@@ -958,15 +958,15 @@ export function registerPluginsCli(program: Command): void {
         }
 
         // Save to config and env
-        const { loadElizaConfig, saveElizaConfig } = await import(
+        const { loadTokagentConfig, saveTokagentConfig } = await import(
           "../config/config"
         );
 
-        let config: ReturnType<typeof loadElizaConfig>;
+        let config: ReturnType<typeof loadTokagentConfig>;
         try {
-          config = loadElizaConfig();
+          config = loadTokagentConfig();
         } catch {
-          config = {} as ReturnType<typeof loadElizaConfig>;
+          config = {} as ReturnType<typeof loadTokagentConfig>;
         }
 
         // Initialize plugin config structure
@@ -1002,7 +1002,7 @@ export function registerPluginsCli(program: Command): void {
           pluginConfig[key] = value;
         }
 
-        saveElizaConfig(config);
+        saveTokagentConfig(config);
 
         console.log(
           `\n${chalk.green("Success!")} Configuration saved for ${pluginName}.`,
@@ -1028,10 +1028,10 @@ export function registerPluginsCli(program: Command): void {
         const nodeFs = await import("node:fs");
         const { spawnSync } = await import("node:child_process");
         const { resolveStateDir, resolveUserPath } = await import(
-          "@elizaos/agent/config/paths"
+          "@tokagentos/agent/config/paths"
         );
         const { CUSTOM_PLUGINS_DIRNAME, scanDropInPlugins } = await import(
-          "../runtime/eliza"
+          "../runtime/tokagent"
         );
 
         const customDir = nodePath.join(

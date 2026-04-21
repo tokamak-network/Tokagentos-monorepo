@@ -5,7 +5,7 @@ import {
   type IAgentRuntime,
   type Memory,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 import type { ChatRoom } from "../types.js";
 import type { SessionIdentity } from "./identity.js";
@@ -43,14 +43,14 @@ export class AgentClient {
 
     const runtime = this.runtime;
     const { room, text, identity } = params;
-    const source = params.source ?? "eliza-code";
+    const source = params.source ?? "tokagent-code";
     const channelType = params.channelType ?? ChannelType.DM;
     const userName = params.userName ?? "User";
     const onDelta = params.onDelta;
 
     await runtime.ensureConnection({
       entityId: identity.userId,
-      roomId: room.elizaRoomId,
+      roomId: room.tokagentRoomId,
       worldId: identity.worldId,
       userName,
       source,
@@ -62,7 +62,7 @@ export class AgentClient {
     const messageMemory = createMessageMemory({
       id: uuidv4() as UUID,
       entityId: identity.userId,
-      roomId: room.elizaRoomId,
+      roomId: room.tokagentRoomId,
       content: {
         text,
         source,
@@ -101,7 +101,7 @@ export class AgentClient {
     if (!runtime.messageService) return;
     await runtime.messageService.clearChannel(
       runtime,
-      room.elizaRoomId,
+      room.tokagentRoomId,
       room.id,
     );
   }

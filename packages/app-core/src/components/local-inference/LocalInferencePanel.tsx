@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { client } from "../../api";
 import type {
@@ -12,7 +12,7 @@ import type {
 import { isAndroid, isIOS } from "../../platform/init";
 import { useApp } from "../../state";
 import { resolveApiUrl } from "../../utils/asset-url";
-import { getElizaApiToken } from "../../utils/eliza-globals";
+import { getTokagentApiToken } from "../../utils/tokagent-globals";
 import { ActiveModelBar } from "./ActiveModelBar";
 import { DeviceBridgeStatusBar } from "./DeviceBridgeStatus";
 import { DevicesPanel } from "./DevicesPanel";
@@ -493,7 +493,7 @@ function formatSize(bytes: number): string {
 }
 
 function appendTokenParam(url: string): string {
-  const token = getElizaApiToken()?.trim();
+  const token = getTokagentApiToken()?.trim();
   if (!token) return url;
   const hasQuery = url.includes("?");
   return `${url}${hasQuery ? "&" : "?"}token=${encodeURIComponent(token)}`;

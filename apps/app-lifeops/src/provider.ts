@@ -1,11 +1,11 @@
-import { hasAdminAccess } from "@elizaos/agent/security";
+import { hasAdminAccess } from "@tokagentos/agent/security";
 import type {
   IAgentRuntime,
   Memory,
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { LifeOpsService } from "./lifeops/service.js";
 
 function formatSettingsLine(

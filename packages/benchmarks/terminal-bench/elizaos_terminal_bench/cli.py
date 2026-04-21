@@ -12,8 +12,8 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from elizaos_terminal_bench.runner import TerminalBenchRunner, run_terminal_bench
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.runner import TerminalBenchRunner, run_terminal_bench
+from tokagentos_terminal_bench.types import (
     TaskCategory,
     TaskDifficulty,
     TerminalBenchConfig,
@@ -186,7 +186,7 @@ For more information, visit: https://tbench.ai
     parser.add_argument(
         "--standalone",
         action="store_true",
-        help="Use standalone agent (direct API calls) instead of full ElizaOS runtime",
+        help="Use standalone agent (direct API calls) instead of full TokagentOS runtime",
     )
     parser.add_argument(
         "-v", "--verbose",
@@ -275,7 +275,7 @@ async def run_cli(args: argparse.Namespace) -> int:
         verbose=args.verbose,
         dry_run=args.dry_run,
         oracle=args.oracle,
-        use_eliza_agent=not args.standalone,
+        use_tokagent_agent=not args.standalone,
     )
 
     # Create runner

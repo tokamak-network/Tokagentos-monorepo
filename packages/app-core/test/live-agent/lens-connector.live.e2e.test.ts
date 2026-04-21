@@ -14,9 +14,9 @@
  *   LENS_API_KEY         — Lens app Server API Key (from developer.lens.xyz)
  *   LENS_ACCOUNT_ADDRESS — Lens account address (EVM address, e.g. "0x...")
  *   LENS_PRIVATE_KEY     — Wallet private key for signing (0x + 64 hex)
- *   ELIZA_LIVE_TEST=1   — Enable live tests
+ *   TOKAGENT_LIVE_TEST=1   — Enable live tests
  *
- * Or configure in ~/.eliza/eliza.json:
+ * Or configure in ~/.tokagent/tokagent.json:
  *   { "connectors": { "lens": { "apiKey": "...", "accountAddress": "0x...", "privateKey": "0x..." } } }
  *
  * Uses Lens Protocol V3 API (api.lens.xyz/graphql).
@@ -29,8 +29,8 @@ import { fileURLToPath } from "node:url";
 import {
   extractPlugin,
   resolveLensPluginImportSpecifier,
-} from "@elizaos/app-core";
-import { logger, type Plugin } from "@elizaos/core";
+} from "@tokagentos/app-core";
+import { logger, type Plugin } from "@tokagentos/core";
 import dotenv from "dotenv";
 import { ethers } from "ethers";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -50,7 +50,7 @@ const LENS_PRIVATE_KEY = process.env.LENS_PRIVATE_KEY;
 const LENS_APP_ADDRESS = process.env.LENS_APP_ADDRESS;
 
 const hasLensCreds = Boolean(LENS_API_KEY && LENS_ACCOUNT_ADDRESS);
-const liveTestsEnabled = process.env.ELIZA_LIVE_TEST === "1";
+const liveTestsEnabled = process.env.TOKAGENT_LIVE_TEST === "1";
 const runLiveTests = hasLensCreds && liveTestsEnabled;
 
 // Write tests require a valid Ethereum private key + app address for auth
@@ -83,7 +83,7 @@ logger.info(
   `[lens-connector] Live tests ${runLiveTests ? "ENABLED" : "DISABLED"} ` +
     `(API_KEY=${Boolean(LENS_API_KEY)}, ACCOUNT=${Boolean(LENS_ACCOUNT_ADDRESS)}, ` +
     `PRIVATE_KEY=${Boolean(LENS_PRIVATE_KEY)}, APP=${Boolean(LENS_APP_ADDRESS)}, ` +
-    `ELIZA_LIVE_TEST=${liveTestsEnabled})`,
+    `TOKAGENT_LIVE_TEST=${liveTestsEnabled})`,
 );
 logger.info(
   `[lens-connector] Write tests ${runLiveWriteTests ? "ENABLED" : "DISABLED"} ` +
@@ -108,7 +108,7 @@ async function lensGraphQL(
   await sleep(RATE_LIMIT_DELAY_MS);
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    Origin: "https://eliza.ai",
+    Origin: "https://tokagent.ai",
   };
   if (LENS_API_KEY) {
     headers["x-api-key"] = LENS_API_KEY;
@@ -965,7 +965,7 @@ describe("Lens Connector - Integration", () => {
   it("Lens is mapped in CONNECTOR_PLUGINS", async () => {
     const mod = await tryWorkspaceImport<{
       CONNECTOR_PLUGINS: Record<string, string>;
-    }>("@elizaos/app-core");
+    }>("@tokagentos/app-core");
     if (!mod) {
       logger.warn("[lens-connector] Workspace not built — skipping");
       return;
@@ -978,7 +978,7 @@ describe("Lens Connector - Integration", () => {
     try {
       mod = await tryWorkspaceImport<{
         CHANNEL_PLUGIN_MAP: Record<string, string>;
-      }>("@elizaos/app-core");
+      }>("@tokagentos/app-core");
     } catch {
       mod = null;
     }

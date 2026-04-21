@@ -76,7 +76,7 @@ export interface VoiceChatOptions {
   ) => void;
   /** Called when playback of a speech segment starts */
   onPlaybackStart?: (event: VoicePlaybackStartEvent) => void;
-  /** True when Eliza Cloud-managed voice access is available */
+  /** True when Tokagent Cloud-managed voice access is available */
   cloudConnected?: boolean;
   /** Whether user speech should immediately interrupt assistant playback */
   interruptOnSpeech?: boolean;
@@ -131,7 +131,7 @@ export interface SpeakTask {
   append: boolean;
   segment: SpeechSegmentKind;
   cacheKey?: string;
-  /** App-only: sent as `x-elizaos-tts-*` headers on `/api/tts/*` when debug is on (never forwarded to Eliza Cloud). */
+  /** App-only: sent as `x-tokagentos-tts-*` headers on `/api/tts/*` when debug is on (never forwarded to Tokagent Cloud). */
   debugUtteranceContext?: {
     messageId: string;
     fullAssistTextPreview: string;
@@ -190,7 +190,7 @@ export function resolveVoiceProxyEndpoint(mode: VoiceMode): string {
   );
 }
 
-/** For ELIZA_TTS_DEBUG: shows whether cloud TTS hits the API or the wrong (page) origin. */
+/** For TOKAGENT_TTS_DEBUG: shows whether cloud TTS hits the API or the wrong (page) origin. */
 export function describeTtsCloudFetchTargetForDebug(): string {
   const target = resolveApiUrl("/api/tts/cloud");
   if (/^https?:\/\//i.test(target)) {
@@ -203,7 +203,7 @@ export function describeTtsCloudFetchTargetForDebug(): string {
   const origin =
     typeof window !== "undefined" ? window.location.origin : "(no-window)";
   const path = target.startsWith("/") ? target : `/${target}`;
-  return `${origin}${path} — relative URL (TTS fetch goes to the UI host, not the app API). Set __ELIZAOS_API_BASE__ / session elizaos_api_base / boot apiBase to http://127.0.0.1:<apiPort>`;
+  return `${origin}${path} — relative URL (TTS fetch goes to the UI host, not the app API). Set __TOKAGENTOS_API_BASE__ / session tokagentos_api_base / boot apiBase to http://127.0.0.1:<apiPort>`;
 }
 
 function isRedactedSecret(value: unknown): boolean {
@@ -343,7 +343,7 @@ export function isAbortError(error: unknown): boolean {
   return false;
 }
 
-/** ELIZA_TTS_DEBUG fields for OS/browser SpeechSynthesis (often Microsoft Edge on Windows). */
+/** TOKAGENT_TTS_DEBUG fields for OS/browser SpeechSynthesis (often Microsoft Edge on Windows). */
 export function webSpeechVoiceDebugFields(
   voice: SpeechSynthesisVoice | undefined,
 ): Record<string, string | boolean | undefined> {

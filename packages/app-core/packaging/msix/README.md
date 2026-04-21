@@ -42,7 +42,7 @@ Both steps run automatically in `release-electrobun.yml` when `WINDOWS_SIGN_CERT
 ## Store Submission
 
 1. Create a Microsoft Partner Center account at https://partner.microsoft.com
-2. Register the app identity ("ElizaOS.App")
+2. Register the app identity ("TokagentOS.App")
 3. Update `AppxManifest.xml` Publisher field with your actual publisher ID
 4. Replace placeholder assets in `assets/` with final artwork
 5. Add screenshots to `store/screenshots/`

@@ -315,39 +315,39 @@ export function debugLogResolvedContext(
   context: Record<string, unknown>,
   log: (msg: string) => void = console.debug,
 ): void {
-  log("[eliza:debug] ══════ Resolved Plugin/Provider Context ══════");
-  log(`[eliza:debug] Plugins loaded (${plugins.length}):`);
+  log("[tokagent:debug] ══════ Resolved Plugin/Provider Context ══════");
+  log(`[tokagent:debug] Plugins loaded (${plugins.length}):`);
   for (const name of plugins) {
-    log(`[eliza:debug]   • ${name}`);
+    log(`[tokagent:debug]   • ${name}`);
   }
-  log(`[eliza:debug] Providers loaded (${providers.length}):`);
+  log(`[tokagent:debug] Providers loaded (${providers.length}):`);
   for (const name of providers) {
-    log(`[eliza:debug]   • ${name}`);
+    log(`[tokagent:debug]   • ${name}`);
   }
 
   const validation = validateRuntimeContext(context);
   if (validation.valid && validation.serializable) {
     log(
-      "[eliza:debug] Context validation: ✓ PASS (all fields valid, serializable)",
+      "[tokagent:debug] Context validation: ✓ PASS (all fields valid, serializable)",
     );
   } else {
-    log("[eliza:debug] Context validation: ✗ ISSUES DETECTED");
+    log("[tokagent:debug] Context validation: ✗ ISSUES DETECTED");
     if (validation.nullFields.length > 0) {
-      log(`[eliza:debug]   null fields: ${validation.nullFields.join(", ")}`);
+      log(`[tokagent:debug]   null fields: ${validation.nullFields.join(", ")}`);
     }
     if (validation.undefinedFields.length > 0) {
       log(
-        `[eliza:debug]   undefined fields: ${validation.undefinedFields.join(", ")}`,
+        `[tokagent:debug]   undefined fields: ${validation.undefinedFields.join(", ")}`,
       );
     }
     if (validation.emptyFields.length > 0) {
-      log(`[eliza:debug]   empty fields: ${validation.emptyFields.join(", ")}`);
+      log(`[tokagent:debug]   empty fields: ${validation.emptyFields.join(", ")}`);
     }
     if (validation.nonSerializableFields.length > 0) {
       log(
-        `[eliza:debug]   non-serializable fields: ${validation.nonSerializableFields.join(", ")}`,
+        `[tokagent:debug]   non-serializable fields: ${validation.nonSerializableFields.join(", ")}`,
       );
     }
   }
-  log("[eliza:debug] ══════════════════════════════════════════════");
+  log("[tokagent:debug] ══════════════════════════════════════════════");
 }

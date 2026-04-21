@@ -1,7 +1,7 @@
-// testing.proto - Test suite metadata for elizaOS
+// testing.proto - Test suite metadata for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
 // Represents a test case definition (handler is runtime-only).
 message TestCase {

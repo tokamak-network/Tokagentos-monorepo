@@ -1,9 +1,9 @@
-//! AWS Lambda handler for elizaOS chat worker (Rust)
+//! AWS Lambda handler for tokagentOS chat worker (Rust)
 //!
 //! For local testing, run: cargo run --bin test_local
 //! For Lambda deployment, this binary runs as the bootstrap handler.
 
-use eliza_lambda::function_handler;
+use tokagent_lambda::function_handler;
 use lambda_http::{run, service_fn, Error};
 use tracing::info;
 
@@ -29,7 +29,7 @@ async fn main() -> Result<(), Error> {
         .json()
         .init();
 
-    info!("Starting elizaOS Lambda handler");
+    info!("Starting tokagentOS Lambda handler");
 
     run(service_fn(function_handler)).await
 }

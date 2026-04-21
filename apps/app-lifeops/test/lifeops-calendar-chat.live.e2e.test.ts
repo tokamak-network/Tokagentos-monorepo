@@ -13,7 +13,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   createLifeOpsTestRuntime,
@@ -23,7 +23,7 @@ import { selectLiveProvider } from "../../../../test/helpers/live-provider";
 import { stochasticTest } from "../../../packages/app-core/test/helpers/stochastic-test";
 import { saveEnv } from "../../../../test/helpers/test-utils";
 import { calendarAction } from "../src/actions/calendar.js";
-import { resolveOAuthDir } from "@elizaos/agent/config/paths";
+import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
 import {
   addDaysToLocalDate,
   buildUtcDateFromLocalParts,
@@ -450,14 +450,14 @@ describeWithLLM("life-ops calendar chat (real LLM)", () => {
 
   beforeAll(async () => {
     envBackup = saveEnv(
-      "ELIZA_STATE_DIR",
-      "ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
+      "TOKAGENT_STATE_DIR",
+      "TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
     );
     stateDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), "lifeops-calendar-chat-"),
     );
-    process.env.ELIZA_STATE_DIR = stateDir;
-    process.env.ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID =
+    process.env.TOKAGENT_STATE_DIR = stateDir;
+    process.env.TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID =
       "lifeops-calendar-chat-client";
 
     testResult = await createLifeOpsTestRuntime({

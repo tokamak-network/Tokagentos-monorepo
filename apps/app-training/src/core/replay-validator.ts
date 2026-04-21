@@ -2,7 +2,7 @@
  * Replay validator for synthetic training data.
  *
  * Validates that every generated sample:
- * 1. Parses correctly with the same Eliza parser
+ * 1. Parses correctly with the same Tokagent parser
  * 2. References only valid contexts/actions/providers
  * 3. Would survive round-trip through the real runtime
  * 4. Has proper structure for Gemini supervised tuning
@@ -428,7 +428,7 @@ export function formatQualityReport(report: DatasetQualityReport): string {
 // ==================== Skill scoring ====================
 
 /**
- * Minimum metadata a Skill needs for scoring. We do not import @elizaos/skills
+ * Minimum metadata a Skill needs for scoring. We do not import @tokagentos/skills
  * here because app-training is downstream of the skills package and we want
  * scoreSkill to be usable in cron-job contexts that pass loaded skills.
  */

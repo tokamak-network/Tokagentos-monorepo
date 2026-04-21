@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 /**
- * ChatAvatar depends on @elizaos/app-core/state (useApp) and VrmViewer
+ * ChatAvatar depends on @tokagentos/app-core/state (useApp) and VrmViewer
  * (WebGL). Full rendering requires a 3D context.
  *
  * This placeholder story documents the component interface; interactive

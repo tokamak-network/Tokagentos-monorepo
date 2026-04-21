@@ -1,6 +1,6 @@
 ---
 title: "Runtime and Lifecycle"
-description: "From Character configuration to live Agent execution in elizaOS"
+description: "From Character configuration to live Agent execution in tokagentOS"
 ---
 
 ## Agent Lifecycle Overview
@@ -72,7 +72,7 @@ async function loadCharacter(source: string): Promise<Character> {
 Before creating an agent, the character must be validated:
 
 ```typescript
-import { validateCharacter } from "@elizaos/core";
+import { validateCharacter } from "@tokagentos/core";
 
 function validateAndPrepareCharacter(character: Partial<Character>): Character {
   // Required fields
@@ -1197,7 +1197,7 @@ Basic deployment for a single agent:
 
 ```typescript
 // server.ts
-import { AgentRuntime } from "@elizaos/core";
+import { AgentRuntime } from "@tokagentos/core";
 import { PostgresDatabaseAdapter } from "@elizaos/plugin-sql";
 import { character } from "./character";
 

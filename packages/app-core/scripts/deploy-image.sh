@@ -164,7 +164,7 @@ deploy_container() {
   restart_policy=$(ssh_run "docker inspect --format '{{.HostConfig.RestartPolicy.Name}}' '${container}'" 2>/dev/null || echo "unless-stopped")
   [[ -z "$restart_policy" || "$restart_policy" == "no" ]] && restart_policy="unless-stopped"
 
-  # Capture all env vars (preserves both ELIZA_* and MILADY_* and any others)
+  # Capture all env vars (preserves both TOKAGENT_* and MILADY_* and any others)
   # Format them as --env KEY=VALUE args for docker run
   local env_args
   env_args=$(ssh_run "docker inspect --format \

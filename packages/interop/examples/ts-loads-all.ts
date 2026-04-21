@@ -12,13 +12,13 @@
  * ```
  */
 
-import type { Memory, State } from "@elizaos/core";
+import type { Memory, State } from "@tokagentos/core";
 import {
   loadPlugin,
   loadPythonPlugin,
   loadWasmPlugin,
   stopPythonPlugin,
-} from "@elizaos/interop";
+} from "@tokagentos/interop";
 
 // ============================================================================
 // Example 1: Load Rust Plugin via WASM
@@ -30,7 +30,7 @@ async function loadRustViaWasm(): Promise<void> {
   try {
     // Path to compiled WASM module
     const wasmPath =
-      "../../../plugins/plugin-eliza-classic/rust/pkg/elizaos_plugin_eliza_classic_bg.wasm";
+      "../../../plugins/plugin-tokagent-classic/rust/pkg/tokagentos_plugin_tokagent_classic_bg.wasm";
 
     const plugin = await loadWasmPlugin(wasmPath);
 
@@ -80,7 +80,7 @@ async function loadPythonViaIpc(): Promise<void> {
 
   try {
     // Path to Python plugin
-    const pythonPluginPath = "../../../plugins/plugin-eliza-classic/python";
+    const pythonPluginPath = "../../../plugins/plugin-tokagent-classic/python";
 
     const plugin = await loadPythonPlugin(pythonPluginPath);
 
@@ -133,9 +133,9 @@ async function universalLoader(): Promise<void> {
 
   // The universal loader auto-detects plugin type from plugin.json manifest
   const pluginPaths = [
-    "../../../plugins/plugin-eliza-classic/rust",
-    "../../../plugins/plugin-eliza-classic/python",
-    "../../../plugins/plugin-eliza-classic/typescript",
+    "../../../plugins/plugin-tokagent-classic/rust",
+    "../../../plugins/plugin-tokagent-classic/python",
+    "../../../plugins/plugin-tokagent-classic/typescript",
   ];
 
   for (const path of pluginPaths) {

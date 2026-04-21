@@ -1,16 +1,16 @@
-"""SWE-bench providers for context injection into ElizaOS runtime."""
+"""SWE-bench providers for context injection into TokagentOS runtime."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar
 
-from elizaos.types.components import Provider, ProviderResult
-from elizaos.types.memory import Memory
-from elizaos.types.state import State
+from tokagentos.types.components import Provider, ProviderResult
+from tokagentos.types.memory import Memory
+from tokagentos.types.state import State
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 from .repo_manager import RepositoryManager
 from .tools import REPO_MANAGER_KEY

@@ -1,23 +1,23 @@
-import type { Plugin } from "@elizaos/core";
-import { gatePluginSessionForHostedApp } from "@elizaos/agent/services/app-session-gate";
-import { manageElizaBrowserWorkspaceAction } from "./action";
+import type { Plugin } from "@tokagentos/core";
+import { gatePluginSessionForHostedApp } from "@tokagentos/agent/services/app-session-gate";
+import { manageTokagentBrowserWorkspaceAction } from "./action";
 import { appBrowserWorkspaceProvider } from "./provider";
 import { AppBrowserWorkspaceService } from "./service";
 import {
-  approveElizaWalletRequestAction,
-  rejectElizaWalletRequestAction,
-  signWithElizaWalletAction,
+  approveTokagentWalletRequestAction,
+  rejectTokagentWalletRequestAction,
+  signWithTokagentWalletAction,
 } from "./wallet-action";
 
 const rawAppBrowserPlugin: Plugin = {
   name: "@elizaos/app-browser",
   description:
-    "Controls Eliza browser workspace tabs and Steward wallet signing requests across the desktop bridge and web iframe workspace.",
+    "Controls Tokagent browser workspace tabs and Steward wallet signing requests across the desktop bridge and web iframe workspace.",
   actions: [
-    manageElizaBrowserWorkspaceAction,
-    signWithElizaWalletAction,
-    approveElizaWalletRequestAction,
-    rejectElizaWalletRequestAction,
+    manageTokagentBrowserWorkspaceAction,
+    signWithTokagentWalletAction,
+    approveTokagentWalletRequestAction,
+    rejectTokagentWalletRequestAction,
   ],
   providers: [appBrowserWorkspaceProvider],
   services: [AppBrowserWorkspaceService],
@@ -29,12 +29,12 @@ export const appBrowserPlugin: Plugin = gatePluginSessionForHostedApp(
 );
 
 export {
-  approveElizaWalletRequestAction,
+  approveTokagentWalletRequestAction,
   AppBrowserWorkspaceService,
   appBrowserWorkspaceProvider,
-  manageElizaBrowserWorkspaceAction,
-  rejectElizaWalletRequestAction,
-  signWithElizaWalletAction,
+  manageTokagentBrowserWorkspaceAction,
+  rejectTokagentWalletRequestAction,
+  signWithTokagentWalletAction,
 };
 
 export default appBrowserPlugin;

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Interactive test client for elizaOS AWS Lambda worker (Python)
+Interactive test client for tokagentOS AWS Lambda worker (Python)
 
 Usage:
     python test-client.py --endpoint https://YOUR_API_ID.execute-api.us-east-1.amazonaws.com/prod/chat
@@ -32,7 +32,7 @@ class ErrorResponse(TypedDict):
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="elizaOS AWS Lambda Test Client",
+        description="tokagentOS AWS Lambda Test Client",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -97,14 +97,14 @@ def main() -> None:
     endpoint = args.endpoint
     conversation_id = args.conversation
 
-    print("\n🤖 elizaOS AWS Lambda Test Client\n")
+    print("\n🤖 tokagentOS AWS Lambda Test Client\n")
     print(f"📡 Endpoint: {endpoint}\n")
 
     with httpx.Client() as client:
         # Check health
         check_health(client, endpoint)
 
-        print("💬 Chat with Eliza (type 'exit' to quit, 'new' for new conversation)\n")
+        print("💬 Chat with Tokagent (type 'exit' to quit, 'new' for new conversation)\n")
 
         while True:
             try:
@@ -129,7 +129,7 @@ def main() -> None:
             if not text:
                 continue
 
-            print("Eliza: ", end="", flush=True)
+            print("Tokagent: ", end="", flush=True)
             start = time.time()
             response = send_message(client, endpoint, text, conversation_id)
             duration = int((time.time() - start) * 1000)

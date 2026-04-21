@@ -1,5 +1,5 @@
 """
-ElizaOS Tau-bench - Tool-Agent-User Interaction Benchmark.
+TokagentOS Tau-bench - Tool-Agent-User Interaction Benchmark.
 
 Tau-bench evaluates LLMs' ability to effectively utilize tools in real-world
 customer service scenarios across multiple domains:
@@ -16,7 +16,7 @@ Key metrics:
 
 __version__ = "0.1.0"
 
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauDomain,
     ToolCallStatus,
     ToolDefinition,
@@ -29,20 +29,20 @@ from elizaos_tau_bench.types import (
     TauBenchConfig,
     PassKMetrics,
 )
-from elizaos_tau_bench.dataset import DataValidationError
-from elizaos_tau_bench.evaluator import TauBenchEvaluator
-from elizaos_tau_bench.agent import TauAgent  # Legacy mock agent
-from elizaos_tau_bench.eliza_agent import (
-    ElizaOSTauAgent,
+from tokagentos_tau_bench.dataset import DataValidationError
+from tokagentos_tau_bench.evaluator import TauBenchEvaluator
+from tokagentos_tau_bench.agent import TauAgent  # Legacy mock agent
+from tokagentos_tau_bench.tokagent_agent import (
+    TokagentOSTauAgent,
     MockTauAgent,
     create_tau_agent,
-    ELIZAOS_AVAILABLE,
+    TOKAGENTOS_AVAILABLE,
 )
-from elizaos_tau_bench.constants import LEADERBOARD_SCORES
-from elizaos_tau_bench.environments.base import DomainEnvironment
-from elizaos_tau_bench.environments.retail import RetailEnvironment
-from elizaos_tau_bench.environments.airline import AirlineEnvironment
-from elizaos_tau_bench.runner import TauBenchRunner
+from tokagentos_tau_bench.constants import LEADERBOARD_SCORES
+from tokagentos_tau_bench.environments.base import DomainEnvironment
+from tokagentos_tau_bench.environments.retail import RetailEnvironment
+from tokagentos_tau_bench.environments.airline import AirlineEnvironment
+from tokagentos_tau_bench.runner import TauBenchRunner
 
 __all__ = [
     # Types
@@ -61,11 +61,11 @@ __all__ = [
     "TauBenchRunner",
     "TauBenchEvaluator",
     "TauAgent",
-    # ElizaOS-integrated agents
-    "ElizaOSTauAgent",
+    # TokagentOS-integrated agents
+    "TokagentOSTauAgent",
     "MockTauAgent",
     "create_tau_agent",
-    "ELIZAOS_AVAILABLE",
+    "TOKAGENTOS_AVAILABLE",
     # Environments
     "DomainEnvironment",
     "RetailEnvironment",

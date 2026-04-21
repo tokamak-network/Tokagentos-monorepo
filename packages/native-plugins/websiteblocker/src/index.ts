@@ -8,7 +8,7 @@ const loadWeb = () =>
   import("./web").then((module) => new module.WebsiteBlockerWeb());
 
 export const WebsiteBlocker = registerPlugin<WebsiteBlockerPlugin>(
-  "ElizaWebsiteBlocker",
+  "TokagentWebsiteBlocker",
   {
     web: loadWeb,
   },

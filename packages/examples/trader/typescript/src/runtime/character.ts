@@ -1,4 +1,4 @@
-import { createCharacter } from '@elizaos/core';
+import { createCharacter } from '@tokagentos/core';
 
 /**
  * Trading bot character configuration

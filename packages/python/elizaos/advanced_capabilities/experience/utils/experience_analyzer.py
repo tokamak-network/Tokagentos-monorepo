@@ -4,7 +4,7 @@ import random
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from elizaos.advanced_capabilities.experience.types import (
+from tokagentos.advanced_capabilities.experience.types import (
     Experience,
     ExperienceType,
     OutcomeType,

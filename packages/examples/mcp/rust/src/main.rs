@@ -1,18 +1,18 @@
-//! elizaOS MCP Agent Server - Rust
+//! tokagentOS MCP Agent Server - Rust
 //!
-//! Exposes an elizaOS agent as an MCP server. Any MCP-compatible client
+//! Exposes an tokagentOS agent as an MCP server. Any MCP-compatible client
 //! (Claude Desktop, VS Code, etc.) can interact with your agent.
 //!
-//! Uses real elizaOS runtime with OpenAI plugin.
+//! Uses real tokagentOS runtime with OpenAI plugin.
 
 use anyhow::Result;
-use elizaos::{
+use tokagentos::{
     parse_character,
     runtime::{AgentRuntime, RuntimeOptions},
     types::{Content, Memory, UUID},
     IMessageService,
 };
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 use serde::{Deserialize, Serialize};
 use std::io::{BufRead, Write};
 use std::sync::Arc;
@@ -24,8 +24,8 @@ use tracing::{error, info};
 // ============================================================================
 
 const CHARACTER_JSON: &str = r#"{
-    "name": "Eliza",
-    "bio": "A helpful AI assistant powered by elizaOS, accessible via MCP.",
+    "name": "Tokagent",
+    "bio": "A helpful AI assistant powered by tokagentOS, accessible via MCP.",
     "system": "You are a helpful, friendly AI assistant. Be concise and informative."
 }"#;
 
@@ -149,7 +149,7 @@ impl McpServer {
 
         let runtime = AgentRuntime::new(RuntimeOptions {
             character: Some(character),
-            plugins: vec![create_openai_elizaos_plugin()?],
+            plugins: vec![create_openai_tokagentos_plugin()?],
             ..Default::default()
         })
         .await?;
@@ -162,7 +162,7 @@ impl McpServer {
         vec![
             Tool {
                 name: "chat".to_string(),
-                description: "Send a message to the Eliza agent and receive a response"
+                description: "Send a message to the Tokagent agent and receive a response"
                     .to_string(),
                 input_schema: serde_json::json!({
                     "type": "object",
@@ -181,7 +181,7 @@ impl McpServer {
             },
             Tool {
                 name: "get_agent_info".to_string(),
-                description: "Get information about the Eliza agent".to_string(),
+                description: "Get information about the Tokagent agent".to_string(),
                 input_schema: serde_json::json!({
                     "type": "object",
                     "properties": {}
@@ -214,8 +214,8 @@ impl McpServer {
 
     fn get_agent_info(&self) -> AgentInfo {
         AgentInfo {
-            name: "Eliza".to_string(),
-            bio: "A helpful AI assistant powered by elizaOS, accessible via MCP.".to_string(),
+            name: "Tokagent".to_string(),
+            bio: "A helpful AI assistant powered by tokagentOS, accessible via MCP.".to_string(),
             capabilities: vec![
                 "Natural language conversation".to_string(),
                 "Helpful responses".to_string(),
@@ -234,7 +234,7 @@ impl McpServer {
                 result: Some(serde_json::to_value(InitializeResult {
                     protocol_version: "2024-11-05".to_string(),
                     server_info: ServerInfo {
-                        name: "eliza-mcp-server".to_string(),
+                        name: "tokagent-mcp-server".to_string(),
                         version: "1.0.0".to_string(),
                     },
                     capabilities: Capabilities {
@@ -382,11 +382,11 @@ async fn main() -> Result<()> {
         .with_writer(std::io::stderr)
         .with_env_filter(
             tracing_subscriber::EnvFilter::from_default_env()
-                .add_directive("eliza_mcp_server=info".parse().unwrap()),
+                .add_directive("tokagent_mcp_server=info".parse().unwrap()),
         )
         .init();
 
-    eprintln!("🌐 elizaOS MCP Server starting on stdio");
+    eprintln!("🌐 tokagentOS MCP Server starting on stdio");
     eprintln!("📚 Available tools: chat, get_agent_info");
 
     let server = McpServer::new();

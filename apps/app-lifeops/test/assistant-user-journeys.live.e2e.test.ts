@@ -11,12 +11,12 @@ import {
   logger,
   type Plugin,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, beforeAll, expect, it } from "vitest";
 import { describeIf } from "../../../../test/helpers/conditional-tests.ts";
 import { saveEnv, sleep, withTimeout } from "../../../../test/helpers/test-utils";
-import { resolveOAuthDir } from "@elizaos/agent/config/paths";
+import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
 import {
   addDaysToLocalDate,
   buildUtcDateFromLocalParts,
@@ -35,14 +35,14 @@ import {
   createLifeOpsGmailSyncState,
   LifeOpsRepository,
 } from "../src/lifeops/repository.js";
-import { buildCharacterFromConfig } from "@elizaos/agent/runtime/eliza";
-import { configureLocalEmbeddingPlugin } from "@elizaos/agent/runtime/eliza";
-import { createElizaPlugin } from "@elizaos/agent/runtime/eliza-plugin";
+import { buildCharacterFromConfig } from "@tokagentos/agent/runtime/tokagent";
+import { configureLocalEmbeddingPlugin } from "@tokagentos/agent/runtime/tokagent";
+import { createTokagentPlugin } from "@tokagentos/agent/runtime/tokagent-plugin";
 import {
   extractPlugin,
   type PluginModuleShape,
-} from "@elizaos/agent/test-support/test-helpers";
-import { listTriggerTasks, readTriggerConfig } from "@elizaos/agent/triggers/runtime";
+} from "@tokagentos/agent/test-support/test-helpers";
+import { listTriggerTasks, readTriggerConfig } from "@tokagentos/agent/triggers/runtime";
 
 const testDir = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(testDir, "..");
@@ -820,30 +820,30 @@ describeIf(LIVE_SUITE_ENABLED)(
     let dmRoomId: UUID;
 
     const workspaceDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-assistant-journeys-workspace-"),
+      path.join(os.tmpdir(), "tokagent-assistant-journeys-workspace-"),
     );
     const pgliteDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-assistant-journeys-pglite-"),
+      path.join(os.tmpdir(), "tokagent-assistant-journeys-pglite-"),
     );
     const stateDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "eliza-assistant-journeys-state-"),
+      path.join(os.tmpdir(), "tokagent-assistant-journeys-state-"),
     );
 
     beforeAll(async () => {
       envBackup = saveEnv(
         ...LIVE_PROVIDER_ENV_KEYS,
         "PGLITE_DATA_DIR",
-        "ELIZA_STATE_DIR",
-        "ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
+        "TOKAGENT_STATE_DIR",
+        "TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
         "ENABLE_TRAJECTORIES",
-        "ELIZA_TRAJECTORY_LOGGING",
+        "TOKAGENT_TRAJECTORY_LOGGING",
       );
       process.env.PGLITE_DATA_DIR = pgliteDir;
-      process.env.ELIZA_STATE_DIR = stateDir;
-      process.env.ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID = GOOGLE_CLIENT_ID;
+      process.env.TOKAGENT_STATE_DIR = stateDir;
+      process.env.TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID = GOOGLE_CLIENT_ID;
       process.env.ENABLE_TRAJECTORIES = "false";
-      process.env.ELIZA_TRAJECTORY_LOGGING = "false";
-      process.env.LOG_LEVEL = process.env.ELIZA_E2E_LOG_LEVEL ?? "error";
+      process.env.TOKAGENT_TRAJECTORY_LOGGING = "false";
+      process.env.LOG_LEVEL = process.env.TOKAGENT_E2E_LOG_LEVEL ?? "error";
 
       for (const key of LIVE_PROVIDER_ENV_KEYS) {
         delete process.env[key];
@@ -857,7 +857,7 @@ describeIf(LIVE_SUITE_ENABLED)(
       const character = buildCharacterFromConfig({});
       character.settings = {
         ...(character.settings ?? {}),
-        ELIZA_ADMIN_ENTITY_ID: ownerId,
+        TOKAGENT_ADMIN_ENTITY_ID: ownerId,
       };
       character.secrets = selectedProviderEnv;
 
@@ -876,7 +876,7 @@ describeIf(LIVE_SUITE_ENABLED)(
         character,
         plugins: [
           providerPlugin,
-          createElizaPlugin({
+          createTokagentPlugin({
             agentId: "main",
             workspaceDir,
           }),
@@ -1067,7 +1067,7 @@ describeIf(LIVE_SUITE_ENABLED)(
         entityId: ownerId,
         roomId: dmRoomId,
         source: "telegram",
-        text: "Hey Eliza, can you create a recurring 9am heartbeat that summarizes financial and international news every morning and sends it to me?",
+        text: "Hey Tokagent, can you create a recurring 9am heartbeat that summarizes financial and international news every morning and sends it to me?",
       });
 
       const findNewsTrigger = async () => {

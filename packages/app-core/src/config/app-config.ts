@@ -2,11 +2,11 @@
  * White-label application configuration.
  *
  * This is the top-level config that a white-label app provides to customize
- * the entire elizaOS experience — branding, defaults, deployment, and cloud
+ * the entire tokagentOS experience — branding, defaults, deployment, and cloud
  * integration. Apps provide this via `app.config.ts` in their project root.
  *
  * Usage:
- *   import { AppConfig } from "@elizaos/app-core";
+ *   import { AppConfig } from "@tokagentos/app-core";
  *
  *   export default {
  *     appName: "MyAgent",
@@ -92,9 +92,9 @@ export interface AppConfig {
   description: string;
 
   /**
-   * Eliza Cloud app ID for rev sharing.
+   * Tokagent Cloud app ID for rev sharing.
    * When set, the app earns revenue through inference markups and
-   * purchase-share settings on Eliza Cloud.
+   * purchase-share settings on Tokagent Cloud.
    */
   cloudAppId?: string;
 
@@ -103,8 +103,8 @@ export interface AppConfig {
 
   /**
    * Env var prefix for this app.
-   * When set, the app's brand-env layer aliases `{PREFIX}_PORT` → `ELIZA_PORT`, etc.
-   * Example: "MILADY" generates MILADY_PORT → ELIZA_PORT.
+   * When set, the app's brand-env layer aliases `{PREFIX}_PORT` → `TOKAGENT_PORT`, etc.
+   * Example: "MILADY" generates MILADY_PORT → TOKAGENT_PORT.
    */
   envPrefix?: string;
 
@@ -124,7 +124,7 @@ export interface AppConfig {
   packaging?: AppPackagingConfig;
 
   /**
-   * Default ELIZA_NAMESPACE value.
+   * Default TOKAGENT_NAMESPACE value.
    * Determines the state directory name (~/.{namespace}/) and config filename.
    * Defaults to the cliName if not set.
    */
@@ -140,16 +140,16 @@ export function resolveAppBranding(appConfig: AppConfig): BrandingConfig {
   // Requiring branding at call time was leaking into the browser bundle and
   // causing a runtime `require is not defined` failure.
   const defaults: BrandingConfig = {
-    appName: "Eliza",
-    orgName: "elizaos",
-    repoName: "eliza",
-    docsUrl: "https://docs.elizaos.ai",
-    appUrl: "https://app.elizaos.ai",
+    appName: "Tokagent",
+    orgName: "tokagentos",
+    repoName: "tokagent",
+    docsUrl: "https://docs.tokagentos.ai",
+    appUrl: "https://app.tokagentos.ai",
     bugReportUrl:
-      "https://github.com/elizaos/eliza/issues/new?template=bug_report.yml",
-    hashtag: "#ElizaAgent",
-    fileExtension: ".eliza-agent",
-    packageScope: "elizaos",
+      "https://github.com/tokagentos/tokagent/issues/new?template=bug_report.yml",
+    hashtag: "#TokagentAgent",
+    fileExtension: ".tokagent-agent",
+    packageScope: "tokagentos",
   };
 
   return {

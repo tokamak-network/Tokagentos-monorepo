@@ -1,6 +1,6 @@
 # Agentic Game of Life - Python Version
 
-A tiny grid-world simulation demonstrating **the full elizaOS message pipeline** with **no LLM**.
+A tiny grid-world simulation demonstrating **the full tokagentOS message pipeline** with **no LLM**.
 
 ## Running
 
@@ -23,7 +23,7 @@ That triggers:
 - `runtime.use_model(TEXT_LARGE, { prompt })`
 - a **custom rule-based model handler** that returns deterministic XML:
   - `<actions>MOVE_TOWARD_FOOD</actions>` / `<actions>EAT</actions>` / `<actions>WANDER</actions>`
-- `runtime.process_actions(...)` which executes real elizaOS `Action` handlers (mutating the world)
+- `runtime.process_actions(...)` which executes real tokagentOS `Action` handlers (mutating the world)
 
 ## Current Status
 

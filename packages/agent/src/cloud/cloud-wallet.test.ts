@@ -18,7 +18,7 @@ import {
   it,
   vi,
 } from "vitest";
-import { ElizaCloudClient } from "./bridge-client";
+import { TokagentCloudClient } from "./bridge-client";
 import {
   __resetCloudWalletModuleForTests,
   CloudWalletFlagDisabledError,
@@ -157,8 +157,8 @@ afterEach(() => {
   delete process.env.ENABLE_CLOUD_WALLET;
 });
 
-function bridge(): ElizaCloudClient {
-  return new ElizaCloudClient(`http://127.0.0.1:${serverPort}`, "test-api-key");
+function bridge(): TokagentCloudClient {
+  return new TokagentCloudClient(`http://127.0.0.1:${serverPort}`, "test-api-key");
 }
 
 // ---------------------------------------------------------------------------
@@ -306,7 +306,7 @@ describe("provisionCloudWallets", () => {
           provider: "privy" as const,
         };
       }),
-    } as unknown as ElizaCloudClient;
+    } as unknown as TokagentCloudClient;
 
     const result = await provisionCloudWalletsBestEffort(partialBridge, {
       agentId: "agent-1",

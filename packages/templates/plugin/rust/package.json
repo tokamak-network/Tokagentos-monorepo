@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/rust-plugin-starter",
   "private": true,
-  "description": "Starter template for elizaOS Rust plugins with cross-language support",
+  "description": "Starter template for tokagentOS Rust plugins with cross-language support",
   "version": "2.0.0-alpha",
   "type": "module",
   "main": "dist/index.js",
@@ -10,18 +10,18 @@
   "packageType": "plugin",
   "platform": "node",
   "license": "MIT",
-  "author": "elizaOS Team",
+  "author": "tokagentOS Team",
   "keywords": [
     "plugin",
-    "elizaos",
+    "tokagentos",
     "rust",
     "wasm"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaos/eliza"
+    "url": "https://github.com/tokagentos/tokagent"
   },
-  "homepage": "https://elizaos.ai",
+  "homepage": "https://tokagentos.ai",
   "exports": {
     "./package.json": "./package.json",
     ".": {
@@ -37,7 +37,7 @@
     "package.json"
   ],
   "dependencies": {
-    "@elizaos/core": "__ELIZAOS_VERSION__"
+    "@tokagentos/core": "__TOKAGENTOS_VERSION__"
   },
   "devDependencies": {
     "typescript": "^6.0.0"
@@ -46,10 +46,10 @@
     "build:rust": "bun run build.ts",
     "build:ts": "tsc",
     "build": "echo 'Skipping rust-plugin-starter build'",
-    "test": "elizaos test",
+    "test": "tokagentos test",
     "test:component": "vitest run",
-    "test:e2e": "elizaos test --type e2e",
-    "start": "elizaos start",
+    "test:e2e": "tokagentos test --type e2e",
+    "start": "tokagentos start",
     "typecheck": "tsc --noEmit"
   }
 }

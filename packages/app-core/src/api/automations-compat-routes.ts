@@ -2,29 +2,29 @@ import type http from "node:http";
 import {
   extractConversationMetadataFromRoom,
   isAutomationConversationMetadata,
-} from "@elizaos/agent/api/conversation-metadata";
+} from "@tokagentos/agent/api/conversation-metadata";
 import type {
   ConversationMetadata,
   ConversationScope,
-} from "@elizaos/agent/api/server-types";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
-import { toWorkbenchTask } from "@elizaos/agent/api/workbench-helpers";
-import { listTriggerTasks, taskToTriggerSummary } from "@elizaos/agent/triggers/runtime";
-import type { TriggerSummary } from "@elizaos/agent/triggers/types";
+} from "@tokagentos/agent/api/server-types";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
+import { toWorkbenchTask } from "@tokagentos/agent/api/workbench-helpers";
+import { listTriggerTasks, taskToTriggerSummary } from "@tokagentos/agent/triggers/runtime";
+import type { TriggerSummary } from "@tokagentos/agent/triggers/types";
 import { LifeOpsService } from "@elizaos/app-lifeops/lifeops/service";
 import type {
   LifeOpsDiscordConnectorStatus,
   LifeOpsGoogleConnectorStatus,
   LifeOpsSignalConnectorStatus,
   LifeOpsTelegramConnectorStatus,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   type AgentRuntime,
   logger,
   type Room,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   AutomationItem,
   AutomationNodeCatalogResponse,
@@ -118,17 +118,17 @@ function humanizeCapabilityName(value: string): string {
 
 function resolveAgentName(
   runtime: AgentRuntime | null,
-  config: ReturnType<typeof loadElizaConfig>,
+  config: ReturnType<typeof loadTokagentConfig>,
 ): string {
   return (
     runtime?.character?.name?.trim() ||
     config.ui?.assistant?.name?.trim() ||
-    "Eliza"
+    "Tokagent"
   );
 }
 
 function resolveAdminEntityId(
-  config: ReturnType<typeof loadElizaConfig>,
+  config: ReturnType<typeof loadTokagentConfig>,
   agentName: string,
 ): UUID {
   const configured = config.agents?.defaults?.adminEntityId?.trim();
@@ -256,7 +256,7 @@ async function invokeN8nCompatRoute<T>(
     res,
     method: "GET",
     pathname,
-    config: loadElizaConfig(),
+    config: loadTokagentConfig(),
     runtime: state.current,
     json: (_res, body, nextStatus = 200) => {
       payload = body as T;
@@ -415,7 +415,7 @@ async function buildAutomationListResponse(
     throw new Error("Agent runtime is not available");
   }
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const agentName = resolveAgentName(runtime, config);
   const rooms = await listAutomationRooms(runtime, agentName);
   const taskRooms = new Map(
@@ -674,7 +674,7 @@ async function buildAutomationNodeCatalog(
     throw new Error("Agent runtime is not available");
   }
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const agentName = resolveAgentName(runtime, config);
   const adminEntityId = resolveAdminEntityId(config, agentName);
   const lifeOps = new LifeOpsService(runtime, { ownerEntityId: adminEntityId });

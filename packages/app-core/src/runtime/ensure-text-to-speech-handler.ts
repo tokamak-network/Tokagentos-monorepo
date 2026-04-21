@@ -1,6 +1,6 @@
 import process from "node:process";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
-import { type AgentRuntime, logger, ModelType } from "@elizaos/core";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
+import { type AgentRuntime, logger, ModelType } from "@tokagentos/core";
 
 export interface EdgeTtsConfig {
   plugins?: {
@@ -17,7 +17,7 @@ export function isEdgeTtsDisabled(config: EdgeTtsConfig): boolean {
     return true;
   }
 
-  const raw = process?.env ? process.env.ELIZA_DISABLE_EDGE_TTS : undefined;
+  const raw = process?.env ? process.env.TOKAGENT_DISABLE_EDGE_TTS : undefined;
   if (!raw || typeof raw !== "string") {
     return false;
   }
@@ -54,14 +54,14 @@ function readHandler(
 }
 
 /**
- * `@elizaos/agent` boot calls its own `collectPluginNames`, so the app wrapper
+ * `@tokagentos/agent` boot calls its own `collectPluginNames`, so the app wrapper
  * that adds Edge TTS is bypassed. Register the Edge TTS model handler on the
  * live runtime so streaming / swarm voice can still resolve TEXT_TO_SPEECH.
  */
 export async function ensureTextToSpeechHandler(
   runtime: AgentRuntime,
 ): Promise<void> {
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   if (isEdgeTtsDisabled(config)) {
     return;
   }
@@ -98,11 +98,11 @@ export async function ensureTextToSpeechHandler(
       0,
     );
     logger.info(
-      "[eliza] Registered Edge TTS for runtime TEXT_TO_SPEECH (streaming / swarm voice)",
+      "[tokagent] Registered Edge TTS for runtime TEXT_TO_SPEECH (streaming / swarm voice)",
     );
   } catch (error) {
     throw new Error(
-      `[eliza] Could not register Edge TTS for TEXT_TO_SPEECH: ${error instanceof Error ? error.message : String(error)}`,
+      `[tokagent] Could not register Edge TTS for TEXT_TO_SPEECH: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Button, Input } from "@elizaos/ui";
+import { Button, Input } from "@tokagentos/ui";
 import type { MouseEvent } from "react";
 import type { RegistryAppInfo } from "../../api";
 import { useApp } from "../../state";

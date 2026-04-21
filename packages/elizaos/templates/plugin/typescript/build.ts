@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * Self-contained build script for elizaOS plugins
+ * Self-contained build script for tokagentOS plugins
  */
 
 import { existsSync } from "node:fs";
@@ -39,7 +39,7 @@ async function build() {
           external: [
             "dotenv",
             "node:*",
-            "@elizaos/core",
+            "@tokagentos/core",
             "zod",
           ],
           naming: {

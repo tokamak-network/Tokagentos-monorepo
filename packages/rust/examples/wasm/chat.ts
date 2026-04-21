@@ -6,13 +6,13 @@
  *   bun run examples/wasm/chat.ts
  */
 
-import * as elizaos from "../../pkg-node/elizaos.js";
+import * as tokagentos from "../../pkg-node/tokagentos.js";
 import { createInterface } from "node:readline";
 
 async function main() {
-  console.log("=== elizaOS Interactive Chat ===\n");
+  console.log("=== tokagentOS Interactive Chat ===\n");
 
-  const runtime = elizaos.WasmAgentRuntime.create(
+  const runtime = tokagentos.WasmAgentRuntime.create(
     JSON.stringify({
       name: "ChatBot",
       bio: "A friendly chat bot running in WASM",
@@ -21,7 +21,7 @@ async function main() {
   );
   await runtime.initialize();
 
-  const handler = new elizaos.JsModelHandler({
+  const handler = new tokagentos.JsModelHandler({
     handle: async (paramsJson: string): Promise<string> => {
       const params = JSON.parse(paramsJson) as { prompt?: string };
       const prompt = params.prompt ?? "";
@@ -47,8 +47,8 @@ async function main() {
     }
 
     const messageJson = JSON.stringify({
-      entityId: elizaos.generateUUID(),
-      roomId: elizaos.generateUUID(),
+      entityId: tokagentos.generateUUID(),
+      roomId: tokagentos.generateUUID(),
       content: { text: input },
     });
 

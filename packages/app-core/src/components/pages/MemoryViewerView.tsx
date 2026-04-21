@@ -9,7 +9,7 @@ import {
   SidebarHeader,
   SidebarPanel,
   SidebarScrollRegion,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { RefreshCw, Search } from "lucide-react";
 import {
   type ReactNode,

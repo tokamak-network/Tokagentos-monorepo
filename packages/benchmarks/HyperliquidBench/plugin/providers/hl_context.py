@@ -9,10 +9,10 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
 # JSON plan schema (mirrors crates/hl-runner/src/llm/prompts.rs)
 _PLAN_SCHEMA = """\

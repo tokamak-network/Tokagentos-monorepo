@@ -12,7 +12,7 @@ Simulates an airline customer service environment with:
 from datetime import datetime, timedelta
 from typing import Any
 
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauBenchTask,
     ToolCall,
     ToolCallStatus,
@@ -20,7 +20,7 @@ from elizaos_tau_bench.types import (
     PolicyConstraint,
     TauDomain,
 )
-from elizaos_tau_bench.environments.base import DomainEnvironment
+from tokagentos_tau_bench.environments.base import DomainEnvironment
 
 
 class AirlineEnvironment(DomainEnvironment):

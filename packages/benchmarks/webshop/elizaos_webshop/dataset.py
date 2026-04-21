@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from elizaos_webshop.types import Product, WebShopTask
+from tokagentos_webshop.types import Product, WebShopTask
 
 logger = logging.getLogger(__name__)
 

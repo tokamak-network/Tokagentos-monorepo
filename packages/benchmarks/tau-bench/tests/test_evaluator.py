@@ -3,14 +3,14 @@ Tests for Tau-bench evaluator.
 """
 
 import pytest
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauBenchTask,
     TauBenchResult,
     TauDomain,
     ToolCall,
     PolicyConstraint,
 )
-from elizaos_tau_bench.evaluator import TauBenchEvaluator
+from tokagentos_tau_bench.evaluator import TauBenchEvaluator
 
 
 @pytest.fixture

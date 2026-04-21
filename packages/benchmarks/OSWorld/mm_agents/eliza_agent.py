@@ -1,15 +1,15 @@
 """
-Eliza OSWorld Agent -- routes all decisions through Eliza's message_service.handle_message().
+Tokagent OSWorld Agent -- routes all decisions through Tokagent's message_service.handle_message().
 
 This agent implements the OSWorld agent interface (predict / reset) but uses
-Eliza's canonical message processing pipeline:
+Tokagent's canonical message processing pipeline:
   1. Observations (screenshot + a11y tree) are injected via a Provider
   2. The LLM chooses from registered desktop Actions (DESKTOP_CLICK, DESKTOP_TYPE, etc.)
   3. Action handlers generate pyautogui code
   4. The code is collected and returned to OSWorld's env.step()
 
 Usage:
-    agent = ElizaOSWorldAgent(
+    agent = TokagentOSWorldAgent(
         model="qwen/qwen3-32b",
         observation_type="screenshot_a11y_tree",
         action_space="pyautogui",
@@ -29,18 +29,18 @@ from typing import Dict, List
 
 # Ensure protobuf generated modules are importable
 _generated_dir = os.path.join(
-    os.path.dirname(__file__), "..", "..", "..", "eliza", "packages", "python",
-    "elizaos", "types", "generated",
+    os.path.dirname(__file__), "..", "..", "..", "tokagent", "packages", "python",
+    "tokagentos", "types", "generated",
 )
 _generated_dir = os.path.normpath(_generated_dir)
 if os.path.isdir(_generated_dir) and _generated_dir not in sys.path:
     sys.path.insert(0, _generated_dir)
 
-from mm_agents.eliza_desktop_actions import ActionCollector
-from mm_agents.eliza_observation import ObservationStore
+from mm_agents.tokagent_desktop_actions import ActionCollector
+from mm_agents.tokagent_observation import ObservationStore
 from mm_agents.plugin import create_osworld_plugin
 
-logger = logging.getLogger("osworld.eliza.agent")
+logger = logging.getLogger("osworld.tokagent.agent")
 
 
 def _resize_screenshot_b64(raw_bytes: bytes, max_dimension: int = 1280) -> str:
@@ -100,11 +100,11 @@ def _linearize_accessibility_tree_simple(accessibility_tree: str, platform: str 
         return accessibility_tree
 
 
-class ElizaOSWorldAgent:
-    """OSWorld agent backed by Eliza's message service.
+class TokagentOSWorldAgent:
+    """OSWorld agent backed by Tokagent's message service.
     
     This class implements the OSWorld agent interface (predict, reset) while
-    routing ALL decision-making through Eliza's message_service.handle_message().
+    routing ALL decision-making through Tokagent's message_service.handle_message().
     """
 
     def __init__(
@@ -146,19 +146,19 @@ class ElizaOSWorldAgent:
         self.step_idx = 0
         self.vm_ip: str | None = None
 
-        # Eliza runtime -- initialized in async_init
+        # Tokagent runtime -- initialized in async_init
         self._runtime: object | None = None
         self._initialized = False
 
     async def async_init(self) -> None:
-        """Initialize the Eliza runtime with desktop actions and observation provider.
+        """Initialize the Tokagent runtime with desktop actions and observation provider.
         
         Must be called once before predict().
         """
         if self._initialized:
             return
 
-        from elizaos.runtime import AgentRuntime
+        from tokagentos.runtime import AgentRuntime
 
         # Build character config for the agent
         character = _build_character(
@@ -195,7 +195,7 @@ class ElizaOSWorldAgent:
             max_tokens=self.max_tokens,
             temperature=self.temperature,
         )
-        from elizaos.types.model import ModelType
+        from tokagentos.types.model import ModelType
         runtime.register_model(ModelType.TEXT_LARGE, groq_handler, provider="groq")
         runtime.register_model(ModelType.TEXT_SMALL, groq_handler, provider="groq")
 
@@ -204,13 +204,13 @@ class ElizaOSWorldAgent:
         self._runtime = runtime
         self._initialized = True
         logger.info(
-            "Eliza OSWorld agent initialized with model=%s, provider=%s",
+            "Tokagent OSWorld agent initialized with model=%s, provider=%s",
             self.model,
             model_provider,
         )
 
     def predict(self, instruction: str, obs: Dict) -> tuple[str, List[str]]:
-        """Predict the next action(s) via Eliza's message service.
+        """Predict the next action(s) via Tokagent's message service.
         
         This is the synchronous entry point called by OSWorld's run loop.
         Internally runs the async handle_message in an event loop.
@@ -229,7 +229,7 @@ class ElizaOSWorldAgent:
             return asyncio.run(self._async_predict(instruction, obs))
 
     async def _async_predict(self, instruction: str, obs: Dict) -> tuple[str, List[str]]:
-        """Async implementation of predict using Eliza's handle_message."""
+        """Async implementation of predict using Tokagent's handle_message."""
         if not self._initialized:
             await self.async_init()
 
@@ -302,9 +302,9 @@ class ElizaOSWorldAgent:
         collector = ActionCollector.get()
         collector.reset()
 
-        # ---- 4. Build Eliza message ----
-        from elizaos.types.primitives import Content, Media
-        from elizaos.types.memory import Memory
+        # ---- 4. Build Tokagent message ----
+        from tokagentos.types.primitives import Content, Media
+        from tokagentos.types.memory import Memory
 
         if not hasattr(self, "_room_id"):
             self._room_id = str(uuid.uuid4())
@@ -501,8 +501,8 @@ def _build_character(
     screen_height: int = 1080,
     client_password: str = "password",
 ) -> object:
-    """Build an Eliza Character for the OSWorld agent."""
-    from elizaos.types.agent import Character
+    """Build an Tokagent Character for the OSWorld agent."""
+    from tokagentos.types.agent import Character
 
     system_prompt = (
         "You are an expert desktop automation agent. You interact with a computer "

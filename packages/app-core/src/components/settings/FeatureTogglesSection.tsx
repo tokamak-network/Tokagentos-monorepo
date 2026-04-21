@@ -9,15 +9,15 @@
  * of truth for managed entitlements (Commandment 4).
  *
  * Travel features (`travel.*`, `cloud.duffel`) get a Cloud-aware UX:
- *  - Cloud-linked, Cloud-managed row → "Enabled via Eliza Cloud · 20%
+ *  - Cloud-linked, Cloud-managed row → "Enabled via Tokagent Cloud · 20%
  *    service fee" badge and a disabled switch (managed upstream).
- *  - Not Cloud-linked → "Sign in to Eliza Cloud to enable, or toggle on
+ *  - Not Cloud-linked → "Sign in to Tokagent Cloud to enable, or toggle on
  *    locally (requires your own Duffel API key)" hint, and the Sync
  *    button switches to a "Sign in to Cloud" CTA wired into the existing
  *    `handleCloudLogin` flow from `useApp`.
  */
 
-import { Button, Switch } from "@elizaos/ui";
+import { Button, Switch } from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { client } from "../../api";
 import { useApp } from "../../state";
@@ -48,7 +48,7 @@ interface ToggleResponse {
 }
 
 /** Feature keys that are Cloud-default-on when the user is signed into
- *  Eliza Cloud. Mirrors `CLOUD_LINKED_DEFAULT_ON` in
+ *  Tokagent Cloud. Mirrors `CLOUD_LINKED_DEFAULT_ON` in
  *  feature-flags.types.ts; duplicated here to avoid pulling the
  *  app-lifeops package into the React bundle. */
 const CLOUD_TRAVEL_KEYS: ReadonlySet<string> = new Set([
@@ -88,7 +88,7 @@ function sourceBadge(source: FeatureSource): {
 }
 
 export function FeatureTogglesSection() {
-  const { elizaCloudConnected, handleCloudLogin } = useApp();
+  const { tokagentCloudConnected, handleCloudLogin } = useApp();
   const [features, setFeatures] = useState<FeatureRowDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -178,7 +178,7 @@ export function FeatureTogglesSection() {
   }, [handleCloudLogin, load]);
 
   const headerCta = useMemo(() => {
-    if (!elizaCloudConnected) {
+    if (!tokagentCloudConnected) {
       return (
         <Button
           variant="outline"
@@ -202,7 +202,7 @@ export function FeatureTogglesSection() {
         {syncing ? "Syncing…" : "Sync from Cloud"}
       </Button>
     );
-  }, [elizaCloudConnected, handleSignIn, handleSync, signInBusy, syncing]);
+  }, [tokagentCloudConnected, handleSignIn, handleSync, signInBusy, syncing]);
 
   return (
     <div className="border-t border-border/40 pt-4">
@@ -239,7 +239,7 @@ export function FeatureTogglesSection() {
             const isBusy = busyKey === feature.featureKey;
             const showCloudFeeTag = cloudTravel && isCloudManaged;
             const showCloudHint =
-              cloudTravel && !elizaCloudConnected && !isCloudManaged;
+              cloudTravel && !tokagentCloudConnected && !isCloudManaged;
             return (
               <li
                 key={feature.featureKey}
@@ -262,7 +262,7 @@ export function FeatureTogglesSection() {
                     </span>
                     {showCloudFeeTag && (
                       <span className="rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-                        Enabled via Eliza Cloud · 20% service fee
+                        Enabled via Tokagent Cloud · 20% service fee
                       </span>
                     )}
                     {feature.costsMoney && !showCloudFeeTag && (
@@ -276,13 +276,13 @@ export function FeatureTogglesSection() {
                   </p>
                   {isCloudManaged && (
                     <p className="text-xs-tight text-muted">
-                      Managed by your Eliza Cloud package — disable it from
+                      Managed by your Tokagent Cloud package — disable it from
                       the Cloud dashboard.
                     </p>
                   )}
                   {showCloudHint && (
                     <p className="text-xs-tight text-muted">
-                      Sign in to Eliza Cloud to enable, or toggle on locally
+                      Sign in to Tokagent Cloud to enable, or toggle on locally
                       (requires your own Duffel API key).
                     </p>
                   )}

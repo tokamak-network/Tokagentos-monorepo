@@ -35,7 +35,7 @@ describe("run-mobile-build", () => {
     writeFile(
       path.join(
         repoRoot,
-        "eliza",
+        "tokagent",
         "packages",
         "app-core",
         "platforms",
@@ -49,7 +49,7 @@ describe("run-mobile-build", () => {
     writeFile(
       path.join(
         repoRoot,
-        "eliza",
+        "tokagent",
         "packages",
         "app-core",
         "platforms",
@@ -62,7 +62,7 @@ describe("run-mobile-build", () => {
     writeFile(
       path.join(
         repoRoot,
-        "eliza",
+        "tokagent",
         "packages",
         "app-core",
         "platforms",
@@ -77,7 +77,7 @@ describe("run-mobile-build", () => {
     writeFile(
       path.join(
         repoRoot,
-        "eliza",
+        "tokagent",
         "packages",
         "app-core",
         "platforms",
@@ -92,7 +92,7 @@ describe("run-mobile-build", () => {
     writeFile(
       path.join(
         repoRoot,
-        "eliza",
+        "tokagent",
         "packages",
         "app-core",
         "platforms",
@@ -107,7 +107,7 @@ describe("run-mobile-build", () => {
     writeFile(
       path.join(
         repoRoot,
-        "eliza",
+        "tokagent",
         "packages",
         "app-core",
         "platforms",
@@ -119,7 +119,7 @@ describe("run-mobile-build", () => {
     writeFile(
       path.join(
         repoRoot,
-        "eliza",
+        "tokagent",
         "packages",
         "app-core",
         "platforms",

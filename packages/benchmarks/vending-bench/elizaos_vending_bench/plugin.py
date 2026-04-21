@@ -1,7 +1,7 @@
 """
-Vending-Bench ElizaOS Plugin
+Vending-Bench TokagentOS Plugin
 
-Provides proper ElizaOS integration for the Vending-Bench benchmark with:
+Provides proper TokagentOS integration for the Vending-Bench benchmark with:
 - OpenAI/Anthropic model provider for LLM calls
 - Actions for vending machine operations
 - Provider for business state context
@@ -15,10 +15,10 @@ import os
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from elizaos_vending_bench.environment import VendingEnvironment
+from tokagentos_vending_bench.environment import VendingEnvironment
 
 if TYPE_CHECKING:
-    from elizaos.types.components import (
+    from tokagentos.types.components import (
         Action,
         ActionResult,
         HandlerCallback,
@@ -26,10 +26,10 @@ if TYPE_CHECKING:
         Provider,
         ProviderResult,
     )
-    from elizaos.types.memory import Memory
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.state import State
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.state import State
 
 logger = logging.getLogger(__name__)
 
@@ -146,9 +146,9 @@ async def openai_model_handler(
 
 def create_vending_actions() -> list[Action]:
     """
-    Create ElizaOS Action objects for vending machine operations.
+    Create TokagentOS Action objects for vending machine operations.
     """
-    from elizaos.types.components import (
+    from tokagentos.types.components import (
         Action,
         ActionParameter,
         ActionParameterSchema,
@@ -569,7 +569,7 @@ def create_vending_actions() -> list[Action]:
 
 def create_vending_provider() -> Provider:
     """Create a provider for vending business state context."""
-    from elizaos.types.components import Provider, ProviderResult
+    from tokagentos.types.components import Provider, ProviderResult
 
     async def get_business_state(
         runtime: IAgentRuntime,
@@ -612,7 +612,7 @@ def create_vending_provider() -> Provider:
 
 def create_vending_bench_plugin() -> Plugin:
     """
-    Create the Vending-Bench ElizaOS plugin.
+    Create the Vending-Bench TokagentOS plugin.
 
     This plugin provides:
     - OpenAI model handler for TEXT_LARGE
@@ -622,8 +622,8 @@ def create_vending_bench_plugin() -> Plugin:
     Returns:
         Plugin configured for Vending-Bench
     """
-    from elizaos.types.model import ModelType
-    from elizaos.types.plugin import Plugin
+    from tokagentos.types.model import ModelType
+    from tokagentos.types.plugin import Plugin
 
     actions = create_vending_actions()
     provider = create_vending_provider()

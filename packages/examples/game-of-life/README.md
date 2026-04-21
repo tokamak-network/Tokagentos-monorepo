@@ -1,6 +1,6 @@
 # Agentic Game of Life
 
-A multi-agent evolution simulation demonstrating elizaOS's ability to run autonomous agents **without an LLM**.
+A multi-agent evolution simulation demonstrating tokagentOS's ability to run autonomous agents **without an LLM**.
 
 ## Key Features
 
@@ -62,5 +62,5 @@ bun run examples/game-of-life/typescript/game.ts --stats
 
 - **Digital Life**: True self-replicating agents with heredity and mutation
 - **Zero Cost**: No API calls, pure algorithmic simulation
-- **elizaOS Showcase**: Custom model handlers, plugin system, agent runtime
+- **tokagentOS Showcase**: Custom model handlers, plugin system, agent runtime
 - **Emergent Complexity**: Simple rules → rich ecosystem dynamics

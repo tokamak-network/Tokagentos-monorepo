@@ -4,8 +4,8 @@ import type {
   ActionResult,
   HandlerOptions,
   IAgentRuntime,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import crypto from "node:crypto";
 import { executeRawSql, sqlQuote } from "../../../lifeops/sql.js";
 import { BlockRuleWriter } from "../block-rule-service.js";

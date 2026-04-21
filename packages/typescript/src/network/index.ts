@@ -1,5 +1,5 @@
 /**
- * Network utilities for Eliza.
+ * Network utilities for Tokagent.
  *
  * Provides SSRF protection and secure fetch utilities.
  *

@@ -108,7 +108,7 @@ function toRenderLines(messages: Message[], maxWidth: number): RenderLine[] {
       continue;
     }
 
-    const speaker = msg.role === "user" ? "You" : "Eliza";
+    const speaker = msg.role === "user" ? "You" : "Tokagent";
     const color = msg.role === "user" ? "cyan" : "green";
     const header = `${speaker}${timeStr ? ` ${timeStr}` : ""}`;
 
@@ -238,7 +238,7 @@ export class ChatPane implements Component, Focusable {
     // Build all render lines
     const allLines = toRenderLines(messages, innerWidth);
     if (isAgentTyping) {
-      allLines.push({ text: "Eliza typing…", color: "green", dim: true });
+      allLines.push({ text: "Tokagent typing…", color: "green", dim: true });
     }
 
     // Calculate visible lines with scroll

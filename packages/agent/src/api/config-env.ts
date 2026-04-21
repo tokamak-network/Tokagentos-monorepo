@@ -2,7 +2,7 @@
  * Atomic key/value writer for the on-disk `config.env` file.
  *
  * `config.env` lives under the Milady state directory (default
- * `~/.milady/config.env`, or whatever `MILADY_STATE_DIR` / `ELIZA_STATE_DIR`
+ * `~/.milady/config.env`, or whatever `MILADY_STATE_DIR` / `TOKAGENT_STATE_DIR`
  * resolves to). It is an escape hatch for sensitive process-env-only
  * material (e.g. cloud-wallet client address keys, `WALLET_SOURCE_*`
  * bindings) that must not be mirrored into `milady.json` but still needs
@@ -193,7 +193,7 @@ export async function readConfigEnv(
 }
 
 /**
- * Synchronous variant for early startup paths such as `loadElizaConfig()`.
+ * Synchronous variant for early startup paths such as `loadTokagentConfig()`.
  * Missing file → empty record. Does NOT touch `process.env`.
  */
 export function readConfigEnvSync(stateDir?: string): Record<string, string> {

@@ -17,8 +17,8 @@ import type {
   ProviderResult,
   State,
   UUID,
-} from "@elizaos/core";
-import { logger, resolveCanonicalOwnerIdForMessage } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger, resolveCanonicalOwnerIdForMessage } from "@tokagentos/core";
 import { hasAdminAccess } from "../security/access.js";
 
 // ---------------------------------------------------------------------------

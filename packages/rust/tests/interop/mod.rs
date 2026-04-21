@@ -1,4 +1,4 @@
-//! Interoperability tests for elizaOS Core
+//! Interoperability tests for tokagentOS Core
 //!
 //! These tests verify that Rust types serialize/deserialize identically to TypeScript.
 //! They use JSON fixtures that are generated from the TypeScript implementation

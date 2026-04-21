@@ -3,7 +3,7 @@ Tests for Tau-bench types.
 """
 
 import pytest
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     TauDomain,
     ToolCallStatus,
     TaskDifficulty,

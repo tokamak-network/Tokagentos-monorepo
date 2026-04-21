@@ -2,7 +2,7 @@ import type {
   GroupChatConfig,
   HumanDelayConfig,
   IdentityConfig,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   AgentDefaultsConfig,
   SandboxBrowserSettings,
@@ -88,9 +88,9 @@ export type AgentConfig = {
   };
   tools?: AgentToolsConfig;
 
-  /** Cloud deployment info (set when agent runs in Eliza Cloud). */
+  /** Cloud deployment info (set when agent runs in Tokagent Cloud). */
   cloud?: {
-    /** Eliza Cloud agent record ID. */
+    /** Tokagent Cloud agent record ID. */
     cloudAgentId?: string;
     /** Last known sandbox status. */
     lastStatus?: string;

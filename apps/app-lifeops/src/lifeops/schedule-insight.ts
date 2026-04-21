@@ -1,11 +1,11 @@
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   LifeOpsActivitySignal,
   LifeOpsHealthSignal,
   LifeOpsScheduleInsight,
   LifeOpsScheduleMealInsight,
   LifeOpsScheduleMealLabel,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { listActivityEvents } from "../activity-profile/activity-tracker-repo.js";
 import type { LifeOpsRepository, LifeOpsScheduleInsightRecord } from "./repository.js";
 import { getLocalDateKey, getZonedDateParts } from "./time.js";

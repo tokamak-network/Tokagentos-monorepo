@@ -7,7 +7,7 @@ import {
   Slider,
   Spinner,
   Switch,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { AlertTriangle } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";

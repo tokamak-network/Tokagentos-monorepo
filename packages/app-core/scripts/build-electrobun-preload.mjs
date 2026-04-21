@@ -29,7 +29,7 @@ const ELECTROBUN_DIR =
   [
     process.cwd(),
     path.join(repoRoot, "apps", "app", "electrobun"),
-    path.join(repoRoot, "eliza", "packages", "app-core", "platforms", "electrobun"),
+    path.join(repoRoot, "tokagent", "packages", "app-core", "platforms", "electrobun"),
   ].find(isElectrobunDir) ??
   (() => {
     throw new Error("Could not resolve Electrobun workspace directory");

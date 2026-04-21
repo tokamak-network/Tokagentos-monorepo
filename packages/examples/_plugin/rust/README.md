@@ -1,6 +1,6 @@
-# elizaOS Rust Plugin Starter
+# tokagentOS Rust Plugin Starter
 
-A template for creating elizaOS plugins in Rust that can be loaded by both the TypeScript and Python runtimes.
+A template for creating tokagentOS plugins in Rust that can be loaded by both the TypeScript and Python runtimes.
 
 ## Features
 
@@ -23,7 +23,7 @@ wasm-pack build --target web --features wasm
 
 # Or manually:
 cargo build --target wasm32-unknown-unknown --release --features wasm
-wasm-bindgen target/wasm32-unknown-unknown/release/elizaos_plugin_starter.wasm --out-dir dist --target web
+wasm-bindgen target/wasm32-unknown-unknown/release/tokagentos_plugin_starter.wasm --out-dir dist --target web
 ```
 
 ### For Python (FFI)
@@ -33,9 +33,9 @@ wasm-bindgen target/wasm32-unknown-unknown/release/elizaos_plugin_starter.wasm -
 cargo build --release --features ffi
 
 # The output will be in:
-# - Linux: target/release/libelizaos_plugin_starter.so
-# - macOS: target/release/libelizaos_plugin_starter.dylib
-# - Windows: target/release/elizaos_plugin_starter.dll
+# - Linux: target/release/libtokagentos_plugin_starter.so
+# - macOS: target/release/libtokagentos_plugin_starter.dylib
+# - Windows: target/release/tokagentos_plugin_starter.dll
 ```
 
 ## Usage
@@ -43,10 +43,10 @@ cargo build --release --features ffi
 ### In TypeScript
 
 ```typescript
-import { loadWasmPlugin } from "@elizaos/interop";
+import { loadWasmPlugin } from "@tokagentos/interop";
 
 const plugin = await loadWasmPlugin({
-  wasmPath: "./dist/elizaos_plugin_starter.wasm",
+  wasmPath: "./dist/tokagentos_plugin_starter.wasm",
 });
 
 // Register with runtime
@@ -58,9 +58,9 @@ await runtime.registerPlugin(plugin);
 ### In Python
 
 ```python
-from elizaos.interop import load_rust_plugin
+from tokagentos.interop import load_rust_plugin
 
-plugin = load_rust_plugin("./target/release/libelizaos_plugin_starter.so")
+plugin = load_rust_plugin("./target/release/libtokagentos_plugin_starter.so")
 await runtime.register_plugin(plugin)
 
 # The HELLO_RUST action is now available
@@ -174,7 +174,7 @@ The plugin includes E2E tests that verify the agent can respond and call the `HE
 
 1. Install wasm-bindgen-cli: `cargo install wasm-bindgen-cli`
 2. Build the WASM module: `bun run build`
-3. Run tests: `elizaos test`
+3. Run tests: `tokagentos test`
 
 The E2E tests verify:
 
@@ -200,17 +200,17 @@ bun run build.ts
 
 This will:
 
-1. Compile Rust to WASM (`target/wasm32-unknown-unknown/release/elizaos_plugin_starter.wasm`)
-2. Generate JavaScript bindings (`dist/elizaos_plugin_starter.js` and `dist/elizaos_plugin_starter_bg.wasm`)
+1. Compile Rust to WASM (`target/wasm32-unknown-unknown/release/tokagentos_plugin_starter.wasm`)
+2. Generate JavaScript bindings (`dist/tokagentos_plugin_starter.js` and `dist/tokagentos_plugin_starter_bg.wasm`)
 3. Compile TypeScript (`dist/index.js`)
 
 ### Build FFI for Python Runtime
 
 ```bash
 cargo build --release --features ffi
-# Output: target/release/libelizaos_plugin_starter.so (Linux)
-#         target/release/libelizaos_plugin_starter.dylib (macOS)
-#         target/release/elizaos_plugin_starter.dll (Windows)
+# Output: target/release/libtokagentos_plugin_starter.so (Linux)
+#         target/release/libtokagentos_plugin_starter.dylib (macOS)
+#         target/release/tokagentos_plugin_starter.dll (Windows)
 ```
 
 ## License

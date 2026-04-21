@@ -16,7 +16,7 @@ export const APP_DIST_BOOTSTRAP_ASSETS = [
   "logos/anthropic-icon.png",
   "logos/claude-icon.png",
   "logos/deepseek-icon.png",
-  "logos/elizaos-icon.png",
+  "logos/tokagentos-icon.png",
   "logos/gemini-icon.png",
   "logos/grok-icon-white.png",
   "logos/grok-icon.png",
@@ -35,9 +35,9 @@ export const APP_DIST_BOOTSTRAP_ASSETS = [
   "vrm-decoders/draco/draco_decoder.js",
   "vrm-decoders/draco/draco_decoder.wasm",
   "vrm-decoders/draco/draco_wasm_wrapper.js",
-  "vrms/backgrounds/eliza-1.png",
-  "vrms/eliza-1.vrm.gz",
-  "vrms/previews/eliza-1.png",
+  "vrms/backgrounds/tokagent-1.png",
+  "vrms/tokagent-1.vrm.gz",
+  "vrms/previews/tokagent-1.png",
 ];
 
 function listFilesRecursive(dir) {

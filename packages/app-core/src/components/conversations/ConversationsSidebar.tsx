@@ -18,7 +18,7 @@ import {
   SidebarPanel,
   SidebarScrollRegion,
   TooltipProvider,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   Globe,
   MessagesSquare,
@@ -51,7 +51,7 @@ import {
   ALL_WORLDS_SCOPE,
   buildConversationsSidebarModel,
   type ConversationsSidebarRow,
-  ELIZA_SOURCE_SCOPE,
+  TOKAGENT_SOURCE_SCOPE,
 } from "./conversation-sidebar-model";
 
 /**
@@ -168,7 +168,7 @@ export function ConversationsSidebar({
   const menuAnchorRef = useRef<HTMLDivElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
-  const [sourceScope, setSourceScope] = useState(ELIZA_SOURCE_SCOPE);
+  const [sourceScope, setSourceScope] = useState(TOKAGENT_SOURCE_SCOPE);
   const [worldScope, setWorldScope] = useState(ALL_WORLDS_SCOPE);
 
   useEffect(() => {
@@ -295,7 +295,7 @@ export function ConversationsSidebar({
   };
 
   const handleNewChat = () => {
-    setSourceScope(ELIZA_SOURCE_SCOPE);
+    setSourceScope(TOKAGENT_SOURCE_SCOPE);
     setWorldScope(ALL_WORLDS_SCOPE);
     setState("activeInboxChat", null);
     setTab("chat");
@@ -375,7 +375,7 @@ export function ConversationsSidebar({
   }, []);
 
   const showNewChatAction =
-    tab === "chat" && sidebarModel.sourceScope === ELIZA_SOURCE_SCOPE;
+    tab === "chat" && sidebarModel.sourceScope === TOKAGENT_SOURCE_SCOPE;
   const newChatAction = isGameModal ? (
     <Button
       variant="outline"
@@ -397,7 +397,7 @@ export function ConversationsSidebar({
     ? t("conversations.noMatchingChats", {
         defaultValue: "No matching chats",
       })
-    : sidebarModel.sourceScope === ELIZA_SOURCE_SCOPE
+    : sidebarModel.sourceScope === TOKAGENT_SOURCE_SCOPE
       ? t("conversations.noneApp", {
           defaultValue: "No chats yet",
         })

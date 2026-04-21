@@ -19,7 +19,7 @@
  * PR 5 adds `skills`, `journal`, `goals`, `world-knowledge`.
  */
 
-import type { Provider } from "@elizaos/core";
+import type { Provider } from "@tokagentos/core";
 
 import { botStateProvider } from "./bot-state.js";
 import { goalsProvider } from "./goals.js";

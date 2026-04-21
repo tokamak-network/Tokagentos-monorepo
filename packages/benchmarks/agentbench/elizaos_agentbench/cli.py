@@ -9,9 +9,9 @@ import os
 import sys
 from pathlib import Path
 
-from elizaos_agentbench.types import AgentBenchConfig, AgentBenchEnvironment
-from elizaos_agentbench.runner import AgentBenchRunner
-from elizaos_agentbench.mock_runtime import SmartMockRuntime
+from tokagentos_agentbench.types import AgentBenchConfig, AgentBenchEnvironment
+from tokagentos_agentbench.runner import AgentBenchRunner
+from tokagentos_agentbench.mock_runtime import SmartMockRuntime
 
 # Configure logging
 logging.basicConfig(
@@ -31,7 +31,7 @@ def _load_dotenv() -> None:
 
     candidates = [
         Path.cwd() / ".env",
-        # repo_root/benchmarks/agentbench/python/elizaos_agentbench/cli.py -> repo_root is parents[4]
+        # repo_root/benchmarks/agentbench/python/tokagentos_agentbench/cli.py -> repo_root is parents[4]
         Path(__file__).resolve().parents[4] / ".env",
     ]
 
@@ -59,7 +59,7 @@ def _load_dotenv() -> None:
 def create_parser() -> argparse.ArgumentParser:
     """Create command-line argument parser."""
     parser = argparse.ArgumentParser(
-        description="AgentBench benchmark for ElizaOS Python",
+        description="AgentBench benchmark for TokagentOS Python",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
@@ -101,9 +101,9 @@ def create_parser() -> argparse.ArgumentParser:
     run_parser.add_argument(
         "--runtime",
         type=str,
-        choices=["mock", "elizaos"],
+        choices=["mock", "tokagentos"],
         default="mock",
-        help="Runtime to use (mock for testing, elizaos for real evaluation)",
+        help="Runtime to use (mock for testing, tokagentos for real evaluation)",
     )
 
     # Report command
@@ -176,16 +176,16 @@ async def run_benchmark(args: argparse.Namespace) -> int:
 
     # Create runtime
     runtime = None
-    if args.runtime == "elizaos":
+    if args.runtime == "tokagentos":
         try:
-            from elizaos.runtime import AgentRuntime
-            from elizaos.types.model import LLMMode, ModelType
+            from tokagentos.runtime import AgentRuntime
+            from tokagentos.types.model import LLMMode, ModelType
 
             _load_dotenv()
 
             plugins = []
             try:
-                from elizaos_plugin_openai import get_openai_plugin
+                from tokagentos_plugin_openai import get_openai_plugin
 
                 if os.environ.get("OPENAI_API_KEY"):
                     plugins = [get_openai_plugin()]
@@ -204,14 +204,14 @@ async def run_benchmark(args: argparse.Namespace) -> int:
                 await runtime.initialize()
                 if not runtime.has_model(ModelType.TEXT_LARGE):
                     logger.warning(
-                        "ElizaOS runtime has no TEXT_LARGE model handler; falling back to deterministic mock runtime"
+                        "TokagentOS runtime has no TEXT_LARGE model handler; falling back to deterministic mock runtime"
                     )
                     await runtime.stop()
                     runtime = SmartMockRuntime()
                 else:
-                    logger.info("Using ElizaOS runtime (OpenAI)")
+                    logger.info("Using TokagentOS runtime (OpenAI)")
         except ImportError:
-            logger.warning("ElizaOS runtime not available, using deterministic mock")
+            logger.warning("TokagentOS runtime not available, using deterministic mock")
             runtime = SmartMockRuntime()
     else:
         logger.info("Using deterministic mock runtime (harness validation)")

@@ -3,13 +3,13 @@
  * Renders inside the Wallets tab as a sub-section or alongside inventory.
  */
 
-import { useApp } from "@elizaos/app-core";
+import { useApp } from "@tokagentos/app-core";
 import type { StewardStatusResponse } from "./types/steward";
-import { PagePanel } from "@elizaos/ui/components/composites/page-panel";
-import { SidebarContent } from "@elizaos/ui/components/composites/sidebar/sidebar-content";
-import { SidebarPanel } from "@elizaos/ui/components/composites/sidebar/sidebar-panel";
-import { Sidebar } from "@elizaos/ui/components/composites/sidebar/sidebar-root";
-import { PageLayout } from "@elizaos/ui/layouts/page-layout/page-layout";
+import { PagePanel } from "@tokagentos/ui/components/composites/page-panel";
+import { SidebarContent } from "@tokagentos/ui/components/composites/sidebar/sidebar-content";
+import { SidebarPanel } from "@tokagentos/ui/components/composites/sidebar/sidebar-panel";
+import { Sidebar } from "@tokagentos/ui/components/composites/sidebar/sidebar-root";
+import { PageLayout } from "@tokagentos/ui/layouts/page-layout/page-layout";
 import { FileText } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { ApprovalQueue } from "./ApprovalQueue";

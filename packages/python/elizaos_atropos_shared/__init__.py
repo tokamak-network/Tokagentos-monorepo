@@ -1,1 +1,1 @@
-"""Shared utilities for elizaOS Atropos examples."""
+"""Shared utilities for tokagentOS Atropos examples."""

@@ -6,10 +6,10 @@
  *   bun run examples/wasm/runtime.ts
  */
 
-import * as elizaos from "../../pkg-node/elizaos.js";
+import * as tokagentos from "../../pkg-node/tokagentos.js";
 
 async function main() {
-  console.log("=== elizaOS WASM Runtime Example ===\n");
+  console.log("=== tokagentOS WASM Runtime Example ===\n");
 
   const characterJson = JSON.stringify({
     name: "RuntimeAgent",
@@ -17,10 +17,10 @@ async function main() {
     system: "Be concise and friendly.",
   });
 
-  const runtime = elizaos.WasmAgentRuntime.create(characterJson);
+  const runtime = tokagentos.WasmAgentRuntime.create(characterJson);
   await runtime.initialize();
 
-  const handler = new elizaos.JsModelHandler({
+  const handler = new tokagentos.JsModelHandler({
     handle: async (paramsJson: string): Promise<string> => {
       const params = JSON.parse(paramsJson) as { prompt?: string };
       const prompt = params.prompt ?? "";
@@ -31,8 +31,8 @@ async function main() {
   runtime.registerModelHandler("TEXT_LARGE", handler);
 
   const messageJson = JSON.stringify({
-    entityId: elizaos.generateUUID(),
-    roomId: elizaos.generateUUID(),
+    entityId: tokagentos.generateUUID(),
+    roomId: tokagentos.generateUUID(),
     content: { text: "Hello from WASM!" },
   });
 

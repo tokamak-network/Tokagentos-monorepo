@@ -1,8 +1,8 @@
 """
 Orchestrated SWE-bench benchmark.
 
-Tests whether an Eliza agent can correctly orchestrate coding tasks
-through sub-agent providers (Claude Code, SWE-Agent, Eliza Code) and
+Tests whether an Tokagent agent can correctly orchestrate coding tasks
+through sub-agent providers (Claude Code, SWE-Agent, Tokagent Code) and
 compares orchestrated performance against direct execution.
 """
 

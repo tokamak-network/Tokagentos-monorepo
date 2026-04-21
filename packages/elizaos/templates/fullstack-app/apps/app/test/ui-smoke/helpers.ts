@@ -13,10 +13,10 @@ type EvaluatedReadyCheck = {
 };
 
 export const DEFAULT_APP_STORAGE: Record<string, string> = {
-  "eliza:onboarding-complete": "1",
-  "eliza:onboarding:step": "activate",
-  "eliza:ui-shell-mode": "native",
-  "elizaos:active-server": JSON.stringify({
+  "tokagent:onboarding-complete": "1",
+  "tokagent:onboarding:step": "activate",
+  "tokagent:ui-shell-mode": "native",
+  "tokagentos:active-server": JSON.stringify({
     id: "local:embedded",
     kind: "local",
     label: "This device",

@@ -8,14 +8,14 @@
  * - Connection status indicator
  */
 
-import { packageNameToAppRouteSlug } from "@elizaos/shared/contracts/apps";
+import { packageNameToAppRouteSlug } from "@tokagentos/shared/contracts/apps";
 import {
   Button,
   Input,
   useDocumentVisibility,
   useIntervalWhenDocumentVisible,
   useTimeout,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   type AppRunSummary,

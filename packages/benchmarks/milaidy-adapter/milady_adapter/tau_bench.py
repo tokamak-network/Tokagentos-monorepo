@@ -8,12 +8,12 @@ from dataclasses import dataclass, field
 
 from milady_adapter.client import MiladyClient
 
-from elizaos_tau_bench.types import (
+from tokagentos_tau_bench.types import (
     ConversationTurn,
     TauBenchTask,
     ToolCall,
 )
-from elizaos_tau_bench.executor import ToolExecutor
+from tokagentos_tau_bench.executor import ToolExecutor
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def _extract_xml_tag(text: str, tag: str) -> str | None:
 class MiladyTauAgent:
     """Tau-bench agent that delegates to the milady TypeScript agent.
 
-    Drop-in replacement for ``ElizaOSTauAgent`` — same ``process_task``
+    Drop-in replacement for ``TokagentOSTauAgent`` — same ``process_task``
     interface but routes LLM calls through the milady benchmark server.
     """
 

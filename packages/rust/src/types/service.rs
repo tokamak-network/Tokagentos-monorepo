@@ -1,4 +1,4 @@
-//! Service types for elizaOS
+//! Service types for tokagentOS
 //!
 //! Contains Service trait, service types, and related interfaces.
 

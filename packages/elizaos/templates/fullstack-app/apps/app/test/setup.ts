@@ -17,8 +17,8 @@ declare global {
   var IS_REACT_ACT_ENVIRONMENT: boolean | undefined;
 }
 
-const ANCHOR_CLICK_PATCH_MARK = Symbol.for("eliza.test.anchorClickPatched");
-const JSDOM_EMIT_PATCH_MARK = Symbol.for("eliza.test.jsdomEmitPatched");
+const ANCHOR_CLICK_PATCH_MARK = Symbol.for("tokagent.test.anchorClickPatched");
+const JSDOM_EMIT_PATCH_MARK = Symbol.for("tokagent.test.jsdomEmitPatched");
 
 globalThis.React = React;
 globalThis.IS_REACT_ACT_ENVIRONMENT = true;
@@ -44,7 +44,7 @@ function ensureStorage(
 }
 
 // ---------------------------------------------------------------------------
-// Mock @elizaos/app-core bridge modules — the real electrobun RPC module
+// Mock @tokagentos/app-core bridge modules — the real electrobun RPC module
 // relies on native Electrobun bindings that are unavailable in the test
 // environment.
 // ---------------------------------------------------------------------------
@@ -58,8 +58,8 @@ type RpcRequestMap = Record<string, (params?: unknown) => unknown>;
 interface ElectrobunTestWindow {
   __electrobunWindowId?: number;
   __electrobunWebviewId?: number;
-  __ELIZA_ELECTROBUN_RPC__?: unknown;
-  __ELIZA_ELECTROBUN_RPC__?: unknown;
+  __TOKAGENT_ELECTROBUN_RPC__?: unknown;
+  __TOKAGENT_ELECTROBUN_RPC__?: unknown;
 }
 
 function isInjectedElectrobunRuntime(): boolean {
@@ -76,7 +76,7 @@ function createBridgeMock(extraExports: Record<string, unknown> = {}) {
   function getElectrobunRendererRpc() {
     if (typeof window === "undefined") return null;
     const w = window as ElectrobunTestWindow;
-    return w.__ELIZA_ELECTROBUN_RPC__ ?? w.__ELIZA_ELECTROBUN_RPC__ ?? null;
+    return w.__TOKAGENT_ELECTROBUN_RPC__ ?? w.__TOKAGENT_ELECTROBUN_RPC__ ?? null;
   }
 
   return {
@@ -154,7 +154,7 @@ function createBridgeMock(extraExports: Record<string, unknown> = {}) {
   };
 }
 
-vi.mock("@elizaos/app-core", () =>
+vi.mock("@tokagentos/app-core", () =>
   createBridgeMock({
     platform: "web",
     isWeb: () => true,

@@ -19,7 +19,7 @@ class ProviderType(str, Enum):
     CLAUDE_CODE = "claude-code"
     SWE_AGENT = "swe-agent"
     CODEX = "codex"
-    ELIZA_CODE = "eliza-code"
+    TOKAGENT_CODE = "tokagent-code"
 
 
 class ExecutionMode(str, Enum):

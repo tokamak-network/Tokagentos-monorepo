@@ -1,4 +1,4 @@
-import { stringToUuid } from "@elizaos/core";
+import { stringToUuid } from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 import type {
@@ -12,16 +12,16 @@ import type {
 } from "../types.js";
 import { getCwd, setCwd } from "./cwd.js";
 import {
-  createRoomElizaId,
+  createRoomTokagentId,
   ensureSessionIdentity,
-  getMainRoomElizaId,
+  getMainRoomTokagentId,
   isUuidString,
   type SessionIdentity,
 } from "./identity.js";
 import { loadSession, type SessionState, saveSession } from "./session.js";
 
 function shouldPersistSessionToDisk(): boolean {
-  if (process.env.ELIZA_CODE_DISABLE_SESSION_PERSISTENCE === "1") return false;
+  if (process.env.TOKAGENT_CODE_DISABLE_SESSION_PERSISTENCE === "1") return false;
   if (process.env.BUN_TEST === "1") return false;
   if (process.env.NODE_ENV === "test") return false;
   return true;
@@ -54,7 +54,7 @@ function computeTaskPaneVisible(
 // Store State Interface
 // ============================================================================
 
-interface ElizaCodeState {
+interface TokagentCodeState {
   // Identity (persisted per-project)
   identity: SessionIdentity;
 
@@ -147,7 +147,7 @@ const createInitialRoom = (identity: SessionIdentity): ChatRoom => ({
   messages: [],
   createdAt: new Date(),
   taskIds: [],
-  elizaRoomId: getMainRoomElizaId(identity),
+  tokagentRoomId: getMainRoomTokagentId(identity),
 });
 
 const initialRoom = createInitialRoom(initialIdentity);
@@ -156,7 +156,7 @@ const initialRoom = createInitialRoom(initialIdentity);
 let saveTimeout: ReturnType<typeof setTimeout> | null = null;
 let isSaving = false;
 
-const debouncedSave = (state: ElizaCodeState) => {
+const debouncedSave = (state: TokagentCodeState) => {
   // Don't queue saves while already saving or before session is loaded
   if (!shouldPersistSessionToDisk()) return;
   if (isSaving || !state.sessionLoaded) return;
@@ -176,7 +176,7 @@ const debouncedSave = (state: ElizaCodeState) => {
 // Store Implementation
 // ============================================================================
 
-export const useStore = create<ElizaCodeState>((set, get) => ({
+export const useStore = create<TokagentCodeState>((set, get) => ({
   // Initial state
   identity: initialIdentity,
   rooms: [initialRoom],
@@ -202,7 +202,7 @@ export const useStore = create<ElizaCodeState>((set, get) => ({
       messages: [],
       createdAt: new Date(),
       taskIds: [],
-      elizaRoomId: createRoomElizaId(identity),
+      tokagentRoomId: createRoomTokagentId(identity),
     };
 
     set((state) => ({
@@ -497,9 +497,9 @@ export const useStore = create<ElizaCodeState>((set, get) => ({
     // Restore the currently-selected worker into process env so runtime actions
     // (e.g., CREATE_TASK) can read it.
     if (selectedSubAgentType) {
-      process.env.ELIZA_CODE_ACTIVE_SUB_AGENT = selectedSubAgentType;
+      process.env.TOKAGENT_CODE_ACTIVE_SUB_AGENT = selectedSubAgentType;
     } else {
-      delete process.env.ELIZA_CODE_ACTIVE_SUB_AGENT;
+      delete process.env.TOKAGENT_CODE_ACTIVE_SUB_AGENT;
     }
 
     // Validate and restore rooms
@@ -520,18 +520,18 @@ export const useStore = create<ElizaCodeState>((set, get) => ({
         .map((room) => {
           // Repair invalid persisted room UUIDs (e.g. "main-room-uuid") which break the SQL adapter.
           if (
-            typeof room.elizaRoomId === "string" &&
-            isUuidString(room.elizaRoomId)
+            typeof room.tokagentRoomId === "string" &&
+            isUuidString(room.tokagentRoomId)
           ) {
             return room;
           }
           const repairedId =
             room.id === INITIAL_ROOM_ID
-              ? getMainRoomElizaId(identity)
+              ? getMainRoomTokagentId(identity)
               : stringToUuid(
-                `eliza-code:room:${identity.projectId}:${room.id}`,
+                `tokagent-code:room:${identity.projectId}:${room.id}`,
               );
-          return { ...room, elizaRoomId: repairedId };
+          return { ...room, tokagentRoomId: repairedId };
         });
 
       if (validRooms.length > 0) {
@@ -603,20 +603,20 @@ export const useStore = create<ElizaCodeState>((set, get) => ({
 // Selectors
 // ============================================================================
 
-export const selectCurrentRoom = (state: ElizaCodeState) =>
+export const selectCurrentRoom = (state: TokagentCodeState) =>
   state.rooms.find((r) => r.id === state.currentRoomId);
 
-export const selectCurrentTask = (state: ElizaCodeState) =>
+export const selectCurrentTask = (state: TokagentCodeState) =>
   state.currentTaskId
     ? state.tasks.find((t) => t.id === state.currentTaskId)
     : null;
 
-export const selectMessages = (state: ElizaCodeState) => {
+export const selectMessages = (state: TokagentCodeState) => {
   const room = selectCurrentRoom(state);
   return room?.messages ?? [];
 };
 
-export const selectTaskStats = (state: ElizaCodeState) => ({
+export const selectTaskStats = (state: TokagentCodeState) => ({
   total: state.tasks.length,
   running: state.tasks.filter((t) => t.metadata?.status === "running").length,
   completed: state.tasks.filter((t) => t.metadata?.status === "completed")
@@ -625,7 +625,7 @@ export const selectTaskStats = (state: ElizaCodeState) => ({
   pending: state.tasks.filter((t) => t.metadata?.status === "pending").length,
 });
 
-export const selectIsTaskPaneVisible = (state: ElizaCodeState) =>
+export const selectIsTaskPaneVisible = (state: TokagentCodeState) =>
   computeTaskPaneVisible(
     state.taskPaneVisibility,
     state.tasks,

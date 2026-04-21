@@ -26,7 +26,7 @@ The Solana Gauntlet provides a structured methodology to evaluate agent behavior
 
 **What's Next:**
 - [ ] Expand model testing across 5+ frontier LLMs (Claude, Gemini, Llama)
-- [ ] Framework integration (Eliza, AgentKit, GOAT)
+- [ ] Framework integration (Tokagent, AgentKit, GOAT)
 - [ ] Public leaderboard and results dashboard
 - [ ] Network stress testing (Level 4)
 

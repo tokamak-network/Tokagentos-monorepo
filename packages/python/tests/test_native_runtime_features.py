@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types import Character, CharacterSettings
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types import Character, CharacterSettings
 
 
 def make_character(**overrides: object) -> Character:

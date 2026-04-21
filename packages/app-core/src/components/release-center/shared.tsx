@@ -1,4 +1,4 @@
-import { StatusBadge, type StatusVariant } from "@elizaos/ui";
+import { StatusBadge, type StatusVariant } from "@tokagentos/ui";
 import { useApp } from "../../state";
 
 export function summarizeError(error: unknown): string {
@@ -6,11 +6,11 @@ export function summarizeError(error: unknown): string {
 }
 
 export function normalizeReleaseNotesUrl(url?: string | null): string {
-  const candidate = url?.trim() || "https://elizaos.ai/releases/";
+  const candidate = url?.trim() || "https://tokagentos.ai/releases/";
   try {
     return new URL(candidate).toString();
   } catch {
-    return "https://elizaos.ai/releases/";
+    return "https://tokagentos.ai/releases/";
   }
 }
 

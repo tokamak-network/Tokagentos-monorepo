@@ -8,13 +8,13 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime, Plugin } from "@elizaos/core";
+import type { AgentRuntime, Plugin } from "@tokagentos/core";
 import {
   AgentRuntime as AgentRuntimeCtor,
   createBasicCapabilitiesPlugin,
   createCharacter,
   logger,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   type LiveProviderConfig,
   type LiveProviderName,
@@ -133,7 +133,7 @@ export async function createScenarioRuntime(
     string,
     unknown
   >;
-  const providerPlugin = extractPlugin(providerModule, ["default", "elizaPlugin"]);
+  const providerPlugin = extractPlugin(providerModule, ["default", "tokagentPlugin"]);
   if (!providerPlugin) {
     throw new Error(
       `[scenario-runner] provider package ${providerConfig.pluginPackage} did not export a Plugin`,

@@ -6,7 +6,7 @@ import json
 import logging
 from typing import TYPE_CHECKING
 
-from elizaos.types import (
+from tokagentos.types import (
     Action,
     ActionExample,
     ActionParameter,
@@ -16,7 +16,7 @@ from elizaos.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -95,7 +95,7 @@ async def _handle_execute_code(
     timeout_ms = int(timeout_ms_setting) if timeout_ms_setting is not None else 30000
 
     # Execute the TypeScript skill
-    from benchmarks.evm.eliza_explorer import run_typescript_skill
+    from benchmarks.evm.tokagent_explorer import run_typescript_skill
 
     logger.info("Executing TypeScript skill (%d bytes of code)", len(code))
 

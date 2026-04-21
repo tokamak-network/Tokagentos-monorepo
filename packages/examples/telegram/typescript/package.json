@@ -1,7 +1,7 @@
 {
   "name": "@elizaos/example-telegram",
   "version": "2.0.0-alpha",
-  "description": "Complete Telegram bot agent using elizaOS with SQL persistence",
+  "description": "Complete Telegram bot agent using tokagentOS with SQL persistence",
   "type": "module",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
     "@elizaos/plugin-telegram": "alpha"

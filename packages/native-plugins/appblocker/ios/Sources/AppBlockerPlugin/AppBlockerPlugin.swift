@@ -3,10 +3,10 @@ import FamilyControls
 import Foundation
 import UIKit
 
-@objc(ElizaAppBlockerPlugin)
-public class ElizaAppBlockerPlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "ElizaAppBlockerPlugin"
-    public let jsName = "ElizaAppBlocker"
+@objc(TokagentAppBlockerPlugin)
+public class TokagentAppBlockerPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "TokagentAppBlockerPlugin"
+    public let jsName = "TokagentAppBlocker"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "checkPermissions", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "requestPermissions", returnType: CAPPluginReturnPromise),
@@ -184,7 +184,7 @@ public class ElizaAppBlockerPlugin: CAPPlugin, CAPBridgedPlugin {
         case .approved:
             return nil
         case .notDetermined:
-            return "Authorize Family Controls before Eliza can choose and shield apps on this iPhone."
+            return "Authorize Family Controls before Tokagent can choose and shield apps on this iPhone."
         default:
             return "Family Controls access is currently denied for this app. Re-run authorization on this iPhone developer build."
         }

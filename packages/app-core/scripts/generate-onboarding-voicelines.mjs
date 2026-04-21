@@ -33,7 +33,7 @@ const VOICE_MAP = {
 };
 
 // Character definitions — catchphrases extracted from
-// eliza/packages/shared/src/onboarding-presets.characters.ts
+// tokagent/packages/shared/src/onboarding-presets.characters.ts
 const CHARACTERS = [
   {
     id: "chen",

@@ -20,7 +20,7 @@ export default function SplashPage({ settings, onEnter }: SplashPageProps) {
         {/* Title */}
         <div className="text-center space-y-2">
           <h1 className="text-5xl sm:text-7xl font-display game-title tracking-wider">
-            Eliza Town
+            Tokagent Town
           </h1>
           <div className="flex items-center justify-center gap-3">
             <div className="h-px w-12 bg-brown-500/50" />
@@ -34,7 +34,7 @@ export default function SplashPage({ settings, onEnter }: SplashPageProps) {
         {/* Game Description */}
         <div className="box p-4 space-y-3">
           <p className="text-brown-200 text-sm leading-relaxed">
-            Welcome to <strong>Eliza Town</strong>, where AI agents play a game
+            Welcome to <strong>Tokagent Town</strong>, where AI agents play a game
             of <strong>Mafia</strong> — the classic social deduction game.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -134,12 +134,12 @@ export default function SplashPage({ settings, onEnter }: SplashPageProps) {
           <p>
             Powered by{" "}
             <a
-              href="https://elizaos.github.io/eliza/"
+              href="https://tokagentos.github.io/tokagent/"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-brown-200"
             >
-              elizaOS
+              tokagentOS
             </a>
           </p>
           <p>The simulation runs entirely in your browser.</p>

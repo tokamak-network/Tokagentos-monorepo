@@ -8,8 +8,8 @@
 **/.venv
 **/*.so
 **/*.wasm
-**/.eliza
-**/.elizadb
+**/.tokagent
+**/.tokagentdb
 **/*.log
 **/.env
 **/.env.*
@@ -19,7 +19,7 @@
 # Large dirs (keep all packages/ and plugins/ so workspace resolves)
 examples
 apps
-eliza-cloud-v2
+tokagent-cloud-v2
 **/fonts
 **/*.otf
 **/*.ttf

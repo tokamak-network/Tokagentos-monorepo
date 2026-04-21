@@ -5,8 +5,8 @@
 
 #[cfg(all(feature = "native", not(feature = "wasm")))]
 mod inner {
-    use elizaos::runtime::{AgentRuntime, RuntimeModelHandler, RuntimeOptions};
-    use elizaos::types::{Bio, Character};
+    use tokagentos::runtime::{AgentRuntime, RuntimeModelHandler, RuntimeOptions};
+    use tokagentos::types::{Bio, Character};
     use serde_json::json;
     use std::sync::Arc;
 

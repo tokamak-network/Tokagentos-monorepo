@@ -11,7 +11,7 @@
 
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { resolveStateDir } from "@elizaos/core";
+import { resolveStateDir } from "@tokagentos/core";
 import {
   exportTrajectoryTaskDatasets,
   type TrajectoryTaskDatasetExport,

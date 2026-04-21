@@ -244,7 +244,7 @@ impl VetKeysManager {
         identifier: &str,
         transport_public_key: &[u8],
     ) -> CanisterResult<EncryptedVetKey> {
-        let context = format!("eliza_{}", purpose);
+        let context = format!("tokagent_{}", purpose);
         let derivation_id = identifier.as_bytes();
 
         self.derive_encrypted_key(context.as_bytes(), derivation_id, transport_public_key)
@@ -257,16 +257,16 @@ impl VetKeysManager {
 /// Standard contexts for key derivation
 pub mod contexts {
     /// Context for encrypting stored memories
-    pub const MEMORY_ENCRYPTION: &[u8] = b"eliza_memory_encryption";
+    pub const MEMORY_ENCRYPTION: &[u8] = b"tokagent_memory_encryption";
 
     /// Context for encrypting API credentials
-    pub const API_CREDENTIALS: &[u8] = b"eliza_api_credentials";
+    pub const API_CREDENTIALS: &[u8] = b"tokagent_api_credentials";
 
     /// Context for session keys
-    pub const SESSION_KEY: &[u8] = b"eliza_session";
+    pub const SESSION_KEY: &[u8] = b"tokagent_session";
 
     /// Context for user-specific encryption
-    pub const USER_DATA: &[u8] = b"eliza_user_data";
+    pub const USER_DATA: &[u8] = b"tokagent_user_data";
 }
 
 // ========== Helper Functions ==========

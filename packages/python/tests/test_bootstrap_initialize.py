@@ -1,8 +1,8 @@
 import pytest
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types import Character
-from elizaos.types.service import ServiceType
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types import Character
+from tokagentos.types.service import ServiceType
 
 
 @pytest.mark.asyncio

@@ -1,7 +1,7 @@
 """Tests for GAIA type definitions."""
 
 import pytest
-from elizaos_gaia.types import (
+from tokagentos_gaia.types import (
     GAIALevel,
     ToolType,
     GAIAQuestion,

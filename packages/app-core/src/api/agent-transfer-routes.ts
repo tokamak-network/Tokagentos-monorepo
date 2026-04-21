@@ -1,15 +1,15 @@
-import type { RouteRequestContext } from "@elizaos/agent/api";
+import type { RouteRequestContext } from "@tokagentos/agent/api";
 import {
   type AgentTransferRouteState,
   type AgentTransferRouteContext as AutonomousAgentTransferRouteContext,
   handleAgentTransferRoutes as handleAutonomousAgentTransferRoutes,
-} from "@elizaos/agent/api/agent-transfer-routes";
+} from "@tokagentos/agent/api/agent-transfer-routes";
 import {
   AgentExportError,
   estimateExportSize,
   exportAgent,
   importAgent,
-} from "@elizaos/agent/services";
+} from "@tokagentos/agent/services";
 
 export type { AgentTransferRouteState };
 

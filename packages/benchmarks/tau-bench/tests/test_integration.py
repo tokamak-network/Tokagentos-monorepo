@@ -5,13 +5,13 @@ Integration tests for Tau-bench benchmark.
 import pytest
 from pathlib import Path
 
-from elizaos_tau_bench.types import TauBenchConfig, TauDomain, TauBenchTask
-from elizaos_tau_bench.runner import TauBenchRunner
-from elizaos_tau_bench.dataset import TauBenchDataset
-from elizaos_tau_bench.eliza_agent import create_tau_agent
-from elizaos_tau_bench.executor import ToolExecutor
-from elizaos_tau_bench.environments.retail import RetailEnvironment
-from elizaos_tau_bench.environments.airline import AirlineEnvironment
+from tokagentos_tau_bench.types import TauBenchConfig, TauDomain, TauBenchTask
+from tokagentos_tau_bench.runner import TauBenchRunner
+from tokagentos_tau_bench.dataset import TauBenchDataset
+from tokagentos_tau_bench.tokagent_agent import create_tau_agent
+from tokagentos_tau_bench.executor import ToolExecutor
+from tokagentos_tau_bench.environments.retail import RetailEnvironment
+from tokagentos_tau_bench.environments.airline import AirlineEnvironment
 
 
 class TestDatasetLoading:

@@ -4,8 +4,8 @@
  * heuristics fallback, no fake scores.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
-import { ModelType, logger } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { ModelType, logger } from "@tokagentos/core";
 
 const JUDGE_PROMPT_TEMPLATE = `You are a strict evaluator. Score the candidate response against the rubric from 0.0 (fails completely) to 1.0 (fully satisfies).
 

@@ -2,12 +2,12 @@
  * CLI entry point for the training data pipeline.
  *
  * Usage (from repo root):
- *   bun run eliza/apps/app-training/src/core/cli.ts generate --variants 5 --output ./training-data
- *   bun run eliza/apps/app-training/src/core/cli.ts validate --input ./training-data/raw_samples.json
- *   bun run eliza/apps/app-training/src/core/cli.ts export-trajectories --output ./training-data/trajectories.jsonl
- *   bun run eliza/apps/app-training/src/core/cli.ts tune --project my-gcp-project --bucket my-bucket --model flash-lite --data ./training-data/should_respond_training.jsonl
+ *   bun run tokagent/apps/app-training/src/core/cli.ts generate --variants 5 --output ./training-data
+ *   bun run tokagent/apps/app-training/src/core/cli.ts validate --input ./training-data/raw_samples.json
+ *   bun run tokagent/apps/app-training/src/core/cli.ts export-trajectories --output ./training-data/trajectories.jsonl
+ *   bun run tokagent/apps/app-training/src/core/cli.ts tune --project my-gcp-project --bucket my-bucket --model flash-lite --data ./training-data/should_respond_training.jsonl
  *
- * Or: `cd eliza/packages/agent && bun run training:cli` (delegates to this file).
+ * Or: `cd tokagent/packages/agent && bun run training:cli` (delegates to this file).
  */
 
 import { readFile } from "fs/promises";
@@ -247,7 +247,7 @@ async function cmdTune(args: string[]) {
       model: { type: "string", default: "gemini-2.5-flash-lite" },
       data: { type: "string" },
       validation: { type: "string" },
-      name: { type: "string", default: "eliza-should-respond" },
+      name: { type: "string", default: "tokagent-should-respond" },
       epochs: { type: "string", default: "3" },
       region: { type: "string", default: "us-central1" },
     },
@@ -340,7 +340,7 @@ async function cmdOrchestrate(args: string[]) {
       scope: { type: "string", default: "global" },
       ownerId: { type: "string" },
       model: { type: "string" },
-      name: { type: "string", default: "eliza-tuned-model" },
+      name: { type: "string", default: "tokagent-tuned-model" },
       epochs: { type: "string", default: "3" },
       region: { type: "string", default: "us-central1" },
     },
@@ -417,7 +417,7 @@ Commands:
     --bucket NAME   GCS bucket for training data
     --data PATH     Path to training JSONL
     --model TYPE    flash-lite or flash (default: flash-lite)
-    --name NAME     Display name (default: eliza-should-respond)
+    --name NAME     Display name (default: tokagent-should-respond)
     --epochs N      Training epochs (default: 3)
     --region REG    GCP region (default: us-central1)
 

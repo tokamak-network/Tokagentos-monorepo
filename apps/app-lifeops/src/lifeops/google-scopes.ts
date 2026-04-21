@@ -1,7 +1,7 @@
 import {
   LIFEOPS_GOOGLE_CAPABILITIES,
   type LifeOpsGoogleCapability,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 
 export const GOOGLE_OPENID_SCOPES = ["openid", "email", "profile"] as const;
 export const GOOGLE_CALENDAR_READ_SCOPE =

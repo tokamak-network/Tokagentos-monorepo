@@ -38,7 +38,7 @@ import {
   SidebarPanel,
   SidebarScrollRegion,
   useLinkedSidebarSelection,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { PluginCard } from "./PluginCard";
 import {
   ConnectorPluginGroups,

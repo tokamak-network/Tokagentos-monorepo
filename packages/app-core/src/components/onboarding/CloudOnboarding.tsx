@@ -1,18 +1,18 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { useEffect } from "react";
 import { useApp } from "../../state";
 import { openExternalUrl } from "../../utils";
 
 /**
- * Minimal onboarding screen for Eliza Home.
- * Shows a single step: connect to Eliza Cloud.
+ * Minimal onboarding screen for Tokagent Home.
+ * Shows a single step: connect to Tokagent Cloud.
  * Once connected, automatically completes onboarding and navigates to chat.
  */
 export function CloudOnboarding() {
   const {
-    elizaCloudConnected,
-    elizaCloudLoginBusy,
-    elizaCloudLoginError,
+    tokagentCloudConnected,
+    tokagentCloudLoginBusy,
+    tokagentCloudLoginError,
     handleCloudLogin,
     handleCloudOnboardingFinish,
     t,
@@ -20,12 +20,12 @@ export function CloudOnboarding() {
 
   // Auto-complete onboarding once cloud is connected.
   useEffect(() => {
-    if (elizaCloudConnected) {
+    if (tokagentCloudConnected) {
       void handleCloudOnboardingFinish();
     }
-  }, [elizaCloudConnected, handleCloudOnboardingFinish]);
+  }, [tokagentCloudConnected, handleCloudOnboardingFinish]);
 
-  const urlMatch = elizaCloudLoginError?.match(
+  const urlMatch = tokagentCloudLoginError?.match(
     /^Open this link to log in: (.+)$/,
   );
 
@@ -34,9 +34,9 @@ export function CloudOnboarding() {
       <div className="flex flex-col items-center gap-6 max-w-md w-full px-6">
         {/* Logo */}
         <div className="flex flex-col items-center gap-2 mb-2">
-          <div className="text-4xl font-bold tracking-tight">eliza</div>
+          <div className="text-4xl font-bold tracking-tight">tokagent</div>
           <p className="text-muted text-sm text-center">
-            {t("cloudonboarding.ConnectToElizaCloud", {
+            {t("cloudonboarding.ConnectToTokagentCloud", {
               defaultValue: "Sign in to get started",
             })}
           </p>
@@ -44,7 +44,7 @@ export function CloudOnboarding() {
 
         {/* Main card */}
         <div className="w-full rounded-xl border border-border bg-surface p-6 flex flex-col items-center gap-4">
-          {elizaCloudConnected ? (
+          {tokagentCloudConnected ? (
             <p className="text-ok text-sm">
               {t("cloudonboarding.ConnectedSetupAgent", {
                 defaultValue: "Connected! Setting up your agent...",
@@ -58,18 +58,18 @@ export function CloudOnboarding() {
                 onClick={() => {
                   void handleCloudLogin();
                 }}
-                disabled={elizaCloudLoginBusy}
+                disabled={tokagentCloudLoginBusy}
               >
-                {elizaCloudLoginBusy
+                {tokagentCloudLoginBusy
                   ? t("cloudonboarding.WaitingForLogin", {
                       defaultValue: "Waiting for login...",
                     })
                   : t("cloudonboarding.ConnectButton", {
-                      defaultValue: "Connect to Eliza Cloud",
+                      defaultValue: "Connect to Tokagent Cloud",
                     })}
               </Button>
 
-              {elizaCloudLoginError && (
+              {tokagentCloudLoginError && (
                 <div className="w-full text-sm text-center">
                   {urlMatch ? (
                     <Button
@@ -82,7 +82,7 @@ export function CloudOnboarding() {
                       })}
                     </Button>
                   ) : (
-                    <p className="text-err">{elizaCloudLoginError}</p>
+                    <p className="text-err">{tokagentCloudLoginError}</p>
                   )}
                 </div>
               )}

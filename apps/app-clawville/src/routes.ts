@@ -1,7 +1,7 @@
 /**
- * ClawVille app — Eliza plugin routes
+ * ClawVille app — Tokagent plugin routes
  *
- * Registers at `/api/apps/clawville/*` inside Eliza's embedded HTTP server
+ * Registers at `/api/apps/clawville/*` inside Tokagent's embedded HTTP server
  * and handles:
  *
  *   GET  /api/apps/clawville/viewer         — serves the embedded game HTML
@@ -11,7 +11,7 @@
  *
  * The `resolveLaunchSession` hook fires when the user clicks "Launch" on the
  * ClawVille app card. It POSTs to ClawVille's /api/agent/connect with the
- * Eliza runtime's agentId + character name (runtime-trust model — no token
+ * Tokagent runtime's agentId + character name (runtime-trust model — no token
  * exchange) and stashes the returned sessionId + wallet address back on the
  * runtime via setSetting.
  *
@@ -20,7 +20,7 @@
  * injection for embed-mode styling).
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   AppLaunchDiagnostic,
   AppLaunchResult,
@@ -28,7 +28,7 @@ import type {
   AppRunSessionContext,
   AppSessionActionResult,
   AppSessionState,
-} from "@elizaos/shared/contracts/apps";
+} from "@tokagentos/shared/contracts/apps";
 
 import {
   asRuntimeLike,
@@ -52,7 +52,7 @@ const VIEWER_FETCH_TIMEOUT_MS = 8_000;
 
 /**
  * CSP frame-ancestors directive we send on the viewer HTML response so that
- * Eliza's various host shells (desktop Electrobun, mobile Capacitor, plus
+ * Tokagent's various host shells (desktop Electrobun, mobile Capacitor, plus
  * the dev http://localhost and https://localhost cases) can embed us in an
  * iframe. Mirrors the value used by app-defense-of-the-agents.
  */
@@ -118,16 +118,16 @@ function buildSessionState(
   connectResult: ClawvilleConnectResponse | null,
   perception?: Record<string, unknown> | null,
 ): AppSessionState {
-  const agentName = config.elizaCharacterName ?? "Eliza Agent";
+  const agentName = config.tokagentCharacterName ?? "Tokagent Agent";
 
   if (!connectResult) {
     return {
-      sessionId: config.elizaAgentId ?? "clawville",
+      sessionId: config.tokagentAgentId ?? "clawville",
       appName: APP_NAME,
       mode: "spectate-and-steer",
       status: "connecting",
       displayName: APP_DISPLAY_NAME,
-      agentId: config.elizaAgentId ?? undefined,
+      agentId: config.tokagentAgentId ?? undefined,
       canSendCommands: false,
       controls: ["pause", "resume"],
       summary: "Connecting to ClawVille...",
@@ -191,14 +191,14 @@ function buildSessionState(
 
 /**
  * Build the bootstrap <script> we inject into the ClawVille viewer HTML.
- * When ClawVille's `/game` page loads inside a Eliza iframe, this script
+ * When ClawVille's `/game` page loads inside a Tokagent iframe, this script
  * runs in its DOM context and:
  *
  *   1. Sets localStorage flags that tell the ClawVille frontend to skip
  *      the login/create-pet overlay
  *   2. Hides any login-gate UI elements if they do render
  *   3. Adds a small "Watching {agentName}" banner so players know the
- *      Eliza agent is the one driving the avatar
+ *      Tokagent agent is the one driving the avatar
  *
  * This mirrors the approach in app-defense-of-the-agents'
  * buildViewerShellInjection(agentName, viewerUrl) — fetch the real site,
@@ -210,12 +210,12 @@ function buildViewerShellInjection(
   sessionId: string | null,
   viewerUrl: string,
 ): string {
-  const safeAgentName = JSON.stringify(agentName || "Eliza Agent");
+  const safeAgentName = JSON.stringify(agentName || "Tokagent Agent");
   const safeSessionId = JSON.stringify(sessionId ?? "");
   const safeFullSiteUrl = JSON.stringify(viewerUrl);
 
-  return `<style id="eliza-clawville-embed-style">
-#eliza-clawville-spectator-banner {
+  return `<style id="tokagent-clawville-embed-style">
+#tokagent-clawville-spectator-banner {
   position: fixed;
   top: 12px;
   right: 12px;
@@ -230,19 +230,19 @@ function buildViewerShellInjection(
   font: 12px system-ui, -apple-system, "Segoe UI", sans-serif;
   pointer-events: auto;
 }
-#eliza-clawville-spectator-banner .eliza-clawville-title {
+#tokagent-clawville-spectator-banner .tokagent-clawville-title {
   color: #7fe6ff;
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 4px;
   letter-spacing: 0.02em;
 }
-#eliza-clawville-spectator-banner .eliza-clawville-body {
+#tokagent-clawville-spectator-banner .tokagent-clawville-body {
   color: rgba(214, 244, 255, 0.72);
   line-height: 1.5;
   margin-bottom: 8px;
 }
-#eliza-clawville-spectator-banner .eliza-clawville-link {
+#tokagent-clawville-spectator-banner .tokagent-clawville-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -254,26 +254,26 @@ function buildViewerShellInjection(
   background: rgba(0, 229, 255, 0.08);
   font-size: 11px;
 }
-#eliza-clawville-spectator-banner .eliza-clawville-link:hover {
+#tokagent-clawville-spectator-banner .tokagent-clawville-link:hover {
   background: rgba(0, 229, 255, 0.15);
 }
 </style>
-<script id="eliza-clawville-embedded-bootstrap">
+<script id="tokagent-clawville-embedded-bootstrap">
 (() => {
   const agentName = ${safeAgentName};
   const sessionId = ${safeSessionId};
   const fullSiteUrl = ${safeFullSiteUrl};
 
-  // Tell the ClawVille SPA it's embedded inside a Eliza host so it can
+  // Tell the ClawVille SPA it's embedded inside a Tokagent host so it can
   // skip landing-page overlays and login gates. ClawVille reads these
   // flags from localStorage on boot (it's a best-effort hint — if
   // ClawVille doesn't check them yet, the banner below still appears
   // and the rest of the app keeps working).
   try {
-    localStorage.setItem("clawville-embed-mode", "eliza");
-    localStorage.setItem("clawville-eliza-agent-name", agentName);
+    localStorage.setItem("clawville-embed-mode", "tokagent");
+    localStorage.setItem("clawville-tokagent-agent-name", agentName);
     if (sessionId) {
-      localStorage.setItem("clawville-eliza-session-id", sessionId);
+      localStorage.setItem("clawville-tokagent-session-id", sessionId);
     }
     localStorage.setItem("landing-closed", "1");
   } catch {
@@ -283,7 +283,7 @@ function buildViewerShellInjection(
   // Hide any landing-page / auth overlay that might render in the first
   // paint. IDs here are best-guess based on ClawVille's current frontend;
   // unknown IDs are no-ops. ClawVille can add more to this list by
-  // observing what Eliza passes in its postMessage handshake (future).
+  // observing what Tokagent passes in its postMessage handshake (future).
   const hiddenIds = [
     "landing-overlay",
     "auth-modal",
@@ -299,33 +299,33 @@ function buildViewerShellInjection(
     }
   }
 
-  // postMessage the Eliza identity to the iframe — ClawVille's
+  // postMessage the Tokagent identity to the iframe — ClawVille's
   // /game page can listen on window.addEventListener('message', ...)
-  // and call /api/auth/eliza-session-exchange to mint a ClawVille
+  // and call /api/auth/tokagent-session-exchange to mint a ClawVille
   // guest cookie. (ClawVille-side wiring is planned but not required
   // for the plugin to load — if ClawVille ignores the message the
   // viewer still works in read-only mode.)
   window.parent?.postMessage?.(
-    { type: "eliza-clawville-ready", agentName, sessionId },
+    { type: "tokagent-clawville-ready", agentName, sessionId },
     "*",
   );
 
   // Drop a small "Watching <agentName>" banner in the top-right so
-  // players know the visible avatar is being steered by Eliza.
+  // players know the visible avatar is being steered by Tokagent.
   const ensureBanner = () => {
-    if (document.getElementById("eliza-clawville-spectator-banner")) return;
+    if (document.getElementById("tokagent-clawville-spectator-banner")) return;
     if (!document.body) return;
     const banner = document.createElement("div");
-    banner.id = "eliza-clawville-spectator-banner";
+    banner.id = "tokagent-clawville-spectator-banner";
     const title = document.createElement("div");
-    title.className = "eliza-clawville-title";
+    title.className = "tokagent-clawville-title";
     title.textContent = "Watching " + agentName;
     const body = document.createElement("div");
-    body.className = "eliza-clawville-body";
+    body.className = "tokagent-clawville-body";
     body.textContent =
-      "Eliza is steering this agent inside ClawVille. Open the full site if you want to create your own pet.";
+      "Tokagent is steering this agent inside ClawVille. Open the full site if you want to create your own pet.";
     const link = document.createElement("a");
-    link.className = "eliza-clawville-link";
+    link.className = "tokagent-clawville-link";
     link.href = fullSiteUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
@@ -346,7 +346,7 @@ function buildViewerShellInjection(
 
 /**
  * Rewrite relative asset URLs in the fetched HTML so they resolve against
- * the real clawville.world origin instead of against Eliza's localhost.
+ * the real clawville.world origin instead of against Tokagent's localhost.
  * Handles `src="..."`, `href="..."`, and `srcset="..."` attributes.
  */
 function absolutizeViewerHtmlAssetUrls(
@@ -400,7 +400,7 @@ async function buildEmbeddedViewerHtml(
 
   const absolutized = absolutizeViewerHtmlAssetUrls(html, config.viewerUrl);
   const injection = buildViewerShellInjection(
-    config.elizaCharacterName ?? "Eliza Agent",
+    config.tokagentCharacterName ?? "Tokagent Agent",
     config.storedSessionId ?? null,
     config.viewerUrl,
   );
@@ -448,15 +448,15 @@ function applyViewerEmbedHeaders(response: {
 }
 
 // ---------------------------------------------------------------------------
-// Launch session resolver — fires on "Launch" click in Eliza's app UI
+// Launch session resolver — fires on "Launch" click in Tokagent's app UI
 // ---------------------------------------------------------------------------
 
 /**
- * Called by Eliza when the user clicks "Launch" on the ClawVille app card.
+ * Called by Tokagent when the user clicks "Launch" on the ClawVille app card.
  * We POST to ClawVille's /api/agent/connect with runtime.agentId +
  * runtime.character.name, stash the returned session artifacts back onto
  * the runtime via setSetting, and return a populated AppSessionState for
- * Eliza's side panel to render.
+ * Tokagent's side panel to render.
  *
  * On failure we return a degraded "connecting" session state and log a
  * diagnostic — the user sees a clear error message in the panel without
@@ -488,7 +488,7 @@ export async function resolveLaunchSession(
 }
 
 /**
- * Called periodically by Eliza to refresh the side-panel state after
+ * Called periodically by Tokagent to refresh the side-panel state after
  * launch. We avoid another /connect call (which would bump totalSessions)
  * and instead fetch perception data for the stored sessionId. If the
  * sessionId has expired server-side (e.g. container restart), we fall
@@ -524,14 +524,14 @@ export async function refreshRunSession(
 
   // Rebuild state with the cached connect-time data + fresh perception
   const fauxConnect: ClawvilleConnectResponse = {
-    agentId: (ctx.session?.agentId as string) ?? `eliza:${config.elizaAgentId ?? "unknown"}`,
+    agentId: (ctx.session?.agentId as string) ?? `tokagent:${config.tokagentAgentId ?? "unknown"}`,
     sessionId,
     uuid: config.storedUuid ?? "",
     isReturning: true,
     totalSessions:
       (ctx.session?.telemetry as { totalSessions?: number } | null)?.totalSessions ?? 1,
     knowledge: [],
-    identityType: "eliza",
+    identityType: "tokagent",
     autonomyMode: "server-managed",
     walletAddress: config.storedWalletAddress ?? null,
   };
@@ -540,7 +540,7 @@ export async function refreshRunSession(
 }
 
 /**
- * Emit launch diagnostics (warnings shown in the Eliza UI below the app
+ * Emit launch diagnostics (warnings shown in the Tokagent UI below the app
  * card). We use this to surface config issues early — e.g. if the runtime
  * somehow has no agentId.
  */
@@ -551,12 +551,12 @@ export async function collectLaunchDiagnostics(ctx: {
   const config = resolveClawvilleConfig(ctx.runtime);
   const diagnostics: AppLaunchDiagnostic[] = [];
 
-  if (!config.elizaAgentId) {
+  if (!config.tokagentAgentId) {
     diagnostics.push({
       code: "clawville-missing-agent-id",
       severity: "error",
       message:
-        "ClawVille requires a Eliza runtime agentId. Restart the agent after configuring.",
+        "ClawVille requires a Tokagent runtime agentId. Restart the agent after configuring.",
     });
   }
 
@@ -612,15 +612,15 @@ export async function handleAppRoutes(ctx: RouteContext): Promise<boolean> {
       const perception = await clawvillePerception(config, sessionId);
       const fauxConnect: ClawvilleConnectResponse = {
         agentId:
-          config.elizaAgentId
-            ? `eliza:${config.elizaAgentId}`
+          config.tokagentAgentId
+            ? `tokagent:${config.tokagentAgentId}`
             : "clawville",
         sessionId,
         uuid: config.storedUuid ?? "",
         isReturning: true,
         totalSessions: 1,
         knowledge: [],
-        identityType: "eliza",
+        identityType: "tokagent",
         autonomyMode: "server-managed",
         walletAddress: config.storedWalletAddress ?? null,
       };
@@ -638,7 +638,7 @@ export async function handleAppRoutes(ctx: RouteContext): Promise<boolean> {
   // POST /api/apps/clawville/session/:id/control — pause/resume
   if (ctx.method === "POST" && subroute === "control") {
     // ClawVille has no server-side pause/resume concept yet — return a
-    // no-op success so Eliza's UI doesn't show an error.
+    // no-op success so Tokagent's UI doesn't show an error.
     const result: AppSessionActionResult = {
       success: true,
       message: "ClawVille pause/resume is a no-op (simulation runs server-side).",

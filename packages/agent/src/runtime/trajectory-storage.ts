@@ -10,7 +10,7 @@ import {
   logger as coreLogger,
   type IAgentRuntime,
   Service,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   Trajectory,
   TrajectoryExportOptions,
@@ -227,8 +227,8 @@ interface TrainingTriggerEntry {
 /**
  * Fire-and-forget notification to the optional TrainingTriggerService.
  *
- * Registered by `@elizaos/app-core` when `@elizaos/app-training` is installed
- * (see `runtime/eliza.ts` → `registerTrackCTrainingCrons`). Slim installs
+ * Registered by `@tokagentos/app-core` when `@elizaos/app-training` is installed
+ * (see `runtime/tokagent.ts` → `registerTrackCTrainingCrons`). Slim installs
  * never register the service and this resolves to a no-op.
  *
  * Errors are logged at debug level only — auto-train counter increments
@@ -1099,7 +1099,7 @@ export class DatabaseTrajectoryLogger extends Service {
   private enabled = shouldEnableTrajectoryLoggingByDefault();
 
   /**
-   * Static start method required by @elizaos/core runtime.
+   * Static start method required by @tokagentos/core runtime.
    */
   static async start(runtime: IAgentRuntime): Promise<Service> {
     const service = new DatabaseTrajectoryLogger(runtime);

@@ -13,9 +13,9 @@ from pathlib import Path
 
 import pytest
 
-from elizaos_agentbench.mock_runtime import SmartMockRuntime
-from elizaos_agentbench.runner import AgentBenchRunner
-from elizaos_agentbench.types import AgentBenchConfig, AgentBenchEnvironment, EnvironmentConfig
+from tokagentos_agentbench.mock_runtime import SmartMockRuntime
+from tokagentos_agentbench.runner import AgentBenchRunner
+from tokagentos_agentbench.types import AgentBenchConfig, AgentBenchEnvironment, EnvironmentConfig
 
 
 @pytest.mark.asyncio

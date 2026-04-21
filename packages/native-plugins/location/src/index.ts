@@ -6,6 +6,6 @@ export * from "./definitions";
 
 const loadWeb = () => import("./web").then((m) => new m.LocationWeb());
 
-export const Location = registerPlugin<LocationPlugin>("ElizaLocation", {
+export const Location = registerPlugin<LocationPlugin>("TokagentLocation", {
   web: loadWeb,
 });

@@ -10,10 +10,10 @@
 //! - Provider behavior
 
 use anyhow::Result;
-use elizaos::autonomy::{autonomy_routes, AUTONOMY_SERVICE_TYPE};
-use elizaos::runtime::RuntimeOptions;
-use elizaos::types::agent::{Bio, Character, CharacterSettings};
-use elizaos::AgentRuntime;
+use tokagentos::autonomy::{autonomy_routes, AUTONOMY_SERVICE_TYPE};
+use tokagentos::runtime::RuntimeOptions;
+use tokagentos::types::agent::{Bio, Character, CharacterSettings};
+use tokagentos::AgentRuntime;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -41,7 +41,7 @@ async fn autonomy_can_be_enabled_via_constructor_flag() -> Result<()> {
     assert!(runtime.get_service(AUTONOMY_SERVICE_TYPE).await.is_some());
 
     // Provider should contribute status in normal rooms
-    let msg = elizaos::Memory::message(elizaos::UUID::new_v4(), elizaos::UUID::new_v4(), "hello");
+    let msg = tokagentos::Memory::message(tokagentos::UUID::new_v4(), tokagentos::UUID::new_v4(), "hello");
     let state = runtime.compose_state(&msg).await?;
     assert!(state.text.contains("AUTONOMY_STATUS"));
 
@@ -136,7 +136,7 @@ fn autonomy_routes_are_defined() {
 
 #[test]
 fn autonomy_routes_have_correct_methods() {
-    use elizaos::types::plugin::HttpMethod;
+    use tokagentos::types::plugin::HttpMethod;
 
     let routes = autonomy_routes();
 
@@ -227,7 +227,7 @@ async fn autonomy_status_provider_shows_running_state() -> Result<()> {
     runtime.initialize().await?;
 
     // Compose state in a normal room (not the autonomous room)
-    let msg = elizaos::Memory::message(elizaos::UUID::new_v4(), elizaos::UUID::new_v4(), "hello");
+    let msg = tokagentos::Memory::message(tokagentos::UUID::new_v4(), tokagentos::UUID::new_v4(), "hello");
     let state = runtime.compose_state(&msg).await?;
 
     // Should contain autonomy status

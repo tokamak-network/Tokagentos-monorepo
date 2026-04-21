@@ -60,7 +60,7 @@ function prepareTemplates(): void {
   const manifest = {
     version: "1.0.0",
     generatedAt: new Date().toISOString(),
-    repoUrl: "https://github.com/elizaos/eliza",
+    repoUrl: "https://github.com/tokagentos/tokagent",
     templates: loadTemplateDefinitions(),
   };
   fs.writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`);

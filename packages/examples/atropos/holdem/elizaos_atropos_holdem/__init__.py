@@ -1,10 +1,10 @@
 """
-ElizaOS Atropos Texas Hold'em Environment
+TokagentOS Atropos Texas Hold'em Environment
 
-A Texas Hold'em poker environment for training ElizaOS agents.
+A Texas Hold'em poker environment for training TokagentOS agents.
 """
 
-from elizaos_atropos_holdem.types import (
+from tokagentos_atropos_holdem.types import (
     Suit,
     Rank,
     Card,
@@ -16,10 +16,10 @@ from elizaos_atropos_holdem.types import (
     GameState,
     HandResult,
 )
-from elizaos_atropos_holdem.deck import Deck
-from elizaos_atropos_holdem.hand_evaluator import evaluate_hand, compare_hands
-from elizaos_atropos_holdem.environment import HoldemEnvironment
-from elizaos_atropos_holdem.agent import HoldemAgent
+from tokagentos_atropos_holdem.deck import Deck
+from tokagentos_atropos_holdem.hand_evaluator import evaluate_hand, compare_hands
+from tokagentos_atropos_holdem.environment import HoldemEnvironment
+from tokagentos_atropos_holdem.agent import HoldemAgent
 
 __version__ = "1.0.0"
 

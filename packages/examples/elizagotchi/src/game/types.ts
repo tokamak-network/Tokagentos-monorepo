@@ -1,5 +1,5 @@
 /**
- * Elizagotchi - Virtual Pet Game Types
+ * Tokagentgotchi - Virtual Pet Game Types
  *
  * A Tamagotchi-style virtual pet with all classic mechanics.
  */

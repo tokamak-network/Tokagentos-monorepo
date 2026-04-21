@@ -7,16 +7,16 @@ import type {
   WebsiteBlockerStatus,
 } from "./definitions";
 
-interface ElizaWindow extends Window {
-  __ELIZA_API_BASE__?: string;
-  __ELIZA_API_TOKEN__?: string;
+interface TokagentWindow extends Window {
+  __TOKAGENT_API_BASE__?: string;
+  __TOKAGENT_API_TOKEN__?: string;
 }
 
 export class WebsiteBlockerWeb extends WebPlugin {
   private apiBase(): string {
     const global =
       typeof window !== "undefined"
-        ? (window as ElizaWindow).__ELIZA_API_BASE__
+        ? (window as TokagentWindow).__TOKAGENT_API_BASE__
         : undefined;
     if (typeof global === "string" && global.trim().length > 0) {
       return global;
@@ -27,7 +27,7 @@ export class WebsiteBlockerWeb extends WebPlugin {
   private apiToken(): string | null {
     const global =
       typeof window !== "undefined"
-        ? (window as ElizaWindow).__ELIZA_API_TOKEN__
+        ? (window as TokagentWindow).__TOKAGENT_API_TOKEN__
         : undefined;
     if (typeof global === "string" && global.trim().length > 0) {
       return global.trim();
@@ -35,7 +35,7 @@ export class WebsiteBlockerWeb extends WebPlugin {
     if (typeof window === "undefined") {
       return null;
     }
-    const stored = window.sessionStorage.getItem("eliza_api_token");
+    const stored = window.sessionStorage.getItem("tokagent_api_token");
     return stored?.trim() ? stored.trim() : null;
   }
 
@@ -47,7 +47,7 @@ export class WebsiteBlockerWeb extends WebPlugin {
   private canReachApi(): boolean {
     const global =
       typeof window !== "undefined"
-        ? (window as ElizaWindow).__ELIZA_API_BASE__
+        ? (window as TokagentWindow).__TOKAGENT_API_BASE__
         : undefined;
     if (typeof global === "string" && global.trim().length > 0) {
       return true;
@@ -64,7 +64,7 @@ export class WebsiteBlockerWeb extends WebPlugin {
     init?: RequestInit,
   ): Promise<T> {
     if (!this.canReachApi()) {
-      throw new Error("Eliza API not available");
+      throw new Error("Tokagent API not available");
     }
     const response = await fetch(`${this.apiBase()}${pathname}`, {
       ...init,

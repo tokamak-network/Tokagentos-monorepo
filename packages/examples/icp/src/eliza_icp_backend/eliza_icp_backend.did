@@ -1,4 +1,4 @@
-// elizaOS ICP Canister Interface
+// tokagentOS ICP Canister Interface
 
 // ========== Error Types ==========
 
@@ -43,7 +43,7 @@ type OpenAIConfig = record {
 // ========== Inference Mode Types ==========
 
 type InferenceMode = variant {
-    ElizaClassic;   // Pattern-based (instant, free, fully on-chain)
+    TokagentClassic;   // Pattern-based (instant, free, fully on-chain)
     OpenAI;         // HTTP outcalls (fast, costs cycles + API key)
     OnChainLLM;     // Self-hosted llama_cpp_canister (slower, fully decentralized)
     DfinityLLM;     // DFINITY LLM canister (fast, FREE, Llama 3.1 8B / Qwen3 32B)
@@ -73,7 +73,7 @@ type DfinityLLMConfig = record {
 
 type InferenceStatus = record {
     current_mode: InferenceMode;
-    eliza_classic_ready: bool;
+    tokagent_classic_ready: bool;
     openai_configured: bool;
     onchain_llm_configured: bool;
     onchain_llm_canister_id: opt text;
@@ -180,10 +180,10 @@ service : {
     whoami: () -> (principal) query;
     is_openai_enabled: () -> (bool) query;
     
-    // ELIZA Classic (pattern-based Rogerian psychotherapist - no API keys needed)
-    get_eliza_greeting: () -> (text) query;
-    eliza_classic_chat: (text) -> (text) query;
-    reset_eliza_session: () -> ();
+    // TOKAGENT Classic (pattern-based Rogerian psychotherapist - no API keys needed)
+    get_tokagent_greeting: () -> (text) query;
+    tokagent_classic_chat: (text) -> (text) query;
+    reset_tokagent_session: () -> ();
     
     // HTTP Transform (required for OpenAI outcalls)
     transform_openai_response: (record { response: record { status: nat; headers: vec record { name: text; value: text }; body: blob }; context: blob }) -> (record { status: nat; headers: vec record { name: text; value: text }; body: blob }) query;

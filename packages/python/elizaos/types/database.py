@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Protocol, runtime_checkable
 
-from elizaos.types.generated.eliza.v1 import database_pb2
+from tokagentos.types.generated.tokagent.v1 import database_pb2
 
 # Proto-backed types
 BaseLogBody = database_pb2.BaseLogBody

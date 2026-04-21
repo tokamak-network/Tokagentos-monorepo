@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING, Any, Literal
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
-    from elizaos.types.agent import Character
-    from elizaos.types.components import Action, Evaluator, Provider
-    from elizaos.types.database import IDatabaseAdapter
-    from elizaos.types.runtime import IAgentRuntime
-    from elizaos.types.service import Service
+    from tokagentos.types.agent import Character
+    from tokagentos.types.components import Action, Evaluator, Provider
+    from tokagentos.types.database import IDatabaseAdapter
+    from tokagentos.types.runtime import IAgentRuntime
+    from tokagentos.types.service import Service
 
 # Type for streaming model handlers
 StreamingModelHandler = Callable[["IAgentRuntime", dict[str, Any]], AsyncIterator[str]]

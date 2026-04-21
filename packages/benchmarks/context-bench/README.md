@@ -1,6 +1,6 @@
-# ElizaOS Context Benchmark
+# TokagentOS Context Benchmark
 
-A comprehensive benchmark suite for evaluating LLM context retrieval and reasoning capabilities, integrated with the ElizaOS Python runtime.
+A comprehensive benchmark suite for evaluating LLM context retrieval and reasoning capabilities, integrated with the TokagentOS Python runtime.
 
 ## Overview
 
@@ -37,7 +37,7 @@ pip install -e ".[dev]"
 
 ```python
 import asyncio
-from elizaos_context_bench import (
+from tokagentos_context_bench import (
     ContextBenchRunner,
     ContextBenchConfig,
     quick_test,
@@ -58,14 +58,14 @@ async def main():
 asyncio.run(main())
 ```
 
-### With ElizaOS Runtime
+### With TokagentOS Runtime
 
 ```python
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_context_bench import run_eliza_benchmark, ContextBenchConfig
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_context_bench import run_tokagent_benchmark, ContextBenchConfig
 
-async def benchmark_eliza():
+async def benchmark_tokagent():
     runtime = AgentRuntime()
     # IMPORTANT: the Python runtime does not register model handlers by default.
     # Register at least one model plugin (e.g. OpenAI) before running benchmarks.
@@ -79,14 +79,14 @@ async def benchmark_eliza():
         tasks_per_position=5,
     )
     
-    results = await run_eliza_benchmark(runtime, config)
+    results = await run_tokagent_benchmark(runtime, config)
     return results
 ```
 
 ### Full Benchmark
 
 ```python
-from elizaos_context_bench import (
+from tokagentos_context_bench import (
     ContextBenchRunner,
     ContextBenchConfig,
     ContextBenchReporter,
@@ -129,7 +129,7 @@ async def run_full_benchmark():
 ## Configuration
 
 ```python
-from elizaos_context_bench import ContextBenchConfig, NeedlePosition
+from tokagentos_context_bench import ContextBenchConfig, NeedlePosition
 
 config = ContextBenchConfig(
     # Context lengths to test (in tokens)
@@ -249,7 +249,7 @@ pytest tests/ -v
 ## Architecture
 
 ```
-elizaos_context_bench/
+tokagentos_context_bench/
 ├── __init__.py          # Package exports
 ├── types.py             # Core type definitions
 ├── generator.py         # Context and needle generation
@@ -262,7 +262,7 @@ elizaos_context_bench/
 │   ├── niah.py          # NIAH benchmark suite
 │   └── multihop.py      # Multi-hop benchmark suite
 └── providers/
-    └── context.py       # ElizaOS context providers
+    └── context.py       # TokagentOS context providers
 ```
 
 ## References

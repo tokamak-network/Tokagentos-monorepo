@@ -1,7 +1,7 @@
-# elizaOS Python packages (installed from local source)
+# tokagentOS Python packages (installed from local source)
 # Install with: pip install -r requirements.txt
 
-# Core elizaOS packages (editable installs from repo)
+# Core tokagentOS packages (editable installs from repo)
 -e ../../../packages/python
 -e ../../../plugins/plugin-openai/python
 -e ../../../plugins/plugin-sql/python

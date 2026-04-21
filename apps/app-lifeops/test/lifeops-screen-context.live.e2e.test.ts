@@ -12,12 +12,12 @@ import {
   isBrowserCaptureSupported,
   startBrowserCapture,
   stopBrowserCapture,
-} from "@elizaos/agent/services/browser-capture";
+} from "@tokagentos/agent/services/browser-capture";
 import { LifeOpsScreenContextSampler } from "../src/lifeops/screen-context.js";
 
 const LIVE_TESTS_ENABLED =
   process.env.MILADY_LIVE_TEST === "1" ||
-  process.env.ELIZA_LIVE_TEST === "1";
+  process.env.TOKAGENT_LIVE_TEST === "1";
 const CHROME_SUPPORTED = isBrowserCaptureSupported();
 
 console.info(
@@ -25,7 +25,7 @@ console.info(
 );
 
 const missingSetupReasons = [
-  !LIVE_TESTS_ENABLED ? "set ELIZA_LIVE_TEST=1 or ELIZA_LIVE_TEST=1" : null,
+  !LIVE_TESTS_ENABLED ? "set TOKAGENT_LIVE_TEST=1 or TOKAGENT_LIVE_TEST=1" : null,
   !CHROME_SUPPORTED
     ? `install Google Chrome at ${getBrowserCaptureExecutablePath()}`
     : null,
@@ -65,7 +65,7 @@ describeIf(LIVE_TESTS_ENABLED && CHROME_SUPPORTED)(
     let serverUrl = "";
 
     beforeAll(async () => {
-      tempRoot = await fsMkdtemp(path.join(os.tmpdir(), "eliza-screen-live-"));
+      tempRoot = await fsMkdtemp(path.join(os.tmpdir(), "tokagent-screen-live-"));
       await rm(FRAME_FILE, { force: true });
 
       const port = await getFreePort();

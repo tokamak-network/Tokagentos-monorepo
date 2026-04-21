@@ -1,5 +1,5 @@
 import { useCompanionSceneStatus } from "@elizaos/app-companion/components/companion/companion-scene-status-context";
-import { useDocumentVisibility, useTimeout } from "@elizaos/ui";
+import { useDocumentVisibility, useTimeout } from "@tokagentos/ui";
 import {
   useCallback,
   useEffect,
@@ -14,9 +14,9 @@ import type {
   ConversationMessage,
 } from "../../api/client-types-chat";
 import type { VoiceConfig } from "../../api/client-types-config";
-import type { ElizaCloudStatusUpdatedDetail } from "../../events";
+import type { TokagentCloudStatusUpdatedDetail } from "../../events";
 import {
-  ELIZA_CLOUD_STATUS_UPDATED_EVENT,
+  TOKAGENT_CLOUD_STATUS_UPDATED_EVENT,
   VOICE_CONFIG_UPDATED_EVENT,
 } from "../../events";
 import { useVoiceChat } from "../../hooks/useVoiceChat";
@@ -111,8 +111,8 @@ export function __resetCompanionSpeechMemoryForTests(): void {
 
 /**
  * Chat assistant TTS pipeline — order matters for cloud-backed voice:
- * 1. Server exposes Eliza Cloud via `GET /api/cloud/status` (`hasApiKey`, `enabled`, `connected`).
- * 2. `AppContext.pollCloudCredits` persists React state and dispatches {@link ELIZA_CLOUD_STATUS_UPDATED_EVENT}.
+ * 1. Server exposes Tokagent Cloud via `GET /api/cloud/status` (`hasApiKey`, `enabled`, `connected`).
+ * 2. `AppContext.pollCloudCredits` persists React state and dispatches {@link TOKAGENT_CLOUD_STATUS_UPDATED_EVENT}.
  * 3. This hook stores `detail.cloudVoiceProxyAvailable` in a ref for same-turn
  *    `true` before React state commits; `cloudConnected` is `context || ref===true`
  *    so an early `false` snapshot cannot block TTS after auth loads. Then reloads
@@ -125,9 +125,9 @@ export function useChatVoiceController(options: {
   chatFirstTokenReceived: boolean;
   chatInput: string;
   chatSending: boolean;
-  elizaCloudConnected: boolean;
-  elizaCloudVoiceProxyAvailable: boolean;
-  elizaCloudHasPersistedKey: boolean;
+  tokagentCloudConnected: boolean;
+  tokagentCloudVoiceProxyAvailable: boolean;
+  tokagentCloudHasPersistedKey: boolean;
   conversationMessages: ConversationMessage[];
   activeConversationId: string | null;
   handleChatEdit: (messageId: string, text: string) => Promise<boolean>;
@@ -144,9 +144,9 @@ export function useChatVoiceController(options: {
     chatFirstTokenReceived,
     chatInput,
     chatSending,
-    elizaCloudConnected,
-    elizaCloudVoiceProxyAvailable,
-    elizaCloudHasPersistedKey,
+    tokagentCloudConnected,
+    tokagentCloudVoiceProxyAvailable,
+    tokagentCloudHasPersistedKey,
     conversationMessages,
     activeConversationId,
     handleChatEdit,
@@ -156,7 +156,7 @@ export function useChatVoiceController(options: {
     setState,
     uiLanguage,
   } = options;
-  /** After the first `eliza:cloud-status-updated`, mirrors server `cloudVoiceProxyAvailable` (avoids one-frame lag vs context). */
+  /** After the first `tokagent:cloud-status-updated`, mirrors server `cloudVoiceProxyAvailable` (avoids one-frame lag vs context). */
   const [cloudVoiceSnapshot, setCloudVoiceSnapshot] = useState<boolean | null>(
     null,
   );
@@ -257,7 +257,7 @@ export function useChatVoiceController(options: {
       return;
     }
     const onCloudStatus = (event: Event) => {
-      const detail = (event as CustomEvent<ElizaCloudStatusUpdatedDetail>)
+      const detail = (event as CustomEvent<TokagentCloudStatusUpdatedDetail>)
         .detail;
       if (detail && typeof detail === "object") {
         ttsDebug("chat:cloud-status-event", {
@@ -272,10 +272,10 @@ export function useChatVoiceController(options: {
       }
       void loadVoiceConfig();
     };
-    window.addEventListener(ELIZA_CLOUD_STATUS_UPDATED_EVENT, onCloudStatus);
+    window.addEventListener(TOKAGENT_CLOUD_STATUS_UPDATED_EVENT, onCloudStatus);
     return () =>
       window.removeEventListener(
-        ELIZA_CLOUD_STATUS_UPDATED_EVENT,
+        TOKAGENT_CLOUD_STATUS_UPDATED_EVENT,
         onCloudStatus,
       );
   }, [loadVoiceConfig]);
@@ -345,28 +345,28 @@ export function useChatVoiceController(options: {
   );
 
   const cloudVoiceAvailable = useMemo(() => {
-    const fromContext = elizaCloudVoiceProxyAvailable;
+    const fromContext = tokagentCloudVoiceProxyAvailable;
     // Ref snapshot can be `false` from an early status poll before the key is
     // loaded, then never updated if no further event fires. Prefer the
     // committed `enabled` state; only use the event snapshot to force `true`
     // when it arrives before the wider app state catches up.
     return fromContext || cloudVoiceSnapshot === true;
-  }, [cloudVoiceSnapshot, elizaCloudVoiceProxyAvailable]);
+  }, [cloudVoiceSnapshot, tokagentCloudVoiceProxyAvailable]);
 
   useEffect(() => {
     ttsDebug("chat:cloud-voice-available", {
       cloudVoiceAvailable,
-      elizaCloudConnected,
-      elizaCloudVoiceProxyAvailable,
-      elizaCloudHasPersistedKey,
+      tokagentCloudConnected,
+      tokagentCloudVoiceProxyAvailable,
+      tokagentCloudHasPersistedKey,
       snapshotValue: cloudVoiceSnapshot,
     });
   }, [
     cloudVoiceAvailable,
     cloudVoiceSnapshot,
-    elizaCloudConnected,
-    elizaCloudVoiceProxyAvailable,
-    elizaCloudHasPersistedKey,
+    tokagentCloudConnected,
+    tokagentCloudVoiceProxyAvailable,
+    tokagentCloudHasPersistedKey,
   ]);
 
   const voice = useVoiceChat({

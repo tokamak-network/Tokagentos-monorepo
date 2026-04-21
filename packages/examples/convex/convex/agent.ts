@@ -1,10 +1,10 @@
 "use node";
 
 /**
- * Convex Node.js action that runs an elizaOS agent.
+ * Convex Node.js action that runs an tokagentOS agent.
  *
  * The "use node" directive enables full Node.js runtime so we can import
- * @elizaos/core and LLM provider plugins. The action receives a chat message,
+ * @tokagentos/core and LLM provider plugins. The action receives a chat message,
  * processes it through runtime.messageService.handleMessage, persists both the
  * user message and the agent response to Convex, and returns the result.
  */
@@ -21,7 +21,7 @@ import {
   type Character,
   type Plugin,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
 
@@ -118,8 +118,8 @@ async function getOrCreateRuntime(): Promise<{
   }
 
   const character: Character = createCharacter({
-    name: "Eliza",
-    bio: "A helpful AI assistant powered by elizaOS, running on Convex.",
+    name: "Tokagent",
+    bio: "A helpful AI assistant powered by tokagentOS, running on Convex.",
   });
 
   const runtime = new AgentRuntime({
@@ -140,7 +140,7 @@ async function getOrCreateRuntime(): Promise<{
 // ============================================================================
 
 /**
- * Process a chat message through the elizaOS agent.
+ * Process a chat message through the tokagentOS agent.
  *
  * Flow:
  *   1. Initialise (or reuse) the AgentRuntime
@@ -188,7 +188,7 @@ export const chat = internalAction({
       entityId: userId,
     });
 
-    // Build an elizaOS Memory object for the incoming message
+    // Build an tokagentOS Memory object for the incoming message
     const memory = createMessageMemory({
       id: uuidv4() as UUID,
       entityId: userId,
@@ -229,7 +229,7 @@ export const chat = internalAction({
     return {
       response: responseText,
       conversationId: args.conversationId,
-      agentName: runtime.character?.name ?? "Eliza",
+      agentName: runtime.character?.name ?? "Tokagent",
       provider: providerName,
     };
   },

@@ -19,12 +19,12 @@ const isNative = Capacitor.isNativePlatform();
 // On iOS, WKWebView localStorage can be purged under memory pressure.
 // These keys are critical for session restoration on mobile.
 const SYNCED_KEYS = new Set([
-  "eliza.control.settings.v1",
-  "eliza.device.identity",
-  "eliza.device.auth",
-  "elizaos:active-server",
-  "eliza:onboarding-complete",
-  "eliza:onboarding:step",
+  "tokagent.control.settings.v1",
+  "tokagent.device.identity",
+  "tokagent.device.auth",
+  "tokagentos:active-server",
+  "tokagent:onboarding-complete",
+  "tokagent:onboarding:step",
 ]);
 
 // In-memory cache of values from Preferences (for native)

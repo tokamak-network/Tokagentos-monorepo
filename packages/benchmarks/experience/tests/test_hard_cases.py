@@ -8,7 +8,7 @@ Validates that:
 - Per-category results are meaningful
 """
 
-from elizaos_experience_bench.hard_cases import (
+from tokagentos_experience_bench.hard_cases import (
     ALL_HARD_CASES,
     JACCARD_CATEGORIES,
     SEMANTIC_CATEGORIES,
@@ -16,7 +16,7 @@ from elizaos_experience_bench.hard_cases import (
     get_jaccard_cases,
     get_semantic_cases,
 )
-from elizaos_experience_bench.evaluators.hard_cases import HardCaseEvaluator
+from tokagentos_experience_bench.evaluators.hard_cases import HardCaseEvaluator
 
 
 # ---------------------------------------------------------------------------

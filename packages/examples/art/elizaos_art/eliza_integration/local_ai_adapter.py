@@ -1,5 +1,5 @@
 """
-Local AI Adapter for ElizaOS plugin-local-ai
+Local AI Adapter for TokagentOS plugin-local-ai
 
 Provides model inference using local GGUF models via:
 - llama.cpp (via node-llama-cpp in TypeScript)
@@ -27,7 +27,7 @@ class LocalModelConfig:
     models_dir: str = field(
         default_factory=lambda: os.environ.get(
             "MODELS_DIR",
-            str(Path.home() / ".eliza" / "models"),
+            str(Path.home() / ".tokagent" / "models"),
         )
     )
 
@@ -97,7 +97,7 @@ class ModelProvider(Protocol):
         ...
 
 
-class ElizaLocalAIProvider:
+class TokagentLocalAIProvider:
     """
     Local AI provider for ART training.
     
@@ -284,7 +284,7 @@ def get_recommended_model(available_memory_gb: float) -> str:
 
 async def download_model(
     model_name: str,
-    models_dir: str | Path = "~/.eliza/models",
+    models_dir: str | Path = "~/.tokagent/models",
 ) -> Path:
     """
     Download a model from HuggingFace.

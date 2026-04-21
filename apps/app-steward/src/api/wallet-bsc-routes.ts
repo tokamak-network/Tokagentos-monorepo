@@ -6,9 +6,9 @@
  */
 
 import type http from "node:http";
-import type { ReadJsonBodyOptions } from "@elizaos/agent/api/http-helpers";
-import type { ElizaConfig } from "@elizaos/agent/config/config";
-import { logger } from "@elizaos/core";
+import type { ReadJsonBodyOptions } from "@tokagentos/agent/api/http-helpers";
+import type { TokagentConfig } from "@tokagentos/agent/config/config";
+import { logger } from "@tokagentos/core";
 import { ethers } from "ethers";
 
 // ---------------------------------------------------------------------------
@@ -20,7 +20,7 @@ export interface WalletBscRouteDeps {
     evmAddress: string | null;
     solanaAddress: string | null;
   };
-  resolveWalletRpcReadiness: (config: ElizaConfig) => {
+  resolveWalletRpcReadiness: (config: TokagentConfig) => {
     bscRpcUrls: string[];
     cloudManagedAccess: boolean;
   };
@@ -51,13 +51,13 @@ export interface WalletBscRouteDeps {
     update: unknown,
   ) => unknown;
   loadWalletTradingProfile: (opts: unknown) => unknown;
-  resolveTradePermissionMode: (config: ElizaConfig) => unknown;
+  resolveTradePermissionMode: (config: TokagentConfig) => unknown;
   isAgentAutomationRequest: (req: http.IncomingMessage) => boolean;
   canUseLocalTradeExecution: (
     mode: unknown,
     isAgentRequest: boolean,
   ) => boolean;
-  saveElizaConfig: (config: ElizaConfig) => void;
+  saveTokagentConfig: (config: TokagentConfig) => void;
 }
 
 export interface WalletBscRouteContext {
@@ -66,7 +66,7 @@ export interface WalletBscRouteContext {
   method: string;
   pathname: string;
   url: URL;
-  state: { config: ElizaConfig };
+  state: { config: TokagentConfig };
   json: (res: http.ServerResponse, data: unknown, status?: number) => void;
   error: (res: http.ServerResponse, message: string, status?: number) => void;
   readJsonBody: <T extends object>(
@@ -468,7 +468,7 @@ export async function handleWalletBscRoutes(
 
     if (changed.length > 0) {
       try {
-        deps.saveElizaConfig(state.config);
+        deps.saveTokagentConfig(state.config);
       } catch (err) {
         logger.warn(
           `[api] production-defaults config save failed: ${err instanceof Error ? err.message : err}`,

@@ -32,8 +32,8 @@ export function resolveBrowserWorkspaceBridgeConfig(
   env: NodeJS.ProcessEnv = process.env,
 ): BrowserWorkspaceBridgeConfig | null {
   const baseUrl =
-    normalizeEnvValue(env.ELIZA_BROWSER_WORKSPACE_URL) ??
-    normalizeEnvValue(env.ELIZA_BROWSER_WORKSPACE_URL);
+    normalizeEnvValue(env.TOKAGENT_BROWSER_WORKSPACE_URL) ??
+    normalizeEnvValue(env.TOKAGENT_BROWSER_WORKSPACE_URL);
   if (!baseUrl) {
     return null;
   }
@@ -41,8 +41,8 @@ export function resolveBrowserWorkspaceBridgeConfig(
   return {
     baseUrl: baseUrl.replace(/\/+$/, ""),
     token:
-      normalizeEnvValue(env.ELIZA_BROWSER_WORKSPACE_TOKEN) ??
-      normalizeEnvValue(env.ELIZA_BROWSER_WORKSPACE_TOKEN),
+      normalizeEnvValue(env.TOKAGENT_BROWSER_WORKSPACE_TOKEN) ??
+      normalizeEnvValue(env.TOKAGENT_BROWSER_WORKSPACE_TOKEN),
   };
 }
 
@@ -53,7 +53,7 @@ export function isBrowserWorkspaceBridgeConfigured(
 }
 
 export function getBrowserWorkspaceUnavailableMessage(): string {
-  return "Eliza browser workspace desktop bridge is unavailable.";
+  return "Tokagent browser workspace desktop bridge is unavailable.";
 }
 
 export async function requestBrowserWorkspace<T>(
@@ -97,7 +97,7 @@ export async function evaluateBrowserWorkspaceTab(
 ): Promise<unknown> {
   if (!isBrowserWorkspaceBridgeConfigured(env)) {
     throw new Error(
-      "Eliza browser workspace eval is only available in the desktop app.",
+      "Tokagent browser workspace eval is only available in the desktop app.",
     );
   }
 
@@ -118,7 +118,7 @@ export async function snapshotBrowserWorkspaceTab(
 ): Promise<{ data: string }> {
   if (!isBrowserWorkspaceBridgeConfigured(env)) {
     throw new Error(
-      "Eliza browser workspace snapshot is only available in the desktop app.",
+      "Tokagent browser workspace snapshot is only available in the desktop app.",
     );
   }
 
@@ -543,7 +543,7 @@ export function createDesktopBrowserWorkspaceCommandScript(
   };
   const hoverElement = (element) => {
     if (!element) throw new Error("Target element was not found.");
-    element.setAttribute("data-eliza-hover", "true");
+    element.setAttribute("data-tokagent-hover", "true");
     return { hovered: true, selector: selectorFor(element) };
   };
   const activateElement = (subaction, element) => {
@@ -818,8 +818,8 @@ export function createDesktopBrowserWorkspaceUtilityScript(
   const command = ${JSON.stringify(command)};
   const normalize = (value) => String(value ?? "").replace(/\\s+/g, " ").trim();
   const state =
-    window.__elizaBrowserWorkspaceState ||
-    (window.__elizaBrowserWorkspaceState = {
+    window.__tokagentBrowserWorkspaceState ||
+    (window.__tokagentBrowserWorkspaceState = {
       clipboardText: "",
       consoleEntries: [],
       currentFrame: null,
@@ -1085,16 +1085,16 @@ export function createDesktopBrowserWorkspaceUtilityScript(
     case "drag": {
       const source = resolveTarget();
       const target = command.value ? queryOne(command.value) : null;
-      if (!source || !target) throw new Error("Eliza browser workspace drag requires source selector and target selector in value.");
-      source.setAttribute("data-eliza-dragging", "true");
-      target.setAttribute("data-eliza-drop-target", "true");
+      if (!source || !target) throw new Error("Tokagent browser workspace drag requires source selector and target selector in value.");
+      source.setAttribute("data-tokagent-dragging", "true");
+      target.setAttribute("data-tokagent-drop-target", "true");
       return { source: buildSelector(source), target: buildSelector(target) };
     }
     case "upload": {
       const target = resolveTarget();
-      if (!target || target.tagName !== "INPUT") throw new Error("Eliza browser workspace upload requires a file input target.");
+      if (!target || target.tagName !== "INPUT") throw new Error("Tokagent browser workspace upload requires a file input target.");
       const files = Array.isArray(command.files) ? command.files.map((entry) => String(entry).split(/[\\\\/]/).pop()) : [];
-      target.setAttribute("data-eliza-uploaded-files", files.join(","));
+      target.setAttribute("data-tokagent-uploaded-files", files.join(","));
       return { files, selector: buildSelector(target) };
     }
     case "set": {
@@ -1134,7 +1134,7 @@ export function createDesktopBrowserWorkspaceUtilityScript(
       }
       if (action === "set") {
         const name = command.name || command.entryKey;
-        if (!name) throw new Error("Eliza browser workspace cookies set requires name.");
+        if (!name) throw new Error("Tokagent browser workspace cookies set requires name.");
         document.cookie = name + "=" + (command.value || "") + "; path=/";
       }
       const cookieString = document.cookie || "";
@@ -1157,7 +1157,7 @@ export function createDesktopBrowserWorkspaceUtilityScript(
       }
       if (action === "set") {
         const key = command.entryKey || command.name;
-        if (!key) throw new Error("Eliza browser workspace storage set requires entryKey.");
+        if (!key) throw new Error("Tokagent browser workspace storage set requires entryKey.");
         storage.setItem(key, command.value || "");
       }
       if (command.entryKey || command.name) {
@@ -1173,7 +1173,7 @@ export function createDesktopBrowserWorkspaceUtilityScript(
     case "network": {
       const action = command.networkAction || "requests";
       if (action === "route") {
-        if (!command.url) throw new Error("Eliza browser workspace network route requires url pattern.");
+        if (!command.url) throw new Error("Tokagent browser workspace network route requires url pattern.");
         state.networkRoutes.push({
           abort: Boolean(command.offline),
           body: command.responseBody ?? null,
@@ -1226,7 +1226,7 @@ export function createDesktopBrowserWorkspaceUtilityScript(
     case "highlight": {
       const target = resolveTarget();
       if (!target) throw new Error("Target element was not found.");
-      target.setAttribute("data-eliza-highlight", "true");
+      target.setAttribute("data-tokagent-highlight", "true");
       state.highlightedSelector = buildSelector(target);
       return { selector: state.highlightedSelector };
     }
@@ -1236,7 +1236,7 @@ export function createDesktopBrowserWorkspaceUtilityScript(
         return { frame: null };
       }
       const frame = command.selector ? document.querySelector(command.selector) : null;
-      if (!frame || frame.tagName !== "IFRAME") throw new Error("Eliza browser workspace frame select requires an iframe selector.");
+      if (!frame || frame.tagName !== "IFRAME") throw new Error("Tokagent browser workspace frame select requires an iframe selector.");
       state.currentFrame = buildSelector(frame);
       return { frame: state.currentFrame };
     }
@@ -1291,7 +1291,7 @@ export async function getDesktopBrowserWorkspaceSnapshotRecord(
       script: `
 (() => {
   const activeDocument = (() => {
-    const state = window.__elizaBrowserWorkspaceState || {};
+    const state = window.__tokagentBrowserWorkspaceState || {};
     if (!state.currentFrame) return document;
     try {
       const frame = document.querySelector(state.currentFrame);
@@ -1337,7 +1337,7 @@ export async function getDesktopBrowserWorkspaceSessionState(
       id,
       script: `
 (() => {
-  const state = window.__elizaBrowserWorkspaceState || {};
+  const state = window.__tokagentBrowserWorkspaceState || {};
   const readStorage = (storage) => {
     const out = {};
     for (let i = 0; i < storage.length; i += 1) {
@@ -1384,8 +1384,8 @@ export async function loadDesktopBrowserWorkspaceSessionState(
 (() => {
   const payload = ${JSON.stringify(payload)};
   const state =
-    window.__elizaBrowserWorkspaceState ||
-    (window.__elizaBrowserWorkspaceState = { settings: {} });
+    window.__tokagentBrowserWorkspaceState ||
+    (window.__tokagentBrowserWorkspaceState = { settings: {} });
   localStorage.clear();
   for (const [key, value] of Object.entries(payload.localStorage || {})) {
     localStorage.setItem(key, String(value ?? ""));

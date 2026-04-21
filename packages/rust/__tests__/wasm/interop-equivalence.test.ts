@@ -7,8 +7,8 @@
 
 import * as fs from "node:fs";
 import * as path from "node:path";
-import type { Character, CharacterInput, Content, Memory } from "@elizaos/core";
-import { createCharacter, stringToUuid } from "@elizaos/core";
+import type { Character, CharacterInput, Content, Memory } from "@tokagentos/core";
+import { createCharacter, stringToUuid } from "@tokagentos/core";
 import { beforeAll, describe, expect, it } from "vitest";
 
 // WASM module interface
@@ -33,7 +33,7 @@ describeInterop("TypeScript/Rust Interop Equivalence", () => {
 
   beforeAll(async () => {
     try {
-      wasm = await import("../../pkg-node/elizaos.js");
+      wasm = await import("../../pkg-node/tokagentos.js");
     } catch (error) {
       console.warn("WASM module not available:", error);
     }

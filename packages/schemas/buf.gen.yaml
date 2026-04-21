@@ -5,7 +5,7 @@ managed:
   enabled: true
   override:
     - file_option: go_package_prefix
-      value: github.com/elizaos/eliza/gen/go
+      value: github.com/tokagentos/tokagent/gen/go
 
 plugins:
   # TypeScript generation using @bufbuild/protobuf
@@ -17,11 +17,11 @@ plugins:
 
   # Python generation using standard protobuf
   - remote: buf.build/protocolbuffers/python:v29.3
-    out: ../python/elizaos/types/generated
+    out: ../python/tokagentos/types/generated
 
   # Python type stubs
   - remote: buf.build/protocolbuffers/pyi:v29.3
-    out: ../python/elizaos/types/generated
+    out: ../python/tokagentos/types/generated
 
   # Rust generation using prost (WASM-compatible)
   - remote: buf.build/community/neoeinstein-prost:v0.4.0

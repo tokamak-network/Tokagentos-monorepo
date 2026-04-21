@@ -5,7 +5,7 @@ import type {
   Memory,
   State,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const accessMocks = vi.hoisted(() => ({
@@ -285,7 +285,7 @@ describe("website blocker actions", () => {
     engineMocks.startSelfControlBlock.mockResolvedValue({
       success: false,
       error:
-        "Eliza updated the system hosts file, but these websites still resolved outside loopback on this machine: x.com, api.x.com. The website block was rolled back because it would not be effective.",
+        "Tokagent updated the system hosts file, but these websites still resolved outside loopback on this machine: x.com, api.x.com. The website block was rolled back because it would not be effective.",
     });
     const runtime = createRuntime();
 
@@ -317,7 +317,7 @@ describe("website blocker actions", () => {
       endsAt: "2026-04-19T20:00:00.000Z",
       engine: "hosts-file",
       hostsFilePath: "/etc/hosts",
-      managedBy: "eliza-selfcontrol",
+      managedBy: "tokagent-selfcontrol",
       metadata: null,
       platform: process.platform,
       reason: undefined,
@@ -352,7 +352,7 @@ describe("website blocker actions", () => {
       endsAt: null,
       engine: "hosts-file",
       hostsFilePath: "/etc/hosts",
-      managedBy: "eliza-selfcontrol",
+      managedBy: "tokagent-selfcontrol",
       metadata: null,
       platform: process.platform,
       reason: undefined,

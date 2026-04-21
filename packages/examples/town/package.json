@@ -11,7 +11,7 @@
     "le": "vite src/editor/"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-anthropic": "alpha",
     "@elizaos/plugin-google-genai": "alpha",
     "@elizaos/plugin-groq": "alpha",

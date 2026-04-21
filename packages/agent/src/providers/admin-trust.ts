@@ -4,18 +4,18 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   checkSenderRole,
   resolveCanonicalOwnerIdForMessage,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { hasAdminAccess } from "../security/access.js";
 
 export const adminTrustProvider: Provider = createAdminTrustProvider();
 
 export function createAdminTrustProvider(): Provider {
   return {
-    name: "elizaAdminTrust",
+    name: "tokagentAdminTrust",
     description:
       "Marks owner/admin chat identity as trusted for contact assertions (relationships-oriented).",
     dynamic: true,

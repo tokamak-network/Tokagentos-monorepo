@@ -6,8 +6,8 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Any
 
-from elizaos.generated.spec_helpers import require_evaluator_spec
-from elizaos.types import (
+from tokagentos.generated.spec_helpers import require_evaluator_spec
+from tokagentos.types import (
     ActionResult,
     Component,
     Entity,
@@ -15,10 +15,10 @@ from elizaos.types import (
     EvaluatorResult,
     HandlerOptions,
 )
-from elizaos.types.primitives import string_to_uuid
+from tokagentos.types.primitives import string_to_uuid
 
 if TYPE_CHECKING:
-    from elizaos.types import Content, IAgentRuntime, Memory, State
+    from tokagentos.types import Content, IAgentRuntime, Memory, State
 
 # Get text content from centralized specs
 _spec = require_evaluator_spec("RELATIONSHIP_EXTRACTION")

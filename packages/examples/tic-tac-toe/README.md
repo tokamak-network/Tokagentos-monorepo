@@ -1,6 +1,6 @@
 # Tic-Tac-Toe Demo - No LLM, Pure Minimax
 
-A tic-tac-toe game demonstrating elizaOS's ability to run agents **without an LLM**.
+A tic-tac-toe game demonstrating tokagentOS's ability to run agents **without an LLM**.
 
 ## Key Features
 
@@ -12,8 +12,8 @@ A tic-tac-toe game demonstrating elizaOS's ability to run agents **without an LL
 ## Available Implementations
 
 - [TypeScript](./typescript/) - Full implementation with interactive play
-- [Python](./python/) - Full Eliza runtime integration (message_service.handle_message)
-- [Rust](./rust/) - Full Eliza runtime integration (message_service.handle_message)
+- [Python](./python/) - Full Tokagent runtime integration (message_service.handle_message)
+- [Rust](./rust/) - Full Tokagent runtime integration (message_service.handle_message)
 
 ## How It Works
 

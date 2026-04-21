@@ -1,4 +1,4 @@
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   CreateLifeOpsDefinitionRequest,
   LifeOpsActiveReminderView,
@@ -11,10 +11,10 @@ import type {
   LifeOpsWindowPolicy,
   SnoozeLifeOpsOccurrenceRequest,
   UpdateLifeOpsDefinitionRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_REMINDER_CHANNELS,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   requireNonEmptyString,
   normalizeOptionalString,

@@ -9,9 +9,9 @@ import random
 import time
 from collections.abc import Awaitable, Callable
 
-from elizaos_context_bench.evaluators.retrieval import RetrievalEvaluator
-from elizaos_context_bench.generator import ContextGenerator
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.evaluators.retrieval import RetrievalEvaluator
+from tokagentos_context_bench.generator import ContextGenerator
+from tokagentos_context_bench.types import (
     ContextBenchConfig,
     ContextBenchResult,
     ContextBenchTask,

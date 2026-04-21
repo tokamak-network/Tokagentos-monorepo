@@ -5,7 +5,7 @@ import {
   CardDescription,
   CardHeader,
   StatusBadge,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { type ComputerUseApprovalSnapshot, client } from "../../api/client";
 import { useApp } from "../../state";

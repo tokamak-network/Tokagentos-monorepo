@@ -1,5 +1,5 @@
 import type http from "node:http";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   AppLaunchDiagnostic,
   AppLaunchResult,
@@ -8,7 +8,7 @@ import type {
   AppSessionActivityItem,
   AppSessionJsonValue,
   AppSessionState,
-} from "@elizaos/shared/contracts/apps";
+} from "@tokagentos/shared/contracts/apps";
 import { decode, encode } from "@toon-format/toon";
 
 import type { JournalGoal, JournalMemory } from "./journal/types.js";
@@ -37,8 +37,8 @@ import type { ScapeGameService } from "./services/game-service.js";
  *   POST /api/apps/scape/session/:sessionId/message — operator goal / verb
  *   POST /api/apps/scape/session/:sessionId/control — pause|resume
  *
- * The session-scoped message/control routes are the path elizaOS uses
- * when the operator types in the eliza Apps UI. We alias the
+ * The session-scoped message/control routes are the path tokagentOS uses
+ * when the operator types in the tokagent Apps UI. We alias the
  * behaviour to the legacy `/prompt` handler so both paths share the
  * same `ScapeGameService.applyOperatorMessage` plumbing.
  *
@@ -54,15 +54,15 @@ import type { ScapeGameService } from "./services/game-service.js";
  *
  * Viewer → `text/html`
  * Everything else → `text/toon; charset=utf-8` with a TOON-encoded
- * payload. The eliza host is fine with any content type as long as
+ * payload. The tokagent host is fine with any content type as long as
  * the status line is correct.
  *
  * ## Why a wrapper HTML and not a direct `launchUrl` iframe?
  *
  *   1. The xRSPS client is served by the craco dev server which sets
  *      its own CSP. We want our own CSP `frame-ancestors` controlling
- *      where eliza hosts can embed us, without mutating the client.
- *   2. Serving the wrapper from the eliza host gives us a single URL
+ *      where tokagent hosts can embed us, without mutating the client.
+ *   2. Serving the wrapper from the tokagent host gives us a single URL
  *      to point authenticated sessions at (we can inject a
  *      postMessage bridge for auto-login later).
  */
@@ -92,7 +92,7 @@ const SESSION_ROUTE_PREFIX = "/api/apps/scape/session/";
 const DEFAULT_CLIENT_URL = "https://scape-client-2sqyc.kinsta.page";
 
 // Same hosts the defense plugin whitelists; covers every runtime that
-// might embed the eliza apps grid (browser, Electrobun native window,
+// might embed the tokagent apps grid (browser, Electrobun native window,
 // Capacitor mobile, Tauri, vscode webview, file://).
 const VIEWER_FRAME_ANCESTORS_DIRECTIVE =
   "frame-ancestors 'self' http://localhost:* http://127.0.0.1:* " +
@@ -120,9 +120,9 @@ function asRuntimeLike(runtime: unknown | null): RuntimeLike | null {
 }
 
 /**
- * Read a setting from either the eliza runtime (character secrets) or
+ * Read a setting from either the tokagent runtime (character secrets) or
  * the process env, in that order. Lets operators configure the plugin
- * per-character in a deployed eliza instance or globally via env.
+ * per-character in a deployed tokagent instance or globally via env.
  */
 function resolveSettingLike(
   runtime: IAgentRuntime | null,
@@ -153,7 +153,7 @@ function resolveClientUrl(runtime: IAgentRuntime | null): string {
 
 /**
  * Derive a stable session id for this runtime. We key on
- * `runtime.agentId` — the canonical elizaOS identifier for the agent
+ * `runtime.agentId` — the canonical tokagentOS identifier for the agent
  * — so every refresh cycle resolves to the same session. Previously
  * we used `Date.now()`, which meant every refresh pass (periodic,
  * driven by `packages/agent/src/services/app-manager.ts`) minted a
@@ -337,7 +337,7 @@ function sendHtmlResponse(res: unknown, html: string): void {
  * Send a TOON-encoded response. Mirrors `sendHtmlResponse` above but
  * for the agent-facing endpoints; response body is the TOON-encoded
  * version of `payload`. We set `text/toon` so clients that know the
- * format can decode directly, but the eliza host doesn't care.
+ * format can decode directly, but the tokagent host doesn't care.
  */
 function sendToonResponse(
   res: unknown,
@@ -360,7 +360,7 @@ function sendToonResponse(
  * Read the request body as a Node Buffer and decode it. We need this
  * because the host's `readJsonBody` helper rejects anything with a
  * non-JSON Content-Type, and our routes accept TOON. Size-capped at
- * 64KB so a pathological client can't OOM the eliza host.
+ * 64KB so a pathological client can't OOM the tokagent host.
  */
 async function readRawBody(
   req: unknown,
@@ -446,7 +446,7 @@ async function readDirectiveBody(
 
   // TOON decode (covers text/toon and unlabeled body that happens
   // to be TOON — the 2004scape app-manager proxy forwards with
-  // application/toon, elizaOS's run-steering uses text/toon).
+  // application/toon, tokagentOS's run-steering uses text/toon).
   try {
     const decoded = decode(raw);
     if (decoded && typeof decoded === "object") {
@@ -517,7 +517,7 @@ function getScapeService(
 }
 
 // ---------------------------------------------------------------------------
-// Telemetry extraction — feeds the ScapeOperatorSurface in the eliza UI
+// Telemetry extraction — feeds the ScapeOperatorSurface in the tokagent UI
 // ---------------------------------------------------------------------------
 
 /** Chebyshev distance on the OSRS tile grid. `null` means unknown. */
@@ -729,7 +729,7 @@ function buildScapeSessionState(
   const activeGoal = journalService?.getActiveGoal?.() ?? null;
   const eventLog = service?.getRecentEventLog?.(16) ?? [];
 
-  // Activity feed — the eliza run pane shows this as a timeline next
+  // Activity feed — the tokagent run pane shows this as a timeline next
   // to the viewer. Each autonomous step emits an entry via
   // `pushEventLog`; we surface the latest 16 newest-first so the
   // operator can watch the agent's decisions land.
@@ -797,7 +797,7 @@ function buildScapeSessionState(
         : `Embedding xRSPS client at ${clientUrl}.`,
     canSendCommands: true,
     // The shared AppSessionState contract only allows the two
-    // stock verbs here ("pause" | "resume"); the eliza Apps UI
+    // stock verbs here ("pause" | "resume"); the tokagent Apps UI
     // renders them as buttons and handles the label/disabled
     // state itself based on `status`.
     controls: paused ? ["resume"] : ["pause"],
@@ -813,7 +813,7 @@ function buildScapeSessionState(
 }
 
 // ---------------------------------------------------------------------------
-// Public exports — these match the shape the eliza host imports from
+// Public exports — these match the shape the tokagent host imports from
 // every curated app plugin.
 // ---------------------------------------------------------------------------
 

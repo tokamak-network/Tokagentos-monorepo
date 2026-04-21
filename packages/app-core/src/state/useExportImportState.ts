@@ -55,7 +55,7 @@ export function useExportImportState() {
       const blob = await resp.blob();
       const disposition = resp.headers.get("Content-Disposition") ?? "";
       const filenameMatch = /filename="?([^"]+)"?/.exec(disposition);
-      const filename = filenameMatch?.[1] ?? "agent-export.eliza-agent";
+      const filename = filenameMatch?.[1] ?? "agent-export.tokagent-agent";
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;

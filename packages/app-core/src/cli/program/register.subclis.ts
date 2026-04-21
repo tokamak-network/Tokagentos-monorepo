@@ -1,4 +1,4 @@
-import { isTruthyEnvValue } from "@elizaos/shared/env-utils";
+import { isTruthyEnvValue } from "@tokagentos/shared/env-utils";
 import type { Command } from "commander";
 import { buildParseArgv, getPrimaryCommand, hasHelpOrVersion } from "../argv";
 
@@ -15,7 +15,7 @@ type SubCliEntry = {
 const entries: SubCliEntry[] = [
   {
     name: "plugins",
-    description: "Plugin management (elizaOS plugins)",
+    description: "Plugin management (tokagentOS plugins)",
     register: async (program) => {
       const mod = await import("../plugins-cli");
       mod.registerPluginsCli(program);
@@ -84,7 +84,7 @@ export function registerSubCliCommands(
   program: Command,
   argv: string[] = process.argv,
 ) {
-  const eagerAll = isTruthyEnvValue(process.env.ELIZA_DISABLE_LAZY_SUBCOMMANDS);
+  const eagerAll = isTruthyEnvValue(process.env.TOKAGENT_DISABLE_LAZY_SUBCOMMANDS);
 
   if (eagerAll) {
     for (const entry of entries) {

@@ -16,7 +16,7 @@
  * The LLM step at the end (gated on a live provider) proves the agent can
  * actually reach the sidecar through the API server the UI talks to.
  *
- * Gated on MILADY_LIVE_TEST=1 / ELIZA_LIVE_TEST=1. The live provider is
+ * Gated on MILADY_LIVE_TEST=1 / TOKAGENT_LIVE_TEST=1. The live provider is
  * optional — the sidecar mechanics run on any environment, the chat step
  * only runs if a provider key is configured.
  */
@@ -315,7 +315,7 @@ describeIf(CAN_RUN)("Live: n8n sidecar end-to-end", () => {
           preferredProvider: LIVE_PROVIDER?.name,
         });
         try {
-          const { ModelType } = await import("@elizaos/core");
+          const { ModelType } = await import("@tokagentos/core");
           const model = rt.runtime.getModel(ModelType.TEXT_SMALL);
           expect(model, "live provider must register a TEXT_SMALL model").toBeTypeOf(
             "function",

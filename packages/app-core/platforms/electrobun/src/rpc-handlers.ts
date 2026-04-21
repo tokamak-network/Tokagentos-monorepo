@@ -1,7 +1,7 @@
 /**
  * RPC Handler Registration for Electrobun
  *
- * Maps each RPC request method from ElizaDesktopRPCSchema.bun.requests
+ * Maps each RPC request method from TokagentDesktopRPCSchema.bun.requests
  * to the corresponding native module method. This is the Bun-side
  * equivalent of main-process request handler registration.
  *
@@ -99,7 +99,7 @@ export {
  * Register all RPC request handlers on the given rpc instance.
  *
  * Each handler receives typed params and must return the typed response
- * matching ElizaDesktopRPCSchema.bun.requests[method].
+ * matching TokagentDesktopRPCSchema.bun.requests[method].
  */
 export function registerRpcHandlers(
   rpc: ElectrobunRpcWithHandlers | null | undefined,
@@ -182,7 +182,7 @@ export function registerRpcHandlers(
     ) => {
       const box = await desktop.showMessageBox({
         type: "warning",
-        title: "Disconnect from Eliza Cloud",
+        title: "Disconnect from Tokagent Cloud",
         message: "The agent will need a local AI provider to continue working.",
         buttons: ["Disconnect", "Cancel"],
         defaultId: 0,

@@ -1,5 +1,5 @@
 /**
- * Node.js-specific entry point for @elizaos/core
+ * Node.js-specific entry point for @tokagentos/core
  *
  * This file exports all modules including Node.js-specific functionality.
  * This is the full API surface of the core package.
@@ -133,7 +133,7 @@ export * from "./utils/channel-utils";
 export * from "./utils/environment";
 // Export Node-specific utilities
 export * from "./utils/server-health";
-// Milady state-dir resolution (MILADY_STATE_DIR → ELIZA_STATE_DIR → ~/.milady)
+// Milady state-dir resolution (MILADY_STATE_DIR → TOKAGENT_STATE_DIR → ~/.milady)
 export * from "./utils/state-dir";
 // Export streaming utilities
 export * from "./utils/streaming";

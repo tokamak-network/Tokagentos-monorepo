@@ -9,9 +9,9 @@
 import type {
   WalletAddresses,
   WalletBalancesResponse,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { client } from "@elizaos/app-core";
+import { client } from "@tokagentos/app-core";
 
 // ── Vincent endpoint types ──────────────────────────────────────────────
 

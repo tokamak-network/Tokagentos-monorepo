@@ -4,15 +4,15 @@
  * operational boundaries (Layer 2 of the 3-layer permission model).
  */
 
-import { loadElizaConfig } from "@elizaos/agent/config/config";
-import type { AwarenessContributor } from "@elizaos/agent/contracts";
-import type { IAgentRuntime } from "@elizaos/core";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
+import type { AwarenessContributor } from "@tokagentos/agent/contracts";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 type AutomationMode = "connectors-only" | "full";
 
 function resolveAutomationMode(): AutomationMode {
   try {
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const features =
       config.features && typeof config.features === "object"
         ? (config.features as Record<string, unknown>)

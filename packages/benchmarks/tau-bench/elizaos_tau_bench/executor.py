@@ -4,8 +4,8 @@ Tool executor for Tau-bench.
 
 from typing import Optional
 
-from elizaos_tau_bench.types import ToolCall, ToolDefinition, ToolCallStatus
-from elizaos_tau_bench.environments.base import DomainEnvironment
+from tokagentos_tau_bench.types import ToolCall, ToolDefinition, ToolCallStatus
+from tokagentos_tau_bench.environments.base import DomainEnvironment
 
 
 class ToolExecutor:

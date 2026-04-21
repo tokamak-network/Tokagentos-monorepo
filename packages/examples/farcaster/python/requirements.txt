@@ -1,10 +1,10 @@
-# elizaOS Python SDK
-elizaos>=2.0.0a4
+# tokagentOS Python SDK
+tokagentos>=2.0.0a4
 
 # Plugins
-elizaos-plugin-openai>=2.0.0a4
-elizaos-plugin-sql>=2.0.0a4
-elizaos-plugin-farcaster>=2.0.0a4
+tokagentos-plugin-openai>=2.0.0a4
+tokagentos-plugin-sql>=2.0.0a4
+tokagentos-plugin-farcaster>=2.0.0a4
 
 # Environment
 python-dotenv>=1.0.0

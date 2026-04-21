@@ -1,4 +1,4 @@
-import type { LifeOpsHealthSignal } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsHealthSignal } from "@tokagentos/shared/contracts/lifeops";
 
 export type TimeBucket =
   | "EARLY_MORNING" // 5-7

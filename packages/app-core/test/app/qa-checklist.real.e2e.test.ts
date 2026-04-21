@@ -34,24 +34,24 @@ const envPath = path.resolve(
 loadDotenv({ path: envPath });
 
 const DEFAULT_UI_URL = stripTrailingSlash(
-  process.env.ELIZA_LIVE_UI_URL ??
-    process.env.ELIZA_UI_URL ??
+  process.env.TOKAGENT_LIVE_UI_URL ??
+    process.env.TOKAGENT_UI_URL ??
     "http://localhost:2138",
 );
 let API_URL = stripTrailingSlash(
-  process.env.ELIZA_LIVE_API_URL ??
-    process.env.ELIZA_API_URL ??
+  process.env.TOKAGENT_LIVE_API_URL ??
+    process.env.TOKAGENT_API_URL ??
     "http://127.0.0.1:31337",
 );
 const API_TOKEN =
-  process.env.ELIZA_API_TOKEN?.trim() ??
-  process.env.ELIZA_API_TOKEN?.trim() ??
+  process.env.TOKAGENT_API_TOKEN?.trim() ??
+  process.env.TOKAGENT_API_TOKEN?.trim() ??
   "";
 const ELEVENLABS_API_KEY = process.env.ELEVENLABS_API_KEY?.trim() ?? "";
 const LIVE_BROWSER = resolveLiveBrowserExecutable();
 const CHROME_PATH = LIVE_BROWSER.executablePath;
 const LIVE_TESTS_ENABLED =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const CHROME_AVAILABLE = CHROME_PATH !== null && existsSync(CHROME_PATH);
 const LIVE_PROVIDER =
   (LIVE_TESTS_ENABLED && selectLiveProvider("openai")) ||
@@ -70,7 +70,7 @@ const REQUIRE_STRICT_TTS_ASSERTIONS = ELEVENLABS_API_KEY.length > 0;
 const CAN_RUN =
   LIVE_TESTS_ENABLED && CHROME_AVAILABLE && LIVE_PROVIDER !== null;
 const PROFILE_FILTER = new Set(
-  (process.env.ELIZA_LIVE_PROFILE ?? "")
+  (process.env.TOKAGENT_LIVE_PROFILE ?? "")
     .split(",")
     .map((value) => value.trim().toLowerCase())
     .filter(Boolean),
@@ -78,7 +78,7 @@ const PROFILE_FILTER = new Set(
 
 const EXPECTED_SARAH_VOICE_ID = "EXAVITQu4vr4xnSDxMaL";
 const KNOWLEDGE_CODEWORD = "VELVET-MOON-4821";
-const QA_ARTIFACT_DIR = path.join(os.tmpdir(), "eliza-live-qa");
+const QA_ARTIFACT_DIR = path.join(os.tmpdir(), "tokagent-live-qa");
 const QA_ONBOARDING_TRACE_FILE = path.join(
   QA_ARTIFACT_DIR,
   "onboarding-trace.log",
@@ -296,7 +296,7 @@ describeIf(CAN_RUN)("Live QA checklist", () => {
     await ensureHttpOk(`${API_URL}/api/status`);
     console.log("[live-qa][setup] api reachable");
     browserProfileDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), "eliza-qa-browser-"),
+      path.join(os.tmpdir(), "tokagent-qa-browser-"),
     );
     browser = await launchQaBrowser(browserProfileDir);
     console.log("[live-qa][setup] browser launched");
@@ -409,7 +409,7 @@ describeIf(CAN_RUN)("Live QA checklist", () => {
         }
         await appendQaOnboardingTrace("dispatch teleport complete");
         await page.evaluate(() => {
-          window.dispatchEvent(new Event("eliza:vrm-teleport-complete"));
+          window.dispatchEvent(new Event("tokagent:vrm-teleport-complete"));
         });
         await appendQaOnboardingTrace("wait for chat composer");
         await page.waitForSelector('[data-testid="chat-composer-textarea"]');
@@ -690,7 +690,7 @@ describeIf(CAN_RUN)("Live QA checklist", () => {
         await waitForCompanionReady(page, 120_000);
         logQaStep(profile, "avatar-voice QA companion avatar ready");
         await page.evaluate(() => {
-          window.dispatchEvent(new Event("eliza:vrm-teleport-complete"));
+          window.dispatchEvent(new Event("tokagent:vrm-teleport-complete"));
         });
         await page.waitForSelector('[data-testid="chat-composer-textarea"]');
         await page.mouse.click(24, 24);
@@ -786,7 +786,7 @@ function contentTypeFor(filePath: string): string {
 }
 
 function injectQaBootScript(html: string): string {
-  const bootScript = `<script>window.__ELIZA_API_BASE__=window.location.origin;${API_TOKEN ? `Object.defineProperty(window,"__ELIZA_API_TOKEN__",{value:${JSON.stringify(API_TOKEN)},configurable:true,writable:true,enumerable:false});` : ""}</script>`;
+  const bootScript = `<script>window.__TOKAGENT_API_BASE__=window.location.origin;${API_TOKEN ? `Object.defineProperty(window,"__TOKAGENT_API_TOKEN__",{value:${JSON.stringify(API_TOKEN)},configurable:true,writable:true,enumerable:false});` : ""}</script>`;
   if (html.includes("</head>")) {
     return html.replace("</head>", `${bootScript}</head>`);
   }
@@ -1100,7 +1100,7 @@ async function waitForJson<T>(
 
 async function startRealStack(): Promise<StartedStack> {
   await ensureUiDistReady();
-  const stateDir = await fs.mkdtemp(path.join(os.tmpdir(), "eliza-qa-live-"));
+  const stateDir = await fs.mkdtemp(path.join(os.tmpdir(), "tokagent-qa-live-"));
   const apiPort = await getFreePort();
   const uiPort = await getFreePort();
   const apiBase = `http://127.0.0.1:${apiPort}`;
@@ -1110,7 +1110,7 @@ async function startRealStack(): Promise<StartedStack> {
     [
       "--import",
       "tsx",
-      path.join(REPO_ROOT, "eliza/packages/app-core/src/runtime/dev-server.ts"),
+      path.join(REPO_ROOT, "tokagent/packages/app-core/src/runtime/dev-server.ts"),
     ],
     {
       cwd: REPO_ROOT,
@@ -1119,12 +1119,12 @@ async function startRealStack(): Promise<StartedStack> {
         ALLOW_NO_DATABASE: "",
         CHECK_SHOULD_RESPOND: "false",
         CONVERSATION_LENGTH: "20",
-        ELIZA_DISABLE_LIFEOPS_SCHEDULER: "1",
-        ELIZA_DISABLE_PROACTIVE_AGENT: "1",
+        TOKAGENT_DISABLE_LIFEOPS_SCHEDULER: "1",
+        TOKAGENT_DISABLE_PROACTIVE_AGENT: "1",
         FORCE_COLOR: "0",
-        ELIZA_API_PORT: String(apiPort),
-        ELIZA_PORT: String(apiPort),
-        ELIZA_STATE_DIR: stateDir,
+        TOKAGENT_API_PORT: String(apiPort),
+        TOKAGENT_PORT: String(apiPort),
+        TOKAGENT_STATE_DIR: stateDir,
       },
       stdio: ["ignore", "pipe", "pipe"],
     },
@@ -1149,7 +1149,7 @@ async function startRealStack(): Promise<StartedStack> {
     port: uiPort,
   });
 
-  process.env.ELIZA_API_PORT = String(apiPort);
+  process.env.TOKAGENT_API_PORT = String(apiPort);
 
   return {
     apiBase,
@@ -1441,8 +1441,8 @@ async function installQaInstrumentation(page: Page) {
     qaWindow.__qaSpeechCalls = [];
     qaWindow.__qaTeleportEvents = [];
 
-    const QA_EMOTE_EVENT_NAME = "eliza:app-emote";
-    const QA_TELEPORT_EVENT_NAME = "eliza:vrm-teleport-complete";
+    const QA_EMOTE_EVENT_NAME = "tokagent:app-emote";
+    const QA_TELEPORT_EVENT_NAME = "tokagent:vrm-teleport-complete";
     let vrmRegistryStore: QaRegistryEntry[] = [];
 
     const recordWindowEvent = (event: Event) => {
@@ -1504,7 +1504,7 @@ async function installQaInstrumentation(page: Page) {
       engine.__qaPlayEmoteWrapped = true;
     };
 
-    Object.defineProperty(window, "__ELIZA_VRM_ENGINES__", {
+    Object.defineProperty(window, "__TOKAGENT_VRM_ENGINES__", {
       configurable: true,
       get() {
         return vrmRegistryStore;
@@ -1645,7 +1645,7 @@ async function qaRemoteSnapshot(page: Page): Promise<QaRemoteSnapshot> {
     const visibleText = body?.innerText ?? "";
     const domText = body?.textContent ?? "";
     return {
-      activeServer: window.localStorage.getItem("eliza:active-server"),
+      activeServer: window.localStorage.getItem("tokagent:active-server"),
       bodyText: `${visibleText}\n${domText}`,
       connectButtonText,
       remoteApiBase,
@@ -1783,7 +1783,7 @@ async function pageContainsText(page: Page, text: string): Promise<boolean> {
 async function currentVrmRegistry(page: Page): Promise<QaVrmRegistryEntry[]> {
   return page.evaluate(() => {
     const qaWindow = window as typeof window & {
-      __ELIZA_VRM_ENGINES__?: Array<{
+      __TOKAGENT_VRM_ENGINES__?: Array<{
         role?: string;
         vrmPath?: string;
         worldUrl?: string | null;
@@ -1797,7 +1797,7 @@ async function currentVrmRegistry(page: Page): Promise<QaVrmRegistryEntry[]> {
       }>;
     };
 
-    return (qaWindow.__ELIZA_VRM_ENGINES__ ?? []).map((entry) => {
+    return (qaWindow.__TOKAGENT_VRM_ENGINES__ ?? []).map((entry) => {
       const debug =
         typeof entry.getDebugInfo === "function" ? entry.getDebugInfo() : null;
       return {
@@ -2467,7 +2467,7 @@ async function qaCharacterSwitchAndDance(page: Page, profile?: Profile) {
     logQaStep(profile, "character-switch QA open dance emote picker");
   }
   await page.evaluate(() => {
-    document.dispatchEvent(new Event("eliza:emote-picker"));
+    document.dispatchEvent(new Event("tokagent:emote-picker"));
   });
   await page.waitForSelector('button[title="Dance Happy"]', {
     visible: true,
@@ -2541,12 +2541,12 @@ async function qaCharacterSwitchAndDance(page: Page, profile?: Profile) {
 }
 
 async function writeKnowledgeFile(profileId: string): Promise<string> {
-  const filename = `eliza-qa-knowledge-${profileId}.txt`;
+  const filename = `tokagent-qa-knowledge-${profileId}.txt`;
   const fullPath = path.join(os.tmpdir(), filename);
   await fs.writeFile(
     fullPath,
     [
-      "Eliza QA knowledge fixture.",
+      "Tokagent QA knowledge fixture.",
       `The QA codeword is ${KNOWLEDGE_CODEWORD}.`,
       "If asked for the QA codeword, answer with only the codeword.",
     ].join("\n"),

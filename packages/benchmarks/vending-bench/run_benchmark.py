@@ -15,8 +15,8 @@ from pathlib import Path
 # Add the package to path for direct execution
 sys.path.insert(0, str(Path(__file__).parent))
 
-from elizaos_vending_bench.runner import VendingBenchRunner
-from elizaos_vending_bench.types import VendingBenchConfig
+from tokagentos_vending_bench.runner import VendingBenchRunner
+from tokagentos_vending_bench.types import VendingBenchConfig
 
 
 def setup_logging() -> None:
@@ -52,7 +52,7 @@ async def main() -> int:
     runner = VendingBenchRunner(config)
 
     logger.info("=" * 70)
-    logger.info("Starting Vending-Bench Evaluation for ElizaOS")
+    logger.info("Starting Vending-Bench Evaluation for TokagentOS")
     logger.info("=" * 70)
     logger.info("Configuration:")
     logger.info(f"  - Runs: {config.num_runs}")

@@ -7,7 +7,7 @@ const meta = {
   component: ChatEmptyState,
   tags: ["autodocs"],
   args: {
-    agentName: "Eliza",
+    agentName: "Tokagent",
     onSuggestionClick: fn(),
   },
 } satisfies Meta<typeof ChatEmptyState>;
@@ -25,7 +25,7 @@ export const Default: Story = {
 
 export const CustomSuggestions: Story = {
   args: {
-    agentName: "Eliza",
+    agentName: "Tokagent",
     suggestions: ["What can you do?", "Help me code", "Tell me about yourself"],
   },
   render: (args) => (

@@ -10,7 +10,7 @@
 import { execFile, spawn, type ChildProcess } from "node:child_process";
 import { promisify } from "node:util";
 import { randomUUID, randomInt } from "node:crypto";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 const execFileAsync = promisify(execFile);
 
@@ -101,9 +101,9 @@ function resolveConfig(
   return {
     preferredBackend: config?.preferredBackend,
     tailscaleNodeName:
-      config?.tailscaleNodeName ?? (env.ELIZA_TAILSCALE_NODE?.trim() || undefined),
+      config?.tailscaleNodeName ?? (env.TOKAGENT_TAILSCALE_NODE?.trim() || undefined),
     ngrokAuthToken:
-      config?.ngrokAuthToken ?? (env.ELIZA_NGROK_AUTH_TOKEN?.trim() || undefined),
+      config?.ngrokAuthToken ?? (env.TOKAGENT_NGROK_AUTH_TOKEN?.trim() || undefined),
     vncPort: config?.vncPort ?? DEFAULT_VNC_PORT,
     sessionDurationMinutes:
       config?.sessionDurationMinutes ?? DEFAULT_SESSION_MINUTES,
@@ -455,7 +455,7 @@ export async function startRemoteSession(
     } else {
       if (!resolved.ngrokAuthToken) {
         throw new RemoteDesktopError(
-          "ngrok auth token not configured (ELIZA_NGROK_AUTH_TOKEN)",
+          "ngrok auth token not configured (TOKAGENT_NGROK_AUTH_TOKEN)",
           "ngrok-vnc",
         );
       }

@@ -12,7 +12,7 @@ import {
   SkillSidebarItem,
   StatusBadge,
   Switch,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { RefreshCw } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import type { SkillInfo } from "../../api";

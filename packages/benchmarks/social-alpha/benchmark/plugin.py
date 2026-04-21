@@ -1,7 +1,7 @@
 """
-Social Alpha Benchmark Plugin for ElizaOS.
+Social Alpha Benchmark Plugin for TokagentOS.
 
-Provides actions and a provider that allow an ElizaOS AgentRuntime to perform
+Provides actions and a provider that allow an TokagentOS AgentRuntime to perform
 social-alpha tasks:
   - EXTRACT_RECOMMENDATION: parse a message for trading signals
   - PROCESS_CALL: record a trade call and update trust metrics
@@ -23,9 +23,9 @@ import re
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.memory import Memory
-    from elizaos.types.state import State
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.state import State
 
 # ---------------------------------------------------------------------------
 # Shared in-process state
@@ -197,7 +197,7 @@ def _compute_trust_score(user_id: str) -> float:
     archetype = _classify_archetype(user_id)
     m = _compute_user_metrics(user_id)
 
-    from elizaos_plugin_social_alpha.trust_score import (
+    from tokagentos_plugin_social_alpha.trust_score import (
         TrustScoreMetrics,
         calculate_balanced_trust_score,
     )
@@ -256,7 +256,7 @@ Rules:
 
 def create_social_alpha_actions() -> list:
     """Create the EXTRACT_RECOMMENDATION and PROCESS_CALL actions."""
-    from elizaos.types.components import (
+    from tokagentos.types.components import (
         Action,
         ActionParameter,
         ActionParameterSchema,
@@ -284,7 +284,7 @@ def create_social_alpha_actions() -> list:
         callback: HandlerCallback | None = None,
         responses: list[Memory] | None = None,
     ) -> ActionResult:
-        from elizaos.types.model import ModelType
+        from tokagentos.types.model import ModelType
 
         msg_text = ""
         if options and options.parameters:
@@ -402,7 +402,7 @@ def create_social_alpha_actions() -> list:
 
 def create_social_alpha_provider():  # noqa: ANN201
     """Create a SOCIAL_ALPHA_CONTEXT provider that injects call history / trust data."""
-    from elizaos.types.components import Provider, ProviderResult
+    from tokagentos.types.components import Provider, ProviderResult
 
     async def get_context(
         runtime: AgentRuntime,
@@ -568,9 +568,9 @@ def _parse_extraction_json(text: str) -> dict[str, str | bool]:
 
 
 def create_social_alpha_benchmark_plugin():  # noqa: ANN201
-    """Create the social-alpha benchmark ElizaOS plugin."""
-    from elizaos.types.model import ModelType
-    from elizaos.types.plugin import Plugin
+    """Create the social-alpha benchmark TokagentOS plugin."""
+    from tokagentos.types.model import ModelType
+    from tokagentos.types.plugin import Plugin
 
     actions = create_social_alpha_actions()
     provider = create_social_alpha_provider()
@@ -583,7 +583,7 @@ def create_social_alpha_benchmark_plugin():  # noqa: ANN201
 
     return Plugin(
         name="social-alpha-benchmark",
-        description="Social Alpha benchmark plugin — extraction, trust scoring, and ranking via Eliza runtime",
+        description="Social Alpha benchmark plugin — extraction, trust scoring, and ranking via Tokagent runtime",
         init=init_plugin,
         config={},
         actions=actions,

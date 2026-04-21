@@ -29,7 +29,7 @@
  */
 
 import { type ChildProcess, execSync, spawn } from "node:child_process";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { type ITtsStreamBridge, ttsStreamBridge } from "./tts-stream-bridge.js";
 
 const TAG = "[StreamManager]";
@@ -590,7 +590,7 @@ class StreamManager {
       }
       case "file": {
         // Read from a continuously-updated JPEG file (written by browser-capture).
-        const framePath = config.frameFile || "/tmp/eliza-stream-frame.jpg";
+        const framePath = config.frameFile || "/tmp/tokagent-stream-frame.jpg";
         return [
           "-probesize",
           "32",

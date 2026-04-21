@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from elizaos.types import Plugin
+from tokagentos.types import Plugin
 
 from .actions import (
     analyze_input_action,

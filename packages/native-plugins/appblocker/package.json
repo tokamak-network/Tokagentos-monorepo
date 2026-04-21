@@ -31,17 +31,17 @@
     "build": "npm run clean && tsc && rollup -c rollup.config.mjs",
     "clean": "rimraf ./dist"
   },
-  "author": "elizaOS",
+  "author": "tokagentOS",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaOS/eliza.git",
+    "url": "https://github.com/tokagentOS/tokagent.git",
     "directory": "packages/native-plugins/appblocker"
   },
   "capacitor": {
     "ios": {
       "src": "ios",
-      "podName": "ElizaosCapacitorAppblocker"
+      "podName": "TokagentosCapacitorAppblocker"
     },
     "android": {
       "src": "android"
@@ -60,7 +60,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "elizaos": {
+  "tokagentos": {
     "platforms": [
       "browser",
       "android",

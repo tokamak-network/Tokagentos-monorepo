@@ -5,7 +5,7 @@ Covers:
   - instruction_catalog: data integrity, discriminator uniqueness, boundary values
   - skill_templates: template generation, TypeScript validity via real Bun execution
   - exploration_strategy: state tracking, phase transitions, edge cases
-  - eliza_explorer: run_typescript_skill with real Bun, construction, metrics
+  - tokagent_explorer: run_typescript_skill with real Bun, construction, metrics
 """
 
 import asyncio
@@ -524,25 +524,25 @@ class TestTemplatesBunExecution:
 
 
 # =========================================================================
-# eliza_explorer: run_typescript_skill and ElizaExplorer construction
+# tokagent_explorer: run_typescript_skill and TokagentExplorer construction
 # =========================================================================
 
-class TestElizaExplorerConstruction:
+class TestTokagentExplorerConstruction:
 
     def test_default_construction(self):
         # Import inline to avoid surfpool_env path issues in CI without gym env
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=3)
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=3)
         assert explorer.max_messages == 3
         assert explorer.model_name == "anthropic/claude-sonnet-4"
         assert explorer.env_config is None
-        assert explorer.run_id.startswith("eliza_")
+        assert explorer.run_id.startswith("tokagent_")
         assert len(explorer.metrics["messages"]) == 0
         assert explorer._llm is None
 
     def test_construction_with_env_config(self):
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(
             environment_config="voyager/environments/basic_env.json",
             max_messages=5,
         )
@@ -550,20 +550,20 @@ class TestElizaExplorerConstruction:
         assert explorer.env_config["name"] == "basic_benchmark"
 
     def test_timeout_default(self):
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         assert explorer._timeout_ms == 30000
 
     def test_timeout_from_config(self):
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(
             environment_config="voyager/environments/basic_env.json",
         )
         assert explorer._timeout_ms == 4000  # basic_env.json has timeout: 4000
 
     def test_ensure_llm_raises_without_any_key(self):
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         saved = {}
         for k in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY"):
             saved[k] = os.environ.pop(k, None)
@@ -574,8 +574,8 @@ class TestElizaExplorerConstruction:
                 os.environ[k] = v
 
     def test_metrics_structure(self):
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1, run_index=42)
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1, run_index=42)
         m = explorer.metrics
         assert m["run_index"] == 42
         assert m["model"] == "anthropic/claude-sonnet-4"
@@ -584,23 +584,23 @@ class TestElizaExplorerConstruction:
         assert isinstance(m["programs_discovered"], dict)
 
     def test_code_pattern_extracts_typescript(self):
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         text = "here is code:\n```typescript\nconst x = 1;\n```\nand more"
         matches = explorer.code_pattern.findall(text)
         assert len(matches) == 1
         assert "const x = 1;" in matches[0]
 
     def test_code_pattern_extracts_multiple_blocks(self):
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         text = "```ts\nblock1\n```\ntext\n```javascript\nblock2\n```"
         matches = explorer.code_pattern.findall(text)
         assert len(matches) == 2
 
     def test_code_pattern_no_match(self):
-        from benchmarks.solana.eliza_explorer import ElizaExplorer
-        explorer = ElizaExplorer(max_messages=1)
+        from benchmarks.solana.tokagent_explorer import TokagentExplorer
+        explorer = TokagentExplorer(max_messages=1)
         matches = explorer.code_pattern.findall("no code here")
         assert len(matches) == 0
 
@@ -613,7 +613,7 @@ SKILL_RUNNER_DIR = GYM_ENV_DIR / "voyager" / "skill_runner"
 class TestRunTypescriptSkill:
 
     def test_valid_memo_skill(self):
-        from benchmarks.solana.eliza_explorer import run_typescript_skill
+        from benchmarks.solana.tokagent_explorer import run_typescript_skill
         code = memo_blitz_ascii_template(FAKE_PUBKEY, 0, 3)
         result = run_typescript_skill(
             code, FAKE_PUBKEY,
@@ -623,7 +623,7 @@ class TestRunTypescriptSkill:
         assert result.get("serialized_tx") is not None
 
     def test_syntax_error_returns_error(self):
-        from benchmarks.solana.eliza_explorer import run_typescript_skill
+        from benchmarks.solana.tokagent_explorer import run_typescript_skill
         code = "this is not valid typescript }{}{}{}"
         result = run_typescript_skill(
             code, FAKE_PUBKEY,
@@ -634,7 +634,7 @@ class TestRunTypescriptSkill:
         assert "error" in result or "stderr" in result
 
     def test_missing_execute_skill_returns_error(self):
-        from benchmarks.solana.eliza_explorer import run_typescript_skill
+        from benchmarks.solana.tokagent_explorer import run_typescript_skill
         code = "export function wrongName(): string { return 'hi'; }"
         result = run_typescript_skill(
             code, FAKE_PUBKEY,

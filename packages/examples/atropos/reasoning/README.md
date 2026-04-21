@@ -1,6 +1,6 @@
-# ElizaOS Atropos - Reasoning Gym Environment
+# TokagentOS Atropos - Reasoning Gym Environment
 
-A reasoning and problem-solving environment for training ElizaOS agents using the Atropos RL framework.
+A reasoning and problem-solving environment for training TokagentOS agents using the Atropos RL framework.
 
 ## Overview
 
@@ -21,13 +21,13 @@ pip install -e examples/atropos/reasoning
 
 ```bash
 # Run evaluation on math problems
-python -m elizaos_atropos_reasoning --mode eval --task math
+python -m tokagentos_atropos_reasoning --mode eval --task math
 
 # Interactive problem solving
-python -m elizaos_atropos_reasoning --mode interactive
+python -m tokagentos_atropos_reasoning --mode interactive
 
 # Run full benchmark
-python -m elizaos_atropos_reasoning --mode benchmark
+python -m tokagentos_atropos_reasoning --mode benchmark
 ```
 
 ## Task Categories
@@ -93,9 +93,9 @@ python -m elizaos_atropos_reasoning --mode benchmark
 ## Environment Interface
 
 ```python
-from elizaos import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_atropos_reasoning import (
+from tokagentos import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_atropos_reasoning import (
     ReasoningEnvironment,
     ReasoningAgent,
     TaskType,
@@ -130,7 +130,7 @@ print(f"Score: {state.score}")
 
 ```python
 from atropos import AtroposClient
-from elizaos_atropos_reasoning import ReasoningEnvironment
+from tokagentos_atropos_reasoning import ReasoningEnvironment
 
 # Register with Atropos
 client = AtroposClient()
@@ -212,7 +212,7 @@ Expected: Alice-dog, Bob-cat, Carol-bird
 ## Architecture
 
 ```
-elizaos_atropos_reasoning/
+tokagentos_atropos_reasoning/
 ├── __init__.py           # Package exports
 ├── types.py              # Task types, problem definitions
 ├── problems/
@@ -222,10 +222,10 @@ elizaos_atropos_reasoning/
 │   └── puzzles.py        # Puzzle generators
 ├── evaluator.py          # Answer evaluation
 ├── environment.py        # ReasoningEnvironment class
-├── agent.py              # ElizaOS agent integration
+├── agent.py              # TokagentOS agent integration
 └── cli.py                # Command-line interface
 ```
 
 ## License
 
-MIT License - Part of the ElizaOS project.
+MIT License - Part of the TokagentOS project.

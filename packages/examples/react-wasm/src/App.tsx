@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getGreeting, getRuntime, sendMessage } from "./eliza-runtime";
+import { getGreeting, getRuntime, sendMessage } from "./tokagent-runtime";
 import "./App.css";
 
 interface Message {
@@ -18,11 +18,11 @@ function App() {
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const addElizaMessage = useCallback((text: string) => {
+  const addTokagentMessage = useCallback((text: string) => {
     setMessages((prev) => [
       ...prev,
       {
-        id: `eliza-${Date.now()}`,
+        id: `tokagent-${Date.now()}`,
         text,
         isUser: false,
         timestamp: new Date(),
@@ -34,8 +34,8 @@ function App() {
   useEffect(() => {
     let mounted = true;
 
-    const initializeEliza = async () => {
-      setBootStatus("Loading elizaOS runtime...");
+    const initializeTokagent = async () => {
+      setBootStatus("Loading tokagentOS runtime...");
 
       // Initialize the AgentRuntime
       await getRuntime();
@@ -48,17 +48,17 @@ function App() {
       // Add initial greeting after boot
       setTimeout(() => {
         if (mounted) {
-          addElizaMessage(getGreeting());
+          addTokagentMessage(getGreeting());
         }
       }, 500);
     };
 
-    initializeEliza();
+    initializeTokagent();
 
     return () => {
       mounted = false;
     };
-  }, [addElizaMessage]);
+  }, [addTokagentMessage]);
 
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -95,12 +95,12 @@ function App() {
       setInputValue("");
       setIsTyping(true);
 
-      // Send message through elizaOS runtime
+      // Send message through tokagentOS runtime
       const response = await sendMessage(text);
-      addElizaMessage(response);
+      addTokagentMessage(response);
       setIsTyping(false);
     },
-    [inputValue, isTyping, addElizaMessage],
+    [inputValue, isTyping, addTokagentMessage],
   );
 
   return (
@@ -115,7 +115,7 @@ function App() {
         <div className="terminal">
           {/* Header */}
           <header className="terminal-header">
-            <h1 className="title">ELIZA</h1>
+            <h1 className="title">TOKAGENT</h1>
             <div className="subtitle">Rogerian Psychotherapist Simulation</div>
             <div className="meta">MIT AI Lab • 1966 • Joseph Weizenbaum</div>
           </header>
@@ -135,18 +135,18 @@ function App() {
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`message ${message.isUser ? "user" : "eliza"}`}
+                className={`message ${message.isUser ? "user" : "tokagent"}`}
               >
                 <span className="message-label">
-                  {message.isUser ? "YOU" : "ELIZA"}:
+                  {message.isUser ? "YOU" : "TOKAGENT"}:
                 </span>
                 <span className="message-text">{message.text}</span>
               </div>
             ))}
 
             {isTyping && (
-              <div className="message eliza typing">
-                <span className="message-label">ELIZA:</span>
+              <div className="message tokagent typing">
+                <span className="message-label">TOKAGENT:</span>
                 <span className="typing-dots">
                   <span>.</span>
                   <span>.</span>

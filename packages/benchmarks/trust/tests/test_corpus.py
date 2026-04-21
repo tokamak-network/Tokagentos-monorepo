@@ -1,7 +1,7 @@
 """Tests for corpus integrity and structure."""
 
-from elizaos_trust_bench.corpus import TEST_CORPUS, get_corpus, TrustTestCase
-from elizaos_trust_bench.types import Difficulty, ThreatCategory
+from tokagentos_trust_bench.corpus import TEST_CORPUS, get_corpus, TrustTestCase
+from tokagentos_trust_bench.types import Difficulty, ThreatCategory
 
 
 class TestCorpusIntegrity:

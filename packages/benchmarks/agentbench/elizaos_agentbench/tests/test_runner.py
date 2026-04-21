@@ -6,12 +6,12 @@ import pytest
 import tempfile
 from pathlib import Path
 
-from elizaos_agentbench.types import (
+from tokagentos_agentbench.types import (
     AgentBenchConfig,
     AgentBenchEnvironment,
     EnvironmentConfig,
 )
-from elizaos_agentbench.runner import AgentBenchRunner, run_agentbench, MemoryTracker
+from tokagentos_agentbench.runner import AgentBenchRunner, run_agentbench, MemoryTracker
 
 
 class TestMemoryTracker:

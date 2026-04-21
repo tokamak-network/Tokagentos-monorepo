@@ -9,7 +9,7 @@ import {
   isConnectorConfigured,
   isStreamingDestinationConfigured,
   STREAMING_PLUGINS,
-} from "@elizaos/agent/config/plugin-auto-enable";
+} from "@tokagentos/agent/config/plugin-auto-enable";
 
 export {
   AUTH_PROVIDER_PLUGINS,
@@ -22,7 +22,7 @@ export {
 // Extend upstream CONNECTOR_PLUGINS with App-local connectors.
 export const CONNECTOR_PLUGINS: Record<string, string> = {
   ..._upstreamConnectorPlugins,
-  wechat: "elizaoswechat",
+  wechat: "tokagentoswechat",
 };
 
 import { isNativeServerPlatform } from "../platform/is-native-server";
@@ -42,8 +42,8 @@ export function applyPluginAutoEnable(
     const plugins = config.plugins as Record<string, unknown>;
     if (plugins.allow == null) plugins.allow = [];
     const allow = plugins.allow as string[];
-    if (!allow.includes("elizaoswechat") && !allow.includes("wechat")) {
-      allow.push("elizaoswechat");
+    if (!allow.includes("tokagentoswechat") && !allow.includes("wechat")) {
+      allow.push("tokagentoswechat");
     }
   }
 
@@ -54,8 +54,8 @@ export function applyPluginAutoEnable(
     const plugins = config.plugins as Record<string, unknown>;
     if (plugins.allow == null) plugins.allow = [];
     const allow = plugins.allow as string[];
-    if (!allow.includes("@stwd/eliza-plugin")) {
-      allow.push("@stwd/eliza-plugin");
+    if (!allow.includes("@stwd/tokagent-plugin")) {
+      allow.push("@stwd/tokagent-plugin");
     }
   }
 

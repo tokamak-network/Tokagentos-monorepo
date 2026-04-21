@@ -57,11 +57,11 @@ function materializeRuntimePath(inputPath: string): string {
       "Contents",
       "Resources",
       "app",
-      "eliza-dist",
+      "tokagent-dist",
       "node_modules",
     );
   }
-  if (path.basename(resolved) === "eliza-dist") {
+  if (path.basename(resolved) === "tokagent-dist") {
     return joinPortable(resolved, "node_modules");
   }
   return resolved;

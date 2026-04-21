@@ -1,5 +1,5 @@
 declare module "@elizaos/plugin-telegram" {
-  import type { Plugin } from "@elizaos/core";
+  import type { Plugin } from "@tokagentos/core";
 
   const telegramPlugin: Plugin;
   export default telegramPlugin;

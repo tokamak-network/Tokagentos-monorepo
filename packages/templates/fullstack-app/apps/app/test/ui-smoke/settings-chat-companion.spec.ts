@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
 import { openAppPath, readLocalStorage, seedAppStorage } from "./helpers";
 
-const VRM_POWER_KEY = "eliza:companion-vrm-power";
-const HALF_FRAMERATE_KEY = "eliza:companion-half-framerate";
-const ANIMATE_WHEN_HIDDEN_KEY = "eliza:companion-animate-when-hidden";
+const VRM_POWER_KEY = "tokagent:companion-vrm-power";
+const HALF_FRAMERATE_KEY = "tokagent:companion-half-framerate";
+const ANIMATE_WHEN_HIDDEN_KEY = "tokagent:companion-animate-when-hidden";
 
 test.beforeEach(async ({ page }) => {
   await seedAppStorage(page);

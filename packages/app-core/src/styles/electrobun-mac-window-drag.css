@@ -8,59 +8,59 @@
  * - We still ship these rules so CEF or future web engines get sensible defaults
  *   without duplicating policy only in native code.
  *
- * html.eliza-electrobun-frameless is toggled from apps/app/src/main.tsx
+ * html.tokagent-electrobun-frameless is toggled from apps/app/src/main.tsx
  * (main macOS Electrobun shell only; detached shells skip it).
  */
-html.eliza-electrobun-frameless {
+html.tokagent-electrobun-frameless {
   /**
    * Extra top inset so the first interactive row (shell toggle, header) sits below
    * the traffic lights — hiddenInset draws them over the web view with no title bar.
    */
-  --eliza-macos-frame-top-inset: 26px;
+  --tokagent-macos-frame-top-inset: 26px;
 }
 
-html.eliza-electrobun-frameless body {
+html.tokagent-electrobun-frameless body {
   -webkit-app-region: drag;
 }
 
-html.eliza-electrobun-frameless a,
-html.eliza-electrobun-frameless button,
-html.eliza-electrobun-frameless input,
-html.eliza-electrobun-frameless textarea,
-html.eliza-electrobun-frameless select,
-html.eliza-electrobun-frameless option,
-html.eliza-electrobun-frameless label,
-html.eliza-electrobun-frameless summary,
-html.eliza-electrobun-frameless iframe,
-html.eliza-electrobun-frameless canvas,
-html.eliza-electrobun-frameless video,
-html.eliza-electrobun-frameless audio,
-html.eliza-electrobun-frameless electrobun-wgpu,
-html.eliza-electrobun-frameless [role="button"],
-html.eliza-electrobun-frameless [role="link"],
-html.eliza-electrobun-frameless [role="menuitem"],
-html.eliza-electrobun-frameless [role="menuitemcheckbox"],
-html.eliza-electrobun-frameless [role="menuitemradio"],
-html.eliza-electrobun-frameless [role="option"],
-html.eliza-electrobun-frameless [role="radio"],
-html.eliza-electrobun-frameless [role="checkbox"],
-html.eliza-electrobun-frameless [role="switch"],
-html.eliza-electrobun-frameless [role="tab"],
-html.eliza-electrobun-frameless [role="slider"],
-html.eliza-electrobun-frameless [role="listbox"],
-html.eliza-electrobun-frameless [role="combobox"],
-html.eliza-electrobun-frameless [role="spinbutton"],
-html.eliza-electrobun-frameless [role="textbox"],
-html.eliza-electrobun-frameless [role="searchbox"],
-html.eliza-electrobun-frameless [contenteditable="true"],
-html.eliza-electrobun-frameless [aria-haspopup],
-html.eliza-electrobun-frameless [data-shell-scroll-region="true"],
-html.eliza-electrobun-frameless [data-no-window-drag="true"],
-html.eliza-electrobun-frameless [data-no-camera-drag="true"] {
+html.tokagent-electrobun-frameless a,
+html.tokagent-electrobun-frameless button,
+html.tokagent-electrobun-frameless input,
+html.tokagent-electrobun-frameless textarea,
+html.tokagent-electrobun-frameless select,
+html.tokagent-electrobun-frameless option,
+html.tokagent-electrobun-frameless label,
+html.tokagent-electrobun-frameless summary,
+html.tokagent-electrobun-frameless iframe,
+html.tokagent-electrobun-frameless canvas,
+html.tokagent-electrobun-frameless video,
+html.tokagent-electrobun-frameless audio,
+html.tokagent-electrobun-frameless electrobun-wgpu,
+html.tokagent-electrobun-frameless [role="button"],
+html.tokagent-electrobun-frameless [role="link"],
+html.tokagent-electrobun-frameless [role="menuitem"],
+html.tokagent-electrobun-frameless [role="menuitemcheckbox"],
+html.tokagent-electrobun-frameless [role="menuitemradio"],
+html.tokagent-electrobun-frameless [role="option"],
+html.tokagent-electrobun-frameless [role="radio"],
+html.tokagent-electrobun-frameless [role="checkbox"],
+html.tokagent-electrobun-frameless [role="switch"],
+html.tokagent-electrobun-frameless [role="tab"],
+html.tokagent-electrobun-frameless [role="slider"],
+html.tokagent-electrobun-frameless [role="listbox"],
+html.tokagent-electrobun-frameless [role="combobox"],
+html.tokagent-electrobun-frameless [role="spinbutton"],
+html.tokagent-electrobun-frameless [role="textbox"],
+html.tokagent-electrobun-frameless [role="searchbox"],
+html.tokagent-electrobun-frameless [contenteditable="true"],
+html.tokagent-electrobun-frameless [aria-haspopup],
+html.tokagent-electrobun-frameless [data-shell-scroll-region="true"],
+html.tokagent-electrobun-frameless [data-no-window-drag="true"],
+html.tokagent-electrobun-frameless [data-no-camera-drag="true"] {
   -webkit-app-region: no-drag;
 }
 
 /* Onboarding full-screen VRM canvas would otherwise stay no-drag (companion rule above). */
-html.eliza-electrobun-frameless .onboarding-screen canvas {
+html.tokagent-electrobun-frameless .onboarding-screen canvas {
   -webkit-app-region: drag;
 }

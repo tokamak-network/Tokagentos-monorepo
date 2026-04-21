@@ -1,11 +1,11 @@
-import { useApp } from "@elizaos/app-core";
+import { useApp } from "@tokagentos/app-core";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@elizaos/ui/components/ui/select";
-import { SettingsControls } from "@elizaos/ui/components/ui/settings-controls";
+} from "@tokagentos/ui/components/ui/select";
+import { SettingsControls } from "@tokagentos/ui/components/ui/settings-controls";
 import type { LlmProvider } from "./coding-agent-settings-shared";
 
 interface LlmProviderSectionProps {
@@ -50,7 +50,7 @@ export function LlmProviderSection({
             </SelectItem>
             <SelectItem value="cloud">
               {t("codingagentsettingssection.LlmProviderCloud", {
-                defaultValue: "Eliza Cloud",
+                defaultValue: "Tokagent Cloud",
               })}
             </SelectItem>
           </SelectContent>
@@ -64,7 +64,7 @@ export function LlmProviderSection({
             : isCloud
               ? t("codingagentsettingssection.LlmProviderDescCloud", {
                   defaultValue:
-                    "Route all agent LLM calls through Eliza Cloud. Gemini CLI is not supported.",
+                    "Route all agent LLM calls through Tokagent Cloud. Gemini CLI is not supported.",
                 })
               : t("codingagentsettingssection.LlmProviderDescApiKeys", {
                   defaultValue:
@@ -143,14 +143,14 @@ export function LlmProviderSection({
             <SettingsControls.MutedText className="text-xs text-ok">
               {t("codingagentsettingssection.CloudPaired", {
                 defaultValue:
-                  "Using your Eliza Cloud account for coding agent LLM calls.",
+                  "Using your Tokagent Cloud account for coding agent LLM calls.",
               })}
             </SettingsControls.MutedText>
           ) : (
             <SettingsControls.MutedText className="text-xs text-warn">
               {t("codingagentsettingssection.CloudUnpaired", {
                 defaultValue:
-                  "No Eliza Cloud account connected. Pair your account in the Cloud settings section first.",
+                  "No Tokagent Cloud account connected. Pair your account in the Cloud settings section first.",
               })}
             </SettingsControls.MutedText>
           )}

@@ -13,7 +13,7 @@
 
 They answer **different questions**:
 
-- **`flow.ts`** — “What is the **next wizard step** after `deployment`?” — one linear order for the current three-step wizard. It must not know about local vs remote vs Eliza Cloud selection details; that is orthogonal.
+- **`flow.ts`** — “What is the **next wizard step** after `deployment`?” — one linear order for the current three-step wizard. It must not know about local vs remote vs Tokagent Cloud selection details; that is orthogonal.
 - **`connection-flow.ts`** — “Given onboarding **connection** fields, which **panel** should render, and what **state patch** does this button imply?” — many branches, still one wizard step id (`providers`).
 
 **Why not one file:** merging them would couple outer wizard order to inner connection state and encourage importing React into step-order logic. **Why not put connection in `onboarding-config.ts`:** that file builds the **HTTP submit payload** for the API — a different output contract than “which UI to show.”
@@ -24,10 +24,10 @@ So you can run **fast unit tests** without jsdom, and so **dynamic imports / cir
 
 ## Imports
 
-- **`@elizaos/app-core/onboarding/flow`** — Wizard step order (see `package.json` `"exports"`).
-- **`@elizaos/app-core/onboarding/types`** — Connection subflow types only.
-- **`@elizaos/app-core/onboarding/connection-flow`** — Connection subflow logic + re-exported types.
-- **`@elizaos/app-core/state/internal`** — Re-exports `flow` symbols for code that already uses `internal`.
+- **`@tokagentos/app-core/onboarding/flow`** — Wizard step order (see `package.json` `"exports"`).
+- **`@tokagentos/app-core/onboarding/types`** — Connection subflow types only.
+- **`@tokagentos/app-core/onboarding/connection-flow`** — Connection subflow logic + re-exported types.
+- **`@tokagentos/app-core/state/internal`** — Re-exports `flow` symbols for code that already uses `internal`.
 
 ## UI entry points
 

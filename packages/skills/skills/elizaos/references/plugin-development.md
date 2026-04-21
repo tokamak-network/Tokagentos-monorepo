@@ -1,8 +1,8 @@
-# elizaOS Plugin Development
+# tokagentOS Plugin Development
 
 ## Plugin Shape
 
-An elizaOS plugin is a plain object that can register:
+An tokagentOS plugin is a plain object that can register:
 
 - `actions`
 - `providers`
@@ -63,9 +63,9 @@ At plugin registration:
 3. routes are namespaced
 4. services are initialized asynchronously
 
-## Eliza Context
+## Tokagent Context
 
-In this repo, Eliza adds product behavior around elizaOS, but the underlying runtime composition rules still come from elizaOS. When a Eliza feature behaves strangely, check whether the root cause is actually in:
+In this repo, Tokagent adds product behavior around tokagentOS, but the underlying runtime composition rules still come from tokagentOS. When a Tokagent feature behaves strangely, check whether the root cause is actually in:
 
 - provider ordering
 - action planning

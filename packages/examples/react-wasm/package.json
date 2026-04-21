@@ -1,20 +1,20 @@
 {
-  "name": "eliza-react-wasm-rust",
+  "name": "tokagent-react-wasm-rust",
   "version": "2.0.0-alpha",
-  "description": "React ELIZA demo using Rust WASM runtime with classic pattern matching and LocalDB",
+  "description": "React TOKAGENT demo using Rust WASM runtime with classic pattern matching and LocalDB",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "copy-wasm": "mkdir -p public/wasm && cp ../../packages/rust/pkg/elizaos_bg.wasm public/wasm/",
+    "copy-wasm": "mkdir -p public/wasm && cp ../../packages/rust/pkg/tokagentos_bg.wasm public/wasm/",
     "lint": "bunx @biomejs/biome check --write --unsafe .",
     "lint:check": "bunx @biomejs/biome check .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elizaos/plugin-eliza-classic": "alpha",
+    "@elizaos/plugin-tokagent-classic": "alpha",
     "@elizaos/plugin-localdb": "alpha",
     "react": "19.2.3",
     "react-dom": "19.2.3",

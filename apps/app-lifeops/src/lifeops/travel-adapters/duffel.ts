@@ -1,5 +1,5 @@
-import { logger } from "@elizaos/core";
-import { createIntegrationTelemetrySpan } from "@elizaos/agent/diagnostics";
+import { logger } from "@tokagentos/core";
+import { createIntegrationTelemetrySpan } from "@tokagentos/agent/diagnostics";
 import {
   PaymentRequiredError,
   parseX402Response,
@@ -18,7 +18,7 @@ export class DuffelConfigError extends Error {
 }
 
 /** Direct mode hits api.duffel.com with the user's own DUFFEL_API_KEY.
- *  Cloud mode hits the local Eliza Cloud relay which performs the upstream
+ *  Cloud mode hits the local Tokagent Cloud relay which performs the upstream
  *  Duffel call, applies creator markup, and meters against the user's
  *  Cloud credit balance. Cloud mode is the default. */
 export type DuffelMode = "cloud" | "direct";
@@ -27,7 +27,7 @@ export interface DuffelConfig {
   mode: DuffelMode;
   /** Required when mode === "direct". */
   apiKey: string | null;
-  /** Required when mode === "cloud". Local Eliza agent API base, e.g.
+  /** Required when mode === "cloud". Local Tokagent agent API base, e.g.
    *  http://127.0.0.1:31337. The relay path is appended internally. */
   cloudRelayBaseUrl: string | null;
 }
@@ -153,7 +153,7 @@ export interface DuffelCallCost {
   totalUsd: number;
   /** Portion that flows to the creator as markup, in USD. */
   creatorMarkupUsd: number;
-  /** Eliza Cloud platform fee portion, in USD. */
+  /** Tokagent Cloud platform fee portion, in USD. */
   platformFeeUsd: number;
   /** Display-only ratio of platform fee to total (e.g. 0.2 for 20%).
    *  Derived from server values, never used for pricing. Null when
@@ -443,7 +443,7 @@ function mapPayment(
 }
 
 /**
- * Cost meta envelope returned by the Eliza Cloud relay alongside the
+ * Cost meta envelope returned by the Tokagent Cloud relay alongside the
  * Duffel payload. Defined server-side; the client trusts whatever Cloud
  * returns and never recomputes (commandment 2).
  */
@@ -468,7 +468,7 @@ function readRelayCost(envelope: unknown): DuffelCallCost {
     !("_meta" in envelope)
   ) {
     throw new Error(
-      "Duffel cloud relay response missing _meta envelope. Update Eliza Cloud or set MILADY_DUFFEL_DIRECT=1.",
+      "Duffel cloud relay response missing _meta envelope. Update Tokagent Cloud or set MILADY_DUFFEL_DIRECT=1.",
     );
   }
   const meta = (envelope as RelayEnvelope)._meta;

@@ -1,13 +1,13 @@
 /**
  * Plugin ↔ Core version compatibility validation.
  *
- * Detects version skew between @elizaos/core and plugins that depend on
+ * Detects version skew between @tokagentos/core and plugins that depend on
  * specific core exports. This catches the class of bug where plugins on npm
  * advance past the core version, importing symbols that don't exist yet in
  * the installed core — causing silent import failures that take down every
  * model provider.
  *
- * @see https://github.com/elizaos/eliza/issues/10
+ * @see https://github.com/tokagentos/tokagent/issues/10
  */
 
 // ---------------------------------------------------------------------------
@@ -55,16 +55,16 @@ export const AI_PROVIDER_PLUGINS: readonly string[] = [
   "@elizaos/plugin-groq",
   "@elizaos/plugin-xai",
   "@homunculuslabs/plugin-zai",
-  "@elizaos/plugin-elizacloud",
+  "@elizaos/plugin-tokagentcloud",
 ];
 
 /**
  * Self-declared plugin names (the `name` property on the plugin object) that
  * correspond to AI provider plugins.  Some plugins use a short internal name
- * (e.g. "elizaOSCloud") that differs from the npm package name.  The
+ * (e.g. "tokagentOSCloud") that differs from the npm package name.  The
  * diagnostic must recognise both forms to avoid false-positive warnings.
  */
-const AI_PROVIDER_PLUGIN_ALIASES: readonly string[] = ["elizaOSCloud"];
+const AI_PROVIDER_PLUGIN_ALIASES: readonly string[] = ["tokagentOSCloud"];
 
 // ---------------------------------------------------------------------------
 // Semver comparison (simplified for alpha tags)
@@ -135,14 +135,14 @@ export function versionSatisfies(installed: string, required: string): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * Check whether a specific named export exists in `@elizaos/core`.
+ * Check whether a specific named export exists in `@tokagentos/core`.
  *
  * This does a live import check — it tests the *actual* installed module,
  * not a version number lookup.
  */
 export async function coreExportExists(exportName: string): Promise<boolean> {
   try {
-    const core = (await import("@elizaos/core")) as Record<string, unknown>;
+    const core = (await import("@tokagentos/core")) as Record<string, unknown>;
     return exportName in core && core[exportName] !== undefined;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException).code;
@@ -204,7 +204,7 @@ export async function validatePluginCompat(
   if (!compatible) {
     message =
       `${pluginName}${pluginVersion ? `@${pluginVersion}` : ""} requires ` +
-      `${missingExports.join(", ")} from @elizaos/core, but the installed ` +
+      `${missingExports.join(", ")} from @tokagentos/core, but the installed ` +
       `core@${coreVersion} does not export ${missingExports.length === 1 ? "it" : "them"}. ` +
       `Pin this plugin to a version compatible with core@${coreVersion}, or upgrade core.`;
   }
@@ -249,7 +249,7 @@ export function diagnoseNoAIProvider(
     return (
       "No AI provider plugin was loaded. Set an API key environment variable " +
       "(e.g. ANTHROPIC_API_KEY, OPENAI_API_KEY, OPENROUTER_API_KEY) or log in " +
-      "to Eliza Cloud (ELIZAOS_CLOUD_API_KEY) to enable at least one model provider."
+      "to Tokagent Cloud (TOKAGENTOS_CLOUD_API_KEY) to enable at least one model provider."
     );
   }
 
@@ -267,8 +267,8 @@ export function diagnoseNoAIProvider(
       `Version skew detected: ${names} failed to import required symbols from ` +
       `@elizaos/core. This usually means the plugin version is ahead of the ` +
       `installed core version. Pin the affected plugins to a version compatible ` +
-      `with your installed @elizaos/core, or upgrade core. ` +
-      `See: https://github.com/elizaos/eliza/issues/10`
+      `with your installed @tokagentos/core, or upgrade core. ` +
+      `See: https://github.com/tokagentos/tokagent/issues/10`
     );
   }
 

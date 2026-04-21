@@ -1,15 +1,15 @@
 """
-elizaOS app benchmark adapter for the benchmarks orchestrator.
+tokagentOS app benchmark adapter for the benchmarks orchestrator.
 
-This adapter allows the benchmarks suite to evaluate an elizaOS app agent
+This adapter allows the benchmarks suite to evaluate an tokagentOS app agent
 by invoking its ``benchmark`` CLI subcommand.
 
 Usage:
-    Copy this file to the elizaOS/benchmarks repo's orchestrator/adapters/
+    Copy this file to the tokagentOS/benchmarks repo's orchestrator/adapters/
     directory, or add it to the adapter discovery path.
 
     The adapter expects the app repo root to be passed as
-    ``app_root`` in the config, or set via the ``ELIZA_APP_ROOT``
+    ``app_root`` in the config, or set via the ``TOKAGENT_APP_ROOT``
     environment variable.  The legacy ``MILADY_ROOT`` env var is
     also accepted for backwards compatibility.
 """
@@ -26,7 +26,7 @@ from typing import Any, Optional
 
 @dataclass
 class AppBenchmarkConfig:
-    """Configuration for running elizaOS app benchmarks."""
+    """Configuration for running tokagentOS app benchmarks."""
 
     app_root: str = ""
     model: str = "claude-sonnet-4-20250514"
@@ -37,13 +37,13 @@ class AppBenchmarkConfig:
     def __post_init__(self) -> None:
         if not self.app_root:
             self.app_root = (
-                os.environ.get("ELIZA_APP_ROOT")
+                os.environ.get("TOKAGENT_APP_ROOT")
                 or os.environ.get("MILADY_ROOT")
                 or ""
             )
         if not self.app_root:
             raise ValueError(
-                "app_root must be set via config or ELIZA_APP_ROOT env var"
+                "app_root must be set via config or TOKAGENT_APP_ROOT env var"
             )
 
 
@@ -69,7 +69,7 @@ def build_benchmark_command(
 def _build_env(config: AppBenchmarkConfig) -> dict[str, str]:
     """Build the subprocess environment, forwarding relevant API keys."""
     env = os.environ.copy()
-    env["ELIZA_HEADLESS"] = "1"
+    env["TOKAGENT_HEADLESS"] = "1"
     env["NODE_ENV"] = "production"
     if config.provider == "anthropic":
         env.setdefault("ANTHROPIC_API_KEY", os.environ.get("ANTHROPIC_API_KEY", ""))
@@ -248,7 +248,7 @@ def extract_score(result_path: str) -> dict[str, Any]:
     """
     Extract a normalized score from benchmark results.
 
-    Compatible with the elizaOS benchmarks ScoreExtraction format.
+    Compatible with the tokagentOS benchmarks ScoreExtraction format.
     """
     with open(result_path) as f:
         data = json.load(f)
@@ -283,11 +283,11 @@ def extract_score(result_path: str) -> dict[str, Any]:
     return {"score": 0.0, "unit": "ratio", "higher_is_better": True, "metrics": {}}
 
 
-# Adapter registration for elizaOS benchmarks orchestrator
+# Adapter registration for tokagentOS benchmarks orchestrator
 APP_EVAL_ADAPTER: dict[str, Any] = {
     "id": "app-eval",
-    "display_name": "elizaOS App Agent",
-    "description": "Evaluate an elizaOS app agent on benchmark tasks",
+    "display_name": "tokagentOS App Agent",
+    "description": "Evaluate an tokagentOS app agent on benchmark tasks",
     "command_builder": build_benchmark_command,
     "runner": run_benchmark,
     "batch_runner": run_benchmark_batch,

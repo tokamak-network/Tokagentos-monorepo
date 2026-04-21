@@ -1,9 +1,9 @@
-// database.proto - Database and logging types for elizaOS
+// database.proto - Database and logging types for tokagentOS
 syntax = "proto3";
 
-package eliza.v1;
+package tokagent.v1;
 
-import "eliza/v1/memory.proto";
+import "tokagent/v1/memory.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 

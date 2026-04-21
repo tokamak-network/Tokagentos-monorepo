@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { AlertTriangle } from "lucide-react";
 import type { CSSProperties } from "react";
 
@@ -86,7 +86,7 @@ export function resolveCloudStatusBadgeState(
     return {
       kind: "error",
       text: t("logsview.Error"),
-      title: t("header.elizaCloudAuthRejected"),
+      title: t("header.tokagentCloudAuthRejected"),
     };
   }
 

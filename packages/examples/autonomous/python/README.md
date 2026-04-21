@@ -2,9 +2,9 @@
 
 This example runs a **sandboxed autonomous loop** using:
 
-- `elizaos-plugin-local-ai` (local GGUF inference)
-- `elizaos-plugin-shell` (restricted shell)
-- `elizaos-plugin-inmemorydb` (ephemeral memory)
+- `tokagentos-plugin-local-ai` (local GGUF inference)
+- `tokagentos-plugin-shell` (restricted shell)
+- `tokagentos-plugin-inmemorydb` (ephemeral memory)
 
 Entry point: `autonomous.py`
 

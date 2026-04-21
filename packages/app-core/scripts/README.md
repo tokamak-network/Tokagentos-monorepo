@@ -1,12 +1,12 @@
 # `scripts/` — build, dev orchestration, tooling
 
-Most scripts here are invoked from **root `package.json`** (`bun run …`). **App and desktop dev entrypoints** (`dev-ui.mjs`, `dev-platform.mjs`, `run-node.mjs`, `desktop-build.mjs`, etc.) live under **`eliza/packages/app-core/scripts/`** so they ship with `@elizaos/app-core`. This README highlights the **desktop dev orchestrator**; deeper rationale lives in the docs site.
+Most scripts here are invoked from **root `package.json`** (`bun run …`). **App and desktop dev entrypoints** (`dev-ui.mjs`, `dev-platform.mjs`, `run-node.mjs`, `desktop-build.mjs`, etc.) live under **`tokagent/packages/app-core/scripts/`** so they ship with `@tokagentos/app-core`. This README highlights the **desktop dev orchestrator**; deeper rationale lives in the docs site.
 
 ## Desktop: `dev-platform.mjs`
 
 | npm script | Entry |
 |------------|--------|
-| `bun run dev:desktop` | `bun eliza/packages/app-core/scripts/dev-platform.mjs` |
+| `bun run dev:desktop` | `bun tokagent/packages/app-core/scripts/dev-platform.mjs` |
 | `bun run dev:desktop:watch` | `MILADY_DESKTOP_VITE_WATCH=1` + same |
 
 **Why a dedicated script:** Electrobun needs a renderer URL, often a running API, and (in dev) a root `dist/` bundle. Starting each piece by hand drifts on ports and env vars; one orchestrator keeps **startup and shutdown** symmetric.
@@ -18,7 +18,7 @@ Most scripts here are invoked from **root `package.json`** (`bun run …`). **Ap
 - Recommended: **Bun 1.3.x stable** for `dev:win` flows.
 - Canary builds can change ESM/CJS interop behavior. `dev-ui.mjs` prints a startup advisory when it detects canary or non-1.3 Bun.
 
-### Supporting modules (`eliza/packages/app-core/scripts/lib/`)
+### Supporting modules (`tokagent/packages/app-core/scripts/lib/`)
 
 | Module | Why it exists |
 |--------|----------------|

@@ -1,6 +1,6 @@
 """Component-based persistence for form data.
 
-Form data is stored using elizaOS's Component system:
+Form data is stored using tokagentOS's Component system:
 - Sessions stored as ``form_session:{roomId}``
 - Submissions stored as ``form_submission:{formId}:{submissionId}``
 - Autofill stored as ``form_autofill:{formId}``
@@ -21,7 +21,7 @@ from .types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 
 def _session_component_type(room_id: str) -> str:

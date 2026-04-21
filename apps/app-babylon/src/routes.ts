@@ -1,10 +1,10 @@
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   AppLaunchResult,
   AppLaunchSessionContext,
   AppRunSessionContext,
   AppSessionState,
-} from "@elizaos/shared/contracts/apps";
+} from "@tokagentos/shared/contracts/apps";
 import {
   asRuntimeLike,
   type BabylonConfig,

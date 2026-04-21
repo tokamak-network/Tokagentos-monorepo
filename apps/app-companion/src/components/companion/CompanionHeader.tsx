@@ -4,8 +4,8 @@ import {
   type UiLanguage,
   type UiTheme,
   useMediaQuery,
-} from "@elizaos/app-core";
-import { Button } from "@elizaos/ui/components/ui/button";
+} from "@tokagentos/app-core";
+import { Button } from "@tokagentos/ui/components/ui/button";
 import {
   MessageCirclePlus,
   Monitor,

@@ -1,7 +1,7 @@
 import type {
   LifeOpsOccurrenceView,
   LifeOpsOverview,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { describe, expect, it } from "vitest";
 import {
   formatOverview,

@@ -1,5 +1,5 @@
-import { MemoryType, type Memory } from "@elizaos/core";
-import { ModelType } from "@elizaos/core";
+import { MemoryType, type Memory } from "@tokagentos/core";
+import { ModelType } from "@tokagentos/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { LipSyncPlayer } from "./components/LipSyncPlayer";
@@ -30,8 +30,8 @@ const MESSAGE_VISIBLE_DURATION = 8000; // 8 seconds before fade starts
 
 function modeLabel(mode: DemoMode): string {
   switch (mode) {
-    case "elizaClassic":
-      return "ELIZA";
+    case "tokagentClassic":
+      return "TOKAGENT";
     case "openai":
       return "OpenAI";
     case "anthropic":
@@ -43,12 +43,12 @@ function modeLabel(mode: DemoMode): string {
     case "groq":
       return "Groq";
     default:
-      return "ELIZA";
+      return "TOKAGENT";
   }
 }
 
 export default function App() {
-  const [config, setConfig] = useLocalStorageState<DemoConfig>("eliza-vrm-demo:config", DEFAULT_DEMO_CONFIG);
+  const [config, setConfig] = useLocalStorageState<DemoConfig>("tokagent-vrm-demo:config", DEFAULT_DEMO_CONFIG);
   const effectiveMode = getEffectiveMode(config);
 
   const [messages, setMessages] = useState<UiMessage[]>([]);
@@ -433,7 +433,7 @@ export default function App() {
       {/* Top-right controls */}
       <div className="top-controls">
         <div className="status-pill">
-          <span className={`status-dot ${effectiveMode === "elizaClassic" ? "offline" : "online"}`} />
+          <span className={`status-dot ${effectiveMode === "tokagentClassic" ? "offline" : "online"}`} />
           <span>{modeLabel(effectiveMode)}</span>
         </div>
         {vrmState?.vrmLoaded ? (

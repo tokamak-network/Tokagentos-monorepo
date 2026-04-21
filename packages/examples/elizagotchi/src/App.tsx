@@ -1,5 +1,5 @@
 /**
- * Elizagotchi - Virtual Pet Game
+ * Tokagentgotchi - Virtual Pet Game
  *
  * Fullscreen, minimal, stylish design.
  */
@@ -9,10 +9,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Clouds, Ground, Poop, Stars } from "./components/GameElements";
 import { PetSprite } from "./components/PetSprite";
 import {
-  type ElizagotchiAgentLogEntry,
-  sendElizagotchiCommand,
-  subscribeElizagotchiAgentLog,
-  subscribeElizagotchiState,
+  type TokagentgotchiAgentLogEntry,
+  sendTokagentgotchiCommand,
+  subscribeTokagentgotchiAgentLog,
+  subscribeTokagentgotchiState,
 } from "./game/agent";
 import type { Action, AnimationType, PetState } from "./game/types";
 import "./App.css";
@@ -75,7 +75,7 @@ function App() {
   const [message, setMessage] = useState("");
   const [importError, setImportError] = useState("");
   const [agentLogEnabled, setAgentLogEnabled] = useState(false);
-  const [agentLog, setAgentLog] = useState<ElizagotchiAgentLogEntry[]>([]);
+  const [agentLog, setAgentLog] = useState<TokagentgotchiAgentLogEntry[]>([]);
   const previousStage = useRef<PetState["stage"] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const agentLogEnabledRef = useRef(agentLogEnabled);
@@ -90,7 +90,7 @@ function App() {
     let cancelled = false;
 
     (async () => {
-      unsubscribe = await subscribeElizagotchiState((payload) => {
+      unsubscribe = await subscribeTokagentgotchiState((payload) => {
         if (cancelled) return;
         const newState = payload.petState;
 
@@ -115,7 +115,7 @@ function App() {
       });
 
       // Ensure we have an immediate snapshot even if the first tick emitted before subscribing.
-      await sendElizagotchiCommand("__tick__");
+      await sendTokagentgotchiCommand("__tick__");
     })();
 
     return () => {
@@ -124,13 +124,13 @@ function App() {
     };
   }, []);
 
-  // Optional: show internal eliza action execution as a dev overlay
+  // Optional: show internal tokagent action execution as a dev overlay
   useEffect(() => {
     let unsubscribe: (() => void) | null = null;
     let cancelled = false;
 
     (async () => {
-      unsubscribe = await subscribeElizagotchiAgentLog((entry) => {
+      unsubscribe = await subscribeTokagentgotchiAgentLog((entry) => {
         if (cancelled) return;
         if (!agentLogEnabledRef.current) return;
         setAgentLog((prev) => [entry, ...prev].slice(0, 60));
@@ -152,7 +152,7 @@ function App() {
   }, [message]);
 
   const handleAction = useCallback(async (action: Action) => {
-    const event = await sendElizagotchiCommand(action);
+    const event = await sendTokagentgotchiCommand(action);
 
     // Prefer agent-specified animation, fallback to local mapping
     const nextAnimation =
@@ -185,8 +185,8 @@ function App() {
 
   const handleReset = useCallback(() => {
     (async () => {
-      const name = prompt("Name your pet:", "Elizagotchi") || "Elizagotchi";
-      await sendElizagotchiCommand(`__reset__:${encodeURIComponent(name)}`);
+      const name = prompt("Name your pet:", "Tokagentgotchi") || "Tokagentgotchi";
+      await sendTokagentgotchiCommand(`__reset__:${encodeURIComponent(name)}`);
       previousStage.current = "egg";
       setAnimation("idle");
       setMessage(`🥚 ${name} appeared!`);
@@ -198,7 +198,7 @@ function App() {
   const handleExport = useCallback(() => {
     (async () => {
       if (!petState) return;
-      const event = await sendElizagotchiCommand("__export__");
+      const event = await sendTokagentgotchiCommand("__export__");
       const saveData = event?.saveData;
       if (!saveData) {
         setMessage("Export failed");
@@ -237,7 +237,7 @@ function App() {
 
           // Route through agent (state is stored inside runtime)
           const encoded = encodeURIComponent(raw);
-          const result = await sendElizagotchiCommand(`__import__:${encoded}`);
+          const result = await sendTokagentgotchiCommand(`__import__:${encoded}`);
           const loaded = result?.petState;
           if (loaded) {
             previousStage.current = loaded.stage;
@@ -260,7 +260,7 @@ function App() {
   if (!petState) {
     return (
       <div className="game day">
-        <div className="toast">Initializing Elizagotchi agent…</div>
+        <div className="toast">Initializing Tokagentgotchi agent…</div>
       </div>
     );
   }

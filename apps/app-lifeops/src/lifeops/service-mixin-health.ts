@@ -15,8 +15,8 @@ import type { Constructor, LifeOpsServiceBase } from "./service-mixin-core.js";
 
 function resolveHealthConfig(): HealthBridgeConfig {
   return {
-    healthKitCliPath: process.env.ELIZA_HEALTHKIT_CLI_PATH,
-    googleFitAccessToken: process.env.ELIZA_GOOGLE_FIT_ACCESS_TOKEN,
+    healthKitCliPath: process.env.TOKAGENT_HEALTHKIT_CLI_PATH,
+    googleFitAccessToken: process.env.TOKAGENT_GOOGLE_FIT_ACCESS_TOKEN,
   };
 }
 

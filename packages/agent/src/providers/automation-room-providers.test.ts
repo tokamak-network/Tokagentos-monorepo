@@ -1,4 +1,4 @@
-import type { Memory, UUID } from "@elizaos/core";
+import type { Memory, UUID } from "@tokagentos/core";
 import { describe, expect, it, vi } from "vitest";
 
 import { automationTerminalBridgeProvider } from "./automation-terminal-bridge.js";

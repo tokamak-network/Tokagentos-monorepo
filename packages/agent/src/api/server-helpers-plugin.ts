@@ -2,7 +2,7 @@
  * Plugin config/form helpers extracted from server.ts.
  */
 
-import type { ElizaConfig } from "../config/config.js";
+import type { TokagentConfig } from "../config/config.js";
 import { BLOCKED_ENV_KEYS } from "./plugin-discovery-helpers.js";
 import type { ServerState } from "./server-types.js";
 

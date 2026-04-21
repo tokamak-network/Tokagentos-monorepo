@@ -1,7 +1,7 @@
 #define MyAppId "__APP_ID__"
 #define MyAppName "__APP_NAME__"
 #define MyAppVersion "__APP_VERSION__"
-#define MyAppPublisher "elizaOS"
+#define MyAppPublisher "tokagentOS"
 #define MyAppExeName "bin\launcher.exe"
 #define MyDefaultDirName "__DEFAULT_DIR_NAME__"
 #define MyDefaultGroupName "__DEFAULT_GROUP_NAME__"
@@ -9,16 +9,16 @@
 #define MyOutputBaseFilename "__OUTPUT_BASE_FILENAME__"
 #define MySourceDir "__SOURCE_DIR__"
 #define MySetupIconFile "__ICON_FILE__"
-#define MyAppIconFile "ElizaOSApp.ico"
+#define MyAppIconFile "TokagentOSApp.ico"
 
 [Setup]
 AppId={#MyAppId}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-AppPublisherURL=https://app.elizaos.ai
-AppSupportURL=https://github.com/elizaos/elizaos-app/issues
-AppUpdatesURL=https://github.com/elizaos/elizaos-app/releases
+AppPublisherURL=https://app.tokagentos.ai
+AppSupportURL=https://github.com/tokagentos/tokagentos-app/issues
+AppUpdatesURL=https://github.com/tokagentos/tokagentos-app/releases
 DefaultDirName={#MyDefaultDirName}
 DefaultGroupName={#MyDefaultGroupName}
 DisableProgramGroupPage=yes

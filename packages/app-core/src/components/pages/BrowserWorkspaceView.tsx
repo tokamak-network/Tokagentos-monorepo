@@ -5,8 +5,8 @@ import {
 import type {
   LifeOpsBrowserCompanionPackageStatus,
   LifeOpsBrowserCompanionStatus,
-} from "@elizaos/shared/contracts/lifeops";
-import { Button, Input } from "@elizaos/ui";
+} from "@tokagentos/shared/contracts/lifeops";
+import { Button, Input } from "@tokagentos/ui";
 import {
   ChevronLeft,
   ChevronRight,

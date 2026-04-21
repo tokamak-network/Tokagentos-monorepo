@@ -13,7 +13,7 @@ import {
   type TrainingTrajectoryDetail,
   type TrainingTrajectoryList,
   useApp,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 
 import {
   type ReactNode,
@@ -22,7 +22,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useIntervalWhenDocumentVisible, Button, ContentLayout } from "@elizaos/ui";
+import { useIntervalWhenDocumentVisible, Button, ContentLayout } from "@tokagentos/ui";
 import {
   asTrainingEvent,
   DatasetSection,

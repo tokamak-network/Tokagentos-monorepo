@@ -2,7 +2,7 @@
 name = "discord-agent"
 version = "0.1.0"
 edition = "2021"
-description = "Full-featured Discord AI agent using elizaOS"
+description = "Full-featured Discord AI agent using tokagentOS"
 license = "MIT"
 publish = false
 
@@ -15,8 +15,8 @@ name = "discord_agent"
 path = "src/lib.rs"
 
 [dependencies]
-# elizaOS Discord Plugin
-elizaos-plugin-discord = "2.0.0"
+# tokagentOS Discord Plugin
+tokagentos-plugin-discord = "2.0.0"
 
 # Async runtime
 tokio = { version = "1.42", features = ["rt-multi-thread", "macros", "signal", "sync", "time"] }
@@ -41,5 +41,5 @@ tokio-test = "0.4"
 
 [features]
 default = ["native"]
-native = ["elizaos-plugin-discord/native"]
+native = ["tokagentos-plugin-discord/native"]
 live = []  # Enable live integration tests

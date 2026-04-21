@@ -25,6 +25,6 @@
     "time": "10/Jan/2025:12:00:00 +0000",
     "timeEpoch": 1736510400000
   },
-  "body": "{\"message\": \"Hello, Eliza! How are you today?\"}",
+  "body": "{\"message\": \"Hello, Tokagent! How are you today?\"}",
   "isBase64Encoded": false
 }

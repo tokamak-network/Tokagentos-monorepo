@@ -2,7 +2,7 @@ import {
   Button,
   Spinner,
   Textarea,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   ChevronDown,
   ChevronUp,

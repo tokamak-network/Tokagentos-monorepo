@@ -143,8 +143,8 @@ function resolveDiscordApplicationId(config: MiladyConfig): string {
 
 function resolveCloudApiKey(config: MiladyConfig): string {
   return (
-    process.env.ELIZAOS_CLOUD_API_KEY?.trim() ||
-    process.env.ELIZA_CLOUD_API_KEY?.trim() ||
+    process.env.TOKAGENTOS_CLOUD_API_KEY?.trim() ||
+    process.env.TOKAGENT_CLOUD_API_KEY?.trim() ||
     config.cloud?.apiKey?.trim() ||
     ""
   );
@@ -157,7 +157,7 @@ function buildRuntimeConfig(
 ): MiladyConfig {
   const allow = new Set(baseConfig.plugins?.allow ?? []);
   allow.add("@elizaos/plugin-discord");
-  allow.add("@elizaos/plugin-elizacloud");
+  allow.add("@elizaos/plugin-tokagentcloud");
 
   return {
     logging: {
@@ -315,29 +315,29 @@ async function startRuntime(
   await mkdir(stateDir, { recursive: true });
   await writeFile(configPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
 
-  const child = spawn("bun", ["run", "start:eliza"], {
+  const child = spawn("bun", ["run", "start:tokagent"], {
     cwd: REPO_ROOT,
     env: {
       ...process.env,
       CI: "1",
-      ELIZA_DISABLE_WORKSPACE_PLUGIN_OVERRIDES: "1",
-      ELIZA_SKIP_LOCAL_UPSTREAMS: "1",
-      ELIZA_CONFIG_PATH: configPath,
+      TOKAGENT_DISABLE_WORKSPACE_PLUGIN_OVERRIDES: "1",
+      TOKAGENT_SKIP_LOCAL_UPSTREAMS: "1",
+      TOKAGENT_CONFIG_PATH: configPath,
       MILADY_SKIP_LOCAL_UPSTREAMS: "1",
       MILADY_CONFIG_PATH: configPath,
-      ELIZA_STATE_DIR: stateDir,
+      TOKAGENT_STATE_DIR: stateDir,
       MILADY_STATE_DIR: stateDir,
-      ELIZA_PORT: String(apiPort),
+      TOKAGENT_PORT: String(apiPort),
       MILADY_API_PORT: String(apiPort),
       MILADY_PORT: String(uiPort),
-      ELIZA_DISABLE_LOCAL_EMBEDDINGS: "1",
+      TOKAGENT_DISABLE_LOCAL_EMBEDDINGS: "1",
       MILADY_DISABLE_LOCAL_EMBEDDINGS: "1",
       DISCORD_API_TOKEN: discordToken,
       DISCORD_BOT_TOKEN: discordToken,
       DISCORD_APPLICATION_ID: discordApplicationId,
       CHANNEL_IDS: CHANNEL_ID,
       DISCORD_SHOULD_RESPOND_ONLY_TO_MENTIONS: "false",
-      ELIZAOS_CLOUD_API_KEY: cloudApiKey,
+      TOKAGENTOS_CLOUD_API_KEY: cloudApiKey,
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -440,7 +440,7 @@ async function main(): Promise<void> {
   }
   if (!cloudApiKey) {
     throw new Error(
-      "No Eliza Cloud API key found in environment or ~/.milady/milady.json",
+      "No Tokagent Cloud API key found in environment or ~/.milady/milady.json",
     );
   }
 

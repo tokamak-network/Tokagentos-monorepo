@@ -15,7 +15,7 @@
         "regression-matrix-pr"
       ],
       "bannedSnippets": [
-        "--exclude eliza/packages/agent/test/apps-e2e.e2e.test.ts"
+        "--exclude tokagent/packages/agent/test/apps-e2e.e2e.test.ts"
       ]
     },
     "nightly": {
@@ -149,7 +149,7 @@
   "surfaces": [
     {
       "name": "packages-shared",
-      "globs": ["eliza/packages/shared/**"],
+      "globs": ["tokagent/packages/shared/**"],
       "workflowSuites": {
         "pr": ["vitest-real", "validation-e2e"],
         "nightly": [
@@ -164,7 +164,7 @@
     },
     {
       "name": "packages-agent",
-      "globs": ["eliza/packages/agent/**"],
+      "globs": ["tokagent/packages/agent/**"],
       "workflowSuites": {
         "pr": ["vitest-real", "db-check"],
         "nightly": [
@@ -180,7 +180,7 @@
     },
     {
       "name": "packages-app-core",
-      "globs": ["eliza/packages/app-core/**"],
+      "globs": ["tokagent/packages/app-core/**"],
       "workflowSuites": {
         "pr": ["vitest-real", "db-check", "validation-e2e"],
         "nightly": [
@@ -200,8 +200,8 @@
         "apps/app/test/ui-smoke/**",
         "apps/app/playwright.ui-smoke.config.ts",
         "apps/app/scripts/run-ui-playwright.mjs",
-        "eliza/packages/app-core/scripts/run-ui-smoke-playwright-suite.mjs",
-        "eliza/packages/app-core/scripts/playwright-ui-live-stack.ts"
+        "tokagent/packages/app-core/scripts/run-ui-smoke-playwright-suite.mjs",
+        "tokagent/packages/app-core/scripts/playwright-ui-live-stack.ts"
       ],
       "workflowSuites": {
         "pr": ["ui-playwright-smoke"],
@@ -264,8 +264,8 @@
       "name": "e2e-test-harness",
       "globs": [
         "test/**",
-        "eliza/apps/**/test/**",
-        "eliza/packages/app-core/test/**",
+        "tokagent/apps/**/test/**",
+        "tokagent/packages/app-core/test/**",
         "test/vitest/integration.config.ts",
         "test/vitest/e2e.config.ts"
       ],
@@ -285,25 +285,25 @@
   "exceptions": {
     "heavyOnlyE2E": [
       {
-        "path": "eliza/apps/app-steward/test/anvil-contracts.real.e2e.test.ts",
+        "path": "tokagent/apps/app-steward/test/anvil-contracts.real.e2e.test.ts",
         "suite": "e2e-heavy",
         "tier": "heavy",
         "rationale": "requires contract and anvil setup that stays out of the default live API/runtime lane"
       },
       {
-        "path": "eliza/packages/app-core/test/app/memory-relationships.real.e2e.test.ts",
+        "path": "tokagent/packages/app-core/test/app/memory-relationships.real.e2e.test.ts",
         "suite": "e2e-heavy",
         "tier": "heavy",
         "rationale": "requires the browser QA harness and stays out of the default live API/runtime lane"
       },
       {
-        "path": "eliza/packages/app-core/test/app/onboarding-companion.live.e2e.test.ts",
+        "path": "tokagent/packages/app-core/test/app/onboarding-companion.live.e2e.test.ts",
         "suite": "e2e-heavy",
         "tier": "heavy",
         "rationale": "drives the built dashboard in a browser and belongs in the heavy nightly or release gate"
       },
       {
-        "path": "eliza/packages/app-core/test/app/qa-checklist.real.e2e.test.ts",
+        "path": "tokagent/packages/app-core/test/app/qa-checklist.real.e2e.test.ts",
         "suite": "e2e-heavy",
         "tier": "heavy",
         "rationale": "validates the browser QA checklist and belongs in the heavy nightly or release gate"

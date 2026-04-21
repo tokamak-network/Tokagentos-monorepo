@@ -1,4 +1,4 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type CodeTaskService = any;
 import { type Component, Editor, type Focusable, type TUI } from "@elizaos/tui";
@@ -12,12 +12,12 @@ import type {
 } from "../types.js";
 
 const SUB_AGENT_TYPES: SubAgentType[] = [
-  "eliza",
+  "tokagent",
   "claude-code",
   "codex",
   "opencode",
   "sweagent",
-  "elizaos-native",
+  "tokagentos-native",
 ];
 
 interface TaskPaneProps {
@@ -336,7 +336,7 @@ export class TaskPane implements Component, Focusable {
       const rawType = currentTask.metadata?.subAgentType;
       const current = SUB_AGENT_TYPES.includes(rawType as SubAgentType)
         ? (rawType as SubAgentType)
-        : "eliza";
+        : "tokagent";
       const idx = Math.max(0, SUB_AGENT_TYPES.indexOf(current));
       const next = SUB_AGENT_TYPES[(idx + 1) % SUB_AGENT_TYPES.length];
       taskService.setTaskSubAgentType(taskId, next).catch((err: Error) => {
@@ -514,7 +514,7 @@ export class TaskPane implements Component, Focusable {
 
       // Sub-agent
       output.push(
-        `${borderColor("│")} ${chalk.dim(`Sub-agent: ${currentTask.metadata?.subAgentType ?? "eliza"}`).padEnd(innerWidth - 1)}${borderColor("│")}`,
+        `${borderColor("│")} ${chalk.dim(`Sub-agent: ${currentTask.metadata?.subAgentType ?? "tokagent"}`).padEnd(innerWidth - 1)}${borderColor("│")}`,
       );
 
       // Detail view header

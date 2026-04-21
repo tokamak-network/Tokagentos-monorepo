@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 // UI build: Capacitor plugins then Vite. Requires prior `bun install` (postinstall).
-// ELIZA_BUILD_FULL_SETUP=1 prepends install --ignore-scripts + run-repo-setup (CI-style).
+// TOKAGENT_BUILD_FULL_SETUP=1 prepends install --ignore-scripts + run-repo-setup (CI-style).
 import { spawn } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { resolveElizaAssetBaseUrls } from "../../../eliza/packages/app-core/scripts/lib/asset-cdn.mjs";
+import { resolveTokagentAssetBaseUrls } from "../../../tokagent/packages/app-core/scripts/lib/asset-cdn.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const appDir = path.resolve(__dirname, "..");
 const repoRoot = path.resolve(appDir, "..", "..");
 const repoSetupScript = path.join(
   repoRoot,
-  "eliza",
+  "tokagent",
   "packages",
   "app-core",
   "scripts",
@@ -20,7 +20,7 @@ const repoSetupScript = path.join(
 );
 const pruneCdnAssetsScript = path.join(
   repoRoot,
-  "eliza",
+  "tokagent",
   "packages",
   "app-core",
   "scripts",
@@ -33,17 +33,17 @@ const bunExecutable = path
   ? process.execPath
   : "bun";
 
-const fullSetup = process.env.ELIZA_BUILD_FULL_SETUP === "1";
+const fullSetup = process.env.TOKAGENT_BUILD_FULL_SETUP === "1";
 
 function run(command, args, cwd) {
-  const { appAssetBaseUrl } = resolveElizaAssetBaseUrls();
+  const { appAssetBaseUrl } = resolveTokagentAssetBaseUrls();
   const env = {
     ...process.env,
     ...(appAssetBaseUrl
       ? {
           VITE_ASSET_BASE_URL:
             process.env.VITE_ASSET_BASE_URL ??
-            process.env.ELIZA_ASSET_BASE_URL ??
+            process.env.TOKAGENT_ASSET_BASE_URL ??
             appAssetBaseUrl,
         }
       : {}),
@@ -80,6 +80,6 @@ if (fullSetup) {
 }
 
 await run(bunExecutable, ["run", "build:web"], appDir);
-if (resolveElizaAssetBaseUrls().appAssetBaseUrl) {
+if (resolveTokagentAssetBaseUrls().appAssetBaseUrl) {
   await run(process.execPath, [pruneCdnAssetsScript], repoRoot);
 }

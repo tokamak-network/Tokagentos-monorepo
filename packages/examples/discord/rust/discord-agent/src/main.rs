@@ -13,7 +13,7 @@ mod character;
 mod handlers;
 
 use anyhow::{Context, Result};
-use elizaos_plugin_discord::{DiscordConfig, DiscordEventType, DiscordService};
+use tokagentos_plugin_discord::{DiscordConfig, DiscordEventType, DiscordService};
 use std::sync::Arc;
 use tokio::signal;
 use tokio::sync::RwLock;

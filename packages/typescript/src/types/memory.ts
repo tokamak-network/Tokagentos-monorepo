@@ -270,7 +270,7 @@ export interface SessionSkillsSnapshot {
 /**
  * Session context providing first-class session state access.
  * This enables filtering memories by session and accessing session configuration
- * from within the Eliza runtime pipeline (providers, evaluators, actions).
+ * from within the Tokagent runtime pipeline (providers, evaluators, actions).
  */
 export interface SessionContext {
 	/** Session ID (UUID) - used for transcript files and filtering */

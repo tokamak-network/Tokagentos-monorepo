@@ -10,7 +10,7 @@
  * demand via {@link getActivityReport}.
  */
 
-import { type IAgentRuntime, Service, logger } from "@elizaos/core";
+import { type IAgentRuntime, Service, logger } from "@tokagentos/core";
 import {
   type ActivityCollectorEvent,
   type ActivityCollectorHandle,

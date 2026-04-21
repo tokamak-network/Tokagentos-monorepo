@@ -1,6 +1,6 @@
 ---
 title: "Vercel Examples"
-description: "Deploy elizaOS to Vercel Edge Functions"
+description: "Deploy tokagentOS to Vercel Edge Functions"
 ---
 
 Deploy AI agents to Vercel's global edge network.
@@ -23,7 +23,7 @@ vercel  # Deploy to production
 
 ```typescript
 // api/chat.ts
-import { AgentRuntime, ModelType } from "@elizaos/core";
+import { AgentRuntime, ModelType } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 export const config = {
@@ -35,7 +35,7 @@ let runtime: AgentRuntime | null = null;
 export default async function handler(request: Request) {
   if (!runtime) {
     runtime = new AgentRuntime({
-      character: { name: "Eliza", bio: "A helpful AI." },
+      character: { name: "Tokagent", bio: "A helpful AI." },
       plugins: [openaiPlugin],
     });
     await runtime.initialize();

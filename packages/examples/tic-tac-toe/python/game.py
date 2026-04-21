@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-elizaOS Tic-Tac-Toe Demo - Python Version
+tokagentOS Tic-Tac-Toe Demo - Python Version
 
 A tic-tac-toe game where an AI agent plays perfectly WITHOUT using an LLM.
 Demonstrates:
-- elizaOS AgentRuntime (anonymous character)
+- tokagentOS AgentRuntime (anonymous character)
 - Full canonical message processing via runtime.message_service.handle_message()
 - Custom model handlers implement perfect play via minimax (NO LLM calls)
 
@@ -22,17 +22,17 @@ from dataclasses import dataclass, field
 from typing import TypeAlias
 
 # Allow running from repo without installing the Python package.
-# (If elizaos is already installed, this is a no-op.)
+# (If tokagentos is already installed, this is a no-op.)
 _repo_root = Path(__file__).resolve().parents[3]
 _pkg_path = _repo_root / "packages" / "python"
 if _pkg_path.exists():
     sys.path.insert(0, str(_pkg_path))
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types.memory import Memory
-from elizaos.types.model import ModelType
-from elizaos.types.plugin import Plugin
-from elizaos.types.primitives import Content, UUID, as_uuid
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.memory import Memory
+from tokagentos.types.model import ModelType
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.primitives import Content, UUID, as_uuid
 
 # Type definitions
 Player: TypeAlias = str  # "X" or "O"
@@ -270,7 +270,7 @@ async def tic_tac_toe_model_handler(
     # Get the optimal move
     move = get_optimal_move(board, ai_player)
 
-    # Return canonical Eliza XML so message_service can parse it.
+    # Return canonical Tokagent XML so message_service can parse it.
     return "\n".join(
         [
             "<response>",
@@ -349,7 +349,7 @@ Position reference:
 
 
 # ============================================================================
-# ELIZA AGENT INTEGRATION (Full pipeline)
+# TOKAGENT AGENT INTEGRATION (Full pipeline)
 # ============================================================================
 
 
@@ -415,7 +415,7 @@ async def create_runtime() -> AgentSession:
 
 
 async def get_ai_move(session: AgentSession, game: TicTacToeGame, *, ai_player: Player) -> int:
-    """Send environment state through Eliza and parse the chosen move."""
+    """Send environment state through Tokagent and parse the chosen move."""
     state = game.get_state()
     board_cells = ",".join(c if c else "_" for c in state.board)
     available = ",".join(str(i) for i in get_available_moves(state.board))
@@ -457,7 +457,7 @@ async def get_ai_move(session: AgentSession, game: TicTacToeGame, *, ai_player: 
 
 def show_intro() -> None:
     """Show game introduction."""
-    print("\n🎮 elizaOS Tic-Tac-Toe Demo (Python)")
+    print("\n🎮 tokagentOS Tic-Tac-Toe Demo (Python)")
     print("""
 ╔════════════════════════════════════════════════════════════════════╗
 ║                   PERFECT TIC-TAC-TOE AI                            ║

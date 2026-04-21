@@ -1,8 +1,8 @@
 """
-GCP Cloud Run handler for elizaOS chat worker (Python)
+GCP Cloud Run handler for tokagentOS chat worker (Python)
 
 This Cloud Run service processes chat messages and returns AI responses
-using the elizaOS runtime with OpenAI as the LLM provider.
+using the tokagentOS runtime with OpenAI as the LLM provider.
 """
 
 from __future__ import annotations
@@ -60,7 +60,7 @@ class ErrorResponse(TypedDict):
 def get_character_config() -> dict[str, str]:
     """Get character configuration from environment."""
     return {
-        "name": os.environ.get("CHARACTER_NAME", "Eliza"),
+        "name": os.environ.get("CHARACTER_NAME", "Tokagent"),
         "bio": os.environ.get("CHARACTER_BIO", "A helpful AI assistant."),
         "system": os.environ.get(
             "CHARACTER_SYSTEM",
@@ -75,22 +75,22 @@ _runtime_initialized = False
 
 
 async def get_runtime():
-    """Get or create the elizaOS runtime (singleton pattern)."""
+    """Get or create the tokagentOS runtime (singleton pattern)."""
     global _runtime, _runtime_initialized
 
     if _runtime_initialized:
         return _runtime
 
-    logger.info("Initializing elizaOS runtime...")
+    logger.info("Initializing tokagentOS runtime...")
 
-    from elizaos import Character
-    from elizaos.runtime import AgentRuntime
-    from elizaos_plugin_openai import get_openai_plugin
+    from tokagentos import Character
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_plugin_openai import get_openai_plugin
 
     character_config = get_character_config()
     character = Character(
         name=character_config["name"],
-        username="eliza",
+        username="tokagent",
         bio=character_config["bio"],
         system=character_config["system"],
     )
@@ -103,7 +103,7 @@ async def get_runtime():
     await _runtime.initialize()
     _runtime_initialized = True
 
-    logger.info("elizaOS runtime initialized successfully")
+    logger.info("tokagentOS runtime initialized successfully")
     return _runtime
 
 
@@ -129,14 +129,14 @@ def parse_request_body(body: str | bytes | None) -> ChatRequest:
 
 
 async def handle_chat_async(request: ChatRequest) -> ChatResponse:
-    """Handle a chat message using elizaOS runtime."""
+    """Handle a chat message using tokagentOS runtime."""
     runtime = await get_runtime()
 
     # Generate conversation ID
     conversation_id = request.get("conversationId") or f"conv-{uuid.uuid4().hex[:12]}"
 
     # Route through the full message pipeline (planning/actions/providers/memory)
-    from elizaos import ChannelType, Content, Memory, string_to_uuid
+    from tokagentos import ChannelType, Content, Memory, string_to_uuid
 
     user_id_raw = request.get("userId") or f"user-{uuid.uuid4().hex}"
     user_id = string_to_uuid(user_id_raw)
@@ -170,7 +170,7 @@ def handle_health() -> HealthResponse:
     """Return health status."""
     return {
         "status": "healthy",
-        "runtime": "elizaos-python",
+        "runtime": "tokagentos-python",
         "version": "2.0.0-alpha",
     }
 
@@ -182,7 +182,7 @@ def handle_info() -> InfoResponse:
         "name": character_config["name"],
         "bio": character_config["bio"],
         "version": "2.0.0-alpha",
-        "powered_by": "elizaOS",
+        "powered_by": "tokagentOS",
         "endpoints": {
             "POST /chat": "Send a message and receive a response",
             "GET /health": "Health check endpoint",
@@ -265,7 +265,7 @@ except ImportError:
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "8080"))
 
-    logger.info(f"🚀 elizaOS Cloud Run worker starting on port {port}")
+    logger.info(f"🚀 tokagentOS Cloud Run worker starting on port {port}")
     logger.info(f"📍 Health check: http://localhost:{port}/health")
     logger.info(f"💬 Chat endpoint: http://localhost:{port}/chat")
 

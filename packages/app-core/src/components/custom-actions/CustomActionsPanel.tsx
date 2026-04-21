@@ -1,5 +1,5 @@
-import type { CustomActionDef } from "@elizaos/agent/contracts/config";
-import { Button, Input, Switch } from "@elizaos/ui";
+import type { CustomActionDef } from "@tokagentos/agent/contracts/config";
+import { Button, Input, Switch } from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { client } from "../../api/client";
 import { useApp } from "../../state/useApp";

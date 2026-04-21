@@ -5,9 +5,9 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from elizaos.advanced_capabilities.experience.types import Experience
+    from tokagentos.advanced_capabilities.experience.types import Experience
 
-from elizaos.advanced_capabilities.experience.types import ExperienceType, OutcomeType
+from tokagentos.advanced_capabilities.experience.types import ExperienceType, OutcomeType
 
 _TYPE_EMOJI: dict[ExperienceType, str] = {
     ExperienceType.SUCCESS: "V",

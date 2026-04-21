@@ -9,7 +9,7 @@ import {
   type HeaderReader,
   type RuntimeLike,
 } from "./app";
-import { elizaClassicXmlPlugin } from "./elizaClassicXmlPlugin";
+import { tokagentClassicXmlPlugin } from "./tokagentClassicXmlPlugin";
 
 function makeReq(headers: Record<string, string>, rawBody: string): HeaderReader {
   return {
@@ -24,13 +24,13 @@ describe("roblox bridge helpers", () => {
     expect(verifySharedSecret(req, "")).toBe(true);
   });
 
-  it("accepts when x-eliza-secret matches", () => {
-    const req = makeReq({ "x-eliza-secret": "s3cr3t" }, "{}");
+  it("accepts when x-tokagent-secret matches", () => {
+    const req = makeReq({ "x-tokagent-secret": "s3cr3t" }, "{}");
     expect(verifySharedSecret(req, "s3cr3t")).toBe(true);
   });
 
-  it("rejects when x-eliza-secret mismatches", () => {
-    const req = makeReq({ "x-eliza-secret": "wrong" }, "{}");
+  it("rejects when x-tokagent-secret mismatches", () => {
+    const req = makeReq({ "x-tokagent-secret": "wrong" }, "{}");
     expect(verifySharedSecret(req, "right")).toBe(false);
   });
 
@@ -39,14 +39,14 @@ describe("roblox bridge helpers", () => {
     const rawBody = JSON.stringify({ hello: "world" });
     const sig =
       "sha256=" + crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
-    const req = makeReq({ "x-eliza-signature": sig }, rawBody);
+    const req = makeReq({ "x-tokagent-signature": sig }, rawBody);
     expect(verifySharedSecret(req, secret)).toBe(true);
   });
 
   it("rejects when HMAC signature mismatches", () => {
     const secret = "s3cr3t";
     const rawBody = JSON.stringify({ hello: "world" });
-    const req = makeReq({ "x-eliza-signature": "sha256=deadbeef" }, rawBody);
+    const req = makeReq({ "x-tokagent-signature": "sha256=deadbeef" }, rawBody);
     expect(verifySharedSecret(req, secret)).toBe(false);
   });
 
@@ -71,7 +71,7 @@ describe("roblox bridge helpers", () => {
     try {
       const runtime: RuntimeLike = {
         agentId: "00000000-0000-0000-0000-000000000000",
-        character: { name: "Eliza" },
+        character: { name: "Tokagent" },
         ensureConnection: async () => {},
         messageService: {
           handleMessage: async (_runtime, _message, callback) => {
@@ -107,9 +107,9 @@ describe("roblox bridge helpers", () => {
     }
   });
 
-  it("elizaClassicXmlPlugin returns <response> XML", async () => {
-    const out = await elizaClassicXmlPlugin.models?.TEXT_LARGE?.(
-      {} as import("@elizaos/core").IAgentRuntime,
+  it("tokagentClassicXmlPlugin returns <response> XML", async () => {
+    const out = await tokagentClassicXmlPlugin.models?.TEXT_LARGE?.(
+      {} as import("@tokagentos/core").IAgentRuntime,
       { prompt: "You: hello" }
     );
     expect(typeof out).toBe("string");

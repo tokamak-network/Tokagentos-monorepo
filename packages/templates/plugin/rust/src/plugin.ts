@@ -9,15 +9,15 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { RustPluginTestSuite } from "./__tests__/e2e/rust-plugin.e2e";
 
 /**
  * Rust Plugin Starter - TypeScript Wrapper
  *
  * This TypeScript wrapper loads the Rust plugin compiled to WASM via wasm-bindgen
- * and exposes it as an elizaOS plugin.
+ * and exposes it as an tokagentOS plugin.
  */
 
 // Type definitions for wasm-bindgen generated module
@@ -66,10 +66,10 @@ export const rustPluginStarter: Plugin = {
 
   async init(config: Record<string, string>) {
     // Load the wasm-bindgen generated module
-    // The JS file should be built and available at dist/elizaos_plugin_starter.js
+    // The JS file should be built and available at dist/tokagentos_plugin_starter.js
     // Use absolute path resolution
     const wasmModulePath = new URL(
-      "../dist/elizaos_plugin_starter.js",
+      "../dist/tokagentos_plugin_starter.js",
       import.meta.url,
     ).href;
 

@@ -21,7 +21,7 @@ describe('API Endpoints (demo)', () => {
     })
 
     it('chat should return message + sessionId', async () => {
-        const response = await fetch(`${API_BASE}/api/chat/eliza`, {
+        const response = await fetch(`${API_BASE}/api/chat/tokagent`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: 'Hello', userId: 'demo-user' }),

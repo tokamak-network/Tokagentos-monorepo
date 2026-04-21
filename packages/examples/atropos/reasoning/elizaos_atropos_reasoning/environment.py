@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_reasoning.types import (
+from tokagentos_atropos_reasoning.types import (
     TaskType,
     Difficulty,
     Problem,
@@ -14,10 +14,10 @@ from elizaos_atropos_reasoning.types import (
     StepResult,
     EpisodeResult,
 )
-from elizaos_atropos_reasoning.problems.math import MathProblemGenerator
-from elizaos_atropos_reasoning.problems.logic import LogicProblemGenerator
-from elizaos_atropos_reasoning.problems.puzzles import PuzzleProblemGenerator
-from elizaos_atropos_reasoning.evaluator import evaluate_answer, extract_answer_from_text
+from tokagentos_atropos_reasoning.problems.math import MathProblemGenerator
+from tokagentos_atropos_reasoning.problems.logic import LogicProblemGenerator
+from tokagentos_atropos_reasoning.problems.puzzles import PuzzleProblemGenerator
+from tokagentos_atropos_reasoning.evaluator import evaluate_answer, extract_answer_from_text
 
 if TYPE_CHECKING:
     pass

@@ -20,7 +20,7 @@
  * No SQL mocks. PGLite only, per user memory.
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   createRealTestRuntime,

@@ -5,12 +5,12 @@ import UIKit
 import Photos
 import ImageIO
 
-// MARK: - ElizaCameraPlugin
+// MARK: - TokagentCameraPlugin
 
-@objc(ElizaCameraPlugin)
-public class ElizaCameraPlugin: CAPPlugin, CAPBridgedPlugin {
-    public let identifier = "ElizaCameraPlugin"
-    public let jsName = "ElizaCamera"
+@objc(TokagentCameraPlugin)
+public class TokagentCameraPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "TokagentCameraPlugin"
+    public let jsName = "TokagentCamera"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "getDevices", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "startPreview", returnType: CAPPluginReturnPromise),
@@ -51,7 +51,7 @@ public class ElizaCameraPlugin: CAPPlugin, CAPBridgedPlugin {
     private var lastFrameEmitTime: CFAbsoluteTime = 0
 
     /// Serial queue for video data output sample buffer callbacks (frame events).
-    private let videoDataQueue = DispatchQueue(label: "eliza.camera.videodata", qos: .userInitiated)
+    private let videoDataQueue = DispatchQueue(label: "tokagent.camera.videodata", qos: .userInitiated)
 
     /// All device types to discover. Ported from classic CameraController to include
     /// dual, triple, TrueDepth, and LiDAR cameras.
@@ -943,7 +943,7 @@ public class ElizaCameraPlugin: CAPPlugin, CAPBridgedPlugin {
             asset: asset,
             presetName: AVAssetExportPresetHighestQuality
         ) else {
-            completion(.failure(NSError(domain: "ElizaCamera", code: 1, userInfo: [
+            completion(.failure(NSError(domain: "TokagentCamera", code: 1, userInfo: [
                 NSLocalizedDescriptionKey: "Failed to create export session",
             ])))
             return
@@ -958,15 +958,15 @@ public class ElizaCameraPlugin: CAPPlugin, CAPBridgedPlugin {
             case .completed:
                 completion(.success(mp4URL))
             case .failed:
-                completion(.failure(exporter.error ?? NSError(domain: "ElizaCamera", code: 2, userInfo: [
+                completion(.failure(exporter.error ?? NSError(domain: "TokagentCamera", code: 2, userInfo: [
                     NSLocalizedDescriptionKey: "Export failed",
                 ])))
             case .cancelled:
-                completion(.failure(NSError(domain: "ElizaCamera", code: 3, userInfo: [
+                completion(.failure(NSError(domain: "TokagentCamera", code: 3, userInfo: [
                     NSLocalizedDescriptionKey: "Export cancelled",
                 ])))
             default:
-                completion(.failure(NSError(domain: "ElizaCamera", code: 4, userInfo: [
+                completion(.failure(NSError(domain: "TokagentCamera", code: 4, userInfo: [
                     NSLocalizedDescriptionKey: "Export did not complete",
                 ])))
             }
@@ -976,7 +976,7 @@ public class ElizaCameraPlugin: CAPPlugin, CAPBridgedPlugin {
 
 // MARK: - AVCapturePhotoCaptureDelegate
 
-extension ElizaCameraPlugin: AVCapturePhotoCaptureDelegate {
+extension TokagentCameraPlugin: AVCapturePhotoCaptureDelegate {
     public func photoOutput(
         _ output: AVCapturePhotoOutput,
         didFinishProcessingPhoto photo: AVCapturePhoto,
@@ -1079,7 +1079,7 @@ extension ElizaCameraPlugin: AVCapturePhotoCaptureDelegate {
 
 // MARK: - AVCaptureFileOutputRecordingDelegate
 
-extension ElizaCameraPlugin: AVCaptureFileOutputRecordingDelegate {
+extension TokagentCameraPlugin: AVCaptureFileOutputRecordingDelegate {
     public func fileOutput(
         _ output: AVCaptureFileOutput,
         didFinishRecordingTo outputFileURL: URL,
@@ -1200,7 +1200,7 @@ extension ElizaCameraPlugin: AVCaptureFileOutputRecordingDelegate {
 
 // MARK: - AVCaptureVideoDataOutputSampleBufferDelegate (Frame Events)
 
-extension ElizaCameraPlugin: AVCaptureVideoDataOutputSampleBufferDelegate {
+extension TokagentCameraPlugin: AVCaptureVideoDataOutputSampleBufferDelegate {
     public func captureOutput(
         _ output: AVCaptureOutput,
         didOutput sampleBuffer: CMSampleBuffer,

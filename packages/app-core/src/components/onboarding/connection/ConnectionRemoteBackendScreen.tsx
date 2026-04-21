@@ -1,4 +1,4 @@
-import { Button, Input } from "@elizaos/ui";
+import { Button, Input } from "@tokagentos/ui";
 import { appNameInterpolationVars, useBranding } from "../../../config";
 import type {
   ConnectionEffect,

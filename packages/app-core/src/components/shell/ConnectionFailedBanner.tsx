@@ -1,4 +1,4 @@
-import { Button, Spinner, Z_SYSTEM_CRITICAL } from "@elizaos/ui";
+import { Button, Spinner, Z_SYSTEM_CRITICAL } from "@tokagentos/ui";
 import { useApp } from "../../state";
 
 /**

@@ -3,7 +3,7 @@
 Generates human-readable reports, ASCII visualizations, and markdown output.
 """
 
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.types import (
     LEADERBOARD_SCORES,
     ContextBenchResults,
     NeedlePosition,
@@ -263,7 +263,7 @@ class ContextBenchReporter:
             lines.append(f"| {model_name} | {overall:.1%} | {diff_str} | {lim:.1%} |")
 
         lines.append(
-            f"| **ElizaOS** | **{self.metrics.overall_accuracy:.1%}** | - | "
+            f"| **TokagentOS** | **{self.metrics.overall_accuracy:.1%}** | - | "
             f"**{self.metrics.lost_in_middle_score:.1%}** |"
         )
         lines.append("")

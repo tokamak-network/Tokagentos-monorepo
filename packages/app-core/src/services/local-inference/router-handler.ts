@@ -23,8 +23,8 @@
  * + device-bridge routing from one settings panel.
  */
 
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
-import { ModelType } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
+import { ModelType } from "@tokagentos/core";
 import { handlerRegistry } from "./handler-registry";
 import { policyEngine } from "./routing-policy";
 import { readRoutingPreferences } from "./routing-preferences";

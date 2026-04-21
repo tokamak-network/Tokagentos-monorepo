@@ -14,11 +14,11 @@ const ROOT = resolveRepoRootFromImportMeta(import.meta.url);
 const ARTIFACTS_DIR = path.join(ROOT, "artifacts");
 
 // Target packages to pack (MVP for Phase 5).
-// @elizaos/core now contains the orchestrator runtime, so pairing it with one
+// @tokagentos/core now contains the orchestrator runtime, so pairing it with one
 // vendored plugin proves both core and plugin tarballs build cleanly.
 const TARGETS = [
-  path.join(ROOT, "eliza", "packages", "typescript"), // @elizaos/core
-  path.join(ROOT, "eliza", "plugins", "plugin-sql", "typescript"), // representative vendored plugin
+  path.join(ROOT, "tokagent", "packages", "typescript"), // @tokagentos/core
+  path.join(ROOT, "tokagent", "plugins", "plugin-sql", "typescript"), // representative vendored plugin
 ];
 
 function runCommand(command, args, cwd) {

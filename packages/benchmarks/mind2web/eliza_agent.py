@@ -1,7 +1,7 @@
 """
-ElizaOS-integrated agent for Mind2Web benchmark.
+TokagentOS-integrated agent for Mind2Web benchmark.
 
-Uses the canonical ElizaOS flow:
+Uses the canonical TokagentOS flow:
 - Messages processed through runtime.message_service.handle_message()
 - Actions executed via process_actions()
 - Providers inject page context into state
@@ -25,14 +25,14 @@ from benchmarks.mind2web.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, IAgentRuntime, State
-    from elizaos.types.components import ActionResult, HandlerOptions
+    from tokagentos.types import HandlerCallback, IAgentRuntime, State
+    from tokagentos.types.components import ActionResult, HandlerOptions
 
 logger = logging.getLogger(__name__)
 
 
-# Check ElizaOS availability
-ELIZAOS_AVAILABLE = False
+# Check TokagentOS availability
+TOKAGENTOS_AVAILABLE = False
 AgentRuntime = None  # type: ignore[misc,assignment]
 Character = None  # type: ignore[misc,assignment]
 Plugin = None  # type: ignore[misc,assignment]
@@ -48,23 +48,23 @@ ActionParameter = None  # type: ignore[misc,assignment]
 ActionParameterSchema = None  # type: ignore[misc,assignment]
 
 try:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
-    from elizaos.types.components import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
+    from tokagentos.types.components import (
         Action,
         ActionExample,
         ActionResult,
         Provider,
         ProviderResult,
     )
-    from elizaos.types.memory import Memory
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.primitives import Content, as_uuid
+    from tokagentos.types.memory import Memory
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.primitives import Content, as_uuid
 
-    ELIZAOS_AVAILABLE = True
-except Exception as _elizaos_import_error:
-    # ElizaOS not available - will run in mock mode
-    logger.debug(f"ElizaOS not available: {_elizaos_import_error}")
+    TOKAGENTOS_AVAILABLE = True
+except Exception as _tokagentos_import_error:
+    # TokagentOS not available - will run in mock mode
+    logger.debug(f"TokagentOS not available: {_tokagentos_import_error}")
 
 
 # ---------------------------------------------------------------------------
@@ -74,7 +74,7 @@ except Exception as _elizaos_import_error:
 
 def get_model_provider_plugin(provider: str | None = None) -> "Plugin | None":
     """Get the appropriate model provider plugin."""
-    if not ELIZAOS_AVAILABLE:
+    if not TOKAGENTOS_AVAILABLE:
         return None
 
     requested = provider.lower().strip() if provider else ""
@@ -82,17 +82,17 @@ def get_model_provider_plugin(provider: str | None = None) -> "Plugin | None":
     # Try Groq first (fast and cheap for testing)
     if (not requested or requested == "groq") and os.environ.get("GROQ_API_KEY"):
         try:
-            from elizaos_plugin_groq import GroqClient, GroqConfig
+            from tokagentos_plugin_groq import GroqClient, GroqConfig
 
             # Create Groq plugin manually since it doesn't have get_groq_plugin()
-            return _create_groq_elizaos_plugin()
+            return _create_groq_tokagentos_plugin()
         except ImportError:
             logger.debug("Groq plugin not available")
 
     # Try OpenAI
     if (not requested or requested == "openai") and os.environ.get("OPENAI_API_KEY"):
         try:
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             logger.info("Using OpenAI model provider")
             return get_openai_plugin()
@@ -105,9 +105,9 @@ def get_model_provider_plugin(provider: str | None = None) -> "Plugin | None":
             # Check if anthropic plugin exists
             import importlib.util
 
-            spec = importlib.util.find_spec("elizaos_plugin_anthropic")
+            spec = importlib.util.find_spec("tokagentos_plugin_anthropic")
             if spec:
-                from elizaos_plugin_anthropic import get_anthropic_plugin  # type: ignore[import-not-found]
+                from tokagentos_plugin_anthropic import get_anthropic_plugin  # type: ignore[import-not-found]
 
                 logger.info("Using Anthropic model provider")
                 return get_anthropic_plugin()
@@ -124,7 +124,7 @@ def get_model_provider_plugin(provider: str | None = None) -> "Plugin | None":
 def _get_model_type_value(name: str) -> str:
     """Resolve model type enum value for legacy/new names."""
     try:
-        from elizaos.types.model import ModelType
+        from tokagentos.types.model import ModelType
     except Exception:
         return name
 
@@ -136,12 +136,12 @@ def _get_model_type_value(name: str) -> str:
     return name
 
 
-def _create_groq_elizaos_plugin() -> "Plugin":
-    """Create a Groq ElizaOS plugin."""
-    from elizaos import Plugin
-    from elizaos.types.runtime import IAgentRuntime
+def _create_groq_tokagentos_plugin() -> "Plugin":
+    """Create a Groq TokagentOS plugin."""
+    from tokagentos import Plugin
+    from tokagentos.types.runtime import IAgentRuntime
 
-    from elizaos_plugin_groq import GenerateTextParams, GroqClient, GroqConfig
+    from tokagentos_plugin_groq import GenerateTextParams, GroqClient, GroqConfig
 
     _client: GroqClient | None = None
 
@@ -193,7 +193,7 @@ def _create_groq_elizaos_plugin() -> "Plugin":
     logger.info("Using Groq model provider")
     return Plugin(
         name="groq",
-        description="Groq model provider for elizaOS",
+        description="Groq model provider for tokagentOS",
         models={
             _get_model_type_value("TEXT_LARGE"): text_large_handler,
             _get_model_type_value("TEXT_SMALL"): text_small_handler,
@@ -294,7 +294,7 @@ async def get_mind2web_context_provider(
     _ = message
     _ = state
 
-    # Handle case when ElizaOS types aren't available
+    # Handle case when TokagentOS types aren't available
     if ProviderResult is None:
         # Return a mock result for testing
         from dataclasses import dataclass
@@ -570,7 +570,7 @@ class Mind2WebActionHandler:
 
     @property
     def examples(self) -> list[list["ActionExample"]]:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             [
@@ -634,7 +634,7 @@ class Mind2WebActionHandler:
 
     @property
     def parameters(self) -> list[Mind2WebActionParameter]:
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             return []
         return [
             Mind2WebActionParameter(
@@ -662,8 +662,8 @@ class Mind2WebActionHandler:
 
 def create_mind2web_plugin() -> "Plugin":
     """Create the Mind2Web benchmark plugin."""
-    if not ELIZAOS_AVAILABLE:
-        raise RuntimeError("ElizaOS is required for Mind2Web plugin")
+    if not TOKAGENTOS_AVAILABLE:
+        raise RuntimeError("TokagentOS is required for Mind2Web plugin")
 
     action_impl = Mind2WebActionHandler()
     action = Action(
@@ -781,12 +781,12 @@ When task is complete:
 
 
 # ---------------------------------------------------------------------------
-# ElizaOS Mind2Web Agent
+# TokagentOS Mind2Web Agent
 # ---------------------------------------------------------------------------
 
 
-class ElizaOSMind2WebAgent:
-    """ElizaOS-powered agent for Mind2Web benchmark."""
+class TokagentOSMind2WebAgent:
+    """TokagentOS-powered agent for Mind2Web benchmark."""
 
     def __init__(
         self,
@@ -806,9 +806,9 @@ class ElizaOSMind2WebAgent:
         if self._initialized:
             return
 
-        if not ELIZAOS_AVAILABLE:
+        if not TOKAGENTOS_AVAILABLE:
             if not self.config.use_mock:
-                raise RuntimeError("ElizaOS not available (required for real-llm mode)")
+                raise RuntimeError("TokagentOS not available (required for real-llm mode)")
             self._initialized = True
             return
 
@@ -872,7 +872,7 @@ class ElizaOSMind2WebAgent:
         set_mind2web_context(task)
         ctx = get_mind2web_context()
 
-        if not ELIZAOS_AVAILABLE or self.runtime is None or not self._has_model_provider:
+        if not TOKAGENTOS_AVAILABLE or self.runtime is None or not self._has_model_provider:
             return await self._process_task_mock(task)
 
         return await self._process_task_canonical(task, ctx)
@@ -880,7 +880,7 @@ class ElizaOSMind2WebAgent:
     async def _process_task_canonical(
         self, task: Mind2WebTask, ctx: Mind2WebContext
     ) -> list[Mind2WebAction]:
-        """Process task using canonical ElizaOS message loop."""
+        """Process task using canonical TokagentOS message loop."""
         assert self.runtime is not None
 
         user_id = as_uuid(str(uuid4()))
@@ -989,7 +989,7 @@ class MockMind2WebAgent:
 
 def create_mind2web_agent(
     config: Mind2WebConfig,
-) -> ElizaOSMind2WebAgent | MockMind2WebAgent:
+) -> TokagentOSMind2WebAgent | MockMind2WebAgent:
     """Create a Mind2Web agent.
 
     Args:
@@ -998,7 +998,7 @@ def create_mind2web_agent(
     Returns:
         Agent instance
     """
-    if config.use_mock or not ELIZAOS_AVAILABLE:
+    if config.use_mock or not TOKAGENTOS_AVAILABLE:
         return MockMind2WebAgent(config)
 
-    return ElizaOSMind2WebAgent(config)
+    return TokagentOSMind2WebAgent(config)

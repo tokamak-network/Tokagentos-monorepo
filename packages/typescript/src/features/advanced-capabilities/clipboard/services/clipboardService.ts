@@ -13,7 +13,7 @@ import type {
 } from "../types.ts";
 
 export const DEFAULT_CLIPBOARD_CONFIG: ClipboardConfig = {
-	basePath: path.join(os.homedir(), ".eliza", "clipboard"),
+	basePath: path.join(os.homedir(), ".tokagent", "clipboard"),
 	maxFileSize: 1024 * 1024, // 1MB
 	allowedExtensions: [".md", ".txt"],
 };

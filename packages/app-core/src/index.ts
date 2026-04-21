@@ -1,19 +1,19 @@
 /**
- * Public entry point for @elizaos/app-core — import from `@elizaos/app-core` only.
+ * Public entry point for @tokagentos/app-core — import from `@tokagentos/app-core` only.
  */
 
 export {
   DEFAULT_MAX_BODY_BYTES,
   readRequestBody,
   readRequestBodyBuffer,
-} from "@elizaos/agent/api/http-helpers";
-export type { RestartHandler } from "@elizaos/shared/restart";
+} from "@tokagentos/agent/api/http-helpers";
+export type { RestartHandler } from "@tokagentos/shared/restart";
 export {
   RESTART_EXIT_CODE,
   requestRestart,
   setRestartHandler,
-} from "@elizaos/shared/restart";
-export * from "@elizaos/ui";
+} from "@tokagentos/shared/restart";
+export * from "@tokagentos/ui";
 export { App } from "./App.tsx";
 export * from "./api/auth";
 export * from "./api/compat-route-shared";

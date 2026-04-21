@@ -1,5 +1,5 @@
 /**
- * Full Eliza Runtime for Browser Extension
+ * Full Tokagent Runtime for Browser Extension
  * 
  * Based on examples/avatar/src/runtime/runtimeManager.ts
  */
@@ -14,9 +14,9 @@ import {
   type Provider,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import anthropicPlugin from "@elizaos/plugin-anthropic";
-import { elizaClassicPlugin, getElizaGreeting } from "@elizaos/plugin-eliza-classic";
+import { tokagentClassicPlugin, getTokagentGreeting } from "@elizaos/plugin-tokagent-classic";
 import googleGenAIPlugin from "@elizaos/plugin-google-genai";
 import groqPlugin from "@elizaos/plugin-groq";
 import localdbPlugin from "@elizaos/plugin-localdb";
@@ -47,7 +47,7 @@ const BROWSER_ASSISTANT_CHARACTER = createCharacter({
   system: `You are a helpful browser assistant that can discuss the content of webpages with users.
 When the user asks about "this page", "this article", "this website", or similar, refer to the PAGE_CONTENT context.
 Be concise and helpful. Focus on answering questions about the page content when relevant.`,
-  bio: "An AI assistant built on ElizaOS that helps users understand and interact with web content.",
+  bio: "An AI assistant built on TokagentOS that helps users understand and interact with web content.",
 });
 
 // ============================================
@@ -55,8 +55,8 @@ Be concise and helpful. Focus on answering questions about the page content when
 // ============================================
 
 const STORAGE_KEYS = { 
-  userId: "elizaos-extension:userId",
-  roomId: "elizaos-extension:roomId",
+  userId: "tokagentos-extension:userId",
+  roomId: "tokagentos-extension:roomId",
 } as const;
 
 // ============================================
@@ -69,7 +69,7 @@ let cachedScreenshot: string | null = null;
 let lastScreenshotHash: string | null = null;
 
 export function updatePageContent(content: PageContent | null): void {
-  console.log("[ElizaOS Runtime] updatePageContent called:", content ? {
+  console.log("[TokagentOS Runtime] updatePageContent called:", content ? {
     title: content.title,
     url: content.url,
     contentLength: content.content?.length,
@@ -182,19 +182,19 @@ function getOrCreateRoomId(): UUID {
 export function resolveEffectiveMode(config: ExtensionConfig): ProviderMode {
   switch (config.mode) {
     case "openai":
-      return (config.provider.openaiApiKey ?? "").trim() ? "openai" : "elizaClassic";
+      return (config.provider.openaiApiKey ?? "").trim() ? "openai" : "tokagentClassic";
     case "anthropic":
-      return (config.provider.anthropicApiKey ?? "").trim() ? "anthropic" : "elizaClassic";
+      return (config.provider.anthropicApiKey ?? "").trim() ? "anthropic" : "tokagentClassic";
     case "xai":
-      return (config.provider.xaiApiKey ?? "").trim() ? "xai" : "elizaClassic";
+      return (config.provider.xaiApiKey ?? "").trim() ? "xai" : "tokagentClassic";
     case "gemini":
-      return (config.provider.googleGenaiApiKey ?? "").trim() ? "gemini" : "elizaClassic";
+      return (config.provider.googleGenaiApiKey ?? "").trim() ? "gemini" : "tokagentClassic";
     case "groq":
-      return (config.provider.groqApiKey ?? "").trim() ? "groq" : "elizaClassic";
-    case "elizaClassic":
-      return "elizaClassic";
+      return (config.provider.groqApiKey ?? "").trim() ? "groq" : "tokagentClassic";
+    case "tokagentClassic":
+      return "tokagentClassic";
     default:
-      return "elizaClassic";
+      return "tokagentClassic";
   }
 }
 
@@ -240,13 +240,13 @@ function applySettings(runtime: AgentRuntime, config: ExtensionConfig, effective
 
 function buildPlugins(effectiveMode: ProviderMode) {
   const base = [localdbPlugin];
-  if (effectiveMode === "elizaClassic") return [...base, elizaClassicPlugin];
+  if (effectiveMode === "tokagentClassic") return [...base, tokagentClassicPlugin];
   if (effectiveMode === "openai") return [...base, openaiPlugin];
   if (effectiveMode === "anthropic") return [...base, anthropicPlugin];
   if (effectiveMode === "xai") return [...base, openaiPlugin]; // xAI uses OpenAI-compatible API
   if (effectiveMode === "gemini") return [...base, googleGenAIPlugin];
   if (effectiveMode === "groq") return [...base, groqPlugin];
-  return [...base, elizaClassicPlugin];
+  return [...base, tokagentClassicPlugin];
 }
 
 // ============================================
@@ -276,7 +276,7 @@ export async function getOrCreateRuntime(config: ExtensionConfig): Promise<Runti
 
     const userId = getOrCreateUserId();
     const roomId = getOrCreateRoomId();
-    const worldId = stringToUuid("elizaos-browser-extension-world");
+    const worldId = stringToUuid("tokagentos-browser-extension-world");
 
     const plugins = buildPlugins(effectiveMode);
 
@@ -330,26 +330,26 @@ export async function resetConversation(): Promise<void> {
 }
 
 export function getGreetingText(effectiveMode: ProviderMode): string {
-  if (effectiveMode === "elizaClassic") {
-    return getElizaGreeting();
+  if (effectiveMode === "tokagentClassic") {
+    return getTokagentGreeting();
   }
   return "Hello! I can help you understand and discuss the content of this webpage. What would you like to know?";
 }
 
 /**
  * Build message text with page context injected.
- * Since ElizaOS message service doesn't call custom providers by default,
+ * Since TokagentOS message service doesn't call custom providers by default,
  * we inject the context directly into the message.
  */
 function buildMessageWithContext(userText: string): string {
-  console.log("[ElizaOS Runtime] Building message with context...");
-  console.log("[ElizaOS Runtime] cachedPageContent:", cachedPageContent ? {
+  console.log("[TokagentOS Runtime] Building message with context...");
+  console.log("[TokagentOS Runtime] cachedPageContent:", cachedPageContent ? {
     title: cachedPageContent.title,
     url: cachedPageContent.url,
     contentLength: cachedPageContent.content?.length,
     hasVisibleText: !!cachedPageContent.visibleText,
   } : null);
-  console.log("[ElizaOS Runtime] cachedSelectedText:", cachedSelectedText?.substring(0, 100));
+  console.log("[TokagentOS Runtime] cachedSelectedText:", cachedSelectedText?.substring(0, 100));
   
   // Build context prefix
   let contextPrefix = "";
@@ -378,11 +378,11 @@ function buildMessageWithContext(userText: string): string {
     
     contextPrefix += `[END PAGE CONTEXT]\n\n`;
   } else {
-    console.warn("[ElizaOS Runtime] No page content available!");
+    console.warn("[TokagentOS Runtime] No page content available!");
   }
   
   const result = contextPrefix + `User message: ${userText}`;
-  console.log("[ElizaOS Runtime] Final message length:", result.length, "Context prefix length:", contextPrefix.length);
+  console.log("[TokagentOS Runtime] Final message length:", result.length, "Context prefix length:", contextPrefix.length);
   
   return result;
 }

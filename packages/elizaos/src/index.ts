@@ -1,5 +1,5 @@
 /**
- * elizaOS CLI - Public API
+ * tokagentOS CLI - Public API
  */
 
 export { create, info, upgrade, version } from "./commands/index.js";

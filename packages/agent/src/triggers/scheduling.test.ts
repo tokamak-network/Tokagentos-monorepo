@@ -1,4 +1,4 @@
-import type { UUID } from "@elizaos/core";
+import type { UUID } from "@tokagentos/core";
 import { describe, expect, it } from "vitest";
 import {
   buildTriggerConfig,

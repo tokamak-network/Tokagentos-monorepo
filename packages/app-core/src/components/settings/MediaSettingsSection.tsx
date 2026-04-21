@@ -4,7 +4,7 @@ import {
   SettingsControls,
   Switch,
   useTimeout,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useState } from "react";
 import {
   type AudioGenProvider,
@@ -61,7 +61,7 @@ export function MediaSettingsSection() {
 
   const {
     t,
-    elizaCloudConnected,
+    tokagentCloudConnected,
     companionVrmPowerMode,
     setCompanionVrmPowerMode,
     companionAnimateWhenHidden,
@@ -169,7 +169,7 @@ export function MediaSettingsSection() {
     (category: MediaCategory): boolean => {
       if (category === "voice") return true;
       const mode = getMode(category);
-      if (mode === "cloud") return elizaCloudConnected;
+      if (mode === "cloud") return tokagentCloudConnected;
 
       const provider = getProvider(category);
       const apiKeyField = getApiKeyField(category, provider);
@@ -181,7 +181,7 @@ export function MediaSettingsSection() {
       );
       return typeof value === "string" && value.length > 0;
     },
-    [getMode, getProvider, mediaConfig, elizaCloudConnected],
+    [getMode, getProvider, mediaConfig, tokagentCloudConnected],
   );
 
   if (loading) {
@@ -377,9 +377,9 @@ export function MediaSettingsSection() {
             {/* Cloud mode status */}
             {currentMode === "cloud" && (
               <CloudConnectionStatus
-                connected={elizaCloudConnected}
+                connected={tokagentCloudConnected}
                 disconnectedText={t(
-                  "elizaclouddashboard.ElizaCloudNotConnectedSettings",
+                  "tokagentclouddashboard.TokagentCloudNotConnectedSettings",
                 )}
               />
             )}
@@ -422,12 +422,12 @@ export function MediaSettingsSection() {
                         >
                           <div className="font-semibold">
                             {p.id === "cloud"
-                              ? t("providerswitcher.elizaCloud")
+                              ? t("providerswitcher.tokagentCloud")
                               : t(p.labelKey)}
                           </div>
                           <div className="text-2xs text-muted mt-0.5">
                             {p.id === "cloud"
-                              ? t("elizaclouddashboard.NoSetupNeeded")
+                              ? t("tokagentclouddashboard.NoSetupNeeded")
                               : t(p.hint)}
                           </div>
                         </Button>

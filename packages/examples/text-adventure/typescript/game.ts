@@ -1,9 +1,9 @@
 /**
- * elizaOS Adventure Game Demo
+ * tokagentOS Adventure Game Demo
  *
- * A text adventure game where an AI agent (powered by elizaOS) explores a dungeon,
+ * A text adventure game where an AI agent (powered by tokagentOS) explores a dungeon,
  * making decisions about which actions to take. Demonstrates:
- * - elizaOS runtime with plugins
+ * - tokagentOS runtime with plugins
  * - Embedded database persistence via PGLite (serverless PostgreSQL)
  * - OpenAI integration for AI decision making
  * - Custom game actions
@@ -16,7 +16,7 @@
  *   PGLITE_DATA_DIR=./adventure-db OPENAI_API_KEY=your_key bun run examples/typescript/adventure-game.ts
  */
 
-// MUST be set before any imports to suppress elizaOS logs and AI SDK warnings
+// MUST be set before any imports to suppress tokagentOS logs and AI SDK warnings
 process.env.LOG_LEVEL = process.env.LOG_LEVEL || "fatal";
 (globalThis as Record<string, unknown>).AI_SDK_LOG_WARNINGS = false;
 
@@ -28,7 +28,7 @@ import {
   createMessageMemory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
@@ -553,8 +553,8 @@ class Configuration {
 class AdventureAgent {
   private static createCharacter() {
     return createCharacter({
-      name: "Eliza the Adventurer",
-      username: "eliza_adventurer",
+      name: "Tokagent the Adventurer",
+      username: "tokagent_adventurer",
       bio: [
         "A brave AI adventurer exploring dangerous dungeons.",
         "Known for clever problem-solving and careful exploration.",
@@ -743,12 +743,12 @@ Respond with ONLY the exact action text you want to take (e.g., "go north" or "a
 
 class GameDisplay {
   static showIntro(): void {
-    clack.intro("🏰 elizaOS Adventure Game Demo");
+    clack.intro("🏰 tokagentOS Adventure Game Demo");
     console.log(`
 ╔════════════════════════════════════════════════════════════════════╗
 ║                   THE DUNGEON OF DOOM                              ║
 ╠════════════════════════════════════════════════════════════════════╣
-║  Watch as Eliza the AI Adventurer explores a dangerous dungeon!    ║
+║  Watch as Tokagent the AI Adventurer explores a dangerous dungeon!    ║
 ║                                                                    ║
 ║  The AI will:                                                      ║
 ║  • Explore rooms and collect items                                 ║
@@ -766,7 +766,7 @@ class GameDisplay {
     console.log(`\n${"═".repeat(60)}`);
     console.log(`🎮 TURN ${turnNumber}`);
     console.log(`${"─".repeat(60)}`);
-    console.log(`🤖 Eliza decides: "${action}"`);
+    console.log(`🤖 Tokagent decides: "${action}"`);
     console.log(`${"─".repeat(60)}`);
   }
 
@@ -778,9 +778,9 @@ class GameDisplay {
   static showGameOver(victory: boolean, score: number, turns: number): void {
     console.log(`\n${"═".repeat(60)}`);
     if (victory) {
-      console.log("🏆 VICTORY! Eliza has conquered the dungeon!");
+      console.log("🏆 VICTORY! Tokagent has conquered the dungeon!");
     } else {
-      console.log("💀 GAME OVER! Eliza has fallen...");
+      console.log("💀 GAME OVER! Tokagent has fallen...");
     }
     console.log(`Final Score: ${score} points in ${turns} turns`);
     console.log(`${"═".repeat(60)}\n`);
@@ -851,9 +851,9 @@ async function runInteractiveMode(): Promise<void> {
   const session = await AdventureAgent.initialize();
   const { game } = session;
 
-  console.log("\n📜 INTERACTIVE MODE: Guide Eliza through the dungeon!\n");
+  console.log("\n📜 INTERACTIVE MODE: Guide Tokagent through the dungeon!\n");
   console.log(
-    "You can type actions yourself, or type 'ai' to let Eliza decide.\n"
+    "You can type actions yourself, or type 'ai' to let Tokagent decide.\n"
   );
   const initialDescription = game.describeRoom();
   console.log(initialDescription);
@@ -877,9 +877,9 @@ async function runInteractiveMode(): Promise<void> {
     let action: string;
     if (input === "ai") {
       const spinner = clack.spinner();
-      spinner.start("Eliza is thinking...");
+      spinner.start("Tokagent is thinking...");
       action = await AdventureAgent.decideAction(session);
-      spinner.stop(`Eliza chooses: "${action}"`);
+      spinner.stop(`Tokagent chooses: "${action}"`);
     } else {
       action = input;
     }
@@ -915,12 +915,12 @@ async function main(): Promise<void> {
       {
         value: "auto",
         label: "Watch AI Play",
-        hint: "Eliza plays automatically",
+        hint: "Tokagent plays automatically",
       },
       {
         value: "interactive",
         label: "Interactive",
-        hint: "Guide Eliza or play yourself",
+        hint: "Guide Tokagent or play yourself",
       },
     ],
   });

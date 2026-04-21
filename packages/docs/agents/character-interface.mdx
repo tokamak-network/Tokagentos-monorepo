@@ -10,7 +10,7 @@ A character file is all you need to create a unique agent. Here's the minimum:
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import type { Character } from '@elizaos/core';
+import type { Character } from '@tokagentos/core';
 
 export const character: Character = {
   name: "Chef Mario",
@@ -21,7 +21,7 @@ export const character: Character = {
   </Tab>
   <Tab title="Python">
 ```python
-from elizaos import Character
+from tokagentos import Character
 
 character = Character(
 name="Chef Mario",
@@ -32,7 +32,7 @@ bio="A passionate Italian chef who loves sharing recipes and cooking tips.",
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos::parse_character;
+use tokagentos::parse_character;
 
 let character = parse_character(r#"{
     "name": "Chef Mario",
@@ -54,7 +54,7 @@ That's it. Your agent now has a name, personality, and can chat. Everything else
 
 ## Overview
 
-In elizaOS, the distinction between a **Character** and an **Agent** is fundamental:
+In tokagentOS, the distinction between a **Character** and an **Agent** is fundamental:
 
 - **Character**: A configuration object that defines an agent's personality, capabilities, and settings
 - **Agent**: A runtime instance created from a Character, with additional status tracking and lifecycle management
@@ -106,7 +106,7 @@ export const character: Character = {
   </Tab>
   <Tab title="Python">
 ```python
-from elizaos import Character
+from tokagentos import Character
 from uuid import UUID
 
 character = Character( # Required: The agent's display name
@@ -483,7 +483,7 @@ const character: Character = {
     [
       { name: "user", content: { text: "How do I create a plugin?" } },
       { name: "ExampleBot", content: { 
-        text: "Great question! Here's how to create a plugin:\n\n1. Run `elizaos create --type plugin`\n2. Define your actions in `src/actions/`\n3. Export your plugin from `src/index.ts`\n\nWant me to walk you through any of these steps?" 
+        text: "Great question! Here's how to create a plugin:\n\n1. Run `tokagentos create --type plugin`\n2. Define your actions in `src/actions/`\n3. Export your plugin from `src/index.ts`\n\nWant me to walk you through any of these steps?" 
       }},
     ],
     [
@@ -505,7 +505,7 @@ character = Character(
         [
             {"name": "user", "content": {"text": "How do I create a plugin?"}},
             {"name": "ExampleBot", "content": {
-                "text": "Great question! Here's how to create a plugin:\n\n1. Run `elizaos create --type plugin`\n2. Define your actions in `src/actions/`\n3. Export your plugin from `src/index.ts`"
+                "text": "Great question! Here's how to create a plugin:\n\n1. Run `tokagentos create --type plugin`\n2. Define your actions in `src/actions/`\n3. Export your plugin from `src/index.ts`"
             }},
         ],
     ],
@@ -646,7 +646,7 @@ let character = parse_character(&format!(r#"{{
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import type { Character } from '@elizaos/core';
+import type { Character } from '@tokagentos/core';
 
 export const character: Character = {
   name: "DevHelper",
@@ -695,7 +695,7 @@ Always suggest best practices and potential improvements.`,
   <Tab title="Python">
 ```python
 import os
-from elizaos import Character
+from tokagentos import Character
 
 character = Character(
 name="DevHelper",
@@ -735,7 +735,7 @@ secrets={
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos::parse_character;
+use tokagentos::parse_character;
 use std::env;
 
 let character_json = format!(r#"{{
@@ -775,7 +775,7 @@ let character = parse_character(&character_json)?;
 <Tabs>
   <Tab title="TypeScript">
 ```typescript
-import { AgentRuntime } from '@elizaos/core';
+import { AgentRuntime } from '@tokagentos/core';
 import { character } from './character';
 
 const runtime = new AgentRuntime({
@@ -789,7 +789,7 @@ await runtime.initialize();
   </Tab>
   <Tab title="Python">
 ```python
-from elizaos import AgentRuntime
+from tokagentos import AgentRuntime
 from character import character
 
 runtime = AgentRuntime(
@@ -803,7 +803,7 @@ await runtime.initialize()
   </Tab>
   <Tab title="Rust">
 ```rust
-use elizaos::{AgentRuntime, RuntimeOptions};
+use tokagentos::{AgentRuntime, RuntimeOptions};
 
 let runtime = AgentRuntime::new(RuntimeOptions {
 character: Some(character),

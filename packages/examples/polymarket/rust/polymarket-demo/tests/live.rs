@@ -1,5 +1,5 @@
 use anyhow::Result;
-use elizaos_plugin_polymarket::client::ClobClient;
+use tokagentos_plugin_polymarket::client::ClobClient;
 
 #[tokio::test]
 async fn live_markets_fetch_gated() -> Result<()> {

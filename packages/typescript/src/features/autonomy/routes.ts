@@ -1,5 +1,5 @@
 /**
- * Autonomy Routes for elizaOS
+ * Autonomy Routes for tokagentOS
  *
  * API routes for controlling autonomy via REST.
  */

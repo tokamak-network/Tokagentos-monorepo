@@ -62,7 +62,7 @@
  * ```
  */
 
-import type { JsonValue } from "@elizaos/core";
+import type { JsonValue } from "@tokagentos/core";
 import type { ControlType, FormControl, ValidationResult } from "./types";
 
 // ============================================================================

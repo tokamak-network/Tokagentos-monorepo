@@ -11,7 +11,7 @@ import { join, resolve } from "node:path";
 import { execFileSync } from "node:child_process";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const INSTALL_STAMP = join(ROOT, ".eliza", "plugin-dev-needs-install");
+const INSTALL_STAMP = join(ROOT, ".tokagent", "plugin-dev-needs-install");
 
 const PLUGIN_TYPESCRIPT = [
 	"plugins/plugin-sql/typescript",
@@ -44,7 +44,7 @@ if (needsInstall) {
 
 const coreDist = join(ROOT, "packages", "typescript", "dist");
 if (!existsSync(coreDist)) {
-	console.log("\n[dev] building `@elizaos/core` (no dist/)…\n");
+	console.log("\n[dev] building `@tokagentos/core` (no dist/)…\n");
 	run("bun", ["run", "build:core"]);
 }
 

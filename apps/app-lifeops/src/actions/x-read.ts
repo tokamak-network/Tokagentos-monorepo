@@ -7,18 +7,18 @@ import type {
   IAgentRuntime,
   Memory,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   ModelType,
   logger,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   LifeOpsXDm,
   LifeOpsXFeedItem,
   LifeOpsXFeedType,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { LifeOpsService, LifeOpsServiceError } from "../lifeops/service.js";
 import { hasLifeOpsAccess, messageText } from "./lifeops-google-helpers.js";
 import { recentConversationTexts as collectRecentConversationTexts } from "./life-recent-context.js";
@@ -229,7 +229,7 @@ export const xReadAction: Action = {
   ],
   description:
     "Read X/Twitter DMs, the home timeline or mentions feed, or run a recent search. " +
-    "Use this for requests like 'check my Twitter DMs', 'what's on my X timeline?', 'show me my mentions', or 'search Twitter for posts about elizaOS'. " +
+    "Use this for requests like 'check my Twitter DMs', 'what's on my X timeline?', 'show me my mentions', or 'search Twitter for posts about tokagentOS'. " +
     "Use this for retrieving content from X, not posting. Do not reply that X/Twitter access is unavailable when this action is registered and visible.",
 
   validate: async (runtime, message) => {
@@ -406,7 +406,7 @@ export const xReadAction: Action = {
     {
       name: "intent",
       description:
-        'Free-text description of the request, e.g. "check my X DMs", "show my mentions", "search X for elizaOS".',
+        'Free-text description of the request, e.g. "check my X DMs", "show my mentions", "search X for tokagentOS".',
       required: false,
       schema: { type: "string" as const },
     },
@@ -474,12 +474,12 @@ export const xReadAction: Action = {
     [
       {
         name: "{{name1}}",
-        content: { text: "Search Twitter for posts about elizaOS." },
+        content: { text: "Search Twitter for posts about tokagentOS." },
       },
       {
         name: "{{agentName}}",
         content: {
-          text: "X search (5):\n- @dev: elizaOS is shipping fast",
+          text: "X search (5):\n- @dev: tokagentOS is shipping fast",
         },
       },
     ],

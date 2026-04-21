@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
   StatusBadge,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { ChevronRight } from "lucide-react";
 import { type ReactNode, type RefCallback, useState } from "react";
 import { type CloudCompatAgent, client, type PluginInfo } from "../../api";
@@ -159,7 +159,7 @@ function ConnectorPluginCard({
   testResults,
   togglingPlugins,
 }: ConnectorPluginCardProps) {
-  const { elizaCloudConnected, setActionNotice, setState, setTab } = useApp();
+  const { tokagentCloudConnected, setActionNotice, setState, setTab } = useApp();
   const [managedDiscordBusy, setManagedDiscordBusy] = useState(false);
   const [managedDiscordAgents, setManagedDiscordAgents] = useState<
     CloudCompatAgent[]
@@ -226,7 +226,7 @@ function ConnectorPluginCard({
         provisionResponse.error ||
           t("pluginsview.ManagedDiscordGatewayProvisionFailed", {
             defaultValue:
-              "Failed to start the shared Discord gateway in Eliza Cloud.",
+              "Failed to start the shared Discord gateway in Tokagent Cloud.",
           }),
       );
     }
@@ -250,7 +250,7 @@ function ConnectorPluginCard({
     await handleOpenPluginExternalUrl(oauthResponse.data.authorizeUrl);
     setManagedDiscordPickerOpen(false);
     setActionNotice(
-      t("elizaclouddashboard.DiscordSetupContinuesInBrowser", {
+      t("tokagentclouddashboard.DiscordSetupContinuesInBrowser", {
         defaultValue: options?.gatewayDeploying
           ? "Finish Discord setup in your browser, then wait for the shared Discord gateway to finish deploying."
           : "Finish Discord setup in your browser, then return here.",
@@ -264,13 +264,13 @@ function ConnectorPluginCard({
       return;
     }
 
-    if (!elizaCloudConnected) {
+    if (!tokagentCloudConnected) {
       setState("cloudDashboardView", "billing");
       setTab("settings");
       setActionNotice(
         t("pluginsview.ManagedDiscordRequiresCloud", {
           defaultValue:
-            "Connect Eliza Cloud first, then you can use managed Discord OAuth.",
+            "Connect Tokagent Cloud first, then you can use managed Discord OAuth.",
         }),
         "info",
         5000,
@@ -335,7 +335,7 @@ function ConnectorPluginCard({
       setActionNotice(
         error instanceof Error
           ? error.message
-          : t("elizaclouddashboard.DiscordSetupFailed", {
+          : t("tokagentclouddashboard.DiscordSetupFailed", {
               defaultValue: "Failed to start Discord setup.",
             }),
         "error",
@@ -377,7 +377,7 @@ function ConnectorPluginCard({
       setActionNotice(
         error instanceof Error
           ? error.message
-          : t("elizaclouddashboard.DiscordSetupFailed", {
+          : t("tokagentclouddashboard.DiscordSetupFailed", {
               defaultValue: "Failed to start Discord setup.",
             }),
         "error",
@@ -524,24 +524,24 @@ function ConnectorPluginCard({
               >
                 {managedDiscordBusy
                   ? "..."
-                  : elizaCloudConnected
+                  : tokagentCloudConnected
                     ? t("pluginsview.UseManagedDiscord", {
                         defaultValue: "Use managed Discord",
                       })
-                    : t("pluginsview.OpenElizaCloud", {
-                        defaultValue: "Open Eliza Cloud",
+                    : t("pluginsview.OpenTokagentCloud", {
+                        defaultValue: "Open Tokagent Cloud",
                       })}
               </Button>
             }
           >
-            {elizaCloudConnected
+            {tokagentCloudConnected
               ? t("pluginsview.ManagedDiscordGatewayHintConnected", {
                   defaultValue:
                     "Prefer OAuth? Managed Discord uses a shared gateway and only works for servers owned by the linking Discord account.",
                 })
               : t("pluginsview.ManagedDiscordGatewayHint", {
                   defaultValue:
-                    "Prefer OAuth? Connect Eliza Cloud to use the shared Discord gateway instead of a local bot token.",
+                    "Prefer OAuth? Connect Tokagent Cloud to use the shared Discord gateway instead of a local bot token.",
                 })}
             {managedDiscordPickerOpen && managedDiscordAgents.length > 1 ? (
               <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">

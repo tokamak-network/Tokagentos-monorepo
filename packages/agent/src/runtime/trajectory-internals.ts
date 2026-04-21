@@ -17,8 +17,8 @@ import {
   logger as coreLogger,
   type IAgentRuntime,
   ModelType,
-} from "@elizaos/core";
-import { asRecord } from "@elizaos/shared/type-guards";
+} from "@tokagentos/core";
+import { asRecord } from "@tokagentos/shared/type-guards";
 export { asRecord };
 
 import {
@@ -788,7 +788,7 @@ export function warnRuntime(
 ): void {
   if (runtime.logger?.warn) {
     runtime.logger.warn(
-      { err, src: "eliza", subsystem: "trajectory-db" },
+      { err, src: "tokagent", subsystem: "trajectory-db" },
       message,
     );
   }
@@ -1688,13 +1688,13 @@ export function readOrchestratorTrajectoryContext(runtime: unknown):
 // ---------------------------------------------------------------------------
 
 export function resolvePreferredTrajectoryArchiveRoot(): string {
-  const explicitWorkspace = process.env.ELIZA_WORKSPACE_DIR?.trim();
+  const explicitWorkspace = process.env.TOKAGENT_WORKSPACE_DIR?.trim();
   if (explicitWorkspace) return explicitWorkspace;
 
-  const workspaceRoot = process.env.ELIZA_WORKSPACE_ROOT?.trim();
+  const workspaceRoot = process.env.TOKAGENT_WORKSPACE_ROOT?.trim();
   if (workspaceRoot) return workspaceRoot;
 
-  return path.join(os.homedir(), ".eliza", "workspace");
+  return path.join(os.homedir(), ".tokagent", "workspace");
 }
 
 export async function ensureArchiveDirectory(dir: string): Promise<void> {
@@ -1712,7 +1712,7 @@ export async function resolveTrajectoryArchiveDirectory(): Promise<string> {
   } catch {
     const fallback = path.join(
       process.env.TMPDIR || os.tmpdir(),
-      "eliza",
+      "tokagent",
       TRAJECTORY_ARCHIVE_DIRNAME,
     );
     await ensureArchiveDirectory(fallback);
@@ -1752,11 +1752,11 @@ export async function writeCompressedJsonlRows(
  * Trajectory persistence is unconditionally on. The only paths that disable it:
  *
  *   1. `NODE_ENV === "test"` — keeps the test runner free of background DB writes.
- *   2. `ELIZA_DISABLE_TRAJECTORY_LOGGING=1` — explicit operator opt-out.
+ *   2. `TOKAGENT_DISABLE_TRAJECTORY_LOGGING=1` — explicit operator opt-out.
  *
  * We deliberately stopped honoring the legacy `ENABLE_TRAJECTORIES`,
- * `ELIZA_TRAJECTORY_LOGGING`, `TRAJECTORY_LOGGING_ENABLED`, and
- * `ELIZA_CLOUD_PROVISIONED` knobs: each represented a different historical
+ * `TOKAGENT_TRAJECTORY_LOGGING`, `TRAJECTORY_LOGGING_ENABLED`, and
+ * `TOKAGENT_CLOUD_PROVISIONED` knobs: each represented a different historical
  * attempt to gate persistence, and shipping multiple opt-in paths produced
  * silent gaps where debugging and training data went missing. One opt-out,
  * otherwise on.
@@ -1765,6 +1765,6 @@ export function shouldEnableTrajectoryLoggingByDefault(
   env: NodeJS.ProcessEnv = process.env,
 ): boolean {
   if (env.NODE_ENV === "test") return false;
-  if (env.ELIZA_DISABLE_TRAJECTORY_LOGGING === "1") return false;
+  if (env.TOKAGENT_DISABLE_TRAJECTORY_LOGGING === "1") return false;
   return true;
 }

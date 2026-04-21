@@ -1,6 +1,6 @@
 /**
  * Client-side helpers for the local-inference endpoints. Mirrors the
- * structure used by `client-computeruse.ts`: augments `ElizaClient` via
+ * structure used by `client-computeruse.ts`: augments `TokagentClient` via
  * declaration merging so callers get typed methods without reaching into
  * raw `fetch` from UI code.
  */
@@ -24,7 +24,7 @@ import type {
   ModelHubSnapshot,
 } from "../services/local-inference/types";
 import type { VerifyResult } from "../services/local-inference/verify";
-import { ElizaClient } from "./client-base";
+import { TokagentClient } from "./client-base";
 
 export type {
   ActiveModelState,
@@ -45,7 +45,7 @@ export type {
 };
 
 declare module "./client-base" {
-  interface ElizaClient {
+  interface TokagentClient {
     getLocalInferenceHub(): Promise<ModelHubSnapshot>;
     getLocalInferenceHardware(): Promise<HardwareProbe>;
     getLocalInferenceCatalog(): Promise<{ models: CatalogModel[] }>;
@@ -89,32 +89,32 @@ declare module "./client-base" {
   }
 }
 
-ElizaClient.prototype.getLocalInferenceHub = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceHub = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/hub");
 };
 
-ElizaClient.prototype.getLocalInferenceHardware = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceHardware = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/hardware");
 };
 
-ElizaClient.prototype.getLocalInferenceCatalog = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceCatalog = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/catalog");
 };
 
-ElizaClient.prototype.getLocalInferenceInstalled = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceInstalled = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/installed");
 };
 
-ElizaClient.prototype.startLocalInferenceDownload = async function (
-  this: ElizaClient,
+TokagentClient.prototype.startLocalInferenceDownload = async function (
+  this: TokagentClient,
   modelIdOrSpec: string | CatalogModel,
 ) {
   const body =
@@ -127,8 +127,8 @@ ElizaClient.prototype.startLocalInferenceDownload = async function (
   });
 };
 
-ElizaClient.prototype.searchHuggingFaceGguf = async function (
-  this: ElizaClient,
+TokagentClient.prototype.searchHuggingFaceGguf = async function (
+  this: TokagentClient,
   query: string,
   limit?: number,
 ) {
@@ -137,8 +137,8 @@ ElizaClient.prototype.searchHuggingFaceGguf = async function (
   return this.fetch(`/api/local-inference/hf-search?${params.toString()}`);
 };
 
-ElizaClient.prototype.cancelLocalInferenceDownload = async function (
-  this: ElizaClient,
+TokagentClient.prototype.cancelLocalInferenceDownload = async function (
+  this: TokagentClient,
   modelId: string,
 ) {
   return this.fetch(
@@ -147,14 +147,14 @@ ElizaClient.prototype.cancelLocalInferenceDownload = async function (
   );
 };
 
-ElizaClient.prototype.getLocalInferenceActive = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceActive = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/active");
 };
 
-ElizaClient.prototype.setLocalInferenceActive = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setLocalInferenceActive = async function (
+  this: TokagentClient,
   modelId: string,
 ) {
   return this.fetch("/api/local-inference/active", {
@@ -163,16 +163,16 @@ ElizaClient.prototype.setLocalInferenceActive = async function (
   });
 };
 
-ElizaClient.prototype.clearLocalInferenceActive = async function (
-  this: ElizaClient,
+TokagentClient.prototype.clearLocalInferenceActive = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/active", {
     method: "DELETE",
   });
 };
 
-ElizaClient.prototype.uninstallLocalInferenceModel = async function (
-  this: ElizaClient,
+TokagentClient.prototype.uninstallLocalInferenceModel = async function (
+  this: TokagentClient,
   id: string,
 ) {
   return this.fetch(
@@ -181,20 +181,20 @@ ElizaClient.prototype.uninstallLocalInferenceModel = async function (
   );
 };
 
-ElizaClient.prototype.getLocalInferenceDeviceStatus = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceDeviceStatus = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/device");
 };
 
-ElizaClient.prototype.getLocalInferenceAssignments = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceAssignments = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/assignments");
 };
 
-ElizaClient.prototype.setLocalInferenceAssignment = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setLocalInferenceAssignment = async function (
+  this: TokagentClient,
   slot: AgentModelSlot,
   modelId: string | null,
 ) {
@@ -204,8 +204,8 @@ ElizaClient.prototype.setLocalInferenceAssignment = async function (
   });
 };
 
-ElizaClient.prototype.verifyLocalInferenceModel = async function (
-  this: ElizaClient,
+TokagentClient.prototype.verifyLocalInferenceModel = async function (
+  this: TokagentClient,
   id: string,
 ) {
   return this.fetch(
@@ -214,14 +214,14 @@ ElizaClient.prototype.verifyLocalInferenceModel = async function (
   );
 };
 
-ElizaClient.prototype.getLocalInferenceRouting = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceRouting = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/routing");
 };
 
-ElizaClient.prototype.setLocalInferencePreferredProvider = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setLocalInferencePreferredProvider = async function (
+  this: TokagentClient,
   slot: AgentModelSlot,
   provider: string | null,
 ) {
@@ -231,8 +231,8 @@ ElizaClient.prototype.setLocalInferencePreferredProvider = async function (
   });
 };
 
-ElizaClient.prototype.setLocalInferencePolicy = async function (
-  this: ElizaClient,
+TokagentClient.prototype.setLocalInferencePolicy = async function (
+  this: TokagentClient,
   slot: AgentModelSlot,
   policy: RoutingPolicy | null,
 ) {
@@ -242,8 +242,8 @@ ElizaClient.prototype.setLocalInferencePolicy = async function (
   });
 };
 
-ElizaClient.prototype.getLocalInferenceProviders = async function (
-  this: ElizaClient,
+TokagentClient.prototype.getLocalInferenceProviders = async function (
+  this: TokagentClient,
 ) {
   return this.fetch("/api/local-inference/providers");
 };

@@ -22,17 +22,17 @@ if (!pluginPath) {
 
 const INCLUDE_DETAILS =
   ["1", "true", "yes", "on"].includes(
-    String(process.env.ELIZA_INTEROP_DEBUG ?? process.env.LOG_DIAGNOSTIC ?? "")
+    String(process.env.TOKAGENT_INTEROP_DEBUG ?? process.env.LOG_DIAGNOSTIC ?? "")
       .trim()
       .toLowerCase(),
   ) || false;
 
 const MAX_MESSAGE_BYTES = Number.parseInt(
-  String(process.env.ELIZA_INTEROP_MAX_MESSAGE_BYTES ?? "1000000"),
+  String(process.env.TOKAGENT_INTEROP_MAX_MESSAGE_BYTES ?? "1000000"),
   10,
 );
 const MAX_BUFFER_BYTES = Number.parseInt(
-  String(process.env.ELIZA_INTEROP_MAX_BUFFER_BYTES ?? "2000000"),
+  String(process.env.TOKAGENT_INTEROP_MAX_BUFFER_BYTES ?? "2000000"),
   10,
 );
 

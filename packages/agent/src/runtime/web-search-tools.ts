@@ -10,18 +10,18 @@
  * is Anthropic and no tools are already present.
  *
  * Controlled by:
- *   ELIZA_WEB_SEARCH=0|false|off  — disable (default: enabled)
+ *   TOKAGENT_WEB_SEARCH=0|false|off  — disable (default: enabled)
  */
 
-import type { AgentRuntime } from "@elizaos/core";
-import { logger, ModelType } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
+import { logger, ModelType } from "@tokagentos/core";
 
 // ---------------------------------------------------------------------------
 // Env gate (opt-out, enabled by default)
 // ---------------------------------------------------------------------------
 
-const ELIZA_WEB_SEARCH_ENABLED = (() => {
-  const raw = process.env.ELIZA_WEB_SEARCH?.toLowerCase();
+const TOKAGENT_WEB_SEARCH_ENABLED = (() => {
+  const raw = process.env.TOKAGENT_WEB_SEARCH?.toLowerCase();
   if (raw === "0" || raw === "false" || raw === "off") return false;
   return true;
 })();
@@ -144,8 +144,8 @@ function patchAiSdk(webSearchTool: unknown): void {
  * Call after plugins are registered and prompt optimizations installed.
  */
 export function installAnthropicWebSearch(runtime: AgentRuntime): void {
-  if (!ELIZA_WEB_SEARCH_ENABLED) {
-    logger.info("[web-search] Disabled via ELIZA_WEB_SEARCH env var");
+  if (!TOKAGENT_WEB_SEARCH_ENABLED) {
+    logger.info("[web-search] Disabled via TOKAGENT_WEB_SEARCH env var");
     return;
   }
 

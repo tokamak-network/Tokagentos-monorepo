@@ -34,23 +34,23 @@ describe("Integration: X DM inbound", () => {
 
   beforeEach(async () => {
     oauthDir = await mkdtemp(path.join(os.tmpdir(), "lifeops-x-dm-inbound-"));
-    prevOAuthDir = process.env.ELIZA_OAUTH_DIR;
-    prevStateDir = process.env.ELIZA_STATE_DIR;
-    prevDisableProactive = process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
-    process.env.ELIZA_OAUTH_DIR = oauthDir;
-    process.env.ELIZA_STATE_DIR = path.join(oauthDir, "state");
-    await mkdir(process.env.ELIZA_STATE_DIR, { recursive: true });
-    process.env.ELIZA_DISABLE_PROACTIVE_AGENT = "1";
+    prevOAuthDir = process.env.TOKAGENT_OAUTH_DIR;
+    prevStateDir = process.env.TOKAGENT_STATE_DIR;
+    prevDisableProactive = process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
+    process.env.TOKAGENT_OAUTH_DIR = oauthDir;
+    process.env.TOKAGENT_STATE_DIR = path.join(oauthDir, "state");
+    await mkdir(process.env.TOKAGENT_STATE_DIR, { recursive: true });
+    process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = "1";
   });
 
   afterEach(async () => {
     if (runtime) { await runtime.cleanup(); runtime = undefined; }
-    if (prevOAuthDir === undefined) delete process.env.ELIZA_OAUTH_DIR;
-    else process.env.ELIZA_OAUTH_DIR = prevOAuthDir;
-    if (prevStateDir === undefined) delete process.env.ELIZA_STATE_DIR;
-    else process.env.ELIZA_STATE_DIR = prevStateDir;
-    if (prevDisableProactive === undefined) delete process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
-    else process.env.ELIZA_DISABLE_PROACTIVE_AGENT = prevDisableProactive;
+    if (prevOAuthDir === undefined) delete process.env.TOKAGENT_OAUTH_DIR;
+    else process.env.TOKAGENT_OAUTH_DIR = prevOAuthDir;
+    if (prevStateDir === undefined) delete process.env.TOKAGENT_STATE_DIR;
+    else process.env.TOKAGENT_STATE_DIR = prevStateDir;
+    if (prevDisableProactive === undefined) delete process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
+    else process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = prevDisableProactive;
     await rm(oauthDir, { recursive: true, force: true });
   });
 

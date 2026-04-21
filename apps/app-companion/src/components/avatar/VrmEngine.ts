@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-import { resolveAppAssetUrl } from "@elizaos/app-core";
+import { resolveAppAssetUrl } from "@tokagentos/app-core";
 import {
   MToonMaterialLoaderPlugin,
   type VRM,
@@ -155,7 +155,7 @@ const TELEPORT_DISSOLVE_END_Y = 1.0;
 const COMPANION_ZOOM_NEAR_FACTOR = 0.25;
 const COMPANION_ZOOM_MIN_RADIUS = 1.2;
 const MAX_RENDERER_PIXEL_RATIO = 2;
-const AVATAR_RENDERER_OVERRIDE_KEY = "eliza.avatarRenderer";
+const AVATAR_RENDERER_OVERRIDE_KEY = "tokagent.avatarRenderer";
 const KNOWN_VRM_WEBGPU_WARNING =
   'TSL: "transformedNormalView" is deprecated. Use "normalView" instead.';
 
@@ -1796,7 +1796,7 @@ export class VrmEngine {
         // Teleport animation failed (e.g. WebGPU unavailable) — still notify
         // the app so companion UI (header, chat) becomes visible.
         if (typeof window !== "undefined") {
-          window.dispatchEvent(new CustomEvent("eliza:vrm-teleport-complete"));
+          window.dispatchEvent(new CustomEvent("tokagent:vrm-teleport-complete"));
         }
       }
     }
@@ -2265,7 +2265,7 @@ ${isOutgoing ? "if (teleportNoise >= teleportRatio) discard;" : "if (teleportNoi
           // Notify the app that the teleport-in animation has finished
           if (typeof window !== "undefined") {
             window.dispatchEvent(
-              new CustomEvent("eliza:vrm-teleport-complete"),
+              new CustomEvent("tokagent:vrm-teleport-complete"),
             );
           }
         }

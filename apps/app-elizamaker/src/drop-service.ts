@@ -1,5 +1,5 @@
 /**
- * ElizaMaker drop/mint service.
+ * TokagentMaker drop/mint service.
  *
  * Handles the ERC-8041 fixed-supply collection minting:
  * - Public free mint (user pays gas)
@@ -8,12 +8,12 @@
  * - Supply tracking and status
  */
 
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { ethers } from "ethers";
-import type { DropStatus, MintResult } from "@elizaos/agent/contracts/drop";
+import type { DropStatus, MintResult } from "@tokagentos/agent/contracts/drop";
 import type { TxService } from "@elizaos/app-steward/api/tx-service";
 
-export type { DropStatus, MintResult } from "@elizaos/agent/contracts/drop";
+export type { DropStatus, MintResult } from "@tokagentos/agent/contracts/drop";
 
 // ── ABI ──────────────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ const COLLECTION_ABI = [
   "event CollectionUpdated(uint256 maxSupply, uint256 currentSupply, bool publicOpen, bool whitelistOpen)",
 ] as const;
 
-const DEFAULT_CAP_HASH = ethers.id("eliza-agent");
+const DEFAULT_CAP_HASH = ethers.id("tokagent-agent");
 
 // ── Service ──────────────────────────────────────────────────────────────
 

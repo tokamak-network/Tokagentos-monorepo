@@ -1,5 +1,5 @@
-"""Allow running elizaos-app as a Python module: python -m elizaos_app"""
+"""Allow running tokagentos-app as a Python module: python -m tokagentos_app"""
 
-from elizaos_app.cli import main
+from tokagentos_app.cli import main
 
 main()

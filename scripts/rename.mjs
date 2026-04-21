@@ -19,7 +19,9 @@ const SKIP_DIRS = new Set([
 	'node_modules', 'dist', '.turbo', 'target', 'build', '.next',
 	'.git', 'plugins',
 ]);
-const SKIP_FILES = new Set(['LICENSE', 'bun.lock', 'package-lock.json']);
+// rename.mjs itself MUST skip its own filename — otherwise it rewrites
+// its own source during a full-tree pass and subsequent runs break.
+const SKIP_FILES = new Set(['LICENSE', 'bun.lock', 'package-lock.json', 'rename.mjs']);
 const BINARY_EXTS = new Set([
 	'.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.pdf', '.zip',
 	'.tar', '.gz', '.wasm', '.so', '.dylib', '.dll', '.lock',
@@ -65,6 +67,14 @@ export function substitute(input, allowlist) {
 	// package ref starting with `@elizaos/` — those are handled above and
 	// must preserve the original scope for non-allowlisted plugin packages.
 	out = out.replace(/(?<!@)elizaos/g, 'tokagentos');
+	// Bare 'eliza'/'Eliza'/'ELIZA' — after the *os variants are already
+	// handled above, these are safe to rewrite. Covers ELIZA_* env vars,
+	// .eliza/ config dirs, .elizadb paths, ElizaConfig typedefs.
+	// Skip anything preceded by `@` (npm scopes like @elizaos/plugin-*
+	// where the `os` suffix preserved the scope — must not be re-entered).
+	out = out.replace(/(?<!@)ELIZA/g, 'TOKAGENT');
+	out = out.replace(/(?<!@)Eliza/g, 'Tokagent');
+	out = out.replace(/(?<!@)eliza/g, 'tokagent');
 	return out;
 }
 
@@ -112,6 +122,11 @@ function selfTest() {
 	expect('@elizaos/core allowlisted', substitute('@elizaos/core', allow), '@tokagentos/core');
 	expect('@elizaos/client allowlisted', substitute('@elizaos/client', allow), '@tokagentos/client');
 	expect('@elizaos/plugin-x not allowlisted', substitute('@elizaos/plugin-anthropic', allow), '@elizaos/plugin-anthropic');
+	expect('bare eliza', substitute('eliza', allow), 'tokagent');
+	expect('.elizadb path', substitute('.elizadb', allow), '.tokagentdb');
+	expect('.eliza/ config dir', substitute('.eliza/config', allow), '.tokagent/config');
+	expect('ELIZA_ env var', substitute('ELIZA_CONFIG', allow), 'TOKAGENT_CONFIG');
+	expect('ElizaConfig typedef', substitute('ElizaConfig', allow), 'TokagentConfig');
 
 	// shouldSkipPath
 	expect('plugins skipped', shouldSkipPath('plugins/plugin-anthropic/src/index.ts'), true);

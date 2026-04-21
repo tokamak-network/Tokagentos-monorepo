@@ -2,7 +2,7 @@ import type { AppConfig, ChatMessage, ProviderMode } from "./types";
 
 declare global {
   interface Window {
-    elizaChat: {
+    tokagentChat: {
       getGreeting: (config?: AppConfig) => Promise<string>;
       getHistory: (config?: AppConfig) => Promise<ChatMessage[]>;
       reset: (config?: AppConfig) => Promise<void>;

@@ -195,7 +195,7 @@ function main() {
 
   const tempRoot = path.join(
     process.env.RUNNER_TEMP ?? os.tmpdir(),
-    `eliza-electrobun-src-${electrobunVersion}`,
+    `tokagent-electrobun-src-${electrobunVersion}`,
   );
   rmSync(tempRoot, { recursive: true, force: true });
 

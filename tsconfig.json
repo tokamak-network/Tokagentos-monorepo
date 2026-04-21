@@ -18,12 +18,12 @@
     "strict": true,
     "jsx": "react-jsx",
     "paths": {
-      "@elizaos/ui": ["./packages/ui/src/index.ts"],
-      "@elizaos/ui/*": ["./packages/ui/src/*"],
-      "@elizaos/core": ["./packages/typescript/src/index.node.ts"],
-      "@elizaos/core/*": ["./packages/typescript/src/*"],
-      "@elizaos/shared": ["./packages/shared/src/index.ts"],
-      "@elizaos/shared/*": ["./packages/shared/src/*"]
+      "@tokagentos/ui": ["./packages/ui/src/index.ts"],
+      "@tokagentos/ui/*": ["./packages/ui/src/*"],
+      "@tokagentos/core": ["./packages/typescript/src/index.node.ts"],
+      "@tokagentos/core/*": ["./packages/typescript/src/*"],
+      "@tokagentos/shared": ["./packages/shared/src/index.ts"],
+      "@tokagentos/shared/*": ["./packages/shared/src/*"]
     }
   },
   "exclude": [
@@ -47,7 +47,7 @@
     "examples/next/**",
     "examples/farcaster-miniapp/**",
     "packages/python/**",
-    "packages/elizaos/examples/**",
+    "packages/tokagentos/examples/**",
     "plugins/plugin-lp-manager/**",
     "plugins/plugin-local-ai/**",
     "plugins/plugin-vision/**",

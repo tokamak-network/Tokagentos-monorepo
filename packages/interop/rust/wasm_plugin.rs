@@ -1,4 +1,4 @@
-//! WASM Plugin Bindings for elizaOS
+//! WASM Plugin Bindings for tokagentOS
 //!
 //! This module provides WASM-specific bindings for creating plugins that can be
 //! loaded by the TypeScript runtime.
@@ -6,8 +6,8 @@
 //! # Example
 //!
 //! ```rust,ignore
-//! use elizaos::interop::wasm_plugin::*;
-//! use elizaos::types::*;
+//! use tokagentos::interop::wasm_plugin::*;
+//! use tokagentos::types::*;
 //!
 //! // Define your plugin
 //! struct MyPlugin;
@@ -29,7 +29,7 @@
 //! }
 //!
 //! // Export the plugin
-//! elizaos_wasm_plugin!(MyPlugin::new());
+//! tokagentos_wasm_plugin!(MyPlugin::new());
 //! ```
 
 #![cfg(feature = "wasm")]
@@ -308,7 +308,7 @@ pub fn dealloc(ptr: *mut u8, size: usize) {
 /// This macro should be called in your plugin's lib.rs to make it loadable
 /// from the TypeScript runtime via WASM.
 #[macro_export]
-macro_rules! elizaos_wasm_plugin {
+macro_rules! tokagentos_wasm_plugin {
     ($plugin:expr) => {
         #[wasm_bindgen(start)]
         pub fn wasm_plugin_init() {

@@ -346,7 +346,7 @@ function evaluatePreflight(params: {
     .filter((channel) => !preflight.availableChannels.includes(channel))
     .map((channel) => ({
       channel,
-      reason: `Channel ${channel} is not configured or not currently available in Eliza.`,
+      reason: `Channel ${channel} is not configured or not currently available in Tokagent.`,
     }));
 
   const runnableFrameworks = ["codex", "claude"].filter(
@@ -355,7 +355,7 @@ function evaluatePreflight(params: {
   );
   const hardBlockers: EvaluatedPreflightIssue[] = [];
 
-  const apiCheck = getCheck(preflight, "eliza-api");
+  const apiCheck = getCheck(preflight, "tokagent-api");
   if (apiCheck?.status === "fail") {
     hardBlockers.push({
       id: apiCheck.id,

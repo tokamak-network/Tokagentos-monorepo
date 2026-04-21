@@ -98,9 +98,9 @@ const translations: Record<string, string> = {
   "onboarding.setupTokenInstructions":
     'How to get your setup token:\n\n• Option A: Run  claude setup-token  in your terminal\n\n• Option B: Go to claude.ai/settings/api → "Claude Code" → "Use setup token"',
   "subscriptionstatus.ClaudeTosWarning":
-    "Claude subscriptions can only be used through the Claude Code CLI (Anthropic TOS). Your subscription will power task agents but not the main agent runtime. For the main agent, use Eliza Cloud, a direct Anthropic API key, or another provider.",
+    "Claude subscriptions can only be used through the Claude Code CLI (Anthropic TOS). Your subscription will power task agents but not the main agent runtime. For the main agent, use Tokagent Cloud, a direct Anthropic API key, or another provider.",
   "subscriptionstatus.ClaudeTosWarningShort":
-    "Powers task agents only (Claude Code CLI). For the main agent runtime, connect Eliza Cloud or a direct API key.",
+    "Powers task agents only (Claude Code CLI). For the main agent runtime, connect Tokagent Cloud or a direct API key.",
 };
 
 function t(key: string, options?: { defaultValue?: string }): string {
@@ -117,11 +117,11 @@ function buildAppState(
     onboardingCloudApiKey: "",
     onboardingApiKey: "",
     onboardingPrimaryModel: "",
-    onboardingElizaCloudTab: "login",
+    onboardingTokagentCloudTab: "login",
     onboardingOpenRouterModel: "",
-    elizaCloudConnected: false,
-    elizaCloudLoginBusy: false,
-    elizaCloudLoginError: "",
+    tokagentCloudConnected: false,
+    tokagentCloudLoginBusy: false,
+    tokagentCloudLoginError: "",
     handleCloudLogin: vi.fn(),
     handleOnboardingNext: vi.fn(),
     setState: vi.fn(),

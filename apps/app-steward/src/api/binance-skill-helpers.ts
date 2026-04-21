@@ -5,7 +5,7 @@
  * (meme-rush, trading-signal, token-info, etc.) and fallback action parsing.
  */
 
-import { extractCompatTextContent } from "@elizaos/agent/api/compat-utils";
+import { extractCompatTextContent } from "@tokagentos/agent/api/compat-utils";
 import {
   type Action,
   type ActionParameters,
@@ -13,7 +13,7 @@ import {
   type Content,
   type createMessageMemory,
   ModelType,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 const EXPOSED_BINANCE_SKILL_IDS = new Set([
   "binance-crypto-market-rank",
@@ -905,11 +905,11 @@ async function summarizeDirectBinanceSkillResult(
   } catch (err) {
     runtime.logger?.warn(
       {
-        src: "eliza-api",
+        src: "tokagent-api",
         skillSlug,
         error: err instanceof Error ? err.message : String(err),
       },
-      "[eliza-api] Binance skill summarization failed; falling back to raw output",
+      "[tokagent-api] Binance skill summarization failed; falling back to raw output",
     );
     return rawText;
   }
@@ -986,13 +986,13 @@ export async function maybeHandleDirectBinanceSkillRequest(
     let directRunText = "";
     runtime.logger?.info(
       {
-        src: "eliza-api",
+        src: "tokagent-api",
         action: "USE_SKILL",
         skillSlug,
         script: command.script,
         args: command.args,
       },
-      `[eliza-api] Direct Binance script dispatch: ${skillSlug}/${command.script}`,
+      `[tokagent-api] Direct Binance script dispatch: ${skillSlug}/${command.script}`,
     );
     const runResult = await Promise.resolve(
       useSkillAction.handler(

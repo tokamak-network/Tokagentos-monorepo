@@ -6,8 +6,8 @@ import json
 import logging
 from pathlib import Path
 
-from elizaos_adhdbench.config import ADHDBenchConfig
-from elizaos_adhdbench.types import BenchmarkResults, ScalingCurvePoint
+from tokagentos_adhdbench.config import ADHDBenchConfig
+from tokagentos_adhdbench.types import BenchmarkResults, ScalingCurvePoint
 
 logger = logging.getLogger("adhdbench")
 

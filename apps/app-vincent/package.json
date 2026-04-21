@@ -13,10 +13,10 @@
     "./*": "./src/*"
   },
   "dependencies": {
-    "@elizaos/core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
     "lucide-react": "^1.0.0"
   },
-  "elizaos": {
+  "tokagentos": {
     "app": {
       "heroImage": "assets/hero.png"
     }

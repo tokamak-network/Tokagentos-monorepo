@@ -24,8 +24,8 @@ import {
   logger,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+} from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import type { ChatGenerationResult, LogEntry } from "./chat-routes.js";
 import {
@@ -94,7 +94,7 @@ function _readDeletedConversationIdsFromState(): Set<string> {
     );
   } catch (err) {
     logger.warn(
-      `[eliza-api] Failed to read deleted conversations state: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent-api] Failed to read deleted conversations state: ${err instanceof Error ? err.message : String(err)}`,
     );
     return new Set();
   }
@@ -130,7 +130,7 @@ function persistDeletedConversationIdsToState(ids: Set<string>): void {
 
 export interface ConversationRouteState {
   runtime: AgentRuntime | null;
-  config: ElizaConfig;
+  config: TokagentConfig;
   agentName: string;
   adminEntityId: UUID | null;
   chatUserId: UUID | null;
@@ -328,7 +328,7 @@ async function ensureConversationRoom(
 ): Promise<void> {
   if (!state.runtime) return;
   const runtime = state.runtime;
-  const agentName = runtime.character.name ?? "Eliza";
+  const agentName = runtime.character.name ?? "Tokagent";
   const userId = ensureAdminEntityId(state);
   const worldId = stringToUuid(`${agentName}-web-chat-world`);
   const messageServerId = stringToUuid(`${agentName}-web-server`) as UUID;
@@ -617,7 +617,7 @@ async function ensureConversationGreetingStored(
   persisted: boolean;
 }> {
   const runtime = state.runtime;
-  const agentName = runtime?.character.name ?? state.agentName ?? "Eliza";
+  const agentName = runtime?.character.name ?? state.agentName ?? "Tokagent";
   if (!runtime) {
     return {
       text: "",

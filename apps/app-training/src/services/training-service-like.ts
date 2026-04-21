@@ -1,7 +1,7 @@
 import type {
   Trajectory,
   TrajectoryListResult,
-} from "@elizaos/agent/types/trajectory";
+} from "@tokagentos/agent/types/trajectory";
 
 export interface TrainingServiceLike {
   getStatus(): Record<string, unknown>;

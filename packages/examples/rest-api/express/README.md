@@ -1,11 +1,11 @@
-# elizaOS REST API - Express.js
+# tokagentOS REST API - Express.js
 
-A simple REST API server for chatting with an elizaOS agent using Express.js.
+A simple REST API server for chatting with an tokagentOS agent using Express.js.
 
 **No API keys or external services required!** Uses:
 
 - `plugin-localdb` for local JSON-based storage
-- `plugin-eliza-classic` for pattern-matching responses (no LLM needed)
+- `plugin-tokagent-classic` for pattern-matching responses (no LLM needed)
 
 ## Quick Start
 
@@ -52,7 +52,7 @@ Response:
 ```json
 {
   "response": "How do you do. Please state your problem.",
-  "character": "Eliza",
+  "character": "Tokagent",
   "userId": "generated-uuid"
 }
 ```

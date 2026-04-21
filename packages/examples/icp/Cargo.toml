@@ -1,5 +1,5 @@
 [workspace]
-members = ["src/eliza_icp_backend"]
+members = ["src/tokagent_icp_backend"]
 resolver = "2"
 
 [profile.release]

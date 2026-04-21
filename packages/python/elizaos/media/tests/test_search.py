@@ -1,6 +1,6 @@
 """Tests for hybrid search utilities."""
 
-from elizaos.media.search import (
+from tokagentos.media.search import (
     HybridKeywordResult,
     HybridVectorResult,
     bm25_rank_to_score,

@@ -4,7 +4,7 @@ Blackjack strategy implementations.
 
 from __future__ import annotations
 
-from elizaos_atropos_blackjack.types import BlackjackAction, BlackjackState
+from tokagentos_atropos_blackjack.types import BlackjackAction, BlackjackState
 
 
 class BasicStrategy:

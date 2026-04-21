@@ -1,6 +1,6 @@
 /**
  * Opt-in verbose logging for settings load / change / save flows.
- * Enable with ELIZA_SETTINGS_DEBUG=1 (and Vite: same env at build time, or VITE_ELIZA_SETTINGS_DEBUG=1).
+ * Enable with TOKAGENT_SETTINGS_DEBUG=1 (and Vite: same env at build time, or VITE_TOKAGENT_SETTINGS_DEBUG=1).
  */
 
 import { isTruthyEnvValue } from "./env-utils.impl.js";
@@ -16,7 +16,7 @@ const MAX_STRING = 120;
 /**
  * True when settings debug is enabled (Node: process.env; browser: import.meta.env from Vite define).
  */
-export function isElizaSettingsDebugEnabled(options?: {
+export function isTokagentSettingsDebugEnabled(options?: {
   /** Node / Bun process.env */
   env?: Record<string, string | undefined> | null;
   /** Vite `import.meta.env` (pass only in browser bundles). */
@@ -24,19 +24,19 @@ export function isElizaSettingsDebugEnabled(options?: {
 }): boolean {
   const im = options?.importMetaEnv;
   if (im) {
-    if (isTruthyEnvValue(String(im.ELIZA_SETTINGS_DEBUG ?? "").trim()))
+    if (isTruthyEnvValue(String(im.TOKAGENT_SETTINGS_DEBUG ?? "").trim()))
       return true;
-    if (isTruthyEnvValue(String(im.VITE_ELIZA_SETTINGS_DEBUG ?? "").trim()))
+    if (isTruthyEnvValue(String(im.VITE_TOKAGENT_SETTINGS_DEBUG ?? "").trim()))
       return true;
   }
   const e = options?.env;
   if (e) {
-    if (isTruthyEnvValue(e.ELIZA_SETTINGS_DEBUG)) return true;
-    if (isTruthyEnvValue(e.VITE_ELIZA_SETTINGS_DEBUG)) return true;
+    if (isTruthyEnvValue(e.TOKAGENT_SETTINGS_DEBUG)) return true;
+    if (isTruthyEnvValue(e.VITE_TOKAGENT_SETTINGS_DEBUG)) return true;
   }
   if (typeof process !== "undefined" && process.env) {
-    if (isTruthyEnvValue(process.env.ELIZA_SETTINGS_DEBUG)) return true;
-    if (isTruthyEnvValue(process.env.VITE_ELIZA_SETTINGS_DEBUG)) return true;
+    if (isTruthyEnvValue(process.env.TOKAGENT_SETTINGS_DEBUG)) return true;
+    if (isTruthyEnvValue(process.env.VITE_TOKAGENT_SETTINGS_DEBUG)) return true;
   }
   return false;
 }

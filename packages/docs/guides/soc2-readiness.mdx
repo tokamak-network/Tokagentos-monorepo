@@ -1,23 +1,23 @@
 ---
 title: SOC 2 Readiness (Library/SDK)
-description: Security, privacy, and operational guidance for using elizaOS packages in SOC 2–scoped systems.
+description: Security, privacy, and operational guidance for using tokagentOS packages in SOC 2–scoped systems.
 ---
 
 ## What this document is (and is not)
 
 SOC 2 is an **organization-level attestation** covering people, process, and technology. This repository (as an OSS library/SDK) cannot be “SOC 2 compliant” by itself.
 
-This guide documents **SOC 2–aligned engineering defaults** and **operator guidance** for downstream teams building a SOC 2–scoped service on top of elizaOS packages.
+This guide documents **SOC 2–aligned engineering defaults** and **operator guidance** for downstream teams building a SOC 2–scoped service on top of tokagentOS packages.
 
 ## System boundary (OSS library scope)
 
 Within this repository, the SOC 2–relevant components are the runtimes and interoperability layers:
 
-- `packages/typescript` (`@elizaos/core`)
-- `packages/python` (`elizaos`)
-- `packages/rust` (`elizaos`)
-- `packages/interop` (`@elizaos/interop` + Python/Rust helpers)
-- `packages/prompts` (`@elizaos/prompts`)
+- `packages/typescript` (`@tokagentos/core`)
+- `packages/python` (`tokagentos`)
+- `packages/rust` (`tokagentos`)
+- `packages/interop` (`@tokagentos/interop` + Python/Rust helpers)
+- `packages/prompts` (`@tokagentos/prompts`)
 
 Anything outside these packages (your deployment, infrastructure, access controls, monitoring, incident response, vendor management) is **owned by the operator**.
 
@@ -61,7 +61,7 @@ This is a practical mapping of what the codebase helps with vs what operators mu
 ### Security (CC series)
 
 - **Codebase support**
-  - Redaction-first logging in TypeScript core (`packages/typescript/src/logger.ts`) and Python core (`packages/python/elizaos/logger.py`).
+  - Redaction-first logging in TypeScript core (`packages/typescript/src/logger.ts`) and Python core (`packages/python/tokagentos/logger.py`).
   - Secret encryption for stored settings/secrets with authenticated encryption (v2 AES-GCM) and legacy read support.
   - Interop limits and safer defaults (message size limits, max pending requests, WASM size/memory caps).
   - CI checks for prompt templates to avoid accidental secret commits.
@@ -114,7 +114,7 @@ This is a practical mapping of what the codebase helps with vs what operators mu
 ### `packages/typescript`, `packages/python`, `packages/rust` (core runtimes)
 
 - Secrets/settings encryption uses a **versioned envelope**:
-  - **v2**: `v2:<ivHex>:<ciphertextHex>:<tagHex>` (AES-256-GCM, AAD = `elizaos:settings:v2`)
+  - **v2**: `v2:<ivHex>:<ciphertextHex>:<tagHex>` (AES-256-GCM, AAD = `tokagentos:settings:v2`)
   - **v1 legacy**: `<ivHex>:<ciphertextHex>` (AES-256-CBC) is still readable for backward compatibility.
 - If you have persisted v1 values, use the migration helpers to re-encrypt as v2.
 
@@ -122,7 +122,7 @@ This is a practical mapping of what the codebase helps with vs what operators mu
 
 - **Secrets**
   - Set `SECRET_SALT` to a strong, unique value per environment.
-  - In production (`NODE_ENV=production`), the core settings helpers **fail closed** if `SECRET_SALT` is unset/default (`secretsalt`). You can override with `ELIZA_ALLOW_DEFAULT_SECRET_SALT=true` (not recommended).
+  - In production (`NODE_ENV=production`), the core settings helpers **fail closed** if `SECRET_SALT` is unset/default (`secretsalt`). You can override with `TOKAGENT_ALLOW_DEFAULT_SECRET_SALT=true` (not recommended).
   - Store secrets in a managed secret store; avoid long-lived plaintext in env where possible.
   - Migrate legacy encrypted values to v2.
 

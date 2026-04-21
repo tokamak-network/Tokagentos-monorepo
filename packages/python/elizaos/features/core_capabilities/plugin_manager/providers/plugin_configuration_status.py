@@ -11,7 +11,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
-from elizaos.types import Provider, ProviderResult
+from tokagentos.types import Provider, ProviderResult
 
 from ..relevance import (
     COMMON_CONNECTOR_KEYWORDS,
@@ -22,7 +22,7 @@ from ..relevance import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime, Memory, State
+    from tokagentos.types import IAgentRuntime, Memory, State
 
     from ..service import PluginManagerService
 

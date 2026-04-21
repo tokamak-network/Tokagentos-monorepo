@@ -10,13 +10,13 @@ description: "From localhost to production in 5 minutes"
   TEE**](https://www.youtube.com/watch?v=paoryBje404&list=PLrjBjP4nU8ehOgKAa0-XddHzE0KK0nNvS&index=7)
 </Tip>
 
-## Eliza Cloud
+## Tokagent Cloud
 
 **Two commands. That's it.**
 
 ```bash
-elizaos login
-elizaos deploy --project-name my-agent
+tokagentos login
+tokagentos deploy --project-name my-agent
 ```
 
 No Dockerfile to write. No cloud console. No load balancer config. No CI/CD pipeline.
@@ -26,7 +26,7 @@ You get a production URL in ~5 minutes, with automatic HTTPS, health monitoring,
 Beyond deployment: on-chain agent discovery (ERC-8004), crypto payments (X402), and a marketplace to publish and monetize your agents.
 
 <Card
-  title="Get Started with Eliza Cloud"
+  title="Get Started with Tokagent Cloud"
   icon="rocket"
   href="/guides/deploy-to-cloud"
 >
@@ -37,20 +37,20 @@ Beyond deployment: on-chain agent discovery (ERC-8004), crypto payments (X402), 
 
 ## Other Options
 
-Need more control? Here's how Eliza Cloud compares:
+Need more control? Here's how Tokagent Cloud compares:
 
-|                        | Eliza Cloud | Railway/Render | Self-Hosted |
+|                        | Tokagent Cloud | Railway/Render | Self-Hosted |
 | ---------------------- | :---------: | :------------: | :---------: |
 | **Setup time**         |    5 min    |   15-30 min    |  1-2 hours  |
 | **Commands to deploy** |      2      |   10+ steps    |  20+ steps  |
 | **Docker knowledge**   | Not needed  |     Basic      |  Required   |
 | **Server management**  |    None     |      None      | All on you  |
 | **Scaling**            |  Automatic  |   Automatic    |   Manual    |
-| **elizaOS optimized**  |     ✅      |       ❌       |     ❌      |
+| **tokagentOS optimized**  |     ✅      |       ❌       |     ❌      |
 
 <Note>
   **For Advanced Users:** If you're experienced with server administration and
-  networking, you can deploy elizaOS like any Node.js application using your
+  networking, you can deploy tokagentOS like any Node.js application using your
   preferred infrastructure setup. The sections below are for developers looking
   for guided deployment paths.
 </Note>
@@ -94,7 +94,7 @@ Railway is a solid, preferred option. They offer a free Trial plan with $5 of cr
 <Steps>
   <Step title="Create your project">
     ```bash Terminal
-    elizaos create my-agent --type project
+    tokagentos create my-agent --type project
     cd my-agent
     ```
   </Step>
@@ -146,7 +146,7 @@ Railway is a solid, preferred option. They offer a free Trial plan with $5 of cr
 
     ```bash env
     # If your project has a frontend/web UI
-    ELIZA_UI_ENABLE=true
+    TOKAGENT_UI_ENABLE=true
 
     # If using Postgres (recommended for production)
     POSTGRES_URL=your_postgres_connection_string
@@ -189,7 +189,7 @@ Render is comparable to Railway, but its Free/Hobby plan is less generous and sl
 <Steps>
   <Step title="Create your project">
     ```bash Terminal
-    elizaos create my-agent --type project
+    tokagentos create my-agent --type project
     cd my-agent
     ```
   </Step>
@@ -238,7 +238,7 @@ Render is comparable to Railway, but its Free/Hobby plan is less generous and sl
     alt="Render environment variables configuration"
   />
   Add your variables: ```bash env # If your project has a frontend/web UI
-  ELIZA_UI_ENABLE=true # If using Postgres (can add PostgreSQL service in
+  TOKAGENT_UI_ENABLE=true # If using Postgres (can add PostgreSQL service in
   Render) POSTGRES_URL=your_postgres_connection_string # Everything else in your
   .env OPENAI_API_KEY=your_openai_key DISCORD_APPLICATION_ID=your_app_id
   DISCORD_API_TOKEN=your_bot_token ... etc ```
@@ -283,12 +283,12 @@ Deploy on your own Virtual Private Server (VPS) for more control and predictable
 
 [Phala website](https://phala.network) | [Phala docs](https://docs.phala.network) | [Video Tutorial](https://www.youtube.com/watch?v=paoryBje404&t=8s)
 
-Phala offers secure deployment with excellent elizaOS integration and a good CLI. Perfect for production agents requiring a good mix of cost-effective and good security.
+Phala offers secure deployment with excellent tokagentOS integration and a good CLI. Perfect for production agents requiring a good mix of cost-effective and good security.
 
 <Steps>
   <Step title="Create your project">
     ```bash Terminal
-    elizaos create my-agent --type project
+    tokagentos create my-agent --type project
     cd my-agent
     ```
     
@@ -314,8 +314,8 @@ Phala offers secure deployment with excellent elizaOS integration and a good CLI
 <Step title="Configure environment variables">
   Set up your production `.env` file with the variables your project needs:
   ```bash .env # If using Postgres (recommended for production)
-  POSTGRES_URL=postgresql://user:password@host:5432/eliza # If your project has
-  a frontend/web UI ELIZA_UI_ENABLE=true # Everything else in your .env
+  POSTGRES_URL=postgresql://user:password@host:5432/tokagent # If your project has
+  a frontend/web UI TOKAGENT_UI_ENABLE=true # Everything else in your .env
   OPENAI_API_KEY=your_openai_key DISCORD_APPLICATION_ID=your_app_id
   DISCORD_API_TOKEN=your_bot_token ... etc ```
   <Note>
@@ -405,6 +405,6 @@ Phala offers secure deployment with excellent elizaOS integration and a good CLI
     Learn comprehensive testing strategies for your agents
   </Card>
   <Card title="Publish a Plugin" icon="upload" href="/guides/publish-a-plugin">
-    Share your custom plugins with the elizaOS community
+    Share your custom plugins with the tokagentOS community
   </Card>
 </CardGroup>

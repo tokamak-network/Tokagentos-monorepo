@@ -1,10 +1,10 @@
 """
-ElizaOS Atropos Diplomacy Environment
+TokagentOS Atropos Diplomacy Environment
 
-A multi-agent Diplomacy game environment for training ElizaOS agents.
+A multi-agent Diplomacy game environment for training TokagentOS agents.
 """
 
-from elizaos_atropos_diplomacy.types import (
+from tokagentos_atropos_diplomacy.types import (
     Power,
     Province,
     UnitType,
@@ -17,9 +17,9 @@ from elizaos_atropos_diplomacy.types import (
     PowerState,
     Message,
 )
-from elizaos_atropos_diplomacy.environment import DiplomacyEnvironment
-from elizaos_atropos_diplomacy.agent import DiplomacyAgent
-from elizaos_atropos_diplomacy.map_data import PROVINCES, SUPPLY_CENTERS, ADJACENCIES
+from tokagentos_atropos_diplomacy.environment import DiplomacyEnvironment
+from tokagentos_atropos_diplomacy.agent import DiplomacyAgent
+from tokagentos_atropos_diplomacy.map_data import PROVINCES, SUPPLY_CENTERS, ADJACENCIES
 
 __version__ = "1.0.0"
 

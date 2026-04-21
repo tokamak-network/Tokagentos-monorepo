@@ -15,19 +15,19 @@ vi.mock("../../state", () => ({
   useApp: () => useAppMock(),
 }));
 
-vi.mock("@elizaos/app-core", async () => {
+vi.mock("@tokagentos/app-core", async () => {
   const actual =
-    await vi.importActual<typeof import("@elizaos/app-core")>(
-      "@elizaos/app-core",
+    await vi.importActual<typeof import("@tokagentos/app-core")>(
+      "@tokagentos/app-core",
     );
   const { createInlineUiMock } = await import("../../../test/app/mockInlineUi");
   return createInlineUiMock(actual);
 });
 
 vi.mock("./config-page-sections", () => ({
-  BSC_RPC_OPTIONS: [{ id: "eliza-cloud", label: "Eliza Cloud" }],
-  EVM_RPC_OPTIONS: [{ id: "eliza-cloud", label: "Eliza Cloud" }],
-  SOLANA_RPC_OPTIONS: [{ id: "eliza-cloud", label: "Eliza Cloud" }],
+  BSC_RPC_OPTIONS: [{ id: "tokagent-cloud", label: "Tokagent Cloud" }],
+  EVM_RPC_OPTIONS: [{ id: "tokagent-cloud", label: "Tokagent Cloud" }],
+  SOLANA_RPC_OPTIONS: [{ id: "tokagent-cloud", label: "Tokagent Cloud" }],
   CloudServicesSection: () => <div data-testid="cloud-services" />,
   RpcConfigSection: () => <div data-testid="rpc-config" />,
 }));
@@ -45,13 +45,13 @@ function buildAppState(
   return {
     t: (key: string, options?: { defaultValue?: string }) =>
       options?.defaultValue ?? key,
-    elizaCloudConnected: true,
-    elizaCloudCredits: 11.13,
-    elizaCloudCreditsLow: false,
-    elizaCloudCreditsCritical: false,
-    elizaCloudAuthRejected: false,
-    elizaCloudTopUpUrl: "https://example.com/top-up",
-    elizaCloudLoginBusy: false,
+    tokagentCloudConnected: true,
+    tokagentCloudCredits: 11.13,
+    tokagentCloudCreditsLow: false,
+    tokagentCloudCreditsCritical: false,
+    tokagentCloudAuthRejected: false,
+    tokagentCloudTopUpUrl: "https://example.com/top-up",
+    tokagentCloudLoginBusy: false,
     walletConfig: null,
     walletApiKeySaving: false,
     handleWalletApiKeySave,
@@ -85,9 +85,9 @@ describe("ConfigPageView", () => {
       expect(handleWalletApiKeySave).toHaveBeenCalledWith(
         expect.objectContaining({
           selections: {
-            evm: "eliza-cloud",
-            bsc: "eliza-cloud",
-            solana: "eliza-cloud",
+            evm: "tokagent-cloud",
+            bsc: "tokagent-cloud",
+            solana: "tokagent-cloud",
           },
           walletNetwork: "mainnet",
         }),
@@ -138,9 +138,9 @@ describe("ConfigPageView", () => {
       expect(handleWalletApiKeySave).toHaveBeenCalledWith(
         expect.objectContaining({
           selections: {
-            evm: "eliza-cloud",
-            bsc: "eliza-cloud",
-            solana: "eliza-cloud",
+            evm: "tokagent-cloud",
+            bsc: "tokagent-cloud",
+            solana: "tokagent-cloud",
           },
           walletNetwork: "mainnet",
         }),

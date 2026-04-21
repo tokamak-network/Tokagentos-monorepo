@@ -174,16 +174,16 @@ export function startupReducer(
       switch (event.type) {
         case "BACKEND_REACHED":
           console.log(
-            "[eliza][coordinator] BACKEND_REACHED onboardingComplete:",
+            "[tokagent][coordinator] BACKEND_REACHED onboardingComplete:",
             event.onboardingComplete,
           );
           if (event.onboardingComplete) {
             console.log(
-              "[eliza][coordinator] → starting-runtime (skip onboarding)",
+              "[tokagent][coordinator] → starting-runtime (skip onboarding)",
             );
             return { phase: "starting-runtime", attempts: 0 };
           }
-          console.log("[eliza][coordinator] → onboarding-required");
+          console.log("[tokagent][coordinator] → onboarding-required");
           return { phase: "onboarding-required", serverReachable: true };
         case "BACKEND_AUTH_REQUIRED":
           return { phase: "pairing-required" };

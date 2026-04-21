@@ -16,7 +16,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from elizaos.types import Service
+from tokagentos.types import Service
 
 from .types import (
     PendingPluginActivation,
@@ -27,7 +27,7 @@ from .types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
     from .service import SecretsService
 

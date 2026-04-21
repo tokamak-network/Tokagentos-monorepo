@@ -23,7 +23,7 @@ from ..types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
     from ..types import ClipboardConfig
 

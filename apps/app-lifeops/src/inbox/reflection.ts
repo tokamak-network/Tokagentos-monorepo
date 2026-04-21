@@ -1,5 +1,5 @@
-import type { IAgentRuntime } from "@elizaos/core";
-import { logger, ModelType, parseJSONObjectFromText } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { logger, ModelType, parseJSONObjectFromText } from "@tokagentos/core";
 
 function parseReflectionObject(
   raw: string,

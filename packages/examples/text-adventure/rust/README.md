@@ -1,6 +1,6 @@
 # Rust Examples
 
-Pure Rust examples using the native elizaOS Rust implementation.
+Pure Rust examples using the native tokagentOS Rust implementation.
 
 ## Examples
 
@@ -44,24 +44,24 @@ cargo run
 ### Chat Example
 
 ```rust
-use elizaos::{
+use tokagentos::{
     runtime::{AgentRuntime, RuntimeOptions},
     types::{Bio, Character, ChannelType, Content, Memory, UUID},
 };
-use elizaos_plugin_openai::create_openai_elizaos_plugin;
+use tokagentos_plugin_openai::create_openai_tokagentos_plugin;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Create character and runtime
     let character = Character {
-        name: "Eliza".to_string(),
+        name: "Tokagent".to_string(),
         bio: Bio::Single("A helpful AI assistant.".to_string()),
         ..Default::default()
     };
 
     let runtime = AgentRuntime::new(RuntimeOptions {
         character: Some(character),
-        plugins: vec![create_openai_elizaos_plugin()?],
+        plugins: vec![create_openai_tokagentos_plugin()?],
         ..Default::default()
     }).await?;
 
@@ -98,9 +98,9 @@ async fn main() -> anyhow::Result<()> {
 ### Adventure Game Example
 
 ```rust
-use elizaos::runtime::AgentRuntime;
-use elizaos::types::{ChannelType, Content, Memory, UUID};
-use elizaos::IMessageService;
+use tokagentos::runtime::AgentRuntime;
+use tokagentos::types::{ChannelType, Content, Memory, UUID};
+use tokagentos::IMessageService;
 
 // Route through the full message pipeline (planning/actions/providers/memory)
 let content = Content {
@@ -159,7 +159,7 @@ examples/rust/
 
 Both examples use:
 
-- `elizaos` - Core runtime and types
-- `elizaos-plugin-openai` - OpenAI integration
+- `tokagentos` - Core runtime and types
+- `tokagentos-plugin-openai` - OpenAI integration
 - `tokio` - Async runtime
 - `anyhow` - Error handling

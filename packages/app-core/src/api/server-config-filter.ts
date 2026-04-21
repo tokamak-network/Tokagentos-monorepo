@@ -11,13 +11,13 @@ export const SENSITIVE_ENV_RESPONSE_KEYS = new Set([
   "SOLANA_PRIVATE_KEY",
   "MILADY_CLOUD_CLIENT_ADDRESS_KEY",
   // Auth / step-up tokens
-  "ELIZA_API_TOKEN",
-  "ELIZA_API_TOKEN",
-  "ELIZA_WALLET_EXPORT_TOKEN",
-  "ELIZA_TERMINAL_RUN_TOKEN",
+  "TOKAGENT_API_TOKEN",
+  "TOKAGENT_API_TOKEN",
+  "TOKAGENT_WALLET_EXPORT_TOKEN",
+  "TOKAGENT_TERMINAL_RUN_TOKEN",
   "HYPERSCAPE_AUTH_TOKEN",
   // Cloud API keys
-  "ELIZAOS_CLOUD_API_KEY",
+  "TOKAGENTOS_CLOUD_API_KEY",
   // Third-party auth tokens
   "GITHUB_TOKEN",
   // Database connection strings (may contain credentials)

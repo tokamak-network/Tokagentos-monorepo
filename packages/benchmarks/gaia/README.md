@@ -1,6 +1,6 @@
-# GAIA Benchmark for ElizaOS
+# GAIA Benchmark for TokagentOS
 
-A comprehensive implementation of the [GAIA (General AI Assistants)](https://gaiabenchmark.com/) benchmark for evaluating ElizaOS agents on real-world tasks requiring reasoning, multimodal processing, web browsing, and tool use.
+A comprehensive implementation of the [GAIA (General AI Assistants)](https://gaiabenchmark.com/) benchmark for evaluating TokagentOS agents on real-world tasks requiring reasoning, multimodal processing, web browsing, and tool use.
 
 ## Overview
 
@@ -22,10 +22,10 @@ GAIA evaluates AI assistants on tasks that are easy for humans but challenging f
 
 ```bash
 # Basic installation
-pip install elizaos-gaia
+pip install tokagentos-gaia
 
 # With all optional features
-pip install "elizaos-gaia[full]"
+pip install "tokagentos-gaia[full]"
 
 # Development installation
 pip install -e ".[dev]"
@@ -56,7 +56,7 @@ gaia-benchmark --model gpt-4-turbo
 
 ```python
 import asyncio
-from elizaos_gaia import GAIAConfig, GAIARunner
+from tokagentos_gaia import GAIAConfig, GAIARunner
 
 async def main():
     config = GAIAConfig(
@@ -75,17 +75,17 @@ async def main():
 asyncio.run(main())
 ```
 
-### Integration with ElizaOS
+### Integration with TokagentOS
 
 ```python
-from elizaos.runtime import AgentRuntime
-from elizaos_gaia import GAIAConfig, GAIARunner
+from tokagentos.runtime import AgentRuntime
+from tokagentos_gaia import GAIAConfig, GAIARunner
 
-# Create ElizaOS runtime with your plugins
+# Create TokagentOS runtime with your plugins
 runtime = AgentRuntime(...)
 await runtime.initialize()
 
-# Run benchmark with ElizaOS agent
+# Run benchmark with TokagentOS agent
 config = GAIAConfig(model_name="gpt-4")
 runner = GAIARunner(config, runtime=runtime)
 results = await runner.run_benchmark()
@@ -130,7 +130,7 @@ After running the benchmark, you'll get:
 ### Sample Report
 
 ```
-# GAIA Benchmark Results - ElizaOS Python
+# GAIA Benchmark Results - TokagentOS Python
 
 ## Executive Summary
 
@@ -159,7 +159,7 @@ After running the benchmark, you'll get:
 ## Architecture
 
 ```
-elizaos_gaia/
+tokagentos_gaia/
 ├── __init__.py          # Package exports
 ├── types.py             # Type definitions
 ├── dataset.py           # HuggingFace dataset loader
@@ -233,13 +233,13 @@ pip install -e ".[dev]"
 pytest
 
 # Type checking
-mypy elizaos_gaia
+mypy tokagentos_gaia
 
 # Linting
-ruff check elizaos_gaia
+ruff check tokagentos_gaia
 
 # Format code
-black elizaos_gaia
+black tokagentos_gaia
 ```
 
 ## References

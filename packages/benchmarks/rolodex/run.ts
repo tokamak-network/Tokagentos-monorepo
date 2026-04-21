@@ -4,7 +4,7 @@
  *
  * Usage:
  *   bun run benchmarks/rolodex/run.ts              # runs perfect + rolodex
- *   bun run benchmarks/rolodex/run.ts --eliza       # runs perfect + rolodex + eliza (LLM)
+ *   bun run benchmarks/rolodex/run.ts --tokagent       # runs perfect + rolodex + tokagent (LLM)
  */
 
 import { WORLD } from './world';
@@ -74,7 +74,7 @@ async function run(handler: Handler): Promise<RunResult> {
 }
 
 async function main() {
-  const useEliza = process.argv.includes('--eliza');
+  const useTokagent = process.argv.includes('--tokagent');
 
   header('ROLODEX BENCHMARK v2');
   console.log(`  World: ${WORLD.entities.length} entities, ${WORLD.links.length} cross-platform links, ${WORLD.antiLinks.length} anti-links`);
@@ -102,14 +102,14 @@ async function main() {
     { name: 'Rolodex (Algorithmic)', idF1: rolodex.identityM.f1, relF1: rolodex.relM.f1, trF1: rolodex.trustM.f1, resF1: rolodex.resM.f1, fmr: rolodex.fmr, typeAcc: rolodex.relM.typeAccuracy, ms: rolodex.totalTime },
   ];
 
-  // Eliza handler (optional, LLM-based)
-  let elizaResult: RunResult | null = null;
-  if (useEliza) {
-    const { elizaHandler } = await import('./handlers/eliza');
-    header('ELIZA HANDLER (LLM via AgentRuntime)');
-    elizaResult = await run(elizaHandler);
+  // Tokagent handler (optional, LLM-based)
+  let tokagentResult: RunResult | null = null;
+  if (useTokagent) {
+    const { tokagentHandler } = await import('./handlers/tokagent');
+    header('TOKAGENT HANDLER (LLM via AgentRuntime)');
+    tokagentResult = await run(tokagentHandler);
     comparisonEntries.push({
-      name: 'Eliza (LLM)', idF1: elizaResult.identityM.f1, relF1: elizaResult.relM.f1, trF1: elizaResult.trustM.f1, resF1: elizaResult.resM.f1, fmr: elizaResult.fmr, typeAcc: elizaResult.relM.typeAccuracy, ms: elizaResult.totalTime,
+      name: 'Tokagent (LLM)', idF1: tokagentResult.identityM.f1, relF1: tokagentResult.relM.f1, trF1: tokagentResult.trustM.f1, resF1: tokagentResult.resM.f1, fmr: tokagentResult.fmr, typeAcc: tokagentResult.relM.typeAccuracy, ms: tokagentResult.totalTime,
     });
   }
 
@@ -117,8 +117,8 @@ async function main() {
   printComparison(comparisonEntries);
 
   // Verdict
-  const sutResult = elizaResult ?? rolodex;
-  const sutName = elizaResult ? 'Eliza' : 'Rolodex';
+  const sutResult = tokagentResult ?? rolodex;
+  const sutName = tokagentResult ? 'Tokagent' : 'Rolodex';
   const allPerfect = sutResult.identityM.f1 === 1 && sutResult.relM.f1 === 1 && sutResult.trustM.f1 === 1 && sutResult.resM.f1 === 1 && sutResult.fmr === 0;
   header('VERDICT');
   if (allPerfect) {

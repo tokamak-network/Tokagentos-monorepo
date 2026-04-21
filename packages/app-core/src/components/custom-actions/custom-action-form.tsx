@@ -1,4 +1,4 @@
-import type { CustomActionHandler } from "@elizaos/agent/contracts/config";
+import type { CustomActionHandler } from "@tokagentos/agent/contracts/config";
 
 /* ── Types ─────────────────────────────────────────────────────────── */
 

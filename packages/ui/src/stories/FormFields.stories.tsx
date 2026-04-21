@@ -42,7 +42,7 @@ export const Default: Story = {
           <FieldLabel>Name</FieldLabel>
           <input
             readOnly
-            value="Eliza"
+            value="Tokagent"
             className="h-11 w-full rounded-2xl border border-border/60 bg-bg/70 px-4 text-sm text-txt"
           />
           <FieldDescription>
@@ -90,7 +90,7 @@ export const Default: Story = {
               <SelectValue placeholder="Select environment" />
             </SettingsControls.SelectTrigger>
             <SelectContent>
-              <SelectItem value="cloud">Eliza Cloud</SelectItem>
+              <SelectItem value="cloud">Tokagent Cloud</SelectItem>
               <SelectItem value="desktop">Desktop local runtime</SelectItem>
               <SelectItem value="relay">Browser relay</SelectItem>
             </SelectContent>
@@ -105,7 +105,7 @@ export const Default: Story = {
           <SettingsControls.Input
             readOnly
             variant="filter"
-            value="https://eliza.cloud/apps/demo/hooks/deploy"
+            value="https://tokagent.cloud/apps/demo/hooks/deploy"
           />
           <SettingsControls.Textarea
             readOnly

@@ -1,7 +1,7 @@
 /**
  * Side-registry of model handlers registered on an AgentRuntime.
  *
- * The elizaOS core exposes `runtime.registerModel(type, handler, provider,
+ * The tokagentOS core exposes `runtime.registerModel(type, handler, provider,
  * priority)` but no way to list who registered what. This module patches
  * `AgentRuntime.prototype.registerModel` at import time so every call —
  * from every plugin, on every runtime instance — records into a
@@ -10,7 +10,7 @@
  * `runtime.useModel`.
  */
 
-import { AgentRuntime, type IAgentRuntime } from "@elizaos/core";
+import { AgentRuntime, type IAgentRuntime } from "@tokagentos/core";
 
 export interface HandlerRegistration {
   modelType: string;

@@ -1,9 +1,9 @@
 import { WebPlugin } from "@capacitor/core";
 import type { AgentPlugin, AgentStatus, ChatResult } from "./definitions";
 
-interface ElizaWindow extends Window {
-  __ELIZA_API_BASE__?: string;
-  __ELIZA_API_TOKEN__?: string;
+interface TokagentWindow extends Window {
+  __TOKAGENT_API_BASE__?: string;
+  __TOKAGENT_API_TOKEN__?: string;
 }
 
 /**
@@ -23,7 +23,7 @@ export class AgentWeb extends WebPlugin implements AgentPlugin {
     const base =
       this.apiBase() ||
       (typeof window !== "undefined" ? window.location.origin : "same-origin");
-    return `eliza_agent_web_conversation:${encodeURIComponent(base)}`;
+    return `tokagent_agent_web_conversation:${encodeURIComponent(base)}`;
   }
 
   private readLegacyConversationId(): string | null {
@@ -102,7 +102,7 @@ export class AgentWeb extends WebPlugin implements AgentPlugin {
   private apiBase(): string {
     const global =
       typeof window !== "undefined"
-        ? (window as ElizaWindow).__ELIZA_API_BASE__
+        ? (window as TokagentWindow).__TOKAGENT_API_BASE__
         : undefined;
     if (typeof global === "string" && global.trim().length > 0) return global;
     // No explicit base — use relative URLs (works on http/https origins).
@@ -112,11 +112,11 @@ export class AgentWeb extends WebPlugin implements AgentPlugin {
   private apiToken(): string | null {
     const global =
       typeof window !== "undefined"
-        ? (window as ElizaWindow).__ELIZA_API_TOKEN__
+        ? (window as TokagentWindow).__TOKAGENT_API_TOKEN__
         : undefined;
     if (typeof global === "string" && global.trim()) return global.trim();
     if (typeof window === "undefined") return null;
-    const stored = window.sessionStorage.getItem("eliza_api_token");
+    const stored = window.sessionStorage.getItem("tokagent_api_token");
     return stored?.trim() ? stored.trim() : null;
   }
 
@@ -129,7 +129,7 @@ export class AgentWeb extends WebPlugin implements AgentPlugin {
   private canReachApi(): boolean {
     const global =
       typeof window !== "undefined"
-        ? (window as ElizaWindow).__ELIZA_API_BASE__
+        ? (window as TokagentWindow).__TOKAGENT_API_BASE__
         : undefined;
     if (typeof global === "string" && global.trim().length > 0) return true;
     // No explicit base — relative fetches only work on http(s) origins.

@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
   Textarea,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { client } from "../../api";
@@ -352,7 +352,7 @@ export function BugReportModal() {
     setErrorMsg(null);
     try {
       const bundle = await createDesktopBugReportBundle({
-        prefix: "elizaos-report",
+        prefix: "tokagentos-report",
         reportMarkdown: formatMarkdown(),
         reportJson: buildReportPayload(),
       });

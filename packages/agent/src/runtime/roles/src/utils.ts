@@ -15,4 +15,4 @@ export {
   resolveWorldForMessage,
   setConnectorAdminWhitelist,
   setEntityRole,
-} from "@elizaos/core";
+} from "@tokagentos/core";

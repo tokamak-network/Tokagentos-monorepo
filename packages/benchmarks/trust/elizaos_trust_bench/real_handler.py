@@ -1,4 +1,4 @@
-"""Real handler wrapping the ElizaOS trust plugin's Python implementation.
+"""Real handler wrapping the TokagentOS trust plugin's Python implementation.
 
 Uses SecurityModule for injection, social engineering, impersonation, and phishing.
 Uses CredentialProtector for credential theft detection.
@@ -24,9 +24,9 @@ _TRUST_PLUGIN_PATH = str(
 if _TRUST_PLUGIN_PATH not in sys.path:
     sys.path.insert(0, _TRUST_PLUGIN_PATH)
 
-from elizaos_plugin_trust.services.security_module import SecurityModule
-from elizaos_plugin_trust.services.credential_protector import CredentialProtector
-from elizaos_plugin_trust.types.security import ThreatLevel
+from tokagentos_plugin_trust.services.security_module import SecurityModule
+from tokagentos_plugin_trust.services.credential_protector import CredentialProtector
+from tokagentos_plugin_trust.types.security import ThreatLevel
 
 
 # ---------------------------------------------------------------------------
@@ -102,7 +102,7 @@ _CONTENT_POLICY_PATTERNS: list[tuple[re.Pattern[str], float]] = [
 
 
 class RealTrustHandler:
-    """Handler wrapping the real ElizaOS trust plugin for benchmarking.
+    """Handler wrapping the real TokagentOS trust plugin for benchmarking.
 
     This exercises the actual Python SecurityModule and CredentialProtector
     detection logic against the benchmark corpus.
@@ -114,7 +114,7 @@ class RealTrustHandler:
 
     @property
     def name(self) -> str:
-        return "elizaos-trust-plugin"
+        return "tokagentos-trust-plugin"
 
     def detect_injection(self, message: str) -> dict[str, bool | float]:
         """Use SecurityModule.detect_prompt_injection."""

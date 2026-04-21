@@ -40,7 +40,7 @@ export function isTestExempt(file) {
   if (file.startsWith("test/helpers/") || /(^|\/)test\/helpers\//.test(file))
     return true;
   // Submodule pointer changes appear as a single path with no extension.
-  if (file === "eliza" || file === "eliza/cloud" || file === "eliza/steward-fi")
+  if (file === "tokagent" || file === "tokagent/cloud" || file === "tokagent/steward-fi")
     return true;
   return false;
 }
@@ -124,7 +124,7 @@ function runCommandArgs(command, args, options = {}) {
 
 export function getBaseRef() {
   const explicitBase =
-    process.env.ELIZA_PRE_REVIEW_BASE ?? process.env.PRE_REVIEW_BASE_REF;
+    process.env.TOKAGENT_PRE_REVIEW_BASE ?? process.env.PRE_REVIEW_BASE_REF;
   if (explicitBase) {
     const explicitResult = runCommandArgs("git", [
       "rev-parse",

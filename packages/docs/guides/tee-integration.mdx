@@ -16,7 +16,7 @@ Your agent handles API keys, user data, maybe crypto wallets. How do users know 
 
 ## What TEE Gives You
 
-TEE integration allows your ElizaOS agents to run in secure enclaves with:
+TEE integration allows your TokagentOS agents to run in secure enclaves with:
 
 - **Remote attestation**: Cryptographic proof of code integrity
 - **Secure key derivation**: Keys derived within the enclave
@@ -38,7 +38,7 @@ enum TEEMode {
 ### 1. Use the TEE Starter Project
 
 ```bash
-elizaos create --type project --template tee my-tee-agent
+tokagentos create --type project --template tee my-tee-agent
 cd my-tee-agent
 ```
 
@@ -53,7 +53,7 @@ WALLET_SECRET_SALT=your-secret-salt-min-8-chars
 ### 3. Start in TEE Mode
 
 ```bash
-elizaos start
+tokagentos start
 ```
 
 ## Configuration
@@ -128,7 +128,7 @@ interface DeriveKeyAttestationData {
 
 ## TEE Providers
 
-ElizaOS supports multiple TEE providers. See the [TEE CLI Reference](/cli-reference/tee) for complete deployment commands.
+TokagentOS supports multiple TEE providers. See the [TEE CLI Reference](/cli-reference/tee) for complete deployment commands.
 
 ### Phala Network
 
@@ -136,19 +136,19 @@ Primary TEE provider using Intel TDX:
 
 ```bash
 # Login to Phala Cloud
-elizaos tee phala auth login <api-key>
+tokagentos tee phala auth login <api-key>
 
 # Deploy to Phala
-elizaos tee phala cvms create --name my-agent --compose ./docker-compose.yml
+tokagentos tee phala cvms create --name my-agent --compose ./docker-compose.yml
 
 # Check status
-elizaos tee phala cvms list
+tokagentos tee phala cvms list
 ```
 
 ### Eigen Infrastructure
 
 ```bash
-elizaos tee eigen deploy
+tokagentos tee eigen deploy
 ```
 
 ## API Endpoints

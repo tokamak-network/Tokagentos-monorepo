@@ -1,6 +1,6 @@
 """Core manager service.
 
-Manages the core elizaOS installation lifecycle: eject (clone upstream
+Manages the core tokagentOS installation lifecycle: eject (clone upstream
 source for local development), sync (pull upstream changes), and
 re-inject (revert to npm packages).
 
@@ -23,18 +23,18 @@ from datetime import UTC
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
-from elizaos.types import Service
+from tokagentos.types import Service
 
 from ..types import UpstreamMetadata
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
-logger = logging.getLogger("elizaos.plugin_manager.core_manager")
+logger = logging.getLogger("tokagentos.plugin_manager.core_manager")
 
-_CORE_GIT_URL = "https://github.com/elizaos/eliza.git"
+_CORE_GIT_URL = "https://github.com/tokagentos/tokagent.git"
 _CORE_BRANCH = "develop"
-_CORE_PACKAGE_NAME = "@elizaos/core"
+_CORE_PACKAGE_NAME = "@tokagentos/core"
 
 _VALID_GIT_URL = re.compile(r"^https://[a-zA-Z0-9][\w./-]*\.git$")
 _VALID_BRANCH = re.compile(r"^[a-zA-Z0-9][\w./-]*$")
@@ -42,11 +42,11 @@ _VALID_BRANCH = re.compile(r"^[a-zA-Z0-9][\w./-]*$")
 
 def _resolve_state_dir() -> Path:
     """Resolve the state directory, respecting env overrides."""
-    for var in ("ELIZA_STATE_DIR", "ELIZA_STATE_DIR"):
+    for var in ("TOKAGENT_STATE_DIR", "TOKAGENT_STATE_DIR"):
         val = os.environ.get(var)
         if val:
             return Path(val)
-    namespace = os.environ.get("ELIZA_NAMESPACE", "eliza")
+    namespace = os.environ.get("TOKAGENT_NAMESPACE", "tokagent")
     return Path.home() / f".{namespace}"
 
 
@@ -150,7 +150,7 @@ class CoreStatus:
 
 
 class CoreManagerService(Service):
-    """Manages the core elizaOS installation (eject, sync, reinject)."""
+    """Manages the core tokagentOS installation (eject, sync, reinject)."""
 
     service_type: ClassVar[str] = "core_manager"
 
@@ -160,7 +160,7 @@ class CoreManagerService(Service):
 
     @property
     def capability_description(self) -> str:
-        return "Manages the core elizaOS installation (eject, sync, reinject)"
+        return "Manages the core tokagentOS installation (eject, sync, reinject)"
 
     @classmethod
     async def start(cls, runtime: IAgentRuntime) -> CoreManagerService:
@@ -179,7 +179,7 @@ class CoreManagerService(Service):
         return _resolve_state_dir() / "core"
 
     def _core_monorepo_dir(self) -> Path:
-        return self._core_base_dir() / "eliza"
+        return self._core_base_dir() / "tokagent"
 
     def _core_package_dir(self) -> Path:
         return self._core_monorepo_dir() / "packages" / "core"
@@ -249,7 +249,7 @@ class CoreManagerService(Service):
         return "unknown"
 
     async def _resolve_installed_core_version(self) -> str:
-        """Best-effort resolution of the installed @elizaos/core version."""
+        """Best-effort resolution of the installed @tokagentos/core version."""
         try:
             core_pkg = Path.cwd() / "node_modules" / "@elizaos" / "core" / "package.json"
             if core_pkg.exists():
@@ -274,7 +274,7 @@ class CoreManagerService(Service):
                 return None
             return UpstreamMetadata(
                 schema="milaidy-upstream-v1",
-                source=data.get("source", "github:elizaos/eliza"),
+                source=data.get("source", "github:tokagentos/tokagent"),
                 git_url=data["gitUrl"],
                 branch=data["branch"],
                 commit_hash=data["commitHash"],
@@ -348,7 +348,7 @@ class CoreManagerService(Service):
 
                 metadata = UpstreamMetadata(
                     schema="milaidy-upstream-v1",
-                    source="github:elizaos/eliza",
+                    source="github:tokagentos/tokagent",
                     git_url=_CORE_GIT_URL,
                     branch=_CORE_BRANCH,
                     commit_hash=commit_hash,

@@ -4,7 +4,7 @@ import type {
   ActionResult,
   HandlerOptions,
   IAgentRuntime,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { BlockRuleWriter } from "../block-rule-service.js";
 
 interface ReleaseBlockParams {

@@ -3,11 +3,11 @@
  * to stderr if a newer version is available (like npm's update-notifier).
  */
 
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import {
   checkForUpdate,
   resolveChannel,
-} from "@elizaos/agent/services/update-checker";
+} from "@tokagentos/agent/services/update-checker";
 import { theme } from "../terminal/theme";
 
 let notified = false;
@@ -16,9 +16,9 @@ export function scheduleUpdateNotification(): void {
   if (notified) return;
   notified = true;
 
-  let config: Partial<ReturnType<typeof loadElizaConfig>> = {};
+  let config: Partial<ReturnType<typeof loadTokagentConfig>> = {};
   try {
-    config = loadElizaConfig();
+    config = loadTokagentConfig();
   } catch {
     // Keep behavior resilient to malformed config files: continue with defaults.
   }
@@ -34,7 +34,7 @@ export function scheduleUpdateNotification(): void {
 
       process.stderr.write(
         `\n${theme.accent("Update available:")} ${theme.muted(result.currentVersion)} -> ${theme.success(result.latestVersion)}${theme.muted(suffix)}\n` +
-          `${theme.muted("Run")} ${theme.command("eliza update")} ${theme.muted("to install")}\n\n`,
+          `${theme.muted("Run")} ${theme.command("tokagent update")} ${theme.muted("to install")}\n\n`,
       );
     })
     .catch(() => {});

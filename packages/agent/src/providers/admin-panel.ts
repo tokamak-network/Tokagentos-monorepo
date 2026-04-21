@@ -5,8 +5,8 @@ import type {
   ProviderResult,
   State,
   UUID,
-} from "@elizaos/core";
-import { resolveCanonicalOwnerIdForMessage } from "@elizaos/core";
+} from "@tokagentos/core";
+import { resolveCanonicalOwnerIdForMessage } from "@tokagentos/core";
 import { hasAdminAccess } from "../security/access.js";
 
 /** Maximum total characters for the provider text output. */
@@ -70,7 +70,7 @@ function formatMessages(messages: Memory[], agentId: string): string {
     return `[${sender}] ${text.substring(0, 200)}`;
   });
 
-  let result = `# Recent Owner Conversation (Eliza App)\n${lines.join("\n")}`;
+  let result = `# Recent Owner Conversation (Tokagent App)\n${lines.join("\n")}`;
   if (result.length > MAX_TEXT_LENGTH) {
     result = `${result.substring(0, MAX_TEXT_LENGTH - 3)}...`;
   }
@@ -83,7 +83,7 @@ export function createAdminPanelProvider(): Provider {
   return {
     name: "adminPanel",
     description:
-      "Surfaces the owner's recent Eliza app chat so the agent has context across platforms.",
+      "Surfaces the owner's recent Tokagent app chat so the agent has context across platforms.",
     dynamic: true,
     position: 14,
     async get(

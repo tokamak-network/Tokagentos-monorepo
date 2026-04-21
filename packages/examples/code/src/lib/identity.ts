@@ -1,4 +1,4 @@
-import { stringToUuid, type UUID } from "@elizaos/core";
+import { stringToUuid, type UUID } from "@tokagentos/core";
 import { v4 as uuidv4 } from "uuid";
 
 const UUID_REGEX =
@@ -13,7 +13,7 @@ export function isUuidString(value: string): value is UUID {
  * consistent across process restarts (TUI + non-interactive CLI).
  */
 export interface SessionIdentity {
-  /** Random per-project identifier (persisted to `.eliza-code/session.json`). */
+  /** Random per-project identifier (persisted to `.tokagent-code/session.json`). */
   projectId: UUID;
   /** The "user entity" id used for messages sent from this CLI/TUI. */
   userId: UUID;
@@ -39,22 +39,22 @@ export function ensureSessionIdentity(
   const worldId =
     input.worldId && isUuidString(input.worldId)
       ? input.worldId
-      : stringToUuid(`eliza-code:world:${projectId}`);
+      : stringToUuid(`tokagent-code:world:${projectId}`);
   const messageServerId =
     input.messageServerId && isUuidString(input.messageServerId)
       ? input.messageServerId
-      : stringToUuid(`eliza-code:server:${projectId}`);
+      : stringToUuid(`tokagent-code:server:${projectId}`);
 
   return { projectId, userId, worldId, messageServerId };
 }
 
-export function createRoomElizaId(identity: SessionIdentity): UUID {
+export function createRoomTokagentId(identity: SessionIdentity): UUID {
   // We deliberately derive this from (projectId + random) so it is:
   // - unique within a project
   // - stable across restarts once persisted in the session file
-  return stringToUuid(`eliza-code:room:${identity.projectId}:${uuidv4()}`);
+  return stringToUuid(`tokagent-code:room:${identity.projectId}:${uuidv4()}`);
 }
 
-export function getMainRoomElizaId(identity: SessionIdentity): UUID {
-  return stringToUuid(`eliza-code:room:${identity.projectId}:main`);
+export function getMainRoomTokagentId(identity: SessionIdentity): UUID {
+  return stringToUuid(`tokagent-code:room:${identity.projectId}:main`);
 }

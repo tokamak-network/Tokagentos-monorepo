@@ -65,7 +65,7 @@ export function findJsdomPackageJsonPath(): string {
   }
 
   throw new Error(
-    "Could not find jsdom on disk (install dependencies: jsdom is listed on @elizaos/agent and apps/app).",
+    "Could not find jsdom on disk (install dependencies: jsdom is listed on @tokagentos/agent and apps/app).",
   );
 }
 
@@ -124,7 +124,7 @@ export function applyBrowserWorkspaceDomSettings(
   if (state.settings.device) {
     Object.defineProperty(dom.window.navigator, "userAgent", {
       configurable: true,
-      value: `ElizaBrowserWorkspace/${state.settings.device}`,
+      value: `TokagentBrowserWorkspace/${state.settings.device}`,
     });
   }
 
@@ -187,10 +187,10 @@ export function installBrowserWorkspaceWebRuntime(
   applyBrowserWorkspaceDomSettings(dom, state);
 
   const windowRecord = dom.window as unknown as Record<string, unknown>;
-  windowRecord.__elizaBrowserWorkspaceState = state;
+  windowRecord.__tokagentBrowserWorkspaceState = state;
 
   const consoleTarget = dom.window.console as Console & Record<string, unknown>;
-  if (!consoleTarget.__elizaWrapped) {
+  if (!consoleTarget.__tokagentWrapped) {
     for (const level of ["log", "info", "warn", "error"] as const) {
       consoleTarget[level] = (...args: unknown[]) => {
         state.consoleEntries.push({
@@ -203,7 +203,7 @@ export function installBrowserWorkspaceWebRuntime(
         return undefined;
       };
     }
-    consoleTarget.__elizaWrapped = true;
+    consoleTarget.__tokagentWrapped = true;
   }
 
   dom.window.alert = (message?: string) => {

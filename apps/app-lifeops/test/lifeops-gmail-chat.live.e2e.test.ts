@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { describeIf } from "../../../../test/helpers/conditional-tests.ts";
 import {
@@ -15,8 +15,8 @@ import {
 } from "../../../../test/helpers/live-provider";
 import { createLifeOpsTestRuntime } from "./helpers/runtime.js";
 import { saveEnv } from "../../../../test/helpers/test-utils";
-import { createElizaPlugin } from "@elizaos/agent/runtime/eliza-plugin";
-import { resolveOAuthDir } from "@elizaos/agent/config/paths";
+import { createTokagentPlugin } from "@tokagentos/agent/runtime/tokagent-plugin";
+import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
 import {
   createLifeOpsConnectorGrant,
   createLifeOpsGmailSyncState,
@@ -207,27 +207,27 @@ async function startLiveServer(): Promise<StartedLiveServer> {
   );
   const envBackup = saveEnv(
     ...Object.keys(LIVE_PROVIDER?.env ?? {}),
-    "ELIZA_STATE_DIR",
-    "ELIZA_STATE_DIR",
-    "ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
+    "TOKAGENT_STATE_DIR",
+    "TOKAGENT_STATE_DIR",
+    "TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
     "PGLITE_DATA_DIR",
   );
 
   for (const [key, value] of Object.entries(LIVE_PROVIDER?.env ?? {})) {
     process.env[key] = value;
   }
-  process.env.ELIZA_STATE_DIR = stateDir;
-  process.env.ELIZA_STATE_DIR = stateDir;
-  process.env.ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID = GOOGLE_CLIENT_ID;
+  process.env.TOKAGENT_STATE_DIR = stateDir;
+  process.env.TOKAGENT_STATE_DIR = stateDir;
+  process.env.TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID = GOOGLE_CLIENT_ID;
 
   const runtimeResult = await createLifeOpsTestRuntime({
     withLLM: true,
     preferredProvider: LIVE_PROVIDER?.name,
-    plugins: [createElizaPlugin({ agentId: "main" })],
+    plugins: [createTokagentPlugin({ agentId: "main" })],
   });
   await seedLocalGmail(runtimeResult.runtime, stateDir);
 
-  const { startApiServer } = await import("@elizaos/agent/api/server");
+  const { startApiServer } = await import("@tokagentos/agent/api/server");
   const server = await startApiServer({
     port: 0,
     runtime: runtimeResult.runtime,

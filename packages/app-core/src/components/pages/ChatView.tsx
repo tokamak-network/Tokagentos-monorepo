@@ -10,7 +10,7 @@ import {
   ChatThreadLayout,
   ChatTranscript,
   TypingIndicator,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   type ChangeEvent,
   type DragEvent,
@@ -122,9 +122,9 @@ export function ChatView({
     handleChatSend,
     handleChatStop,
     handleChatEdit,
-    elizaCloudConnected,
-    elizaCloudVoiceProxyAvailable,
-    elizaCloudHasPersistedKey,
+    tokagentCloudConnected,
+    tokagentCloudVoiceProxyAvailable,
+    tokagentCloudHasPersistedKey,
     setState,
     copyToClipboard,
     droppedFiles: rawDroppedFiles,
@@ -242,9 +242,9 @@ export function ChatView({
     chatFirstTokenReceived,
     chatInput,
     chatSending,
-    elizaCloudConnected,
-    elizaCloudVoiceProxyAvailable,
-    elizaCloudHasPersistedKey,
+    tokagentCloudConnected,
+    tokagentCloudVoiceProxyAvailable,
+    tokagentCloudHasPersistedKey,
     conversationMessages,
     activeConversationId,
     handleChatEdit,
@@ -287,11 +287,11 @@ export function ChatView({
             ) && !isRoutineCodingAgentMessage(msg),
         )
         // Default-tag any message that arrived without a source as
-        // "eliza" so dashboard turns render the gold chip symmetric
+        // "tokagent" so dashboard turns render the gold chip symmetric
         // with connector messages. Live-streamed turns flow through
         // the SSE path and don't carry the server-side default from
         // conversation-routes.ts, so we catch them here too.
-        .map((msg) => (msg.source ? msg : { ...msg, source: "eliza" })),
+        .map((msg) => (msg.source ? msg : { ...msg, source: "tokagent" })),
     [chatFirstTokenReceived, chatSending, msgs],
   );
   const {

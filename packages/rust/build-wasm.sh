@@ -1,9 +1,9 @@
 #!/bin/bash
-# Build elizaOS Core for WASM
+# Build tokagentOS Core for WASM
 
 set -e
 
-echo "Building elizaOS Core for WASM..."
+echo "Building tokagentOS Core for WASM..."
 
 # Install wasm-pack if not present
 if ! command -v wasm-pack &> /dev/null; then

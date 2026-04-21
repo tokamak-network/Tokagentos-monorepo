@@ -1,7 +1,7 @@
 """
-Canonical ElizaOS Agent for Terminal-Bench.
+Canonical TokagentOS Agent for Terminal-Bench.
 
-This agent uses the full ElizaOS runtime with message_service.handle_message(),
+This agent uses the full TokagentOS runtime with message_service.handle_message(),
 actions, providers, and evaluators - NO BYPASS.
 """
 
@@ -14,12 +14,12 @@ import uuid
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from elizaos import AgentRuntime
-from elizaos.types import Plugin
-from elizaos.types.agent import Character
-from elizaos.types.memory import Memory
-from elizaos.types.model import ModelType
-from elizaos.types.primitives import Content, as_uuid, string_to_uuid
+from tokagentos import AgentRuntime
+from tokagentos.types import Plugin
+from tokagentos.types.agent import Character
+from tokagentos.types.memory import Memory
+from tokagentos.types.model import ModelType
+from tokagentos.types.primitives import Content, as_uuid, string_to_uuid
 
 from .environment import TerminalEnvironment
 from .plugin import terminal_bench_plugin
@@ -175,13 +175,13 @@ def _get_model_provider_plugin(model_name: str) -> Plugin:
         os.environ["OPENAI_SMALL_MODEL"] = clean_model
         os.environ["OPENAI_LARGE_MODEL"] = clean_model
         try:
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             return get_openai_plugin()
         except ImportError as exc:
             raise RuntimeError(
-                "elizaos_plugin_openai not found. Please install it:\n"
-                "  pip install elizaos-plugin-openai\n"
+                "tokagentos_plugin_openai not found. Please install it:\n"
+                "  pip install tokagentos-plugin-openai\n"
                 "Or set PYTHONPATH to include the plugin directory."
             ) from exc
 
@@ -277,9 +277,9 @@ def _get_model_provider_plugin(model_name: str) -> Plugin:
     )
 
 
-class ElizaTerminalAgent:
+class TokagentTerminalAgent:
     """
-    Canonical ElizaOS agent for Terminal-Bench that uses the full runtime.
+    Canonical TokagentOS agent for Terminal-Bench that uses the full runtime.
 
     This agent:
     - Creates an AgentRuntime with basicCapabilities enabled
@@ -318,7 +318,7 @@ class ElizaTerminalAgent:
         self._environment = env
 
     async def _initialize_runtime(self) -> AgentRuntime:
-        """Initialize the full ElizaOS runtime with all plugins."""
+        """Initialize the full TokagentOS runtime with all plugins."""
         os.environ.setdefault("BENCHMARK_MODEL_NAME", self._model_name)
         if "/" in self._model_name:
             os.environ.setdefault("BENCHMARK_MODEL_PROVIDER", self._model_name.split("/", 1)[0].strip().lower())
@@ -373,17 +373,17 @@ class ElizaTerminalAgent:
         # Optionally register the post-action evaluator for recursive action chaining
         if self._use_post_action_evaluator:
             try:
-                from elizaos.bootstrap.autonomy import post_action_evaluator
+                from tokagentos.bootstrap.autonomy import post_action_evaluator
 
                 runtime.register_evaluator(post_action_evaluator)
                 logger.info("Post-action evaluator registered for recursive action chaining")
             except ImportError:
                 logger.warning(
-                    "Could not import post_action_evaluator from elizaos.bootstrap.autonomy"
+                    "Could not import post_action_evaluator from tokagentos.bootstrap.autonomy"
                 )
 
         logger.info(
-            f"ElizaOS runtime initialized with {len(runtime.actions)} actions, "
+            f"TokagentOS runtime initialized with {len(runtime.actions)} actions, "
             f"{len(runtime.providers)} providers, "
             f"{len(runtime.evaluators)} evaluators"
         )
@@ -392,7 +392,7 @@ class ElizaTerminalAgent:
 
     async def _setup_session(self, task: TerminalTask) -> TerminalSession:
         """Create a new benchmark session."""
-        session_id = f"eliza_{task.task_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        session_id = f"tokagent_{task.task_id}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         return TerminalSession(
             session_id=session_id,
             task=task,
@@ -420,10 +420,10 @@ class ElizaTerminalAgent:
 
     async def solve_task(self, task: TerminalTask) -> TerminalBenchResult:
         """
-        Solve a terminal benchmark task using canonical ElizaOS flow.
+        Solve a terminal benchmark task using canonical TokagentOS flow.
 
         This method:
-        1. Initializes the ElizaOS runtime (if not done)
+        1. Initializes the TokagentOS runtime (if not done)
         2. Sets up the session and injects context
         3. Sends the task instruction as a message
         4. Lets the runtime handle message -> actions -> response

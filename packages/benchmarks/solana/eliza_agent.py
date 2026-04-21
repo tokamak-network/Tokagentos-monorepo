@@ -1,5 +1,5 @@
 """
-Eliza-powered Solana benchmark agent using the full ElizaOS runtime.
+Tokagent-powered Solana benchmark agent using the full TokagentOS runtime.
 
 Two-phase exploration:
   Phase 1 (Deterministic): pre-built TypeScript templates executed directly
@@ -10,7 +10,7 @@ Two-phase exploration:
 
 Usage:
     surfpool start -u https://api.mainnet-beta.solana.com --no-tui
-    USE_EXTERNAL_SURFPOOL=true python -m benchmarks.solana.eliza_agent
+    USE_EXTERNAL_SURFPOOL=true python -m benchmarks.solana.tokagent_agent
 """
 
 from __future__ import annotations
@@ -27,11 +27,11 @@ from typing import TYPE_CHECKING
 
 from dotenv import load_dotenv
 
-from elizaos import AgentRuntime
-from elizaos.types import Plugin
-from elizaos.types.agent import Character
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid, string_to_uuid
+from tokagentos import AgentRuntime
+from tokagentos.types import Plugin
+from tokagentos.types.agent import Character
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid, string_to_uuid
 
 from benchmarks.solana.exploration_strategy import ExplorationStrategy
 from benchmarks.solana.plugin import solana_bench_plugin
@@ -123,9 +123,9 @@ def _get_model_plugin(model_name: str) -> Plugin:
     """Get a model provider plugin for LLM calls.
 
     Checks available API keys in order:
-      1. ANTHROPIC_API_KEY → try elizaos_plugin_anthropic
-      2. OPENAI_API_KEY → use elizaos_plugin_openai
-      3. OPENROUTER_API_KEY → use elizaos_plugin_openai with OpenRouter base URL
+      1. ANTHROPIC_API_KEY → try tokagentos_plugin_anthropic
+      2. OPENAI_API_KEY → use tokagentos_plugin_openai
+      3. OPENROUTER_API_KEY → use tokagentos_plugin_openai with OpenRouter base URL
     """
     clean_model = model_name.split("/")[-1] if "/" in model_name else model_name
     openai_base_url = os.getenv("OPENAI_BASE_URL", "").strip()
@@ -137,7 +137,7 @@ def _get_model_plugin(model_name: str) -> Plugin:
     # Try Anthropic plugin first if key available
     if anthropic_key:
         try:
-            from elizaos_plugin_anthropic import get_anthropic_plugin
+            from tokagentos_plugin_anthropic import get_anthropic_plugin
 
             os.environ.setdefault("ANTHROPIC_SMALL_MODEL", clean_model)
             os.environ.setdefault("ANTHROPIC_LARGE_MODEL", clean_model)
@@ -145,7 +145,7 @@ def _get_model_plugin(model_name: str) -> Plugin:
             return get_anthropic_plugin()
         except ImportError:
             logger.info(
-                "elizaos_plugin_anthropic not found, falling back to OpenAI plugin"
+                "tokagentos_plugin_anthropic not found, falling back to OpenAI plugin"
             )
 
     # Configure OpenAI or OpenRouter
@@ -164,7 +164,7 @@ def _get_model_plugin(model_name: str) -> Plugin:
     elif anthropic_key:
         # Anthropic key without plugin — cannot proceed
         raise RuntimeError(
-            "ANTHROPIC_API_KEY found but elizaos_plugin_anthropic not installed. "
+            "ANTHROPIC_API_KEY found but tokagentos_plugin_anthropic not installed. "
             "Either install it or use OPENAI_API_KEY / OPENROUTER_API_KEY."
         )
     else:
@@ -174,13 +174,13 @@ def _get_model_plugin(model_name: str) -> Plugin:
         )
 
     try:
-        from elizaos_plugin_openai import get_openai_plugin
+        from tokagentos_plugin_openai import get_openai_plugin
 
         return get_openai_plugin()
     except ImportError:
         raise RuntimeError(
-            "elizaos_plugin_openai not found. Install with:\n"
-            "  pip install elizaos-plugin-openai"
+            "tokagentos_plugin_openai not found. Install with:\n"
+            "  pip install tokagentos-plugin-openai"
         )
 
 
@@ -189,9 +189,9 @@ def _get_model_plugin(model_name: str) -> Plugin:
 # ---------------------------------------------------------------------------
 
 
-class SolanaElizaAgent:
+class SolanaTokagentAgent:
     """
-    Solana benchmark agent using the full ElizaOS runtime.
+    Solana benchmark agent using the full TokagentOS runtime.
 
     Phase 1 (Deterministic):
         Pre-built templates executed directly through :func:`execute_solana_skill`.
@@ -217,10 +217,10 @@ class SolanaElizaAgent:
         self.max_messages = max_messages
         self.run_index = run_index
         self.code_file = code_file or str(
-            GYM_ENV_DIR / "voyager" / "skill_runner" / "eliza_skill.ts"
+            GYM_ENV_DIR / "voyager" / "skill_runner" / "tokagent_skill.ts"
         )
         self.run_id = (
-            f"eliza_{datetime.now().strftime('%y-%m-%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
+            f"tokagent_{datetime.now().strftime('%y-%m-%d_%H%M%S')}_{uuid.uuid4().hex[:8]}"
         )
 
         self.env_config: dict[str, int | str | float | dict[str, list[str]]] | None = (
@@ -264,7 +264,7 @@ class SolanaElizaAgent:
     # -- Runtime initialisation ------------------------------------------
 
     async def _initialize_runtime(self) -> AgentRuntime:
-        """Create and initialise the full ElizaOS runtime with plugins."""
+        """Create and initialise the full TokagentOS runtime with plugins."""
         character = Character(
             name="SolanaExplorer",
             username="solana_explorer",
@@ -304,7 +304,7 @@ class SolanaElizaAgent:
         await runtime.initialize()
 
         logger.info(
-            "ElizaOS runtime initialised: %d actions, %d providers",
+            "TokagentOS runtime initialised: %d actions, %d providers",
             len(runtime.actions),
             len(runtime.providers),
         )
@@ -589,7 +589,7 @@ class SolanaElizaAgent:
             json.dump(mc, f, indent=2, default=str)
 
     async def cleanup(self) -> None:
-        """Stop the ElizaOS runtime and release resources."""
+        """Stop the TokagentOS runtime and release resources."""
         if self._runtime is not None:
             await self._runtime.stop()
             self._runtime = None
@@ -601,7 +601,7 @@ class SolanaElizaAgent:
 
 
 async def main() -> None:
-    """Run the Solana benchmark with a real ElizaOS agent."""
+    """Run the Solana benchmark with a real TokagentOS agent."""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s  %(levelname)-7s  %(message)s",
@@ -625,7 +625,7 @@ async def main() -> None:
 
     from voyager.surfpool_env import SurfpoolEnv, _surfpool_validator
 
-    agent = SolanaElizaAgent(
+    agent = SolanaTokagentAgent(
         model_name=model_name,
         max_messages=max_messages,
         run_index=run_index,

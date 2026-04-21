@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import time
 
-from elizaos_trust_bench.types import (
+from tokagentos_trust_bench.types import (
     BenchmarkResult,
     CategoryScore,
     DetectionResult,

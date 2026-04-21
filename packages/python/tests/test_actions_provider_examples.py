@@ -1,9 +1,9 @@
 import pytest
 
-from elizaos.action_docs import with_canonical_action_docs  # noqa: F401 - for send_message_action
-from elizaos.features.advanced_capabilities.actions import send_message_action
-from elizaos.runtime import AgentRuntime
-from elizaos.types import Character, Content, Memory, as_uuid
+from tokagentos.action_docs import with_canonical_action_docs  # noqa: F401 - for send_message_action
+from tokagentos.features.advanced_capabilities.actions import send_message_action
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types import Character, Content, Memory, as_uuid
 
 
 @pytest.mark.asyncio

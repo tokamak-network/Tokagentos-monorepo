@@ -19,20 +19,20 @@ WORKSPACE_ROOT = VOICEBENCH_DIR.parent.parent
 SHARED_DIR = VOICEBENCH_DIR / "shared"
 
 # Make local workspace packages importable without separate installation.
-sys.path.insert(0, str(WORKSPACE_ROOT / "eliza/packages/python"))
+sys.path.insert(0, str(WORKSPACE_ROOT / "tokagent/packages/python"))
 sys.path.insert(0, str(WORKSPACE_ROOT / "plugins/plugin-groq/python"))
 sys.path.insert(0, str(WORKSPACE_ROOT / "plugins/plugin-elevenlabs/python/src"))
 sys.path.insert(0, str(WORKSPACE_ROOT / "plugins/plugin-inmemorydb/python"))
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types.agent import Character
-from elizaos.types.memory import BaseMetadata, Memory, MemoryMetadata, MessageMetadata
-from elizaos.types.model import ModelType
-from elizaos.types.primitives import Content, as_uuid
-from elizaos.types.service import Service
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.agent import Character
+from tokagentos.types.memory import BaseMetadata, Memory, MemoryMetadata, MessageMetadata
+from tokagentos.types.model import ModelType
+from tokagentos.types.primitives import Content, as_uuid
+from tokagentos.types.service import Service
 
-from eliza_plugin_elevenlabs import create_elevenlabs_elizaos_plugin
-from elizaos_plugin_groq import create_groq_elizaos_plugin
+from tokagent_plugin_elevenlabs import create_elevenlabs_tokagentos_plugin
+from tokagentos_plugin_groq import create_groq_tokagentos_plugin
 
 
 AGENT_ID = as_uuid("00000000-0000-0000-0000-000000000201")
@@ -358,9 +358,9 @@ async def seed_runtime_graph(runtime: AgentRuntime) -> None:
 
 
 async def create_runtime(profile: str, character: Character) -> AgentRuntime:
-    plugins = [create_groq_elizaos_plugin()]
+    plugins = [create_groq_tokagentos_plugin()]
     if profile == "elevenlabs":
-        plugins.append(create_elevenlabs_elizaos_plugin())
+        plugins.append(create_elevenlabs_tokagentos_plugin())
 
     runtime = AgentRuntime(
         agent_id=AGENT_ID,

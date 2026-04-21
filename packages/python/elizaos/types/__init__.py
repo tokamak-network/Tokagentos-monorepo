@@ -1,6 +1,6 @@
 # Import generated module first to set up sys.path for protobuf imports
-import elizaos.types.generated  # noqa: F401
-from elizaos.types.agent import (
+import tokagentos.types.generated  # noqa: F401
+from tokagentos.types.agent import (
     Agent,
     AgentStatus,
     Character,
@@ -8,7 +8,7 @@ from elizaos.types.agent import (
     MessageExample,
     TemplateType,
 )
-from elizaos.types.components import (
+from tokagentos.types.components import (
     Action,
     ActionContext,
     ActionExample,
@@ -27,7 +27,7 @@ from elizaos.types.components import (
     StreamChunkCallback,
     Validator,
 )
-from elizaos.types.database import (
+from tokagentos.types.database import (
     VECTOR_DIMS,
     ActionLogBody,
     AgentRunCounts,
@@ -49,7 +49,7 @@ from elizaos.types.database import (
     RunStatus,
     SearchOptions,
 )
-from elizaos.types.environment import (
+from tokagentos.types.environment import (
     Component,
     Entity,
     Participant,
@@ -60,7 +60,7 @@ from elizaos.types.environment import (
     WorldMetadata,
     WorldOwnership,
 )
-from elizaos.types.events import (
+from tokagentos.types.events import (
     ActionEventPayload,
     ChannelClearedPayload,
     ControlMessagePayload,
@@ -78,7 +78,7 @@ from elizaos.types.events import (
     RunEventPayload,
     WorldPayload,
 )
-from elizaos.types.memory import (
+from tokagentos.types.memory import (
     BaseMetadata,
     CustomMetadata,
     DescriptionMetadata,
@@ -90,7 +90,7 @@ from elizaos.types.memory import (
     MessageMemory,
     MessageMetadata,
 )
-from elizaos.types.model import (
+from tokagentos.types.model import (
     DetokenizeTextParams,
     GenerateTextOptions,
     GenerateTextParams,
@@ -111,7 +111,7 @@ from elizaos.types.model import (
     TokenUsage,
     TranscriptionParams,
 )
-from elizaos.types.plugin import (
+from tokagentos.types.plugin import (
     Plugin,
     PluginEvents,
     Project,
@@ -120,7 +120,7 @@ from elizaos.types.plugin import (
     RouteRequest,
     RouteResponse,
 )
-from elizaos.types.primitives import (
+from tokagentos.types.primitives import (
     DEFAULT_UUID,
     UUID,
     Content,
@@ -130,12 +130,12 @@ from elizaos.types.primitives import (
     as_uuid,
     string_to_uuid,
 )
-from elizaos.types.runtime import (
+from tokagentos.types.runtime import (
     IAgentRuntime,
     RuntimeSettings,
     StreamingModelHandler,
 )
-from elizaos.types.service import (
+from tokagentos.types.service import (
     Service,
     ServiceError,
     ServiceType,
@@ -143,7 +143,7 @@ from elizaos.types.service import (
     ServiceTypeRegistry,
     create_service_error,
 )
-from elizaos.types.service_interfaces import (
+from tokagentos.types.service_interfaces import (
     BrowserNavigationOptions,
     # Browser
     BrowserViewport,
@@ -244,7 +244,7 @@ from elizaos.types.service_interfaces import (
     WalletPortfolio,
     WebSearchBaseOptions,
 )
-from elizaos.types.state import (
+from tokagentos.types.state import (
     ActionPlan,
     ActionPlanStep,
     RetryBackoffConfig,
@@ -255,7 +255,7 @@ from elizaos.types.state import (
     StreamEventType,
     WorkingMemoryItem,
 )
-from elizaos.types.task import (
+from tokagentos.types.task import (
     Task,
     TaskMetadata,
     TaskStatus,

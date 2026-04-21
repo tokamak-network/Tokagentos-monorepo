@@ -12,7 +12,7 @@
  * - boot-start failure is caught and does not throw
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startN8nAutoStart } from "./n8n-autostart";
 import {

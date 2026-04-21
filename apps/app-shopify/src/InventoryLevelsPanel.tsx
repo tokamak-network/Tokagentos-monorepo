@@ -3,7 +3,7 @@
  * +/- inventory adjustment controls.
  */
 
-import { Button, Skeleton } from "@elizaos/app-core";
+import { Button, Skeleton } from "@tokagentos/app-core";
 import { Minus, Package, Plus } from "lucide-react";
 import { useState } from "react";
 import type { ShopifyInventoryItem } from "./useShopifyDashboard";

@@ -10,7 +10,7 @@ import {
   PromptDialog,
   useConfirm,
   usePrompt,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   type ReactNode,
   useCallback,
@@ -157,9 +157,9 @@ function traceGreeting(phase: string, detail?: Record<string, unknown>): void {
   try {
     if (
       typeof localStorage !== "undefined" &&
-      localStorage.getItem("elizaos:debug:greeting") === "1"
+      localStorage.getItem("tokagentos:debug:greeting") === "1"
     ) {
-      console.info(`[eliza][greeting] ${phase}`, detail ?? "");
+      console.info(`[tokagent][greeting] ${phase}`, detail ?? "");
     }
   } catch {
     /* noop */
@@ -185,7 +185,7 @@ export function AppProvider({
   const onLanguageSyncError = useCallback((lang: UiLanguage) => {
     // Notification is deferred until AppProviderInner mounts; this is
     // only called on language *changes*, never on initial mount.
-    console.warn("[eliza] Failed to sync language to server:", lang);
+    console.warn("[tokagent] Failed to sync language to server:", lang);
   }, []);
   return (
     <TranslationProvider onLanguageSyncError={onLanguageSyncError}>
@@ -640,7 +640,7 @@ function AppProviderInner({
     handleCharacterMessageExamplesInput,
   } = characterHook;
 
-  // elizaCloud* state, refs, and callbacks are now provided by useCloudState (cloudHook above).
+  // tokagentCloud* state, refs, and callbacks are now provided by useCloudState (cloudHook above).
 
   const [ownerName, setOwnerNameState] = useState<string | null>(null);
   const [_ownerNameHydrated, _setOwnerNameHydrated] = useState(false);
@@ -705,7 +705,7 @@ function AppProviderInner({
       remoteApiBase: onboardingRemoteApiBase,
       remoteToken: onboardingRemoteToken,
       subscriptionTab: onboardingSubscriptionTab,
-      elizaCloudTab: onboardingElizaCloudTab,
+      tokagentCloudTab: onboardingTokagentCloudTab,
       selectedChains: onboardingSelectedChains,
       rpcSelections: onboardingRpcSelections,
       rpcKeys: onboardingRpcKeys,
@@ -769,7 +769,7 @@ function AppProviderInner({
     setOnboardingBlooioPhoneNumber,
     setOnboardingGithubToken,
     setOnboardingSubscriptionTab,
-    setOnboardingElizaCloudTab,
+    setOnboardingTokagentCloudTab,
     setOnboardingSelectedChains,
     setOnboardingRpcSelections,
     setOnboardingRpcKeys,
@@ -854,7 +854,7 @@ function AppProviderInner({
     "browse" | "running" | "games"
   >(() => {
     try {
-      const stored = sessionStorage.getItem("eliza:appsSubTab");
+      const stored = sessionStorage.getItem("tokagent:appsSubTab");
       if (stored === "browse" || stored === "running" || stored === "games")
         return stored;
     } catch {
@@ -865,7 +865,7 @@ function AppProviderInner({
   const setAppsSubTab = useCallback((v: "browse" | "running" | "games") => {
     setAppsSubTabRaw(v);
     try {
-      sessionStorage.setItem("eliza:appsSubTab", v);
+      sessionStorage.setItem("tokagent:appsSubTab", v);
     } catch {
       /* ignore */
     }
@@ -896,9 +896,9 @@ function AppProviderInner({
   // --- Refs for timers ---
   // actionNoticeTimer, shownOnceNotices, agentStatusRef, lifecycleBusyRef,
   // lifecycleActionRef, setAgentStatusIfChanged are now in useLifecycleState
-  // elizaCloudPollInterval, elizaCloudDisconnectInFlightRef,
-  // elizaCloudPreferDisconnectedUntilLoginRef, lastElizaCloudPollConnectedRef,
-  // elizaCloudLoginPollTimer are now in useCloudState (cloudHook)
+  // tokagentCloudPollInterval, tokagentCloudDisconnectInFlightRef,
+  // tokagentCloudPreferDisconnectedUntilLoginRef, lastTokagentCloudPollConnectedRef,
+  // tokagentCloudLoginPollTimer are now in useCloudState (cloudHook)
   const prevAgentStateRef = useRef<string | null>(null);
   const _restartNotificationSignatureRef = useRef<string | null>(null);
   const _heartbeatNotificationKeyRef = useRef<string | null>(null);
@@ -908,7 +908,7 @@ function AppProviderInner({
   const forceLocalBootstrapRef = forceLocalBootstrapRefFromHook;
   // exportBusyRef and importBusyRef are now managed inside useExportImportState (exportImportHook)
   // walletApiKeySavingRef is now managed inside useWalletState (walletHook)
-  // elizaCloudLoginBusyRef, elizaCloudAuthNoticeSentRef, handleCloudLoginRef
+  // tokagentCloudLoginBusyRef, tokagentCloudAuthNoticeSentRef, handleCloudLoginRef
   // are now managed inside useCloudState (cloudHook)
 
   // --- Confirm Modal ---
@@ -1003,39 +1003,39 @@ function AppProviderInner({
     handleVincentDisconnect,
   } = vincentHook;
   const {
-    elizaCloudEnabled,
-    setElizaCloudEnabled,
-    elizaCloudVoiceProxyAvailable,
-    setElizaCloudVoiceProxyAvailable,
-    elizaCloudConnected,
-    setElizaCloudConnected,
-    elizaCloudHasPersistedKey,
-    setElizaCloudHasPersistedKey,
-    elizaCloudCredits,
-    setElizaCloudCredits,
-    elizaCloudCreditsLow,
-    setElizaCloudCreditsLow,
-    elizaCloudCreditsCritical,
-    setElizaCloudCreditsCritical,
-    elizaCloudAuthRejected,
-    setElizaCloudAuthRejected,
-    elizaCloudCreditsError,
-    setElizaCloudCreditsError,
-    elizaCloudTopUpUrl,
-    setElizaCloudTopUpUrl,
-    elizaCloudUserId,
-    setElizaCloudUserId,
-    elizaCloudStatusReason,
-    setElizaCloudStatusReason,
+    tokagentCloudEnabled,
+    setTokagentCloudEnabled,
+    tokagentCloudVoiceProxyAvailable,
+    setTokagentCloudVoiceProxyAvailable,
+    tokagentCloudConnected,
+    setTokagentCloudConnected,
+    tokagentCloudHasPersistedKey,
+    setTokagentCloudHasPersistedKey,
+    tokagentCloudCredits,
+    setTokagentCloudCredits,
+    tokagentCloudCreditsLow,
+    setTokagentCloudCreditsLow,
+    tokagentCloudCreditsCritical,
+    setTokagentCloudCreditsCritical,
+    tokagentCloudAuthRejected,
+    setTokagentCloudAuthRejected,
+    tokagentCloudCreditsError,
+    setTokagentCloudCreditsError,
+    tokagentCloudTopUpUrl,
+    setTokagentCloudTopUpUrl,
+    tokagentCloudUserId,
+    setTokagentCloudUserId,
+    tokagentCloudStatusReason,
+    setTokagentCloudStatusReason,
     cloudDashboardView,
     setCloudDashboardView,
-    elizaCloudLoginBusy,
-    elizaCloudLoginError,
-    setElizaCloudLoginError,
-    elizaCloudDisconnecting,
-    elizaCloudPollInterval,
-    elizaCloudPreferDisconnectedUntilLoginRef,
-    elizaCloudLoginPollTimer,
+    tokagentCloudLoginBusy,
+    tokagentCloudLoginError,
+    setTokagentCloudLoginError,
+    tokagentCloudDisconnecting,
+    tokagentCloudPollInterval,
+    tokagentCloudPreferDisconnectedUntilLoginRef,
+    tokagentCloudLoginPollTimer,
     pollCloudCredits,
     handleCloudLogin,
     handleCloudDisconnect,
@@ -1201,23 +1201,23 @@ function AppProviderInner({
     loadConversations,
     loadConversationMessages,
     loadPlugins,
-    elizaCloudEnabled,
-    elizaCloudConnected,
+    tokagentCloudEnabled,
+    tokagentCloudConnected,
     pollCloudCredits,
-    elizaCloudPreferDisconnectedUntilLoginRef,
-    setElizaCloudEnabled,
-    setElizaCloudConnected,
-    setElizaCloudVoiceProxyAvailable,
-    setElizaCloudHasPersistedKey,
-    setElizaCloudCredits,
-    setElizaCloudCreditsLow,
-    setElizaCloudCreditsCritical,
-    setElizaCloudAuthRejected,
-    setElizaCloudCreditsError,
-    setElizaCloudTopUpUrl,
-    setElizaCloudUserId,
-    setElizaCloudStatusReason,
-    setElizaCloudLoginError,
+    tokagentCloudPreferDisconnectedUntilLoginRef,
+    setTokagentCloudEnabled,
+    setTokagentCloudConnected,
+    setTokagentCloudVoiceProxyAvailable,
+    setTokagentCloudHasPersistedKey,
+    setTokagentCloudCredits,
+    setTokagentCloudCreditsLow,
+    setTokagentCloudCreditsCritical,
+    setTokagentCloudAuthRejected,
+    setTokagentCloudCreditsError,
+    setTokagentCloudTopUpUrl,
+    setTokagentCloudUserId,
+    setTokagentCloudStatusReason,
+    setTokagentCloudLoginError,
     onboardingCompletionCommittedRef,
     setOnboardingUiRevealNonce,
     setOnboardingLoading,
@@ -1323,7 +1323,7 @@ function AppProviderInner({
     uiLanguage,
     selectedVrmIndex,
     walletConfig,
-    elizaCloudConnected,
+    tokagentCloudConnected,
     setActionNotice,
     retryStartup,
     setWalletEnabled,
@@ -1427,7 +1427,7 @@ function AppProviderInner({
         onboardingBlooioPhoneNumber: setOnboardingBlooioPhoneNumber,
         onboardingGithubToken: setOnboardingGithubToken,
         onboardingSubscriptionTab: setOnboardingSubscriptionTab,
-        onboardingElizaCloudTab: setOnboardingElizaCloudTab,
+        onboardingTokagentCloudTab: setOnboardingTokagentCloudTab,
         onboardingRpcKeys: setOnboardingRpcKeys,
         onboardingAvatar: setOnboardingAvatar,
         onboardingFeatureTelegram: setOnboardingFeatureTelegram,
@@ -1437,8 +1437,8 @@ function AppProviderInner({
         onboardingFeatureBrowser: setOnboardingFeatureBrowser,
         onboardingFeatureComputerUse: setOnboardingFeatureComputerUse,
         onboardingFeatureOAuthPending: setOnboardingFeatureOAuthPending,
-        elizaCloudEnabled: setElizaCloudEnabled,
-        elizaCloudVoiceProxyAvailable: setElizaCloudVoiceProxyAvailable,
+        tokagentCloudEnabled: setTokagentCloudEnabled,
+        tokagentCloudVoiceProxyAvailable: setTokagentCloudVoiceProxyAvailable,
         cloudDashboardView: setCloudDashboardView,
         selectedVrmIndex: setSelectedVrmIndex,
         customVrmUrl: setCustomVrmUrl,
@@ -1524,7 +1524,7 @@ function AppProviderInner({
       setOnboardingServerTarget,
       setOnboardingDetectedProviders,
       setOnboardingDiscordToken,
-      setOnboardingElizaCloudTab,
+      setOnboardingTokagentCloudTab,
       setOnboardingExistingInstallDetected,
       setOnboardingGithubToken,
       setOnboardingLargeModel,
@@ -1570,8 +1570,8 @@ function AppProviderInner({
       setCustomVrmUrl,
       setCustomWorldUrl,
       setDroppedFiles,
-      setElizaCloudEnabled,
-      setElizaCloudVoiceProxyAvailable,
+      setTokagentCloudEnabled,
+      setTokagentCloudVoiceProxyAvailable,
       setEmotePickerOpen,
       setExportError,
       setExportIncludeLogs,
@@ -1750,8 +1750,8 @@ function AppProviderInner({
     forceLocalBootstrapRef,
     initialTabSetRef,
     activeConversationIdRef,
-    elizaCloudPollInterval,
-    elizaCloudLoginPollTimer,
+    tokagentCloudPollInterval,
+    tokagentCloudLoginPollTimer,
     uiLanguage,
     onboardingMode,
   });
@@ -2089,23 +2089,23 @@ function AppProviderInner({
       customVoicePresetId,
       activePackId,
       customWorldUrl,
-      elizaCloudEnabled,
-      elizaCloudVoiceProxyAvailable,
-      elizaCloudConnected,
-      elizaCloudHasPersistedKey,
-      elizaCloudCredits,
-      elizaCloudCreditsLow,
-      elizaCloudCreditsCritical,
-      elizaCloudAuthRejected,
-      elizaCloudCreditsError,
-      elizaCloudTopUpUrl,
-      elizaCloudUserId,
-      elizaCloudStatusReason,
+      tokagentCloudEnabled,
+      tokagentCloudVoiceProxyAvailable,
+      tokagentCloudConnected,
+      tokagentCloudHasPersistedKey,
+      tokagentCloudCredits,
+      tokagentCloudCreditsLow,
+      tokagentCloudCreditsCritical,
+      tokagentCloudAuthRejected,
+      tokagentCloudCreditsError,
+      tokagentCloudTopUpUrl,
+      tokagentCloudUserId,
+      tokagentCloudStatusReason,
       ownerName,
       cloudDashboardView,
-      elizaCloudLoginBusy,
-      elizaCloudLoginError,
-      elizaCloudDisconnecting,
+      tokagentCloudLoginBusy,
+      tokagentCloudLoginError,
+      tokagentCloudDisconnecting,
       activeAgentProfile: getActiveProfile(),
       updateStatus,
       updateLoading,
@@ -2183,7 +2183,7 @@ function AppProviderInner({
       onboardingBlooioPhoneNumber,
       onboardingGithubToken,
       onboardingSubscriptionTab,
-      onboardingElizaCloudTab,
+      onboardingTokagentCloudTab,
       onboardingSelectedChains,
       onboardingRpcSelections,
       onboardingRpcKeys,
@@ -2502,23 +2502,23 @@ function AppProviderInner({
       customVoicePresetId,
       activePackId,
       customWorldUrl,
-      elizaCloudEnabled,
-      elizaCloudVoiceProxyAvailable,
-      elizaCloudConnected,
-      elizaCloudHasPersistedKey,
-      elizaCloudCredits,
-      elizaCloudCreditsLow,
-      elizaCloudCreditsCritical,
-      elizaCloudAuthRejected,
-      elizaCloudCreditsError,
-      elizaCloudTopUpUrl,
-      elizaCloudUserId,
-      elizaCloudStatusReason,
+      tokagentCloudEnabled,
+      tokagentCloudVoiceProxyAvailable,
+      tokagentCloudConnected,
+      tokagentCloudHasPersistedKey,
+      tokagentCloudCredits,
+      tokagentCloudCreditsLow,
+      tokagentCloudCreditsCritical,
+      tokagentCloudAuthRejected,
+      tokagentCloudCreditsError,
+      tokagentCloudTopUpUrl,
+      tokagentCloudUserId,
+      tokagentCloudStatusReason,
       ownerName,
       cloudDashboardView,
-      elizaCloudLoginBusy,
-      elizaCloudLoginError,
-      elizaCloudDisconnecting,
+      tokagentCloudLoginBusy,
+      tokagentCloudLoginError,
+      tokagentCloudDisconnecting,
       updateStatus,
       updateLoading,
       updateChannelSaving,
@@ -2595,7 +2595,7 @@ function AppProviderInner({
       onboardingBlooioPhoneNumber,
       onboardingGithubToken,
       onboardingSubscriptionTab,
-      onboardingElizaCloudTab,
+      onboardingTokagentCloudTab,
       onboardingSelectedChains,
       onboardingRpcSelections,
       onboardingRpcKeys,

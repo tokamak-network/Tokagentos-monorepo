@@ -4,7 +4,7 @@ import type {
   SessionSendPolicyAction,
   ToolPolicyConfig,
   ToolProfileId,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 export type MediaUnderstandingScopeMatch = {
   channel?: string;

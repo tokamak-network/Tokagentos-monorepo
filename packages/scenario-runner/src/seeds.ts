@@ -1,6 +1,6 @@
-import type { AgentRuntime, UUID } from "@elizaos/core";
-import type { ScenarioContext, ScenarioSeedStep } from "@elizaos/scenario-schema";
-import { stringToUuid } from "@elizaos/core";
+import type { AgentRuntime, UUID } from "@tokagentos/core";
+import type { ScenarioContext, ScenarioSeedStep } from "@tokagentos/scenario-schema";
+import { stringToUuid } from "@tokagentos/core";
 import { resolveDefaultWindowPolicy } from "../../../apps/app-lifeops/src/lifeops/defaults.ts";
 import { materializeDefinitionOccurrences } from "../../../apps/app-lifeops/src/lifeops/engine.ts";
 import {

@@ -79,20 +79,20 @@ export interface WalletNftsResponse {
 
 export const WALLET_RPC_PROVIDER_OPTIONS = {
   evm: [
-    { id: "eliza-cloud", label: "Eliza Cloud" },
+    { id: "tokagent-cloud", label: "Tokagent Cloud" },
     { id: "alchemy", label: "Alchemy" },
     { id: "infura", label: "Infura" },
     { id: "ankr", label: "Ankr" },
   ],
   bsc: [
-    { id: "eliza-cloud", label: "Eliza Cloud" },
+    { id: "tokagent-cloud", label: "Tokagent Cloud" },
     { id: "alchemy", label: "Alchemy" },
     { id: "ankr", label: "Ankr" },
     { id: "nodereal", label: "NodeReal" },
     { id: "quicknode", label: "QuickNode" },
   ],
   solana: [
-    { id: "eliza-cloud", label: "Eliza Cloud" },
+    { id: "tokagent-cloud", label: "Tokagent Cloud" },
     { id: "helius-birdeye", label: "Helius + Birdeye" },
   ],
 } as const;
@@ -112,13 +112,13 @@ export interface WalletRpcSelections {
 }
 
 export const DEFAULT_WALLET_RPC_SELECTIONS: WalletRpcSelections = {
-  evm: "eliza-cloud",
-  bsc: "eliza-cloud",
-  solana: "eliza-cloud",
+  evm: "tokagent-cloud",
+  bsc: "tokagent-cloud",
+  solana: "tokagent-cloud",
 };
 
 const WALLET_RPC_PROVIDER_ALIASES = {
-  elizacloud: "eliza-cloud",
+  tokagentcloud: "tokagent-cloud",
   helius: "helius-birdeye",
 } as const;
 

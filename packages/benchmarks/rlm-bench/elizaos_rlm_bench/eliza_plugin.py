@@ -1,6 +1,6 @@
-"""Eliza Benchmark Plugin for RLM Bench.
+"""Tokagent Benchmark Plugin for RLM Bench.
 
-This plugin provides canonical Eliza integration for RLM benchmarking:
+This plugin provides canonical Tokagent integration for RLM benchmarking:
 - RLMBenchProvider: Injects benchmark context + question into agent state
 - RLMBenchEvaluatorPlugin: Assesses answer quality after agent responds
 
@@ -12,8 +12,8 @@ using the canonical agent flow:
 4. RLMBenchEvaluatorPlugin captures and scores the response
 
 Usage:
-    from elizaos.runtime import AgentRuntime
-    from elizaos_rlm_bench.eliza_plugin import (
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos_rlm_bench.tokagent_plugin import (
         get_rlm_bench_plugin,
         RLMBenchSession,
         run_benchmark_task_through_agent,
@@ -38,20 +38,20 @@ import uuid
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.types.components import (
+from tokagentos.types.components import (
     Evaluator,
     HandlerOptions,
     Provider,
     ProviderResult,
 )
-from elizaos.types.memory import Memory
-from elizaos.types.plugin import Plugin
-from elizaos.types.primitives import Content, string_to_uuid
-from elizaos.types.runtime import IAgentRuntime
-from elizaos.types.state import State
+from tokagentos.types.memory import Memory
+from tokagentos.types.plugin import Plugin
+from tokagentos.types.primitives import Content, string_to_uuid
+from tokagentos.types.runtime import IAgentRuntime
+from tokagentos.types.state import State
 
 if TYPE_CHECKING:
-    from elizaos.types.components import HandlerCallback
+    from tokagentos.types.components import HandlerCallback
 
 
 # ============================================================================
@@ -90,7 +90,7 @@ class RLMBenchEvaluation:
 class RLMBenchSession:
     """Session manager for RLM benchmark tasks.
 
-    This class coordinates between the benchmark runner and the Eliza plugin,
+    This class coordinates between the benchmark runner and the Tokagent plugin,
     storing task context and collecting evaluation results.
     """
 
@@ -244,7 +244,7 @@ async def rlm_bench_provider_get(
     RECENT_MESSAGES, etc.) in the canonical flow.
 
     Args:
-        runtime: The Eliza runtime.
+        runtime: The Tokagent runtime.
         message: The incoming message.
         state: Current agent state.
 
@@ -319,7 +319,7 @@ async def rlm_bench_evaluator_validate(
     """Validate if the RLM benchmark evaluator should run.
 
     Args:
-        runtime: The Eliza runtime.
+        runtime: The Tokagent runtime.
         message: The incoming message.
         state: Current agent state.
 
@@ -350,7 +350,7 @@ async def rlm_bench_evaluator_handler(
     the evaluation results in the session.
 
     Args:
-        runtime: The Eliza runtime.
+        runtime: The Tokagent runtime.
         message: The incoming message.
         state: Current agent state.
         options: Handler options.
@@ -397,7 +397,7 @@ async def rlm_bench_evaluator_handler(
         return
 
     # Use the RLM bench evaluator for scoring
-    from elizaos_rlm_bench.evaluator import (
+    from tokagentos_rlm_bench.evaluator import (
         compute_exact_match,
         compute_partial_match,
     )
@@ -455,7 +455,7 @@ def get_rlm_bench_plugin() -> Plugin:
     """
     return Plugin(
         name="rlmBench",
-        description="RLM benchmarking plugin for evaluating long-context retrieval via Eliza runtime",
+        description="RLM benchmarking plugin for evaluating long-context retrieval via Tokagent runtime",
         providers=[rlm_bench_provider],
         actions=[],  # No custom actions - use bootstrap's REPLY
         evaluators=[rlm_bench_evaluator],
@@ -477,9 +477,9 @@ async def run_benchmark_task_through_agent(
     bench_type: str = "",
     context_length_tokens: int = 0,
 ) -> RLMBenchEvaluation:
-    """Run a single RLM benchmark task through the full Eliza agent loop.
+    """Run a single RLM benchmark task through the full Tokagent agent loop.
 
-    This function exercises the CANONICAL Eliza flow:
+    This function exercises the CANONICAL Tokagent flow:
     1. Sets up the benchmark session with task context
     2. Creates a message with the question
     3. Processes through message_service.handle_message() which:
@@ -491,7 +491,7 @@ async def run_benchmark_task_through_agent(
     4. Returns evaluation results
 
     Args:
-        runtime: Initialized Eliza runtime with RLM bench plugin.
+        runtime: Initialized Tokagent runtime with RLM bench plugin.
         session: RLMBenchSession to use for this task.
         task_id: Unique task identifier.
         context: The haystack context text.
@@ -557,7 +557,7 @@ async def run_benchmark_task_through_agent(
             if result.response_content and result.response_content.text:
                 response_text = result.response_content.text
 
-            from elizaos_rlm_bench.evaluator import (
+            from tokagentos_rlm_bench.evaluator import (
                 compute_exact_match,
                 compute_partial_match,
             )
@@ -601,7 +601,7 @@ async def run_benchmark_task_through_agent(
 async def setup_benchmark_runtime(
     model_plugin: Plugin | None = None,
 ) -> "IAgentRuntime":
-    """Set up an Eliza runtime configured for RLM benchmarking.
+    """Set up an Tokagent runtime configured for RLM benchmarking.
 
     This creates a runtime with:
     - basicCapabilities enabled (default) - loads bootstrap plugin
@@ -617,8 +617,8 @@ async def setup_benchmark_runtime(
         Configured runtime ready for benchmarking.
 
     """
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
 
     # Custom message handler template optimized for RLM benchmark Q&A
     benchmark_message_handler_template = """<task>Plan the next action for {{agentName}} to answer the user's question about long-context content.</task>
@@ -696,7 +696,7 @@ IMPORTANT: Your response must ONLY contain the <response></response> XML block a
 
     # Register the RLM plugin which provides model handlers for TEXT_LARGE
     try:
-        from elizaos_plugin_rlm import plugin as rlm_plugin
+        from tokagentos_plugin_rlm import plugin as rlm_plugin
 
         plugins.append(rlm_plugin)
     except ImportError:

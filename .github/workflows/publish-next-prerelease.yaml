@@ -70,7 +70,7 @@ jobs:
       - name: Compute next prerelease version
         id: version
         run: |
-          CURRENT=$(npm view @elizaos/core versions --json | node -e '
+          CURRENT=$(npm view @tokagentos/core versions --json | node -e '
             const fs = require("fs");
             const versions = JSON.parse(fs.readFileSync(0, "utf8"));
             const prereleases = versions
@@ -131,7 +131,7 @@ jobs:
 
       - name: Ensure clean tree before publish
         run: |
-          git checkout -- packages/elizaos/examples-manifest.json || true
+          git checkout -- packages/tokagentos/examples-manifest.json || true
 
           if [[ -n "$(git status --porcelain)" ]]; then
             echo "❌ Working tree must be clean before publish."

@@ -23,7 +23,7 @@ const { clientMock, reactModuleUrl } = vi.hoisted(() => ({
 }));
 
 vi.mock("react", async () => import(reactModuleUrl));
-vi.mock("@elizaos/app-core/api", () => ({ client: clientMock }));
+vi.mock("@tokagentos/app-core/api", () => ({ client: clientMock }));
 
 import { useIMessageConnector } from "./useIMessageConnector.js";
 

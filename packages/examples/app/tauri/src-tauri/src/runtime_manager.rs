@@ -1,10 +1,10 @@
 use crate::types::{effective_mode, AppConfig, ProviderMode};
-use elizaos::types::agent::Character;
-use elizaos::types::model::LLMMode;
-use elizaos::types::primitives::{string_to_uuid, UUID};
-use elizaos::types::settings::SettingValue;
-use elizaos::{runtime::RuntimeOptions, AgentRuntime};
-use elizaos_plugin_eliza_classic::ElizaClassicPlugin;
+use tokagentos::types::agent::Character;
+use tokagentos::types::model::LLMMode;
+use tokagentos::types::primitives::{string_to_uuid, UUID};
+use tokagentos::types::settings::SettingValue;
+use tokagentos::{runtime::RuntimeOptions, AgentRuntime};
+use tokagentos_plugin_tokagent_classic::TokagentClassicPlugin;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -18,24 +18,24 @@ pub type SharedRuntime = Arc<Mutex<Option<RuntimeState>>>;
 async fn build_runtime(cfg: &AppConfig) -> anyhow::Result<Arc<AgentRuntime>> {
     let mode = effective_mode(cfg);
 
-    // Always have ELIZA classic available as a fallback / offline mode.
+    // Always have TOKAGENT classic available as a fallback / offline mode.
     // For LLM modes, we register TEXT_SMALL/TEXT_LARGE handlers from plugins where available.
-    let plugins: Vec<elizaos::types::Plugin> = Vec::new();
+    let plugins: Vec<tokagentos::types::Plugin> = Vec::new();
 
-    // ELIZA classic doesn't expose an elizaos::Plugin in Rust; we wire it by registering
-    // a model handler directly that returns ELIZA responses.
-    let eliza = Arc::new(ElizaClassicPlugin::new());
+    // TOKAGENT classic doesn't expose an tokagentos::Plugin in Rust; we wire it by registering
+    // a model handler directly that returns TOKAGENT responses.
+    let tokagent = Arc::new(TokagentClassicPlugin::new());
 
     let runtime: Arc<AgentRuntime> = AgentRuntime::new(RuntimeOptions {
             character: Some(Character {
-                name: "Eliza".to_string(),
-                bio: elizaos::types::agent::Bio::Single("A helpful assistant for simple back-and-forth chat.".to_string()),
-                system: Some("You are a helpful assistant. If no LLM is available, respond in the style of classic ELIZA.".to_string()),
+                name: "Tokagent".to_string(),
+                bio: tokagentos::types::agent::Bio::Single("A helpful assistant for simple back-and-forth chat.".to_string()),
+                system: Some("You are a helpful assistant. If no LLM is available, respond in the style of classic TOKAGENT.".to_string()),
                 ..Default::default()
             }),
             plugins,
             adapter: None,
-            log_level: elizaos::runtime::LogLevel::Error,
+            log_level: tokagentos::runtime::LogLevel::Error,
             action_planning: Some(false),
             check_should_respond: Some(false),
             llm_mode: Some(LLMMode::Small),
@@ -51,25 +51,25 @@ async fn build_runtime(cfg: &AppConfig) -> anyhow::Result<Arc<AgentRuntime>> {
         .set_setting("LLM_MODE", SettingValue::String("DEFAULT".to_string()), false)
         .await;
 
-    // Classic ELIZA handler (TEXT_SMALL + TEXT_LARGE) used when no LLM is configured.
-    let eliza_small = Arc::clone(&eliza);
+    // Classic TOKAGENT handler (TEXT_SMALL + TEXT_LARGE) used when no LLM is configured.
+    let tokagent_small = Arc::clone(&tokagent);
     runtime
         .register_model("TEXT_SMALL", Box::new(move |params: serde_json::Value| {
-            let eliza = Arc::clone(&eliza_small);
+            let tokagent = Arc::clone(&tokagent_small);
             Box::pin(async move {
                 let prompt = params.get("prompt").and_then(|v| v.as_str()).unwrap_or("");
-                Ok(eliza.generate_response(prompt))
+                Ok(tokagent.generate_response(prompt))
             })
         }))
         .await;
 
-    let eliza_large = Arc::clone(&eliza);
+    let tokagent_large = Arc::clone(&tokagent);
     runtime
         .register_model("TEXT_LARGE", Box::new(move |params: serde_json::Value| {
-            let eliza = Arc::clone(&eliza_large);
+            let tokagent = Arc::clone(&tokagent_large);
             Box::pin(async move {
                 let prompt = params.get("prompt").and_then(|v| v.as_str()).unwrap_or("");
-                Ok(eliza.generate_response(prompt))
+                Ok(tokagent.generate_response(prompt))
             })
         }))
         .await;
@@ -81,7 +81,7 @@ async fn build_runtime(cfg: &AppConfig) -> anyhow::Result<Arc<AgentRuntime>> {
             std::env::set_var("OPENAI_BASE_URL", cfg.provider.openai_base_url.clone());
             std::env::set_var("OPENAI_SMALL_MODEL", cfg.provider.openai_small_model.clone());
             std::env::set_var("OPENAI_LARGE_MODEL", cfg.provider.openai_large_model.clone());
-            let plugin = elizaos_plugin_openai::create_openai_elizaos_plugin()?;
+            let plugin = tokagentos_plugin_openai::create_openai_tokagentos_plugin()?;
             runtime.register_plugin(plugin).await?;
         }
         ProviderMode::XAI => {
@@ -89,10 +89,10 @@ async fn build_runtime(cfg: &AppConfig) -> anyhow::Result<Arc<AgentRuntime>> {
             std::env::set_var("XAI_BASE_URL", cfg.provider.xai_base_url.clone());
             std::env::set_var("XAI_SMALL_MODEL", cfg.provider.xai_small_model.clone());
             std::env::set_var("XAI_LARGE_MODEL", cfg.provider.xai_large_model.clone());
-            let plugin = elizaos_plugin_xai::create_xai_elizaos_plugin()?;
+            let plugin = tokagentos_plugin_xai::create_xai_tokagentos_plugin()?;
             runtime.register_plugin(plugin).await?;
         }
-        ProviderMode::ElizaClassic => {}
+        ProviderMode::TokagentClassic => {}
     }
 
     runtime.initialize().await?;
@@ -121,13 +121,13 @@ pub fn room_id() -> UUID {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use elizaos::services::IMessageService;
-    use elizaos::types::memory::Memory;
+    use tokagentos::services::IMessageService;
+    use tokagentos::types::memory::Memory;
     use std::sync::Arc;
     use tokio::sync::Mutex;
 
     #[tokio::test]
-    async fn eliza_classic_responds_and_runtime_is_cached() {
+    async fn tokagent_classic_responds_and_runtime_is_cached() {
         let shared: SharedRuntime = Arc::new(Mutex::new(None));
         let cfg = AppConfig::default();
 

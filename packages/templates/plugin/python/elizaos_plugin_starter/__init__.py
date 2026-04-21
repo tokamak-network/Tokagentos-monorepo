@@ -1,16 +1,16 @@
 """
-elizaOS Python Plugin Starter
+tokagentOS Python Plugin Starter
 
-A template for creating elizaOS plugins in Python that can be loaded by:
+A template for creating tokagentOS plugins in Python that can be loaded by:
 - Python runtime (native)
 - TypeScript runtime (via IPC bridge)
 
 Example:
-    >>> from elizaos_plugin_starter import plugin
+    >>> from tokagentos_plugin_starter import plugin
     >>> await runtime.register_plugin(plugin)
 """
 
-from elizaos_plugin_starter.plugin import plugin, StarterService
+from tokagentos_plugin_starter.plugin import plugin, StarterService
 
 __all__ = ["plugin", "StarterService"]
 __version__ = "1.0.0"

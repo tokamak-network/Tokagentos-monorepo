@@ -7,7 +7,7 @@
 import { writeFileSync } from "node:fs";
 import { mkdirSync } from "node:fs";
 import path from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import type { AggregateReport, ScenarioReport } from "./types.ts";
 
 export function buildAggregate(

@@ -1,4 +1,4 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { theme } from "../terminal/theme";
 
 const LOG_LEVEL_PRIORITY: Record<string, number> = {

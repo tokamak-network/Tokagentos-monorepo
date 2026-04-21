@@ -1,51 +1,51 @@
-# elizaOS CLI
+# tokagentOS CLI
 
-Create and upgrade elizaOS project templates.
+Create and upgrade tokagentOS project templates.
 
 ## Installation
 
 ```bash
 # Interactive home screen
-npx elizaos
+npx tokagentos
 
 # Or run a command directly
-npx elizaos create
+npx tokagentos create
 ```
 
 ## Commands
 
-### `elizaos create`
+### `tokagentos create`
 
 Create a new project from a packaged template.
 
 ```bash
 # Interactive template selection
-elizaos create
+tokagentos create
 
 # Create a fullstack app workspace
-elizaos create my-app --template fullstack-app
+tokagentos create my-app --template fullstack-app
 
 # Create a Rust plugin starter
-elizaos create plugin-foo --template plugin --language rust
+tokagentos create plugin-foo --template plugin --language rust
 ```
 
-### `elizaos upgrade`
+### `tokagentos upgrade`
 
 Upgrade the current generated project to the latest packaged template.
 
 ```bash
-elizaos upgrade
-elizaos upgrade --check
+tokagentos upgrade
+tokagentos upgrade --check
 ```
 
-### `elizaos info`
+### `tokagentos info`
 
 Show available templates and languages.
 
 ```bash
-elizaos info
-elizaos info --template fullstack-app
-elizaos info --language rust
+tokagentos info
+tokagentos info --template fullstack-app
+tokagentos info --language rust
 ```
 
 ## Templates
@@ -53,7 +53,7 @@ elizaos info --language rust
 | Template | Description | Languages |
 | --- | --- | --- |
 | `plugin` | Plugin starter workspace | TypeScript, Python, Rust |
-| `fullstack-app` | Milady-style app workspace backed by a local `eliza` checkout | TypeScript |
+| `fullstack-app` | Milady-style app workspace backed by a local `tokagent` checkout | TypeScript |
 
 ## Development
 

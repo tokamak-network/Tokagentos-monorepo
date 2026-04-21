@@ -1,4 +1,4 @@
-const DOCS_ROOT = "https://docs.eliza.ai";
+const DOCS_ROOT = "https://docs.tokagent.ai";
 
 export function formatTerminalLink(
   label: string,

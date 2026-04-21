@@ -8,10 +8,10 @@ import type {
   LifeOpsGmailReplyDraft,
   LifeOpsGmailSearchFeed,
   LifeOpsGmailTriageFeed,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_GMAIL_DRAFT_TONES,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   fail,
   normalizeEnumValue,

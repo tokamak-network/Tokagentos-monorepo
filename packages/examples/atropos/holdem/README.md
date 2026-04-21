@@ -1,10 +1,10 @@
-# ElizaOS Atropos - Texas Hold'em Poker Environment
+# TokagentOS Atropos - Texas Hold'em Poker Environment
 
-A Texas Hold'em poker environment for training ElizaOS agents using the Atropos RL framework.
+A Texas Hold'em poker environment for training TokagentOS agents using the Atropos RL framework.
 
 ## Overview
 
-This environment implements No-Limit Texas Hold'em poker, allowing ElizaOS agents to:
+This environment implements No-Limit Texas Hold'em poker, allowing TokagentOS agents to:
 - Learn poker strategy through self-play
 - Understand betting dynamics and pot odds
 - Develop opponent modeling skills
@@ -21,16 +21,16 @@ pip install -e examples/atropos/holdem
 
 ```bash
 # Watch AI play heads-up
-python -m elizaos_atropos_holdem --mode auto
+python -m tokagentos_atropos_holdem --mode auto
 
 # Play against the AI
-python -m elizaos_atropos_holdem --mode interactive
+python -m tokagentos_atropos_holdem --mode interactive
 
 # Run tournament simulation
-python -m elizaos_atropos_holdem --mode tournament
+python -m tokagentos_atropos_holdem --mode tournament
 
 # Multi-player game
-python -m elizaos_atropos_holdem --players 6
+python -m tokagentos_atropos_holdem --players 6
 ```
 
 ## Environment Details
@@ -67,12 +67,12 @@ python -m elizaos_atropos_holdem --players 6
 - Profit/loss at end of hand
 - Normalized by big blind
 
-## Usage with ElizaOS
+## Usage with TokagentOS
 
 ```python
-from elizaos import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_atropos_holdem import HoldemEnvironment, HoldemAgent
+from tokagentos import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_atropos_holdem import HoldemEnvironment, HoldemAgent
 
 # Create environment
 env = HoldemEnvironment(num_players=2, starting_stack=1000, blinds=(5, 10))
@@ -103,7 +103,7 @@ for hand in range(100):
 
 ```python
 from atropos import AtroposClient
-from elizaos_atropos_holdem import HoldemEnvironment
+from tokagentos_atropos_holdem import HoldemEnvironment
 
 # Register with Atropos
 client = AtroposClient()
@@ -161,16 +161,16 @@ trajectories = await client.collect_multiagent_rollouts(
 ## Architecture
 
 ```
-elizaos_atropos_holdem/
+tokagentos_atropos_holdem/
 ├── __init__.py           # Package exports
 ├── types.py              # Game types (Card, Hand, Action, etc.)
 ├── deck.py               # Card deck and shuffling
 ├── hand_evaluator.py     # Hand strength evaluation
 ├── environment.py        # HoldemEnvironment class
-├── agent.py              # ElizaOS agent integration
+├── agent.py              # TokagentOS agent integration
 └── cli.py                # Command-line interface
 ```
 
 ## License
 
-MIT License - Part of the ElizaOS project.
+MIT License - Part of the TokagentOS project.

@@ -18,7 +18,7 @@ const appName = appArgMatch ? appArgMatch.split("=")[1] : "app";
 const APP_DIR = path.join(ROOT, "apps", appName);
 const CANONICAL_ELECTROBUN_DIR = path.join(
   ROOT,
-  "eliza",
+  "tokagent",
   "packages",
   "app-core",
   "platforms",
@@ -37,7 +37,7 @@ const PROFILE_EXCLUDED_OPTIONAL_PACKS = {
   full: [],
   "no-streaming": ["streaming"],
 };
-const COMMAND_PREFIX = (process.env.ELIZA_DESKTOP_COMMAND_PREFIX ?? "")
+const COMMAND_PREFIX = (process.env.TOKAGENT_DESKTOP_COMMAND_PREFIX ?? "")
   .trim()
   .split(/\s+/)
   .filter(Boolean);
@@ -48,7 +48,7 @@ const flagStart = command === "build" && argv[0]?.startsWith("--") ? 0 : 1;
 const args = argv.slice(flagStart);
 
 const buildProfile =
-  getArgValue(args, "profile") ?? process.env.ELIZA_DESKTOP_PROFILE ?? "full";
+  getArgValue(args, "profile") ?? process.env.TOKAGENT_DESKTOP_PROFILE ?? "full";
 const variant =
   getArgValue(args, "variant") ?? process.env.VITE_APP_VARIANT ?? "base";
 const buildEnv = getArgValue(args, "env") ?? process.env.BUILD_ENV ?? "";
@@ -601,7 +601,7 @@ function packageDesktopBuild() {
   const packageEnv = {
     ...process.env,
     ...(stageMacosReleaseApp && process.platform === "darwin"
-      ? { ELIZA_ELECTROBUN_NOTARIZE: "0" }
+      ? { TOKAGENT_ELECTROBUN_NOTARIZE: "0" }
       : {}),
   };
 
@@ -624,7 +624,7 @@ function packageDesktopBuild() {
     runBun(["scripts/local-adhoc-sign-macos.ts", appBundlePath], {
       cwd: ELECTROBUN_DIR,
       env: packageEnv,
-      label: `Applying local ad-hoc Eliza signing (${path.basename(appBundlePath)})`,
+      label: `Applying local ad-hoc Tokagent signing (${path.basename(appBundlePath)})`,
     });
   }
 
@@ -634,8 +634,8 @@ function packageDesktopBuild() {
       env: {
         ...packageEnv,
         ELECTROBUN_SKIP_CODESIGN: process.env.ELECTROBUN_SKIP_CODESIGN ?? "1",
-        ELIZA_STAGE_MACOS_SKIP_DMG:
-          process.env.ELIZA_STAGE_MACOS_SKIP_DMG ?? "1",
+        TOKAGENT_STAGE_MACOS_SKIP_DMG:
+          process.env.TOKAGENT_STAGE_MACOS_SKIP_DMG ?? "1",
       },
       label: "Staging direct macOS release app",
     });
@@ -651,7 +651,7 @@ function runDesktopBuild() {
 }
 
 function printUsage() {
-  console.log(`Usage: node eliza/packages/app-core/scripts/desktop-build.mjs <command> [options]
+  console.log(`Usage: node tokagent/packages/app-core/scripts/desktop-build.mjs <command> [options]
 
 Commands:
   preflight Run desktop preflight checks (Bun + electrobun/view resolution)
@@ -669,7 +669,7 @@ Options:
   --exclude-optional-pack <name>   Exclude a manifest-classified optional capability pack during staging
 
 Environment:
-  ELIZA_DESKTOP_COMMAND_PREFIX    Prefix every spawned command, e.g. "arch -x86_64"
+  TOKAGENT_DESKTOP_COMMAND_PREFIX    Prefix every spawned command, e.g. "arch -x86_64"
 `);
 }
 

@@ -7,7 +7,7 @@ compares with published leaderboard scores.
 
 import logging
 
-from elizaos_gaia.types import (
+from tokagentos_gaia.types import (
     LEADERBOARD_SCORES,
     GAIALevel,
     GAIAMetrics,
@@ -168,7 +168,7 @@ class MetricsCalculator:
 
         # Build comparison dict with our score added
         comparison = {
-            "ElizaOS Agent": {
+            "TokagentOS Agent": {
                 "level_1": our_level_scores[GAIALevel.LEVEL_1],
                 "level_2": our_level_scores[GAIALevel.LEVEL_2],
                 "level_3": our_level_scores[GAIALevel.LEVEL_3],

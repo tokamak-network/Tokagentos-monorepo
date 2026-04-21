@@ -4,7 +4,7 @@ import {
   resolveCanonicalOwnerId,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 import { isUuidLike } from "./server-helpers.js";
 
@@ -49,7 +49,7 @@ export function resolveClientChatAdminEntityId<
       : (stringToUuid(`${state.agentName}-admin-entity`) as UUID);
   if (configured && !isUuidLike(configured)) {
     logger.warn(
-      `[eliza-api] Invalid agents.defaults.adminEntityId "${configured}", using deterministic fallback`,
+      `[tokagent-api] Invalid agents.defaults.adminEntityId "${configured}", using deterministic fallback`,
     );
   }
 

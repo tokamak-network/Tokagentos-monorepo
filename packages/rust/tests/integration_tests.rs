@@ -1,6 +1,6 @@
 #![cfg(all(feature = "native", not(feature = "wasm")))]
 
-//! Integration tests for elizaOS Core
+//! Integration tests for tokagentOS Core
 //!
 //! These tests verify the complete agent runtime functionality including:
 //! - Action handling and execution
@@ -12,7 +12,7 @@
 
 use anyhow::Result;
 use async_trait::async_trait;
-use elizaos::{
+use tokagentos::{
     parse_character,
     runtime::{AgentRuntime, DatabaseAdapter, RuntimeOptions},
     types::{
@@ -35,7 +35,7 @@ use std::sync::{Arc, Mutex};
 #[derive(Default)]
 struct MockDatabaseAdapter {
     memories: Mutex<HashMap<String, Memory>>,
-    agents: Mutex<HashMap<String, elizaos::Agent>>,
+    agents: Mutex<HashMap<String, tokagentos::Agent>>,
     rooms: Mutex<HashMap<String, Room>>,
     entities: Mutex<HashMap<String, Entity>>,
     worlds: Mutex<HashMap<String, World>>,
@@ -62,12 +62,12 @@ impl DatabaseAdapter for MockDatabaseAdapter {
         Ok(*initialized)
     }
 
-    async fn get_agent(&self, agent_id: &UUID) -> Result<Option<elizaos::Agent>> {
+    async fn get_agent(&self, agent_id: &UUID) -> Result<Option<tokagentos::Agent>> {
         let agents = self.agents.lock().unwrap();
         Ok(agents.get(agent_id.as_str()).cloned())
     }
 
-    async fn create_agent(&self, agent: &elizaos::Agent) -> Result<bool> {
+    async fn create_agent(&self, agent: &tokagentos::Agent) -> Result<bool> {
         let mut agents = self.agents.lock().unwrap();
         if let Some(id) = &agent.character.id {
             agents.insert(id.as_str().to_string(), agent.clone());
@@ -77,7 +77,7 @@ impl DatabaseAdapter for MockDatabaseAdapter {
         }
     }
 
-    async fn update_agent(&self, agent_id: &UUID, agent: &elizaos::Agent) -> Result<bool> {
+    async fn update_agent(&self, agent_id: &UUID, agent: &tokagentos::Agent) -> Result<bool> {
         let mut agents = self.agents.lock().unwrap();
         agents.insert(agent_id.as_str().to_string(), agent.clone());
         Ok(true)
@@ -1102,7 +1102,7 @@ mod run_management_tests {
 
 mod settings_tests {
     use super::*;
-    use elizaos::types::LLMMode;
+    use tokagentos::types::LLMMode;
 
     /// Test runtime settings
     #[tokio::test]

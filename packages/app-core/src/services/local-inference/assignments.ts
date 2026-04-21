@@ -7,7 +7,7 @@
  * model Y. The runtime's model handlers lazy-load whichever assignment
  * fires; the coordinator handles the actual swap in and out of memory.
  *
- * Stored in `$ELIZA_STATE_DIR/local-inference/assignments.json`. Cheap
+ * Stored in `$TOKAGENT_STATE_DIR/local-inference/assignments.json`. Cheap
  * enough to rewrite on every change — we never mutate in place.
  */
 

@@ -1,10 +1,10 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: elizaos-app
-Upstream-Contact: dev@app.elizaos.ai
-Source: https://github.com/elizaos/elizaos-app
+Upstream-Name: tokagentos-app
+Upstream-Contact: dev@app.tokagentos.ai
+Source: https://github.com/tokagentos/tokagentos-app
 
 Files: *
-Copyright: 2024-2026 elizaos
+Copyright: 2024-2026 tokagentos
 License: MIT
 
 License: MIT

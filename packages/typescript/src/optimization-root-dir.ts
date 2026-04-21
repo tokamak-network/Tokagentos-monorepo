@@ -11,5 +11,5 @@ export function getOptimizationRootDir(settingValue?: string | null): string {
 	if (settingValue && typeof settingValue === "string") {
 		return settingValue;
 	}
-	return join(homedir(), ".eliza", "optimization");
+	return join(homedir(), ".tokagent", "optimization");
 }

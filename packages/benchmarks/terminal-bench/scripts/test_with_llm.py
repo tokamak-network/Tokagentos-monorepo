@@ -18,12 +18,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# When running inside the monorepo, add local ElizaOS + plugins to PYTHONPATH
+# When running inside the monorepo, add local TokagentOS + plugins to PYTHONPATH
 _repo_root = Path(__file__).resolve().parents[4]
-_local_elizaos = _repo_root / "packages" / "python"
+_local_tokagentos = _repo_root / "packages" / "python"
 _local_openai_plugin = _repo_root / "plugins" / "plugin-openai" / "python"
-if _local_elizaos.exists():
-    sys.path.insert(0, str(_local_elizaos))
+if _local_tokagentos.exists():
+    sys.path.insert(0, str(_local_tokagentos))
 if _local_openai_plugin.exists():
     sys.path.insert(0, str(_local_openai_plugin))
 
@@ -38,9 +38,9 @@ DEFAULT_MODEL = os.getenv("TERMINAL_BENCH_MODEL", "gpt-5-mini")
 
 async def test_standalone_mode() -> bool:
     """Test the agent in standalone mode (direct OpenAI API calls)."""
-    from elizaos_terminal_bench.agent import TerminalAgent
-    from elizaos_terminal_bench.environment import TerminalEnvironment
-    from elizaos_terminal_bench.types import TaskCategory, TaskDifficulty, TerminalTask
+    from tokagentos_terminal_bench.agent import TerminalAgent
+    from tokagentos_terminal_bench.environment import TerminalEnvironment
+    from tokagentos_terminal_bench.types import TaskCategory, TaskDifficulty, TerminalTask
     
     logger.info("Testing Standalone Mode (Direct OpenAI API)")
     logger.info("=" * 60)
@@ -104,22 +104,22 @@ python3 /workspace/hello.py""",
         await agent.close()
 
 
-async def test_with_elizaos_runtime() -> bool:
-    """Test the agent with ElizaOS runtime (requires OpenAI plugin setup)."""
-    logger.info("\nTesting ElizaOS Runtime Mode")
+async def test_with_tokagentos_runtime() -> bool:
+    """Test the agent with TokagentOS runtime (requires OpenAI plugin setup)."""
+    logger.info("\nTesting TokagentOS Runtime Mode")
     logger.info("=" * 60)
     
     try:
-        from elizaos.runtime import AgentRuntime
-        from elizaos.types.agent import Character
-        from elizaos_plugin_openai import get_openai_plugin
+        from tokagentos.runtime import AgentRuntime
+        from tokagentos.types.agent import Character
+        from tokagentos_plugin_openai import get_openai_plugin
     except ImportError as e:
-        logger.warning(f"ElizaOS runtime not available: {e}")
-        logger.info("Skipping ElizaOS runtime test")
+        logger.warning(f"TokagentOS runtime not available: {e}")
+        logger.info("Skipping TokagentOS runtime test")
         return True  # Not a failure, just not available
     
-    from elizaos_terminal_bench.agent import TerminalAgent
-    from elizaos_terminal_bench.types import TaskCategory, TaskDifficulty, TerminalTask
+    from tokagentos_terminal_bench.agent import TerminalAgent
+    from tokagentos_terminal_bench.types import TaskCategory, TaskDifficulty, TerminalTask
     
     # Create a simple task
     task = TerminalTask(
@@ -141,7 +141,7 @@ exit 1
     )
     
     try:
-        # Create ElizaOS runtime with OpenAI plugin
+        # Create TokagentOS runtime with OpenAI plugin
         character = Character(
             name="TerminalBenchAgent",
             bio="An agent specialized in terminal tasks",
@@ -173,14 +173,14 @@ exit 1
         return result.success
         
     except Exception as e:
-        logger.error(f"ElizaOS runtime test failed: {e}")
+        logger.error(f"TokagentOS runtime test failed: {e}")
         return False
 
 
 async def run_sample_benchmark() -> None:
     """Run a small benchmark with sample tasks."""
-    from elizaos_terminal_bench.runner import TerminalBenchRunner
-    from elizaos_terminal_bench.types import TerminalBenchConfig
+    from tokagentos_terminal_bench.runner import TerminalBenchRunner
+    from tokagentos_terminal_bench.types import TerminalBenchConfig
     
     logger.info("\nRunning Sample Benchmark")
     logger.info("=" * 60)
@@ -258,13 +258,13 @@ async def main() -> int:
         logger.error(f"Standalone test failed: {e}")
         results.append(("Standalone Mode", False))
     
-    # Test 2: ElizaOS runtime mode
+    # Test 2: TokagentOS runtime mode
     try:
-        success = await test_with_elizaos_runtime()
-        results.append(("ElizaOS Runtime", success))
+        success = await test_with_tokagentos_runtime()
+        results.append(("TokagentOS Runtime", success))
     except Exception as e:
         logger.error(f"Runtime test failed: {e}")
-        results.append(("ElizaOS Runtime", False))
+        results.append(("TokagentOS Runtime", False))
     
     # Test 3: Sample benchmark
     try:

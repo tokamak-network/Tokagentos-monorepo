@@ -1,13 +1,13 @@
 import { logger } from "../../../logger.ts";
 import type {
-	Action as ElizaAction,
+	Action as TokagentAction,
 	IAgentRuntime,
 	Memory,
 } from "../../../types/index.ts";
 import { parseJSONObjectFromText } from "../../../utils.ts";
 import type { ElevationRequest } from "../types/permissions.ts";
 
-export const requestElevationAction: ElizaAction = {
+export const requestElevationAction: TokagentAction = {
 	name: "REQUEST_ELEVATION",
 	description:
 		"Request temporary elevation of permissions for a specific action",

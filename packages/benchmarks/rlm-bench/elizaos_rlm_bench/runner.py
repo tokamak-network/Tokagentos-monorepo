@@ -5,8 +5,8 @@ Executes benchmark tasks using the RLM client and collects results.
 
 Supports multiple execution modes:
 - stub: Fast testing with heuristic-based mock
-- rlm: Direct RLM plugin for recursive inference (bypasses Eliza runtime)
-- eliza: Full Eliza agent loop (Provider -> Model -> Action -> Evaluator)
+- rlm: Direct RLM plugin for recursive inference (bypasses Tokagent runtime)
+- tokagent: Full Tokagent agent loop (Provider -> Model -> Action -> Evaluator)
 - custom: Custom LLM query function
 """
 
@@ -30,9 +30,9 @@ from .generator import RLMBenchGenerator
 from .evaluator import RLMBenchEvaluator
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
-logger = logging.getLogger("elizaos.rlm-bench")
+logger = logging.getLogger("tokagentos.rlm-bench")
 
 # Type for LLM query function
 LLMQueryFn = Callable[[str, str], str]
@@ -45,7 +45,7 @@ class RLMBenchRunner:
     Supports multiple backends:
     - stub: Fast testing with heuristic-based mock
     - rlm: Uses RLM plugin directly for recursive inference
-    - eliza: Full Eliza agent loop with RLM plugin as model handler
+    - tokagent: Full Tokagent agent loop with RLM plugin as model handler
     - custom: Custom LLM query function for comparison
     """
 
@@ -61,7 +61,7 @@ class RLMBenchRunner:
         Args:
             config: Benchmark configuration
             llm_query_fn: Optional custom LLM query function
-            runtime: Optional Eliza runtime for 'eliza' mode
+            runtime: Optional Tokagent runtime for 'tokagent' mode
         """
         self.config = config
         self.generator = RLMBenchGenerator(config)
@@ -75,7 +75,7 @@ class RLMBenchRunner:
     async def _run_task_with_rlm(self, task: RLMBenchTask) -> RLMBenchResult:
         """Run a task using the RLM plugin."""
         try:
-            from elizaos_plugin_rlm import RLMClient, RLMConfig
+            from tokagentos_plugin_rlm import RLMClient, RLMConfig
 
             rlm_config = RLMConfig(
                 backend=self.config.rlm_backend,
@@ -216,10 +216,10 @@ class RLMBenchRunner:
                 error=str(e),
             )
 
-    async def _run_task_with_eliza(self, task: RLMBenchTask) -> RLMBenchResult:
-        """Run a task using the full Eliza agent loop.
+    async def _run_task_with_tokagent(self, task: RLMBenchTask) -> RLMBenchResult:
+        """Run a task using the full Tokagent agent loop.
 
-        This exercises the complete Eliza canonical flow:
+        This exercises the complete Tokagent canonical flow:
         1. RLM_CONTEXT provider injects benchmark context into state
         2. Message service builds prompt from state
         3. Model generates response (via RLM plugin's model handler)
@@ -228,11 +228,11 @@ class RLMBenchRunner:
         """
         if self._runtime is None:
             raise RuntimeError(
-                "No Eliza runtime configured. Use setup_eliza_runner() or pass "
-                "runtime= to RLMBenchRunner for 'eliza' mode."
+                "No Tokagent runtime configured. Use setup_tokagent_runner() or pass "
+                "runtime= to RLMBenchRunner for 'tokagent' mode."
             )
 
-        from .eliza_plugin import (
+        from .tokagent_plugin import (
             RLMBenchSession,
             run_benchmark_task_through_agent,
             set_benchmark_session,
@@ -265,7 +265,7 @@ class RLMBenchRunner:
             )
 
         except Exception as e:
-            logger.error(f"Error running task {task.id} in eliza mode: {e}")
+            logger.error(f"Error running task {task.id} in tokagent mode: {e}")
             return self.evaluator.evaluate_result(
                 task=task,
                 predicted_answer="",
@@ -282,7 +282,7 @@ class RLMBenchRunner:
 
         Args:
             task: The benchmark task
-            mode: Execution mode ("rlm", "stub", "eliza", "custom")
+            mode: Execution mode ("rlm", "stub", "tokagent", "custom")
 
         Returns:
             RLMBenchResult with evaluation
@@ -291,8 +291,8 @@ class RLMBenchRunner:
             return await self._run_task_with_rlm(task)
         elif mode == "stub":
             return await self._run_task_stub(task)
-        elif mode == "eliza":
-            return await self._run_task_with_eliza(task)
+        elif mode == "tokagent":
+            return await self._run_task_with_tokagent(task)
         elif mode == "custom":
             return await self._run_task_custom(task)
         else:
@@ -307,7 +307,7 @@ class RLMBenchRunner:
         Run all benchmark tasks.
 
         Args:
-            mode: Execution mode ("rlm", "stub", "eliza", "custom")
+            mode: Execution mode ("rlm", "stub", "tokagent", "custom")
             progress_callback: Optional callback for progress updates
 
         Returns:
@@ -455,15 +455,15 @@ class RLMBenchRunner:
 
 
 # ============================================================================
-# Convenience functions for Eliza agent loop benchmarking
+# Convenience functions for Tokagent agent loop benchmarking
 # ============================================================================
 
 
-async def setup_eliza_runner(
+async def setup_tokagent_runner(
     config: RLMBenchConfig,
     model_plugin_factory: Optional[Callable[[], object]] = None,
 ) -> RLMBenchRunner:
-    """Set up an RLMBenchRunner configured for Eliza agent loop mode.
+    """Set up an RLMBenchRunner configured for Tokagent agent loop mode.
 
     This convenience function:
     1. Creates an AgentRuntime with the RLM plugin
@@ -476,16 +476,16 @@ async def setup_eliza_runner(
             model plugin (e.g., OpenAI) if RLM plugin is not available.
 
     Returns:
-        RLMBenchRunner configured for 'eliza' mode.
+        RLMBenchRunner configured for 'tokagent' mode.
 
     """
-    from elizaos.types.plugin import Plugin as ElizaPlugin
-    from .eliza_plugin import setup_benchmark_runtime
+    from tokagentos.types.plugin import Plugin as TokagentPlugin
+    from .tokagent_plugin import setup_benchmark_runtime
 
-    model_plugin: ElizaPlugin | None = None
+    model_plugin: TokagentPlugin | None = None
     if model_plugin_factory is not None:
         candidate = model_plugin_factory()
-        if isinstance(candidate, ElizaPlugin):
+        if isinstance(candidate, TokagentPlugin):
             model_plugin = candidate
 
     runtime = await setup_benchmark_runtime(model_plugin)
@@ -496,16 +496,16 @@ async def setup_eliza_runner(
     )
 
 
-async def run_eliza_benchmark(
+async def run_tokagent_benchmark(
     config: RLMBenchConfig | None = None,
     model_plugin_factory: Optional[Callable[[], object]] = None,
     progress_callback: Optional[Callable[[int, int], None]] = None,
 ) -> RLMBenchResults:
-    """Run the full RLM benchmark using the Eliza agent loop.
+    """Run the full RLM benchmark using the Tokagent agent loop.
 
     This is a high-level convenience function that:
-    1. Sets up the Eliza runtime with the RLM plugin
-    2. Creates a benchmark runner configured for 'eliza' mode
+    1. Sets up the Tokagent runtime with the RLM plugin
+    2. Creates a benchmark runner configured for 'tokagent' mode
     3. Runs all benchmark tasks through the full agent loop
     4. Cleans up the runtime
 
@@ -520,14 +520,14 @@ async def run_eliza_benchmark(
     """
     benchmark_config = config or RLMBenchConfig()
 
-    runner = await setup_eliza_runner(
+    runner = await setup_tokagent_runner(
         config=benchmark_config,
         model_plugin_factory=model_plugin_factory,
     )
 
     try:
         return await runner.run_all(
-            mode="eliza",
+            mode="tokagent",
             progress_callback=progress_callback,
         )
     finally:

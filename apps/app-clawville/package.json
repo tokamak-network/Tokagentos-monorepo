@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Eliza app integration for ClawVille — sea-themed agent game where any connected agent can enter a 3D underwater world, visit 10 specialist buildings, and learn skills via the agentskills.io open standard. Auto-generates a custodial Solana wallet per Eliza agent on first launch.",
+  "description": "Tokagent app integration for ClawVille — sea-themed agent game where any connected agent can enter a 3D underwater world, visit 10 specialist buildings, and learn skills via the agentskills.io open standard. Auto-generates a custodial Solana wallet per Tokagent agent on first launch.",
   "main": "./src/index.ts",
   "exports": {
     "./package.json": "./package.json",
@@ -13,7 +13,7 @@
   "homepage": "https://clawville.world/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaos/eliza.git"
+    "url": "https://github.com/tokagentos/tokagent.git"
   },
   "keywords": [
     "game",
@@ -23,14 +23,14 @@
     "openclaw",
     "skills",
     "solana",
-    "elizaos",
-    "eliza"
+    "tokagentos",
+    "tokagent"
   ],
   "dependencies": {
-    "@elizaos/core": "workspace:*",
-    "@elizaos/shared": "workspace:*"
+    "@tokagentos/core": "workspace:*",
+    "@tokagentos/shared": "workspace:*"
   },
-  "elizaos": {
+  "tokagentos": {
     "kind": "app",
     "app": {
       "displayName": "ClawVille",

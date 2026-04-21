@@ -35,7 +35,7 @@ bun run examples/chat/typescript/chat.ts
 
 ```typescript
 const runtime = new AgentRuntime({
-  character: { name: "Eliza", bio: "A helpful AI assistant." },
+  character: { name: "Tokagent", bio: "A helpful AI assistant." },
   plugins: [sqlPlugin, openaiPlugin],
 });
 
@@ -55,7 +55,7 @@ await runtime.messageService.handleMessage(
   </Tab>
   <Tab title="Python">
 ```bash
-pip install elizaos elizaos-plugin-openai
+pip install tokagentos tokagentos-plugin-openai
 export OPENAI_API_KEY="your-key"
 python examples/chat/python/chat.py
 ```
@@ -64,7 +64,7 @@ python examples/chat/python/chat.py
 
 ```python
 runtime = AgentRuntime(
-    character=Character(name="Eliza", bio="A helpful AI assistant."),
+    character=Character(name="Tokagent", bio="A helpful AI assistant."),
     plugins=[get_openai_plugin()],
 )
 
@@ -111,7 +111,7 @@ Define your agent's personality:
 
 ```typescript
 const character = {
-  name: "Eliza",
+  name: "Tokagent",
   bio: "A helpful AI assistant who loves to learn.",
   system: "You are friendly, knowledgeable, and concise.",
   topics: ["technology", "science", "philosophy"],

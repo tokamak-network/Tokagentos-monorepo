@@ -1,5 +1,5 @@
 /**
- * Interactive CLI test client for the elizaOS Convex agent.
+ * Interactive CLI test client for the tokagentOS Convex agent.
  *
  * Usage:
  *   CONVEX_URL=https://your-deployment.convex.cloud bun run test-client.ts
@@ -75,7 +75,7 @@ async function sendMessage(
 // ============================================================================
 
 async function main() {
-  console.log("elizaOS Convex Agent — Test Client\n");
+  console.log("tokagentOS Convex Agent — Test Client\n");
 
   // Health check
   try {

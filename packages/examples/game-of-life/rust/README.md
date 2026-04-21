@@ -1,6 +1,6 @@
 # Agentic Game of Life - Rust Version
 
-A minimal Rust demo that routes an **environment tick** through the **full elizaOS pipeline**:
+A minimal Rust demo that routes an **environment tick** through the **full tokagentOS pipeline**:
 
 - `runtime.message_service().handle_message(&runtime, &mut message, ...)`
 

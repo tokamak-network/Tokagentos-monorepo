@@ -49,14 +49,14 @@ async def run_auto_mode(
     """Run automatic play mode."""
     _load_dotenv()
 
-    from elizaos_atropos_textworld import (
+    from tokagentos_atropos_textworld import (
         TextWorldEnvironment,
         TextWorldAgent,
         GameType,
         Difficulty,
     )
 
-    print("\n📖 ElizaOS Atropos - TextWorld")
+    print("\n📖 TokagentOS Atropos - TextWorld")
     print("=" * 50)
     print(f"Mode: {'LLM-based' if use_llm else 'Heuristic'}")
     print(f"Difficulty: {difficulty}")
@@ -74,28 +74,28 @@ async def run_auto_mode(
     runtime = None
     if use_llm:
         try:
-            from elizaos.runtime import AgentRuntime
-            from elizaos.bootstrap import bootstrap_plugin
-            from elizaos_plugin_openai import get_openai_plugin
+            from tokagentos.runtime import AgentRuntime
+            from tokagentos.bootstrap import bootstrap_plugin
+            from tokagentos_plugin_openai import get_openai_plugin
 
             plugins = [bootstrap_plugin, get_openai_plugin()]
 
             # Optional: register trajectory logger plugin for end-to-end capture
             if log_trajectories:
                 try:
-                    from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+                    from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
                     plugins.append(get_trajectory_logger_plugin())
                 except ImportError:
                     print("⚠️ Trajectory logger plugin not installed; disabling trajectory logging")
                     log_trajectories = False
 
-            from elizaos_atropos_textworld.eliza_plugin import (
+            from tokagentos_atropos_textworld.tokagent_plugin import (
                 create_textworld_character,
-                get_textworld_eliza_plugin,
+                get_textworld_tokagent_plugin,
             )
 
-            plugins.append(get_textworld_eliza_plugin())
+            plugins.append(get_textworld_tokagent_plugin())
             runtime = AgentRuntime(character=create_textworld_character(), plugins=plugins)
             await runtime.initialize()
             print("✅ LLM initialized")
@@ -161,7 +161,7 @@ async def run_auto_mode(
             token = None
             if step_id is not None:
                 try:
-                    from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+                    from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
                     token = CURRENT_TRAJECTORY_STEP_ID.set(step_id)
                 except Exception:
@@ -171,7 +171,7 @@ async def run_auto_mode(
 
             if token is not None:
                 try:
-                    from elizaos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
+                    from tokagentos.trajectory_context import CURRENT_TRAJECTORY_STEP_ID
 
                     CURRENT_TRAJECTORY_STEP_ID.reset(token)
                 except Exception:
@@ -248,7 +248,7 @@ async def run_auto_mode(
     # Export trajectories if logging was enabled
     if log_trajectories and traj_svc is not None:
         try:
-            from elizaos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
+            from tokagentos_plugin_trajectory_logger.runtime_service import TrajectoryExportConfig
 
             export_cfg = TrajectoryExportConfig(
                 dataset_name="atropos_textworld_trajectories",
@@ -270,13 +270,13 @@ async def run_auto_mode(
 
 async def run_interactive_mode(difficulty: str = "medium") -> None:
     """Run interactive play mode."""
-    from elizaos_atropos_textworld import (
+    from tokagentos_atropos_textworld import (
         TextWorldEnvironment,
         GameType,
         Difficulty,
     )
 
-    print("\n📖 ElizaOS Atropos - TextWorld (Interactive)")
+    print("\n📖 TokagentOS Atropos - TextWorld (Interactive)")
     print("=" * 50)
     print("Commands: type any action, or 'quit' to exit")
     print("=" * 50)
@@ -329,15 +329,15 @@ async def run_interactive_mode(difficulty: str = "medium") -> None:
 
 async def run_benchmark_mode(num_episodes: int = 100, difficulty: str = "medium") -> None:
     """Run benchmark comparing strategies."""
-    from elizaos_atropos_textworld import (
+    from tokagentos_atropos_textworld import (
         TextWorldEnvironment,
         TextWorldAgent,
         GameType,
         Difficulty,
     )
-    from elizaos_atropos_textworld.agent import create_heuristic_policy, create_random_policy
+    from tokagentos_atropos_textworld.agent import create_heuristic_policy, create_random_policy
 
-    print("\n📖 elizaOS Atropos - TextWorld Benchmark")
+    print("\n📖 tokagentOS Atropos - TextWorld Benchmark")
     print("=" * 50)
     print(f"Episodes per strategy: {num_episodes}")
     print(f"Difficulty: {difficulty}")
@@ -387,15 +387,15 @@ async def run_benchmark_mode(num_episodes: int = 100, difficulty: str = "medium"
 async def run_atropos_gen_mode(
     num_episodes: int = 100,
     output: str = "trajectories.jsonl",
-    use_elizaos: bool = True,
+    use_tokagentos: bool = True,
     difficulty: str = "medium",
     tokenizer: str = "meta-llama/Llama-3.2-3B-Instruct",
 ) -> None:
-    """Generate Atropos training data from elizaOS gameplay."""
+    """Generate Atropos training data from tokagentOS gameplay."""
     _load_dotenv()
 
     try:
-        from elizaos_atropos_textworld.atropos_integration import (
+        from tokagentos_atropos_textworld.atropos_integration import (
             generate_training_data,
             AtroposConfig,
         )
@@ -404,10 +404,10 @@ async def run_atropos_gen_mode(
         print("Install with: pip install -e '.[atropos]'")
         sys.exit(1)
 
-    print("\n📖 elizaOS TextWorld - Atropos Data Generation")
+    print("\n📖 tokagentOS TextWorld - Atropos Data Generation")
     print("=" * 50)
     print(f"Episodes: {num_episodes}")
-    print(f"Agent: {'elizaOS' if use_elizaos else 'heuristic'}")
+    print(f"Agent: {'tokagentOS' if use_tokagentos else 'heuristic'}")
     print(f"Difficulty: {difficulty}")
     print(f"Tokenizer: {tokenizer}")
     print(f"Output: {output}")
@@ -416,7 +416,7 @@ async def run_atropos_gen_mode(
     config = AtroposConfig(
         tokenizer_name=tokenizer,
         difficulty=difficulty,
-        use_elizaos=use_elizaos,
+        use_tokagentos=use_tokagentos,
     )
 
     trajectories = await generate_training_data(
@@ -448,19 +448,19 @@ async def run_atropos_gen_mode(
 def main() -> None:
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="elizaOS Atropos TextWorld Environment",
+        description="tokagentOS Atropos TextWorld Environment",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  elizaos-textworld --mode auto              # Watch AI play
-  elizaos-textworld --mode interactive       # Play interactively
-  elizaos-textworld --mode benchmark         # Compare strategies
-  elizaos-textworld --mode atropos-gen       # Generate Atropos training data
-  elizaos-textworld --difficulty hard        # Play hard difficulty
+  tokagentos-textworld --mode auto              # Watch AI play
+  tokagentos-textworld --mode interactive       # Play interactively
+  tokagentos-textworld --mode benchmark         # Compare strategies
+  tokagentos-textworld --mode atropos-gen       # Generate Atropos training data
+  tokagentos-textworld --difficulty hard        # Play hard difficulty
 
 Atropos data generation:
-  elizaos-textworld --mode atropos-gen --episodes 500 -o train.jsonl  # Uses elizaOS (default)
-  elizaos-textworld --mode atropos-gen --episodes 500 --no-use-elizaos -o baseline.jsonl  # Uses heuristic
+  tokagentos-textworld --mode atropos-gen --episodes 500 -o train.jsonl  # Uses tokagentOS (default)
+  tokagentos-textworld --mode atropos-gen --episodes 500 --no-use-tokagentos -o baseline.jsonl  # Uses heuristic
         """,
     )
 
@@ -505,17 +505,17 @@ Atropos data generation:
         help="Output directory for trajectory files (default: ./trajectories)",
     )
     # Atropos-specific arguments
-    # WHY --no-use-elizaos instead of --use-elizaos:
-    # With action="store_true" and default=True, --use-elizaos would be a no-op
-    # (always True). Using --no-use-elizaos with action="store_false" means:
-    #   - Default (no flag): use_elizaos=True (elizaOS agent)
-    #   - With --no-use-elizaos: use_elizaos=False (heuristic agent)
+    # WHY --no-use-tokagentos instead of --use-tokagentos:
+    # With action="store_true" and default=True, --use-tokagentos would be a no-op
+    # (always True). Using --no-use-tokagentos with action="store_false" means:
+    #   - Default (no flag): use_tokagentos=True (tokagentOS agent)
+    #   - With --no-use-tokagentos: use_tokagentos=False (heuristic agent)
     parser.add_argument(
-        "--no-use-elizaos",
+        "--no-use-tokagentos",
         action="store_false",
-        dest="use_elizaos",
+        dest="use_tokagentos",
         default=True,
-        help="Use heuristic agent instead of elizaOS (default: use elizaOS)",
+        help="Use heuristic agent instead of tokagentOS (default: use tokagentOS)",
     )
     parser.add_argument(
         "-o", "--output",
@@ -538,9 +538,9 @@ Atropos data generation:
         print("⚠️ OPENAI_API_KEY not set. Falling back to heuristic mode.")
         args.llm = False
 
-    if args.mode == "atropos-gen" and args.use_elizaos and not os.environ.get("OPENAI_API_KEY"):
+    if args.mode == "atropos-gen" and args.use_tokagentos and not os.environ.get("OPENAI_API_KEY"):
         print("⚠️ OPENAI_API_KEY not set. Falling back to heuristic agent.")
-        args.use_elizaos = False
+        args.use_tokagentos = False
 
     try:
         if args.mode == "auto":
@@ -562,7 +562,7 @@ Atropos data generation:
             asyncio.run(run_atropos_gen_mode(
                 num_episodes=args.episodes,
                 output=args.output,
-                use_elizaos=args.use_elizaos,
+                use_tokagentos=args.use_tokagentos,
                 difficulty=args.difficulty,
                 tokenizer=args.tokenizer,
             ))

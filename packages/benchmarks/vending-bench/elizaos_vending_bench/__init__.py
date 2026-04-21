@@ -1,5 +1,5 @@
 """
-Vending-Bench Benchmark Implementation for ElizaOS
+Vending-Bench Benchmark Implementation for TokagentOS
 
 A comprehensive implementation of the Vending-Bench benchmark for evaluating
 LLM agent coherence in a simulated vending machine business.
@@ -9,19 +9,19 @@ Reference:
 - Leaderboard: https://andonlabs.com/evals/vending-bench
 """
 
-from elizaos_vending_bench.agent import (
+from tokagentos_vending_bench.agent import (
     LLMProvider,
     MockLLMProvider,
     VendingAgent,
 )
-from elizaos_vending_bench.environment import (
+from tokagentos_vending_bench.environment import (
     EconomicModel,
     VendingEnvironment,
 )
-from elizaos_vending_bench.evaluator import CoherenceEvaluator
-from elizaos_vending_bench.reporting import VendingBenchReporter
-from elizaos_vending_bench.runner import VendingBenchRunner
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.evaluator import CoherenceEvaluator
+from tokagentos_vending_bench.reporting import VendingBenchReporter
+from tokagentos_vending_bench.runner import VendingBenchRunner
+from tokagentos_vending_bench.types import (
     LEADERBOARD_SCORES,
     ActionType,
     AgentAction,
@@ -53,8 +53,8 @@ from elizaos_vending_bench.types import (
 
 # Plugin (lazy import to avoid circular dependencies)
 def get_plugin():
-    """Get the ElizaOS plugin for Vending-Bench."""
-    from elizaos_vending_bench.plugin import vending_bench_plugin
+    """Get the TokagentOS plugin for Vending-Bench."""
+    from tokagentos_vending_bench.plugin import vending_bench_plugin
 
     return vending_bench_plugin
 

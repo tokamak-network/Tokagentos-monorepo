@@ -18,8 +18,8 @@ import type {
   HandlerCallback,
   HandlerOptions,
   IAgentRuntime,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   buildAuthHeaders,
   getWalletActionApiPort,
@@ -45,7 +45,7 @@ function isValidParam(val: unknown): val is string {
 }
 
 function walletNetworkLabel(): string {
-  return process.env.ELIZA_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
+  return process.env.TOKAGENT_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
     ? "BSC testnet"
     : "BSC";
 }
@@ -203,7 +203,7 @@ export const executeTradeAction: Action = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Eliza-Agent-Action": "1",
+            "X-Tokagent-Agent-Action": "1",
             ...buildAuthHeaders(),
           },
           body: JSON.stringify({

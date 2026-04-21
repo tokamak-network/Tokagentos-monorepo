@@ -1,7 +1,7 @@
 /**
  * Shared pool of Japanese agent names for onboarding.
  *
- * Used by both the CLI first-run flow (eliza.ts) and the
+ * Used by both the CLI first-run flow (tokagent.ts) and the
  * web UI API server (api/server.ts).
  */
 

@@ -6,7 +6,7 @@ Analyzes retrieval performance by needle position to detect
 
 from collections import defaultdict
 
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.types import (
     ContextBenchResult,
     LengthAccuracy,
     NeedlePosition,

@@ -147,7 +147,7 @@ export function signLocalAppBundle(args: {
 
   const entitlementsPath = path.join(
     os.tmpdir(),
-    `elizaos-local-entitlements-${process.pid}-${Date.now()}.plist`,
+    `tokagentos-local-entitlements-${process.pid}-${Date.now()}.plist`,
   );
 
   fs.writeFileSync(

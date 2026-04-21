@@ -54,13 +54,13 @@ describe("Integration: WhatsApp pullWhatsAppRecent", () => {
     drainWhatsAppInboundBuffer();
 
     oauthDir = await mkdtemp(path.join(os.tmpdir(), "lifeops-whatsapp-pull-"));
-    prevOAuthDir = process.env.ELIZA_OAUTH_DIR;
-    prevStateDir = process.env.ELIZA_STATE_DIR;
-    prevDisableProactive = process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
-    process.env.ELIZA_OAUTH_DIR = oauthDir;
-    process.env.ELIZA_STATE_DIR = path.join(oauthDir, "state");
-    await mkdir(process.env.ELIZA_STATE_DIR, { recursive: true });
-    process.env.ELIZA_DISABLE_PROACTIVE_AGENT = "1";
+    prevOAuthDir = process.env.TOKAGENT_OAUTH_DIR;
+    prevStateDir = process.env.TOKAGENT_STATE_DIR;
+    prevDisableProactive = process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
+    process.env.TOKAGENT_OAUTH_DIR = oauthDir;
+    process.env.TOKAGENT_STATE_DIR = path.join(oauthDir, "state");
+    await mkdir(process.env.TOKAGENT_STATE_DIR, { recursive: true });
+    process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = "1";
   });
 
   afterEach(async () => {
@@ -69,13 +69,13 @@ describe("Integration: WhatsApp pullWhatsAppRecent", () => {
       await runtime.cleanup();
       runtime = undefined;
     }
-    if (prevOAuthDir === undefined) delete process.env.ELIZA_OAUTH_DIR;
-    else process.env.ELIZA_OAUTH_DIR = prevOAuthDir;
-    if (prevStateDir === undefined) delete process.env.ELIZA_STATE_DIR;
-    else process.env.ELIZA_STATE_DIR = prevStateDir;
+    if (prevOAuthDir === undefined) delete process.env.TOKAGENT_OAUTH_DIR;
+    else process.env.TOKAGENT_OAUTH_DIR = prevOAuthDir;
+    if (prevStateDir === undefined) delete process.env.TOKAGENT_STATE_DIR;
+    else process.env.TOKAGENT_STATE_DIR = prevStateDir;
     if (prevDisableProactive === undefined)
-      delete process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
-    else process.env.ELIZA_DISABLE_PROACTIVE_AGENT = prevDisableProactive;
+      delete process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
+    else process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = prevDisableProactive;
     await rm(oauthDir, { recursive: true, force: true });
   });
 

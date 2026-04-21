@@ -7,7 +7,7 @@ import type http from "node:http";
 import type {
   WalletExportRejection,
   WalletExportRequestBody,
-} from "@elizaos/shared/contracts";
+} from "@tokagentos/shared/contracts";
 import type { FallbackParsedAction } from "./binance-skill-helpers.js";
 
 export type { WalletExportRejection };
@@ -45,7 +45,7 @@ function buildWalletParameterFailureReply(
   reason: string,
 ): string {
   const walletNetwork =
-    process.env.ELIZA_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
+    process.env.TOKAGENT_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
       ? "BSC testnet"
       : "BSC";
   return [
@@ -225,19 +225,19 @@ export function resolveWalletExportRejection(
   }
 
   const expected =
-    process.env.ELIZA_WALLET_EXPORT_TOKEN?.trim() ||
-    process.env.ELIZA_WALLET_EXPORT_TOKEN?.trim();
+    process.env.TOKAGENT_WALLET_EXPORT_TOKEN?.trim() ||
+    process.env.TOKAGENT_WALLET_EXPORT_TOKEN?.trim();
   if (!expected) {
     return {
       status: 403,
       reason:
-        "Wallet export is disabled. Set ELIZA_WALLET_EXPORT_TOKEN (or ELIZA_WALLET_EXPORT_TOKEN) to enable secure exports.",
+        "Wallet export is disabled. Set TOKAGENT_WALLET_EXPORT_TOKEN (or TOKAGENT_WALLET_EXPORT_TOKEN) to enable secure exports.",
     };
   }
 
   const headerToken =
-    typeof req.headers["x-eliza-export-token"] === "string"
-      ? req.headers["x-eliza-export-token"].trim()
+    typeof req.headers["x-tokagent-export-token"] === "string"
+      ? req.headers["x-tokagent-export-token"].trim()
       : "";
   const bodyToken =
     typeof body.exportToken === "string" ? body.exportToken.trim() : "";
@@ -247,7 +247,7 @@ export function resolveWalletExportRejection(
     return {
       status: 401,
       reason:
-        "Missing export token. Provide X-Eliza-Export-Token header or exportToken in request body.",
+        "Missing export token. Provide X-Tokagent-Export-Token header or exportToken in request body.",
     };
   }
 

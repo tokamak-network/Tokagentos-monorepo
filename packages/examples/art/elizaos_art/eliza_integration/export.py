@@ -8,7 +8,7 @@ Provides export to:
 - RULER scoring format
 
 All exports are compatible with the plugin-trajectory-logger format
-for seamless integration with ElizaOS training pipelines.
+for seamless integration with TokagentOS training pipelines.
 """
 
 import json
@@ -17,7 +17,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
-from elizaos_art.eliza_integration.storage_adapter import ElizaStorageAdapter
+from tokagentos_art.tokagent_integration.storage_adapter import TokagentStorageAdapter
 
 
 @dataclass
@@ -57,7 +57,7 @@ class ExportResult:
 
 
 async def export_for_art(
-    storage: ElizaStorageAdapter,
+    storage: TokagentStorageAdapter,
     options: ExportOptions | None = None,
 ) -> ExportResult:
     """
@@ -129,7 +129,7 @@ async def export_for_art(
 
 
 async def export_grouped_for_grpo(
-    storage: ElizaStorageAdapter,
+    storage: TokagentStorageAdapter,
     options: ExportOptions | None = None,
 ) -> ExportResult:
     """
@@ -192,9 +192,9 @@ async def export_grouped_for_grpo(
     )
 
 
-def _convert_to_art_format(eliza_traj: dict) -> dict:
+def _convert_to_art_format(tokagent_traj: dict) -> dict:
     """
-    Convert ElizaOS trajectory to ART format.
+    Convert TokagentOS trajectory to ART format.
     
     This preserves all the rich data captured by the trajectory logger:
     - LLM calls with full context
@@ -215,7 +215,7 @@ def _convert_to_art_format(eliza_traj: dict) -> dict:
     }
 
     # Extract messages and context from steps
-    for step in eliza_traj.get("steps", []):
+    for step in tokagent_traj.get("steps", []):
         # Track environment state
         env_state = step.get("environmentState", {})
         if step.get("stepNumber", 0) == 0:
@@ -277,7 +277,7 @@ def _convert_to_art_format(eliza_traj: dict) -> dict:
                 environment_context["errors"].append(action.get("error", "unknown error"))
 
     # Build game knowledge from metadata
-    metadata = eliza_traj.get("metadata", {})
+    metadata = tokagent_traj.get("metadata", {})
     game_knowledge = {}
     if metadata.get("trueProbabilities"):
         game_knowledge["trueProbabilities"] = metadata["trueProbabilities"]
@@ -288,21 +288,21 @@ def _convert_to_art_format(eliza_traj: dict) -> dict:
 
     return {
         "messages": messages,
-        "reward": eliza_traj.get("totalReward", 0.0),
+        "reward": tokagent_traj.get("totalReward", 0.0),
         "metadata": {
-            "trajectoryId": eliza_traj.get("trajectoryId"),
-            "agentId": eliza_traj.get("agentId"),
-            "scenarioId": eliza_traj.get("scenarioId"),
-            "groupIndex": eliza_traj.get("groupIndex"),
+            "trajectoryId": tokagent_traj.get("trajectoryId"),
+            "agentId": tokagent_traj.get("agentId"),
+            "scenarioId": tokagent_traj.get("scenarioId"),
+            "groupIndex": tokagent_traj.get("groupIndex"),
             "environmentContext": environment_context,
             "gameKnowledge": game_knowledge if game_knowledge else None,
-            "metrics": eliza_traj.get("metrics", {}),
-            "rewardComponents": eliza_traj.get("rewardComponents", {}),
+            "metrics": tokagent_traj.get("metrics", {}),
+            "rewardComponents": tokagent_traj.get("rewardComponents", {}),
         },
         "metrics": {
-            "episodeLength": eliza_traj.get("metrics", {}).get("episodeLength", 0),
-            "durationMs": eliza_traj.get("durationMs", 0),
-            "totalReward": eliza_traj.get("totalReward", 0.0),
+            "episodeLength": tokagent_traj.get("metrics", {}).get("episodeLength", 0),
+            "durationMs": tokagent_traj.get("durationMs", 0),
+            "totalReward": tokagent_traj.get("totalReward", 0.0),
         },
     }
 
@@ -503,7 +503,7 @@ async def export_grouped_trajectories_for_grpo(
 async def export_for_huggingface(
     trajectories: list[dict],
     output_dir: str | Path,
-    dataset_name: str = "elizaos-trajectories",
+    dataset_name: str = "tokagentos-trajectories",
     train_ratio: float = 0.8,
     validation_ratio: float = 0.1,
 ) -> dict[str, str]:
@@ -555,7 +555,7 @@ async def export_for_huggingface(
     dataset_card = f"""---
 dataset_info:
   name: {dataset_name}
-  description: ElizaOS agent trajectories for RL training
+  description: TokagentOS agent trajectories for RL training
   size_categories:
     - {_size_category(n)}
   license: mit
@@ -566,7 +566,7 @@ dataset_info:
 
 # {dataset_name}
 
-ElizaOS agent trajectories exported for RL training.
+TokagentOS agent trajectories exported for RL training.
 
 ## Dataset Statistics
 

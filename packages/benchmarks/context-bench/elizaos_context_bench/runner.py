@@ -1,12 +1,12 @@
 """Context Benchmark Runner.
 
 Main orchestrator for running context benchmarks and collecting results.
-Integrates with ElizaOS Python runtime.
+Integrates with TokagentOS Python runtime.
 
 Supports three modes:
 1. Direct LLM query (llm_query_fn) - tests model layer only
-2. Eliza model layer (run_eliza_benchmark) - tests runtime.use_model()
-3. Full agent loop (run_eliza_agent_benchmark) - tests providers/actions/evaluators
+2. Tokagent model layer (run_tokagent_benchmark) - tests runtime.use_model()
+3. Full agent loop (run_tokagent_agent_benchmark) - tests providers/actions/evaluators
 """
 
 import asyncio
@@ -16,10 +16,10 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from elizaos_context_bench.evaluators.position import PositionAnalyzer
-from elizaos_context_bench.suites.multihop import MultiHopBenchmarkSuite
-from elizaos_context_bench.suites.niah import NIAHBenchmarkSuite
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.evaluators.position import PositionAnalyzer
+from tokagentos_context_bench.suites.multihop import MultiHopBenchmarkSuite
+from tokagentos_context_bench.suites.niah import NIAHBenchmarkSuite
+from tokagentos_context_bench.types import (
     LEADERBOARD_SCORES,
     ContextBenchConfig,
     ContextBenchMetrics,
@@ -30,7 +30,7 @@ from elizaos_context_bench.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.types.runtime import IAgentRuntime
+    from tokagentos.types.runtime import IAgentRuntime
 
 
 # Type for the LLM query function
@@ -396,30 +396,30 @@ class ContextBenchRunner:
         }
 
 
-async def run_eliza_benchmark(
+async def run_tokagent_benchmark(
     runtime: "IAgentRuntime",
     config: ContextBenchConfig | None = None,
 ) -> ContextBenchResults:
-    """Run context benchmark using an ElizaOS runtime.
+    """Run context benchmark using an TokagentOS runtime.
 
     Args:
-        runtime: ElizaOS Python runtime instance.
+        runtime: TokagentOS Python runtime instance.
         config: Optional benchmark configuration.
 
     Returns:
         ContextBenchResults with all metrics.
 
     """
-    from elizaos.types.model import ModelType
+    from tokagentos.types.model import ModelType
 
     if not runtime.has_model(ModelType.TEXT_LARGE):
         raise RuntimeError(
-            "Eliza runtime has no TEXT_LARGE model registered. "
+            "Tokagent runtime has no TEXT_LARGE model registered. "
             "Register a model plugin (e.g. the OpenAI plugin) before running context-bench."
         )
 
     async def llm_query(context: str, question: str) -> str:
-        """Query the ElizaOS runtime for an answer."""
+        """Query the TokagentOS runtime for an answer."""
         system = (
             "You are a helpful assistant that answers questions based ONLY on the provided context. "
             "Return ONLY the answer text (no extra words, no markdown)."
@@ -465,15 +465,15 @@ async def quick_test(
 # ============================================================================
 
 
-async def run_eliza_agent_benchmark(
+async def run_tokagent_agent_benchmark(
     runtime: "IAgentRuntime",
     config: ContextBenchConfig | None = None,
     concurrency: int = 1,
     progress_callback: Callable[[str, int, int], None] | None = None,
 ) -> ContextBenchResults:
-    """Run context benchmark using the FULL Eliza agent loop.
+    """Run context benchmark using the FULL Tokagent agent loop.
 
-    This function exercises the complete Eliza canonical flow:
+    This function exercises the complete Tokagent canonical flow:
     1. Provider injects benchmark context into state
     2. Message service builds prompt from state
     3. Model generates response with actions
@@ -484,7 +484,7 @@ async def run_eliza_agent_benchmark(
     model layer but the entire agent architecture.
 
     Args:
-        runtime: Initialized ElizaOS runtime with context bench plugin registered.
+        runtime: Initialized TokagentOS runtime with context bench plugin registered.
         config: Optional benchmark configuration.
         concurrency: Number of concurrent tasks (default 1 for sequential).
         progress_callback: Optional callback(suite_name, completed, total).
@@ -493,17 +493,17 @@ async def run_eliza_agent_benchmark(
         ContextBenchResults with all metrics.
 
     """
-    from elizaos_context_bench.eliza_plugin import (
+    from tokagentos_context_bench.tokagent_plugin import (
         BenchmarkSession,
         run_benchmark_task_through_agent,
         set_benchmark_session,
     )
-    from elizaos_plugin_trajectory_logger.export import (
+    from tokagentos_plugin_trajectory_logger.export import (
         ExportOptions,
         export_for_openpipe_art,
         export_grouped_for_grpo,
     )
-    from elizaos_plugin_trajectory_logger.types import Trajectory
+    from tokagentos_plugin_trajectory_logger.types import Trajectory
 
     benchmark_config = config or ContextBenchConfig()
     results: list[ContextBenchResult] = []
@@ -685,7 +685,7 @@ async def run_eliza_agent_benchmark(
         findings.append(f"Agent loop needs improvement ({overall_accuracy:.1%} accuracy)")
         recommendations.append("Review provider context injection and action handling")
 
-    findings.append("Tested full Eliza canonical flow: Provider -> Model -> Action -> Evaluator")
+    findings.append("Tested full Tokagent canonical flow: Provider -> Model -> Action -> Evaluator")
 
     status = "excellent" if overall_accuracy >= 0.9 else "good" if overall_accuracy >= 0.75 else "needs_improvement"
 
@@ -695,7 +695,7 @@ async def run_eliza_agent_benchmark(
         output_dir = getattr(benchmark_config, "output_dir", None)
         if isinstance(output_dir, str) and output_dir:
             traj_dir = Path(output_dir) / "trajectories"
-            dataset_name = f"context-bench-eliza-agent-{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+            dataset_name = f"context-bench-tokagent-agent-{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             options = ExportOptions(
                 dataset_name=dataset_name,
                 trajectories=trajectories,
@@ -730,7 +730,7 @@ async def run_eliza_agent_benchmark(
             "timestamp": datetime.now().isoformat(),
             "seed": 42,
             "total_duration_ms": total_duration,
-            "benchmark_mode": "eliza_agent_loop",
+            "benchmark_mode": "tokagent_agent_loop",
             "concurrency": concurrency,
             "trajectory_count": len(trajectories),
             "trajectory_exports": trajectory_exports,
@@ -744,7 +744,7 @@ async def setup_and_run_agent_benchmark(
     concurrency: int = 1,
     progress_callback: Callable[[str, int, int], None] | None = None,
 ) -> ContextBenchResults:
-    """Set up Eliza runtime and run the full agent loop benchmark.
+    """Set up Tokagent runtime and run the full agent loop benchmark.
 
     This is a convenience function that:
     1. Creates an AgentRuntime
@@ -763,8 +763,8 @@ async def setup_and_run_agent_benchmark(
 
     """
     # Use the canonical benchmark runtime setup (bootstrap enabled + Q&A-focused template)
-    from elizaos_context_bench.eliza_plugin import setup_benchmark_runtime
-    from elizaos.types.plugin import Plugin
+    from tokagentos_context_bench.tokagent_plugin import setup_benchmark_runtime
+    from tokagentos.types.plugin import Plugin
 
     model_plugin: Plugin | None = None
     if model_plugin_factory is not None:
@@ -776,7 +776,7 @@ async def setup_and_run_agent_benchmark(
 
     try:
         # Run benchmark
-        return await run_eliza_agent_benchmark(
+        return await run_tokagent_agent_benchmark(
             runtime=runtime,
             config=config,
             concurrency=concurrency,

@@ -1,5 +1,5 @@
 import type http from "node:http";
-import type { ElizaConfig } from "../config/config.js";
+import type { TokagentConfig } from "../config/config.js";
 import type { ReadJsonBodyOptions } from "./http-helpers.js";
 
 // ---------------------------------------------------------------------------
@@ -12,7 +12,7 @@ export interface UpdateRouteContext {
   method: string;
   pathname: string;
   url: URL;
-  state: { config: ElizaConfig };
+  state: { config: TokagentConfig };
   json: (res: http.ServerResponse, data: unknown, status?: number) => void;
   error: (res: http.ServerResponse, message: string, status?: number) => void;
   readJsonBody: <T extends object>(
@@ -20,7 +20,7 @@ export interface UpdateRouteContext {
     res: http.ServerResponse,
     options?: ReadJsonBodyOptions,
   ) => Promise<T | null>;
-  saveElizaConfig: (config: ElizaConfig) => void;
+  saveTokagentConfig: (config: TokagentConfig) => void;
 }
 
 // ---------------------------------------------------------------------------
@@ -82,7 +82,7 @@ export async function handleUpdateRoutes(
       lastCheckAt: undefined,
       lastCheckVersion: undefined,
     };
-    ctx.saveElizaConfig(state.config);
+    ctx.saveTokagentConfig(state.config);
     json(res, { channel: ch });
     return true;
   }

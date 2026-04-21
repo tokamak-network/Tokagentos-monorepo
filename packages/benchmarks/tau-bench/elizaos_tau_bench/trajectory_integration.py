@@ -1,8 +1,8 @@
 """
 Trajectory logging integration for Tau-bench.
 
-This module integrates `elizaos-plugin-trajectory-logger` (Python) with the
-Tau-bench harness to capture full end-to-end ElizaOS interactions suitable for
+This module integrates `tokagentos-plugin-trajectory-logger` (Python) with the
+Tau-bench harness to capture full end-to-end TokagentOS interactions suitable for
 training and benchmarking:
 - Canonical `runtime.message_service.handle_message()` flow
 - Provider accesses (e.g., TAU_BENCH_CONTEXT)
@@ -19,16 +19,16 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal
 
-from elizaos_tau_bench.types import TauBenchResult, TauBenchTask
+from tokagentos_tau_bench.types import TauBenchResult, TauBenchTask
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.model import ModelType
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.model import ModelType
 
 
 # Optional dependency: trajectory logger plugin (Python)
 try:
-    from elizaos_plugin_trajectory_logger import (
+    from tokagentos_plugin_trajectory_logger import (
         ActionAttempt,
         EnvironmentState,
         ExportOptions,

@@ -2627,7 +2627,7 @@ export const allActionsSpec = {
 		{
 			name: "CHECK_CLOUD_CREDITS",
 			description:
-				"Check ElizaCloud credit balance, container costs, and estimated remaining runtime.",
+				"Check TokagentCloud credit balance, container costs, and estimated remaining runtime.",
 			parameters: [],
 			similes: [
 				"check credits",
@@ -3006,7 +3006,7 @@ export const allActionsSpec = {
 		{
 			name: "PROVISION_CLOUD_AGENT",
 			description:
-				"Deploy an ElizaOS agent to ElizaCloud. Provisions a container, waits for deployment, connects the bridge, and starts auto-backup.",
+				"Deploy an TokagentOS agent to TokagentCloud. Provisions a container, waits for deployment, connects the bridge, and starts auto-backup.",
 			parameters: [],
 			similes: [
 				"deploy agent to cloud",

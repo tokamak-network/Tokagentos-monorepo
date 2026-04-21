@@ -1,12 +1,12 @@
-import type { Provider } from "@elizaos/core";
+import type { Provider } from "@tokagentos/core";
 import {
   getBrowserWorkspaceMode,
   listBrowserWorkspaceTabs,
-} from "@elizaos/agent/services/browser-workspace";
+} from "@tokagentos/agent/services/browser-workspace";
 import {
   getStewardPendingApprovals,
   getStewardWalletStatus,
-} from "@elizaos/agent/services/steward-wallet";
+} from "@tokagentos/agent/services/steward-wallet";
 
 async function formatWorkspaceSummary(): Promise<{
   text: string;
@@ -23,7 +23,7 @@ async function formatWorkspaceSummary(): Promise<{
     : [];
 
   const lines = [
-    `Eliza browser workspace (${mode}): ${tabs.length} tab${tabs.length === 1 ? "" : "s"} open.`,
+    `Tokagent browser workspace (${mode}): ${tabs.length} tab${tabs.length === 1 ? "" : "s"} open.`,
   ];
   if (tabs.length === 0) {
     lines.push("- No tabs are open.");
@@ -35,14 +35,14 @@ async function formatWorkspaceSummary(): Promise<{
   }
 
   if (!steward.configured) {
-    lines.push("Eliza wallet: Steward not configured.");
+    lines.push("Tokagent wallet: Steward not configured.");
   } else if (!steward.connected) {
     lines.push(
-      `Eliza wallet: Steward unavailable${steward.error ? ` (${steward.error})` : "."}`,
+      `Tokagent wallet: Steward unavailable${steward.error ? ` (${steward.error})` : "."}`,
     );
   } else {
     lines.push(
-      `Eliza wallet: Steward connected${pendingApprovals.length > 0 ? ` with ${pendingApprovals.length} pending approval${pendingApprovals.length === 1 ? "" : "s"}` : " with no pending approvals"}.`,
+      `Tokagent wallet: Steward connected${pendingApprovals.length > 0 ? ` with ${pendingApprovals.length} pending approval${pendingApprovals.length === 1 ? "" : "s"}` : " with no pending approvals"}.`,
     );
   }
 
@@ -58,7 +58,7 @@ async function formatWorkspaceSummary(): Promise<{
 export const appBrowserWorkspaceProvider: Provider = {
   name: "app_browser_workspace",
   description:
-    "Summarizes Eliza browser workspace tabs plus Steward wallet signing state for the agent.",
+    "Summarizes Tokagent browser workspace tabs plus Steward wallet signing state for the agent.",
   descriptionCompressed: "Browser workspace tabs + Steward wallet signing state.",
   get: async () => {
     try {
@@ -76,7 +76,7 @@ export const appBrowserWorkspaceProvider: Provider = {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       return {
-        text: `Eliza browser workspace error: ${message}`,
+        text: `Tokagent browser workspace error: ${message}`,
         data: { available: true, error: message },
       };
     }

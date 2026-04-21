@@ -7,8 +7,8 @@ import type {
   Content,
   Memory,
   UUID,
-} from "@elizaos/core";
-import type { Trajectory } from "@elizaos/agent/types/trajectory";
+} from "@tokagentos/core";
+import type { Trajectory } from "@tokagentos/agent/types/trajectory";
 import type {
   RoleplayEpisode,
   RoleplayManifestLine,
@@ -603,8 +603,8 @@ async function resolveRuntime(runtime?: AgentRuntime): Promise<RuntimeLike> {
     return runtime as RuntimeLike;
   }
 
-  const { bootElizaRuntime } = await import("@elizaos/agent/runtime/eliza");
-  return (await bootElizaRuntime()) as RuntimeLike;
+  const { bootTokagentRuntime } = await import("@tokagentos/agent/runtime/tokagent");
+  return (await bootTokagentRuntime()) as RuntimeLike;
 }
 
 export async function executeRoleplayEpisode(

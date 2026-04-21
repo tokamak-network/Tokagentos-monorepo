@@ -1,5 +1,5 @@
-import { runCoordinatorLiveScenarios } from "@elizaos/agent/evals/coordinator-live-runner";
-import type { CoordinatorEvalChannel } from "@elizaos/agent/evals/coordinator-scenarios";
+import { runCoordinatorLiveScenarios } from "@tokagentos/agent/evals/coordinator-live-runner";
+import type { CoordinatorEvalChannel } from "@tokagentos/agent/evals/coordinator-scenarios";
 
 function takeFlag(name: string): string | undefined {
 	const index = process.argv.indexOf(name);
@@ -54,7 +54,7 @@ try {
 	] as CoordinatorEvalChannel[];
 
 	const result = await runCoordinatorLiveScenarios({
-		baseUrl: process.env.ELIZA_BASE_URL,
+		baseUrl: process.env.TOKAGENT_BASE_URL,
 		batchId,
 		profile,
 		outputRoot,

@@ -97,7 +97,7 @@ export enum ErrorCategory {
 // Error Options Interface
 // ============================================================================
 
-export interface ElizaCodeErrorOptions {
+export interface TokagentCodeErrorOptions {
   /** Original error that caused this error */
   cause?: Error | JsonValue;
   /** Error category */
@@ -119,7 +119,7 @@ export interface ElizaCodeErrorOptions {
 /**
  * Custom error class with categorization and resolution suggestions
  */
-export class ElizaCodeError extends Error {
+export class TokagentCodeError extends Error {
   /** Original error that caused this error */
   cause?: Error | JsonValue;
   /** Error category */
@@ -135,10 +135,10 @@ export class ElizaCodeError extends Error {
   /** Timestamp when error occurred */
   timestamp: Date;
 
-  constructor(message: string, options: ElizaCodeErrorOptions = {}) {
+  constructor(message: string, options: TokagentCodeErrorOptions = {}) {
     super(message);
 
-    this.name = "ElizaCodeError";
+    this.name = "TokagentCodeError";
     this.cause = options.cause;
     this.category = options.category ?? ErrorCategory.UNKNOWN;
     this.level = options.level ?? ErrorLevel.ERROR;
@@ -149,7 +149,7 @@ export class ElizaCodeError extends Error {
 
     // Capture stack trace
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, ElizaCodeError);
+      Error.captureStackTrace(this, TokagentCodeError);
     }
   }
 
@@ -199,9 +199,9 @@ export class ElizaCodeError extends Error {
  */
 export function createFileError(
   message: string,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(message, {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(message, {
     category: ErrorCategory.FILE_SYSTEM,
     level: ErrorLevel.ERROR,
     ...options,
@@ -213,9 +213,9 @@ export function createFileError(
  */
 export function createFileNotFoundError(
   filePath: string,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(`File not found: ${filePath}`, {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(`File not found: ${filePath}`, {
     category: ErrorCategory.FILE_NOT_FOUND,
     level: ErrorLevel.ERROR,
     resolution: [
@@ -234,9 +234,9 @@ export function createFileNotFoundError(
 export function createFileAccessError(
   filePath: string,
   operation: "read" | "write",
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(`Permission denied ${operation}ing: ${filePath}`, {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(`Permission denied ${operation}ing: ${filePath}`, {
     category: ErrorCategory.FILE_ACCESS,
     level: ErrorLevel.ERROR,
     resolution: [
@@ -256,9 +256,9 @@ export function createCommandError(
   command: string,
   exitCode: number | string | undefined,
   stderr: string,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(`Command failed: ${command}`, {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(`Command failed: ${command}`, {
     category: ErrorCategory.COMMAND_EXECUTION,
     level: ErrorLevel.ERROR,
     resolution: [
@@ -276,9 +276,9 @@ export function createCommandError(
  */
 export function createAIServiceError(
   message: string,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(message, {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(message, {
     category: ErrorCategory.AI_SERVICE,
     level: ErrorLevel.ERROR,
     resolution: [
@@ -294,9 +294,9 @@ export function createAIServiceError(
  * Create a rate limit error
  */
 export function createRateLimitError(
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError("Rate limit exceeded", {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError("Rate limit exceeded", {
     category: ErrorCategory.RATE_LIMIT,
     level: ErrorLevel.WARNING,
     resolution: [
@@ -314,9 +314,9 @@ export function createRateLimitError(
 export function createTimeoutError(
   operation: string,
   timeoutMs: number,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(
     `Operation timed out after ${timeoutMs}ms: ${operation}`,
     {
       category: ErrorCategory.TIMEOUT,
@@ -337,9 +337,9 @@ export function createTimeoutError(
  */
 export function createValidationError(
   message: string,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(message, {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(message, {
     category: ErrorCategory.VALIDATION,
     level: ErrorLevel.WARNING,
     ...options,
@@ -352,9 +352,9 @@ export function createValidationError(
 export function createTaskError(
   taskId: string,
   message: string,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(message, {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(message, {
     category: ErrorCategory.TASK_EXECUTION,
     level: ErrorLevel.ERROR,
     resolution: [
@@ -373,9 +373,9 @@ export function createTaskError(
 export function createGitError(
   operation: string,
   stderr: string,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
-  return new ElizaCodeError(`Git ${operation} failed`, {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
+  return new TokagentCodeError(`Git ${operation} failed`, {
     category: ErrorCategory.GIT,
     level: ErrorLevel.ERROR,
     resolution: [
@@ -404,7 +404,7 @@ export interface RetryOptions {
   /** Categories of errors to retry */
   retryableCategories: ErrorCategory[];
   /** Callback for retry attempts */
-  onRetry?: (attempt: number, error: ElizaCodeError) => void;
+  onRetry?: (attempt: number, error: TokagentCodeError) => void;
 }
 
 const DEFAULT_RETRY_OPTIONS: RetryOptions = {
@@ -431,19 +431,19 @@ export function withRetry<T>(
   const opts: RetryOptions = { ...DEFAULT_RETRY_OPTIONS, ...options };
 
   return (async () => {
-    let lastError: ElizaCodeError | Error | undefined;
+    let lastError: TokagentCodeError | Error | undefined;
 
     for (let attempt = 0; attempt <= opts.maxRetries; attempt++) {
       try {
         const result = await fn();
         return result;
       } catch (error) {
-        if (error instanceof ElizaCodeError) {
+        if (error instanceof TokagentCodeError) {
           lastError = error;
         } else if (error instanceof Error) {
-          lastError = new ElizaCodeError(error.message, { cause: error });
+          lastError = new TokagentCodeError(error.message, { cause: error });
         } else {
-          lastError = new ElizaCodeError(String(error), {
+          lastError = new TokagentCodeError(String(error), {
             cause: String(error),
           });
         }
@@ -451,7 +451,7 @@ export function withRetry<T>(
         // Check if we should retry
         const shouldRetry =
           attempt < opts.maxRetries &&
-          (lastError instanceof ElizaCodeError
+          (lastError instanceof TokagentCodeError
             ? opts.retryableCategories.includes(lastError.category)
             : true);
 
@@ -469,14 +469,14 @@ export function withRetry<T>(
         const finalDelay = Math.round(delay + jitter);
 
         if (opts.onRetry) {
-          opts.onRetry(attempt + 1, lastError as ElizaCodeError);
+          opts.onRetry(attempt + 1, lastError as TokagentCodeError);
         }
 
         await new Promise((r) => setTimeout(r, finalDelay));
       }
     }
 
-    throw lastError || new ElizaCodeError("Retry failed");
+    throw lastError || new TokagentCodeError("Retry failed");
   })();
 }
 
@@ -488,9 +488,9 @@ export function withRetry<T>(
  * Format an error for display to the user
  */
 export function formatErrorForDisplay(
-  error: Error | ElizaCodeError | JsonValue | undefined,
+  error: Error | TokagentCodeError | JsonValue | undefined,
 ): string {
-  if (error instanceof ElizaCodeError) {
+  if (error instanceof TokagentCodeError) {
     return error.getFormattedMessage();
   }
 
@@ -505,13 +505,13 @@ export function formatErrorForDisplay(
  * Extract error details from various error types
  */
 export function extractErrorDetails(
-  error: Error | ElizaCodeError | JsonValue | undefined,
+  error: Error | TokagentCodeError | JsonValue | undefined,
 ): {
   message: string;
   category: ErrorCategory;
   code?: string;
 } {
-  if (error instanceof ElizaCodeError) {
+  if (error instanceof TokagentCodeError) {
     return {
       message: error.message,
       category: error.category,
@@ -563,10 +563,10 @@ export function extractErrorDetails(
  * Check if an error is of a specific category
  */
 export function isErrorCategory(
-  error: Error | ElizaCodeError | JsonValue | undefined,
+  error: Error | TokagentCodeError | JsonValue | undefined,
   category: ErrorCategory,
 ): boolean {
-  if (error instanceof ElizaCodeError) {
+  if (error instanceof TokagentCodeError) {
     return error.category === category;
   }
   return false;
@@ -576,13 +576,13 @@ export function isErrorCategory(
  * Wrap an error with additional context
  */
 export function wrapError(
-  error: Error | ElizaCodeError | JsonValue | undefined,
+  error: Error | TokagentCodeError | JsonValue | undefined,
   message: string,
-  options: Partial<ElizaCodeErrorOptions> = {},
-): ElizaCodeError {
+  options: Partial<TokagentCodeErrorOptions> = {},
+): TokagentCodeError {
   const details = extractErrorDetails(error);
 
-  return new ElizaCodeError(`${message}: ${details.message}`, {
+  return new TokagentCodeError(`${message}: ${details.message}`, {
     cause: error,
     category: options.category ?? details.category,
     code: options.code ?? details.code,

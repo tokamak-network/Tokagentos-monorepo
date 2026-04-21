@@ -1,18 +1,18 @@
 {
-  "name": "eliza-vrm-demo",
+  "name": "tokagent-vrm-demo",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "echo 'Skipping eliza-vrm-demo build - has Service type issue'",
+    "build": "echo 'Skipping tokagent-vrm-demo build - has Service type issue'",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-anthropic": "alpha",
-    "@elizaos/plugin-eliza-classic": "alpha",
+    "@elizaos/plugin-tokagent-classic": "alpha",
     "@elizaos/plugin-google-genai": "alpha",
     "@elizaos/plugin-groq": "alpha",
     "@elizaos/plugin-elevenlabs": "alpha",

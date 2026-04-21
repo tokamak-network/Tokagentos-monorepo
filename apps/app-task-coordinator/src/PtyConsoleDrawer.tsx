@@ -1,4 +1,4 @@
-import type { CodingAgentSession } from "@elizaos/app-core";
+import type { CodingAgentSession } from "@tokagentos/app-core";
 import { PtyConsoleBase } from "./PtyConsoleBase";
 import { PULSE_STATUSES, STATUS_DOT } from "./pty-status-dots";
 

@@ -67,7 +67,7 @@ python run_benchmark.py --threshold 0.8 --output results.json
 Implement the `TrustHandler` protocol and register it in `run_benchmark.py`:
 
 ```python
-from elizaos_trust_bench.types import TrustHandler
+from tokagentos_trust_bench.types import TrustHandler
 
 class MyAgentHandler:
     """My agent's trust detection handler."""
@@ -107,7 +107,7 @@ class MyAgentHandler:
 Then run:
 
 ```python
-from elizaos_trust_bench.runner import TrustBenchmarkRunner
+from tokagentos_trust_bench.runner import TrustBenchmarkRunner
 
 runner = TrustBenchmarkRunner()
 result = runner.run_and_report(MyAgentHandler(), output_path="results.json")

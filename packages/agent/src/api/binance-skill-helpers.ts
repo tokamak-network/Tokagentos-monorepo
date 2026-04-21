@@ -12,7 +12,7 @@ import {
   type Content,
   type createMessageMemory,
   ModelType,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { extractCompatTextContent } from "./compat-utils.js";
 
 const EXPOSED_BINANCE_SKILL_IDS = new Set([
@@ -911,11 +911,11 @@ async function summarizeDirectBinanceSkillResult(
   } catch (err) {
     runtime.logger?.warn(
       {
-        src: "eliza-api",
+        src: "tokagent-api",
         skillSlug,
         error: err instanceof Error ? err.message : String(err),
       },
-      "[eliza-api] Binance skill summarization failed; falling back to raw output",
+      "[tokagent-api] Binance skill summarization failed; falling back to raw output",
     );
     return rawText;
   }
@@ -992,13 +992,13 @@ export async function maybeHandleDirectBinanceSkillRequest(
     let directRunText = "";
     runtime.logger?.info(
       {
-        src: "eliza-api",
+        src: "tokagent-api",
         action: "USE_SKILL",
         skillSlug,
         script: command.script,
         args: command.args,
       },
-      `[eliza-api] Direct Binance script dispatch: ${skillSlug}/${command.script}`,
+      `[tokagent-api] Direct Binance script dispatch: ${skillSlug}/${command.script}`,
     );
     const runResult = await Promise.resolve(
       useSkillAction.handler(

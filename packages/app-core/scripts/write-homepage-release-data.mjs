@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildRawGitHubAssetBase } from "./lib/asset-cdn.mjs";
 
-const REPOSITORY = "elizaos/eliza";
+const REPOSITORY = "tokagentos/tokagent";
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(SCRIPT_DIR, "..");
 const OUTPUT_PATH = path.resolve(
@@ -17,7 +17,7 @@ const OUTPUT_PATH = path.resolve(
 const RELEASES_URL = `https://api.github.com/repos/${REPOSITORY}/releases?per_page=20`;
 const RELEASES_PAGE_URL = `https://github.com/${REPOSITORY}/releases`;
 
-const installBaseUrl = "https://eliza.ai";
+const installBaseUrl = "https://tokagent.ai";
 const scripts = {
   shell: {
     url: `${installBaseUrl}/install.sh`,
@@ -274,7 +274,7 @@ function toModule(payload) {
 async function fetchReleases() {
   const headers = {
     Accept: "application/vnd.github+json",
-    "User-Agent": "eliza-homepage-release-data",
+    "User-Agent": "tokagent-homepage-release-data",
   };
 
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;

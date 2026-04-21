@@ -1,6 +1,6 @@
 import process from "node:process";
 
-export const ELIZA_GITHUB_REPOSITORY = "elizaos/eliza";
+export const TOKAGENT_GITHUB_REPOSITORY = "tokagentos/tokagent";
 const CDN_ORIGIN = "https://cdn.jsdelivr.net/gh";
 const RAW_GITHUB_ORIGIN = "https://raw.githubusercontent.com";
 const HOMEPAGE_ASSET_ROOT = "apps/homepage/public";
@@ -14,24 +14,24 @@ function normalizeReleaseTag(value) {
   return normalized.startsWith("v") ? normalized : `v${normalized}`;
 }
 
-export function resolveElizaReleaseTag({ env = process.env } = {}) {
+export function resolveTokagentReleaseTag({ env = process.env } = {}) {
   return normalizeReleaseTag(
-    env.ELIZA_RELEASE_TAG || env.RELEASE_TAG || env.GITHUB_REF_NAME,
+    env.TOKAGENT_RELEASE_TAG || env.RELEASE_TAG || env.GITHUB_REF_NAME,
   );
 }
 
-export function resolveElizaAssetRepository({ env = process.env } = {}) {
+export function resolveTokagentAssetRepository({ env = process.env } = {}) {
   const configured =
-    env.ELIZA_ASSET_GITHUB_REPOSITORY?.trim() || env.GITHUB_REPOSITORY?.trim();
-  return configured || ELIZA_GITHUB_REPOSITORY;
+    env.TOKAGENT_ASSET_GITHUB_REPOSITORY?.trim() || env.GITHUB_REPOSITORY?.trim();
+  return configured || TOKAGENT_GITHUB_REPOSITORY;
 }
 
-export function isCanonicalElizaRepository(repository) {
-  return repository === ELIZA_GITHUB_REPOSITORY;
+export function isCanonicalTokagentRepository(repository) {
+  return repository === TOKAGENT_GITHUB_REPOSITORY;
 }
 
 export function buildJsDelivrAssetBase({
-  repository = ELIZA_GITHUB_REPOSITORY,
+  repository = TOKAGENT_GITHUB_REPOSITORY,
   releaseTag,
   assetRoot,
 }) {
@@ -43,7 +43,7 @@ export function buildJsDelivrAssetBase({
 }
 
 export function buildRawGitHubAssetBase({
-  repository = ELIZA_GITHUB_REPOSITORY,
+  repository = TOKAGENT_GITHUB_REPOSITORY,
   releaseTag,
   assetRoot,
 }) {
@@ -55,7 +55,7 @@ export function buildRawGitHubAssetBase({
 }
 
 export function buildManagedAssetUrl({
-  repository = ELIZA_GITHUB_REPOSITORY,
+  repository = TOKAGENT_GITHUB_REPOSITORY,
   releaseTag,
   assetRoot,
   assetPath,
@@ -71,7 +71,7 @@ export function buildManagedAssetUrl({
 }
 
 export function buildReleaseValidationAssetUrl({
-  repository = ELIZA_GITHUB_REPOSITORY,
+  repository = TOKAGENT_GITHUB_REPOSITORY,
   releaseTag,
   assetRoot,
   assetPath,
@@ -86,13 +86,13 @@ export function buildReleaseValidationAssetUrl({
   return new URL(normalizedAssetPath, base).toString();
 }
 
-export function resolveElizaAssetBaseUrls({
+export function resolveTokagentAssetBaseUrls({
   env = process.env,
-  releaseTag = resolveElizaReleaseTag({ env }),
-  repository = resolveElizaAssetRepository({ env }),
+  releaseTag = resolveTokagentReleaseTag({ env }),
+  repository = resolveTokagentAssetRepository({ env }),
 } = {}) {
   const explicitAppBase =
-    env.VITE_ASSET_BASE_URL?.trim() || env.ELIZA_ASSET_BASE_URL?.trim() || "";
+    env.VITE_ASSET_BASE_URL?.trim() || env.TOKAGENT_ASSET_BASE_URL?.trim() || "";
   const explicitHomepageBase =
     env.VITE_HOMEPAGE_ASSET_BASE_URL?.trim() ||
     env.HOMEPAGE_ASSET_BASE_URL?.trim() ||
@@ -118,7 +118,7 @@ export function resolveElizaAssetBaseUrls({
 }
 
 // Milady scripts still import the repo-local alias while the shared helper
-// remains named for the upstream elizaOS package.
+// remains named for the upstream tokagentOS package.
 export function resolveMiladyAssetBaseUrls(options = {}) {
-  return resolveElizaAssetBaseUrls(options);
+  return resolveTokagentAssetBaseUrls(options);
 }

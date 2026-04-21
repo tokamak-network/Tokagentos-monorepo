@@ -13,7 +13,7 @@ import {
   Dialog,
   DialogDescription,
   DialogTitle,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useState } from "react";
 import type { SkillInfo, SkillMarketplaceResult } from "../../api";
 import { useApp } from "../../state";

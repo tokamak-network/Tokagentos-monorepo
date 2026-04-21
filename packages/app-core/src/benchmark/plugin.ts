@@ -1,14 +1,14 @@
 /**
- * Benchmark plugin for Eliza.
+ * Benchmark plugin for Tokagent.
  *
  * Provides:
- * - ELIZA_BENCHMARK provider: injects benchmark task context into agent state
+ * - TOKAGENT_BENCHMARK provider: injects benchmark task context into agent state
  * - BENCHMARK_ACTION action: captures the agent's chosen action + params
  * - Custom messageHandlerTemplate tuned for benchmark execution
  *
  * @module benchmark/plugin
  */
-import { logger, type Plugin } from "@elizaos/core";
+import { logger, type Plugin } from "@tokagentos/core";
 
 // ---------------------------------------------------------------------------
 // Benchmark context (module-level shared state, set per-request by the server)
@@ -265,13 +265,13 @@ function formatContextAsText(ctx: BenchmarkContext): string {
 
 export function createBenchmarkPlugin(): Plugin {
   return {
-    name: "eliza-benchmark",
+    name: "tokagent-benchmark",
     description:
       "Benchmark adapter plugin — injects task context and captures actions",
 
     providers: [
       {
-        name: "ELIZA_BENCHMARK",
+        name: "TOKAGENT_BENCHMARK",
         description:
           "Provides benchmark task context including goals, observations, tools, and elements",
         dynamic: true,

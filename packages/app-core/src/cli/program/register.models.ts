@@ -22,7 +22,7 @@ export function registerModelsCli(program: Command) {
         ["PERPLEXITY_API_KEY", "Perplexity"],
         ["ZAI_API_KEY", "Zai"],
         ["OLLAMA_BASE_URL", "Ollama (local)"],
-        ["ELIZAOS_CLOUD_API_KEY", "elizaOS Cloud"],
+        ["TOKAGENTOS_CLOUD_API_KEY", "tokagentOS Cloud"],
       ] as const;
       console.log(`${getLogPrefix()} Model providers:`);
       for (const [key, name] of envKeys) {

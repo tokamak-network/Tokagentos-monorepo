@@ -1,5 +1,5 @@
 """
-ElizaOS agent for Reasoning Gym environment.
+TokagentOS agent for Reasoning Gym environment.
 """
 
 from __future__ import annotations
@@ -7,22 +7,22 @@ from __future__ import annotations
 import uuid
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_reasoning.types import (
+from tokagentos_atropos_reasoning.types import (
     Response,
     StepResult,
     EpisodeResult,
     TrainingStats,
 )
-from elizaos_atropos_reasoning.evaluator import extract_answer_from_text
+from tokagentos_atropos_reasoning.evaluator import extract_answer_from_text
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.primitives import UUID
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.primitives import UUID
 
 
 class ReasoningAgent:
     """
-    ElizaOS-powered reasoning agent.
+    TokagentOS-powered reasoning agent.
     
     Uses LLM to solve reasoning problems with chain-of-thought prompting.
     
@@ -43,7 +43,7 @@ class ReasoningAgent:
         Initialize the reasoning agent.
         
         Args:
-            runtime: ElizaOS AgentRuntime
+            runtime: TokagentOS AgentRuntime
             use_llm: Whether to use LLM for reasoning
             agent_id: Optional agent ID
         """
@@ -73,7 +73,7 @@ class ReasoningAgent:
             Response with answer and reasoning
         """
         if self._use_llm and self._runtime is not None:
-            return await self._reason_with_eliza(state)
+            return await self._reason_with_tokagent(state)
         return self._reason_with_heuristics(state)
 
     def _reason_with_heuristics(self, state: StepResult) -> Response:
@@ -84,14 +84,14 @@ class ReasoningAgent:
             reasoning="Heuristic mode cannot solve this problem.",
         )
 
-    async def _reason_with_eliza(self, state: StepResult, *, trajectory_step_id: str | None = None) -> Response:
-        """Use canonical ElizaOS message pipeline for reasoning."""
+    async def _reason_with_tokagent(self, state: StepResult, *, trajectory_step_id: str | None = None) -> Response:
+        """Use canonical TokagentOS message pipeline for reasoning."""
         if self._runtime is None:
             return self._reason_with_heuristics(state)
 
         try:
-            from elizaos_atropos_shared.canonical_eliza import run_with_context
-            from elizaos_atropos_reasoning.eliza_plugin import (
+            from tokagentos_atropos_shared.canonical_tokagent import run_with_context
+            from tokagentos_atropos_reasoning.tokagent_plugin import (
                 REASONING_STORE,
                 ReasoningDecisionContext,
             )

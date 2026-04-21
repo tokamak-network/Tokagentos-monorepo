@@ -1,4 +1,4 @@
-"""HyperliquidBench Actions for ElizaOS."""
+"""HyperliquidBench Actions for TokagentOS."""
 
 from .execute_plan import execute_plan_action
 from .generate_plan import generate_plan_action

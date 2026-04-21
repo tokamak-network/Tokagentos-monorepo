@@ -9,9 +9,9 @@ import type { ExtensionConfig, PageContent } from "../../shared/types";
 import { deepMergeConfig, DEFAULT_CONFIG } from "../../shared/types";
 
 // Storage keys
-const CONFIG_STORAGE_KEY = "elizaos-extension-config";
-const CONTEXT_TEXT_KEY = "elizaos-context-text";
-const CHAT_HISTORY_KEY = "elizaos-chat-history";
+const CONFIG_STORAGE_KEY = "tokagentos-extension-config";
+const CONTEXT_TEXT_KEY = "tokagentos-context-text";
+const CHAT_HISTORY_KEY = "tokagentos-chat-history";
 
 type StoredMessage = {
   id: string;
@@ -57,11 +57,11 @@ async function ensureOffscreenDocument(): Promise<boolean> {
     await offscreenApi.createDocument({
       url: "offscreen.html",
       reasons: ["DOM_SCRAPING"],
-      justification: "Keep ElizaOS runtime running for streaming while popup is closed",
+      justification: "Keep TokagentOS runtime running for streaming while popup is closed",
     });
     return true;
   } catch (e) {
-    console.error("[ElizaOS Background] Offscreen create failed:", e);
+    console.error("[TokagentOS Background] Offscreen create failed:", e);
     return false;
   }
 }
@@ -125,7 +125,7 @@ async function getConfig(): Promise<ExtensionConfig> {
       return deepMergeConfig(DEFAULT_CONFIG, result[CONFIG_STORAGE_KEY] as Partial<ExtensionConfig>);
     }
   } catch (error) {
-    console.error("[ElizaOS Background] Error getting config:", error);
+    console.error("[TokagentOS Background] Error getting config:", error);
   }
   return DEFAULT_CONFIG;
 }
@@ -134,7 +134,7 @@ async function setConfig(config: ExtensionConfig): Promise<void> {
   try {
     await chrome.storage.local.set({ [CONFIG_STORAGE_KEY]: config });
   } catch (error) {
-    console.error("[ElizaOS Background] Error saving config:", error);
+    console.error("[TokagentOS Background] Error saving config:", error);
   }
 }
 
@@ -147,13 +147,13 @@ async function getPageContentFromActiveTab(): Promise<PageContent | null> {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
     if (!tab?.id) {
-      console.warn("[ElizaOS Background] No active tab found");
+      console.warn("[TokagentOS Background] No active tab found");
       return null;
     }
 
     // Check if we can inject into this tab
     if (!tab.url || tab.url.startsWith("chrome://") || tab.url.startsWith("chrome-extension://")) {
-      console.warn("[ElizaOS Background] Cannot extract content from:", tab.url);
+      console.warn("[TokagentOS Background] Cannot extract content from:", tab.url);
       return null;
     }
 
@@ -165,7 +165,7 @@ async function getPageContentFromActiveTab(): Promise<PageContent | null> {
       }
     } catch {
       // Content script might not be loaded, try injecting it
-      console.log("[ElizaOS Background] Injecting content script...");
+      console.log("[TokagentOS Background] Injecting content script...");
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         files: ["dist/content.global.js"],
@@ -181,7 +181,7 @@ async function getPageContentFromActiveTab(): Promise<PageContent | null> {
       }
     }
   } catch (error) {
-    console.error("[ElizaOS Background] Error getting page content:", error);
+    console.error("[TokagentOS Background] Error getting page content:", error);
   }
   return null;
 }
@@ -198,7 +198,7 @@ async function captureScreenshot(): Promise<string | null> {
     });
     return dataUrl;
   } catch (error) {
-    console.error("[ElizaOS Background] Screenshot capture failed:", error);
+    console.error("[TokagentOS Background] Screenshot capture failed:", error);
     return null;
   }
 }
@@ -212,25 +212,25 @@ function setupContextMenu(): void {
   chrome.contextMenus.removeAll(() => {
     // Add "Chat about this" context menu
     chrome.contextMenus.create({
-      id: "elizaos-chat-about-selection",
-      title: "Chat about this with ElizaOS",
+      id: "tokagentos-chat-about-selection",
+      title: "Chat about this with TokagentOS",
       contexts: ["selection"],
     });
 
     chrome.contextMenus.create({
-      id: "elizaos-chat-about-page",
+      id: "tokagentos-chat-about-page",
       title: "Chat about this page",
       contexts: ["page"],
     });
 
     chrome.contextMenus.create({
-      id: "elizaos-chat-about-link",
+      id: "tokagentos-chat-about-link",
       title: "Chat about this link",
       contexts: ["link"],
     });
 
     chrome.contextMenus.create({
-      id: "elizaos-chat-about-image",
+      id: "tokagentos-chat-about-image",
       title: "Describe this image",
       contexts: ["image"],
     });
@@ -242,16 +242,16 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   let contextText = "";
   let contextType = "page";
 
-  if (info.menuItemId === "elizaos-chat-about-selection" && info.selectionText) {
+  if (info.menuItemId === "tokagentos-chat-about-selection" && info.selectionText) {
     contextText = info.selectionText;
     contextType = "selection";
-  } else if (info.menuItemId === "elizaos-chat-about-link" && info.linkUrl) {
+  } else if (info.menuItemId === "tokagentos-chat-about-link" && info.linkUrl) {
     contextText = `Link: ${info.linkUrl}`;
     contextType = "link";
-  } else if (info.menuItemId === "elizaos-chat-about-image" && info.srcUrl) {
+  } else if (info.menuItemId === "tokagentos-chat-about-image" && info.srcUrl) {
     contextText = `Image: ${info.srcUrl}`;
     contextType = "image";
-  } else if (info.menuItemId === "elizaos-chat-about-page") {
+  } else if (info.menuItemId === "tokagentos-chat-about-page") {
     contextType = "page";
   }
 
@@ -271,7 +271,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       await chrome.action.openPopup();
     } catch {
       // openPopup() might not work in all contexts, fall back to notification
-      console.log("[ElizaOS Background] Could not open popup automatically");
+      console.log("[TokagentOS Background] Could not open popup automatically");
     }
   }
 });
@@ -388,7 +388,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
             try {
               await chrome.runtime.sendMessage({ type: "OFFSCREEN_RESET" });
             } catch (e) {
-              console.warn("[ElizaOS Background] Offscreen reset failed:", e);
+              console.warn("[TokagentOS Background] Offscreen reset failed:", e);
             }
           }
 
@@ -398,7 +398,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
 
         case "CONTENT_SCRIPT_READY": {
-          console.log("[ElizaOS Background] Content script ready on:", request.url);
+          console.log("[TokagentOS Background] Content script ready on:", request.url);
           sendResponse({ type: "ACK" });
           break;
         }
@@ -407,7 +407,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
           sendResponse({ error: "Unknown message type" });
       }
     } catch (error) {
-      console.error("[ElizaOS Background] Error handling message:", error);
+      console.error("[TokagentOS Background] Error handling message:", error);
       sendResponse({ error: error instanceof Error ? error.message : "Unknown error" });
     }
   })();
@@ -448,10 +448,10 @@ chrome.runtime.onConnect.addListener((port) => {
 
 chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === "install") {
-    console.log("[ElizaOS Background] Extension installed");
+    console.log("[TokagentOS Background] Extension installed");
     setConfig(DEFAULT_CONFIG);
   } else if (details.reason === "update") {
-    console.log("[ElizaOS Background] Extension updated from", details.previousVersion);
+    console.log("[TokagentOS Background] Extension updated from", details.previousVersion);
   }
   
   // Setup context menu
@@ -466,4 +466,4 @@ chrome.runtime.onStartup.addListener(() => {
 // Initialize context menu
 setupContextMenu();
 
-console.log("[ElizaOS Background] Service worker started");
+console.log("[TokagentOS Background] Service worker started");

@@ -1,4 +1,4 @@
-# elizaOS Core Abstractions
+# tokagentOS Core Abstractions
 
 ## Runtime
 
@@ -64,7 +64,7 @@ Providers are ordered by `position`. `private` and `dynamic` providers are exclu
 
 ## Action Model
 
-Actions are elizaOS tools.
+Actions are tokagentOS tools.
 
 The default flow is:
 

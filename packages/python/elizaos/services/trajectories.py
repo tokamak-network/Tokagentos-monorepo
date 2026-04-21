@@ -3,10 +3,10 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.types import Service, ServiceType
+from tokagentos.types import Service, ServiceType
 
 if TYPE_CHECKING:
-    from elizaos.types import IAgentRuntime
+    from tokagentos.types import IAgentRuntime
 
 
 @dataclass

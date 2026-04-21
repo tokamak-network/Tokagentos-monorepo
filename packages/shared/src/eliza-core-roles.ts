@@ -6,11 +6,11 @@ import {
   type Role,
   type UUID,
   type World,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { asRecordOrUndefined } from "./type-guards";
 
-// Vendored elizaOS roles helpers for published core builds that do not expose
-// the @elizaos/shared/eliza-core-roles subpath yet.
+// Vendored tokagentOS roles helpers for published core builds that do not expose
+// the @tokagentos/shared/tokagent-core-roles subpath yet.
 
 const DEFAULT_SERVER_ROLE: Role = "NONE";
 
@@ -51,9 +51,9 @@ export interface ServerOwnershipState {
   };
 }
 
-const CONNECTOR_ADMINS_SETTING_KEY = "ELIZA_ROLES_CONNECTOR_ADMINS_JSON";
-const CANONICAL_OWNER_SETTING_KEY = "ELIZA_ADMIN_ENTITY_ID";
-const OWNER_CONTACTS_SETTING_KEY = "ELIZA_OWNER_CONTACTS_JSON";
+const CONNECTOR_ADMINS_SETTING_KEY = "TOKAGENT_ROLES_CONNECTOR_ADMINS_JSON";
+const CANONICAL_OWNER_SETTING_KEY = "TOKAGENT_ADMIN_ENTITY_ID";
+const OWNER_CONTACTS_SETTING_KEY = "TOKAGENT_OWNER_CONTACTS_JSON";
 const CONNECTOR_ID_FIELDS = ["userId", "id", "username", "userName"] as const;
 const CONNECTOR_STABLE_ID_FIELDS = ["userId", "id"] as const;
 type ConnectorIdField = (typeof CONNECTOR_ID_FIELDS)[number];

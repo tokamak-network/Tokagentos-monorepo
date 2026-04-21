@@ -5,7 +5,7 @@
  * and the SCREEN_TIME action handler end-to-end. No SQL mocks, no LLM.
  */
 
-import type { AgentRuntime, IAgentRuntime } from "@elizaos/core";
+import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   createRealTestRuntime,
@@ -170,8 +170,8 @@ describe("screen-time handler — real PGLite", () => {
           profileId: "screen-time-profile",
           windowId: "window-1",
           tabId: "tab-1",
-          url: "https://github.com/elizaos/elizaos",
-          title: "elizaOS",
+          url: "https://github.com/tokagentos/tokagentos",
+          title: "tokagentOS",
           activeInWindow: true,
           focusedWindow: true,
           focusedActive: true,

@@ -1,5 +1,5 @@
-import type { Action, ActionExample, HandlerOptions, IAgentRuntime } from "@elizaos/core";
-import { requestRestart } from "@elizaos/shared/restart";
+import type { Action, ActionExample, HandlerOptions, IAgentRuntime } from "@tokagentos/core";
+import { requestRestart } from "@tokagentos/shared/restart";
 import {
   isPluginManagerLike,
   type PluginManagerLike,

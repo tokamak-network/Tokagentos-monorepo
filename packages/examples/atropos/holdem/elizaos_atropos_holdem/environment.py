@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_holdem.types import (
+from tokagentos_atropos_holdem.types import (
     Card,
     Action,
     ActionType,
@@ -17,8 +17,8 @@ from elizaos_atropos_holdem.types import (
     HandRank,
     Chips,
 )
-from elizaos_atropos_holdem.deck import create_deck
-from elizaos_atropos_holdem.hand_evaluator import evaluate_hand
+from tokagentos_atropos_holdem.deck import create_deck
+from tokagentos_atropos_holdem.hand_evaluator import evaluate_hand
 
 if TYPE_CHECKING:
     pass

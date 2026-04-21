@@ -1,4 +1,4 @@
-import type { Task as CoreTask, UUID } from "@elizaos/core";
+import type { Task as CoreTask, UUID } from "@tokagentos/core";
 
 // ============================================================================
 // JSON-safe value types (no `any` / `unknown`)
@@ -11,7 +11,7 @@ export type JsonValue =
   | { [key: string]: JsonValue };
 
 // ============================================================================
-// Task Types (extends core elizaOS Task)
+// Task Types (extends core tokagentOS Task)
 // ============================================================================
 
 export type TaskStatus =
@@ -112,21 +112,21 @@ export type TaskTraceEvent =
 
 /**
  * Available sub-agent types for task execution.
- * - eliza: Default ElizaOS tool-calling worker using runtime model
+ * - tokagent: Default TokagentOS tool-calling worker using runtime model
  * - claude-code: Claude Agent SDK-based worker
  * - codex: OpenAI Codex SDK-based worker
  * - opencode: OpenCode CLI-based worker (supports 75+ LLM providers)
  * - sweagent: SWE-agent methodology worker (Think/Act pattern, ACI)
- * - elizaos-native: Best-of-all native ElizaOS agent with monologue reasoning
+ * - tokagentos-native: Best-of-all native TokagentOS agent with monologue reasoning
  */
 export type SubAgentType =
-  | "eliza"
+  | "tokagent"
   | "claude"
   | "claude-code"
   | "codex"
   | "opencode"
   | "sweagent"
-  | "elizaos-native";
+  | "tokagentos-native";
 
 /**
  * Configuration options for sub-agents
@@ -274,7 +274,7 @@ export interface ChatRoom {
   messages: Message[];
   createdAt: Date;
   taskIds: string[];
-  elizaRoomId: UUID;
+  tokagentRoomId: UUID;
 }
 
 // ============================================================================

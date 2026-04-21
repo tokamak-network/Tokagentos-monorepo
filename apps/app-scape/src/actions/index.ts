@@ -13,7 +13,7 @@
  *      prompt surfaces the new tool.
  */
 
-import type { Action } from "@elizaos/core";
+import type { Action } from "@tokagentos/core";
 
 import { attackNpc } from "./attack-npc.js";
 import { chatPublic } from "./chat-public.js";

@@ -19,7 +19,7 @@ describe("capacitor backend runtimeManager", () => {
   let dataDir = "";
 
   beforeEach(async () => {
-    dataDir = await makeTempDir("eliza-capacitor-");
+    dataDir = await makeTempDir("tokagent-capacitor-");
     process.env.LOCALDB_DATA_DIR = dataDir;
     await __shutdownForTests();
   });
@@ -36,7 +36,7 @@ describe("capacitor backend runtimeManager", () => {
     expect(bundle.runtime.messageService).not.toBeNull();
   });
 
-  it("falls back to elizaClassic when credentials missing", async () => {
+  it("falls back to tokagentClassic when credentials missing", async () => {
     const cfg: AppConfig = {
       ...DEFAULT_CONFIG,
       mode: "openai",
@@ -44,7 +44,7 @@ describe("capacitor backend runtimeManager", () => {
     };
 
     const { effectiveMode, responseText } = await sendMessage(cfg, "hello");
-    expect(effectiveMode).toBe("elizaClassic");
+    expect(effectiveMode).toBe("tokagentClassic");
     expect(responseText.trim().length).toBeGreaterThan(0);
   });
 
@@ -55,7 +55,7 @@ describe("capacitor backend runtimeManager", () => {
       "Hello, I'm feeling anxious today.",
     );
 
-    expect(effectiveMode).toBe("elizaClassic");
+    expect(effectiveMode).toBe("tokagentClassic");
     expect(responseText.trim().length).toBeGreaterThan(0);
 
     const history = await getHistory(DEFAULT_CONFIG);

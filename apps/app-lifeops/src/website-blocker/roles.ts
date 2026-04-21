@@ -1,5 +1,5 @@
 /**
- * Selfcontrol role checking — delegates to the core @elizaos/core roles module.
+ * Selfcontrol role checking — delegates to the core @tokagentos/core roles module.
  *
  * No fallbacks.  If coreCheckSenderRole returns null the world/room/entity
  * setup is broken and we throw so the caller surfaces a clear error instead
@@ -11,7 +11,7 @@ import {
   type IAgentRuntime,
   type Memory,
   type RoleCheckResult as CoreRoleCheckResult,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 export type RoleCheckResult = CoreRoleCheckResult & {
   hasPrivateAccess: boolean;

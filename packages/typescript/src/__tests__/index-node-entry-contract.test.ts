@@ -14,7 +14,7 @@ const EXPLICIT_EVALUATOR_EXPORT_SNIPPET = `export {
 	skillRefinementEvaluator,
 } from "./features/advanced-capabilities/evaluators/index";`;
 
-describe("@elizaos/core node entry contract", () => {
+describe("@tokagentos/core node entry contract", () => {
 	it("keeps advanced evaluators explicit in the source node entry", async () => {
 		const source = await readFile(SOURCE_ENTRY_URL, "utf8");
 

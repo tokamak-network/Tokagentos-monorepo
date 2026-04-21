@@ -1,13 +1,13 @@
-# Flatpak manifest for elizaOS App
-# Build:   flatpak-builder --repo=repo --force-clean build-dir ai.elizaos.App.yml
-# Install: flatpak --user install repo ai.elizaos.App
-# Bundle:  flatpak build-bundle repo elizaos-app.flatpak ai.elizaos.App
+# Flatpak manifest for tokagentOS App
+# Build:   flatpak-builder --repo=repo --force-clean build-dir ai.tokagentos.App.yml
+# Install: flatpak --user install repo ai.tokagentos.App
+# Bundle:  flatpak build-bundle repo tokagentos-app.flatpak ai.tokagentos.App
 
-app-id: ai.elizaos.App
+app-id: ai.tokagentos.App
 runtime: org.freedesktop.Platform
 runtime-version: '24.08'
 sdk: org.freedesktop.Sdk
-command: elizaos-app
+command: tokagentos-app
 
 finish-args:
   # Network access (required for AI provider APIs, plugin downloads, web dashboard)
@@ -16,8 +16,8 @@ finish-args:
   - --share=ipc
   # Home directory access (config, workspace, plugins, local models)
   - --filesystem=home
-  # XDG config for .config/elizaos-app persistence
-  - --filesystem=xdg-config/elizaos-app:create
+  # XDG config for .config/tokagentos-app persistence
+  - --filesystem=xdg-config/tokagentos-app:create
   # D-Bus access for desktop notifications
   - --talk-name=org.freedesktop.Notifications
   # D-Bus access for system tray / status notifier
@@ -26,13 +26,13 @@ finish-args:
 build-options:
   no-debuginfo: true
   # Allow network access during the build phase so `npm install -g
-  # elizaos` (and any transitive Node.js downloads) can reach the
+  # tokagentos` (and any transitive Node.js downloads) can reach the
   # registry. By default flatpak-builder sandboxes away network access
   # during `build`, which caused our CI to fail with:
-  #   npm error request to https://registry.npmjs.org/elizaos failed,
+  #   npm error request to https://registry.npmjs.org/tokagentos failed,
   #   reason: getaddrinfo EAI_AGAIN registry.npmjs.org
   # Flathub's own submission pipeline does NOT allow this — see the
-  # long-form comment on the `elizaos-app` module below for the switch to
+  # long-form comment on the `tokagentos-app` module below for the switch to
   # offline sources (flatpak-node-generator) before attempting a
   # Flathub submission. Local and self-hosted CI builds use the
   # network flag.
@@ -76,7 +76,7 @@ modules:
         only-arches:
           - aarch64
 
-  # ── elizaOS App CLI ──────────────────────────────────────────────────
+  # ── tokagentOS App CLI ──────────────────────────────────────────────────
   # NOTE: For Flathub submission, replace the npm-install build with an
   # offline approach using flatpak-node-generator or a vendored tarball.
   # The current approach (npm install -g) requires network at build time
@@ -86,34 +86,34 @@ modules:
   # To generate offline sources for Flathub:
   #   flatpak-node-generator npm package-lock.json -o npm-sources.json
   # Then add: sources: [type: file, path: npm-sources.json]
-  - name: elizaos-app
+  - name: tokagentos-app
     buildsystem: simple
     build-options:
       env:
         npm_config_nodedir: /app
     build-commands:
-      # Install elizaos-app globally from npm
-      - /app/bin/npm install -g elizaos --prefix=/app
+      # Install tokagentos-app globally from npm
+      - /app/bin/npm install -g tokagentos --prefix=/app
 
       # Install wrapper script from source
-      - install -Dm755 elizaos-app-wrapper.sh /app/bin/elizaos-app
+      - install -Dm755 tokagentos-app-wrapper.sh /app/bin/tokagentos-app
 
       # Install desktop entry and AppStream metadata
-      - install -Dm644 ai.elizaos.App.desktop /app/share/applications/ai.elizaos.App.desktop
-      - install -Dm644 ai.elizaos.App.metainfo.xml /app/share/metainfo/ai.elizaos.App.metainfo.xml
+      - install -Dm644 ai.tokagentos.App.desktop /app/share/applications/ai.tokagentos.App.desktop
+      - install -Dm644 ai.tokagentos.App.metainfo.xml /app/share/metainfo/ai.tokagentos.App.metainfo.xml
 
       # Install icons at standard hicolor sizes
-      - install -Dm644 icons/128x128/ai.elizaos.App.png /app/share/icons/hicolor/128x128/apps/ai.elizaos.App.png
-      - install -Dm644 icons/256x256/ai.elizaos.App.png /app/share/icons/hicolor/256x256/apps/ai.elizaos.App.png
-      - install -Dm644 icons/512x512/ai.elizaos.App.png /app/share/icons/hicolor/512x512/apps/ai.elizaos.App.png
+      - install -Dm644 icons/128x128/ai.tokagentos.App.png /app/share/icons/hicolor/128x128/apps/ai.tokagentos.App.png
+      - install -Dm644 icons/256x256/ai.tokagentos.App.png /app/share/icons/hicolor/256x256/apps/ai.tokagentos.App.png
+      - install -Dm644 icons/512x512/ai.tokagentos.App.png /app/share/icons/hicolor/512x512/apps/ai.tokagentos.App.png
 
     sources:
       - type: file
-        path: ai.elizaos.App.desktop
+        path: ai.tokagentos.App.desktop
       - type: file
-        path: ai.elizaos.App.metainfo.xml
+        path: ai.tokagentos.App.metainfo.xml
       - type: file
-        path: elizaos-app-wrapper.sh
+        path: tokagentos-app-wrapper.sh
       # Flatpak's `type: dir` source copies the *contents* of `path`
       # into the build working directory, not the directory itself. So
       # without `dest: icons`, the files would land at `128x128/...`

@@ -3,13 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.generated.spec_helpers import require_action_spec
-from elizaos.prompts import THINK_TEMPLATE
-from elizaos.types import Action, ActionExample, ActionResult, Content, ModelType
-from elizaos.utils.xml import parse_key_value_xml
+from tokagentos.generated.spec_helpers import require_action_spec
+from tokagentos.prompts import THINK_TEMPLATE
+from tokagentos.types import Action, ActionExample, ActionResult, Content, ModelType
+from tokagentos.utils.xml import parse_key_value_xml
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
 # Get text content from centralized specs
 _spec = require_action_spec("THINK")

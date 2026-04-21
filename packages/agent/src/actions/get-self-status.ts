@@ -9,9 +9,9 @@
  * @module actions/get-self-status
  */
 
-import type { Action, ActionExample, HandlerOptions } from "@elizaos/core";
-import type { AwarenessRegistry } from "@elizaos/shared/awareness";
-import { getGlobalAwarenessRegistry } from "@elizaos/shared/awareness";
+import type { Action, ActionExample, HandlerOptions } from "@tokagentos/core";
+import type { AwarenessRegistry } from "@tokagentos/shared/awareness";
+import { getGlobalAwarenessRegistry } from "@tokagentos/shared/awareness";
 
 const VALID_MODULES = [
   "all",

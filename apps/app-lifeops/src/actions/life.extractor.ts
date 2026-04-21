@@ -1,10 +1,10 @@
-import type { IAgentRuntime, Memory, State } from "@elizaos/core";
+import type { IAgentRuntime, Memory, State } from "@tokagentos/core";
 import {
   ModelType,
   parseJSONObjectFromText,
   parseKeyValueXml,
-} from "@elizaos/core";
-import { getRecentMessagesData } from "@elizaos/shared/recent-messages-state";
+} from "@tokagentos/core";
+import { getRecentMessagesData } from "@tokagentos/shared/recent-messages-state";
 import { resolveContextWindow } from "./lifeops-extraction-config.js";
 
 export const LIFE_OPERATION_VALUES = [

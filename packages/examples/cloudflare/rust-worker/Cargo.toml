@@ -1,8 +1,8 @@
 [package]
-name = "elizaos-cloudflare-worker-rust"
+name = "tokagentos-cloudflare-worker-rust"
 version = "1.0.0"
 edition = "2021"
-description = "elizaOS AI agent running on Cloudflare Workers (Rust)"
+description = "tokagentOS AI agent running on Cloudflare Workers (Rust)"
 license = "MIT"
 
 [lib]

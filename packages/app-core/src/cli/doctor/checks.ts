@@ -1,5 +1,5 @@
 /**
- * Health check functions for `eliza doctor`.
+ * Health check functions for `tokagent doctor`.
  *
  * All functions are pure / injectable — no top-level side effects — so they
  * can be unit-tested without touching the filesystem or network.
@@ -17,11 +17,11 @@ import { createConnection } from "node:net";
 import os from "node:os";
 import path from "node:path";
 import process from "node:process";
-import { resolveConfigPath } from "@elizaos/agent/config/paths";
+import { resolveConfigPath } from "@tokagentos/agent/config/paths";
 import {
   resolveApiSecurityConfig,
   resolveServerOnlyPort,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import { getCloudSecret } from "../../api/cloud-secrets";
 
 export type CheckStatus = "pass" | "fail" | "warn" | "skip";
@@ -68,7 +68,7 @@ export const MODEL_KEY_VARS = [
     alias: "AIGATEWAY_API_KEY",
     label: "Vercel AI Gateway",
   },
-  { key: "ELIZAOS_CLOUD_API_KEY", label: "elizaOS Cloud" },
+  { key: "TOKAGENTOS_CLOUD_API_KEY", label: "tokagentOS Cloud" },
   { key: "OLLAMA_BASE_URL", label: "Ollama (local)" },
 ] as const;
 
@@ -124,7 +124,7 @@ export function checkRuntime(): CheckResult {
 export function checkNodeModules(projectRoot?: string): CheckResult {
   const root =
     projectRoot ??
-    path.resolve(process.env.ELIZA_PROJECT_ROOT ?? process.cwd());
+    path.resolve(process.env.TOKAGENT_PROJECT_ROOT ?? process.cwd());
   const nmDir = path.join(root, "node_modules");
 
   if (!existsSync(nmDir)) {
@@ -149,7 +149,7 @@ export function checkNodeModules(projectRoot?: string): CheckResult {
 export function checkBuildArtifacts(projectRoot?: string): CheckResult {
   const root =
     projectRoot ??
-    path.resolve(process.env.ELIZA_PROJECT_ROOT ?? process.cwd());
+    path.resolve(process.env.TOKAGENT_PROJECT_ROOT ?? process.cwd());
   const distEntry = path.join(root, "dist", "entry.js");
 
   if (!existsSync(distEntry)) {
@@ -186,7 +186,7 @@ export function checkConfigFile(
       category: "config",
       status: "warn",
       detail: `Not found: ${resolved}`,
-      fix: "eliza setup",
+      fix: "tokagent setup",
       autoFixable: true,
     };
   }
@@ -217,8 +217,8 @@ export function checkModelKey(
     // Cloud API key may have been scrubbed from process.env into the
     // sealed secret store — check there first.
     const value =
-      entry.key === "ELIZAOS_CLOUD_API_KEY"
-        ? (getCloudSecret("ELIZAOS_CLOUD_API_KEY") ?? env[entry.key])
+      entry.key === "TOKAGENTOS_CLOUD_API_KEY"
+        ? (getCloudSecret("TOKAGENTOS_CLOUD_API_KEY") ?? env[entry.key])
         : env[entry.key];
     if (value?.trim()) {
       return {
@@ -242,7 +242,7 @@ export function checkModelKey(
     category: "config",
     status: "fail",
     detail: "No model provider API key found",
-    fix: "eliza setup",
+    fix: "tokagent setup",
     autoFixable: true,
   };
 }
@@ -254,7 +254,7 @@ export function checkModelKey(
 export function checkStateDir(
   env: Record<string, string | undefined> = process.env,
 ): CheckResult {
-  const dir = env.ELIZA_STATE_DIR ?? path.join(os.homedir(), ".eliza");
+  const dir = env.TOKAGENT_STATE_DIR ?? path.join(os.homedir(), ".tokagent");
 
   if (!existsSync(dir)) {
     return {
@@ -287,8 +287,8 @@ export function checkStateDir(
 export function checkDatabase(
   env: Record<string, string | undefined> = process.env,
 ): CheckResult {
-  const stateDir = env.ELIZA_STATE_DIR ?? path.join(os.homedir(), ".eliza");
-  const dbDir = path.join(stateDir, "workspace", ".eliza", ".elizadb");
+  const stateDir = env.TOKAGENT_STATE_DIR ?? path.join(os.homedir(), ".tokagent");
+  const dbDir = path.join(stateDir, "workspace", ".tokagent", ".tokagentdb");
 
   if (!existsSync(dbDir)) {
     return {
@@ -312,7 +312,7 @@ const MIN_FREE_BYTES = 1 * 1024 * 1024 * 1024; // 1 GiB
 export function checkDiskSpace(
   env: Record<string, string | undefined> = process.env,
 ): CheckResult {
-  const dir = env.ELIZA_STATE_DIR ?? os.homedir();
+  const dir = env.TOKAGENT_STATE_DIR ?? os.homedir();
 
   try {
     const stats = statfsSync(dir);
@@ -371,8 +371,8 @@ export function checkHostConfig(
       label: "Host binding",
       category: "config",
       status: "warn",
-      detail: `ELIZA_API_BIND=${rawBind} — token is auto-generated each restart`,
-      fix: "Set a stable ELIZA_API_TOKEN=<secret> in your environment",
+      detail: `TOKAGENT_API_BIND=${rawBind} — token is auto-generated each restart`,
+      fix: "Set a stable TOKAGENT_API_TOKEN=<secret> in your environment",
     };
   }
 
@@ -383,8 +383,8 @@ export function checkHostConfig(
       label: "Host binding",
       category: "config",
       status: "warn",
-      detail: `ELIZA_API_BIND=${rawBind} without ELIZA_API_TOKEN — token auto-generated each restart`,
-      fix: "Set a stable ELIZA_API_TOKEN=<secret>",
+      detail: `TOKAGENT_API_BIND=${rawBind} without TOKAGENT_API_TOKEN — token auto-generated each restart`,
+      fix: "Set a stable TOKAGENT_API_TOKEN=<secret>",
     };
   }
 
@@ -393,7 +393,7 @@ export function checkHostConfig(
       label: "Host binding",
       category: "config",
       status: "pass",
-      detail: `${rawBind} + ELIZA_ALLOWED_HOSTS=${allowedHosts}`,
+      detail: `${rawBind} + TOKAGENT_ALLOWED_HOSTS=${allowedHosts}`,
     };
   }
 
@@ -477,40 +477,40 @@ export async function checkPort(port: number): Promise<CheckResult> {
     category: "network",
     status: "warn",
     detail: owner ? `In use by ${owner}` : "In use by another process",
-    fix: `ELIZA_PORT=<other> eliza start (current default ${resolveServerOnlyPort(process.env)})`,
+    fix: `TOKAGENT_PORT=<other> tokagent start (current default ${resolveServerOnlyPort(process.env)})`,
   };
 }
 
 // ---------------------------------------------------------------------------
-// Eliza workspace checks
+// Tokagent workspace checks
 // ---------------------------------------------------------------------------
 
-export function checkElizaWorkspace(projectRoot?: string): CheckResult {
+export function checkTokagentWorkspace(projectRoot?: string): CheckResult {
   const root =
     projectRoot ??
-    path.resolve(process.env.ELIZA_PROJECT_ROOT ?? process.cwd());
-  const elizaRoot = path.join(root, "eliza");
-  const pluginsRoot = path.join(elizaRoot, "plugins");
-  const hasElizaRoot = existsSync(path.join(elizaRoot, "package.json"));
+    path.resolve(process.env.TOKAGENT_PROJECT_ROOT ?? process.cwd());
+  const tokagentRoot = path.join(root, "tokagent");
+  const pluginsRoot = path.join(tokagentRoot, "plugins");
+  const hasTokagentRoot = existsSync(path.join(tokagentRoot, "package.json"));
   const hasPluginsRoot = existsSync(pluginsRoot);
 
-  if (!hasElizaRoot && !hasPluginsRoot) {
+  if (!hasTokagentRoot && !hasPluginsRoot) {
     return {
       label: "Local upstreams",
       category: "system",
       status: "warn",
       detail:
-        "Vendored source workspace not found at ./eliza (needed only for repo-local @elizaos development)",
+        "Vendored source workspace not found at ./tokagent (needed only for repo-local @elizaos development)",
       fix: "bun run setup:upstreams",
     };
   }
 
-  if (existsSync(elizaRoot) && !hasElizaRoot) {
+  if (existsSync(tokagentRoot) && !hasTokagentRoot) {
     return {
       label: "Local upstreams",
       category: "system",
       status: "warn",
-      detail: `${elizaRoot} exists but missing package.json`,
+      detail: `${tokagentRoot} exists but missing package.json`,
       fix: "bun run setup:upstreams",
     };
   }
@@ -518,13 +518,13 @@ export function checkElizaWorkspace(projectRoot?: string): CheckResult {
   const coreLink = path.join(root, "node_modules", "@elizaos", "core");
   try {
     const realTarget = realpathSync(coreLink);
-    if (realTarget.startsWith(elizaRoot)) {
+    if (realTarget.startsWith(tokagentRoot)) {
       return {
         label: "Local upstreams",
         category: "system",
         status: "pass",
         detail:
-          "Vendored @elizaos/core workspace is active (includes the orchestrator runtime)",
+          "Vendored @tokagentos/core workspace is active (includes the orchestrator runtime)",
       };
     }
   } catch {
@@ -532,8 +532,8 @@ export function checkElizaWorkspace(projectRoot?: string): CheckResult {
   }
 
   const foundLocations = [
-    hasElizaRoot ? "./eliza" : null,
-    hasPluginsRoot ? "./eliza/plugins" : null,
+    hasTokagentRoot ? "./tokagent" : null,
+    hasPluginsRoot ? "./tokagent/plugins" : null,
   ]
     .filter((value): value is string => Boolean(value))
     .join(" and ");
@@ -569,7 +569,7 @@ export async function runAllChecks(
     checkRuntime(),
     checkNodeModules(opts.projectRoot),
     checkBuildArtifacts(opts.projectRoot),
-    checkElizaWorkspace(opts.projectRoot),
+    checkTokagentWorkspace(opts.projectRoot),
     // config
     checkConfigFile(opts.configPath, env),
     checkModelKey(env),

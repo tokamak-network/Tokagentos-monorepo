@@ -11,13 +11,13 @@
  *   3. LLM provides both (action wins)
  *   4. LLM provides malformed/missing params (error paths)
  *
- * Run: bunx vitest run eliza/apps/app-lifeops/test/life-smoke.integration.test.ts
+ * Run: bunx vitest run tokagent/apps/app-lifeops/test/life-smoke.integration.test.ts
  */
 
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createRealTestRuntime } from "../../../../test/helpers/real-runtime";
 import { lifeAction } from "../src/actions/life.js";
@@ -30,13 +30,13 @@ let isolatedConfigPath: string;
 
 const isolatedEnvKeys = [
   "MILADY_STATE_DIR",
-  "ELIZA_STATE_DIR",
+  "TOKAGENT_STATE_DIR",
   "MILADY_CONFIG_PATH",
-  "ELIZA_CONFIG_PATH",
+  "TOKAGENT_CONFIG_PATH",
   "MILADY_PERSIST_CONFIG_PATH",
-  "ELIZA_PERSIST_CONFIG_PATH",
-  "ELIZAOS_CLOUD_API_KEY",
-  "ELIZAOS_CLOUD_BASE_URL",
+  "TOKAGENT_PERSIST_CONFIG_PATH",
+  "TOKAGENTOS_CLOUD_API_KEY",
+  "TOKAGENTOS_CLOUD_BASE_URL",
 ] as const;
 
 const previousEnv = new Map<string, string | undefined>();
@@ -57,11 +57,11 @@ function setIsolatedLifeSmokeEnv(): void {
   process.env.MILADY_STATE_DIR = isolatedStateDir;
   process.env.MILADY_CONFIG_PATH = isolatedConfigPath;
   process.env.MILADY_PERSIST_CONFIG_PATH = isolatedConfigPath;
-  delete process.env.ELIZA_STATE_DIR;
-  delete process.env.ELIZA_CONFIG_PATH;
-  delete process.env.ELIZA_PERSIST_CONFIG_PATH;
-  delete process.env.ELIZAOS_CLOUD_API_KEY;
-  delete process.env.ELIZAOS_CLOUD_BASE_URL;
+  delete process.env.TOKAGENT_STATE_DIR;
+  delete process.env.TOKAGENT_CONFIG_PATH;
+  delete process.env.TOKAGENT_PERSIST_CONFIG_PATH;
+  delete process.env.TOKAGENTOS_CLOUD_API_KEY;
+  delete process.env.TOKAGENTOS_CLOUD_BASE_URL;
 }
 
 function restoreIsolatedLifeSmokeEnv(): void {

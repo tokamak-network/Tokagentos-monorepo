@@ -1,5 +1,5 @@
 [project]
-name = "elizaos-autonomous-agent"
+name = "tokagentos-autonomous-agent"
 version = "1.0.0"
 description = "Autonomous self-looping agent with local AI, shell access, and in-memory database"
 readme = "README.md"

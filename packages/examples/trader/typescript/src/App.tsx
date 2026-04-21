@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { AgentRuntime } from '@elizaos/core';
+import type { AgentRuntime } from '@tokagentos/core';
 import { getRuntime, resetRuntime, isRuntimeInitialized } from './runtime';
 import { useTrading } from './hooks/useTrading';
 import { WalletSetup } from './components/WalletSetup';
@@ -61,7 +61,7 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <h1>⚡ ElizaOS Auto Trader</h1>
+        <h1>⚡ TokagentOS Auto Trader</h1>
         <p>AI-powered autonomous trading on Solana</p>
       </header>
 
@@ -124,7 +124,7 @@ function App() {
           Only trade with funds you can afford to lose.
         </p>
         <p style={{ marginTop: '8px' }}>
-          Built with ElizaOS • <a href="https://github.com/elizaos/eliza" style={{ color: 'var(--accent-primary)' }}>GitHub</a>
+          Built with TokagentOS • <a href="https://github.com/tokagentos/tokagent" style={{ color: 'var(--accent-primary)' }}>GitHub</a>
         </p>
       </footer>
     </div>

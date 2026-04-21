@@ -11,9 +11,9 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import {
-  getElizaPackageLinks,
+  getTokagentPackageLinks,
   getPluginPackageLinks,
-  getPublishedElizaPackageSpecs,
+  getPublishedTokagentPackageSpecs,
 } from "./setup-upstreams.mjs";
 import { resolveRepoRootFromImportMeta } from "./lib/repo-root.mjs";
 
@@ -31,7 +31,7 @@ function checkUpstreamDrift() {
   let hasDrift = false;
 
   // Get all explicitly pinned (non-workspace:*) @elizaos/* deps from root
-  const pinnedDeps = getPublishedElizaPackageSpecs(ROOT);
+  const pinnedDeps = getPublishedTokagentPackageSpecs(ROOT);
 
   if (pinnedDeps.length === 0) {
     console.log(
@@ -46,12 +46,12 @@ function checkUpstreamDrift() {
 
   // Build a map of packageName -> local vendored directory
   const vendoredPackages = new Map();
-  const elizaLinks = getElizaPackageLinks(ROOT);
+  const tokagentLinks = getTokagentPackageLinks(ROOT);
   const pluginLinks = getPluginPackageLinks(ROOT);
 
-  for (const link of [...elizaLinks, ...pluginLinks]) {
-    // targetPath is the path to the actual package dir (e.g. ROOT/eliza/packages/core)
-    // linkPath is where it gets symlinked (e.g. ROOT/node_modules/@elizaos/core)
+  for (const link of [...tokagentLinks, ...pluginLinks]) {
+    // targetPath is the path to the actual package dir (e.g. ROOT/tokagent/packages/core)
+    // linkPath is where it gets symlinked (e.g. ROOT/node_modules/@tokagentos/core)
     // We read from targetPath to get the truth.
     const pkg = readPackageJson(link.targetPath);
     if (pkg?.name) {

@@ -60,7 +60,7 @@ function sleep(ms) {
 }
 
 export function getRepoSetupLockPath(repoRoot = DEFAULT_REPO_ROOT) {
-  return path.join(repoRoot, ".eliza-repo-setup.lock");
+  return path.join(repoRoot, ".tokagent-repo-setup.lock");
 }
 
 export function isRepoSetupLockStale(
@@ -190,7 +190,7 @@ const isMain =
 if (isMain) {
   runRepoSetup().catch((error) => {
     console.error(
-      `[eliza] Repo setup failed: ${error instanceof Error ? error.message : String(error)}`,
+      `[tokagent] Repo setup failed: ${error instanceof Error ? error.message : String(error)}`,
     );
     process.exit(1);
   });

@@ -6,8 +6,8 @@ import type {
   LifeOpsConnectorSide,
   LifeOpsGoogleCapability,
   StartLifeOpsGoogleConnectorResponse,
-} from "@elizaos/shared/contracts/lifeops";
-import { resolveOAuthDir } from "@elizaos/agent/config/paths";
+} from "@tokagentos/shared/contracts/lifeops";
+import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
 import {
   googleCapabilitiesToScopes,
   googleScopesToCapabilities,
@@ -27,24 +27,24 @@ const GOOGLE_ACCESS_TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;
 const pendingGoogleOAuthSessions = new Map<string, PendingGoogleOAuthSession>();
 
 const DESKTOP_CLIENT_ID_KEYS = [
-  "ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
-  "ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
+  "TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
+  "TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
 ] as const;
 const DESKTOP_CLIENT_SECRET_KEYS = [
-  "ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_SECRET",
-  "ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_SECRET",
+  "TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_SECRET",
+  "TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_SECRET",
 ] as const;
 const WEB_CLIENT_ID_KEYS = [
-  "ELIZA_GOOGLE_OAUTH_WEB_CLIENT_ID",
-  "ELIZA_GOOGLE_OAUTH_WEB_CLIENT_ID",
+  "TOKAGENT_GOOGLE_OAUTH_WEB_CLIENT_ID",
+  "TOKAGENT_GOOGLE_OAUTH_WEB_CLIENT_ID",
 ] as const;
 const WEB_CLIENT_SECRET_KEYS = [
-  "ELIZA_GOOGLE_OAUTH_WEB_CLIENT_SECRET",
-  "ELIZA_GOOGLE_OAUTH_WEB_CLIENT_SECRET",
+  "TOKAGENT_GOOGLE_OAUTH_WEB_CLIENT_SECRET",
+  "TOKAGENT_GOOGLE_OAUTH_WEB_CLIENT_SECRET",
 ] as const;
 const PUBLIC_BASE_URL_KEYS = [
-  "ELIZA_GOOGLE_OAUTH_PUBLIC_BASE_URL",
-  "ELIZA_GOOGLE_OAUTH_PUBLIC_BASE_URL",
+  "TOKAGENT_GOOGLE_OAUTH_PUBLIC_BASE_URL",
+  "TOKAGENT_GOOGLE_OAUTH_PUBLIC_BASE_URL",
 ] as const;
 
 export class GoogleOAuthError extends Error {

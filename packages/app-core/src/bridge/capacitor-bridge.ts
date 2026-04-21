@@ -16,7 +16,7 @@ import { isElectrobunRuntime } from "./electrobun-runtime";
 
 // Import the plugin bridge
 import {
-  type ElizaPlugins,
+  type TokagentPlugins,
   getPluginCapabilities,
   getPlugins,
   isFeatureAvailable,
@@ -201,7 +201,7 @@ export function hasPlugin(name: string): boolean {
 /**
  * The global native bridge object exposed to the UI
  */
-export interface ElizaBridge {
+export interface TokagentBridge {
   /** Platform capabilities */
   capabilities: CapacitorCapabilities;
   /** Plugin-specific capabilities */
@@ -215,7 +215,7 @@ export interface ElizaBridge {
   /** Register a new plugin */
   registerPlugin: typeof registerPlugin;
   /** Get all native plugins with fallback support */
-  plugins: ElizaPlugins;
+  plugins: TokagentPlugins;
   /** Check if a specific feature is available */
   isFeatureAvailable: typeof isFeatureAvailable;
   /** Platform info */
@@ -233,7 +233,7 @@ export interface ElizaBridge {
 /**
  * Create the global bridge object
  */
-function createBridge(): ElizaBridge {
+function createBridge(): TokagentBridge {
   const isDesktop = isDesktopPlatform();
   return {
     capabilities: getCapabilities(),
@@ -259,20 +259,20 @@ function createBridge(): ElizaBridge {
 // Extend the Window interface to include our bridge
 declare global {
   interface Window {
-    Eliza: ElizaBridge;
+    Tokagent: TokagentBridge;
   }
 }
 
 /**
  * Initialize the Capacitor bridge
  *
- * This exposes the bridge object on window.Eliza for use by the UI.
+ * This exposes the bridge object on window.Tokagent for use by the UI.
  */
 export function initializeCapacitorBridge(): void {
-  window.Eliza = createBridge();
+  window.Tokagent = createBridge();
 
   // Dispatch an event to notify that the bridge is ready
-  dispatchAppEvent(BRIDGE_READY_EVENT, window.Eliza);
+  dispatchAppEvent(BRIDGE_READY_EVENT, window.Tokagent);
 }
 
 /**
@@ -280,16 +280,16 @@ export function initializeCapacitorBridge(): void {
  *
  * Returns immediately if already initialized, otherwise waits for the event.
  */
-export function waitForBridge(): Promise<ElizaBridge> {
-  if (window.Eliza) {
-    return Promise.resolve(window.Eliza);
+export function waitForBridge(): Promise<TokagentBridge> {
+  if (window.Tokagent) {
+    return Promise.resolve(window.Tokagent);
   }
 
   return new Promise((resolve) => {
     document.addEventListener(
       BRIDGE_READY_EVENT,
       (event) => {
-        resolve((event as CustomEvent<ElizaBridge>).detail);
+        resolve((event as CustomEvent<TokagentBridge>).detail);
       },
       { once: true },
     );

@@ -1,4 +1,4 @@
-import { Badge, Button } from "@elizaos/app-core";
+import { Badge, Button } from "@tokagentos/app-core";
 import {
   Camera,
   Eye,

@@ -1,8 +1,8 @@
-import { Button, PagePanel } from "@elizaos/app-core";
-import { client, type CloudOAuthConnection } from "@elizaos/app-core";
-import { isWebPlatform } from "@elizaos/app-core";
-import { useApp } from "@elizaos/app-core";
-import { openExternalUrl } from "@elizaos/app-core";
+import { Button, PagePanel } from "@tokagentos/app-core";
+import { client, type CloudOAuthConnection } from "@tokagentos/app-core";
+import { isWebPlatform } from "@tokagentos/app-core";
+import { useApp } from "@tokagentos/app-core";
+import { openExternalUrl } from "@tokagentos/app-core";
 import {
   LIFEOPS_GITHUB_CALLBACK_EVENT,
   type LifeOpsGithubCallbackDetail,
@@ -29,7 +29,7 @@ import { MessagingConnectorGrid } from "./MessagingConnectorCards";
 import { PermissionsPanel } from "./PermissionsPanel";
 
 const LIFEOPS_GITHUB_COMPLETE_PATH = "/api/v1/milady/lifeops/github-complete";
-const LIFEOPS_GITHUB_RETURN_URL = "elizaos://lifeops";
+const LIFEOPS_GITHUB_RETURN_URL = "tokagentos://lifeops";
 
 function buildOwnerGithubRedirectUrl(): string {
   const params = new URLSearchParams();
@@ -49,7 +49,7 @@ function openWebOauthPopup(): Window | null {
   ) {
     return null;
   }
-  return window.open("", "elizaos-lifeops-github");
+  return window.open("", "tokagentos-lifeops-github");
 }
 
 function describeGithubCallback(detail: LifeOpsGithubCallbackDetail): {
@@ -67,7 +67,7 @@ function describeGithubCallback(detail: LifeOpsGithubCallbackDetail): {
 
   if (detail.target === "owner") {
     return {
-      message: "LifeOps GitHub connected through Eliza Cloud.",
+      message: "LifeOps GitHub connected through Tokagent Cloud.",
       tone: "success",
       durationMs: 3600,
     };
@@ -140,7 +140,7 @@ export function LifeOpsPageView() {
   const {
     agentStatus,
     backendConnection,
-    elizaCloudConnected,
+    tokagentCloudConnected,
     setActionNotice,
     setState,
     setTab,
@@ -169,7 +169,7 @@ export function LifeOpsPageView() {
     backendConnection?.state === "connected";
 
   const loadGithub = useCallback(async () => {
-    if (!appEnabled || !elizaCloudConnected) {
+    if (!appEnabled || !tokagentCloudConnected) {
       setGithubError(null);
       setOwnerGithubConnections([]);
       setAgentGithubEntries([]);
@@ -230,7 +230,7 @@ export function LifeOpsPageView() {
     } finally {
       setGithubLoading(false);
     }
-  }, [appEnabled, elizaCloudConnected]);
+  }, [appEnabled, tokagentCloudConnected]);
 
   useEffect(() => {
     void loadGithub();
@@ -495,10 +495,10 @@ export function LifeOpsPageView() {
   );
   const ownerGithubSetup = useMemo(
     () => ({
-      identity: elizaCloudConnected
+      identity: tokagentCloudConnected
         ? readGithubIdentity(primaryOwnerGithubConnection)
         : "Cloud required",
-      status: elizaCloudConnected
+      status: tokagentCloudConnected
         ? primaryOwnerGithubConnection
           ? "1 / 1"
           : githubLoading
@@ -506,10 +506,10 @@ export function LifeOpsPageView() {
             : "0 / 1"
         : "Cloud required",
       connectLabel: primaryOwnerGithubConnection ? "Reconnect" : "Connect",
-      connectDisabled: ownerGithubBusy || !elizaCloudConnected,
+      connectDisabled: ownerGithubBusy || !tokagentCloudConnected,
       disconnectDisabled:
         disconnectingOwnerConnectionId === primaryOwnerGithubConnection?.id,
-      onConnect: elizaCloudConnected
+      onConnect: tokagentCloudConnected
         ? () => {
             void handleConnectOwnerGithub();
           }
@@ -522,7 +522,7 @@ export function LifeOpsPageView() {
     }),
     [
       disconnectingOwnerConnectionId,
-      elizaCloudConnected,
+      tokagentCloudConnected,
       githubLoading,
       handleConnectOwnerGithub,
       handleDisconnectOwnerGithub,
@@ -532,7 +532,7 @@ export function LifeOpsPageView() {
   );
   const agentGithubSetup = useMemo(
     () => ({
-      identity: elizaCloudConnected
+      identity: tokagentCloudConnected
         ? primaryAgentGithubEntry?.github?.connected
           ? readGithubIdentity({
               displayName: primaryAgentGithubEntry.github.githubDisplayName,
@@ -541,7 +541,7 @@ export function LifeOpsPageView() {
             })
           : primaryAgentGithubEntry?.agent.agent_name ?? "No cloud agent"
         : "Cloud required",
-      status: elizaCloudConnected
+      status: tokagentCloudConnected
         ? primaryAgentGithubEntry?.github?.connected
           ? "1 / 1"
           : primaryAgentGithubEntry
@@ -559,7 +559,7 @@ export function LifeOpsPageView() {
         !primaryAgentGithubEntry ||
         busyAgentGithubId === primaryAgentGithubEntry.agent.agent_id,
       onConnect:
-        elizaCloudConnected && primaryAgentGithubEntry
+        tokagentCloudConnected && primaryAgentGithubEntry
           ? () => {
               void handleConnectAgentGithub(
                 primaryAgentGithubEntry.agent.agent_id,
@@ -567,7 +567,7 @@ export function LifeOpsPageView() {
             }
           : undefined,
       onDisconnect:
-        elizaCloudConnected &&
+        tokagentCloudConnected &&
         primaryAgentGithubEntry?.github?.connected &&
         primaryAgentGithubEntry
           ? () => {
@@ -579,7 +579,7 @@ export function LifeOpsPageView() {
     }),
     [
       busyAgentGithubId,
-      elizaCloudConnected,
+      tokagentCloudConnected,
       githubLoading,
       handleConnectAgentGithub,
       handleDisconnectAgentGithub,

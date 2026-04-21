@@ -1,4 +1,4 @@
-import { Button } from "@elizaos/ui";
+import { Button } from "@tokagentos/ui";
 import { useApp } from "../../state";
 import type { AppState, FlaminaGuideTopic } from "../../state/types";
 

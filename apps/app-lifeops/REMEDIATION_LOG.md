@@ -19,15 +19,15 @@ This file turns the review into explicit TODOs. Each item records the problem, t
 
 ## 2. Package-local Vitest config is not discovering LifeOps tests
 
-- [x] Make `eliza/apps/app-lifeops/vitest.config.ts` resolve from repo root instead of accidentally matching the repo-root helper tests only.
-- Why this was broken: the config extended a repo-root base config but kept package-relative include globs, so `vitest --config eliza/apps/app-lifeops/vitest.config.ts` matched the wrong files.
+- [x] Make `tokagent/apps/app-lifeops/vitest.config.ts` resolve from repo root instead of accidentally matching the repo-root helper tests only.
+- Why this was broken: the config extended a repo-root base config but kept package-relative include globs, so `vitest --config tokagent/apps/app-lifeops/vitest.config.ts` matched the wrong files.
 - Options considered:
   - Change only the include globs to repo-root-relative paths.
   - Set `root` explicitly to repo root and compute LifeOps include globs from the config location.
   - Drop the package-local config and force all runs through the repo-root config.
 - Selected approach: set `root` explicitly and compute package globs relative to it. That keeps the package-local command working regardless of the current shell cwd.
 - Risk checks:
-  - `vitest list --config eliza/apps/app-lifeops/vitest.config.ts` must enumerate LifeOps tests under `src/`, `test/`, and `extensions/`.
+  - `vitest list --config tokagent/apps/app-lifeops/vitest.config.ts` must enumerate LifeOps tests under `src/`, `test/`, and `extensions/`.
   - The package-local route test must still run under that config.
 
 ## 3. `GET /api/lifeops/definitions/:id` returns a broken `performance` payload

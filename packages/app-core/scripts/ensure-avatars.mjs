@@ -4,8 +4,8 @@
  *
  * On a fresh clone, the companion plugin's public/vrms/ and animations/
  * may be empty or contain only Git LFS pointers.  This script clones the
- * elizaos/avatars repository (org-owned) into a temp directory and copies
- * the assets into eliza/apps/app-companion/public/.
+ * tokagentos/avatars repository (org-owned) into a temp directory and copies
+ * the assets into tokagent/apps/app-companion/public/.
  *
  * Run automatically via the `postinstall` hook, or manually:
  *   node scripts/ensure-avatars.mjs
@@ -31,7 +31,7 @@ import { resolveRepoRootFromImportMeta } from "./lib/repo-root.mjs";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolveRepoRootFromImportMeta(import.meta.url);
-const PUBLIC = join(ROOT, "eliza", "apps", "app-companion", "public");
+const PUBLIC = join(ROOT, "tokagent", "apps", "app-companion", "public");
 const VRMS_DIR = join(PUBLIC, "vrms");
 const ANIMATIONS_DIR = join(PUBLIC, "animations");
 const BUNDLED_VRM_SOURCE_IDS = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -42,11 +42,11 @@ const UNUSED_ANIMATION_PATHS = [
   join("mixamo", "Crying.fbx"),
 ];
 
-// elizaos/avatars is an org-owned repo in the elizaos GitHub organization.
+// tokagentos/avatars is an org-owned repo in the tokagentos GitHub organization.
 // Pinned to a specific commit for reproducible installs (supply-chain safety).
-const AVATARS_REPO = "https://github.com/elizaos/avatars.git";
+const AVATARS_REPO = "https://github.com/tokagentos/avatars.git";
 const AVATARS_COMMIT = "50f6bf0ad6db583581d4cbaeb377ca005b45195b";
-const AVATARS_REF = process.env.ELIZA_AVATARS_REF?.trim() || "";
+const AVATARS_REF = process.env.TOKAGENT_AVATARS_REF?.trim() || "";
 const TAG = "[ensure-avatars]";
 const CHARACTERS_VRM = join(ROOT, "apps", "app", "characters", "vrm");
 
@@ -217,7 +217,7 @@ export function runEnsureAvatars({
 
     // Clone and checkout pinned commit for reproducibility.
     // Uses --depth 1 + fetch for speed (avoids full history). When an explicit
-    // ref/tag is supplied via ELIZA_AVATARS_REF we clone that shallow ref first.
+    // ref/tag is supplied via TOKAGENT_AVATARS_REF we clone that shallow ref first.
     const cloneArgs = AVATARS_REF
       ? `git clone --depth 1 --branch "${AVATARS_REF}" ${AVATARS_REPO} "${tmpDir}"`
       : `git clone --depth 1 ${AVATARS_REPO} "${tmpDir}"`;
@@ -243,19 +243,19 @@ export function runEnsureAvatars({
 
       for (const sourceId of BUNDLED_VRM_SOURCE_IDS) {
         copyPathIfExists(
-          join(avatarVrms, `eliza-${sourceId}.vrm`),
-          join(VRMS_DIR, `eliza-${sourceId}.vrm`),
+          join(avatarVrms, `tokagent-${sourceId}.vrm`),
+          join(VRMS_DIR, `tokagent-${sourceId}.vrm`),
         );
         copyPathIfExists(
-          join(avatarVrms, "previews", `eliza-${sourceId}.png`),
-          join(VRMS_DIR, "previews", `eliza-${sourceId}.png`),
+          join(avatarVrms, "previews", `tokagent-${sourceId}.png`),
+          join(VRMS_DIR, "previews", `tokagent-${sourceId}.png`),
         );
       }
 
       for (const sourceId of BUNDLED_BACKGROUND_SOURCE_IDS) {
         copyPathIfExists(
-          join(avatarVrms, "backgrounds", `eliza-${sourceId}.png`),
-          join(VRMS_DIR, "backgrounds", `eliza-${sourceId}.png`),
+          join(avatarVrms, "backgrounds", `tokagent-${sourceId}.png`),
+          join(VRMS_DIR, "backgrounds", `tokagent-${sourceId}.png`),
         );
       }
 

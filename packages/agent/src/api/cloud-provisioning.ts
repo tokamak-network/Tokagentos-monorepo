@@ -4,15 +4,15 @@ function hasValue(value: string | undefined): boolean {
 
 function hasCompatApiToken(): boolean {
   return (
-    hasValue(process.env.ELIZA_API_TOKEN) ||
-    hasValue(process.env.ELIZA_API_TOKEN)
+    hasValue(process.env.TOKAGENT_API_TOKEN) ||
+    hasValue(process.env.TOKAGENT_API_TOKEN)
   );
 }
 
 function hasCloudApiKeyProvisioning(): boolean {
   return (
-    process.env.ELIZAOS_CLOUD_ENABLED === "true" &&
-    hasValue(process.env.ELIZAOS_CLOUD_API_KEY)
+    process.env.TOKAGENTOS_CLOUD_ENABLED === "true" &&
+    hasValue(process.env.TOKAGENTOS_CLOUD_API_KEY)
   );
 }
 
@@ -29,7 +29,7 @@ function hasCloudApiKeyProvisioning(): boolean {
  * cloud containers.
  */
 export function isCloudProvisionedContainer(): boolean {
-  const hasCloudFlag = process.env.ELIZA_CLOUD_PROVISIONED === "1";
+  const hasCloudFlag = process.env.TOKAGENT_CLOUD_PROVISIONED === "1";
 
   return (
     hasCloudFlag &&

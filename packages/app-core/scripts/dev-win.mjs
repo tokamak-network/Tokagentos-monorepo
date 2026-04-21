@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 /**
- * Windows-compatible dev server launcher for Eliza.
+ * Windows-compatible dev server launcher for Tokagent.
  *
  * Usage:
- *   node eliza/packages/app-core/scripts/dev-win.mjs [--ui-only]
+ *   node tokagent/packages/app-core/scripts/dev-win.mjs [--ui-only]
  */
 import { execSync } from "node:child_process";
 import { join, resolve } from "node:path";

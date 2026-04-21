@@ -1,5 +1,5 @@
 import type http from "node:http";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 /**
  * Common request body size guard used across API/benchmark endpoints.

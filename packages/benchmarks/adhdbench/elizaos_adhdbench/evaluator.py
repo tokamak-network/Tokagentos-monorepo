@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from elizaos_adhdbench.types import (
+from tokagentos_adhdbench.types import (
     ExpectedOutcome,
     OutcomeResult,
     OutcomeType,

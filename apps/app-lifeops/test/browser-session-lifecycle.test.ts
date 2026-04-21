@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { LifeOpsRepository } from "../src/lifeops/repository.js";
 import { summarizeBrowserTaskLifecycle } from "../src/lifeops/browser-session-lifecycle.js";
 import { LifeOpsService } from "../src/lifeops/service.js";

@@ -1,6 +1,6 @@
-# ElizaOS AgentBench
+# TokagentOS AgentBench
 
-A comprehensive implementation of [AgentBench](https://github.com/THUDM/AgentBench) for evaluating ElizaOS Python agents across 8 diverse environments.
+A comprehensive implementation of [AgentBench](https://github.com/THUDM/AgentBench) for evaluating TokagentOS Python agents across 8 diverse environments.
 
 ## Overview
 
@@ -33,11 +33,11 @@ pip install -e ".[dev]"
 
 ```python
 import asyncio
-from elizaos_agentbench import AgentBenchRunner, AgentBenchConfig
-from elizaos.runtime import AgentRuntime
+from tokagentos_agentbench import AgentBenchRunner, AgentBenchConfig
+from tokagentos.runtime import AgentRuntime
 
 async def main():
-    # Create ElizaOS runtime
+    # Create TokagentOS runtime
     runtime = AgentRuntime()
     await runtime.initialize()
 
@@ -60,7 +60,7 @@ asyncio.run(main())
 ### Run Specific Environments
 
 ```python
-from elizaos_agentbench import AgentBenchConfig, EnvironmentConfig
+from tokagentos_agentbench import AgentBenchConfig, EnvironmentConfig
 
 config = AgentBenchConfig()
 
@@ -78,18 +78,18 @@ config.lateral_thinking_config = EnvironmentConfig(enabled=False)
 
 ```bash
 # Run all environments
-python -m elizaos_agentbench.cli run
+python -m tokagentos_agentbench.cli run
 
 # Run specific environment
-python -m elizaos_agentbench.cli run --env os --env database
+python -m tokagentos_agentbench.cli run --env os --env database
 
 # With custom output directory
-python -m elizaos_agentbench.cli run --output ./my_results
+python -m tokagentos_agentbench.cli run --output ./my_results
 ```
 
 ## Results Comparison
 
-The benchmark compares ElizaOS performance against published baselines:
+The benchmark compares TokagentOS performance against published baselines:
 
 ### Published GPT-4 Baseline Scores (ICLR 2024)
 
@@ -127,15 +127,15 @@ After running the benchmark, you'll find:
 
 ## Trajectory Logging (for Training)
 
-AgentBench can log **end-to-end ElizaOS trajectories** (providers → canonical prompt → model response → actions → env reward)
-via `elizaos_plugin_trajectory_logger`, and export datasets in ART or GRPO formats.
+AgentBench can log **end-to-end TokagentOS trajectories** (providers → canonical prompt → model response → actions → env reward)
+via `tokagentos_plugin_trajectory_logger`, and export datasets in ART or GRPO formats.
 
 ```bash
 # Run and export OpenPipe ART trajectories
-python run_benchmark.py --elizaos --env all --trajectories --trajectory-format art --output ./results
+python run_benchmark.py --tokagentos --env all --trajectories --trajectory-format art --output ./results
 
 # Run and export grouped GRPO trajectories
-python run_benchmark.py --elizaos --env all --trajectories --trajectory-format grpo --output ./results
+python run_benchmark.py --tokagentos --env all --trajectories --trajectory-format grpo --output ./results
 ```
 
 ## Testing
@@ -145,20 +145,20 @@ python run_benchmark.py --elizaos --env all --trajectories --trajectory-format g
 pytest
 
 # With coverage
-pytest --cov=elizaos_agentbench
+pytest --cov=tokagentos_agentbench
 
 # Specific test file
-pytest elizaos_agentbench/tests/test_adapters.py -v
+pytest tokagentos_agentbench/tests/test_adapters.py -v
 ```
 
 ## Architecture
 
 ```
-elizaos_agentbench/
+tokagentos_agentbench/
 ├── __init__.py           # Package exports
 ├── types.py              # Core data types
 ├── runner.py             # Main benchmark runner
-├── eliza_harness.py      # Canonical ElizaOS integration (handle_message flow)
+├── tokagent_harness.py      # Canonical TokagentOS integration (handle_message flow)
 ├── benchmark_actions.py  # Benchmark Action definitions
 ├── adapters/
 │   ├── base.py           # Base adapter interface
@@ -177,7 +177,7 @@ elizaos_agentbench/
 
 - [AgentBench Paper (ICLR 2024)](https://arxiv.org/abs/2308.03688)
 - [AgentBench GitHub](https://github.com/THUDM/AgentBench)
-- [ElizaOS Documentation](https://elizaos.ai)
+- [TokagentOS Documentation](https://tokagentos.ai)
 
 ## License
 

@@ -17,8 +17,8 @@ import type {
   HandlerOptions,
   IAgentRuntime,
   Memory,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { hasOwnerAccess } from "../security/access.js";
 
 /** API port for posting terminal requests. */
@@ -226,9 +226,9 @@ async function getClipboardStoreFn(): Promise<ClipboardStoreFn | null> {
   }
 
   try {
-    // clipboard is now built into @elizaos/core advanced-capabilities
+    // clipboard is now built into @tokagentos/core advanced-capabilities
     const mod = (await import(
-      "@elizaos/core/advanced-capabilities/clipboard/index"
+      "@tokagentos/core/advanced-capabilities/clipboard/index"
     )) as unknown as {
       maybeStoreTaskClipboardItem?: ClipboardStoreFn;
     };

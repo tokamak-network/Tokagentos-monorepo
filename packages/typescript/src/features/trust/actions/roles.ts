@@ -4,7 +4,7 @@ import {
 	type ActionExample,
 	type ActionResult,
 	ChannelType,
-	type Action as ElizaAction,
+	type Action as TokagentAction,
 	type HandlerCallback,
 	type IAgentRuntime,
 	type Memory,
@@ -72,7 +72,7 @@ interface RoleAssignment {
 	newRole: Role;
 }
 
-export const updateRoleAction: ElizaAction = {
+export const updateRoleAction: TokagentAction = {
 	name: "UPDATE_ROLE",
 	similes: ["CHANGE_ROLE", "SET_PERMISSIONS", "ASSIGN_ROLE", "MAKE_ADMIN"],
 	description:

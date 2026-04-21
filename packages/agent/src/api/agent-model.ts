@@ -1,5 +1,5 @@
-import type { AgentRuntime } from "@elizaos/core";
-import type { ElizaConfig } from "../config/config.js";
+import type { AgentRuntime } from "@tokagentos/core";
+import type { TokagentConfig } from "../config/config.js";
 import {
   normalizeOnboardingProviderId,
   resolveDeploymentTargetInConfig,
@@ -85,7 +85,7 @@ function readCharacterModel(runtime: AgentRuntime): string | undefined {
 
 export function detectRuntimeModel(
   runtime: AgentRuntime | null,
-  config?: Pick<ElizaConfig, "deploymentTarget" | "serviceRouting" | "agents">,
+  config?: Pick<TokagentConfig, "deploymentTarget" | "serviceRouting" | "agents">,
 ): string | undefined {
   if (!runtime) return undefined;
 
@@ -102,12 +102,12 @@ export function detectRuntimeModel(
   const backend = normalizeOnboardingProviderId(llmText?.backend);
 
   if (llmText?.transport === "direct") {
-    const provider = backend && backend !== "elizacloud" ? backend : undefined;
+    const provider = backend && backend !== "tokagentcloud" ? backend : undefined;
     return llmText.primaryModel ?? provider;
   }
 
   if (llmText?.transport === "remote") {
-    const provider = backend && backend !== "elizacloud" ? backend : undefined;
+    const provider = backend && backend !== "tokagentcloud" ? backend : undefined;
     return (
       llmText.primaryModel ??
       provider ??
@@ -116,7 +116,7 @@ export function detectRuntimeModel(
     );
   }
 
-  if (llmText?.transport === "cloud-proxy" && backend === "elizacloud") {
+  if (llmText?.transport === "cloud-proxy" && backend === "tokagentcloud") {
     return (
       llmText.responseModel ??
       llmText.largeModel ??
@@ -162,7 +162,7 @@ export function resolveProviderFromModel(model: string): string | null {
   if (!lower) return null;
 
   const providers: Array<{ match: string; label: string }> = [
-    { match: "elizacloud", label: "Eliza Cloud" },
+    { match: "tokagentcloud", label: "Tokagent Cloud" },
     { match: "openrouter", label: "OpenRouter" },
     { match: "openai", label: "OpenAI" },
     { match: "anthropic", label: "Anthropic" },

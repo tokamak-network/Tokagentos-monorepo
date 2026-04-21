@@ -1,7 +1,7 @@
 /**
  * Integration tests for the Bluesky agent
  *
- * These tests verify the full elizaOS integration:
+ * These tests verify the full tokagentOS integration:
  * - Runtime creation with plugins
  * - Handler registration
  * - messageService availability
@@ -153,7 +153,7 @@ describe("Bluesky Agent Unit Tests", () => {
   });
 
   it("should create runtime with character", async () => {
-    const { AgentRuntime } = await import("@elizaos/core");
+    const { AgentRuntime } = await import("@tokagentos/core");
     const { character } = await import("../character");
 
     const runtime = new AgentRuntime({ character });
@@ -163,7 +163,7 @@ describe("Bluesky Agent Unit Tests", () => {
   });
 
   it("should register all event handlers", async () => {
-    const { AgentRuntime } = await import("@elizaos/core");
+    const { AgentRuntime } = await import("@tokagentos/core");
     const { character } = await import("../character");
     const { registerBlueskyHandlers } = await import("../handlers");
 
@@ -188,7 +188,7 @@ describe("Bluesky Agent Unit Tests", () => {
   });
 
   it("should have messageService after initialization", async () => {
-    const { AgentRuntime } = await import("@elizaos/core");
+    const { AgentRuntime } = await import("@tokagentos/core");
     const { character } = await import("../character");
 
     const runtime = new AgentRuntime({ character });
@@ -207,15 +207,15 @@ describe("Bluesky Agent Unit Tests", () => {
 // Pipeline Integration Tests
 // ============================================================================
 
-describe("elizaOS Pipeline Integration", () => {
+describe("tokagentOS Pipeline Integration", () => {
   it("should have createMessageMemory helper available", async () => {
-    const { createMessageMemory } = await import("@elizaos/core");
+    const { createMessageMemory } = await import("@tokagentos/core");
 
     expect(typeof createMessageMemory).toBe("function");
   });
 
   it("should create properly formatted message memory", async () => {
-    const { createMessageMemory, stringToUuid } = await import("@elizaos/core");
+    const { createMessageMemory, stringToUuid } = await import("@tokagentos/core");
 
     const memory = createMessageMemory({
       id: stringToUuid("test-id"),
@@ -236,7 +236,7 @@ describe("elizaOS Pipeline Integration", () => {
   });
 
   it("should have ChannelType enum available", async () => {
-    const { ChannelType } = await import("@elizaos/core");
+    const { ChannelType } = await import("@tokagentos/core");
 
     expect(ChannelType.DM).toBeDefined();
     expect(ChannelType.GROUP).toBeDefined();

@@ -1,7 +1,7 @@
 """
-Vending-Bench ElizaOS Runner - Uses the full ElizaOS runtime canonically.
+Vending-Bench TokagentOS Runner - Uses the full TokagentOS runtime canonically.
 
-This module runs the benchmark using the proper ElizaOS agent flow:
+This module runs the benchmark using the proper TokagentOS agent flow:
 - AgentRuntime with basicCapabilities enabled
 - Actions registered through the plugin system
 - Providers inject context into the agent's prompt
@@ -21,18 +21,18 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from uuid import UUID
 
-from elizaos import ChannelType, Character, Content, Memory
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
+from tokagentos import ChannelType, Character, Content, Memory
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
 from uuid6 import uuid7
 
-from elizaos_vending_bench.eliza_plugin import (
+from tokagentos_vending_bench.tokagent_plugin import (
     _get_env,
     create_vending_bench_plugin,
 )
-from elizaos_vending_bench.environment import VendingEnvironment
-from elizaos_vending_bench.reporting import VendingBenchReporter
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.environment import VendingEnvironment
+from tokagentos_vending_bench.reporting import VendingBenchReporter
+from tokagentos_vending_bench.types import (
     ActionType,
     AgentAction,
     CoherenceError,
@@ -113,8 +113,8 @@ Available actions: PLACE_ORDER, RESTOCK_SLOT, SET_PRICE, COLLECT_CASH, ADVANCE_D
 
 
 @dataclass
-class ElizaRunResult:
-    """Result of a single ElizaOS benchmark run."""
+class TokagentRunResult:
+    """Result of a single TokagentOS benchmark run."""
 
     run_id: str
     simulation_days: int
@@ -132,9 +132,9 @@ class ElizaRunResult:
     error: str | None = None
 
 
-class ElizaVendingRunner:
+class TokagentVendingRunner:
     """
-    Benchmark runner using the canonical ElizaOS runtime.
+    Benchmark runner using the canonical TokagentOS runtime.
 
     This runner:
     1. Creates an AgentRuntime with the vending-bench plugin
@@ -155,7 +155,7 @@ class ElizaVendingRunner:
         self._room_id: UUID | None = None
 
     async def _create_runtime(self) -> AgentRuntime:
-        """Create and initialize the ElizaOS runtime."""
+        """Create and initialize the TokagentOS runtime."""
         _load_dotenv_fallback()
         # Ensure OpenAI plugin uses the benchmark's requested model.
         os.environ.setdefault("OPENAI_LARGE_MODEL", self.model_name)
@@ -194,7 +194,7 @@ class ElizaVendingRunner:
         text: str,
     ) -> tuple[str, list[str], int]:
         """
-        Send a message through the ElizaOS runtime and get response.
+        Send a message through the TokagentOS runtime and get response.
 
         Returns: (response_text, actions_taken, tokens_used)
         """
@@ -213,8 +213,8 @@ class ElizaVendingRunner:
         except Exception as e:
             import traceback
 
-            logger.error(f"[ElizaVendingRunner] Message handling error: {e}")
-            logger.error(f"[ElizaVendingRunner] Traceback: {traceback.format_exc()}")
+            logger.error(f"[TokagentVendingRunner] Message handling error: {e}")
+            logger.error(f"[TokagentVendingRunner] Traceback: {traceback.format_exc()}")
             return f"Error: {e}", [], 0
 
         # Extract response
@@ -226,9 +226,9 @@ class ElizaVendingRunner:
 
         return response_text, actions or [], tokens
 
-    async def run_single(self, run_id: str) -> ElizaRunResult:
-        """Run a single benchmark simulation using ElizaOS."""
-        logger.info(f"[ElizaVendingRunner] Starting run {run_id}")
+    async def run_single(self, run_id: str) -> TokagentRunResult:
+        """Run a single benchmark simulation using TokagentOS."""
+        logger.info(f"[TokagentVendingRunner] Starting run {run_id}")
 
         # Create fresh runtime for this run
         runtime = await self._create_runtime()
@@ -247,7 +247,7 @@ class ElizaVendingRunner:
             for day in range(1, self.config.max_days_per_run + 1):
                 # Check for bankruptcy
                 if env.get_net_worth() <= Decimal("0"):
-                    logger.info(f"[ElizaVendingRunner] Bankrupt on day {day}")
+                    logger.info(f"[TokagentVendingRunner] Bankrupt on day {day}")
                     break
 
                 # Build daily prompt
@@ -260,7 +260,7 @@ class ElizaVendingRunner:
                 while day_actions < max_actions_per_day:
                     start_time = time.time()
 
-                    # Send message through ElizaOS runtime
+                    # Send message through TokagentOS runtime
                     response, actions, tokens = await self._send_message(
                         runtime,
                         day_prompt
@@ -312,7 +312,7 @@ class ElizaVendingRunner:
             coherence_errors: list[CoherenceError] = []
             # We'll do a basic evaluation - the full evaluator needs VendingBenchResult format
 
-            return ElizaRunResult(
+            return TokagentRunResult(
                 run_id=run_id,
                 simulation_days=env.state.current_day,
                 final_net_worth=final_net_worth,
@@ -330,9 +330,9 @@ class ElizaVendingRunner:
 
         except Exception as e:
             import traceback
-            logger.error(f"[ElizaVendingRunner] Run {run_id} failed: {e}")
-            logger.error(f"[ElizaVendingRunner] Traceback: {traceback.format_exc()}")
-            return ElizaRunResult(
+            logger.error(f"[TokagentVendingRunner] Run {run_id} failed: {e}")
+            logger.error(f"[TokagentVendingRunner] Traceback: {traceback.format_exc()}")
+            return TokagentRunResult(
                 run_id=run_id,
                 simulation_days=env.state.current_day if env else 0,
                 final_net_worth=Decimal("0"),
@@ -402,9 +402,9 @@ Yesterday's Summary:
 
     async def run_benchmark(self) -> VendingBenchReport:
         """Run the full benchmark with multiple runs."""
-        logger.info("[ElizaVendingRunner] Starting benchmark")
+        logger.info("[TokagentVendingRunner] Starting benchmark")
         logger.info(
-            f"[ElizaVendingRunner] Config: {self.config.num_runs} runs, {self.config.max_days_per_run} days each"
+            f"[TokagentVendingRunner] Config: {self.config.num_runs} runs, {self.config.max_days_per_run} days each"
         )
 
         start_time = time.time()
@@ -412,7 +412,7 @@ Yesterday's Summary:
 
         for i in range(self.config.num_runs):
             run_id = f"run_{i + 1:03d}"
-            logger.info(f"[ElizaVendingRunner] Starting {run_id}")
+            logger.info(f"[TokagentVendingRunner] Starting {run_id}")
 
             run_result = await self.run_single(run_id)
 
@@ -438,7 +438,7 @@ Yesterday's Summary:
             results.append(result)
 
             logger.info(
-                f"[ElizaVendingRunner] {run_id} completed: "
+                f"[TokagentVendingRunner] {run_id} completed: "
                 f"net_worth=${result.final_net_worth}, "
                 f"days={result.simulation_days}, "
                 f"errors={len(result.coherence_errors)}"
@@ -452,9 +452,9 @@ Yesterday's Summary:
         report = VendingBenchReport(
             metadata={
                 "timestamp": datetime.now().isoformat(),
-                "version": "1.0.0-eliza",
+                "version": "1.0.0-tokagent",
                 "model": self.model_name,
-                "runtime": "elizaos",
+                "runtime": "tokagentos",
                 "total_duration_seconds": total_time,
             },
             config=self.config,
@@ -465,12 +465,12 @@ Yesterday's Summary:
                 "best_net_worth": str(metrics.max_net_worth),
                 "avg_net_worth": str(metrics.avg_net_worth),
                 "coherence_score": f"{metrics.coherence_score:.1%}",
-                "runtime_type": "ElizaOS (canonical)",
+                "runtime_type": "TokagentOS (canonical)",
             },
         )
 
         logger.info(
-            f"[ElizaVendingRunner] Benchmark completed in {total_time:.1f}s. "
+            f"[TokagentVendingRunner] Benchmark completed in {total_time:.1f}s. "
             f"Best net worth: ${metrics.max_net_worth}"
         )
 
@@ -480,7 +480,7 @@ Yesterday's Summary:
         """Calculate aggregate metrics from results."""
         import statistics
 
-        from elizaos_vending_bench.types import CoherenceErrorType
+        from tokagentos_vending_bench.types import CoherenceErrorType
 
         net_worths = [float(r.final_net_worth) for r in results]
         profits = [float(r.profit) for r in results]
@@ -525,30 +525,30 @@ Yesterday's Summary:
         )
 
 
-async def run_eliza_benchmark(
+async def run_tokagent_benchmark(
     num_runs: int = 3,
     max_days: int = 30,
     model: str = "gpt-5-mini",
     output_dir: str | None = None,
 ) -> VendingBenchReport:
     """
-    Run the Vending-Bench using the canonical ElizaOS runtime.
+    Run the Vending-Bench using the canonical TokagentOS runtime.
 
     This is the proper way to run the benchmark - using the full
-    ElizaOS agent with message handling, action selection, and
+    TokagentOS agent with message handling, action selection, and
     provider context injection.
     """
     config = VendingBenchConfig(
         num_runs=num_runs,
         max_days_per_run=max_days,
         model_name=model,
-        output_dir=output_dir or "./benchmark_results/eliza",
+        output_dir=output_dir or "./benchmark_results/tokagent",
         generate_report=True,
         save_trajectories=True,
         save_detailed_logs=True,
     )
 
-    runner = ElizaVendingRunner(config, model_name=model)
+    runner = TokagentVendingRunner(config, model_name=model)
     report = await runner.run_benchmark()
 
     # Save report if output dir specified
@@ -561,9 +561,9 @@ async def run_eliza_benchmark(
         # Save markdown report
         reporter = VendingBenchReporter()
         markdown = reporter.generate_report(report)
-        report_path = output_path / f"VENDING-BENCH-ELIZA-{timestamp}.md"
+        report_path = output_path / f"VENDING-BENCH-TOKAGENT-{timestamp}.md"
         report_path.write_text(markdown)
-        logger.info(f"[ElizaVendingRunner] Saved report to {report_path}")
+        logger.info(f"[TokagentVendingRunner] Saved report to {report_path}")
 
     return report
 
@@ -582,11 +582,11 @@ if __name__ == "__main__":
 
     # Run benchmark
     report = asyncio.run(
-        run_eliza_benchmark(
+        run_tokagent_benchmark(
             num_runs=1,
             max_days=10,
             model="gpt-5-mini",
-            output_dir="./benchmark_results/eliza-test",
+            output_dir="./benchmark_results/tokagent-test",
         )
     )
 

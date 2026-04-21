@@ -16,22 +16,22 @@ const scriptFile = fileURLToPath(import.meta.url);
 const __dirname = dirname(scriptFile);
 const root = resolve(__dirname, "..");
 const skipLocalUpstreams =
-  process.env.ELIZA_SKIP_LOCAL_UPSTREAMS === "1" ||
-  process.env.ELIZA_SKIP_LOCAL_UPSTREAMS === "1";
+  process.env.TOKAGENT_SKIP_LOCAL_UPSTREAMS === "1" ||
+  process.env.TOKAGENT_SKIP_LOCAL_UPSTREAMS === "1";
 const SUBMODULE_READINESS_MARKERS = {
-  eliza: ["package.json", "packages/typescript/package.json"],
+  tokagent: ["package.json", "packages/typescript/package.json"],
 };
 
 // plugin-openrouter contains PGlite :memory:<UUID> paths committed under
 // typescript/ that Windows git rejects as invalid filenames. Skip checkout
-// until elizaos-plugins/plugin-openrouter#25 is merged; the package is
+// until tokagentos-plugins/plugin-openrouter#25 is merged; the package is
 // available via npm in the meantime.
-const SKIP_SUBMODULES = new Set(["eliza/plugins/plugin-openrouter"]);
+const SKIP_SUBMODULES = new Set(["tokagent/plugins/plugin-openrouter"]);
 
 // Submodules whose own nested submodules should NOT be recursively initialized.
 const NO_RECURSE_SUBMODULES = new Set([]);
 
-/** Top-level paths that moved under `eliza/`; drop stale gitlinks after migration. */
+/** Top-level paths that moved under `tokagent/`; drop stale gitlinks after migration. */
 const LEGACY_ROOT_SUBMODULE_PATHS = ["cloud", "steward-fi"];
 
 function getSubmoduleSkipReason(
@@ -41,7 +41,7 @@ function getSubmoduleSkipReason(
   if (SKIP_SUBMODULES.has(submodulePath)) {
     return "it is in the explicit skip list";
   }
-  if (skipLocal && submodulePath === "eliza") {
+  if (skipLocal && submodulePath === "tokagent") {
     return "local upstreams are disabled";
   }
   return null;
@@ -85,12 +85,12 @@ export function loadTrackedSubmodules({ exec = execSync, cwd = root } = {}) {
 }
 
 /**
- * After moving `cloud` and `steward-fi` under `eliza/`, older clones may still
+ * After moving `cloud` and `steward-fi` under `tokagent/`, older clones may still
  * have gitlinks at the repo root. If `.gitmodules` no longer lists those paths
  * but the index still does, remove them so postinstall does not clone into
  * `./cloud` or `./steward-fi`.
  */
-export function pruneLegacyRootSubmodulesMovedUnderEliza(
+export function pruneLegacyRootSubmodulesMovedUnderTokagent(
   rootDir,
   { exec = execSync, log = console.log, logError = console.error } = {},
 ) {
@@ -123,7 +123,7 @@ export function pruneLegacyRootSubmodulesMovedUnderEliza(
     }
 
     log(
-      `[init-submodules] Removing stale top-level submodule "${rel}" (now under eliza/). Deinitializing…`,
+      `[init-submodules] Removing stale top-level submodule "${rel}" (now under tokagent/). Deinitializing…`,
     );
     try {
       exec(`git submodule deinit -f -- "${rel}"`, {
@@ -229,11 +229,11 @@ export function runInitSubmodules({
   );
   if (hasLegacyRootCloudPaths) {
     log(
-      "[init-submodules] This .gitmodules still lists cloud/ or steward-fi/ at the repo root. Pull the latest branch where those repos are nested under eliza/, or edit .gitmodules to match.",
+      "[init-submodules] This .gitmodules still lists cloud/ or steward-fi/ at the repo root. Pull the latest branch where those repos are nested under tokagent/, or edit .gitmodules to match.",
     );
   }
 
-  pruneLegacyRootSubmodulesMovedUnderEliza(rootDir, {
+  pruneLegacyRootSubmodulesMovedUnderTokagent(rootDir, {
     exec,
     log,
     logError,
@@ -377,25 +377,25 @@ export function runInitSubmodules({
   }
 
   if (
-    !shouldSkipSubmodule("eliza") &&
-    exists(resolve(rootDir, "eliza", ".gitmodules"))
+    !shouldSkipSubmodule("tokagent") &&
+    exists(resolve(rootDir, "tokagent", ".gitmodules"))
   ) {
     log(
-      "[init-submodules] Ensuring nested checkouts under eliza/ (cloud, steward-fi, plugins, …)…",
+      "[init-submodules] Ensuring nested checkouts under tokagent/ (cloud, steward-fi, plugins, …)…",
     );
     try {
-      // Run from inside eliza/ so git reads eliza/.gitmodules directly.
-      // Running `git submodule update --init --recursive -- eliza` from the
+      // Run from inside tokagent/ so git reads tokagent/.gitmodules directly.
+      // Running `git submodule update --init --recursive -- tokagent` from the
       // parent can fail when git tries to resolve nested submodule paths
-      // (e.g. eliza/cloud) against the parent's .gitmodules instead of
-      // eliza's own .gitmodules.
+      // (e.g. tokagent/cloud) against the parent's .gitmodules instead of
+      // tokagent's own .gitmodules.
       exec(`git submodule update --init --recursive`, {
-        cwd: resolve(rootDir, "eliza"),
+        cwd: resolve(rootDir, "tokagent"),
         stdio: "inherit",
       });
     } catch (err) {
       logError(
-        `[init-submodules] Nested eliza submodule update failed (fix broken plugin submodules under eliza/ if needed): ${
+        `[init-submodules] Nested tokagent submodule update failed (fix broken plugin submodules under tokagent/ if needed): ${
           err instanceof Error ? err.message : String(err)
         }`,
       );

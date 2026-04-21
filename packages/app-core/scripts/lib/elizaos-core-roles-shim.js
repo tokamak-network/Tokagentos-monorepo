@@ -1,12 +1,12 @@
 /**
- * @elizaos/core/roles runtime shim.
+ * @tokagentos/core/roles runtime shim.
  *
- * The published `@elizaos/core@alpha` package's `dist/index.node.d.ts`
+ * The published `@tokagentos/core@alpha` package's `dist/index.node.d.ts`
  * declares `export * from "./roles";` but the runtime bundle
  * (`dist/index.node.js`) is missing those symbols AND the
  * `package.json` `exports` field does not expose a `./roles` subpath.
- * Every static import of `@elizaos/core/roles` — including the
- * `export * from "@elizaos/core/roles"` in
+ * Every static import of `@tokagentos/core/roles` — including the
+ * `export * from "@tokagentos/core/roles"` in
  * `packages/agent/src/runtime/roles/src/utils.ts` — therefore blows
  * up with `ERR_MODULE_NOT_FOUND` whenever Node resolves modules
  * against the published package (i.e. every CI job that runs
@@ -15,26 +15,26 @@
  * This file is a committed, pre-bundled ESM shim generated with:
  *
  *   bun build <stubs>/roles.ts --target=node --format=esm \
- *     --external='@elizaos/core' --outfile=scripts/lib/elizaos-core-roles-shim.js
+ *     --external='@tokagentos/core' --outfile=scripts/lib/tokagentos-core-roles-shim.js
  *
- * where the stubs are one-line re-exports from `@elizaos/core` for
+ * where the stubs are one-line re-exports from `@tokagentos/core` for
  * `./entities` (createUniqueUuid) and `./logger` (logger). The source
  * `roles.ts` is copied verbatim from
- * `eliza/packages/typescript/src/roles.ts`. The bundle inlines the
+ * `tokagent/packages/typescript/src/roles.ts`. The bundle inlines the
  * role logic and leaves `createUniqueUuid` and `logger` as top-level
- * runtime imports from `@elizaos/core`, which ARE present in the
+ * runtime imports from `@tokagentos/core`, which ARE present in the
  * published main bundle.
  *
- * `scripts/lib/patch-bun-exports.mjs::patchElizaCoreRolesSubpath`
- * copies this file into every installed `@elizaos/core/dist/roles.js`
+ * `scripts/lib/patch-bun-exports.mjs::patchTokagentCoreRolesSubpath`
+ * copies this file into every installed `@tokagentos/core/dist/roles.js`
  * location and patches the corresponding `package.json` `exports`
  * field to declare `./roles`. When upstream ships the missing subpath
  * for real, this shim and its patch function can be deleted and the
  * imports will resolve to the published file directly.
  */
 
-import { createUniqueUuid } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import { createUniqueUuid } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 
 // ../../../private/tmp/rolesbundle/src/roles.ts
 var DEFAULT_SERVER_ROLE = "NONE";
@@ -44,9 +44,9 @@ var ROLE_RANK = {
   ADMIN: 2,
   OWNER: 3
 };
-var CONNECTOR_ADMINS_SETTING_KEY = "ELIZA_ROLES_CONNECTOR_ADMINS_JSON";
-var CANONICAL_OWNER_SETTING_KEY = "ELIZA_ADMIN_ENTITY_ID";
-var OWNER_CONTACTS_SETTING_KEY = "ELIZA_OWNER_CONTACTS_JSON";
+var CONNECTOR_ADMINS_SETTING_KEY = "TOKAGENT_ROLES_CONNECTOR_ADMINS_JSON";
+var CANONICAL_OWNER_SETTING_KEY = "TOKAGENT_ADMIN_ENTITY_ID";
+var OWNER_CONTACTS_SETTING_KEY = "TOKAGENT_OWNER_CONTACTS_JSON";
 var CONNECTOR_ID_FIELDS = ["userId", "id", "username", "userName"];
 var CONNECTOR_STABLE_ID_FIELDS = ["userId", "id"];
 function asStringArray(value) {

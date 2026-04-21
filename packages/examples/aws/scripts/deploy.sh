@@ -1,12 +1,12 @@
 #!/bin/bash
-# Deploy elizaOS AWS Lambda worker
+# Deploy tokagentOS AWS Lambda worker
 # Usage: ./scripts/deploy.sh [typescript|python|rust]
 
 set -e
 
 RUNTIME="${1:-typescript}"
 
-echo "🚀 Deploying elizaOS AWS Lambda Worker"
+echo "🚀 Deploying tokagentOS AWS Lambda Worker"
 echo "📦 Runtime: $RUNTIME"
 echo ""
 
@@ -62,7 +62,7 @@ echo ""
 echo "✅ Deployment complete!"
 echo ""
 echo "📋 Get your API endpoint:"
-echo "   aws cloudformation describe-stacks --stack-name eliza-worker --query 'Stacks[0].Outputs[?OutputKey==\`ChatEndpoint\`].OutputValue' --output text"
+echo "   aws cloudformation describe-stacks --stack-name tokagent-worker --query 'Stacks[0].Outputs[?OutputKey==\`ChatEndpoint\`].OutputValue' --output text"
 
 
 

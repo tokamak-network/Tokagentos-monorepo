@@ -1,4 +1,4 @@
-export * from "@elizaos/shared/spoken-text";
+export * from "@tokagentos/shared/spoken-text";
 export * from "./api/index.js";
 export {
   findPrimaryEnvKey,

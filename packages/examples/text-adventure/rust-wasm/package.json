@@ -10,7 +10,7 @@
     "build:wasm": "cd ../../../packages/rust && ./build-wasm.sh"
   },
   "dependencies": {
-    "@elizaos/core": "alpha",
+    "@tokagentos/core": "alpha",
     "@elizaos/plugin-openai": "alpha",
     "@elizaos/plugin-sql": "alpha",
     "@clack/prompts": "^0.11.0"

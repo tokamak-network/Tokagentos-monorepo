@@ -5,20 +5,20 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, cast
 from uuid import UUID as StdUUID
 
-from elizaos.deterministic import get_prompt_reference_datetime
-from elizaos.generated.spec_helpers import require_action_spec
-from elizaos.prompts import SCHEDULE_FOLLOW_UP_TEMPLATE
-from elizaos.types import (
+from tokagentos.deterministic import get_prompt_reference_datetime
+from tokagentos.generated.spec_helpers import require_action_spec
+from tokagentos.prompts import SCHEDULE_FOLLOW_UP_TEMPLATE
+from tokagentos.types import (
     Action,
     ActionExample,
     ActionResult,
     Content,
     ModelType,
 )
-from elizaos.utils.xml import parse_key_value_xml
+from tokagentos.utils.xml import parse_key_value_xml
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -91,8 +91,8 @@ class ScheduleFollowUpAction:
         callback: HandlerCallback | None = None,
         responses: list[Memory] | None = None,
     ) -> ActionResult:
-        from elizaos.features.advanced_capabilities.services.follow_up import FollowUpService
-        from elizaos.features.advanced_capabilities.services.relationships import (
+        from tokagentos.features.advanced_capabilities.services.follow_up import FollowUpService
+        from tokagentos.features.advanced_capabilities.services.relationships import (
             RelationshipsService,
         )
 

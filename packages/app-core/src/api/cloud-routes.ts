@@ -2,19 +2,19 @@ import type http from "node:http";
 import {
   type CloudRouteState as AutonomousCloudRouteState,
   handleCloudRoute as handleAutonomousCloudRoute,
-} from "@elizaos/agent/api/cloud-routes";
-import { applyCanonicalOnboardingConfig } from "@elizaos/agent/api/provider-switch-config";
-import { normalizeCloudSiteUrl } from "@elizaos/agent/cloud/base-url";
-import type { CloudManager } from "@elizaos/agent/cloud/cloud-manager";
-import { validateCloudBaseUrl } from "@elizaos/agent/cloud/validate-url";
-import type { ElizaConfig } from "@elizaos/agent/config/config";
-import { saveElizaConfig } from "@elizaos/agent/config/config";
-import { createIntegrationTelemetrySpan } from "@elizaos/agent/diagnostics";
-import { type AgentRuntime, logger } from "@elizaos/core";
+} from "@tokagentos/agent/api/cloud-routes";
+import { applyCanonicalOnboardingConfig } from "@tokagentos/agent/api/provider-switch-config";
+import { normalizeCloudSiteUrl } from "@tokagentos/agent/cloud/base-url";
+import type { CloudManager } from "@tokagentos/agent/cloud/cloud-manager";
+import { validateCloudBaseUrl } from "@tokagentos/agent/cloud/validate-url";
+import type { TokagentConfig } from "@tokagentos/agent/config/config";
+import { saveTokagentConfig } from "@tokagentos/agent/config/config";
+import { createIntegrationTelemetrySpan } from "@tokagentos/agent/diagnostics";
+import { type AgentRuntime, logger } from "@tokagentos/core";
 import {
   isCloudInferenceSelectedInConfig,
   migrateLegacyRuntimeConfig,
-} from "@elizaos/shared/contracts/onboarding";
+} from "@tokagentos/shared/contracts/onboarding";
 import { isTimeoutError } from "../utils/errors";
 import {
   disconnectUnifiedCloudConnection,
@@ -24,7 +24,7 @@ import { clearCloudSecrets, scrubCloudSecretsFromEnv } from "./cloud-secrets";
 import { sendJson, sendJsonError } from "./response";
 
 export interface CloudRouteState {
-  config: ElizaConfig;
+  config: TokagentConfig;
   cloudManager: CloudManager | null;
   /** The running agent runtime — needed to persist cloud credentials to the DB. */
   runtime: AgentRuntime | null;
@@ -113,10 +113,10 @@ async function persistCloudLoginStatus(args: {
     args.state.config as Record<string, unknown>,
   );
 
-  args.state.config.cloud = cloud as ElizaConfig["cloud"];
+  args.state.config.cloud = cloud as TokagentConfig["cloud"];
   applyCanonicalOnboardingConfig(args.state.config, {
     linkedAccounts: {
-      elizacloud: {
+      tokagentcloud: {
         status: "linked",
         source: "api-key",
       },
@@ -125,10 +125,10 @@ async function persistCloudLoginStatus(args: {
   migrateLegacyRuntimeConfig(args.state.config as Record<string, unknown>);
 
   try {
-    saveElizaConfig(args.state.config);
+    saveTokagentConfig(args.state.config);
     logger.info("[cloud-login] Saved cloud API key to config file");
     logger.warn(
-      "[cloud-login] Cloud API key is stored in cleartext in ~/.eliza/eliza.json. " +
+      "[cloud-login] Cloud API key is stored in cleartext in ~/.tokagent/tokagent.json. " +
         "Ensure this file has restrictive permissions (chmod 600).",
     );
   } catch (saveErr) {
@@ -138,11 +138,11 @@ async function persistCloudLoginStatus(args: {
   }
 
   clearCloudSecrets();
-  process.env.ELIZAOS_CLOUD_API_KEY = args.apiKey;
+  process.env.TOKAGENTOS_CLOUD_API_KEY = args.apiKey;
   if (cloudInferenceSelected) {
-    process.env.ELIZAOS_CLOUD_ENABLED = "true";
+    process.env.TOKAGENTOS_CLOUD_ENABLED = "true";
   } else {
-    delete process.env.ELIZAOS_CLOUD_ENABLED;
+    delete process.env.TOKAGENTOS_CLOUD_ENABLED;
   }
   scrubCloudSecretsFromEnv();
 
@@ -162,12 +162,12 @@ async function persistCloudLoginStatus(args: {
   try {
     const nextSecrets: CloudRuntimeSecrets = {
       ...(runtime.character.secrets ?? {}),
-      ELIZAOS_CLOUD_API_KEY: args.apiKey,
+      TOKAGENTOS_CLOUD_API_KEY: args.apiKey,
     };
     if (cloudInferenceSelected) {
-      nextSecrets.ELIZAOS_CLOUD_ENABLED = "true";
+      nextSecrets.TOKAGENTOS_CLOUD_ENABLED = "true";
     } else {
-      delete nextSecrets.ELIZAOS_CLOUD_ENABLED;
+      delete nextSecrets.TOKAGENTOS_CLOUD_ENABLED;
     }
     runtime.character.secrets = nextSecrets;
     await runtime.updateAgent(runtime.agentId, {
@@ -184,7 +184,7 @@ async function persistCloudLoginStatus(args: {
 function toAutonomousState(state: CloudRouteState): AutonomousCloudRouteState {
   return {
     ...state,
-    saveConfig: saveElizaConfig,
+    saveConfig: saveTokagentConfig,
     createTelemetrySpan: createIntegrationTelemetrySpan,
   };
 }
@@ -204,7 +204,7 @@ export async function handleCloudRoute(
         cloudManager: state.cloudManager,
         config: state.config,
         runtime: state.runtime,
-        saveConfig: saveElizaConfig,
+        saveConfig: saveTokagentConfig,
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
@@ -216,7 +216,7 @@ export async function handleCloudRoute(
     return true;
   }
 
-  // Direct-auth persistence: the frontend authenticated directly with Eliza
+  // Direct-auth persistence: the frontend authenticated directly with Tokagent
   // Cloud (bypassing the backend's login/status handler) and needs to push
   // the API key to the backend so billing/compat routes can authenticate.
   if (method === "POST" && pathname === "/api/cloud/login/persist") {
@@ -276,7 +276,7 @@ export async function handleCloudRoute(
         loginPollSpan.failure({ error: fetchErr, statusCode: 504 });
         sendJson(res, 504, {
           status: "error",
-          error: "Eliza Cloud status request timed out",
+          error: "Tokagent Cloud status request timed out",
         });
         return true;
       }
@@ -284,7 +284,7 @@ export async function handleCloudRoute(
       loginPollSpan.failure({ error: fetchErr, statusCode: 502 });
       sendJson(res, 502, {
         status: "error",
-        error: "Failed to reach Eliza Cloud",
+        error: "Failed to reach Tokagent Cloud",
       });
       return true;
     }
@@ -297,7 +297,7 @@ export async function handleCloudRoute(
       sendJson(res, 502, {
         status: "error",
         error:
-          "Eliza Cloud status request was redirected; redirects are not allowed",
+          "Tokagent Cloud status request was redirected; redirects are not allowed",
       });
       return true;
     }
@@ -314,7 +314,7 @@ export async function handleCloudRoute(
           ? { status: "expired", error: "Session not found or expired" }
           : {
               status: "error",
-              error: `Eliza Cloud returned HTTP ${pollRes.status}`,
+              error: `Tokagent Cloud returned HTTP ${pollRes.status}`,
             },
       );
       return true;
@@ -335,7 +335,7 @@ export async function handleCloudRoute(
       loginPollSpan.failure({ error: parseErr, statusCode: pollRes.status });
       sendJson(res, 502, {
         status: "error",
-        error: "Eliza Cloud returned invalid JSON",
+        error: "Tokagent Cloud returned invalid JSON",
       });
       return true;
     }

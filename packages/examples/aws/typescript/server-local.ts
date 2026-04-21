@@ -55,12 +55,12 @@ if (!process.env.OPENAI_API_KEY) {
 // Mock Lambda context
 const mockContext: Context = {
   callbackWaitsForEmptyEventLoop: false,
-  functionName: "eliza-worker-local",
+  functionName: "tokagent-worker-local",
   functionVersion: "$LATEST",
-  invokedFunctionArn: "arn:aws:lambda:local:000000000000:function:eliza-worker",
+  invokedFunctionArn: "arn:aws:lambda:local:000000000000:function:tokagent-worker",
   memoryLimitInMB: "512",
   awsRequestId: "local-request",
-  logGroupName: "/aws/lambda/eliza-worker",
+  logGroupName: "/aws/lambda/tokagent-worker",
   logStreamName: "local",
   getRemainingTimeInMillis: () => 30000,
   done: () => {},
@@ -107,7 +107,7 @@ async function requestToEvent(
 }
 
 console.log(`
-🚀 elizaOS AWS Lambda Local Server
+🚀 tokagentOS AWS Lambda Local Server
 
 📡 Server: http://localhost:${PORT}
 📋 Endpoints:
@@ -117,7 +117,7 @@ console.log(`
 💡 Example:
    curl -X POST http://localhost:${PORT}/chat \\
      -H "Content-Type: application/json" \\
-     -d '{"message": "Hello, Eliza!"}'
+     -d '{"message": "Hello, Tokagent!"}'
 
 Press Ctrl+C to stop
 `);

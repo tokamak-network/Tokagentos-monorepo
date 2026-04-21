@@ -9,8 +9,8 @@ import pytest
 benchmark_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(benchmark_root))
 
-from elizaos_trust_bench.baselines import PerfectHandler, RandomHandler
-from elizaos_trust_bench.corpus import TEST_CORPUS
+from tokagentos_trust_bench.baselines import PerfectHandler, RandomHandler
+from tokagentos_trust_bench.corpus import TEST_CORPUS
 
 
 @pytest.fixture

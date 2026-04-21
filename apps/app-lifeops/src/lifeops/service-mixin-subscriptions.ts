@@ -1,11 +1,11 @@
-import type { LifeOpsGmailMessageSummary } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsGmailMessageSummary } from "@tokagentos/shared/contracts/lifeops";
 import type {
   CreateLifeOpsBrowserSessionRequest,
   LifeOpsBrowserAction,
   LifeOpsBrowserCompanionStatus,
   LifeOpsBrowserSession,
   LifeOpsGmailTriageFeed,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   createLifeOpsSubscriptionAudit,
   createLifeOpsSubscriptionCancellation,

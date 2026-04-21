@@ -1,5 +1,5 @@
 """
-Integration tests for the Eliza OSWorld agent adapter.
+Integration tests for the Tokagent OSWorld agent adapter.
 
 Tests:
 1. Agent initialization and reset
@@ -24,28 +24,28 @@ OSWORLD_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if OSWORLD_ROOT not in sys.path:
     sys.path.insert(0, OSWORLD_ROOT)
 
-# Mock elizaos before importing
-sys.modules.setdefault("elizaos", MagicMock())
-sys.modules.setdefault("elizaos.types", MagicMock())
-sys.modules.setdefault("elizaos.types.components", MagicMock())
-sys.modules.setdefault("elizaos.types.memory", MagicMock())
-sys.modules.setdefault("elizaos.types.primitives", MagicMock())
-sys.modules.setdefault("elizaos.types.runtime", MagicMock())
-sys.modules.setdefault("elizaos.types.state", MagicMock())
-sys.modules.setdefault("elizaos.types.generated", MagicMock())
-sys.modules.setdefault("elizaos.types.generated.eliza", MagicMock())
-sys.modules.setdefault("elizaos.types.generated.eliza.v1", MagicMock())
-sys.modules.setdefault("elizaos.types.generated.eliza.v1.primitives_pb2", MagicMock())
-sys.modules.setdefault("elizaos.runtime", MagicMock())
+# Mock tokagentos before importing
+sys.modules.setdefault("tokagentos", MagicMock())
+sys.modules.setdefault("tokagentos.types", MagicMock())
+sys.modules.setdefault("tokagentos.types.components", MagicMock())
+sys.modules.setdefault("tokagentos.types.memory", MagicMock())
+sys.modules.setdefault("tokagentos.types.primitives", MagicMock())
+sys.modules.setdefault("tokagentos.types.runtime", MagicMock())
+sys.modules.setdefault("tokagentos.types.state", MagicMock())
+sys.modules.setdefault("tokagentos.types.generated", MagicMock())
+sys.modules.setdefault("tokagentos.types.generated.tokagent", MagicMock())
+sys.modules.setdefault("tokagentos.types.generated.tokagent.v1", MagicMock())
+sys.modules.setdefault("tokagentos.types.generated.tokagent.v1.primitives_pb2", MagicMock())
+sys.modules.setdefault("tokagentos.runtime", MagicMock())
 
-from mm_agents.eliza_agent import (
+from mm_agents.tokagent_agent import (
     _detect_model_provider,
     _fallback_parse_actions,
     _linearize_accessibility_tree_simple,
-    ElizaOSWorldAgent,
+    TokagentOSWorldAgent,
 )
-from mm_agents.eliza_desktop_actions import ActionCollector
-from mm_agents.eliza_observation import ObservationStore
+from mm_agents.tokagent_desktop_actions import ActionCollector
+from mm_agents.tokagent_observation import ObservationStore
 
 
 @pytest.fixture(autouse=True)
@@ -128,12 +128,12 @@ class TestFallbackActionParsing:
 
 
 # ---------------------------------------------------------------------------
-# ElizaOSWorldAgent Tests
+# TokagentOSWorldAgent Tests
 # ---------------------------------------------------------------------------
 
-class TestElizaOSWorldAgent:
+class TestTokagentOSWorldAgent:
     def test_init_defaults(self):
-        agent = ElizaOSWorldAgent()
+        agent = TokagentOSWorldAgent()
         assert agent.platform == "ubuntu"
         assert agent.model == "qwen/qwen3-32b"
         assert agent.observation_type == "screenshot_a11y_tree"
@@ -144,7 +144,7 @@ class TestElizaOSWorldAgent:
         assert agent.actions == []
 
     def test_init_custom(self):
-        agent = ElizaOSWorldAgent(
+        agent = TokagentOSWorldAgent(
             model="gpt-4o",
             observation_type="screenshot",
             max_steps=20,
@@ -156,7 +156,7 @@ class TestElizaOSWorldAgent:
         assert agent.temperature == 0.7
 
     def test_reset(self):
-        agent = ElizaOSWorldAgent()
+        agent = TokagentOSWorldAgent()
         agent.thoughts.append("thought1")
         agent.actions.append("action1")
         agent.observations.append({"screenshot": None})
@@ -171,7 +171,7 @@ class TestElizaOSWorldAgent:
         assert agent.vm_ip == "192.168.1.100"
 
     def test_reset_clears_stores(self):
-        agent = ElizaOSWorldAgent()
+        agent = TokagentOSWorldAgent()
         collector = ActionCollector.get()
         collector.add("some_code")
         store = ObservationStore.get()

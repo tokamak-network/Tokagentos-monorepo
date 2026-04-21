@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-vending-bench"
+name = "tokagentos-vending-bench"
 version = "2.0.0"
-description = "Vending-Bench benchmark for ElizaOS - Long-term coherence evaluation"
+description = "Vending-Bench benchmark for TokagentOS - Long-term coherence evaluation"
 readme = "RESEARCH.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
 keywords = ["ai", "agents", "benchmark", "vending-bench", "coherence", "llm"]
 classifiers = [
@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "elizaos>=1.0.0",
+    "tokagentos>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -46,20 +46,20 @@ dev = [
 ]
 
 [project.scripts]
-vending-bench = "elizaos_vending_bench.cli:main"
+vending-bench = "tokagentos_vending_bench.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/elizaos/eliza"
-Documentation = "https://elizaos.ai/docs/benchmarks/vending-bench"
-Repository = "https://github.com/elizaos/eliza/tree/main/benchmarks/vending-bench"
+Homepage = "https://github.com/tokagentos/tokagent"
+Documentation = "https://tokagentos.ai/docs/benchmarks/vending-bench"
+Repository = "https://github.com/tokagentos/tokagent/tree/main/benchmarks/vending-bench"
 Paper = "https://arxiv.org/abs/2502.15840"
 Leaderboard = "https://andonlabs.com/evals/vending-bench"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_vending_bench"]
+packages = ["tokagentos_vending_bench"]
 
 [tool.pytest.ini_options]
-testpaths = ["elizaos_vending_bench/tests"]
+testpaths = ["tokagentos_vending_bench/tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
 addopts = "-v --tb=short"
@@ -87,7 +87,7 @@ select = ["E", "W", "F", "I", "B", "C4", "UP"]
 ignore = ["E501", "B008"]
 
 [tool.coverage.run]
-source = ["elizaos_vending_bench"]
+source = ["tokagentos_vending_bench"]
 omit = ["*/tests/*", "*/__init__.py"]
 
 [tool.coverage.report]

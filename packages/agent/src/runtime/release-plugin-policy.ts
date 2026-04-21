@@ -1,12 +1,12 @@
 import { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS } from "./core-plugins.js";
 
 const BASELINE_RUNTIME_SUPPORT_PACKAGES = [
-  "@elizaos/core",
-  "@elizaos/prompts",
+  "@tokagentos/core",
+  "@tokagentos/prompts",
 ] as const;
 
 const BASELINE_PROVIDER_PLUGINS = [
-  "@elizaos/plugin-elizacloud",
+  "@elizaos/plugin-tokagentcloud",
   "@elizaos/plugin-openai",
   "@elizaos/plugin-anthropic",
   "@elizaos/plugin-ollama",
@@ -91,7 +91,7 @@ export function classifyRegistryPluginRelease(params: {
 
   let note: string | undefined;
   if (bundled) {
-    note = "Included in the baseline Eliza runtime bundle.";
+    note = "Included in the baseline Tokagent runtime bundle.";
   } else if (requiresDesktopRuntime && requiresLocalRuntime) {
     note =
       "Excluded from the baseline release. Install on a local desktop runtime after release.";

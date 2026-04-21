@@ -1,9 +1,9 @@
-import type { IAgentRuntime, Memory, Room, UUID } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime, Memory, Room, UUID } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import {
   expandConnectorSourceFilter,
   normalizeConnectorSource,
-} from "@elizaos/shared/connectors";
+} from "@tokagentos/shared/connectors";
 import { buildDeepLink, resolveChannelName } from "./channel-deep-links.js";
 import type { InboundMessage } from "./types.js";
 

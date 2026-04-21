@@ -15,7 +15,7 @@ const pluginDir = path.join(
   "typescript",
 );
 
-const externals = ["node:*", "@elizaos/core", "fflate"];
+const externals = ["node:*", "@tokagentos/core", "fflate"];
 
 async function main() {
   process.chdir(pluginDir);

@@ -16,7 +16,7 @@ export type ChatApi = {
 };
 
 function getDataDir(): string {
-  const dir = join(app.getPath("userData"), "eliza-localdb");
+  const dir = join(app.getPath("userData"), "tokagent-localdb");
   mkdirSync(dir, { recursive: true });
   return dir;
 }

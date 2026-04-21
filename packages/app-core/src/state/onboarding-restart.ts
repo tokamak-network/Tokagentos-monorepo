@@ -1,4 +1,4 @@
-import type { AgentStatus, ElizaClient } from "../api";
+import type { AgentStatus, TokagentClient } from "../api";
 
 /**
  * Onboarding can overlap a runtime restart already in flight on slower boots.
@@ -6,7 +6,7 @@ import type { AgentStatus, ElizaClient } from "../api";
  * recoverable rather than surfacing a setup failure.
  */
 export async function restartAgentAfterOnboarding(
-  client: Pick<ElizaClient, "restartAndWait">,
+  client: Pick<TokagentClient, "restartAndWait">,
   maxWaitMs = 120_000,
 ): Promise<AgentStatus> {
   return client.restartAndWait(maxWaitMs);

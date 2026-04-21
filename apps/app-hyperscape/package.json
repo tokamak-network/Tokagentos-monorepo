@@ -12,15 +12,15 @@
     "./ui": "./src/ui/index.ts"
   },
   "dependencies": {
-    "@elizaos/app-core": "workspace:*",
-    "@elizaos/core": "workspace:*",
-    "@elizaos/shared": "workspace:*",
-    "@elizaos/ui": "workspace:*"
+    "@tokagentos/app-core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
+    "@tokagentos/shared": "workspace:*",
+    "@tokagentos/ui": "workspace:*"
   },
   "peerDependencies": {
-    "@elizaos/core": "workspace:*"
+    "@tokagentos/core": "workspace:*"
   },
-  "elizaos": {
+  "tokagentos": {
     "app": {
       "heroImage": "assets/hero.png"
     }

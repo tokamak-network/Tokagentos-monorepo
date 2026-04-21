@@ -14,9 +14,9 @@
  *   FARCASTER_NEYNAR_API_KEY  — Neynar API key
  *   FARCASTER_SIGNER_UUID     — Neynar managed signer UUID
  *   FARCASTER_FID             — Agent's Farcaster ID (numeric)
- *   ELIZA_LIVE_TEST=1        — Enable live tests
+ *   TOKAGENT_LIVE_TEST=1        — Enable live tests
  *
- * Or configure in ~/.eliza/eliza.json:
+ * Or configure in ~/.tokagent/tokagent.json:
  *   { "connectors": { "farcaster": { "apiKey": "...", "signerUuid": "...", "fid": 12345 } } }
  *
  * NO MOCKS for live tests — all tests use real Neynar API.
@@ -27,8 +27,8 @@ import { fileURLToPath } from "node:url";
 import {
   extractPlugin,
   resolveFarcasterPluginImportSpecifier,
-} from "@elizaos/app-core";
-import { logger, type Plugin } from "@elizaos/core";
+} from "@tokagentos/app-core";
+import { logger, type Plugin } from "@tokagentos/core";
 import dotenv from "dotenv";
 import { afterAll, describe, expect, it } from "vitest";
 import { describeIf } from "../../../../../test/helpers/conditional-tests.ts";
@@ -46,7 +46,7 @@ const SIGNER_UUID = process.env.FARCASTER_SIGNER_UUID;
 const FID = process.env.FARCASTER_FID;
 
 const hasNeynarCreds = Boolean(NEYNAR_API_KEY && SIGNER_UUID && FID);
-const liveTestsEnabled = process.env.ELIZA_LIVE_TEST === "1";
+const liveTestsEnabled = process.env.TOKAGENT_LIVE_TEST === "1";
 const runLiveTests = hasNeynarCreds && liveTestsEnabled;
 
 // Write tests require a Neynar managed signer (UUID format)
@@ -71,7 +71,7 @@ const LIVE_WRITE_TIMEOUT = 120_000;
 logger.info(
   `[farcaster-connector] Live tests ${runLiveTests ? "ENABLED" : "DISABLED"} ` +
     `(API_KEY=${Boolean(NEYNAR_API_KEY)}, SIGNER=${Boolean(SIGNER_UUID)}, ` +
-    `FID=${Boolean(FID)}, ELIZA_LIVE_TEST=${liveTestsEnabled})`,
+    `FID=${Boolean(FID)}, TOKAGENT_LIVE_TEST=${liveTestsEnabled})`,
 );
 logger.info(
   `[farcaster-connector] Write tests ${runLiveWriteTests ? "ENABLED" : "DISABLED"} ` +
@@ -847,7 +847,7 @@ describe("Farcaster Connector - Integration", () => {
   it("Farcaster is mapped in CONNECTOR_PLUGINS", async () => {
     const mod = await tryWorkspaceImport<{
       CONNECTOR_PLUGINS: Record<string, string>;
-    }>("@elizaos/app-core");
+    }>("@tokagentos/app-core");
     if (!mod) {
       logger.warn("[farcaster-connector] Workspace not built — skipping");
       return;
@@ -858,7 +858,7 @@ describe("Farcaster Connector - Integration", () => {
   it("Farcaster is mapped in CHANNEL_PLUGIN_MAP", async () => {
     const mod = await tryWorkspaceImport<{
       CHANNEL_PLUGIN_MAP: Record<string, string>;
-    }>("@elizaos/app-core");
+    }>("@tokagentos/app-core");
     if (!mod) {
       logger.warn("[farcaster-connector] Workspace not built — skipping");
       return;

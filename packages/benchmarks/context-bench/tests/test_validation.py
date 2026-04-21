@@ -2,8 +2,8 @@
 
 import pytest
 
-from elizaos_context_bench.generator import ContextGenerator
-from elizaos_context_bench.types import ContextBenchConfig
+from tokagentos_context_bench.generator import ContextGenerator
+from tokagentos_context_bench.types import ContextBenchConfig
 
 
 class TestConfigValidation:

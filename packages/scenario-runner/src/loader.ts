@@ -1,6 +1,6 @@
 /**
  * Scenario file discovery and loading. Scenarios export either a default or
- * a named `scenario` value that was produced by `@elizaos/scenario-schema`'s
+ * a named `scenario` value that was produced by `@tokagentos/scenario-schema`'s
  * identity `scenario()` factory. We duck-type the returned value rather than
  * validating with Zod — the WS7 shim deliberately leaves this unconstrained.
  */

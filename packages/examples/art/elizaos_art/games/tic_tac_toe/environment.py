@@ -7,8 +7,8 @@ Implements the classic 3x3 Tic-Tac-Toe game.
 import random
 from typing import ClassVar
 
-from elizaos_art.base import BaseEnvironment
-from elizaos_art.games.tic_tac_toe.types import (
+from tokagentos_art.base import BaseEnvironment
+from tokagentos_art.games.tic_tac_toe.types import (
     Player,
     TicTacToeAction,
     TicTacToeConfig,

@@ -6,8 +6,8 @@ import {
   type HandlerOptions,
   type IAgentRuntime,
   type Memory,
-} from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import {
   injectCredentialToClipboard,
   listPasswordItems,
@@ -48,9 +48,9 @@ function readConfig(
   runtime: { getSetting?: (key: string) => unknown } | undefined,
 ): PasswordManagerBridgeConfig {
   const account =
-    process.env.ELIZA_1PASSWORD_ACCOUNT?.trim() ||
+    process.env.TOKAGENT_1PASSWORD_ACCOUNT?.trim() ||
     (() => {
-      const setting = runtime?.getSetting?.("ELIZA_1PASSWORD_ACCOUNT");
+      const setting = runtime?.getSetting?.("TOKAGENT_1PASSWORD_ACCOUNT");
       return typeof setting === "string" ? setting.trim() : "";
     })();
   const config: PasswordManagerBridgeConfig = {};

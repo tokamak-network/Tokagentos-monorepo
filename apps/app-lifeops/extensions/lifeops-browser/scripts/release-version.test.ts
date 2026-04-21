@@ -59,36 +59,36 @@ describe("LifeOps Browser release versioning", () => {
   it("builds portable GitHub release URLs from repository metadata", () => {
     const release = parseReleaseVersion("2.0.0");
 
-    expect(buildGitHubReleasePageUrl("elizaos/eliza", release)).toBe(
-      "https://github.com/elizaos/eliza/releases/tag/v2.0.0",
+    expect(buildGitHubReleasePageUrl("tokagentos/tokagent", release)).toBe(
+      "https://github.com/tokagentos/tokagent/releases/tag/v2.0.0",
     );
     expect(
       buildGitHubReleaseAssetDownloadUrl(
-        "elizaos/eliza",
+        "tokagentos/tokagent",
         release,
         "lifeops-browser-chrome-v2.0.0.zip",
       ),
     ).toBe(
-      "https://github.com/elizaos/eliza/releases/download/v2.0.0/lifeops-browser-chrome-v2.0.0.zip",
+      "https://github.com/tokagentos/tokagent/releases/download/v2.0.0/lifeops-browser-chrome-v2.0.0.zip",
     );
   });
 
   it("reads repository and optional store URLs from the environment", () => {
     expect(
       resolveLifeOpsBrowserReleaseRepository({
-        GITHUB_REPOSITORY: "elizaos/custom",
+        GITHUB_REPOSITORY: "tokagentos/custom",
       }),
-    ).toBe("elizaos/custom");
+    ).toBe("tokagentos/custom");
     expect(
       resolveLifeOpsBrowserReleaseRepository({
         GITHUB_REPOSITORY: "   ",
       }),
-    ).toBe("elizaos/eliza");
+    ).toBe("tokagentos/tokagent");
     expect(
       resolveLifeOpsBrowserStoreUrls({
-        ELIZA_LIFEOPS_BROWSER_CHROME_STORE_URL:
+        TOKAGENT_LIFEOPS_BROWSER_CHROME_STORE_URL:
           "https://chromewebstore.google.com/detail/lifeops-browser/example",
-        ELIZA_LIFEOPS_BROWSER_SAFARI_STORE_URL:
+        TOKAGENT_LIFEOPS_BROWSER_SAFARI_STORE_URL:
           "https://apps.apple.com/us/app/lifeops-browser/id1234567890",
       }),
     ).toEqual({

@@ -1,6 +1,6 @@
-# Eliza Framework Benchmark
+# Tokagent Framework Benchmark
 
-Cross-language performance benchmark comparing the Eliza agent framework across **TypeScript**, **Python**, and **Rust** runtimes.
+Cross-language performance benchmark comparing the Tokagent agent framework across **TypeScript**, **Python**, and **Rust** runtimes.
 
 ## What It Measures
 

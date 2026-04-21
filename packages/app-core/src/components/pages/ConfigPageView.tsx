@@ -6,14 +6,14 @@
  *   2. Secrets (modal)
  */
 
-import type { WalletRpcSelections } from "@elizaos/shared/contracts/wallet";
+import type { WalletRpcSelections } from "@tokagentos/shared/contracts/wallet";
 import {
   Button,
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useCallback, useEffect, useState } from "react";
 import { useApp } from "../../state";
 import {
@@ -34,9 +34,9 @@ import { SecretsView } from "./SecretsView";
 /* ── ConfigPageView ──────────────────────────────────────────────────── */
 
 const CLOUD_RPC_SELECTIONS = {
-  evm: "eliza-cloud",
-  bsc: "eliza-cloud",
-  solana: "eliza-cloud",
+  evm: "tokagent-cloud",
+  bsc: "tokagent-cloud",
+  solana: "tokagent-cloud",
 } as const satisfies WalletRpcSelections;
 
 export function ConfigPageView({
@@ -48,13 +48,13 @@ export function ConfigPageView({
 }) {
   const {
     t,
-    elizaCloudConnected,
-    elizaCloudCredits,
-    elizaCloudCreditsLow,
-    elizaCloudCreditsCritical,
-    elizaCloudAuthRejected,
-    elizaCloudTopUpUrl,
-    elizaCloudLoginBusy,
+    tokagentCloudConnected,
+    tokagentCloudCredits,
+    tokagentCloudCreditsLow,
+    tokagentCloudCreditsCritical,
+    tokagentCloudAuthRejected,
+    tokagentCloudTopUpUrl,
+    tokagentCloudLoginBusy,
     walletConfig,
     walletApiKeySaving,
     handleWalletApiKeySave,
@@ -65,8 +65,8 @@ export function ConfigPageView({
 
   /* ── Mode: "cloud" or "custom" ─────────────────────────────────────── */
   const allCloud =
-    elizaCloudConnected ||
-    resolveInitialWalletRpcSelections(walletConfig).evm === "eliza-cloud";
+    tokagentCloudConnected ||
+    resolveInitialWalletRpcSelections(walletConfig).evm === "tokagent-cloud";
   const [rpcMode, setRpcMode] = useState<"cloud" | "custom">(
     allCloud ? "cloud" : "custom",
   );
@@ -99,7 +99,7 @@ export function ConfigPageView({
   useEffect(() => {
     const selections = resolveInitialWalletRpcSelections(walletConfig);
     const nextMode =
-      elizaCloudConnected || selections.evm === "eliza-cloud"
+      tokagentCloudConnected || selections.evm === "tokagent-cloud"
         ? "cloud"
         : "custom";
     setRpcMode(nextMode);
@@ -115,9 +115,9 @@ export function ConfigPageView({
     setSelectedWalletNetwork(
       walletConfig?.walletNetwork === "testnet" ? "testnet" : "mainnet",
     );
-  }, [elizaCloudConnected, walletConfig]);
+  }, [tokagentCloudConnected, walletConfig]);
 
-  /* When switching to cloud mode, set all providers to eliza-cloud */
+  /* When switching to cloud mode, set all providers to tokagent-cloud */
   const handleModeChange = useCallback((mode: "cloud" | "custom") => {
     setRpcMode(mode);
     if (mode === "cloud") {
@@ -242,12 +242,12 @@ export function ConfigPageView({
   };
 
   const cloudStatusProps = {
-    connected: elizaCloudConnected,
-    credits: elizaCloudCredits,
-    creditsLow: elizaCloudCreditsLow,
-    creditsCritical: elizaCloudCreditsCritical,
-    topUpUrl: elizaCloudTopUpUrl,
-    loginBusy: elizaCloudLoginBusy,
+    connected: tokagentCloudConnected,
+    credits: tokagentCloudCredits,
+    creditsLow: tokagentCloudCreditsLow,
+    creditsCritical: tokagentCloudCreditsCritical,
+    topUpUrl: tokagentCloudTopUpUrl,
+    loginBusy: tokagentCloudLoginBusy,
     onLogin: () => void handleCloudLogin(),
   };
 
@@ -261,10 +261,10 @@ export function ConfigPageView({
         })
       : null;
 
-  /* Filter out eliza-cloud from per-chain options in custom mode */
+  /* Filter out tokagent-cloud from per-chain options in custom mode */
   const filterCloudOption = <T extends string>(
     options: readonly RpcProviderOption<T>[],
-  ) => options.filter((o) => o.id !== "eliza-cloud");
+  ) => options.filter((o) => o.id !== "tokagent-cloud");
 
   return (
     <div>
@@ -280,7 +280,7 @@ export function ConfigPageView({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════
-          MODE SELECTOR: Eliza Cloud vs Custom RPC
+          MODE SELECTOR: Tokagent Cloud vs Custom RPC
           ═══════════════════════════════════════════════════════════════ */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
         <Button
@@ -306,14 +306,14 @@ export function ConfigPageView({
             >
               <title>
                 {t("configpageview.CloudModeSvgTitle", {
-                  defaultValue: "Eliza Cloud managed RPC",
+                  defaultValue: "Tokagent Cloud managed RPC",
                 })}
               </title>
               <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
             </svg>
             <span className="text-sm font-bold">
               {t("configpageview.CloudModeTitle", {
-                defaultValue: "Eliza Cloud",
+                defaultValue: "Tokagent Cloud",
               })}
             </span>
           </div>
@@ -414,43 +414,43 @@ export function ConfigPageView({
 
       {rpcMode === "cloud" && (
         <div>
-          {elizaCloudConnected ? (
+          {tokagentCloudConnected ? (
             <>
               <div className="flex items-center gap-2.5 mb-4 p-3 rounded-lg bg-accent/5 border border-accent/15">
                 <span
-                  className={`w-2 h-2 rounded-full shrink-0 ${elizaCloudAuthRejected ? "bg-danger" : "bg-ok"}`}
+                  className={`w-2 h-2 rounded-full shrink-0 ${tokagentCloudAuthRejected ? "bg-danger" : "bg-ok"}`}
                 />
                 <span className="text-sm font-semibold text-txt">
-                  {elizaCloudAuthRejected
-                    ? t("configpageview.ElizaCloudKeyInvalid", {
-                        defaultValue: "Eliza Cloud key invalid",
+                  {tokagentCloudAuthRejected
+                    ? t("configpageview.TokagentCloudKeyInvalid", {
+                        defaultValue: "Tokagent Cloud key invalid",
                       })
-                    : t("configpageview.ConnectedToElizaCloud", {
-                        defaultValue: "Connected to Eliza Cloud",
+                    : t("configpageview.ConnectedToTokagentCloud", {
+                        defaultValue: "Connected to Tokagent Cloud",
                       })}
                 </span>
-                {(elizaCloudCredits !== null || elizaCloudAuthRejected) && (
+                {(tokagentCloudCredits !== null || tokagentCloudAuthRejected) && (
                   <span className="text-xs text-muted ml-auto flex items-center gap-1.5">
                     <span
                       className={
-                        elizaCloudAuthRejected || elizaCloudCreditsCritical
+                        tokagentCloudAuthRejected || tokagentCloudCreditsCritical
                           ? "text-danger font-bold"
-                          : elizaCloudCreditsLow
+                          : tokagentCloudCreditsLow
                             ? "text-warn font-bold"
                             : "text-txt font-semibold"
                       }
                     >
-                      {elizaCloudAuthRejected
+                      {tokagentCloudAuthRejected
                         ? t("configpageview.FixInCloudSettings", {
                             defaultValue: "Fix in Cloud settings",
                           })
-                        : elizaCloudCredits !== null
-                          ? `$${elizaCloudCredits.toFixed(2)}`
+                        : tokagentCloudCredits !== null
+                          ? `$${tokagentCloudCredits.toFixed(2)}`
                           : ""}
                     </span>
-                    {elizaCloudTopUpUrl && !elizaCloudAuthRejected && (
+                    {tokagentCloudTopUpUrl && !tokagentCloudAuthRejected && (
                       <a
-                        href={elizaCloudTopUpUrl}
+                        href={tokagentCloudTopUpUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs-tight text-accent underline underline-offset-2"
@@ -496,7 +496,7 @@ export function ConfigPageView({
                     </span>
                     <span className="text-2xs text-accent ml-auto font-medium">
                       {t("configpageview.CloudModeTitle", {
-                        defaultValue: "Eliza Cloud",
+                        defaultValue: "Tokagent Cloud",
                       })}
                     </span>
                   </div>
@@ -520,14 +520,14 @@ export function ConfigPageView({
               >
                 <title>
                   {t("configpageview.CloudLoginRequiredSvgTitle", {
-                    defaultValue: "Eliza Cloud login required",
+                    defaultValue: "Tokagent Cloud login required",
                   })}
                 </title>
                 <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z" />
               </svg>
               <div>
                 <p className="text-sm font-semibold text-txt mb-1">
-                  {t("elizaclouddashboard.ConnectElizaCloud")}
+                  {t("tokagentclouddashboard.ConnectTokagentCloud")}
                 </p>
                 <p className="text-xs text-muted max-w-sm">
                   {t("configpageview.ManagedRpcDesc", {
@@ -541,13 +541,13 @@ export function ConfigPageView({
                 size="sm"
                 className="text-xs font-bold"
                 onClick={() => void handleCloudLogin()}
-                disabled={elizaCloudLoginBusy}
+                disabled={tokagentCloudLoginBusy}
               >
-                {elizaCloudLoginBusy
+                {tokagentCloudLoginBusy
                   ? t("configpageview.Connecting", {
                       defaultValue: "Connecting...",
                     })
-                  : t("providerswitcher.logInToElizaCloud")}
+                  : t("providerswitcher.logInToTokagentCloud")}
               </Button>
             </div>
           )}
@@ -614,8 +614,8 @@ export function ConfigPageView({
               })}
               options={filterCloudOption(EVM_RPC_OPTIONS)}
               selectedProvider={
-                selectedEvmRpc === "eliza-cloud"
-                  ? (EVM_RPC_OPTIONS.find((o) => o.id !== "eliza-cloud")?.id ??
+                selectedEvmRpc === "tokagent-cloud"
+                  ? (EVM_RPC_OPTIONS.find((o) => o.id !== "tokagent-cloud")?.id ??
                     selectedEvmRpc)
                   : selectedEvmRpc
               }
@@ -635,8 +635,8 @@ export function ConfigPageView({
               })}
               options={filterCloudOption(BSC_RPC_OPTIONS)}
               selectedProvider={
-                selectedBscRpc === "eliza-cloud"
-                  ? (BSC_RPC_OPTIONS.find((o) => o.id !== "eliza-cloud")?.id ??
+                selectedBscRpc === "tokagent-cloud"
+                  ? (BSC_RPC_OPTIONS.find((o) => o.id !== "tokagent-cloud")?.id ??
                     selectedBscRpc)
                   : selectedBscRpc
               }
@@ -656,8 +656,8 @@ export function ConfigPageView({
               })}
               options={filterCloudOption(SOLANA_RPC_OPTIONS)}
               selectedProvider={
-                selectedSolanaRpc === "eliza-cloud"
-                  ? (SOLANA_RPC_OPTIONS.find((o) => o.id !== "eliza-cloud")
+                selectedSolanaRpc === "tokagent-cloud"
+                  ? (SOLANA_RPC_OPTIONS.find((o) => o.id !== "tokagent-cloud")
                       ?.id ?? selectedSolanaRpc)
                   : selectedSolanaRpc
               }

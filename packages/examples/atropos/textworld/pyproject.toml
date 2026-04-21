@@ -3,16 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-atropos-textworld"
+name = "tokagentos-atropos-textworld"
 version = "2.0.0"
-description = "TextWorld environment for elizaOS RL training with Atropos"
+description = "TextWorld environment for tokagentOS RL training with Atropos"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
-keywords = ["elizaos", "atropos", "reinforcement-learning", "textworld", "interactive-fiction"]
+keywords = ["tokagentos", "atropos", "reinforcement-learning", "textworld", "interactive-fiction"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Games/Entertainment :: Puzzle Games",
 ]
 dependencies = [
-    "elizaos>=2.0.0a4",
+    "tokagentos>=2.0.0a4",
     "pydantic>=2.0.0",
 ]
 
@@ -37,7 +37,7 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 openai = [
-    "elizaos-plugin-openai>=2.0.0a4",
+    "tokagentos-plugin-openai>=2.0.0a4",
 ]
 atropos = [
     "atroposlib>=0.3.0",
@@ -46,10 +46,10 @@ atropos = [
 ]
 
 [project.scripts]
-elizaos-textworld = "elizaos_atropos_textworld.cli:main"
+tokagentos-textworld = "tokagentos_atropos_textworld.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_atropos_textworld"]
+packages = ["tokagentos_atropos_textworld"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

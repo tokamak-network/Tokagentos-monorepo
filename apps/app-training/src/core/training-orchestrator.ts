@@ -351,7 +351,7 @@ async function persistOptimizedPromptArtifact(
 async function loadBaselineForTask(
   task: TrajectoryTrainingTask,
 ): Promise<string> {
-  const prompts = await import("@elizaos/core").catch(() => null);
+  const prompts = await import("@tokagentos/core").catch(() => null);
   if (!prompts) {
     return `# baseline placeholder for ${task}`;
   }

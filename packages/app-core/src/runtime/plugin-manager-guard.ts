@@ -3,7 +3,7 @@
  * dashboard "Install Plugin" flow works. The plugin is bundled but optional
  * (see OPTIONAL_CORE_PLUGINS in the agent runtime).
  *
- * Skipped when `ELIZA_DISABLE_PLUGIN_MANAGER_AUTO_ENABLE=1` is set.
+ * Skipped when `TOKAGENT_DISABLE_PLUGIN_MANAGER_AUTO_ENABLE=1` is set.
  */
 
 let _checked = false;
@@ -26,14 +26,14 @@ export function getPluginManagerBlockReason(
     return "plugin-manager is explicitly disabled in config";
   }
   if (result === "disabled-by-env") {
-    return "plugin-manager auto-enable is disabled by ELIZA_DISABLE_PLUGIN_MANAGER_AUTO_ENABLE=1";
+    return "plugin-manager auto-enable is disabled by TOKAGENT_DISABLE_PLUGIN_MANAGER_AUTO_ENABLE=1";
   }
   return null;
 }
 
 export async function ensurePluginManagerAllowed(): Promise<PluginManagerGuardResult> {
   if (_checked) return _lastResult;
-  if (process.env.ELIZA_DISABLE_PLUGIN_MANAGER_AUTO_ENABLE === "1") {
+  if (process.env.TOKAGENT_DISABLE_PLUGIN_MANAGER_AUTO_ENABLE === "1") {
     _checked = true;
     _lastResult = "disabled-by-env";
     return _lastResult;
@@ -47,10 +47,10 @@ export async function ensurePluginManagerAllowed(): Promise<PluginManagerGuardRe
     return _lastResult;
   }
   try {
-    const { loadElizaConfig, saveElizaConfig } = await import(
-      "@elizaos/agent/config/config"
+    const { loadTokagentConfig, saveTokagentConfig } = await import(
+      "@tokagentos/agent/config/config"
     );
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const PKG = "@elizaos/plugin-plugin-manager";
     const entries =
       config.plugins?.entries ?? ({} as Record<string, { enabled?: boolean }>);
@@ -70,7 +70,7 @@ export async function ensurePluginManagerAllowed(): Promise<PluginManagerGuardRe
       _lastResult = "already-enabled";
       return _lastResult;
     }
-    // The upstream ElizaConfig type marks `plugins` as a complex branded type
+    // The upstream TokagentConfig type marks `plugins` as a complex branded type
     // that doesn't allow direct property assignment. We know the runtime shape
     // is a plain object with an `entries` record, so we cast through unknown.
     config.plugins ??= {} as unknown as typeof config.plugins;
@@ -79,10 +79,10 @@ export async function ensurePluginManagerAllowed(): Promise<PluginManagerGuardRe
       nextAllow.push(PKG);
     }
     (config.plugins as Record<string, unknown>).allow = nextAllow;
-    saveElizaConfig(config);
+    saveTokagentConfig(config);
     console.info(
-      "[eliza] Auto-enabled plugin-manager for dashboard plugin installs. " +
-        "Set ELIZA_DISABLE_PLUGIN_MANAGER_AUTO_ENABLE=1 to prevent this.",
+      "[tokagent] Auto-enabled plugin-manager for dashboard plugin installs. " +
+        "Set TOKAGENT_DISABLE_PLUGIN_MANAGER_AUTO_ENABLE=1 to prevent this.",
     );
     _checked = true;
     _lastResult = "enabled";

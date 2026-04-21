@@ -1,4 +1,4 @@
-import type { IAgentRuntime, Memory } from "@elizaos/core";
+import type { IAgentRuntime, Memory } from "@tokagentos/core";
 
 /** Specification for a task to be executed */
 export interface TaskSpec {

@@ -86,9 +86,9 @@ pub fn load_env_config(execute: bool) -> Result<EnvConfig> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use elizaos_plugin_evm::providers::wallet::{WalletProvider, WalletProviderConfig};
-    use elizaos_plugin_evm::types::SupportedChain;
-    use elizaos_plugin_polymarket::client::ClobClient;
+    use tokagentos_plugin_evm::providers::wallet::{WalletProvider, WalletProviderConfig};
+    use tokagentos_plugin_evm::types::SupportedChain;
+    use tokagentos_plugin_polymarket::client::ClobClient;
 
     #[test]
     fn normalize_adds_prefix() {

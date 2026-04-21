@@ -26,7 +26,7 @@ public class MobileSignalsPlugin: CAPPlugin, CAPBridgedPlugin {
     private var monitoring = false
     private var observers: [NSObjectProtocol] = []
     private let healthStore = HKHealthStore()
-    private let healthQueue = DispatchQueue(label: "ai.eliza.mobile-signals.health", qos: .utility)
+    private let healthQueue = DispatchQueue(label: "ai.tokagent.mobile-signals.health", qos: .utility)
 
     public override func load() {
         UIDevice.current.isBatteryMonitoringEnabled = true

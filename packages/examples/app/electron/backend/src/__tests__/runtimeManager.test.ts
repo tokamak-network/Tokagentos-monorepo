@@ -19,7 +19,7 @@ describe("electron backend runtimeManager", () => {
   let dataDir = "";
 
   beforeEach(async () => {
-    dataDir = await makeTempDir("eliza-electron-");
+    dataDir = await makeTempDir("tokagent-electron-");
     await __shutdownForTests();
   });
 
@@ -35,7 +35,7 @@ describe("electron backend runtimeManager", () => {
     expect(bundle.runtime.messageService).not.toBeNull();
   });
 
-  it("falls back to elizaClassic when credentials missing", async () => {
+  it("falls back to tokagentClassic when credentials missing", async () => {
     const cfg: AppConfig = {
       ...DEFAULT_CONFIG,
       mode: "openai",
@@ -43,7 +43,7 @@ describe("electron backend runtimeManager", () => {
     };
 
     const { effectiveMode, responseText } = await sendMessage(cfg, "hello", dataDir);
-    expect(effectiveMode).toBe("elizaClassic");
+    expect(effectiveMode).toBe("tokagentClassic");
     expect(responseText.trim().length).toBeGreaterThan(0);
   });
 

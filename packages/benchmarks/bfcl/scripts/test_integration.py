@@ -36,7 +36,7 @@ try:
 except ImportError:
     print("⚠️  python-dotenv not installed, using system environment")
 
-from benchmarks.bfcl.agent import BFCLAgent, get_model_provider_plugin, ELIZAOS_AVAILABLE  # noqa: E402
+from benchmarks.bfcl.agent import BFCLAgent, get_model_provider_plugin, TOKAGENTOS_AVAILABLE  # noqa: E402
 from benchmarks.bfcl.types import (  # noqa: E402
     BFCLCategory,
     BFCLConfig,
@@ -304,7 +304,7 @@ async def main() -> int:
     
     # Check environment
     print("\n📋 Environment Check:")
-    print(f"  ElizaOS Available: {ELIZAOS_AVAILABLE}")
+    print(f"  TokagentOS Available: {TOKAGENTOS_AVAILABLE}")
     
     keys = check_environment()
     for key, available in keys.items():

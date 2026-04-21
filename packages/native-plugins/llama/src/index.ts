@@ -264,7 +264,7 @@ export const capacitorLlama: LlamaAdapter = new CapacitorLlamaAdapter();
 
 /**
  * Register this adapter as the runtime's `localInferenceLoader`. Called
- * from the Capacitor bootstrap in `@elizaos/app-core/capacitor-shell` so
+ * from the Capacitor bootstrap in `@tokagentos/app-core/capacitor-shell` so
  * the standard ActiveModelCoordinator routes through it on mobile.
  */
 export function registerCapacitorLlamaLoader(runtime: {

@@ -1,6 +1,6 @@
 import type http from "node:http";
-import { sanitizeSpeechText } from "@elizaos/shared/spoken-text";
-import type { ElizaConfig } from "../config/config.js";
+import { sanitizeSpeechText } from "@tokagentos/shared/spoken-text";
+import type { TokagentConfig } from "../config/config.js";
 import type { ReadJsonBodyOptions } from "./http-helpers.js";
 
 // ---------------------------------------------------------------------------
@@ -12,7 +12,7 @@ export interface TtsRouteContext {
   res: http.ServerResponse;
   method: string;
   pathname: string;
-  state: { config: ElizaConfig };
+  state: { config: TokagentConfig };
   json: (res: http.ServerResponse, data: unknown, status?: number) => void;
   error: (res: http.ServerResponse, message: string, status?: number) => void;
   readJsonBody: <T extends object>(

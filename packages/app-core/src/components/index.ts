@@ -1,4 +1,4 @@
-// Re-export selected reusable UI from @elizaos/ui while keeping app-core's
+// Re-export selected reusable UI from @tokagentos/ui while keeping app-core's
 // higher-level component surface intact.
 export {
   ConfirmDialog as ConfirmModal,
@@ -6,7 +6,7 @@ export {
   PromptDialog as PromptModal,
   type PromptDialogProps as PromptModalProps,
   SaveFooter as ConfigSaveFooter,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 export * from "../utils/knowledge-upload-image";
 export * from "../utils/labels";
 export * from "../utils/trajectory-format";
@@ -52,7 +52,7 @@ export * from "./pages/ConfigPageView";
 export * from "./pages/ConnectorsPageView";
 export * from "./pages/DatabasePageView";
 export * from "./pages/DatabaseView";
-export * from "./pages/ElizaCloudDashboard";
+export * from "./pages/TokagentCloudDashboard";
 export * from "./pages/HeartbeatsView";
 export * from "./pages/InventoryView";
 export * from "./pages/KnowledgeView";

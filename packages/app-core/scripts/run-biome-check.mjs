@@ -7,11 +7,11 @@ const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const APP_CORE_ROOT = path.resolve(SCRIPT_DIR, "..");
 
 const BIOME_CRASHER_PATHS = new Set([
-  "eliza/packages/native-plugins/screencapture/src/web.ts",
-  "eliza/packages/native-plugins/talkmode/electrobun/src/index.d.ts",
-  "eliza/packages/native-plugins/gateway/electrobun/src/index.ts",
-  "eliza/packages/app-core/src/types/elizaos-tui-fallback.d.ts",
-  "eliza/packages/app-core/src/types/optional-plugin-modules.d.ts",
+  "tokagent/packages/native-plugins/screencapture/src/web.ts",
+  "tokagent/packages/native-plugins/talkmode/electrobun/src/index.d.ts",
+  "tokagent/packages/native-plugins/gateway/electrobun/src/index.ts",
+  "tokagent/packages/app-core/src/types/tokagentos-tui-fallback.d.ts",
+  "tokagent/packages/app-core/src/types/optional-plugin-modules.d.ts",
   "scripts/type-audit-report.json",
   "scripts/type-audit-report.md",
 ]);
@@ -23,7 +23,7 @@ const BIOME_ROOTS = [
   "scripts",
   "test",
   "apps",
-  "eliza",
+  "tokagent",
 ];
 const IGNORED_DIRS = new Set([
   ".git",

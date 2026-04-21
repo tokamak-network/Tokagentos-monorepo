@@ -18,7 +18,7 @@ import type {
   HandlerCallback,
   HandlerOptions,
   IAgentRuntime,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   buildAuthHeaders,
   getWalletActionApiPort,
@@ -79,19 +79,19 @@ function isStewardConfigured(): boolean {
   const url = process.env.STEWARD_API_URL?.trim();
   const agentId =
     process.env.STEWARD_AGENT_ID?.trim() ||
-    process.env.ELIZA_STEWARD_AGENT_ID?.trim() ||
-    process.env.ELIZA_STEWARD_AGENT_ID?.trim();
+    process.env.TOKAGENT_STEWARD_AGENT_ID?.trim() ||
+    process.env.TOKAGENT_STEWARD_AGENT_ID?.trim();
   return Boolean(url && agentId);
 }
 
 function resolveBscChainId(): number {
-  return process.env.ELIZA_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
+  return process.env.TOKAGENT_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
     ? BSC_TESTNET_CHAIN_ID
     : BSC_CHAIN_ID;
 }
 
 function walletNetworkLabel(): string {
-  return process.env.ELIZA_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
+  return process.env.TOKAGENT_WALLET_NETWORK?.trim().toLowerCase() === "testnet"
     ? "BSC testnet"
     : "BSC";
 }
@@ -423,7 +423,7 @@ export const transferTokenAction: Action = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Eliza-Agent-Action": "1",
+            "X-Tokagent-Agent-Action": "1",
             ...buildAuthHeaders(),
           },
           body: JSON.stringify(body),

@@ -1,6 +1,6 @@
-// Side-effect: register LifeOps methods on ElizaClient.
+// Side-effect: register LifeOps methods on TokagentClient.
 import "./api/client-lifeops.js";
-import { ElizaClient } from "@elizaos/app-core/api/client-base";
+import { TokagentClient } from "@tokagentos/app-core/api/client-base";
 import {
   getAppBlockerPlugin,
   type AppBlockerPermissionResult,
@@ -11,7 +11,7 @@ import {
   type InstalledApp,
   type SelectAppsResult,
   type UnblockAppsResult,
-} from "@elizaos/app-core/bridge/native-plugins";
+} from "@tokagentos/app-core/bridge/native-plugins";
 
 function requireAppBlockerPlugin(): AppBlockerPluginLike {
   const plugin = getAppBlockerPlugin();
@@ -29,8 +29,8 @@ function requireAppBlockerPlugin(): AppBlockerPluginLike {
   return plugin;
 }
 
-declare module "@elizaos/app-core/api/client-base" {
-  interface ElizaClient {
+declare module "@tokagentos/app-core/api/client-base" {
+  interface TokagentClient {
     checkAppBlockerPermissions(): Promise<AppBlockerPermissionResult>;
     requestAppBlockerPermissions(): Promise<AppBlockerPermissionResult>;
     getAppBlockerStatus(): Promise<AppBlockerStatus>;
@@ -41,32 +41,32 @@ declare module "@elizaos/app-core/api/client-base" {
   }
 }
 
-ElizaClient.prototype.checkAppBlockerPermissions = async function () {
+TokagentClient.prototype.checkAppBlockerPermissions = async function () {
   return requireAppBlockerPlugin().checkPermissions();
 };
 
-ElizaClient.prototype.requestAppBlockerPermissions = async function () {
+TokagentClient.prototype.requestAppBlockerPermissions = async function () {
   return requireAppBlockerPlugin().requestPermissions();
 };
 
-ElizaClient.prototype.getAppBlockerStatus = async function () {
+TokagentClient.prototype.getAppBlockerStatus = async function () {
   return requireAppBlockerPlugin().getStatus();
 };
 
-ElizaClient.prototype.getInstalledAppsToBlock = async function () {
+TokagentClient.prototype.getInstalledAppsToBlock = async function () {
   return requireAppBlockerPlugin().getInstalledApps();
 };
 
-ElizaClient.prototype.selectAppBlockerApps = async function () {
+TokagentClient.prototype.selectAppBlockerApps = async function () {
   return requireAppBlockerPlugin().selectApps();
 };
 
-ElizaClient.prototype.startAppBlock = async function (
+TokagentClient.prototype.startAppBlock = async function (
   options: BlockAppsOptions,
 ) {
   return requireAppBlockerPlugin().blockApps(options);
 };
 
-ElizaClient.prototype.stopAppBlock = async function () {
+TokagentClient.prototype.stopAppBlock = async function () {
   return requireAppBlockerPlugin().unblockApps();
 };

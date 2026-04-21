@@ -6,7 +6,7 @@ import type {
   TriggerType,
   TriggerWakeMode,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 export {
   TRIGGER_SCHEMA_VERSION,
@@ -16,7 +16,7 @@ export {
   type TriggerRunRecord,
   type TriggerType,
   type TriggerWakeMode,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 export interface TriggerTaskMetadata {
   updatedAt?: number;

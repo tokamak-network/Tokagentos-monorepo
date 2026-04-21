@@ -1,7 +1,7 @@
 import type {
   WalletBalancesResponse,
   WalletNftsResponse,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import {
   Button,
   Select,
@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import type { createTranslator } from "../../i18n";
 import type { AppState } from "../../state/types";
 import { CHAIN_CONFIGS, PRIMARY_CHAIN_KEYS } from "./chainConfig";

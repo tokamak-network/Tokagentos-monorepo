@@ -3,13 +3,13 @@ import time
 
 import pytest
 
-from elizaos.runtime import AgentRuntime
-from elizaos.services.message_service import (
+from tokagentos.runtime import AgentRuntime
+from tokagentos.services.message_service import (
     DefaultMessageService,
     MessageProcessingOptions,
 )
-from elizaos.types import Action, ActionResult, Character, Content, HandlerOptions, Memory, State
-from elizaos.types.primitives import ChannelType, as_uuid
+from tokagentos.types import Action, ActionResult, Character, Content, HandlerOptions, Memory, State
+from tokagentos.types.primitives import ChannelType, as_uuid
 
 
 def _message(text: str) -> Memory:

@@ -6,14 +6,14 @@ Milady **app-browser** slice: agent plugin for the desktop-owned browser workspa
 
 - Opens browser tabs as hidden background `BrowserWindow`s in Electrobun
 - Keeps tabs alive while their view is closed
-- Lets an Eliza agent list, open, navigate, show, hide, close, snapshot, and evaluate tabs
+- Lets an Tokagent agent list, open, navigate, show, hide, close, snapshot, and evaluate tabs
 - Uses a loopback-only HTTP bridge with bearer auth between the desktop shell and the embedded agent runtime
 
-## Isolation vs `eliza/packages/app-core`
+## Isolation vs `tokagent/packages/app-core`
 
 - **Native shell** (real windows, preload, bridge server) stays in `apps/app/electrobun/` — that code cannot run inside the plugin package.
 - **Dashboard UI** for the browser workspace should live in this package (or be re-exported from here) once wired, and `app-core` should import it. Moving the **entire** `app-core` tree into this package would duplicate the Milady UI shell; the intended split is **browser-specific** surfaces here, thin imports in `app-core`.
-- **Agent/runtime** pieces stay as they are: `@elizaos/agent` services (`browser-workspace`, Steward) plus this plugin’s actions, providers, and service.
+- **Agent/runtime** pieces stay as they are: `@tokagentos/agent` services (`browser-workspace`, Steward) plus this plugin’s actions, providers, and service.
 
 ## What it does not do yet
 

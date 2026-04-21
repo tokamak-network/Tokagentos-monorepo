@@ -10,7 +10,7 @@ import {
   SidebarHeader,
   SidebarPanel,
   SidebarScrollRegion,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { ChevronRight } from "lucide-react";
 import type { ReactNode, RefCallback } from "react";
 import type { PluginInfo } from "../../api";

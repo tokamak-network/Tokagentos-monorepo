@@ -35,17 +35,17 @@ static NSString *const kElectrobunNativeDragRightEdgeIdentifier =
 }
 @end
 
-static NSString *const kElizaResizeStripRightIdentifier =
-	@"ElizaResizeStripRight";
-static NSString *const kElizaResizeStripBottomIdentifier =
-	@"ElizaResizeStripBottom";
-static NSString *const kElizaResizeStripCornerIdentifier =
-	@"ElizaResizeStripCorner";
+static NSString *const kTokagentResizeStripRightIdentifier =
+	@"TokagentResizeStripRight";
+static NSString *const kTokagentResizeStripBottomIdentifier =
+	@"TokagentResizeStripBottom";
+static NSString *const kTokagentResizeStripCornerIdentifier =
+	@"TokagentResizeStripCorner";
 
-typedef NS_ENUM(NSInteger, ElizaResizeStripKind) {
-	ElizaResizeStripKindRightEdge = 0,
-	ElizaResizeStripKindBottomEdge = 1,
-	ElizaResizeStripKindBottomRightCorner = 2,
+typedef NS_ENUM(NSInteger, TokagentResizeStripKind) {
+	TokagentResizeStripKindRightEdge = 0,
+	TokagentResizeStripKindBottomEdge = 1,
+	TokagentResizeStripKindBottomRightCorner = 2,
 };
 
 /**
@@ -63,14 +63,14 @@ typedef NS_ENUM(NSInteger, ElizaResizeStripKind) {
  * would otherwise swallow events; the loop adjusts window frame from screen
  * mouse deltas until mouse up (clamped to min/max size).
  */
-@interface ElizaResizeStripView : NSView
-@property (nonatomic, assign) ElizaResizeStripKind elizaKind;
+@interface TokagentResizeStripView : NSView
+@property (nonatomic, assign) TokagentResizeStripKind tokagentKind;
 @end
 
-static void elizaRunWindowResizeLoop(NSWindow *window,
-									  ElizaResizeStripKind kind);
+static void tokagentRunWindowResizeLoop(NSWindow *window,
+									  TokagentResizeStripKind kind);
 
-@implementation ElizaResizeStripView
+@implementation TokagentResizeStripView
 
 - (BOOL)isOpaque {
 	return NO;
@@ -80,9 +80,9 @@ static void elizaRunWindowResizeLoop(NSWindow *window,
 	(void)dirtyRect;
 }
 
-- (nullable NSCursor *)elizaCursorForKind {
-	switch (self.elizaKind) {
-		case ElizaResizeStripKindBottomRightCorner:
+- (nullable NSCursor *)tokagentCursorForKind {
+	switch (self.tokagentKind) {
+		case TokagentResizeStripKindBottomRightCorner:
 			// GitHub's macOS builders may use a pre-15 AppKit SDK where the new
 			// frame resize cursor API is not declared yet.
 #if defined(MAC_OS_VERSION_15_0) &&                                      \
@@ -97,9 +97,9 @@ static void elizaRunWindowResizeLoop(NSWindow *window,
 			}
 #endif
 			return [NSCursor crosshairCursor];
-		case ElizaResizeStripKindRightEdge:
+		case TokagentResizeStripKindRightEdge:
 			return [NSCursor resizeLeftRightCursor];
-		case ElizaResizeStripKindBottomEdge:
+		case TokagentResizeStripKindBottomEdge:
 			return [NSCursor resizeUpDownCursor];
 	}
 	return nil;
@@ -107,7 +107,7 @@ static void elizaRunWindowResizeLoop(NSWindow *window,
 
 - (void)resetCursorRects {
 	[super resetCursorRects];
-	NSCursor *c = [self elizaCursorForKind];
+	NSCursor *c = [self tokagentCursorForKind];
 	if (c != nil) {
 		[self addCursorRect:[self bounds] cursor:c];
 	}
@@ -116,13 +116,13 @@ static void elizaRunWindowResizeLoop(NSWindow *window,
 - (void)mouseDown:(NSEvent *)event {
 	(void)event;
 	NSWindow *w = [self window];
-	elizaRunWindowResizeLoop(w, self.elizaKind);
+	tokagentRunWindowResizeLoop(w, self.tokagentKind);
 }
 
 @end
 
-static void elizaRunWindowResizeLoop(NSWindow *window,
-									  ElizaResizeStripKind kind) {
+static void tokagentRunWindowResizeLoop(NSWindow *window,
+									  TokagentResizeStripKind kind) {
 	if (window == nil) {
 		return;
 	}
@@ -151,19 +151,19 @@ static void elizaRunWindowResizeLoop(NSWindow *window,
 
 		NSRect fr = startFrame;
 		switch (kind) {
-			case ElizaResizeStripKindRightEdge: {
+			case TokagentResizeStripKindRightEdge: {
 				CGFloat w = startFrame.size.width + deltaX;
 				fr.size.width = MAX(minW, MIN(maxW, w));
 				break;
 			}
-			case ElizaResizeStripKindBottomEdge: {
+			case TokagentResizeStripKindBottomEdge: {
 				CGFloat h = startFrame.size.height + deltaY;
 				fr.size.height = MAX(minH, MIN(maxH, h));
 				fr.origin.y = startFrame.origin.y -
 							  (fr.size.height - startFrame.size.height);
 				break;
 			}
-			case ElizaResizeStripKindBottomRightCorner: {
+			case TokagentResizeStripKindBottomRightCorner: {
 				CGFloat w = startFrame.size.width + deltaX;
 				CGFloat h = startFrame.size.height + deltaY;
 				fr.size.width = MAX(minW, MIN(maxW, w));
@@ -177,25 +177,25 @@ static void elizaRunWindowResizeLoop(NSWindow *window,
 	}
 }
 
-static ElizaResizeStripView *elizaFindResizeStrip(NSView *contentView,
+static TokagentResizeStripView *tokagentFindResizeStrip(NSView *contentView,
 													NSString *identifier) {
 	if (contentView == nil || identifier == nil) {
 		return nil;
 	}
 	for (NSView *sv in [contentView subviews]) {
-		if ([sv isKindOfClass:[ElizaResizeStripView class]] &&
+		if ([sv isKindOfClass:[TokagentResizeStripView class]] &&
 			[[sv identifier] isEqualToString:identifier]) {
-			return (ElizaResizeStripView *)sv;
+			return (TokagentResizeStripView *)sv;
 		}
 	}
 	return nil;
 }
 
-static ElizaResizeStripView *elizaEnsureResizeStrip(NSView *contentView,
+static TokagentResizeStripView *tokagentEnsureResizeStrip(NSView *contentView,
 													  NSString *identifier) {
-	ElizaResizeStripView *v = elizaFindResizeStrip(contentView, identifier);
+	TokagentResizeStripView *v = tokagentFindResizeStrip(contentView, identifier);
 	if (v == nil) {
-		v = [[ElizaResizeStripView alloc] initWithFrame:NSZeroRect];
+		v = [[TokagentResizeStripView alloc] initWithFrame:NSZeroRect];
 		[v setIdentifier:identifier];
 	}
 	return v;
@@ -203,17 +203,17 @@ static ElizaResizeStripView *elizaEnsureResizeStrip(NSView *contentView,
 
 /** Removes strips when the window is too small for rb geometry so we never
  *  leave stale hit targets with zero/invalid frames. */
-static void elizaRemoveResizeStripOverlays(NSView *contentView) {
+static void tokagentRemoveResizeStripOverlays(NSView *contentView) {
 	if (contentView == nil) {
 		return;
 	}
 	NSArray<NSString *> *idents = @[
-		kElizaResizeStripBottomIdentifier,
-		kElizaResizeStripRightIdentifier,
-		kElizaResizeStripCornerIdentifier,
+		kTokagentResizeStripBottomIdentifier,
+		kTokagentResizeStripRightIdentifier,
+		kTokagentResizeStripCornerIdentifier,
 	];
 	for (NSString *ident in idents) {
-		ElizaResizeStripView *v = elizaFindResizeStrip(contentView, ident);
+		TokagentResizeStripView *v = tokagentFindResizeStrip(contentView, ident);
 		if (v != nil) {
 			[v removeFromSuperview];
 		}
@@ -222,7 +222,7 @@ static void elizaRemoveResizeStripOverlays(NSView *contentView) {
 
 /** Positions right/bottom/BR strips; z-order: below dragView, corner above
  *  right above bottom so BR gets diagonal hit testing. */
-static void elizaInstallResizeStripOverlays(NSWindow *window,
+static void tokagentInstallResizeStripOverlays(NSWindow *window,
 											 NSView *contentView,
 											 CGFloat chromeDepth,
 											 ElectrobunNativeDragView *dragView) {
@@ -235,22 +235,22 @@ static void elizaInstallResizeStripOverlays(NSWindow *window,
 	CGFloat W = contentView.bounds.size.width;
 	CGFloat H = contentView.bounds.size.height;
 	if (W < rb * 3.0 || H < topExcl + rb + 4.0) {
-		elizaRemoveResizeStripOverlays(contentView);
+		tokagentRemoveResizeStripOverlays(contentView);
 		return;
 	}
 
 	BOOL flipped = [contentView isFlipped];
 
-	ElizaResizeStripView *bottom =
-		elizaEnsureResizeStrip(contentView, kElizaResizeStripBottomIdentifier);
-	ElizaResizeStripView *right =
-		elizaEnsureResizeStrip(contentView, kElizaResizeStripRightIdentifier);
-	ElizaResizeStripView *corner =
-		elizaEnsureResizeStrip(contentView, kElizaResizeStripCornerIdentifier);
+	TokagentResizeStripView *bottom =
+		tokagentEnsureResizeStrip(contentView, kTokagentResizeStripBottomIdentifier);
+	TokagentResizeStripView *right =
+		tokagentEnsureResizeStrip(contentView, kTokagentResizeStripRightIdentifier);
+	TokagentResizeStripView *corner =
+		tokagentEnsureResizeStrip(contentView, kTokagentResizeStripCornerIdentifier);
 
-	bottom.elizaKind = ElizaResizeStripKindBottomEdge;
-	right.elizaKind = ElizaResizeStripKindRightEdge;
-	corner.elizaKind = ElizaResizeStripKindBottomRightCorner;
+	bottom.tokagentKind = TokagentResizeStripKindBottomEdge;
+	right.tokagentKind = TokagentResizeStripKindRightEdge;
+	corner.tokagentKind = TokagentResizeStripKindBottomRightCorner;
 
 	// Frames set explicitly when setNativeWindowDragRegion runs from TS (resize,
 	// move, dom-ready). Autoresizing would double-apply with contentView bounds.
@@ -294,7 +294,7 @@ static void elizaInstallResizeStripOverlays(NSWindow *window,
 /// Inside-facing drag + resize band thickness (points).
 /// WHY auto: one constant looks wrong on 1x vs 2x and on very wide displays.
 /// `hostHeightHint` > 0.5 pins thickness (debug / product override).
-static CGFloat elizaChromeDepthPoints(NSWindow *window, double hostHeightHint) {
+static CGFloat tokagentChromeDepthPoints(NSWindow *window, double hostHeightHint) {
 	if (hostHeightHint > 0.5) {
 		return MAX(12.0, MIN(48.0, (CGFloat)hostHeightHint));
 	}
@@ -653,7 +653,7 @@ extern "C" bool isWindowKey(void *windowPtr) {
 }
 
 /** Lays out top drag strip + resize overlays (same depth for both).
- *  `height` ≤ 0: derive depth from window.screen (see elizaChromeDepthPoints).
+ *  `height` ≤ 0: derive depth from window.screen (see tokagentChromeDepthPoints).
  *  WHY one entry point: TS calls this whenever geometry may have changed so
  *  dragView stays NSWindowAbove WKWebView and strips stay in sync. */
 extern "C" bool setNativeWindowDragRegion(void *windowPtr, double x,
@@ -675,7 +675,7 @@ extern "C" bool setNativeWindowDragRegion(void *windowPtr, double x,
 		}
 
 		CGFloat dragX = MAX(0.0, x);
-		CGFloat dragHeight = elizaChromeDepthPoints(window, height);
+		CGFloat dragHeight = tokagentChromeDepthPoints(window, height);
 		CGFloat dragWidth = MAX(0.0, contentView.bounds.size.width - dragX);
 		if (dragWidth <= 0.0) {
 			return;
@@ -708,14 +708,14 @@ extern "C" bool setNativeWindowDragRegion(void *windowPtr, double x,
 					 relativeTo:nil];
 
 		// Legacy Electrobun right-edge drag view would steal drags from the resize
-		// band; remove so ElizaResizeStripView owns the east edge.
+		// band; remove so TokagentResizeStripView owns the east edge.
 		ElectrobunNativeDragView *legacyRight =
 			findNativeDragRightEdgeView(contentView);
 		if (legacyRight != nil) {
 			[legacyRight removeFromSuperview];
 		}
 
-		elizaInstallResizeStripOverlays(window, contentView, dragHeight, dragView);
+		tokagentInstallResizeStripOverlays(window, contentView, dragHeight, dragView);
 
 		success = YES;
 	});

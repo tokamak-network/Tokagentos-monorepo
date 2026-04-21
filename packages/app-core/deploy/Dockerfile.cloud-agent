@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.23
 # ─────────────────────────────────────────────────────────────────────────────
-# elizaOS Cloud Agent Container
+# tokagentOS Cloud Agent Container
 # ─────────────────────────────────────────────────────────────────────────────
 
 ARG APP_PORT=2138
@@ -20,7 +20,7 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy the entrypoint (standalone Node.js script, no build step needed)
-COPY eliza/packages/app-core/deploy/cloud-agent-entrypoint.ts ./entrypoint.ts
+COPY tokagent/packages/app-core/deploy/cloud-agent-entrypoint.ts ./entrypoint.ts
 
 # Install tsx for running TypeScript directly
 RUN npm install -g tsx@4

@@ -1,15 +1,15 @@
-# AWS Lambda elizaOS Worker Examples
+# AWS Lambda tokagentOS Worker Examples
 
-Deploy AI chat agents as serverless AWS Lambda functions. These examples show how to run an elizaOS agent as a stateless worker that processes chat messages via HTTP.
+Deploy AI chat agents as serverless AWS Lambda functions. These examples show how to run an tokagentOS agent as a stateless worker that processes chat messages via HTTP.
 
-All handlers use the full **elizaOS runtime** with OpenAI as the LLM provider, providing the same capabilities as the chat demo examples.
+All handlers use the full **tokagentOS runtime** with OpenAI as the LLM provider, providing the same capabilities as the chat demo examples.
 
 ## Architecture
 
 ```
 ┌──────────────┐     ┌─────────────────┐     ┌────────────────┐
 │  Test Client │────▶│  API Gateway    │────▶│  Lambda        │
-│  (curl/node) │◀────│  (HTTP API)     │◀────│  (elizaOS)     │
+│  (curl/node) │◀────│  (HTTP API)     │◀────│  (tokagentOS)     │
 └──────────────┘     └─────────────────┘     └────────────────┘
                                                     │
                                                     ▼
@@ -31,7 +31,7 @@ All handlers use the full **elizaOS runtime** with OpenAI as the LLM provider, p
 
 ### 1. Set Environment Variables
 
-Create a `.env` file in the project root (`/home/shaw/eliza/.env`):
+Create a `.env` file in the project root (`/home/shaw/tokagent/.env`):
 
 ```bash
 OPENAI_API_KEY=your-openai-api-key
@@ -52,7 +52,7 @@ Before deploying, test locally to verify everything works. Each language has a s
 
 ```bash
 cd examples/aws/typescript
-bun run test:full                # Run automated tests with elizaOS runtime
+bun run test:full                # Run automated tests with tokagentOS runtime
 bun run start                    # Start local HTTP server on port 3000
 ```
 
@@ -61,14 +61,14 @@ bun run start                    # Start local HTTP server on port 3000
 ```bash
 cd examples/aws/python
 pip install -e ../../../packages/python -e ../../../plugins/plugin-openai/python
-python3 handler.py               # Runs automated tests with elizaOS runtime
+python3 handler.py               # Runs automated tests with tokagentOS runtime
 ```
 
 #### Rust
 
 ```bash
 cd examples/aws/rust
-cargo run --bin test_local       # Run automated tests with elizaOS runtime
+cargo run --bin test_local       # Run automated tests with tokagentOS runtime
 ```
 
 #### Test the Local Server (TypeScript)
@@ -113,7 +113,7 @@ After deployment, SAM outputs your API endpoint URL. Test it:
 # Using curl
 curl -X POST https://YOUR_API_ID.execute-api.us-east-1.amazonaws.com/chat \
   -H "Content-Type: application/json" \
-  -d '{"message": "Hello, Eliza!"}'
+  -d '{"message": "Hello, Tokagent!"}'
 
 # Using the test client
 cd examples/aws
@@ -130,16 +130,16 @@ examples/aws/
 ├── test-client.ts            # Interactive test client
 ├── package.json              # Test client dependencies
 ├── typescript/
-│   ├── handler.ts            # Lambda handler (elizaOS runtime)
+│   ├── handler.ts            # Lambda handler (tokagentOS runtime)
 │   ├── package.json
 │   └── tsconfig.json
 ├── python/
-│   ├── handler.py            # Lambda handler (elizaOS runtime)
+│   ├── handler.py            # Lambda handler (tokagentOS runtime)
 │   └── requirements.txt
 └── rust/
     ├── Cargo.toml
     └── src/
-        ├── lib.rs            # Lambda handler library (elizaOS runtime)
+        ├── lib.rs            # Lambda handler library (tokagentOS runtime)
         ├── main.rs           # Lambda entry point
         └── test_local.rs     # Local test runner
 ```
@@ -148,7 +148,7 @@ examples/aws/
 
 ### POST /chat
 
-Send a message to the elizaOS agent.
+Send a message to the tokagentOS agent.
 
 **Request:**
 
@@ -179,7 +179,7 @@ Health check endpoint.
 ```json
 {
   "status": "healthy",
-  "runtime": "elizaos-typescript|elizaos-python|elizaos-rust",
+  "runtime": "tokagentos-typescript|tokagentos-python|tokagentos-rust",
   "version": "2.0.0-alpha"
 }
 ```
@@ -201,7 +201,7 @@ sam deploy
 ```bash
 aws cloudformation deploy \
   --template-file template.yaml \
-  --stack-name eliza-worker \
+  --stack-name tokagent-worker \
   --parameter-overrides OpenAIApiKey=$OPENAI_API_KEY \
   --capabilities CAPABILITY_IAM
 ```
@@ -219,7 +219,7 @@ See `terraform/` directory for Terraform configuration.
 | `OPENAI_API_KEY`     | Yes      | -                         | Your OpenAI API key |
 | `OPENAI_SMALL_MODEL` | No       | `gpt-5-mini`              | Small model to use  |
 | `OPENAI_LARGE_MODEL` | No       | `gpt-5`                   | Large model to use  |
-| `CHARACTER_NAME`     | No       | `Eliza`                   | Agent's name        |
+| `CHARACTER_NAME`     | No       | `Tokagent`                   | Agent's name        |
 | `CHARACTER_BIO`      | No       | `A helpful AI assistant.` | Agent's bio         |
 | `CHARACTER_SYSTEM`   | No       | (default)                 | System prompt       |
 | `LOG_LEVEL`          | No       | `INFO`                    | Logging level       |
@@ -230,7 +230,7 @@ You can customize the agent's personality by setting environment variables or mo
 
 ```typescript
 const character: Character = {
-  name: process.env.CHARACTER_NAME ?? "Eliza",
+  name: process.env.CHARACTER_NAME ?? "Tokagent",
   bio: process.env.CHARACTER_BIO ?? "A helpful AI assistant.",
   system: process.env.CHARACTER_SYSTEM ?? "You are helpful and concise.",
 };
@@ -270,7 +270,7 @@ Recommended memory settings:
 Lambda automatically logs to CloudWatch. View logs:
 
 ```bash
-sam logs -n ElizaWorkerFunction --stack-name eliza-worker --tail
+sam logs -n TokagentWorkerFunction --stack-name tokagent-worker --tail
 ```
 
 ### CloudWatch Metrics
@@ -334,11 +334,11 @@ sam deploy --parameter-overrides OpenAIApiKey=$OPENAI_API_KEY
 Remove all deployed resources:
 
 ```bash
-sam delete --stack-name eliza-worker
+sam delete --stack-name tokagent-worker
 ```
 
 ## See Also
 
-- [elizaOS Documentation](https://elizaos.ai/docs)
+- [tokagentOS Documentation](https://tokagentos.ai/docs)
 - [AWS Lambda Documentation](https://docs.aws.amazon.com/lambda/)
 - [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/)

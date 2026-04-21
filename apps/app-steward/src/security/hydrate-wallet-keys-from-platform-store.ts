@@ -1,10 +1,10 @@
-import { deriveAgentVaultId } from "@elizaos/app-core/security/agent-vault-id";
+import { deriveAgentVaultId } from "@tokagentos/app-core/security/agent-vault-id";
 import {
   createNodePlatformSecureStore,
   isWalletOsStoreReadEnabled,
-} from "@elizaos/app-core/security/platform-secure-store-node";
-import type { SecureStoreSecretKind } from "@elizaos/app-core/security/platform-secure-store";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/app-core/security/platform-secure-store-node";
+import type { SecureStoreSecretKind } from "@tokagentos/app-core/security/platform-secure-store";
+import { logger } from "@tokagentos/core";
 
 const WALLET_ENV_PAIRS: [keyof NodeJS.ProcessEnv, SecureStoreSecretKind][] = [
   ["EVM_PRIVATE_KEY", "wallet.evm_private_key"],

@@ -137,7 +137,7 @@ export interface DownloadEvent {
 
 /**
  * Agent model-type slots Milady lets the user wire to local models. These
- * match the `ModelType` enum in `@elizaos/core` — kept as string literals
+ * match the `ModelType` enum in `@tokagentos/core` — kept as string literals
  * here so the types file stays framework-free.
  */
 export type AgentModelSlot =

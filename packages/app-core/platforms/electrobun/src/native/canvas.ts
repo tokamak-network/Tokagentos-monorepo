@@ -208,7 +208,7 @@ export class CanvasManager {
 
       const tmpPath = path.join(
         os.tmpdir(),
-        `eliza-canvas-snapshot-${Date.now()}.png`,
+        `tokagent-canvas-snapshot-${Date.now()}.png`,
       );
       let proc: ReturnType<typeof Bun.spawn>;
 
@@ -273,8 +273,8 @@ $bmp.Dispose()`;
     if (!canvas) return;
 
     const script = `
-      if (window.elizaDesktopUI && typeof window.elizaDesktopUI.push === 'function') {
-        window.elizaDesktopUI.push(${JSON.stringify(options.payload)});
+      if (window.tokagentDesktopUI && typeof window.tokagentDesktopUI.push === 'function') {
+        window.tokagentDesktopUI.push(${JSON.stringify(options.payload)});
       }
     `;
     try {
@@ -290,8 +290,8 @@ $bmp.Dispose()`;
     if (!canvas) return;
 
     const script = `
-      if (window.elizaDesktopUI && typeof window.elizaDesktopUI.reset === 'function') {
-        window.elizaDesktopUI.reset();
+      if (window.tokagentDesktopUI && typeof window.tokagentDesktopUI.reset === 'function') {
+        window.tokagentDesktopUI.reset();
       }
     `;
     try {

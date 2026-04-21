@@ -5,10 +5,10 @@ import type {
   LifeOpsXConnectorStatus,
   LifeOpsXPostResponse,
   UpsertLifeOpsXConnectorRequest,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   LIFEOPS_X_CAPABILITIES,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { createLifeOpsConnectorGrant } from "./repository.js";
 import {
   fail,

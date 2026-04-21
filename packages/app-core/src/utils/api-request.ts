@@ -1,9 +1,9 @@
 import { DEFAULT_BOOT_CONFIG, getBootConfig } from "../config/boot-config";
-import { getElizaApiToken } from "./eliza-globals";
+import { getTokagentApiToken } from "./tokagent-globals";
 
 export const DEFAULT_FETCH_TIMEOUT_MS = 10_000;
 
-const SESSION_STORAGE_API_TOKEN_KEY = "elizaos_api_token";
+const SESSION_STORAGE_API_TOKEN_KEY = "tokagentos_api_token";
 
 function readTrimmedString(value: unknown): string | null {
   if (typeof value !== "string") {
@@ -26,7 +26,7 @@ export function resolveCompatApiToken(): string | null {
     readSessionStorageToken() ??
     readTrimmedString(getBootConfig().apiToken) ??
     readTrimmedString(DEFAULT_BOOT_CONFIG.apiToken) ??
-    readTrimmedString(getElizaApiToken()) ??
+    readTrimmedString(getTokagentApiToken()) ??
     null
   );
 }

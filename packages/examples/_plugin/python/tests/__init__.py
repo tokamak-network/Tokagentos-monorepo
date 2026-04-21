@@ -1,3 +1,3 @@
-"""Tests for elizaos-plugin-starter."""
+"""Tests for tokagentos-plugin-starter."""
 
 

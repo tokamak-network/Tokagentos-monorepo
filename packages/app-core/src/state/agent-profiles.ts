@@ -12,8 +12,8 @@ export type { AgentProfile, AgentProfileRegistry } from "./agent-profile-types";
 
 /* ── Helpers ─────────────────────────────────────────────────────────── */
 
-const STORAGE_KEY = "elizaos:agent-profiles";
-const ACTIVE_SERVER_KEY = "elizaos:active-server";
+const STORAGE_KEY = "tokagentos:agent-profiles";
+const ACTIVE_SERVER_KEY = "tokagentos:active-server";
 
 function tryLocalStorage<T>(fn: () => T, fallback: T): T {
   try {
@@ -66,7 +66,7 @@ function migrateFromPersistedActiveServer(): AgentProfileRegistry | null {
 
   // Persist immediately so migration only runs once.
   localStorage.setItem(STORAGE_KEY, JSON.stringify(registry));
-  // Leave elizaos:active-server intact for rollback.
+  // Leave tokagentos:active-server intact for rollback.
   return registry;
 }
 

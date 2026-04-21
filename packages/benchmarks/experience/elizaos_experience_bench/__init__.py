@@ -1,18 +1,18 @@
-"""Experience plugin benchmark for ElizaOS."""
+"""Experience plugin benchmark for TokagentOS."""
 
-from elizaos_experience_bench.generator import ExperienceGenerator
-from elizaos_experience_bench.evaluators import (
+from tokagentos_experience_bench.generator import ExperienceGenerator
+from tokagentos_experience_bench.evaluators import (
     RetrievalEvaluator,
     RerankingEvaluator,
     LearningCycleEvaluator,
     HardCaseEvaluator,
 )
-from elizaos_experience_bench.runner import ExperienceBenchmarkRunner
-from elizaos_experience_bench.types import (
+from tokagentos_experience_bench.runner import ExperienceBenchmarkRunner
+from tokagentos_experience_bench.types import (
     BenchmarkConfig,
     BenchmarkMode,
     BenchmarkResult,
-    ElizaAgentMetrics,
+    TokagentAgentMetrics,
 )
 
 __all__ = [
@@ -25,5 +25,5 @@ __all__ = [
     "BenchmarkConfig",
     "BenchmarkMode",
     "BenchmarkResult",
-    "ElizaAgentMetrics",
+    "TokagentAgentMetrics",
 ]

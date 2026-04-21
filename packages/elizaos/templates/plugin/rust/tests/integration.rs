@@ -1,9 +1,9 @@
-//! Integration tests for the elizaOS Rust Plugin Starter
+//! Integration tests for the tokagentOS Rust Plugin Starter
 //!
 //! These tests validate the plugin interface, JSON serialization,
 //! and cross-language compatibility.
 
-use elizaos_plugin_starter::*;
+use tokagentos_plugin_starter::*;
 
 #[test]
 fn test_plugin_creation() {

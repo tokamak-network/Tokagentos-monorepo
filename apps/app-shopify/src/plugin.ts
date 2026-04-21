@@ -1,6 +1,6 @@
 /**
  * Shopify plugin — registers all Shopify dashboard routes with the
- * elizaOS runtime plugin route system.
+ * tokagentOS runtime plugin route system.
  *
  * All routes use `rawPath: true` to preserve the legacy `/api/shopify/*`
  * paths without a plugin-name prefix.
@@ -11,7 +11,7 @@
  */
 
 import type http from "node:http";
-import type { Plugin, Route } from "@elizaos/core";
+import type { Plugin, Route } from "@tokagentos/core";
 import { handleShopifyRoute } from "./routes";
 
 // ---------------------------------------------------------------------------

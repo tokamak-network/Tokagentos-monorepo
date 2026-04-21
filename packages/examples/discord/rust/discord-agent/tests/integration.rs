@@ -6,7 +6,7 @@ use serde_json::json;
 #[test]
 fn test_character_creation() {
     let character = create_character();
-    assert_eq!(character.name, "DiscordEliza");
+    assert_eq!(character.name, "DiscordTokagent");
     assert!(!character.bio.is_empty());
     assert!(!character.system.is_empty());
 }
@@ -23,7 +23,7 @@ fn test_character_discord_settings() {
 
 #[test]
 fn test_generate_response_hello() {
-    let response = generate_response("hello!", "testuser", "DiscordEliza");
+    let response = generate_response("hello!", "testuser", "DiscordTokagent");
     assert!(response.is_some());
     let text = response.unwrap();
     assert!(text.contains("Hello"));
@@ -32,30 +32,30 @@ fn test_generate_response_hello() {
 
 #[test]
 fn test_generate_response_ping() {
-    let response = generate_response("ping", "testuser", "DiscordEliza");
+    let response = generate_response("ping", "testuser", "DiscordTokagent");
     assert!(response.is_some());
     assert!(response.unwrap().contains("Pong"));
 }
 
 #[test]
 fn test_generate_response_help() {
-    let response = generate_response("help me please", "testuser", "DiscordEliza");
+    let response = generate_response("help me please", "testuser", "DiscordTokagent");
     assert!(response.is_some());
     assert!(response.unwrap().contains("How I can help"));
 }
 
 #[test]
 fn test_generate_response_about() {
-    let response = generate_response("about", "testuser", "DiscordEliza");
+    let response = generate_response("about", "testuser", "DiscordTokagent");
     assert!(response.is_some());
     let text = response.unwrap();
-    assert!(text.contains("DiscordEliza"));
-    assert!(text.contains("elizaOS"));
+    assert!(text.contains("DiscordTokagent"));
+    assert!(text.contains("tokagentOS"));
 }
 
 #[test]
 fn test_generate_response_default() {
-    let response = generate_response("some random message", "bob", "DiscordEliza");
+    let response = generate_response("some random message", "bob", "DiscordTokagent");
     assert!(response.is_some());
     assert!(response.unwrap().contains("bob"));
 }

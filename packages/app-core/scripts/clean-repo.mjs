@@ -7,7 +7,7 @@ import { spawnSync } from "node:child_process";
  *   node scripts/clean-repo.mjs           # standard clean (dist, Vite, plugins, turbo, forge test artifacts, …)
  *   node scripts/clean-repo.mjs --deep    # also Electrobun/Electron local build outputs + generated preload
  *
- * Does not remove node_modules or global Bun/npm caches (set ELIZA_CLEAN_GLOBAL_TOOL_CACHE=1 to also run
+ * Does not remove node_modules or global Bun/npm caches (set TOKAGENT_CLEAN_GLOBAL_TOOL_CACHE=1 to also run
  * `bun pm cache rm` — destructive to all Bun projects on the machine).
  */
 import { existsSync, readdirSync, rmSync } from "node:fs";
@@ -23,7 +23,7 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = resolveRepoRootFromImportMeta(import.meta.url);
 const deep = process.argv.includes("--deep");
-const globalToolCache = process.env.ELIZA_CLEAN_GLOBAL_TOOL_CACHE === "1";
+const globalToolCache = process.env.TOKAGENT_CLEAN_GLOBAL_TOOL_CACHE === "1";
 
 function rmPath(label, abs) {
   if (!existsSync(abs)) return;
@@ -69,7 +69,7 @@ function rmPluginDists() {
   const pluginsRoot = NATIVE_PLUGINS_ROOT;
   if (!existsSync(pluginsRoot)) return;
   const relPlugins =
-    path.relative(root, pluginsRoot) || "eliza/packages/native-plugins";
+    path.relative(root, pluginsRoot) || "tokagent/packages/native-plugins";
   for (const name of CAPACITOR_PLUGIN_NAMES) {
     rmPath(`${relPlugins}/${name}/dist`, path.join(pluginsRoot, name, "dist"));
   }
@@ -98,8 +98,8 @@ function main() {
   rmPath("apps/homepage/.vite", path.join(root, "apps", "homepage", ".vite"));
 
   rmPath(
-    "eliza/packages/app-core/dist",
-    path.join(root, "eliza", "packages", "app-core", "dist"),
+    "tokagent/packages/app-core/dist",
+    path.join(root, "tokagent", "packages", "app-core", "dist"),
   );
 
   rmPluginDists();
@@ -136,8 +136,8 @@ function main() {
       path.join(root, "apps", "app", "electron", "app-build"),
     );
     rmPath(
-      "apps/app/electron/eliza-dist",
-      path.join(root, "apps", "app", "electron", "eliza-dist"),
+      "apps/app/electron/tokagent-dist",
+      path.join(root, "apps", "app", "electron", "tokagent-dist"),
     );
     rmPath(
       "apps/app/electron/tsc-out",
@@ -155,7 +155,7 @@ function main() {
   rmFile("tsconfig.tsbuildinfo", rootInfo);
 
   if (globalToolCache) {
-    console.log("\n  ELIZA_CLEAN_GLOBAL_TOOL_CACHE=1 → bun pm cache rm");
+    console.log("\n  TOKAGENT_CLEAN_GLOBAL_TOOL_CACHE=1 → bun pm cache rm");
     const r = spawnSync("bun", ["pm", "cache", "rm"], {
       stdio: "inherit",
       env: process.env,
@@ -169,7 +169,7 @@ function main() {
 
   console.log("\n[clean] done. Next: bun run build  or  bun run dev");
   console.log(
-    "  Tip: ELIZA_DEV_PLUGIN_BUILD=1 bun run dev  and/or  ELIZA_VITE_FORCE=1 bun run dev  after a deep clean.\n",
+    "  Tip: TOKAGENT_DEV_PLUGIN_BUILD=1 bun run dev  and/or  TOKAGENT_VITE_FORCE=1 bun run dev  after a deep clean.\n",
   );
 }
 

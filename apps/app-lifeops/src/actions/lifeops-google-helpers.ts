@@ -1,4 +1,4 @@
-import type { Action, Memory, ProviderDataRecord } from "@elizaos/core";
+import type { Action, Memory, ProviderDataRecord } from "@tokagentos/core";
 import type {
   LifeOpsCalendarEvent,
   LifeOpsCalendarFeed,
@@ -12,10 +12,10 @@ import type {
   LifeOpsNextCalendarEventContext,
   LifeOpsOccurrenceView,
   LifeOpsOverview,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import type { LifeOpsService } from "../lifeops/service.js";
 import { getLocalDateKey, getZonedDateParts } from "../lifeops/time.js";
-import { hasPrivateAccess } from "@elizaos/agent/security";
+import { hasPrivateAccess } from "@tokagentos/agent/security";
 
 export const INTERNAL_URL = new URL("http://127.0.0.1/");
 

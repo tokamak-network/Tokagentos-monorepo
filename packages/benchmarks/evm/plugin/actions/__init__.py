@@ -1,4 +1,4 @@
-"""EVM Benchmark Actions for ElizaOS."""
+"""EVM Benchmark Actions for TokagentOS."""
 
 from .execute_code import execute_code_action
 

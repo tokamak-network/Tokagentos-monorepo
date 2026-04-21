@@ -7,7 +7,7 @@
  * exponential backoff when the link drops.
  *
  * Mirrors the message envelope defined in
- * `@elizaos/app-core/src/services/local-inference/device-bridge.ts`.
+ * `@tokagentos/app-core/src/services/local-inference/device-bridge.ts`.
  * Keep the two in sync by hand — the message shape is the bridge
  * contract.
  */

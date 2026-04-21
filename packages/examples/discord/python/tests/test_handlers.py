@@ -18,7 +18,7 @@ class TestCharacter:
 
     def test_character_has_name(self) -> None:
         """Character should have a name."""
-        assert character.name == "DiscordEliza"
+        assert character.name == "DiscordTokagent"
 
     def test_character_has_bio(self) -> None:
         """Character should have a bio."""

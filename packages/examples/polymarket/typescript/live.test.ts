@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { AgentRuntime, createCharacter, type Character } from "@elizaos/core";
+import { AgentRuntime, createCharacter, type Character } from "@tokagentos/core";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { initializeClobClient } from "@elizaos/plugin-polymarket";
 

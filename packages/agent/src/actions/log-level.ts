@@ -1,15 +1,15 @@
 import {
   type Action,
-  elizaLogger,
+  tokagentLogger,
   type HandlerCallback,
   type IAgentRuntime,
   type Memory,
   type State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   getValidationKeywordTerms,
   textIncludesKeywordTerm,
-} from "@elizaos/shared/validation-keywords";
+} from "@tokagentos/shared/validation-keywords";
 
 const LOG_LEVEL_COMMAND_TERMS = getValidationKeywordTerms(
   "action.logLevel.command",
@@ -95,7 +95,7 @@ export const logLevelAction: Action = {
     _state: State | undefined,
     _options: unknown,
     callback?: HandlerCallback,
-  ): Promise<import("@elizaos/core").ActionResult> => {
+  ): Promise<import("@tokagentos/core").ActionResult> => {
     const text = message.content.text || "";
     const levels = Object.keys(LOG_LEVEL_ALIASES) as CanonicalLogLevel[];
     const level = resolveLogLevel(text);
@@ -117,7 +117,7 @@ export const logLevelAction: Action = {
 
     if (runtimeWithOverrides.logLevelOverrides) {
       runtimeWithOverrides.logLevelOverrides.set(message.roomId, level);
-      elizaLogger.info(`Log level set to ${level} for room ${message.roomId}`);
+      tokagentLogger.info(`Log level set to ${level} for room ${message.roomId}`);
 
       if (callback) {
         callback({

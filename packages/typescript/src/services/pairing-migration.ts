@@ -5,7 +5,7 @@
  * to the database-backed PairingService.
  *
  * This utility reads the JSON files used by otto's pairing system
- * and imports the data into the elizaOS database.
+ * and imports the data into the tokagentOS database.
  */
 
 import type { IAgentRuntime, UUID } from "../types";

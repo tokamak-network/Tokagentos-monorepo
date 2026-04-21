@@ -6,7 +6,7 @@ import {
 import type {
   LifeOpsTelegramDialogSummary,
   VerifyLifeOpsTelegramConnectorResponse,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions";
 import type { StoredTelegramConnectorToken } from "./telegram-auth.js";

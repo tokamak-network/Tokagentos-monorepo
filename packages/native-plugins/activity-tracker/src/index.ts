@@ -11,7 +11,7 @@ import { existsSync } from "node:fs";
 import { createInterface } from "node:readline";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 export type ActivityEventKind = "activate" | "deactivate";
 

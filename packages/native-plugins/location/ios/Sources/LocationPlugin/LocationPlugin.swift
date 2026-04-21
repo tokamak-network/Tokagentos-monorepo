@@ -2,7 +2,7 @@ import Foundation
 import Capacitor
 import CoreLocation
 
-/// Native iOS implementation of the ElizaLocation Capacitor plugin.
+/// Native iOS implementation of the TokagentLocation Capacitor plugin.
 ///
 /// Bridges CLLocationManager to the TypeScript LocationPlugin interface, providing:
 ///   - getCurrentPosition (one-shot with accuracy, maxAge cache, timeout)
@@ -10,10 +10,10 @@ import CoreLocation
 ///   - clearWatch (stop a running watch)
 ///   - checkPermissions / requestPermissions (whenInUse or always)
 ///   - Events: locationChange, error
-@objc(ElizaLocationPlugin)
-public class ElizaLocationPlugin: CAPPlugin, CAPBridgedPlugin, CLLocationManagerDelegate {
-    public let identifier = "ElizaLocationPlugin"
-    public let jsName = "ElizaLocation"
+@objc(TokagentLocationPlugin)
+public class TokagentLocationPlugin: CAPPlugin, CAPBridgedPlugin, CLLocationManagerDelegate {
+    public let identifier = "TokagentLocationPlugin"
+    public let jsName = "TokagentLocation"
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "getCurrentPosition", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "watchPosition", returnType: CAPPluginReturnPromise),

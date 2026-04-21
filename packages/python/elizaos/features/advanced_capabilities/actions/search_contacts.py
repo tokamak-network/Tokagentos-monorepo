@@ -3,20 +3,20 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from elizaos.generated.spec_helpers import require_action_spec
-from elizaos.prompts import SEARCH_CONTACTS_TEMPLATE
-from elizaos.types import (
+from tokagentos.generated.spec_helpers import require_action_spec
+from tokagentos.prompts import SEARCH_CONTACTS_TEMPLATE
+from tokagentos.types import (
     Action,
     ActionExample,
     ActionResult,
     Content,
     ModelType,
 )
-from elizaos.utils.spec_examples import convert_spec_examples
-from elizaos.utils.xml import parse_key_value_xml
+from tokagentos.utils.spec_examples import convert_spec_examples
+from tokagentos.utils.xml import parse_key_value_xml
 
 if TYPE_CHECKING:
-    from elizaos.types import (
+    from tokagentos.types import (
         HandlerCallback,
         HandlerOptions,
         IAgentRuntime,
@@ -54,7 +54,7 @@ class SearchContactsAction:
         callback: HandlerCallback | None = None,
         responses: list[Memory] | None = None,
     ) -> ActionResult:
-        from elizaos.features.advanced_capabilities.services.relationships import (
+        from tokagentos.features.advanced_capabilities.services.relationships import (
             RelationshipsService,
         )
 

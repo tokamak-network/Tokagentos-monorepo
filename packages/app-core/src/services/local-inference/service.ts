@@ -7,7 +7,7 @@
  * stream across the process.
  */
 
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { ActiveModelCoordinator } from "./active-model";
 import { readAssignments, setAssignment } from "./assignments";
 import { MODEL_CATALOG } from "./catalog";

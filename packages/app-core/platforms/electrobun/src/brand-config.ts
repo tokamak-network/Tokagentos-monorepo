@@ -2,14 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 
 /**
- * Brand configuration for the elizaOS desktop shell.
+ * Brand configuration for the tokagentOS desktop shell.
  *
  * All user-facing brand strings (app name, identifiers, URLs) are resolved
  * here from environment variables with sensible defaults. Brand-specific
  * apps (e.g. the app) override via env or by importing and calling
  * `overrideBrandConfig()` before the shell boots.
  *
- * Env precedence: ELIZA_ > ELIZA_ (legacy) > default.
+ * Env precedence: TOKAGENT_ > TOKAGENT_ (legacy) > default.
  */
 
 export interface DesktopBrandConfig {
@@ -17,7 +17,7 @@ export interface DesktopBrandConfig {
   appName: string;
   /** Reverse-DNS app identifier (macOS bundle ID, etc.). */
   appId: string;
-  /** URL scheme for deep links (e.g. "elizaos" -> elizaos://). */
+  /** URL scheme for deep links (e.g. "tokagentos" -> tokagentos://). */
   urlScheme: string;
   /** Base URL for release/update artifacts. */
   releaseUrl: string;
@@ -25,7 +25,7 @@ export interface DesktopBrandConfig {
   configExportFileName: string;
   /** User-facing description. */
   appDescription: string;
-  /** Default namespace for state directory (~/.eliza/ or ~/.eliza/). */
+  /** Default namespace for state directory (~/.tokagent/ or ~/.tokagent/). */
   namespace: string;
   /** Config directory name (used under ~/.config/ on Unix, %APPDATA% on Windows). */
   configDirName: string;
@@ -72,7 +72,7 @@ function envFallback(...keys: string[]): string {
 }
 
 function loadFileConfig(): Partial<DesktopBrandConfig> {
-  const envPath = envFallback("ELIZA_BRAND_CONFIG_PATH", "ELIZA_BRAND_CONFIG_PATH");
+  const envPath = envFallback("TOKAGENT_BRAND_CONFIG_PATH", "TOKAGENT_BRAND_CONFIG_PATH");
   const candidatePaths = [
     envPath,
     path.resolve(process.cwd(), "brand-config.json"),
@@ -96,28 +96,28 @@ function loadFileConfig(): Partial<DesktopBrandConfig> {
 }
 
 const DEFAULT_CONFIG: DesktopBrandConfig = {
-  appName: "elizaOS",
-  appId: "ai.elizaos.app",
-  urlScheme: "elizaos",
+  appName: "tokagentOS",
+  appId: "ai.tokagentos.app",
+  urlScheme: "tokagentos",
   releaseUrl: "",
-  configExportFileName: "eliza-config.json",
+  configExportFileName: "tokagent-config.json",
   appDescription: "AI agents for the desktop",
-  namespace: "eliza",
-  configDirName: "elizaOS",
-  startupLogFileName: "eliza-startup.log",
-  macLaunchAgentPlist: "ai.elizaos.app.plist",
-  macLaunchAgentLabel: "ai.elizaos.app",
-  linuxDesktopFileName: "elizaos.desktop",
-  linuxDesktopEntryName: "elizaOS",
-  windowsRegistryValueName: "elizaOS",
-  cefVersionMarkerFileName: ".eliza-version",
-  runtimeDistDirName: "eliza-dist",
-  mdnsServiceType: "_eliza._tcp",
-  desktopMusicGuildId: "eliza-desktop",
-  browserWorkspacePartition: "persist:eliza-browser",
-  releaseNotesPartition: "persist:eliza-release-notes",
-  cefDesktopPartition: "persist:eliza-desktop-cef",
-  trustedCloseMessageType: "eliza.trusted-eliza-window.close",
+  namespace: "tokagent",
+  configDirName: "tokagentOS",
+  startupLogFileName: "tokagent-startup.log",
+  macLaunchAgentPlist: "ai.tokagentos.app.plist",
+  macLaunchAgentLabel: "ai.tokagentos.app",
+  linuxDesktopFileName: "tokagentos.desktop",
+  linuxDesktopEntryName: "tokagentOS",
+  windowsRegistryValueName: "tokagentOS",
+  cefVersionMarkerFileName: ".tokagent-version",
+  runtimeDistDirName: "tokagent-dist",
+  mdnsServiceType: "_tokagent._tcp",
+  desktopMusicGuildId: "tokagent-desktop",
+  browserWorkspacePartition: "persist:tokagent-browser",
+  releaseNotesPartition: "persist:tokagent-release-notes",
+  cefDesktopPartition: "persist:tokagent-desktop-cef",
+  trustedCloseMessageType: "tokagent.trusted-tokagent-window.close",
 };
 
 let resolvedConfig: DesktopBrandConfig | null = null;
@@ -134,11 +134,11 @@ export function overrideBrandConfig(
 function resolveBrandConfig(): DesktopBrandConfig {
   const fileConfig = loadFileConfig();
   const appName =
-    envFallback("ELIZA_APP_NAME", "ELIZA_APP_NAME") ||
+    envFallback("TOKAGENT_APP_NAME", "TOKAGENT_APP_NAME") ||
     fileConfig.appName ||
     DEFAULT_CONFIG.appName;
   const appId =
-    envFallback("ELIZA_APP_ID", "ELIZA_APP_ID") ||
+    envFallback("TOKAGENT_APP_ID", "TOKAGENT_APP_ID") ||
     fileConfig.appId ||
     DEFAULT_CONFIG.appId;
 
@@ -148,18 +148,18 @@ function resolveBrandConfig(): DesktopBrandConfig {
     appName,
     appId,
     urlScheme:
-      envFallback("ELIZA_URL_SCHEME", "ELIZA_URL_SCHEME") ||
+      envFallback("TOKAGENT_URL_SCHEME", "TOKAGENT_URL_SCHEME") ||
       fileConfig.urlScheme ||
       DEFAULT_CONFIG.urlScheme,
     releaseUrl:
-      envFallback("ELIZA_RELEASE_URL", "ELIZA_RELEASE_URL") ||
+      envFallback("TOKAGENT_RELEASE_URL", "TOKAGENT_RELEASE_URL") ||
       fileConfig.releaseUrl ||
       DEFAULT_CONFIG.releaseUrl,
     configExportFileName:
       fileConfig.configExportFileName ??
       `${appName.toLowerCase().replace(/\s+/g, "-")}-config.json`,
     namespace:
-      envFallback("ELIZA_NAMESPACE", "ELIZA_NAMESPACE") ||
+      envFallback("TOKAGENT_NAMESPACE", "TOKAGENT_NAMESPACE") ||
       fileConfig.namespace ||
       DEFAULT_CONFIG.namespace,
     configDirName: fileConfig.configDirName ?? appName,

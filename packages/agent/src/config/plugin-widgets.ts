@@ -2,7 +2,7 @@
  * Server-side plugin widget declarations.
  *
  * Maps plugin IDs to their widget metadata. This is the authoritative source
- * for widget declarations until upstream elizaOS adds a `widgets` field to the
+ * for widget declarations until upstream tokagentOS adds a `widgets` field to the
  * Plugin type. When that happens, this map becomes a fallback for plugins
  * that haven't adopted the new field yet.
  *

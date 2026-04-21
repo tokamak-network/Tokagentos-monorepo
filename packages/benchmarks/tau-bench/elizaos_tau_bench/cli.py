@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Tau-bench Benchmark CLI for ElizaOS.
+Tau-bench Benchmark CLI for TokagentOS.
 
 Usage:
-    python -m elizaos_tau_bench.cli --all
-    python -m elizaos_tau_bench.cli --domain retail
-    python -m elizaos_tau_bench.cli --domain airline
-    python -m elizaos_tau_bench.cli --trials 8 --output ./results
+    python -m tokagentos_tau_bench.cli --all
+    python -m tokagentos_tau_bench.cli --domain retail
+    python -m tokagentos_tau_bench.cli --domain airline
+    python -m tokagentos_tau_bench.cli --trials 8 --output ./results
 """
 
 import argparse
@@ -18,8 +18,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from elizaos_tau_bench.types import TauBenchConfig, TauDomain, TaskDifficulty
-from elizaos_tau_bench.runner import TauBenchRunner
+from tokagentos_tau_bench.types import TauBenchConfig, TauDomain, TaskDifficulty
+from tokagentos_tau_bench.runner import TauBenchRunner
 
 # Configure logging
 logging.basicConfig(
@@ -60,27 +60,27 @@ def _maybe_load_dotenv() -> None:
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="ElizaOS Tau-bench Benchmark CLI",
+        description="TokagentOS Tau-bench Benchmark CLI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
     # Run all benchmarks (retail + airline)
-    python -m elizaos_tau_bench.cli --all
+    python -m tokagentos_tau_bench.cli --all
 
     # Run only retail domain
-    python -m elizaos_tau_bench.cli --domain retail
+    python -m tokagentos_tau_bench.cli --domain retail
 
     # Run with multiple trials for Pass^k evaluation
-    python -m elizaos_tau_bench.cli --all --trials 8
+    python -m tokagentos_tau_bench.cli --all --trials 8
 
     # Custom output directory
-    python -m elizaos_tau_bench.cli --all --output ./benchmark_results
+    python -m tokagentos_tau_bench.cli --all --output ./benchmark_results
 
     # Verbose mode with max 10 tasks
-    python -m elizaos_tau_bench.cli --all --verbose --max-tasks 10
+    python -m tokagentos_tau_bench.cli --all --verbose --max-tasks 10
 
     # Use sample tasks (no external data required)
-    python -m elizaos_tau_bench.cli --sample
+    python -m tokagentos_tau_bench.cli --sample
         """,
     )
 
@@ -169,7 +169,7 @@ Examples:
         help="Use LLM to judge response quality",
     )
     
-    # ElizaOS integration options
+    # TokagentOS integration options
     parser.add_argument(
         "--mock",
         action="store_true",
@@ -178,7 +178,7 @@ Examples:
     parser.add_argument(
         "--real-llm",
         action="store_true",
-        help="(deprecated, now the default) Use real LLM via ElizaOS",
+        help="(deprecated, now the default) Use real LLM via TokagentOS",
     )
     parser.add_argument(
         "--temperature",
@@ -189,16 +189,16 @@ Examples:
     parser.add_argument(
         "--model-provider",
         type=str,
-        choices=["openai", "groq", "openrouter", "anthropic", "google", "ollama", "eliza"],
+        choices=["openai", "groq", "openrouter", "anthropic", "google", "ollama", "tokagent"],
         default=None,
-        help="Force specific model provider (auto-detected if not set; 'eliza' uses TS agent)",
+        help="Force specific model provider (auto-detected if not set; 'tokagent' uses TS agent)",
     )
 
     # Trajectory logging (for training/benchmarks)
     parser.add_argument(
         "--trajectories",
         action="store_true",
-        help="Enable trajectory logging + export (requires elizaos-plugin-trajectory-logger)",
+        help="Enable trajectory logging + export (requires tokagentos-plugin-trajectory-logger)",
     )
     parser.add_argument(
         "--no-trajectories",
@@ -258,7 +258,7 @@ def create_config(args: argparse.Namespace) -> TauBenchConfig:
         enable_memory_tracking=not args.no_memory,
         use_llm_judge=args.llm_judge,
         verbose=args.verbose,
-        # ElizaOS integration
+        # TokagentOS integration
         use_mock=bool(args.mock),
         temperature=args.temperature,
         model_provider=args.model_provider,
@@ -271,7 +271,7 @@ def print_banner() -> None:
     """Print the CLI banner."""
     print("""
 ╔═══════════════════════════════════════════════════════════════════════╗
-║                  ElizaOS Tau-bench Benchmark Runner                   ║
+║                  TokagentOS Tau-bench Benchmark Runner                   ║
 ║           Tool-Agent-User Interaction in Real-World Domains           ║
 ╚═══════════════════════════════════════════════════════════════════════╝
 """)
@@ -289,7 +289,7 @@ def print_config(config: TauBenchConfig) -> None:
     print(f"   Timeout: {config.timeout_ms}ms")
     print(f"   Memory Tracking: {'✅' if config.enable_memory_tracking else '❌'}")
     print(f"   LLM Judge: {'✅' if config.use_llm_judge else '❌'}")
-    print(f"   Mode: {'🤖 Real LLM (ElizaOS)' if not config.use_mock else '🧪 Mock Mode'}")
+    print(f"   Mode: {'🤖 Real LLM (TokagentOS)' if not config.use_mock else '🧪 Mock Mode'}")
     if not config.use_mock:
         print(f"   Temperature: {config.temperature}")
         print(f"   Provider: {config.model_provider or 'auto-detect'}")

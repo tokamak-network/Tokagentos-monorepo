@@ -3,9 +3,9 @@
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from elizaos_terminal_bench.agent import TerminalAgent, SYSTEM_PROMPT
-from elizaos_terminal_bench.environment import MockTerminalEnvironment
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.agent import TerminalAgent, SYSTEM_PROMPT
+from tokagentos_terminal_bench.environment import MockTerminalEnvironment
+from tokagentos_terminal_bench.types import (
     TaskCategory,
     TaskDifficulty,
     TerminalTask,
@@ -179,7 +179,7 @@ PATH: /workspace"""
         """Test parsing multiple ACTION blocks in one response."""
         from datetime import datetime
 
-        from elizaos_terminal_bench.types import TerminalCommand
+        from tokagentos_terminal_bench.types import TerminalCommand
 
         mock_env = MagicMock()
         mock_env.execute = AsyncMock(

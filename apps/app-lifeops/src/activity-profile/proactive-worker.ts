@@ -1,14 +1,14 @@
-import type { IAgentRuntime, Task, TaskMetadata, UUID } from "@elizaos/core";
+import type { IAgentRuntime, Task, TaskMetadata, UUID } from "@tokagentos/core";
 import {
   logger,
   ModelType,
   parseJSONObjectFromText,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   loadOwnerContactsConfig,
   resolveOwnerContactWithFallback,
-} from "@elizaos/agent/config";
+} from "@tokagentos/agent/config";
 import { loadLifeOpsAppState } from "../lifeops/app-state.js";
 import { ensureRuntimeAgentRecord } from "../lifeops/runtime.js";
 import { resolveDefaultTimeZone } from "../lifeops/defaults.js";
@@ -19,7 +19,7 @@ import {
   type BackgroundJobContext,
 } from "../lifeops/background-planner.js";
 import { enqueueIfSensitive } from "../lifeops/background-planner-dispatch.js";
-import { getAgentEventService } from "@elizaos/agent/runtime";
+import { getAgentEventService } from "@tokagentos/agent/runtime";
 import { resolveEffectiveDayKey } from "./analyzer.js";
 import {
   type CalendarEventSlim,

@@ -1,5 +1,5 @@
 /**
- * elizaOS GCP Cloud Run Test Client
+ * tokagentOS GCP Cloud Run Test Client
  *
  * Interactive CLI client for testing the Cloud Run worker.
  *
@@ -9,7 +9,7 @@
  *
  * Examples:
  *   bun run test-client.ts
- *   bun run test-client.ts --url https://eliza-worker-abc123.run.app
+ *   bun run test-client.ts --url https://tokagent-worker-abc123.run.app
  */
 
 import * as readline from "node:readline";
@@ -45,7 +45,7 @@ function parseArgs(): { url: string } {
       i++;
     } else if (args[i] === "--help" || args[i] === "-h") {
       console.log(`
-elizaOS GCP Cloud Run Test Client
+tokagentOS GCP Cloud Run Test Client
 
 Usage:
   bun run test-client.ts [options]
@@ -59,11 +59,11 @@ Examples:
   bun run test-client.ts
 
   # Connect to deployed Cloud Run service
-  bun run test-client.ts --url https://eliza-worker-abc123.run.app
+  bun run test-client.ts --url https://tokagent-worker-abc123.run.app
 
 Environment:
   You can also set the URL via environment variable:
-  export ELIZA_WORKER_URL=https://your-service.run.app
+  export TOKAGENT_WORKER_URL=https://your-service.run.app
   bun run test-client.ts
 `);
       process.exit(0);
@@ -71,8 +71,8 @@ Environment:
   }
 
   // Check environment variable as fallback
-  if (url === "http://localhost:8080" && process.env.ELIZA_WORKER_URL) {
-    url = process.env.ELIZA_WORKER_URL;
+  if (url === "http://localhost:8080" && process.env.TOKAGENT_WORKER_URL) {
+    url = process.env.TOKAGENT_WORKER_URL;
   }
 
   return { url };
@@ -127,7 +127,7 @@ async function sendMessage(
 async function main(): Promise<void> {
   const { url } = parseArgs();
 
-  console.log("\n🚀 elizaOS GCP Cloud Run Test Client\n");
+  console.log("\n🚀 tokagentOS GCP Cloud Run Test Client\n");
   console.log(`📡 Connecting to: ${url}\n`);
 
   // Check health status
@@ -155,7 +155,7 @@ async function main(): Promise<void> {
     console.error("    cargo run");
     console.error("\n  Or deploy to Cloud Run:");
     console.error(
-      "    gcloud run deploy eliza-worker --source . --region us-central1",
+      "    gcloud run deploy tokagent-worker --source . --region us-central1",
     );
     console.error("");
     process.exit(1);

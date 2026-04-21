@@ -4,9 +4,9 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
-import { hasAdminAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
+import { hasAdminAccess } from "@tokagentos/agent/security";
 import { InboxTriageRepository } from "../inbox/repository.js";
 import type { TriageEntry } from "../inbox/types.js";
 

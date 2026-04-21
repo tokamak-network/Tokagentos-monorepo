@@ -1,10 +1,10 @@
-# On-Chain LLM Integration Plan for elizaOS ICP
+# On-Chain LLM Integration Plan for tokagentOS ICP
 
 ## Overview
 
-This document outlines the plan to support three inference modes in the elizaOS ICP canister:
+This document outlines the plan to support three inference modes in the tokagentOS ICP canister:
 
-1. **ELIZA Classic** - Pattern-based Rogerian psychotherapist (no external deps)
+1. **TOKAGENT Classic** - Pattern-based Rogerian psychotherapist (no external deps)
 2. **OpenAI** - HTTP outcalls to api.openai.com (current implementation)
 3. **On-Chain LLM** - Inter-canister calls to llama_cpp_canister (fully decentralized)
 
@@ -47,11 +47,11 @@ The most mature on-chain LLM solution for ICP:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    elizaOS ICP Canister                         │
+│                    tokagentOS ICP Canister                         │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │                   InferenceRouter                          │  │
 │  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────┐  │  │
-│  │  │ELIZA Classic│ │  OpenAI     │ │  On-Chain LLM       │  │  │
+│  │  │TOKAGENT Classic│ │  OpenAI     │ │  On-Chain LLM       │  │  │
 │  │  │ (Built-in)  │ │ (HTTP Out)  │ │ (Inter-canister)    │  │  │
 │  │  └─────────────┘ └─────────────┘ └─────────────────────┘  │  │
 │  └───────────────────────────────────────────────────────────┘  │
@@ -80,7 +80,7 @@ Add to `types.rs`:
 #[derive(Debug, Clone, CandidType, Serialize, Deserialize, Default)]
 pub enum InferenceMode {
     #[default]
-    ElizaClassic,    // Pattern-based, instant, free
+    TokagentClassic,    // Pattern-based, instant, free
     OpenAI,          // HTTP outcalls, fast, costs cycles + API key
     OnChainLLM,      // Inter-canister, slow, costs cycles only
 }
@@ -97,7 +97,7 @@ pub struct OnChainLLMConfig {
 
 ### Phase 2: Create llama_cpp_canister Interface
 
-Create `src/eliza_icp_backend/src/onchain_llm.rs`:
+Create `src/tokagent_icp_backend/src/onchain_llm.rs`:
 ```rust
 use candid::{CandidType, Principal};
 use ic_cdk::api::call::call;
@@ -156,8 +156,8 @@ async fn generate_response_with_context(
             // New on-chain LLM implementation
             try_onchain_llm_response(character, user_message, recent_memories, agent_id).await
         }
-        InferenceMode::ElizaClassic => {
-            // Existing ELIZA Classic fallback
+        InferenceMode::TokagentClassic => {
+            // Existing TOKAGENT Classic fallback
             generate_pattern_response(user_message)
         }
     }
@@ -215,7 +215,7 @@ get_inference_status: () -> (record {
 
 | Mode | Cycles/Message | Latency | Decentralization |
 |------|---------------|---------|------------------|
-| ELIZA Classic | ~10K | <100ms | Full |
+| TOKAGENT Classic | ~10K | <100ms | Full |
 | OpenAI | ~500M | 1-5s | Partial (HTTP out) |
 | On-Chain LLM | ~2-5B | 5-30s | Full |
 
@@ -224,7 +224,7 @@ get_inference_status: () -> (record {
 Update `app.js` to show inference mode:
 ```javascript
 const modelBadge = {
-    'ElizaClassic': '(Classic)',
+    'TokagentClassic': '(Classic)',
     'OpenAI': '(GPT-4o)',
     'OnChainLLM': '(On-Chain Qwen)'
 }[inferenceMode];

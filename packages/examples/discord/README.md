@@ -1,6 +1,6 @@
 # Discord Agent Examples
 
-Full-featured Discord AI agents using elizaOS, available in **TypeScript**, **Python**, and **Rust**.
+Full-featured Discord AI agents using tokagentOS, available in **TypeScript**, **Python**, and **Rust**.
 
 ## Features
 

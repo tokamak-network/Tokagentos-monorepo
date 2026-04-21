@@ -1,6 +1,6 @@
-# elizaOS Rust Examples
+# tokagentOS Rust Examples
 
-This directory contains practical examples for the elizaOS Rust crate in both native
+This directory contains practical examples for the tokagentOS Rust crate in both native
 and WASM environments.
 
 ## Native Examples

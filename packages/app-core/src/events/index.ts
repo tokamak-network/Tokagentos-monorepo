@@ -1,5 +1,5 @@
 /**
- * Typed constants for eliza:* custom events dispatched across the app.
+ * Typed constants for tokagent:* custom events dispatched across the app.
  *
  * Using these constants instead of raw strings prevents typo-driven drift
  * between producers (main.tsx, bridge, components) and consumers (AppContext,
@@ -7,34 +7,34 @@
  */
 
 // ── App lifecycle ────────────────────────────────────────────────────────
-export const COMMAND_PALETTE_EVENT = "eliza:command-palette" as const;
-export const EMOTE_PICKER_EVENT = "eliza:emote-picker" as const;
-export const STOP_EMOTE_EVENT = "eliza:stop-emote" as const;
+export const COMMAND_PALETTE_EVENT = "tokagent:command-palette" as const;
+export const EMOTE_PICKER_EVENT = "tokagent:emote-picker" as const;
+export const STOP_EMOTE_EVENT = "tokagent:stop-emote" as const;
 
 // ── Agent / bridge ───────────────────────────────────────────────────────
-export const AGENT_READY_EVENT = "eliza:agent-ready" as const;
-export const BRIDGE_READY_EVENT = "eliza:bridge-ready" as const;
-export const SHARE_TARGET_EVENT = "eliza:share-target" as const;
-export const TRAY_ACTION_EVENT = "eliza:tray-action" as const;
+export const AGENT_READY_EVENT = "tokagent:agent-ready" as const;
+export const BRIDGE_READY_EVENT = "tokagent:bridge-ready" as const;
+export const SHARE_TARGET_EVENT = "tokagent:share-target" as const;
+export const TRAY_ACTION_EVENT = "tokagent:tray-action" as const;
 
 // ── App state ────────────────────────────────────────────────────────────
-export const APP_RESUME_EVENT = "eliza:app-resume" as const;
-export const APP_PAUSE_EVENT = "eliza:app-pause" as const;
-export const CONNECT_EVENT = "eliza:connect" as const;
+export const APP_RESUME_EVENT = "tokagent:app-resume" as const;
+export const APP_PAUSE_EVENT = "tokagent:app-pause" as const;
+export const CONNECT_EVENT = "tokagent:connect" as const;
 
 // ── Voice / config ───────────────────────────────────────────────────────
-export const VOICE_CONFIG_UPDATED_EVENT = "eliza:voice-config-updated" as const;
-export const CHAT_AVATAR_VOICE_EVENT = "eliza:chat-avatar-voice" as const;
-export const APP_EMOTE_EVENT = "eliza:app-emote" as const;
+export const VOICE_CONFIG_UPDATED_EVENT = "tokagent:voice-config-updated" as const;
+export const CHAT_AVATAR_VOICE_EVENT = "tokagent:chat-avatar-voice" as const;
+export const APP_EMOTE_EVENT = "tokagent:app-emote" as const;
 /** After `/api/cloud/status` — chat voice reloads config so cloud-backed TTS mode matches the server snapshot. */
-export const ELIZA_CLOUD_STATUS_UPDATED_EVENT =
-  "eliza:cloud-status-updated" as const;
-export interface ElizaCloudStatusUpdatedDetail {
+export const TOKAGENT_CLOUD_STATUS_UPDATED_EVENT =
+  "tokagent:cloud-status-updated" as const;
+export interface TokagentCloudStatusUpdatedDetail {
   /** Same as cloud status `connected` (auth or API key on server). */
   connected: boolean;
-  /** True only when Eliza Cloud inference is the active connection. */
+  /** True only when Tokagent Cloud inference is the active connection. */
   enabled: boolean;
-  /** Server reports a persisted Eliza Cloud API key. */
+  /** Server reports a persisted Tokagent Cloud API key. */
   hasPersistedApiKey: boolean;
   /** True only when cloud voice/chat routing should actively use the proxy. */
   cloudVoiceProxyAvailable: boolean;
@@ -42,13 +42,13 @@ export interface ElizaCloudStatusUpdatedDetail {
 
 // ── Avatar / VRM ─────────────────────────────────────────────────────────
 export const VRM_TELEPORT_COMPLETE_EVENT =
-  "eliza:vrm-teleport-complete" as const;
+  "tokagent:vrm-teleport-complete" as const;
 /** IdentityStep dispatches this after queuing a post-teleport voice preview; OnboardingWizard echoes {@link VRM_TELEPORT_COMPLETE_EVENT} when VRM is off. */
 export const ONBOARDING_VOICE_PREVIEW_AWAIT_TELEPORT_EVENT =
-  "eliza:onboarding-voice-preview-await-teleport" as const;
+  "tokagent:onboarding-voice-preview-await-teleport" as const;
 
 // ── Sidebar sync ─────────────────────────────────────────────────────────
-export const SELF_STATUS_SYNC_EVENT = "eliza:self-status-refresh" as const;
+export const SELF_STATUS_SYNC_EVENT = "tokagent:self-status-refresh" as const;
 
 export interface AppEmoteEventDetail {
   emoteId: string;
@@ -63,7 +63,7 @@ export interface ChatAvatarVoiceEventDetail {
   isSpeaking: boolean;
 }
 
-export type ElizaDocumentEventName =
+export type TokagentDocumentEventName =
   | typeof COMMAND_PALETTE_EVENT
   | typeof EMOTE_PICKER_EVENT
   | typeof STOP_EMOTE_EVENT
@@ -75,22 +75,22 @@ export type ElizaDocumentEventName =
   | typeof APP_PAUSE_EVENT
   | typeof CONNECT_EVENT;
 
-export type ElizaWindowEventName =
+export type TokagentWindowEventName =
   | typeof VOICE_CONFIG_UPDATED_EVENT
   | typeof CHAT_AVATAR_VOICE_EVENT
   | typeof APP_EMOTE_EVENT
-  | typeof ELIZA_CLOUD_STATUS_UPDATED_EVENT
+  | typeof TOKAGENT_CLOUD_STATUS_UPDATED_EVENT
   | typeof VRM_TELEPORT_COMPLETE_EVENT
   | typeof ONBOARDING_VOICE_PREVIEW_AWAIT_TELEPORT_EVENT
   | typeof SELF_STATUS_SYNC_EVENT;
 
-export type ElizaEventName = ElizaDocumentEventName | ElizaWindowEventName;
+export type TokagentEventName = TokagentDocumentEventName | TokagentWindowEventName;
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
 /** Dispatch a typed custom event on `document`. */
 export function dispatchAppEvent(
-  name: ElizaDocumentEventName,
+  name: TokagentDocumentEventName,
   detail?: unknown,
 ): void {
   document.dispatchEvent(new CustomEvent(name, { detail }));
@@ -98,7 +98,7 @@ export function dispatchAppEvent(
 
 /** Dispatch a typed custom event on `window`. */
 export function dispatchWindowEvent(
-  name: ElizaWindowEventName,
+  name: TokagentWindowEventName,
   detail?: unknown,
 ): void {
   if (typeof window === "undefined") return;
@@ -110,13 +110,13 @@ export function dispatchAppEmoteEvent(detail: AppEmoteEventDetail): void {
   dispatchWindowEvent(APP_EMOTE_EVENT, detail);
 }
 
-export function dispatchElizaCloudStatusUpdated(
-  detail: ElizaCloudStatusUpdatedDetail,
+export function dispatchTokagentCloudStatusUpdated(
+  detail: TokagentCloudStatusUpdatedDetail,
 ): void {
-  dispatchWindowEvent(ELIZA_CLOUD_STATUS_UPDATED_EVENT, detail);
+  dispatchWindowEvent(TOKAGENT_CLOUD_STATUS_UPDATED_EVENT, detail);
 }
 
 // ── Generic app aliases (preferred) ──────────────────────────────────────
-export type AppDocumentEventName = ElizaDocumentEventName;
-export type AppWindowEventName = ElizaWindowEventName;
-export type AppEventName = ElizaEventName;
+export type AppDocumentEventName = TokagentDocumentEventName;
+export type AppWindowEventName = TokagentWindowEventName;
+export type AppEventName = TokagentEventName;

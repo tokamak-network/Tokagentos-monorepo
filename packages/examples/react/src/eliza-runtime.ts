@@ -1,9 +1,9 @@
 /**
- * elizaOS Runtime Service for React
+ * tokagentOS Runtime Service for React
  *
  * This module provides a simplified AgentRuntime instance configured for
  * browser use with PGlite database (in-memory WASM Postgres) and classic
- * ELIZA pattern matching.
+ * TOKAGENT pattern matching.
  *
  * PGlite runs Postgres entirely in the browser via WASM - no server needed!
  */
@@ -18,11 +18,11 @@ import {
   type Memory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
-  elizaClassicPlugin,
-  getElizaGreeting,
-} from "@elizaos/plugin-eliza-classic";
+  tokagentClassicPlugin,
+  getTokagentGreeting,
+} from "@elizaos/plugin-tokagent-classic";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { v4 as uuidv4 } from "uuid";
 import { createBrowserPGlite } from "./pglite-browser";
@@ -31,7 +31,7 @@ import { createBrowserPGlite } from "./pglite-browser";
 // Types
 // ============================================================================
 
-export interface ElizaRuntimeState {
+export interface TokagentRuntimeState {
   isInitialized: boolean;
   isInitializing: boolean;
   error: Error | null;
@@ -48,10 +48,10 @@ export interface ChatMessage {
 // Character Configuration
 // ============================================================================
 
-const elizaCharacter: Character = createCharacter({
-  name: "ELIZA",
+const tokagentCharacter: Character = createCharacter({
+  name: "TOKAGENT",
   bio: "A Rogerian psychotherapist simulation based on Joseph Weizenbaum's 1966 program. I use pattern matching to engage in therapeutic conversations.",
-  system: `You are ELIZA, a Rogerian psychotherapist simulation. Your role is to:
+  system: `You are TOKAGENT, a Rogerian psychotherapist simulation. Your role is to:
 - Listen empathetically to the user
 - Reflect their statements back to them
 - Ask open-ended questions to encourage self-exploration
@@ -96,7 +96,7 @@ async function preinitializePGlite(): Promise<void> {
     return;
   }
 
-  console.log("[elizaOS] Pre-initializing PGlite for browser...");
+  console.log("[tokagentOS] Pre-initializing PGlite for browser...");
 
   // Create PGlite with our browser-friendly loader
   const pglite = await createBrowserPGlite();
@@ -111,7 +111,7 @@ async function preinitializePGlite(): Promise<void> {
     },
   };
 
-  console.log("[elizaOS] PGlite pre-initialized successfully");
+  console.log("[tokagentOS] PGlite pre-initialized successfully");
 }
 
 // ============================================================================
@@ -123,8 +123,8 @@ let initializationPromise: Promise<AgentRuntime> | null = null;
 
 // Session identifiers
 const userId = uuidv4() as UUID;
-const roomId = stringToUuid("eliza-chat-room");
-const worldId = stringToUuid("eliza-chat-world");
+const roomId = stringToUuid("tokagent-chat-room");
+const worldId = stringToUuid("tokagent-chat-world");
 
 /**
  * Get or create the AgentRuntime instance.
@@ -149,19 +149,19 @@ export async function getRuntime(): Promise<AgentRuntime> {
 }
 
 /**
- * Initialize a new AgentRuntime with PGlite and ELIZA plugins.
+ * Initialize a new AgentRuntime with PGlite and TOKAGENT plugins.
  */
 async function initializeRuntime(): Promise<AgentRuntime> {
-  console.log("[elizaOS] Initializing AgentRuntime...");
+  console.log("[tokagentOS] Initializing AgentRuntime...");
 
   // Pre-initialize PGlite before the SQL plugin runs
   await preinitializePGlite();
 
   const runtime = new AgentRuntime({
-    character: elizaCharacter,
+    character: tokagentCharacter,
     plugins: [
       sqlPlugin, // PGlite database for browser (uses our pre-initialized instance)
-      elizaClassicPlugin, // Classic ELIZA pattern matching
+      tokagentClassicPlugin, // Classic TOKAGENT pattern matching
     ],
   });
 
@@ -174,23 +174,23 @@ async function initializeRuntime(): Promise<AgentRuntime> {
     worldId,
     userName: "User",
     source: "react-client",
-    channelId: "eliza-chat",
+    channelId: "tokagent-chat",
     type: ChannelType.DM,
   });
 
-  console.log("[elizaOS] AgentRuntime initialized successfully");
+  console.log("[tokagentOS] AgentRuntime initialized successfully");
   return runtime;
 }
 
 /**
- * Send a message to ELIZA and get a response.
+ * Send a message to TOKAGENT and get a response.
  *
  * This uses the AgentRuntime's model system directly, which routes
- * to our classic ELIZA pattern matching plugin.
+ * to our classic TOKAGENT pattern matching plugin.
  *
  * @param text - The user's message
  * @param onChunk - Optional callback for streaming response chunks
- * @returns The complete ELIZA response
+ * @returns The complete TOKAGENT response
  */
 export async function sendMessage(
   text: string,
@@ -219,7 +219,7 @@ export async function sendMessage(
 
   const streamOptions = useStreaming
     ? {
-        $typeName: "eliza.v1.MessageProcessingOptions",
+        $typeName: "tokagent.v1.MessageProcessingOptions",
         onStreamChunk: async (chunk: string): Promise<void> => {
           responseText += chunk;
           onChunk?.(chunk);
@@ -248,10 +248,10 @@ export async function sendMessage(
 }
 
 /**
- * Get the initial ELIZA greeting message.
+ * Get the initial TOKAGENT greeting message.
  */
 export function getGreeting(): string {
-  return getElizaGreeting();
+  return getTokagentGreeting();
 }
 
 /**

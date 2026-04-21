@@ -11,7 +11,7 @@ plugin_root = Path(__file__).resolve().parents[3] / "plugins" / "plugin-experien
 sys.path.insert(0, str(benchmark_root))
 sys.path.insert(0, str(plugin_root))
 
-from elizaos_experience_bench.generator import ExperienceGenerator
+from tokagentos_experience_bench.generator import ExperienceGenerator
 
 
 @pytest.fixture

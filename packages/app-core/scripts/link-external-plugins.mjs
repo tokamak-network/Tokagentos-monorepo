@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Link standalone elizaOS plugin source checkouts into Eliza's
+ * Link standalone tokagentOS plugin source checkouts into Tokagent's
  * node_modules tree as local workspace links — without adding them to
  * any package.json as a dependency.
  *
@@ -47,11 +47,11 @@ const DEFAULT_REPO_ROOT = resolveRepoRootFromImportMeta(import.meta.url);
  */
 export const EXTERNAL_PLUGIN_SOURCES = [
   // plugin-imessage — two-way iMessage connector. Prefer the submodule
-  // at eliza/plugins/plugin-imessage; fall back to a sibling source checkout
+  // at tokagent/plugins/plugin-imessage; fall back to a sibling source checkout
   // at ~/src/plugin-imessage for independent PR development.
   path.resolve(
     DEFAULT_REPO_ROOT,
-    "eliza",
+    "tokagent",
     "plugins",
     "plugin-imessage",
     "typescript",
@@ -60,7 +60,7 @@ export const EXTERNAL_PLUGIN_SOURCES = [
 ];
 
 /**
- * The three node_modules locations where Eliza expects `@elizaos/*`
+ * The three node_modules locations where Tokagent expects `@elizaos/*`
  * packages to resolve from — matches the list used by
  * setup-upstreams.mjs so dynamic imports work from every entry
  * point (root CLI, apps/app Vite shell, apps/home dashboard).
@@ -134,10 +134,10 @@ export function linkExternalPlugins(
 
     // Bun's ESM resolver traverses the **real** path of a symlinked
     // package, not the symlink location, when walking up to find
-    // dependencies. Workspace-linked plugins live outside Eliza's
-    // tree, so `import "@elizaos/core"` from their dist/ walks up
+    // dependencies. Workspace-linked plugins live outside Tokagent's
+    // tree, so `import "@tokagentos/core"` from their dist/ walks up
     // through ~/src/…/typescript/node_modules and finds nothing.
-    // `patch-deps.mjs` earlier removed the nested @elizaos/core from
+    // `patch-deps.mjs` earlier removed the nested @tokagentos/core from
     // workspace-linked plugins to avoid version skew; we re-create it
     // here as a symlink back to the repo root core. This way the
     // plugin's resolver finds a single canonical core regardless of
@@ -161,7 +161,7 @@ export function linkExternalPlugins(
         symlinkSync(rootCore, pluginCoreLink, "dir");
       } catch (err) {
         console.warn(
-          `[link-external-plugins] failed to link @elizaos/core into ${sourceDir}: ${err instanceof Error ? err.message : String(err)}`,
+          `[link-external-plugins] failed to link @tokagentos/core into ${sourceDir}: ${err instanceof Error ? err.message : String(err)}`,
         );
       }
     }

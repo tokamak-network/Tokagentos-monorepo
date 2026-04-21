@@ -8,7 +8,7 @@
 
 import { describe, expect, it } from "vitest";
 import { vincentPlugin } from "./plugin";
-import { matchPluginRoutePath } from "@elizaos/agent/api/runtime-plugin-routes";
+import { matchPluginRoutePath } from "@tokagentos/agent/api/runtime-plugin-routes";
 
 describe("Vincent plugin route dispatch matching", () => {
   const routes = vincentPlugin.routes!;

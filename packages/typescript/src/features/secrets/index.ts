@@ -1,7 +1,7 @@
 /**
  * Secrets Manager — Core Capability
  *
- * Multi-level secret management for elizaOS with:
+ * Multi-level secret management for tokagentOS with:
  * - Conversational onboarding (Discord, Telegram)
  * - Web form-based secret collection
  * - Encryption at rest (AES-256-GCM)

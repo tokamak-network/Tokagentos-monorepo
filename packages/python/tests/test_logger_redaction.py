@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import logging
 
-from elizaos.logger import _redaction_processor
+from tokagentos.logger import _redaction_processor
 
 
 def test_redaction_processor_redacts_common_secret_keys(monkeypatch) -> None:
-    monkeypatch.setenv("ELIZA_LOG_REDACT", "true")
-    monkeypatch.delenv("ELIZA_LOG_REDACT_KEYS", raising=False)
+    monkeypatch.setenv("TOKAGENT_LOG_REDACT", "true")
+    monkeypatch.delenv("TOKAGENT_LOG_REDACT_KEYS", raising=False)
 
     event: dict[str, object] = {
         "message": "hello",
@@ -26,7 +26,7 @@ def test_redaction_processor_redacts_common_secret_keys(monkeypatch) -> None:
 
 
 def test_redaction_processor_can_be_disabled(monkeypatch) -> None:
-    monkeypatch.setenv("ELIZA_LOG_REDACT", "false")
+    monkeypatch.setenv("TOKAGENT_LOG_REDACT", "false")
 
     event: dict[str, object] = {"token": "abc"}
     out = _redaction_processor(logging.getLogger("test"), "info", event)
@@ -34,8 +34,8 @@ def test_redaction_processor_can_be_disabled(monkeypatch) -> None:
 
 
 def test_redaction_processor_supports_custom_keys(monkeypatch) -> None:
-    monkeypatch.setenv("ELIZA_LOG_REDACT", "true")
-    monkeypatch.setenv("ELIZA_LOG_REDACT_KEYS", "email, phone ")
+    monkeypatch.setenv("TOKAGENT_LOG_REDACT", "true")
+    monkeypatch.setenv("TOKAGENT_LOG_REDACT_KEYS", "email, phone ")
 
     event: dict[str, object] = {"email": "user@example.com", "phone": "555-5555"}
     out = _redaction_processor(logging.getLogger("test"), "info", event)

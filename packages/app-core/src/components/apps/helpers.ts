@@ -1,9 +1,9 @@
 import {
-  getElizaCuratedAppCatalogOrder,
-  isElizaCuratedAppName,
-  normalizeElizaCuratedAppName,
+  getTokagentCuratedAppCatalogOrder,
+  isTokagentCuratedAppName,
+  normalizeTokagentCuratedAppName,
   packageNameToAppRouteSlug,
-} from "@elizaos/shared/contracts/apps";
+} from "@tokagentos/shared/contracts/apps";
 import type { RegistryAppInfo } from "../../api";
 import {
   getInternalToolAppCatalogOrder,
@@ -77,7 +77,7 @@ export function isCuratedGameApp(
   app: Pick<RegistryAppInfo, "category" | "name">,
 ): boolean {
   void app.category;
-  return isElizaCuratedAppName(app.name);
+  return isTokagentCuratedAppName(app.name);
 }
 
 export function shouldShowAppInAppsView(
@@ -110,14 +110,14 @@ export function filterAppsForCatalog(
     }
 
     const orderDiff =
-      getElizaCuratedAppCatalogOrder(left.name) -
-      getElizaCuratedAppCatalogOrder(right.name);
+      getTokagentCuratedAppCatalogOrder(left.name) -
+      getTokagentCuratedAppCatalogOrder(right.name);
     if (orderDiff !== 0) {
       return orderDiff;
     }
 
-    const leftCanonicalName = normalizeElizaCuratedAppName(left.name);
-    const rightCanonicalName = normalizeElizaCuratedAppName(right.name);
+    const leftCanonicalName = normalizeTokagentCuratedAppName(left.name);
+    const rightCanonicalName = normalizeTokagentCuratedAppName(right.name);
     const leftCanonicalPenalty = left.name === leftCanonicalName ? 0 : 1;
     const rightCanonicalPenalty = right.name === rightCanonicalName ? 0 : 1;
     if (leftCanonicalPenalty !== rightCanonicalPenalty) {
@@ -147,7 +147,7 @@ export function filterAppsForCatalog(
     }
     const canonicalName = isInternalToolApp(app.name)
       ? app.name
-      : (normalizeElizaCuratedAppName(app.name) ?? app.name);
+      : (normalizeTokagentCuratedAppName(app.name) ?? app.name);
     if (seenCanonicalNames.has(canonicalName)) {
       return false;
     }
@@ -183,7 +183,7 @@ export function getAppCatalogSectionKey(
     return "developerUtilities";
   }
 
-  const canonicalName = normalizeElizaCuratedAppName(app.name) ?? app.name;
+  const canonicalName = normalizeTokagentCuratedAppName(app.name) ?? app.name;
   switch (canonicalName) {
     case "@elizaos/app-companion":
       return "games";

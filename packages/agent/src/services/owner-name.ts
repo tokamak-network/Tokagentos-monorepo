@@ -1,4 +1,4 @@
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
 
 export const OWNER_NAME_MAX_LENGTH = 60;
 
@@ -19,7 +19,7 @@ function normalizeOwnerName(value: unknown): string | null {
 
 export async function fetchConfiguredOwnerName(): Promise<string | null> {
   try {
-    const config = loadElizaConfig() as Record<string, unknown>;
+    const config = loadTokagentConfig() as Record<string, unknown>;
     const ui = isRecord(config.ui) ? config.ui : null;
     return normalizeOwnerName(ui?.ownerName);
   } catch {
@@ -36,9 +36,9 @@ export async function persistConfiguredOwnerName(
   }
 
   try {
-    const config = loadElizaConfig() as Record<string, unknown>;
+    const config = loadTokagentConfig() as Record<string, unknown>;
     const ui = isRecord(config.ui) ? config.ui : {};
-    saveElizaConfig({
+    saveTokagentConfig({
       ...config,
       ui: {
         ...ui,

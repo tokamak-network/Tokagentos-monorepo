@@ -1,10 +1,10 @@
 /**
- * Eliza Cloud login flow — reuses the CLI auth session pattern:
+ * Tokagent Cloud login flow — reuses the CLI auth session pattern:
  * create session, open browser, poll until authenticated, return API key.
  */
 
 import crypto from "node:crypto";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { normalizeCloudSiteUrl } from "./base-url.js";
 import { validateCloudBaseUrl } from "./validate-url.js";
 

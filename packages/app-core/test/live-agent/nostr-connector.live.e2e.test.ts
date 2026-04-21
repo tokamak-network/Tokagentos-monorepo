@@ -15,9 +15,9 @@
  * Requirements for live tests:
  *   NOSTR_PRIVATE_KEY     — Nostr private key (nsec bech32 or 64-char hex)
  *   NOSTR_RELAYS          — Comma-separated relay URLs (default: wss://relay.damus.io)
- *   ELIZA_LIVE_TEST=1    — Enable live tests
+ *   TOKAGENT_LIVE_TEST=1    — Enable live tests
  *
- * Or configure in ~/.eliza/eliza.json:
+ * Or configure in ~/.tokagent/tokagent.json:
  *   { "connectors": { "nostr": { "privateKey": "nsec1...", "relays": "wss://..." } } }
  *
  * NO MOCKS for live tests — all tests use real Nostr relays.
@@ -29,8 +29,8 @@ import { fileURLToPath } from "node:url";
 import {
   extractPlugin,
   resolveNostrPluginImportSpecifier,
-} from "@elizaos/app-core";
-import { logger, type Plugin } from "@elizaos/core";
+} from "@tokagentos/app-core";
+import { logger, type Plugin } from "@tokagentos/core";
 import dotenv from "dotenv";
 import { describe, expect, it } from "vitest";
 import { describeIf } from "../../../../../test/helpers/conditional-tests.ts";
@@ -50,7 +50,7 @@ const _NOSTR_DM_POLICY = process.env.NOSTR_DM_POLICY;
 const _NOSTR_ALLOW_FROM = process.env.NOSTR_ALLOW_FROM;
 
 const hasNostrCreds = Boolean(NOSTR_PRIVATE_KEY);
-const liveTestsEnabled = process.env.ELIZA_LIVE_TEST === "1";
+const liveTestsEnabled = process.env.TOKAGENT_LIVE_TEST === "1";
 const runLiveTests = hasNostrCreds && liveTestsEnabled;
 
 // Write tests require a valid nsec or hex private key
@@ -66,7 +66,7 @@ const hasPlugin = NOSTR_PLUGIN_IMPORT !== null;
 // Plugin-dependent tests (need @elizaos/plugin-nostr installed)
 const describeIfPluginAvailable = describeIf(hasPlugin);
 
-// API-level live tests (need creds + ELIZA_LIVE_TEST=1)
+// API-level live tests (need creds + TOKAGENT_LIVE_TEST=1)
 const describeIfLive = describeIf(runLiveTests);
 const describeIfLiveWrite = describeIf(runLiveWriteTests);
 
@@ -302,7 +302,7 @@ describe("Nostr Connector - Integration", () => {
   it("Nostr is mapped in CONNECTOR_PLUGINS", async () => {
     const mod = await tryWorkspaceImport<{
       CONNECTOR_PLUGINS: Record<string, string>;
-    }>("@elizaos/app-core");
+    }>("@tokagentos/app-core");
     if (!mod) {
       logger.warn("[nostr-connector] Workspace not built — skipping");
       return;
@@ -313,7 +313,7 @@ describe("Nostr Connector - Integration", () => {
   it("Nostr is mapped in CHANNEL_PLUGIN_MAP", async () => {
     const mod = await tryWorkspaceImport<{
       CHANNEL_PLUGIN_MAP: Record<string, string>;
-    }>("@elizaos/app-core");
+    }>("@tokagentos/app-core");
     if (!mod) {
       logger.warn("[nostr-connector] Workspace not built — skipping");
       return;

@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   Input,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import {
   type KeyboardEvent as ReactKeyboardEvent,
   useCallback,
@@ -114,7 +114,7 @@ export function CommandPalette() {
     return allCommands.filter((cmd) => cmd.label.toLowerCase().includes(query));
   }, [allCommands, commandQuery]);
 
-  // Listen for elizaos:command-palette from main.tsx (desktop shortcut Cmd/Ctrl+K)
+  // Listen for tokagentos:command-palette from main.tsx (desktop shortcut Cmd/Ctrl+K)
   useEffect(() => {
     const toggle = () => {
       setState("commandPaletteOpen", !commandPaletteOpen);

@@ -1,7 +1,7 @@
 import pytest
 from google.protobuf import struct_pb2
 
-from elizaos.types import (
+from tokagentos.types import (
     DEFAULT_UUID,
     Character,
     Content,

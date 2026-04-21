@@ -1,5 +1,5 @@
-import { Button } from "@elizaos/ui/components/ui/button";
-import { IconTooltip } from "@elizaos/ui/components/ui/tooltip-extended";
+import { Button } from "@tokagentos/ui/components/ui/button";
+import { IconTooltip } from "@tokagentos/ui/components/ui/tooltip-extended";
 import { AlertTriangle } from "lucide-react";
 import { type CSSProperties, memo, type PointerEvent } from "react";
 import type { CompanionInferenceNotice } from "./resolve-companion-inference-notice";

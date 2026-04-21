@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "name": "elizaos-edge-functions",
+  "name": "tokagentos-edge-functions",
   "buildCommand": "bun run build",
   "outputDirectory": "dist",
   "functions": {

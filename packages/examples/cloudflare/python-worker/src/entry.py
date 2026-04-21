@@ -1,14 +1,14 @@
 """
-elizaOS Cloudflare Worker (Python)
+tokagentOS Cloudflare Worker (Python)
 
 A serverless AI agent running on Cloudflare Workers using Python/Pyodide.
 
-NOTE: Due to Cloudflare Workers Python (Pyodide) limitations, the full elizaOS
+NOTE: Due to Cloudflare Workers Python (Pyodide) limitations, the full tokagentOS
 runtime cannot be used directly. This example provides a simplified REST API
 that demonstrates the same pattern but uses direct OpenAI API calls.
 
 For production Python agents, consider:
-- Running the full elizaOS Python runtime on a proper server
+- Running the full tokagentOS Python runtime on a proper server
 - Using Cloudflare Durable Objects with the TypeScript runtime
 """
 
@@ -30,8 +30,8 @@ def generate_uuid() -> str:
 
 def get_character(env) -> dict:
     """Get character configuration from environment."""
-    name = getattr(env, "CHARACTER_NAME", None) or "Eliza"
-    bio = getattr(env, "CHARACTER_BIO", None) or "A helpful AI assistant powered by elizaOS."
+    name = getattr(env, "CHARACTER_NAME", None) or "Tokagent"
+    bio = getattr(env, "CHARACTER_BIO", None) or "A helpful AI assistant powered by tokagentOS."
     system = getattr(env, "CHARACTER_SYSTEM", None) or f"You are {name}, a helpful AI assistant. {bio}"
     
     return {
@@ -50,7 +50,7 @@ async def call_openai(messages: list, env) -> str:
     """
     Call OpenAI API and return the response text.
     
-    NOTE: In a full elizaOS implementation, this would go through
+    NOTE: In a full tokagentOS implementation, this would go through
     runtime.messageService.handleMessage() which handles the model
     call, context building, and response generation automatically.
     """
@@ -122,9 +122,9 @@ def handle_info(env) -> Response:
         "name": character["name"],
         "bio": character["bio"],
         "version": VERSION,
-        "powered_by": "elizaOS",
+        "powered_by": "tokagentOS",
         "runtime": "Python (Pyodide)",
-        "note": "Limited runtime - for full elizaOS features, use TypeScript worker or dedicated server",
+        "note": "Limited runtime - for full tokagentOS features, use TypeScript worker or dedicated server",
         "endpoints": {
             "POST /chat": "Send a message and receive a response",
             "GET /health": "Health check endpoint",
@@ -141,7 +141,7 @@ def handle_health(env) -> Response:
         "status": "healthy",
         "character": character["name"],
         "mode": "simplified",
-        "note": "Pyodide runtime - full elizaOS runtime not available"
+        "note": "Pyodide runtime - full tokagentOS runtime not available"
     })
 
 
@@ -149,7 +149,7 @@ async def handle_chat(request, env) -> Response:
     """
     Handle POST /chat - process a chat message.
     
-    NOTE: This is a simplified implementation. The canonical elizaOS pattern would:
+    NOTE: This is a simplified implementation. The canonical tokagentOS pattern would:
     1. Create an AgentRuntime with plugins
     2. Call runtime.ensureConnection() 
     3. Create a messageMemory using createMessageMemory()
@@ -171,7 +171,7 @@ async def handle_chat(request, env) -> Response:
     character = get_character(env)
     
     # Build messages for OpenAI
-    # In full elizaOS, this context would be built by providers
+    # In full tokagentOS, this context would be built by providers
     messages = [
         {"role": "system", "content": character["system"]},
         {"role": "user", "content": message}

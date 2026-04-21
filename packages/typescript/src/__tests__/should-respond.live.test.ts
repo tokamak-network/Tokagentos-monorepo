@@ -9,17 +9,17 @@ import {
 import type { Character, State } from "../types";
 import { ModelType } from "../types/model";
 
-const runLiveTests = process.env.ELIZA_RUN_LIVE_TESTS === "1";
+const runLiveTests = process.env.TOKAGENT_RUN_LIVE_TESTS === "1";
 const liveDescribe = runLiveTests ? describe : describe.skip;
 const LIVE_TEST_TIMEOUT_MS = 30_000;
 
 function buildShouldRespondState(recentMessages: string): State {
 	return {
 		values: {
-			agentName: "Eliza",
+			agentName: "Tokagent",
 			providers: [
 				"# Character",
-				"Eliza is a direct, technically capable assistant for software work.",
+				"Tokagent is a direct, technically capable assistant for software work.",
 				"",
 				"# Recent Messages",
 				recentMessages,
@@ -94,12 +94,12 @@ liveDescribe("shouldRespond live", () => {
 	beforeAll(async () => {
 		if (!(await isOllamaAvailable())) {
 			throw new Error(
-				"Ollama is required for shouldRespond live tests when ELIZA_RUN_LIVE_TESTS=1",
+				"Ollama is required for shouldRespond live tests when TOKAGENT_RUN_LIVE_TESTS=1",
 			);
 		}
 
 		const character: Character = {
-			name: "Eliza",
+			name: "Tokagent",
 			system: "You are a precise assistant used for live prompt validation.",
 			bio: ["Precise assistant used for live prompt validation."],
 			templates: {},
@@ -162,7 +162,7 @@ liveDescribe("shouldRespond live", () => {
 			const result = await classify(
 				[
 					"user-1: morning everyone",
-					"user-1: Eliza, can you help me debug this TypeScript type error?",
+					"user-1: Tokagent, can you help me debug this TypeScript type error?",
 				].join("\n"),
 			);
 
@@ -211,7 +211,7 @@ liveDescribe("shouldRespond live", () => {
 		async () => {
 			const result = await classify(
 				[
-					"user-1: Eliza stop. This is a direct instruction for you to end the run and stop talking immediately.",
+					"user-1: Tokagent stop. This is a direct instruction for you to end the run and stop talking immediately.",
 				].join("\n"),
 			);
 

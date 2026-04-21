@@ -8,8 +8,8 @@ This test module validates the streaming extractors:
 
 import pytest
 
-from elizaos.types.state import SchemaRow, StreamEvent, StreamEventType
-from elizaos.utils.streaming import (
+from tokagentos.types.state import SchemaRow, StreamEvent, StreamEventType
+from tokagentos.utils.streaming import (
     MAX_CHUNK_SIZE,
     ChunkSizeError,
     ExtractorState,

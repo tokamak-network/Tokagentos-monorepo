@@ -158,13 +158,13 @@ def _command_adhdbench(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list
 
 def _command_configbench(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[str]:
     args = ["bun", "run", "src/index.ts", "--output", str(ctx.output_root)]
-    if ctx.request.agent.lower() == "eliza":
-        args.append("--eliza")
+    if ctx.request.agent.lower() == "tokagent":
+        args.append("--tokagent")
     return args
 
 
 def _command_experience(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[str]:
-    mode = str(ctx.request.extra_config.get("mode", "eliza-agent"))
+    mode = str(ctx.request.extra_config.get("mode", "tokagent-agent"))
     args = [
         "python",
         "run_benchmark.py",
@@ -204,13 +204,13 @@ def _command_rolodex(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[s
         "--output",
         str(ctx.output_root),
     ]
-    if ctx.request.agent.lower() == "eliza":
-        args.append("--eliza")
+    if ctx.request.agent.lower() == "tokagent":
+        args.append("--tokagent")
     return args
 
 
 def _command_social_alpha(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[str]:
-    system = str(ctx.request.extra_config.get("system", "eliza"))
+    system = str(ctx.request.extra_config.get("system", "tokagent"))
     data_dir = str(ctx.request.extra_config.get("data_dir", "trenches-chat-dataset/data"))
     output_dir = str(ctx.output_root)
     args = [
@@ -234,7 +234,7 @@ def _command_social_alpha(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> l
 
 
 def _command_trust(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[str]:
-    handler = str(ctx.request.extra_config.get("handler", "eliza"))
+    handler = str(ctx.request.extra_config.get("handler", "tokagent"))
     args = [
         "python",
         "run_benchmark.py",
@@ -266,7 +266,7 @@ def _command_webshop(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[s
     args = [
         "python",
         "-m",
-        "elizaos_webshop",
+        "tokagentos_webshop",
         "--output",
         str(ctx.output_root),
         "--model-provider",
@@ -309,7 +309,7 @@ def _command_hyperliquid_env(ctx: ExecutionContext, adapter: BenchmarkAdapter) -
 
 
 def _command_evm(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[str]:
-    return ["python", "-m", "benchmarks.evm.eliza_agent"]
+    return ["python", "-m", "benchmarks.evm.tokagent_agent"]
 
 
 def _env_evm(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> dict[str, str]:
@@ -323,7 +323,7 @@ def _env_evm(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> dict[str, str]
 
 
 def _command_solana(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[str]:
-    return ["python", "-m", "benchmarks.solana.eliza_agent"]
+    return ["python", "-m", "benchmarks.solana.tokagent_agent"]
 
 
 def _env_solana(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> dict[str, str]:
@@ -350,7 +350,7 @@ def _env_solana(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> dict[str, s
 def _command_osworld(ctx: ExecutionContext, adapter: BenchmarkAdapter) -> list[str]:
     args = [
         "python",
-        "scripts/python/run_multienv_eliza.py",
+        "scripts/python/run_multienv_tokagent.py",
         "--result_dir",
         str(ctx.output_root),
         "--model",
@@ -479,7 +479,7 @@ def _score_from_configbench(path: Path) -> ScoreSummary:
         if not isinstance(item, dict):
             continue
         name = str(item.get("handlerName", "")).lower()
-        if "eliza" in name:
+        if "tokagent" in name:
             target = item
             break
     if target is None and handlers:
@@ -574,7 +574,7 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
         for p in benchmarks_root.iterdir()
         if p.is_dir()
         and p.name
-        not in {"__pycache__", ".git", "benchmark_results", "orchestrator", "eliza-adapter", "viewer"}
+        not in {"__pycache__", ".git", "benchmark_results", "orchestrator", "tokagent-adapter", "viewer"}
     )
 
     score_extractor_factory = RegistryScoreExtractor(workspace_root)
@@ -583,10 +583,10 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
     registry_entries = get_benchmark_registry(workspace_root)
     registry_default_extra: dict[str, dict[str, Any]] = {
         "agentbench": {
-            "elizaos": True,
+            "tokagentos": True,
         },
         "rlm_bench": {
-            "mode": "eliza",
+            "mode": "tokagent",
             "tasks_per_config": 1,
             "context_lengths": [1000, 10000],
             "max_iterations": 5,
@@ -674,7 +674,7 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
         _make_extra_adapter(
             adapter_id="hyperliquidbench",
             directory="HyperliquidBench",
-            description="HyperliquidBench Eliza coverage benchmark",
+            description="HyperliquidBench Tokagent coverage benchmark",
             cwd=str((benchmarks_root / "HyperliquidBench").resolve()),
             command_builder=_command_hyperliquid,
             result_patterns=["runs/**/eval_score.json", "runs/**/run_meta.json"],
@@ -702,7 +702,7 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
         _make_extra_adapter(
             adapter_id="experience",
             directory="experience",
-            description="Experience memory benchmark via Eliza agent mode",
+            description="Experience memory benchmark via Tokagent agent mode",
             cwd=str((benchmarks_root / "experience").resolve()),
             command_builder=_command_experience,
             result_patterns=["experience-results.json", "*.json"],
@@ -742,7 +742,7 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
             result_patterns=["trust-results.json", "*.json"],
             score_extractor=_score_from_trust,
             default_extra_config={
-                "handler": "eliza",
+                "handler": "tokagent",
                 "categories": ["prompt_injection"],
                 "difficulty": ["easy"],
                 "threshold": 0.0,
@@ -751,7 +751,7 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
         _make_extra_adapter(
             adapter_id="webshop",
             directory="webshop",
-            description="WebShop benchmark with Eliza agent",
+            description="WebShop benchmark with Tokagent agent",
             cwd=str((benchmarks_root / "webshop").resolve()),
             command_builder=_command_webshop,
             result_patterns=["webshop-results.json"],
@@ -781,11 +781,11 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
         _make_extra_adapter(
             adapter_id="solana",
             directory="solana",
-            description="Solana instruction discovery benchmark via Eliza agent",
+            description="Solana instruction discovery benchmark via Tokagent agent",
             cwd=str(workspace_root.resolve()),
             command_builder=_command_solana,
             env_builder=_env_solana,
-            result_patterns=["benchmarks/solana/solana-gym-env/metrics/eliza_*_metrics.json"],
+            result_patterns=["benchmarks/solana/solana-gym-env/metrics/tokagent_*_metrics.json"],
             score_extractor=score_extractor_factory.for_benchmark("solana"),
             default_timeout_seconds=14400,
             default_extra_config={
@@ -796,11 +796,11 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
         _make_extra_adapter(
             adapter_id="osworld",
             directory="OSWorld",
-            description="OSWorld desktop benchmark via Eliza agent",
+            description="OSWorld desktop benchmark via Tokagent agent",
             cwd=str((benchmarks_root / "OSWorld").resolve()),
             command_builder=_command_osworld,
             env_builder=_env_osworld,
-            result_patterns=["osworld-eliza-results-*.json"],
+            result_patterns=["osworld-tokagent-results-*.json"],
             score_extractor=score_extractor_factory.for_benchmark("osworld"),
             default_timeout_seconds=21600,
             default_extra_config={
@@ -813,7 +813,7 @@ def discover_adapters(workspace_root: Path) -> AdapterDiscovery:
         _make_extra_adapter(
             adapter_id="milaidy_replay",
             directory="milaidy-adapter",
-            description="Replay benchmark over normalized Eliza PARALLAX captures",
+            description="Replay benchmark over normalized Tokagent PARALLAX captures",
             cwd=str((benchmarks_root / "milaidy-adapter").resolve()),
             command_builder=_command_milaidy_replay,
             result_patterns=["milaidy-replay-results.json", "*.json"],

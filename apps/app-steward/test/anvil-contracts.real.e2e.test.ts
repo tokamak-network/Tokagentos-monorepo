@@ -18,9 +18,9 @@ import { fileURLToPath } from "node:url";
 import { ethers } from "ethers";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { describeIf } from "../../../../test/helpers/conditional-tests.ts";
-import { DropService } from "@elizaos/agent/api/drop-service";
-import { RegistryService } from "@elizaos/agent/api/registry-service";
-import { TxService } from "@elizaos/agent/api/tx-service";
+import { DropService } from "@tokagentos/agent/api/drop-service";
+import { RegistryService } from "@tokagentos/agent/api/registry-service";
+import { TxService } from "@tokagentos/agent/api/tx-service";
 import { type AnvilInstance, startAnvil } from "./anvil-helper";
 import { type DeployedContracts, deployContracts } from "./contract-deployer";
 
@@ -156,7 +156,7 @@ describeAnvil("Anvil Contract E2E Tests", () => {
 
     it("registers an agent and mints identity NFT", async () => {
       const result = await registryService.register({
-        name: "TestElizaAgent",
+        name: "TestTokagentAgent",
         endpoint: "http://localhost:3000/agent",
         capabilitiesHash: ethers.id("test-capabilities"),
         tokenURI: "ipfs://QmTestTokenURI",
@@ -170,7 +170,7 @@ describeAnvil("Anvil Contract E2E Tests", () => {
       const status = await registryService.getStatus();
       expect(status.registered).toBe(true);
       expect(status.tokenId).toBeGreaterThan(0);
-      expect(status.agentName).toBe("TestElizaAgent");
+      expect(status.agentName).toBe("TestTokagentAgent");
       expect(status.agentEndpoint).toBe("http://localhost:3000/agent");
       expect(status.isActive).toBe(true);
       expect(status.tokenURI).toBe("ipfs://QmTestTokenURI");
@@ -199,14 +199,14 @@ describeAnvil("Anvil Contract E2E Tests", () => {
 
     it("can sync full profile", async () => {
       await registryService.syncProfile({
-        name: "SyncedElizaAgent",
+        name: "SyncedTokagentAgent",
         endpoint: "http://localhost:5000/agent",
         capabilitiesHash: ethers.id("synced-capabilities"),
         tokenURI: "ipfs://QmSyncedTokenURI",
       });
 
       const status = await registryService.getStatus();
-      expect(status.agentName).toBe("SyncedElizaAgent");
+      expect(status.agentName).toBe("SyncedTokagentAgent");
       expect(status.agentEndpoint).toBe("http://localhost:5000/agent");
       expect(status.tokenURI).toBe("ipfs://QmSyncedTokenURI");
     });
@@ -431,7 +431,7 @@ describeAnvil("Anvil Contract E2E Tests", () => {
       };
 
       expect(inventory.agentIdentity).not.toBeNull();
-      expect(inventory.agentIdentity?.name).toBe("SyncedElizaAgent");
+      expect(inventory.agentIdentity?.name).toBe("SyncedTokagentAgent");
       expect(inventory.dropNFTs).not.toBeNull();
       expect(inventory.dropNFTs?.minted).toBe(true);
     });

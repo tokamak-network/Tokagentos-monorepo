@@ -1,9 +1,9 @@
 /**
- * REST API server for the Eliza Control UI.
+ * REST API server for the Tokagent Control UI.
  *
  * Exposes HTTP endpoints that the UI frontend expects, backed by the
- * elizaOS AgentRuntime. Default port: 2138. In dev mode, the Vite UI
- * dev server proxies /api and /ws here (see eliza/packages/app-core/scripts/dev-ui.mjs).
+ * tokagentOS AgentRuntime. Default port: 2138. In dev mode, the Vite UI
+ * dev server proxies /api and /ws here (see tokagent/packages/app-core/scripts/dev-ui.mjs).
  */
 
 import crypto from "node:crypto";
@@ -32,7 +32,7 @@ import net from "node:net";
 import os from "node:os";
 import path from "node:path";
 // Discord local routes extracted to @elizaos/plugin-discord (setup-routes.ts)
-import { DropService, handleDropRoutes } from "@elizaos/app-elizamaker";
+import { DropService, handleDropRoutes } from "@elizaos/app-tokagentmaker";
 import { handleKnowledgeRoutes } from "@elizaos/app-knowledge/routes";
 import { TxService } from "@elizaos/app-steward/api/tx-service";
 import type {
@@ -60,7 +60,7 @@ import {
   logger,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   isNullOriginAllowed,
   resolveAllowedHosts,
@@ -71,14 +71,14 @@ import {
   resolveServerOnlyPort,
   setApiToken,
   stripOptionalHostPort,
-} from "@elizaos/shared/runtime-env";
+} from "@tokagentos/shared/runtime-env";
 import { type WebSocket, WebSocketServer } from "ws";
 import { getGlobalAwarenessRegistry } from "../awareness/registry.js";
 import { CharacterSchema } from "../config/character-schema.js";
 import {
-  type ElizaConfig,
-  loadElizaConfig,
-  saveElizaConfig,
+  type TokagentConfig,
+  loadTokagentConfig,
+  saveTokagentConfig,
 } from "../config/config.js";
 import { resolveModelsCacheDir, resolveStateDir } from "../config/paths.js";
 import { isStreamingDestinationConfigured } from "../config/plugin-auto-enable.js";
@@ -364,7 +364,7 @@ try {
   agentOrchestratorCompat = null;
 }
 
-// Re-export for downstream consumers (e.g. @elizaos/app-core)
+// Re-export for downstream consumers (e.g. @tokagentos/app-core)
 export {
   AGENT_EVENT_ALLOWED_STREAMS,
   CONFIG_WRITE_ALLOWED_TOP_KEYS,
@@ -412,7 +412,7 @@ function requirePluginManager(runtime: AgentRuntime | null): PluginManagerLike {
 
 /**
  * The upstream plugin-plugin-manager has its own registry client that only
- * fetches from GitHub and scans a `plugins/` dir for `elizaos.plugin.json`.
+ * fetches from GitHub and scans a `plugins/` dir for `tokagentos.plugin.json`.
  * Workspace-vendored plugins (under `packages/plugin-*`) are invisible to it.
  * Wrap `installPlugin` so that when the upstream returns "not found in the
  * registry" we retry using our own registry-client (which discovers workspace
@@ -433,7 +433,7 @@ function wrapPluginManagerWithLocalFallback(
       return result;
     }
 
-    // Upstream registry missed it — check Eliza's own local discovery.
+    // Upstream registry missed it — check Tokagent's own local discovery.
     const { getPluginInfo } = await import("../services/registry-client.js");
     const localInfo = await getPluginInfo(pluginName);
     if (!localInfo?.localPath) {
@@ -497,7 +497,7 @@ function readDeletedConversationIdsFromState(): Set<string> {
     );
   } catch (err) {
     logger.warn(
-      `[eliza-api] Failed to read deleted conversations state: ${err instanceof Error ? err.message : String(err)}`,
+      `[tokagent-api] Failed to read deleted conversations state: ${err instanceof Error ? err.message : String(err)}`,
     );
     return new Set();
   }
@@ -900,7 +900,7 @@ import {
   getStylePresets,
   normalizeCharacterLanguage,
   resolveStylePresetByAvatarIndex,
-} from "@elizaos/shared/onboarding-presets";
+} from "@tokagentos/shared/onboarding-presets";
 import { pickRandomNames } from "../runtime/onboarding-names.js";
 
 import {
@@ -930,7 +930,7 @@ export { isSafeResetStateDir } from "./server-helpers-config.js";
  * Falls back to "user-sign-only" when not configured.
  */
 export function resolveTradePermissionMode(
-  config: ElizaConfig,
+  config: TokagentConfig,
 ): TradePermissionMode {
   const raw = (config.features as Record<string, unknown> | undefined)
     ?.tradePermissionMode;
@@ -971,7 +971,7 @@ export {
 
 import type { AgentAutomationMode } from "./server-types.js";
 
-const AGENT_AUTOMATION_HEADER = "x-eliza-agent-action";
+const AGENT_AUTOMATION_HEADER = "x-tokagent-agent-action";
 const AGENT_AUTOMATION_MODES = new Set<AgentAutomationMode>([
   "connectors-only",
   "full",
@@ -1053,7 +1053,7 @@ function buildPluginEvmDiagnosticEntry(
       "EVM_PRIVATE_KEY",
       "BSC_RPC_URL",
       "BSC_TESTNET_RPC_URL",
-      "ELIZA_WALLET_NETWORK",
+      "TOKAGENT_WALLET_NETWORK",
     ],
     parameters: [],
     validationErrors: [],
@@ -1122,8 +1122,8 @@ import type { TrainingServiceWithRuntime } from "./server-types.js";
 
 type TrainingServiceCtor = new (options: {
   getRuntime: () => AgentRuntime | null;
-  getConfig: () => ElizaConfig;
-  setConfig: (nextConfig: ElizaConfig) => void;
+  getConfig: () => TokagentConfig;
+  setConfig: (nextConfig: TokagentConfig) => void;
 }) => TrainingServiceWithRuntime;
 
 async function resolveTrainingServiceCtor(): Promise<TrainingServiceCtor | null> {
@@ -1619,7 +1619,7 @@ async function buildTaskLine(
   const port = task.originalTask.match(/port\s+(\d+)/i)?.[1];
   if (port) {
     if (await isPortServing(port)) {
-      const host = process.env.ELIZA_PUBLIC_HOST ?? "localhost";
+      const host = process.env.TOKAGENT_PUBLIC_HOST ?? "localhost";
       return `built and serving at http://${host}:${port}`;
     }
     return `built the files but server isn't running on port ${port} yet`;
@@ -1708,7 +1708,7 @@ import {
   chunkForDiscord,
   readLastAssistantTextFromJsonl,
 } from "../runtime/subagent-output.js";
-// ── Parse Action Block from Eliza's Response ─────────────────────────
+// ── Parse Action Block from Tokagent's Response ─────────────────────────
 import {
   parseActionBlock,
   stripActionBlockFromDisplay,
@@ -1718,8 +1718,8 @@ import {
 
 /**
  * Wire the SwarmCoordinator's agentDecisionCallback so coordinator events
- * (blocked prompts, turn completions) route through Eliza's full
- * elizaOS pipeline (memory, personality, actions) so she has conversation
+ * (blocked prompts, turn completions) route through Tokagent's full
+ * tokagentOS pipeline (memory, personality, actions) so she has conversation
  * context to make informed decisions. The pipeline's model size is
  * The pipeline's model size is temporarily overridden to TEXT_SMALL
  * via the private `runtime.llmModeOption` (no public setter exists).
@@ -1727,10 +1727,10 @@ import {
  * stalling CLI agents waiting for input.
  *
  * Events are serialized (one at a time) to prevent context confusion.
- * Eliza's response appears in chat via WS broadcast, and the embedded
+ * Tokagent's response appears in chat via WS broadcast, and the embedded
  * JSON action block is parsed and returned to the coordinator for execution.
  *
- * If the callback fails or Eliza's response has no action block,
+ * If the callback fails or Tokagent's response has no action block,
  * returns null → coordinator falls back to the small LLM.
  */
 function wireCoordinatorEventRouting(st: ServerState): boolean {
@@ -1763,7 +1763,7 @@ function wireCoordinatorEventRouting(st: ServerState): boolean {
           // Ensure the legacy chat connection exists (creates room/world if needed).
           // We inline the setup here because ensureLegacyChatConnection is
           // closure-scoped in the route handler and not accessible at module level.
-          const agentName = runtime.character.name ?? "Eliza";
+          const agentName = runtime.character.name ?? "Tokagent";
           const existingLegacyChatRoom = st.chatRoomId
             ? await runtime.getRoom(st.chatRoomId).catch(() => null)
             : null;
@@ -1795,7 +1795,7 @@ function wireCoordinatorEventRouting(st: ServerState): boolean {
             return;
           }
 
-          // Create a message memory so the event enters Eliza's conversation history.
+          // Create a message memory so the event enters Tokagent's conversation history.
           const message = createMessageMemory({
             id: crypto.randomUUID() as UUID,
             entityId: st.chatUserId,
@@ -2248,7 +2248,7 @@ async function handleCodingAgentsFallback(
 
         return {
           sessionId: task.id ?? "",
-          agentType: meta.providerId ?? "eliza",
+          agentType: meta.providerId ?? "tokagent",
           label: meta.providerLabel ?? task.name ?? "Task",
           originalTask: task.description ?? task.name ?? "",
           workdir: meta.workingDirectory ?? process.cwd(),
@@ -2638,7 +2638,7 @@ async function handleRequest(
       state.pendingRestartReasons.push(canonicalReason);
     }
     logger.info(
-      `[eliza-api] Restart required: ${canonicalReason} (${state.pendingRestartReasons.length} pending)`,
+      `[tokagent-api] Restart required: ${canonicalReason} (${state.pendingRestartReasons.length} pending)`,
     );
     state.broadcastWs?.({
       type: "restart-required",
@@ -2655,7 +2655,7 @@ async function handleRequest(
     }
 
     const previousState = state.agentState;
-    logger.info(`[eliza-api] Applying runtime reload: ${reason}`);
+    logger.info(`[tokagent-api] Applying runtime reload: ${reason}`);
     state.agentState = "restarting";
     state.startup = { ...state.startup, phase: "restarting" };
     state.broadcastStatus?.();
@@ -2682,7 +2682,7 @@ async function handleRequest(
       return true;
     } catch (err) {
       logger.warn(
-        `[eliza-api] Runtime reload failed: ${err instanceof Error ? err.message : String(err)}`,
+        `[tokagent-api] Runtime reload failed: ${err instanceof Error ? err.message : String(err)}`,
       );
       state.agentState = previousState;
       state.broadcastStatus?.();
@@ -2701,8 +2701,8 @@ async function handleRequest(
       res,
       {
         error: "Forbidden — invalid Host header",
-        hint: `To allow this host, set ELIZA_ALLOWED_HOSTS=${incomingHost} (or ELIZA_ALLOWED_HOSTS) in your environment, or access via http://localhost`,
-        docs: "https://docs.eliza.ai/configuration#allowed-hosts",
+        hint: `To allow this host, set TOKAGENT_ALLOWED_HOSTS=${incomingHost} (or TOKAGENT_ALLOWED_HOSTS) in your environment, or access via http://localhost`,
+        docs: "https://docs.tokagent.ai/configuration#allowed-hosts",
       },
       403,
     );
@@ -2771,12 +2771,12 @@ async function handleRequest(
     cloudApiKey: string,
     baseUrl: string,
   ): void => {
-    // Configure coding agent CLIs to proxy through ElizaCloud /api/v1
+    // Configure coding agent CLIs to proxy through TokagentCloud /api/v1
     process.env.ANTHROPIC_BASE_URL = `${baseUrl}/api/v1`;
     process.env.ANTHROPIC_API_KEY = cloudApiKey;
     process.env.OPENAI_BASE_URL = `${baseUrl}/api/v1`;
     process.env.OPENAI_API_KEY = cloudApiKey;
-    // Gemini CLI and Aider — no proxy support via ElizaCloud inference
+    // Gemini CLI and Aider — no proxy support via TokagentCloud inference
   };
 
   // ── POST /api/provider/switch (extracted to provider-switch-routes.ts) ──
@@ -2790,7 +2790,7 @@ async function handleRequest(
       json,
       error,
       readJsonBody,
-      saveElizaConfig,
+      saveTokagentConfig,
       scheduleRuntimeRestart,
       providerSwitchInProgress,
       setProviderSwitchInProgress: (v: boolean) => {
@@ -2832,7 +2832,7 @@ async function handleRequest(
       readJsonBody,
       json,
       error,
-      saveConfig: saveElizaConfig,
+      saveConfig: saveTokagentConfig,
       loadSubscriptionAuth: async () =>
         (await import("../auth/index.js")) as never,
     } as never)
@@ -2901,7 +2901,7 @@ async function handleRequest(
       applyOnboardingVoicePreset: coerce<
         OnboardingRouteArg["applyOnboardingVoicePreset"]
       >(applyOnboardingVoicePreset),
-      saveElizaConfig,
+      saveTokagentConfig,
     })
   ) {
     return;
@@ -3063,7 +3063,7 @@ async function handleRequest(
       json,
       error,
       pickRandomNames,
-      saveConfig: saveElizaConfig as never,
+      saveConfig: saveTokagentConfig as never,
       validateCharacter: (body) => CharacterSchema.safeParse(body) as never,
     })
   ) {
@@ -3085,7 +3085,7 @@ async function handleRequest(
     const agentName =
       state.runtime?.character.name?.trim() ||
       state.agentName?.trim() ||
-      "Eliza";
+      "Tokagent";
 
     json(res, {
       agents: [
@@ -3224,7 +3224,7 @@ async function handleRequest(
         readJsonBody,
         readBody,
         discoverSkills,
-        saveElizaConfig,
+        saveTokagentConfig,
       })
     ) {
       return;
@@ -3312,10 +3312,10 @@ async function handleRequest(
       if (isWalletBridgeImportFailure(err)) {
         logger.debug(
           { err },
-          "[eliza-api] Wallet core routes unavailable from @elizaos/app-steward; falling back to local bridge",
+          "[tokagent-api] Wallet core routes unavailable from @elizaos/app-steward; falling back to local bridge",
         );
       } else {
-        logger.error({ err }, "[eliza-api] Wallet core route bridge failed");
+        logger.error({ err }, "[tokagent-api] Wallet core route bridge failed");
         error(res, getErrorMessage(err), 500);
         return;
       }
@@ -3326,7 +3326,7 @@ async function handleRequest(
           return;
         }
       } catch (err) {
-        logger.error({ err }, "[eliza-api] Wallet core route bridge failed");
+        logger.error({ err }, "[tokagent-api] Wallet core route bridge failed");
         error(res, getErrorMessage(err), 500);
         return;
       }
@@ -3337,8 +3337,8 @@ async function handleRequest(
         res,
         method,
         pathname,
-        config: loadElizaConfig(),
-        saveConfig: saveElizaConfig,
+        config: loadTokagentConfig(),
+        saveConfig: saveTokagentConfig,
         ensureWalletKeysInEnvAndConfig,
         resolveWalletExportRejection,
         restartRuntime,
@@ -3433,7 +3433,7 @@ async function handleRequest(
       json,
       error,
       readJsonBody,
-      saveElizaConfig,
+      saveTokagentConfig,
     })
   ) {
     return;
@@ -3450,7 +3450,7 @@ async function handleRequest(
       json,
       error,
       readJsonBody,
-      saveElizaConfig,
+      saveTokagentConfig,
       redactConfigSecrets,
       isBlockedObjectKey,
       cloneWithoutBlockedObjectKeys,
@@ -3530,7 +3530,7 @@ async function handleRequest(
   if (pathname.startsWith("/api/telegram-account")) {
     const routeState = {
       config: state.config,
-      saveConfig: () => saveElizaConfig(state.config),
+      saveConfig: () => saveTokagentConfig(state.config),
       runtime: state.runtime
         ? {
             getService: (type: string) =>
@@ -3660,7 +3660,7 @@ async function handleRequest(
       json,
       error,
       readJsonBody,
-      saveElizaConfig,
+      saveTokagentConfig,
       resolveTradePermissionMode: coerce<
         PermissionsExtraRouteArg["resolveTradePermissionMode"]
       >(resolveTradePermissionMode),
@@ -3687,7 +3687,7 @@ async function handleRequest(
       json,
       error,
       saveConfig: (config) => {
-        saveElizaConfig(config as ElizaConfig);
+        saveTokagentConfig(config as TokagentConfig);
       },
       scheduleRuntimeRestart,
     })
@@ -3775,7 +3775,7 @@ async function handleRequest(
     );
     if (billingHandled) return;
 
-    // Compat proxy routes — transparent proxy to Eliza Cloud v2 /api/compat/*
+    // Compat proxy routes — transparent proxy to Tokagent Cloud v2 /api/compat/*
     const compatHandled = await handleCloudCompatRoute(
       req,
       res,
@@ -3789,7 +3789,7 @@ async function handleRequest(
       config: state.config,
       cloudManager: state.cloudManager,
       runtime: state.runtime,
-      saveConfig: saveElizaConfig,
+      saveConfig: saveTokagentConfig,
       createTelemetrySpan: createIntegrationTelemetrySpan,
       restartRuntime,
     };
@@ -4169,7 +4169,7 @@ async function handleRequest(
         json,
         error,
         readJsonBody,
-        saveElizaConfig,
+        saveTokagentConfig,
         redactDeep,
         isBlockedObjectKey,
         cloneWithoutBlockedObjectKeys,
@@ -4209,7 +4209,7 @@ async function handleRequest(
     return;
   }
 
-  // ── elizaOS plugin HTTP routes (runtime.routes, e.g. /music-player/*) ───
+  // ── tokagentOS plugin HTTP routes (runtime.routes, e.g. /music-player/*) ───
   if (
     await tryHandleRuntimePluginRoute({
       req,
@@ -4251,7 +4251,7 @@ async function handleRequest(
 // callers that `import { captureEarlyLogs } from "../../../../src/api/server"` keep
 // working.  The implementation lives in `./early-logs.ts` to avoid pulling
 // the entire server dependency graph into lightweight consumers (e.g. the
-// headless `startEliza()` path).
+// headless `startTokagent()` path).
 // ---------------------------------------------------------------------------
 import { type captureEarlyLogs, flushEarlyLogs } from "./early-logs.js";
 
@@ -4286,29 +4286,29 @@ export async function startApiServer(opts?: {
   ) => void;
 }> {
   const apiStartTime = Date.now();
-  console.log(`[eliza-api] startApiServer called`);
+  console.log(`[tokagent-api] startApiServer called`);
 
   const port = opts?.port ?? resolveServerOnlyPort(process.env);
   const host = resolveApiBindHost(process.env);
   ensureApiTokenForBindHost(host);
-  console.log(`[eliza-api] Token check done (${Date.now() - apiStartTime}ms)`);
+  console.log(`[tokagent-api] Token check done (${Date.now() - apiStartTime}ms)`);
 
-  let config: ElizaConfig;
+  let config: TokagentConfig;
   try {
-    config = loadElizaConfig();
+    config = loadTokagentConfig();
   } catch (err) {
     logger.warn(
-      `[eliza-api] Failed to load config, starting with defaults: ${err instanceof Error ? err.message : err}`,
+      `[tokagent-api] Failed to load config, starting with defaults: ${err instanceof Error ? err.message : err}`,
     );
-    config = {} as ElizaConfig;
+    config = {} as TokagentConfig;
   }
-  console.log(`[eliza-api] Config loaded (${Date.now() - apiStartTime}ms)`);
+  console.log(`[tokagent-api] Config loaded (${Date.now() - apiStartTime}ms)`);
 
   // Wallet/inventory routes read from process.env at request-time.
   // Hydrate persisted config.env values so addresses remain visible after restarts.
   const persistedEnv = config.env as Record<string, string> | undefined;
   const envKeysToHydrate = [
-    "ELIZA_WALLET_OS_STORE",
+    "TOKAGENT_WALLET_OS_STORE",
     "EVM_PRIVATE_KEY",
     "SOLANA_PRIVATE_KEY",
     "ALCHEMY_API_KEY",
@@ -4328,7 +4328,7 @@ export async function startApiServer(opts?: {
   // Optional auto-provision mode for legacy environments. Disabled by default
   // so startup does not silently create new wallets when keys are missing.
   const walletAutoProvisionRaw =
-    process.env.ELIZA_WALLET_AUTO_PROVISION?.trim().toLowerCase();
+    process.env.TOKAGENT_WALLET_AUTO_PROVISION?.trim().toLowerCase();
   const walletAutoProvisionEnabled =
     walletAutoProvisionRaw === "1" ||
     walletAutoProvisionRaw === "true" ||
@@ -4336,10 +4336,10 @@ export async function startApiServer(opts?: {
     walletAutoProvisionRaw === "yes";
   if (walletAutoProvisionEnabled && ensureWalletKeysInEnvAndConfig(config)) {
     try {
-      saveElizaConfig(config);
+      saveTokagentConfig(config);
     } catch (err) {
       logger.warn(
-        `[eliza-api] Failed to persist generated wallet keys: ${err instanceof Error ? err.message : err}`,
+        `[tokagent-api] Failed to persist generated wallet keys: ${err instanceof Error ? err.message : err}`,
       );
     }
   }
@@ -4349,14 +4349,14 @@ export async function startApiServer(opts?: {
   await initStewardWalletCache();
 
   // Warn when wallet private keys live in plaintext config and the OS secure
-  // store is not enabled.  This nudges operators toward ELIZA_WALLET_OS_STORE=1.
+  // store is not enabled.  This nudges operators toward TOKAGENT_WALLET_OS_STORE=1.
   {
     const hasPlaintextKeys =
       (typeof persistedEnv?.EVM_PRIVATE_KEY === "string" &&
         persistedEnv.EVM_PRIVATE_KEY.trim()) ||
       (typeof persistedEnv?.SOLANA_PRIVATE_KEY === "string" &&
         persistedEnv.SOLANA_PRIVATE_KEY.trim());
-    const osStoreRaw = process.env.ELIZA_WALLET_OS_STORE?.trim().toLowerCase();
+    const osStoreRaw = process.env.TOKAGENT_WALLET_OS_STORE?.trim().toLowerCase();
     const osStoreEnabled =
       osStoreRaw === "1" ||
       osStoreRaw === "true" ||
@@ -4365,14 +4365,14 @@ export async function startApiServer(opts?: {
     if (hasPlaintextKeys && !osStoreEnabled) {
       logger.warn(
         "[wallet] Private keys are stored in plaintext config. " +
-          "Set ELIZA_WALLET_OS_STORE=1 to use the OS secure store instead.",
+          "Set TOKAGENT_WALLET_OS_STORE=1 to use the OS secure store instead.",
       );
     }
   }
 
   const plugins = discoverPluginsFromManifest();
   console.log(
-    `[eliza-api] Plugins discovered (${Date.now() - apiStartTime}ms)`,
+    `[tokagent-api] Plugins discovered (${Date.now() - apiStartTime}ms)`,
   );
   const workspaceDir =
     config.agents?.defaults?.workspace ?? resolveDefaultAgentWorkspaceDir();
@@ -4441,16 +4441,16 @@ export async function startApiServer(opts?: {
   const trainingServiceOptions = {
     getRuntime: () => state.runtime,
     getConfig: () => state.config,
-    setConfig: (nextConfig: ElizaConfig) => {
+    setConfig: (nextConfig: TokagentConfig) => {
       state.config = nextConfig;
-      saveElizaConfig(nextConfig);
+      saveTokagentConfig(nextConfig);
     },
   };
   if (trainingServiceCtor) {
     state.trainingService = new trainingServiceCtor(trainingServiceOptions);
   } else {
     logger.info(
-      "[eliza-api] Training service package unavailable; training routes will be disabled",
+      "[tokagent-api] Training service package unavailable; training routes will be disabled",
     );
   }
   // Register immediately so /api/training routes are available without a startup race.
@@ -4460,7 +4460,7 @@ export async function startApiServer(opts?: {
     state.chatUserId = state.adminEntityId;
   } else if (configuredAdminEntityId) {
     logger.warn(
-      `[eliza-api] Ignoring invalid agents.defaults.adminEntityId "${configuredAdminEntityId}"`,
+      `[tokagent-api] Ignoring invalid agents.defaults.adminEntityId "${configuredAdminEntityId}"`,
     );
   }
 
@@ -4543,11 +4543,11 @@ export async function startApiServer(opts?: {
   });
 
   // ── Intercept loggers so ALL agent/plugin/service logs appear in the UI ──
-  // We patch both the global `logger` singleton from @elizaos/core (used by
-  // eliza.ts, services, plugins, etc.) AND the runtime instance logger.
+  // We patch both the global `logger` singleton from @tokagentos/core (used by
+  // tokagent.ts, services, plugins, etc.) AND the runtime instance logger.
   // A marker prevents double-patching on hot-restart and avoids stacking
   // wrapper functions that would leak memory.
-  const PATCHED_MARKER = "__elizaLogPatched";
+  const PATCHED_MARKER = "__tokagentLogPatched";
   const LEVELS = ["debug", "info", "warn", "error"] as const;
 
   /**
@@ -4586,7 +4586,7 @@ export async function startApiServer(opts?: {
           }
           msg = typeof args[1] === "string" ? args[1] : JSON.stringify(obj);
         }
-        // Auto-extract source from [bracket] prefixes (e.g. "[eliza] ...")
+        // Auto-extract source from [bracket] prefixes (e.g. "[tokagent] ...")
         const bracketMatch = /^\[([^\]]+)\]\s*/.exec(msg);
         if (bracketMatch && source === defaultSource) {
           source = bracketMatch[1];
@@ -4605,8 +4605,8 @@ export async function startApiServer(opts?: {
     return true;
   };
 
-  // 1) Patch the global @elizaos/core logger — this captures ALL log calls
-  //    from eliza.ts, services, plugins, cloud, hooks, etc.
+  // 1) Patch the global @tokagentos/core logger — this captures ALL log calls
+  //    from tokagent.ts, services, plugins, cloud, hooks, etc.
   if (patchLogger(logger, "agent", ["agent"])) {
     addLog(
       "info",
@@ -4633,7 +4633,7 @@ export async function startApiServer(opts?: {
   const onRestart = opts?.onRestart ?? null;
 
   console.log(
-    `[eliza-api] Creating http server (${Date.now() - apiStartTime}ms)`,
+    `[tokagent-api] Creating http server (${Date.now() - apiStartTime}ms)`,
   );
   const server = http.createServer(async (req, res) => {
     try {
@@ -4657,7 +4657,7 @@ export async function startApiServer(opts?: {
       error(res, msg, 500);
     }
   });
-  console.log(`[eliza-api] Server created (${Date.now() - apiStartTime}ms)`);
+  console.log(`[tokagent-api] Server created (${Date.now() - apiStartTime}ms)`);
 
   const broadcastWs = (payload: object): void => {
     const message = JSON.stringify(payload);
@@ -4667,7 +4667,7 @@ export async function startApiServer(opts?: {
           client.send(message);
         } catch (err) {
           logger.error(
-            `[eliza-api] WebSocket broadcast error: ${err instanceof Error ? err.message : err}`,
+            `[tokagent-api] WebSocket broadcast error: ${err instanceof Error ? err.message : err}`,
           );
         }
       }
@@ -4701,7 +4701,7 @@ export async function startApiServer(opts?: {
     if (!svc) {
       if (runtime) {
         logger.warn(
-          "[eliza-api] AGENT_EVENT service not found on runtime — event streaming will be unavailable",
+          "[tokagent-api] AGENT_EVENT service not found on runtime — event streaming will be unavailable",
         );
       }
       return;
@@ -4777,7 +4777,7 @@ export async function startApiServer(opts?: {
         );
       } catch (err) {
         logger.warn(
-          `[eliza-api] Skill discovery failed during startup: ${err instanceof Error ? err.message : String(err)}`,
+          `[tokagent-api] Skill discovery failed during startup: ${err instanceof Error ? err.message : String(err)}`,
         );
       }
     })();
@@ -4794,7 +4794,7 @@ export async function startApiServer(opts?: {
         ]);
       } catch (err) {
         logger.error(
-          `[eliza-api] Training service init failed: ${err instanceof Error ? err.message : String(err)}`,
+          `[tokagent-api] Training service init failed: ${err instanceof Error ? err.message : String(err)}`,
         );
       }
     })();
@@ -4866,7 +4866,7 @@ export async function startApiServer(opts?: {
         const { handleStreamRoute } = await import("./stream-routes.js");
         // Screen capture manager is injected by the desktop host via globalThis
         const screenCapture = (globalThis as Record<string, unknown>)
-          .__elizaScreenCapture as
+          .__tokagentScreenCapture as
           | {
               isFrameCaptureActive(): boolean;
               startFrameCapture(opts: {
@@ -4906,7 +4906,7 @@ export async function startApiServer(opts?: {
             );
           } catch (err) {
             logger.warn(
-              `[eliza-api] Failed to load custom-rtmp destination: ${err instanceof Error ? err.message : String(err)}`,
+              `[tokagent-api] Failed to load custom-rtmp destination: ${err instanceof Error ? err.message : String(err)}`,
             );
           }
         }
@@ -4924,7 +4924,7 @@ export async function startApiServer(opts?: {
             );
           } catch (err) {
             logger.warn(
-              `[eliza-api] Failed to load twitch destination: ${err instanceof Error ? err.message : String(err)}`,
+              `[tokagent-api] Failed to load twitch destination: ${err instanceof Error ? err.message : String(err)}`,
             );
           }
         }
@@ -4942,7 +4942,7 @@ export async function startApiServer(opts?: {
             );
           } catch (err) {
             logger.warn(
-              `[eliza-api] Failed to load youtube destination: ${err instanceof Error ? err.message : String(err)}`,
+              `[tokagent-api] Failed to load youtube destination: ${err instanceof Error ? err.message : String(err)}`,
             );
           }
         }
@@ -4960,7 +4960,7 @@ export async function startApiServer(opts?: {
             );
           } catch (err) {
             logger.warn(
-              `[eliza-api] Failed to load pumpfun destination: ${err instanceof Error ? err.message : String(err)}`,
+              `[tokagent-api] Failed to load pumpfun destination: ${err instanceof Error ? err.message : String(err)}`,
             );
           }
         }
@@ -4978,7 +4978,7 @@ export async function startApiServer(opts?: {
             );
           } catch (err) {
             logger.warn(
-              `[eliza-api] Failed to load x destination: ${err instanceof Error ? err.message : String(err)}`,
+              `[tokagent-api] Failed to load x destination: ${err instanceof Error ? err.message : String(err)}`,
             );
           }
         }
@@ -4998,15 +4998,15 @@ export async function startApiServer(opts?: {
           destinations,
           activeDestinationId,
           activeStreamSource: { type: "stream-tab" as const },
-          mirrorStreamAvatarToElizaConfig: (avatarIndex: number) => {
+          mirrorStreamAvatarToTokagentConfig: (avatarIndex: number) => {
             try {
               if (!Number.isFinite(avatarIndex)) {
                 return;
               }
-              const diskCfg = loadElizaConfig();
+              const diskCfg = loadTokagentConfig();
               const lang = state.config.ui?.language ?? diskCfg.ui?.language;
               const preset = resolveStylePresetByAvatarIndex(avatarIndex, lang);
-              const nextUi: ElizaConfig["ui"] = {
+              const nextUi: TokagentConfig["ui"] = {
                 ...(state.config.ui ?? {}),
                 avatarIndex,
                 ...(preset?.id ? { presetId: preset.id } : {}),
@@ -5016,9 +5016,9 @@ export async function startApiServer(opts?: {
                 ui: nextUi,
               };
               // Merge disk + live server config so we never persist a minimal
-              // snapshot (e.g. ENOENT default) and clobber eliza.json during
+              // snapshot (e.g. ENOENT default) and clobber tokagent.json during
               // onboarding while state.config still holds the full boot payload.
-              const toSave: ElizaConfig = {
+              const toSave: TokagentConfig = {
                 ...diskCfg,
                 ...state.config,
                 ui: {
@@ -5027,14 +5027,14 @@ export async function startApiServer(opts?: {
                   ...nextUi,
                 },
               };
-              saveElizaConfig(toSave);
+              saveTokagentConfig(toSave);
               state.config = {
                 ...state.config,
                 ui: toSave.ui,
               };
             } catch (err) {
               logger.warn(
-                `[eliza-api] mirrorStreamAvatarToElizaConfig failed: ${
+                `[tokagent-api] mirrorStreamAvatarToTokagentConfig failed: ${
                   err instanceof Error ? err.message : String(err)
                 }`,
               );
@@ -5071,7 +5071,7 @@ export async function startApiServer(opts?: {
         ]);
       } catch (err) {
         logger.warn(
-          `[eliza-api] Failed to load stream routes: ${err instanceof Error ? err.message : String(err)}`,
+          `[tokagent-api] Failed to load stream routes: ${err instanceof Error ? err.message : String(err)}`,
         );
       }
     })();
@@ -5118,7 +5118,7 @@ export async function startApiServer(opts?: {
       });
     } catch (err) {
       logger.error(
-        `[eliza-api] WebSocket upgrade error: ${err instanceof Error ? err.message : err}`,
+        `[tokagent-api] WebSocket upgrade error: ${err instanceof Error ? err.message : err}`,
       );
       rejectWebSocketUpgrade(socket, 404, "Not found");
     }
@@ -5167,7 +5167,7 @@ export async function startApiServer(opts?: {
         }
       } catch (err) {
         logger.error(
-          `[eliza-api] WebSocket send error: ${err instanceof Error ? err.message : err}`,
+          `[tokagent-api] WebSocket send error: ${err instanceof Error ? err.message : err}`,
         );
       }
     };
@@ -5191,7 +5191,7 @@ export async function startApiServer(opts?: {
             ws.send(JSON.stringify({ type: "auth-ok" }));
             activateAuthenticatedConnection();
           } else {
-            logger.warn("[eliza-api] WebSocket message rejected before auth");
+            logger.warn("[tokagent-api] WebSocket message rejected before auth");
             ws.close(1008, "Unauthorized");
           }
           return;
@@ -5258,17 +5258,17 @@ export async function startApiServer(opts?: {
           const subs = wsClientPtySubscriptions.get(ws);
           if (!subs?.has(msg.sessionId)) {
             logger.warn(
-              `[eliza-api] pty-input rejected: client not subscribed to session ${msg.sessionId}`,
+              `[tokagent-api] pty-input rejected: client not subscribed to session ${msg.sessionId}`,
             );
           } else if (msg.data.length > 4096) {
             logger.warn(
-              `[eliza-api] pty-input rejected: payload too large (${msg.data.length} bytes) for session ${msg.sessionId}`,
+              `[tokagent-api] pty-input rejected: payload too large (${msg.data.length} bytes) for session ${msg.sessionId}`,
             );
           } else {
             const bridge = getPtyConsoleBridge(state);
             if (bridge) {
               logger.debug(
-                `[eliza-api] pty-input: session=${msg.sessionId} len=${msg.data.length}`,
+                `[tokagent-api] pty-input: session=${msg.sessionId} len=${msg.data.length}`,
               );
               bridge.writeRaw(msg.sessionId, msg.data);
             }
@@ -5281,7 +5281,7 @@ export async function startApiServer(opts?: {
           const subs = wsClientPtySubscriptions.get(ws);
           if (!subs?.has(msg.sessionId)) {
             logger.warn(
-              `[eliza-api] pty-resize rejected: client not subscribed to session ${msg.sessionId}`,
+              `[tokagent-api] pty-resize rejected: client not subscribed to session ${msg.sessionId}`,
             );
           } else {
             const bridge = getPtyConsoleBridge(state);
@@ -5301,14 +5301,14 @@ export async function startApiServer(opts?: {
               bridge.resize(msg.sessionId, msg.cols, msg.rows);
             } else {
               logger.warn(
-                `[eliza-api] pty-resize rejected: invalid dimensions cols=${msg.cols} rows=${msg.rows}`,
+                `[tokagent-api] pty-resize rejected: invalid dimensions cols=${msg.cols} rows=${msg.rows}`,
               );
             }
           }
         }
       } catch (err) {
         logger.error(
-          `[eliza-api] WebSocket message error: ${err instanceof Error ? err.message : err}`,
+          `[tokagent-api] WebSocket message error: ${err instanceof Error ? err.message : err}`,
         );
       }
     });
@@ -5329,7 +5329,7 @@ export async function startApiServer(opts?: {
 
     ws.on("error", (err: unknown) => {
       logger.error(
-        `[eliza-api] WebSocket error: ${err instanceof Error ? err.message : err}`,
+        `[tokagent-api] WebSocket error: ${err instanceof Error ? err.message : err}`,
       );
       wsClients.delete(ws);
       // Clean up PTY subscriptions on error too
@@ -5367,7 +5367,7 @@ export async function startApiServer(opts?: {
           client.send(message);
         } catch (err) {
           logger.error(
-            `[eliza-api] WebSocket broadcast error: ${err instanceof Error ? err.message : err}`,
+            `[tokagent-api] WebSocket broadcast error: ${err instanceof Error ? err.message : err}`,
           );
         }
       }
@@ -5385,7 +5385,7 @@ export async function startApiServer(opts?: {
         delivered += 1;
       } catch (err) {
         logger.error(
-          `[eliza-api] WebSocket targeted send error: ${err instanceof Error ? err.message : err}`,
+          `[tokagent-api] WebSocket targeted send error: ${err instanceof Error ? err.message : err}`,
         );
       }
     }
@@ -5419,7 +5419,7 @@ export async function startApiServer(opts?: {
     rt: AgentRuntime,
   ): Promise<void> => {
     try {
-      const agentName = rt.character.name ?? "Eliza";
+      const agentName = rt.character.name ?? "Tokagent";
       const worldId = stringToUuid(`${agentName}-web-chat-world`);
       const rooms = await rt.getRoomsByWorld(worldId);
       if (!rooms?.length) return;
@@ -5474,7 +5474,7 @@ export async function startApiServer(opts?: {
       }
     } catch (err) {
       logger.warn(
-        `[eliza-api] Failed to restore conversations from DB: ${err instanceof Error ? err.message : err}`,
+        `[tokagent-api] Failed to restore conversations from DB: ${err instanceof Error ? err.message : err}`,
       );
     }
   };
@@ -5492,7 +5492,7 @@ export async function startApiServer(opts?: {
   /**
    * Load the agent's DB-persisted character data and overlay onto the
    * in-memory runtime.character.  This ensures Character Editor edits
-   * survive server restarts without depending on eliza.json persistence.
+   * survive server restarts without depending on tokagent.json persistence.
    */
   const overlayDbCharacter = async (
     rt: AgentRuntime,
@@ -5633,7 +5633,7 @@ export async function startApiServer(opts?: {
   };
 
   console.log(
-    `[eliza-api] Calling server.listen (${Date.now() - apiStartTime}ms)`,
+    `[tokagent-api] Calling server.listen (${Date.now() - apiStartTime}ms)`,
   );
   return new Promise((resolve, reject) => {
     let currentPort = port;
@@ -5641,17 +5641,17 @@ export async function startApiServer(opts?: {
     server.on("error", (err: NodeJS.ErrnoException) => {
       if (err.code === "EADDRINUSE") {
         console.warn(
-          `[eliza-api] Port ${currentPort} is already in use. Checking fallback...`,
+          `[tokagent-api] Port ${currentPort} is already in use. Checking fallback...`,
         );
         if (currentPort !== 0) {
-          console.warn(`[eliza-api] Retrying with dynamic port (0)...`);
+          console.warn(`[tokagent-api] Retrying with dynamic port (0)...`);
           currentPort = 0;
           server.listen(0, host);
           return;
         }
       } else {
         console.error(
-          `[eliza-api] Server error: ${err.message} (code: ${err.code})`,
+          `[tokagent-api] Server error: ${err.message} (code: ${err.code})`,
         );
       }
       reject(err);
@@ -5659,7 +5659,7 @@ export async function startApiServer(opts?: {
 
     server.listen(port, host, () => {
       console.log(
-        `[eliza-api] server.listen callback fired (${Date.now() - apiStartTime}ms)`,
+        `[tokagent-api] server.listen callback fired (${Date.now() - apiStartTime}ms)`,
       );
       const addr = server.address();
       const actualPort =
@@ -5676,10 +5676,10 @@ export async function startApiServer(opts?: {
       // logger. agent.ts watches stdout for "Listening on http://host:PORT"
       // to detect dynamic port reassignment when the default port is in use.
       console.log(
-        `[eliza-api] Listening on http://${displayHost}:${actualPort}`,
+        `[tokagent-api] Listening on http://${displayHost}:${actualPort}`,
       );
       logger.info(
-        `[eliza-api] Listening on http://${displayHost}:${actualPort}`,
+        `[tokagent-api] Listening on http://${displayHost}:${actualPort}`,
       );
       if (!opts?.skipDeferredStartupWork) {
         startDeferredStartupWork();

@@ -8,7 +8,7 @@ import os
 
 import aiohttp
 
-from elizaos_vending_bench.agent import LLMProvider
+from tokagentos_vending_bench.agent import LLMProvider
 
 
 class AnthropicProvider(LLMProvider):

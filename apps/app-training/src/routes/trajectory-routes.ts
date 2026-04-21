@@ -1,5 +1,5 @@
 /**
- * Trajectory API routes for the Eliza Control UI.
+ * Trajectory API routes for the Tokagent Control UI.
  *
  * Provides endpoints for:
  * - Listing and searching trajectories
@@ -13,7 +13,7 @@
  */
 
 import type http from "node:http";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import {
   enrichTrajectoryLlmCall,
   executeRawSql,
@@ -21,7 +21,7 @@ import {
   type PersistedStep,
   type PersistedTrajectory,
   saveTrajectory,
-} from "@elizaos/agent/runtime/trajectory-internals";
+} from "@tokagentos/agent/runtime/trajectory-internals";
 import type {
   Trajectory,
   TrajectoryExportFormat,
@@ -34,13 +34,13 @@ import type {
   TrajectoryProviderAccess,
   TrajectoryStatus,
   TrajectoryStep,
-} from "@elizaos/agent/types/trajectory";
+} from "@tokagentos/agent/types/trajectory";
 import {
   readJsonBody as parseJsonBody,
   sendJson,
   sendJsonError,
-} from "@elizaos/agent/api/http-helpers";
-import { createZipArchive } from "@elizaos/agent/api/zip-utils";
+} from "@tokagentos/agent/api/http-helpers";
+import { createZipArchive } from "@tokagentos/agent/api/zip-utils";
 
 export type { TrajectoryExportFormat };
 
@@ -909,7 +909,7 @@ async function maybeBackfillTrajectoryFromConversationMemory(
         {
           callId: `${traj.trajectoryId}-conversation-memory`,
           timestamp: userCreatedAt,
-          model: "eliza/conversation-memory-backfill",
+          model: "tokagent/conversation-memory-backfill",
           systemPrompt:
             "[backfilled from conversation memory because the trajectory logger did not capture the live LLM call]",
           userPrompt,

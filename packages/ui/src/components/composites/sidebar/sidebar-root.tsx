@@ -108,7 +108,7 @@ const sidebarCollapsedFallbackBodyClassName =
 const sidebarMetaClassName = "mt-1.5 text-xs text-muted";
 
 const DEFAULT_APP_SIDEBAR_SYNC_ID = "primary-app-sidebar";
-const SIDEBAR_SYNC_STORAGE_PREFIX = "elizaos:ui:sidebar:";
+const SIDEBAR_SYNC_STORAGE_PREFIX = "tokagentos:ui:sidebar:";
 const sidebarSyncListeners = new Map<string, Set<() => void>>();
 
 function getSidebarCollapsedStorageKey(syncId: string) {

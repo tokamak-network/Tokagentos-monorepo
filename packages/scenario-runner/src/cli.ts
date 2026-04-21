@@ -13,7 +13,7 @@
 import path from "node:path";
 import crypto from "node:crypto";
 import process from "node:process";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { availableProviderNames } from "../../app-core/test/helpers/live-provider.ts";
 import { runScenario } from "./executor.ts";
 import { loadAllScenarios } from "./loader.ts";

@@ -9,7 +9,7 @@ import string
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from elizaos_context_bench.types import (
+from tokagentos_context_bench.types import (
     DEFAULT_HAYSTACK_PARAGRAPHS,
     NEEDLE_TEMPLATES,
     QUESTION_TEMPLATES,

@@ -1,14 +1,14 @@
 #![cfg(all(feature = "native", not(feature = "wasm")))]
 
 use anyhow::Result;
-use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-use elizaos::types::agent::Character;
+use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+use tokagentos::types::agent::Character;
 use std::sync::Arc;
 
 fn basic_character() -> Character {
     Character {
         name: "TestAgent".to_string(),
-        bio: elizaos::types::agent::Bio::Single("test".to_string()),
+        bio: tokagentos::types::agent::Bio::Single("test".to_string()),
         ..Default::default()
     }
 }

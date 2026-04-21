@@ -1,6 +1,6 @@
 ## Roblox agent bridge (TypeScript)
 
-This example runs an **elizaOS AgentRuntime** that Roblox can call via HTTP for inbound chat, while the agent can publish outbound messages/actions to Roblox via `@elizaos/plugin-roblox`.
+This example runs an **tokagentOS AgentRuntime** that Roblox can call via HTTP for inbound chat, while the agent can publish outbound messages/actions to Roblox via `@elizaos/plugin-roblox`.
 
 ### Setup
 
@@ -10,7 +10,7 @@ This example runs an **elizaOS AgentRuntime** that Roblox can call via HTTP for 
     - (optional) DataStore access
   - Note your **Universe ID**
 - **Roblox Studio**:
-  - Copy `examples/roblox/roblox-studio/ServerScriptService/ElizaBridge.server.lua` into `ServerScriptService`
+  - Copy `examples/roblox/roblox-studio/ServerScriptService/TokagentBridge.server.lua` into `ServerScriptService`
   - Enable **HttpService** and set `AGENT_URL` to your public URL
 
 ### Environment variables
@@ -21,13 +21,13 @@ This example runs an **elizaOS AgentRuntime** that Roblox can call via HTTP for 
 - **Optional “echo replies into Roblox”**:
   - `ROBLOX_ECHO_TO_GAME=true` (publishes the agent reply back to the MessagingService topic)
 - **Inbound auth (recommended)**:
-  - `ELIZA_ROBLOX_SHARED_SECRET` (must match `SHARED_SECRET` in the Luau script)
+  - `TOKAGENT_ROBLOX_SHARED_SECRET` (must match `SHARED_SECRET` in the Luau script)
 - **Database (required for AgentRuntime)**:
   - `POSTGRES_URL` (recommended; production-grade)
     - If you don’t set `POSTGRES_URL`, `@elizaos/plugin-sql` falls back to PGlite, which can be less reliable depending on platform/runtime.
 - **LLM model**:
   - If you set `OPENAI_API_KEY`, the bridge uses `@elizaos/plugin-openai`.
-  - If `OPENAI_API_KEY` is not set, it falls back to **classic ELIZA** (no OpenAI required).
+  - If `OPENAI_API_KEY` is not set, it falls back to **classic TOKAGENT** (no OpenAI required).
 
 ### Run
 
@@ -37,7 +37,7 @@ bun install
 
 # Start Postgres locally (recommended)
 docker compose up -d
-export POSTGRES_URL="postgresql://eliza:eliza@localhost:55432/eliza"
+export POSTGRES_URL="postgresql://tokagent:tokagent@localhost:55432/tokagent"
 
 # Optional: enable OpenAI (recommended)
 export OPENAI_API_KEY="..."

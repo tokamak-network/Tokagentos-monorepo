@@ -110,14 +110,14 @@ describe("Downloader e2e", () => {
 
   beforeEach(async () => {
     tmpState = await fs.mkdtemp(path.join(os.tmpdir(), "milady-dl-e2e-"));
-    origStateDir = process.env.ELIZA_STATE_DIR;
+    origStateDir = process.env.TOKAGENT_STATE_DIR;
     origHfBase = process.env.MILADY_HF_BASE_URL;
-    process.env.ELIZA_STATE_DIR = tmpState;
+    process.env.TOKAGENT_STATE_DIR = tmpState;
   });
 
   afterEach(async () => {
-    if (origStateDir === undefined) delete process.env.ELIZA_STATE_DIR;
-    else process.env.ELIZA_STATE_DIR = origStateDir;
+    if (origStateDir === undefined) delete process.env.TOKAGENT_STATE_DIR;
+    else process.env.TOKAGENT_STATE_DIR = origStateDir;
     if (origHfBase === undefined) delete process.env.MILADY_HF_BASE_URL;
     else process.env.MILADY_HF_BASE_URL = origHfBase;
     await fs.rm(tmpState, { recursive: true, force: true });

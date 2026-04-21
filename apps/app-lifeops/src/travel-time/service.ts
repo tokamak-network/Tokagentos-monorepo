@@ -10,12 +10,12 @@
  * is explicit-absence, not a stub.
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
-import { logger } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import type {
   LifeOpsCalendarEvent,
   LifeOpsCalendarFeed,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 
 export const FALLBACK_FIXED_BUFFER_MINUTES = 30;
 export const GOOGLE_DISTANCE_MATRIX_URL =

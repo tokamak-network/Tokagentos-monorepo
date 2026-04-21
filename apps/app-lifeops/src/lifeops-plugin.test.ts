@@ -37,12 +37,12 @@ vi.mock("./routes/lifeops-routes", () => ({
 vi.mock("./routes/website-blocker-routes", () => ({
   handleWebsiteBlockerRoutes: vi.fn(async () => {}),
 }));
-vi.mock("@elizaos/agent/api/http-helpers", () => ({
+vi.mock("@tokagentos/agent/api/http-helpers", () => ({
   sendJson: vi.fn(),
   sendJsonError: vi.fn(),
   readJsonBody: vi.fn(),
 }));
-vi.mock("@elizaos/agent/api/server-helpers", () => ({
+vi.mock("@tokagentos/agent/api/server-helpers", () => ({
   decodePathComponent: vi.fn((s: string) => s),
 }));
 

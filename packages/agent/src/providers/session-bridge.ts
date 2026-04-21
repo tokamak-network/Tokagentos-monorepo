@@ -1,8 +1,8 @@
 /**
- * Bridges Eliza session keys with elizaOS rooms.
+ * Bridges Tokagent session keys with tokagentOS rooms.
  *
- * Eliza keys: agent:{agentId}:main (DMs), agent:{agentId}:{channel}:group:{id} (groups)
- * elizaOS rooms: per-agent UUIDs via createUniqueUuid(runtime, channelId)
+ * Tokagent keys: agent:{agentId}:main (DMs), agent:{agentId}:{channel}:group:{id} (groups)
+ * tokagentOS rooms: per-agent UUIDs via createUniqueUuid(runtime, channelId)
  */
 
 import type {
@@ -12,10 +12,10 @@ import type {
   ProviderResult,
   Room,
   State,
-} from "@elizaos/core";
-import * as elizaCore from "@elizaos/core";
+} from "@tokagentos/core";
+import * as tokagentCore from "@tokagentos/core";
 
-type ElizaCoreSessionHelpers = {
+type TokagentCoreSessionHelpers = {
   buildAgentMainSessionKey?: (params: {
     agentId: string;
     mainKey: string;
@@ -32,8 +32,8 @@ type ElizaCoreSessionHelpers = {
     | undefined;
 };
 
-const coreSessionHelpers = elizaCore as ElizaCoreSessionHelpers;
-// Fallback for when ChannelType is not exported by @elizaos/core (e.g. in tests)
+const coreSessionHelpers = tokagentCore as TokagentCoreSessionHelpers;
+// Fallback for when ChannelType is not exported by @tokagentos/core (e.g. in tests)
 const channelType = coreSessionHelpers.ChannelType ?? {
   DM: "DM",
   SELF: "SELF",
@@ -62,7 +62,7 @@ function parseAgentSessionKey(key: string):
 }
 
 /**
- * Resolve an Eliza session key from an elizaOS room.
+ * Resolve an Tokagent session key from an tokagentOS room.
  *
  * DMs -> agent:{agentId}:main
  * Groups -> agent:{agentId}:{channel}:group:{groupId}
@@ -92,8 +92,8 @@ export function createSessionKeyProvider(options?: {
   const agentId = options?.defaultAgentId ?? "main";
 
   return {
-    name: "elizaSessionKey",
-    description: "Eliza session key (DM/group/thread isolation)",
+    name: "tokagentSessionKey",
+    description: "Tokagent session key (DM/group/thread isolation)",
     dynamic: true,
     position: 5,
 

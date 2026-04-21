@@ -12,12 +12,12 @@ import logging
 import re
 from typing import TYPE_CHECKING
 
-from elizaos.types import Action, ActionResult, Content, ModelType
+from tokagentos.types import Action, ActionResult, Content, ModelType
 
 from ..types import SecretContext, SecretLevel
 
 if TYPE_CHECKING:
-    from elizaos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
+    from tokagentos.types import HandlerCallback, HandlerOptions, IAgentRuntime, Memory, State
 
     from ..service import SecretsService
 

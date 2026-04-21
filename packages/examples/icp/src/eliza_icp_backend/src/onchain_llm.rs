@@ -7,7 +7,7 @@
 //!
 //! ```
 //! ┌─────────────────┐     inter-canister     ┌─────────────────────┐
-//! │ elizaOS Canister│─────────call──────────▶│ llama_cpp_canister  │
+//! │ tokagentOS Canister│─────────call──────────▶│ llama_cpp_canister  │
 //! │                 │◀────────────────────────│ (Qwen/Llama model)  │
 //! └─────────────────┘                         └─────────────────────┘
 //! ```

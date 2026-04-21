@@ -8,7 +8,7 @@ import type {
   AppUiExtensionConfig,
   AppViewerConfig,
   RegistryAppInfo,
-} from "@elizaos/shared/contracts/apps";
+} from "@tokagentos/shared/contracts/apps";
 import type { TrajectoryExportFormat } from "./client-types-core";
 
 export type {
@@ -163,7 +163,7 @@ export interface CloudLoginPollResponse {
   error?: string;
 }
 
-// Cloud Compat (Eliza Cloud v2 thin-client types)
+// Cloud Compat (Tokagent Cloud v2 thin-client types)
 export interface CloudCompatAgent {
   agent_id: string;
   agent_name: string;
@@ -229,7 +229,7 @@ export interface CloudCompatManagedDiscordStatus {
   adminDiscordUsername: string | null;
   adminDiscordDisplayName: string | null;
   adminDiscordAvatarUrl: string | null;
-  adminElizaUserId: string | null;
+  adminTokagentUserId: string | null;
   botNickname: string | null;
   connectedAt: string | null;
   restarted?: boolean;
@@ -293,7 +293,7 @@ export interface CloudCompatManagedGithubStatus {
   githubEmail: string | null;
   scopes: string[];
   source?: CloudOAuthConnectionSource | null;
-  adminElizaUserId: string | null;
+  adminTokagentUserId: string | null;
   connectedAt: string | null;
   restarted?: boolean;
 }
@@ -409,7 +409,7 @@ export interface AppViewerAuthMessage {
   followEntity?: string;
 }
 
-// AppViewerConfig, AppUiExtensionConfig — imported from @elizaos/shared/contracts/apps
+// AppViewerConfig, AppUiExtensionConfig — imported from @tokagentos/shared/contracts/apps
 
 export interface AppSessionRecommendation {
   id: string;
@@ -428,7 +428,7 @@ export interface AppSessionActivityItem {
   severity?: "info" | "warning" | "error";
 }
 
-// AppSessionConfig — imported from @elizaos/shared/contracts/apps
+// AppSessionConfig — imported from @tokagentos/shared/contracts/apps
 
 export interface AppSessionState {
   sessionId: string;
@@ -534,7 +534,7 @@ export interface AppLaunchDiagnostic {
   message: string;
 }
 
-// RegistryAppInfo — imported from @elizaos/shared/contracts/apps
+// RegistryAppInfo — imported from @tokagentos/shared/contracts/apps
 
 export interface InstalledAppInfo {
   name: string;
@@ -933,7 +933,7 @@ export interface RawPtySession {
 /**
  * Maps raw PTY sessions from /api/coding-agents into CodingAgentSession[].
  * Extracted as a pure function so it can be unit-tested without instantiating
- * the full ElizaClient.
+ * the full TokagentClient.
  */
 export function mapPtySessionsToCodingAgentSessions(
   ptySessions: RawPtySession[],

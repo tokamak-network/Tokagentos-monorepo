@@ -113,13 +113,13 @@ for (let index = 0; index < runCount; index += 1) {
 		[
 			"--import",
 			"tsx",
-			"eliza/packages/typescript/test/live/orchestrator-live-failover.ts",
+			"tokagent/packages/typescript/test/live/orchestrator-live-failover.ts",
 		],
 		{
 			cwd: repoRoot,
 			env: {
 				...process.env,
-				ELIZA_KEEP_LIVE_ARTIFACTS: "1",
+				TOKAGENT_KEEP_LIVE_ARTIFACTS: "1",
 				ORCHESTRATOR_LIVE_PRIMARY:
 					process.env.ORCHESTRATOR_LIVE_PRIMARY ?? "codex",
 				ORCHESTRATOR_LIVE_FALLBACK:

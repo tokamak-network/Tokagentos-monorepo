@@ -1,5 +1,5 @@
-import { registerOperatorSurface } from "@elizaos/app-core/components/apps/surfaces/registry";
-import { registerDetailExtension } from "@elizaos/app-core/components/apps/extensions/registry";
+import { registerOperatorSurface } from "@tokagentos/app-core/components/apps/surfaces/registry";
+import { registerDetailExtension } from "@tokagentos/app-core/components/apps/extensions/registry";
 import { HyperscapeOperatorSurface } from "./HyperscapeOperatorSurface.js";
 import { HyperscapeDetailExtension } from "./HyperscapeDetailExtension.js";
 

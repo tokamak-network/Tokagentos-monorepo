@@ -11,18 +11,18 @@ from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.table import Table
 
-from elizaos_art.base import TrainingConfig
-from elizaos_art.games.tic_tac_toe.agent import (
+from tokagentos_art.base import TrainingConfig
+from tokagentos_art.games.tic_tac_toe.agent import (
     TicTacToeAgent,
     TicTacToeHeuristicAgent,
     TicTacToeRandomAgent,
 )
-from elizaos_art.games.tic_tac_toe.environment import TicTacToeEnvironment
-from elizaos_art.games.tic_tac_toe.types import Player, TicTacToeAction, TicTacToeConfig
-from elizaos_art.trainer import GRPOTrainer
+from tokagentos_art.games.tic_tac_toe.environment import TicTacToeEnvironment
+from tokagentos_art.games.tic_tac_toe.types import Player, TicTacToeAction, TicTacToeConfig
+from tokagentos_art.trainer import GRPOTrainer
 
 app = typer.Typer(
-    name="elizaos-art-tictactoe",
+    name="tokagentos-art-tictactoe",
     help="Tic-Tac-Toe game training with ART/GRPO",
 )
 console = Console()

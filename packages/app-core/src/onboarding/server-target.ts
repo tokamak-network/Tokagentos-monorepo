@@ -1,4 +1,4 @@
-export type OnboardingServerTarget = "" | "local" | "remote" | "elizacloud";
+export type OnboardingServerTarget = "" | "local" | "remote" | "tokagentcloud";
 
 export function activeServerKindToOnboardingServerTarget(
   kind: "local" | "cloud" | "remote",
@@ -7,7 +7,7 @@ export function activeServerKindToOnboardingServerTarget(
     case "local":
       return "local";
     case "cloud":
-      return "elizacloud";
+      return "tokagentcloud";
     case "remote":
       return "remote";
   }

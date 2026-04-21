@@ -10,7 +10,7 @@ import type {
   LifeOpsConnectorSide,
   LifeOpsGmailMessageSummary,
   LifeOpsNextCalendarEventContext,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   createGoogleCalendarEvent,
   deleteGoogleCalendarEvent,

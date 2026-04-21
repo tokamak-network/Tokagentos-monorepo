@@ -1,13 +1,13 @@
 /**
  * Live database & conversation roundtrip tests.
  *
- * Boots a real eliza runtime and exercises the real database layer:
+ * Boots a real tokagent runtime and exercises the real database layer:
  * - Create, list, get conversations
  * - Post messages and retrieve history
  * - Memory persistence
  *
  * Replaces deleted mock tests for database-api, cloud-persistence, etc.
- * Gated on ELIZA_LIVE_TEST=1.
+ * Gated on TOKAGENT_LIVE_TEST=1.
  */
 import { spawn } from "node:child_process";
 import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
@@ -37,7 +37,7 @@ const REPO_ROOT = path.resolve(
 loadDotenv({ path: path.join(REPO_ROOT, ".env") });
 
 const LIVE =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const LIVE_PROVIDER = selectLiveProvider();
 const LIVE_PROVIDER_PLUGIN_ID = LIVE_PROVIDER?.pluginPackage
   .split("/")
@@ -100,9 +100,9 @@ async function postLiveMessage(
 import type { RuntimeHarness as Runtime } from "./helpers/runtime-harness";
 
 async function startRuntime(): Promise<Runtime> {
-  const tmp = await mkdtemp(path.join(os.tmpdir(), "eliza-db-live-"));
+  const tmp = await mkdtemp(path.join(os.tmpdir(), "tokagent-db-live-"));
   const stateDir = path.join(tmp, "state");
-  const configPath = path.join(tmp, "eliza.json");
+  const configPath = path.join(tmp, "tokagent.json");
   const port = await getFreePort();
   const logBuf: string[] = [];
   const allowPlugins =
@@ -120,15 +120,15 @@ async function startRuntime(): Promise<Runtime> {
     "utf8",
   );
 
-  const child = spawn("bun", ["run", "start:eliza"], {
+  const child = spawn("bun", ["run", "start:tokagent"], {
     cwd: REPO_ROOT,
     env: createLiveRuntimeChildEnv({
       ...(LIVE_PROVIDER?.env ?? {}),
-      ELIZA_CONFIG_PATH: configPath,
-      ELIZA_STATE_DIR: stateDir,
-      ELIZA_PORT: String(port),
-      ELIZA_API_PORT: String(port),
-      ELIZA_DISABLE_LOCAL_EMBEDDINGS: "1",
+      TOKAGENT_CONFIG_PATH: configPath,
+      TOKAGENT_STATE_DIR: stateDir,
+      TOKAGENT_PORT: String(port),
+      TOKAGENT_API_PORT: String(port),
+      TOKAGENT_DISABLE_LOCAL_EMBEDDINGS: "1",
       ALLOW_NO_DATABASE: "",
       DISCORD_API_TOKEN: "",
       DISCORD_BOT_TOKEN: "",

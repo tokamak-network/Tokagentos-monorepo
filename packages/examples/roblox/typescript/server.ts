@@ -1,12 +1,12 @@
-import { AgentRuntime, createCharacter } from "@elizaos/core";
+import { AgentRuntime, createCharacter } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import { robloxPlugin } from "@elizaos/plugin-roblox";
 import sqlPlugin from "@elizaos/plugin-sql";
 import { createRobloxBridgeApp } from "./app";
-import { elizaClassicXmlPlugin } from "./elizaClassicXmlPlugin";
+import { tokagentClassicXmlPlugin } from "./tokagentClassicXmlPlugin";
 
 const PORT = Number(process.env.PORT ?? 3040);
-const SHARED_SECRET = process.env.ELIZA_ROBLOX_SHARED_SECRET ?? "";
+const SHARED_SECRET = process.env.TOKAGENT_ROBLOX_SHARED_SECRET ?? "";
 
 function envSettings(): Record<string, string> {
   const out: Record<string, string> = {};
@@ -18,7 +18,7 @@ function envSettings(): Record<string, string> {
 
 function createRuntime(): AgentRuntime {
   const character = createCharacter({
-    name: "Eliza",
+    name: "Tokagent",
     bio: "A helpful Roblox guide NPC.",
     system:
       "You are a helpful Roblox guide. Be concise. " +
@@ -30,10 +30,10 @@ function createRuntime(): AgentRuntime {
     process.env.OPENAI_API_KEY.trim() !== "";
 
   // If OPENAI_API_KEY is provided, use OpenAI for full agent behavior.
-  // Otherwise, use a classic ELIZA model wrapped into elizaOS XML.
+  // Otherwise, use a classic TOKAGENT model wrapped into tokagentOS XML.
   const plugins = hasOpenAIKey
     ? [sqlPlugin, openaiPlugin, robloxPlugin]
-    : [sqlPlugin, elizaClassicXmlPlugin, robloxPlugin];
+    : [sqlPlugin, tokagentClassicXmlPlugin, robloxPlugin];
 
   return new AgentRuntime({
     character,

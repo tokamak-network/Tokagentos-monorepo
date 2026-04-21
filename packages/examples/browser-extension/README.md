@@ -1,11 +1,11 @@
 # Chat with Webpage - Browser Extension
 
-A cross-platform browser extension that lets you chat with any webpage using AI. Powered by ElizaOS with support for multiple AI providers.
+A cross-platform browser extension that lets you chat with any webpage using AI. Powered by TokagentOS with support for multiple AI providers.
 
 ## Features
 
 - **Chat with any webpage** - Ask questions about the content you're viewing
-- **Multiple AI providers** - OpenAI, Anthropic (Claude), Google Gemini, Groq, xAI (Grok), or offline ELIZA
+- **Multiple AI providers** - OpenAI, Anthropic (Claude), Google Gemini, Groq, xAI (Grok), or offline TOKAGENT
 - **Privacy-focused** - API keys stored locally, page content never leaves your browser
 - **Streaming responses** - See AI responses as they're generated
 - **Cross-platform** - Works on Chrome and Safari
@@ -50,7 +50,7 @@ npm run convert
 
 | Provider | API Key Required | Models |
 |----------|-----------------|--------|
-| ELIZA (Classic) | No | Pattern matching (offline) |
+| TOKAGENT (Classic) | No | Pattern matching (offline) |
 | OpenAI | Yes | GPT-4o, GPT-4o-mini |
 | Anthropic | Yes | Claude Sonnet, Claude Haiku |
 | Google Gemini | Yes | Gemini 2.0 Flash |
@@ -81,7 +81,7 @@ npm run convert
 browser-extension/
 ├── shared/                     # Shared TypeScript code
 │   ├── types.ts               # Type definitions
-│   ├── eliza-runtime.ts       # ElizaOS runtime setup
+│   ├── tokagent-runtime.ts       # TokagentOS runtime setup
 │   └── providers/
 │       └── pageContentProvider.ts  # Page context injection
 ├── chrome/                     # Chrome extension
@@ -103,8 +103,8 @@ browser-extension/
 1. **Content Script** (`content.ts`) - Runs on every page and extracts the main content (title, URL, text)
 2. **Background Script** (`background.ts`) - Manages communication between popup and content scripts
 3. **Popup** (`popup.ts`) - The chat interface that users interact with
-4. **Page Content Provider** - A custom ElizaOS provider that injects the current page content into the AI's context
-5. **Eliza Runtime** - Manages the AI conversation with support for multiple providers
+4. **Page Content Provider** - A custom TokagentOS provider that injects the current page content into the AI's context
+5. **Tokagent Runtime** - Manages the AI conversation with support for multiple providers
 
 ## Development
 

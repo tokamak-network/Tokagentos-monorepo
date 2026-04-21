@@ -3,15 +3,15 @@
  * signer mode, and trade permissions. Never exposes private keys.
  */
 
-import { getWalletAddresses } from "@elizaos/agent/api/wallet";
-import { resolveWalletRpcReadiness } from "@elizaos/agent/api/wallet-rpc";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
-import type { AwarenessContributor } from "@elizaos/agent/contracts";
+import { getWalletAddresses } from "@tokagentos/agent/api/wallet";
+import { resolveWalletRpcReadiness } from "@tokagentos/agent/api/wallet-rpc";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
+import type { AwarenessContributor } from "@tokagentos/agent/contracts";
 import {
   canUseLocalTradeExecution,
   resolveTradePermissionMode,
 } from "@elizaos/app-steward/routes/server-wallet-trade";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 function shorten(address: string | null): string | null {
   if (!address) return null;
@@ -38,7 +38,7 @@ export const walletContributor: AwarenessContributor = {
       return "Wallet: not configured";
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const tradeMode = resolveTradePermissionMode(config);
     const localSigner = Boolean(process.env.EVM_PRIVATE_KEY?.trim());
     const stewardConfigured = Boolean(process.env.STEWARD_API_URL?.trim());
@@ -60,12 +60,12 @@ export const walletContributor: AwarenessContributor = {
     level: "brief" | "full",
   ): Promise<string> {
     const addrs = getWalletAddresses();
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const tradeMode = resolveTradePermissionMode(config);
     const localSigner = Boolean(process.env.EVM_PRIVATE_KEY?.trim());
     const stewardConfigured = Boolean(process.env.STEWARD_API_URL?.trim());
     const stewardAgentId =
-      process.env.STEWARD_AGENT_ID ?? process.env.ELIZA_STEWARD_AGENT_ID ?? "";
+      process.env.STEWARD_AGENT_ID ?? process.env.TOKAGENT_STEWARD_AGENT_ID ?? "";
     const bscRpc = resolveWalletRpcReadiness(config).managedBscRpcReady;
     const canUserTrade = canUseLocalTradeExecution(tradeMode, false);
     const canAgentTrade = canUseLocalTradeExecution(tradeMode, true);

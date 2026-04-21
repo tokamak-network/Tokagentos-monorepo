@@ -9,7 +9,7 @@ import type {
   LifeOpsCalendarEvent,
   LifeOpsOccurrenceView,
   LifeOpsWorkflowRun,
-} from "@elizaos/shared/contracts/lifeops";
+} from "@tokagentos/shared/contracts/lifeops";
 import {
   requireNonEmptyString,
   normalizeOptionalString,

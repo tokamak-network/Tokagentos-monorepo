@@ -5,9 +5,9 @@ mod types;
 use crate::runtime_manager::{get_or_create_runtime, room_id, SharedRuntime};
 use crate::store::ChatStore;
 use crate::types::{effective_mode, AppConfig, ChatMessage, ProviderMode};
-use elizaos::services::IMessageService;
-use elizaos::types::memory::Memory;
-use elizaos::types::primitives::{string_to_uuid, UUID};
+use tokagentos::services::IMessageService;
+use tokagentos::types::memory::Memory;
+use tokagentos::types::primitives::{string_to_uuid, UUID};
 use std::path::PathBuf;
 use std::sync::Arc;
 use tauri::{Manager, State};
@@ -61,7 +61,7 @@ async fn chat_reset(config: Option<AppConfig>, state: State<'_, AppState>) -> Re
 async fn chat_get_greeting(config: Option<AppConfig>) -> String {
     let cfg = config.unwrap_or_default();
     match effective_mode(&cfg) {
-        ProviderMode::ElizaClassic => elizaos_plugin_eliza_classic::get_greeting(),
+        ProviderMode::TokagentClassic => tokagentos_plugin_tokagent_classic::get_greeting(),
         _ => "Hello! What would you like to chat about?".to_string(),
     }
 }
@@ -95,7 +95,7 @@ async fn chat_send(
             .map_err(|e| e.to_string())?;
     }
 
-    // Run elizaOS in Rust backend worker (to avoid Send constraints in Tauri commands)
+    // Run tokagentOS in Rust backend worker (to avoid Send constraints in Tauri commands)
     let (resp_tx, resp_rx) = tokio::sync::oneshot::channel::<Result<String, String>>();
     state
         .worker

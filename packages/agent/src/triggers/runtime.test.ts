@@ -1,4 +1,4 @@
-import type { IAgentRuntime, Task, UUID } from "@elizaos/core";
+import type { IAgentRuntime, Task, UUID } from "@tokagentos/core";
 import { describe, expect, it, vi } from "vitest";
 import { executeTriggerTask } from "./runtime.js";
 import type { TriggerConfig } from "./types.js";

@@ -12,7 +12,7 @@ import type { PluginListenerHandle } from "@capacitor/core";
 import {
   invokeDesktopBridgeRequest,
   subscribeDesktopBridgeEvent,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import type {
   GatewayConnectOptions,
   GatewayConnectResult,
@@ -180,7 +180,7 @@ export class GatewayElectrobun implements GatewayPlugin {
       minProtocol: 3,
       maxProtocol: 3,
       client: {
-        id: this.options.clientName || "eliza-capacitor",
+        id: this.options.clientName || "tokagent-capacitor",
         version: this.options.clientVersion || "1.0.0",
         platform: this.getPlatform(),
         mode: "ui",

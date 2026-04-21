@@ -1,6 +1,6 @@
 /**
  * PR 7 LIVE cross-repo test — full ::steer path from xRSPS server
- * through the bot-SDK to the eliza plugin's ScapeGameService.
+ * through the bot-SDK to the tokagent plugin's ScapeGameService.
  *
  * Flow:
  *   1. Connect a BotSdk as an agent (with onOperatorCommand handler)
@@ -25,10 +25,10 @@
  *   in-game chat path, we rely on the offline verify-pr7.ts harness.
  *
  * Run:
- *   BOT_SDK_TOKEN=dev-secret bun eliza/apps/app-scape/scripts/verify-pr7-live.ts
+ *   BOT_SDK_TOKEN=dev-secret bun tokagent/apps/app-scape/scripts/verify-pr7-live.ts
  */
 
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 
 import { handleAppRoutes } from "../src/routes.js";
 import { ScapeGameService } from "../src/services/game-service.js";

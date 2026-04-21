@@ -1,6 +1,6 @@
 import type http from "node:http";
-import type { ElizaConfig } from "../config/config.js";
-import type { ConnectorConfig } from "../config/types.eliza.js";
+import type { TokagentConfig } from "../config/config.js";
+import type { ConnectorConfig } from "../config/types.tokagent.js";
 import { DISCORD_LOCAL_SERVICE_NAME } from "../runtime/discord-local-plugin.js";
 import { registerEscalationChannel } from "../services/escalation.js";
 import { setOwnerContact } from "./owner-contact-helpers.js";
@@ -16,7 +16,7 @@ interface DiscordLocalServiceLike {
 }
 
 export interface DiscordLocalRouteState {
-  config: ElizaConfig;
+  config: TokagentConfig;
   runtime?: {
     getService(type: string): unknown;
   };

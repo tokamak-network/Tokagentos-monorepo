@@ -2,7 +2,7 @@ import type {
   RolesConfig,
   SessionConfig,
   SessionSendPolicyConfig,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import type {
   CustomActionDef,
   DatabaseProviderType,
@@ -99,8 +99,8 @@ export type BrowserProfileConfig = {
   cdpPort?: number;
   /** CDP URL for this profile (use for remote Chrome). */
   cdpUrl?: string;
-  /** Profile driver (default: eliza). */
-  driver?: "eliza" | "extension";
+  /** Profile driver (default: tokagent). */
+  driver?: "tokagent" | "extension";
   /** Profile color (hex). Auto-assigned at creation. */
   color: string;
 };
@@ -118,7 +118,7 @@ export type BrowserConfig = {
   remoteCdpTimeoutMs?: number;
   /** Remote CDP WebSocket handshake timeout (ms). Default: max(remoteCdpTimeoutMs * 2, 2000). */
   remoteCdpHandshakeTimeoutMs?: number;
-  /** Accent color for the eliza browser profile (hex). Default: #FF4500 */
+  /** Accent color for the tokagent browser profile (hex). Default: #FF4500 */
   color?: string;
   /** Override the browser executable path (all platforms). */
   executablePath?: string;
@@ -180,7 +180,7 @@ export type KnowledgeConfig = {
   docsPath?: string;
 };
 
-export type { RolesConfig } from "@elizaos/core";
+export type { RolesConfig } from "@tokagentos/core";
 
 // --- Models types (merged from types.models.ts) ---
 
@@ -417,7 +417,7 @@ export type MemoryQmdLimitsConfig = {
 // --- Database types ---
 
 export type PgliteConfig = {
-  /** Custom PGLite data directory. Default: ~/.eliza/workspace/.eliza/.elizadb */
+  /** Custom PGLite data directory. Default: ~/.tokagent/workspace/.tokagent/.tokagentdb */
   dataDir?: string;
 };
 
@@ -499,7 +499,7 @@ export type PluginsConfig = {
   registryEndpoints?: RegistryEndpoint[];
 };
 
-// --- Cloud types (Eliza Cloud integration) ---
+// --- Cloud types (Tokagent Cloud integration) ---
 
 export type CloudInferenceMode = "cloud" | "byok" | "local";
 
@@ -533,28 +533,28 @@ export type CloudContainerDefaults = {
 };
 
 export type CloudServiceToggles = {
-  /** Use Eliza Cloud for model inference. Default: true. */
+  /** Use Tokagent Cloud for model inference. Default: true. */
   inference?: boolean;
-  /** Use Eliza Cloud for blockchain RPC. Default: true. */
+  /** Use Tokagent Cloud for blockchain RPC. Default: true. */
   rpc?: boolean;
-  /** Use Eliza Cloud for media generation (image/video/audio/vision). Default: true. */
+  /** Use Tokagent Cloud for media generation (image/video/audio/vision). Default: true. */
   media?: boolean;
-  /** Use Eliza Cloud for TTS (text-to-speech). Default: true. */
+  /** Use Tokagent Cloud for TTS (text-to-speech). Default: true. */
   tts?: boolean;
-  /** Use Eliza Cloud for embeddings. Default: true. */
+  /** Use Tokagent Cloud for embeddings. Default: true. */
   embeddings?: boolean;
 };
 
 export type CloudConfig = {
-  /** Enable Eliza Cloud integration. Default: false. */
+  /** Enable Tokagent Cloud integration. Default: false. */
   enabled?: boolean;
-  /** Selected cloud provider ID (e.g. "elizacloud"). Set during onboarding. */
+  /** Selected cloud provider ID (e.g. "tokagentcloud"). Set during onboarding. */
   provider?: string;
   /** Remote API base URL used when the app is attached to a remote backend. */
   remoteApiBase?: string;
   /** Remote access token used when the app is attached to a remote backend. */
   remoteAccessToken?: string;
-  /** Eliza Cloud API base URL. Default: https://elizacloud.ai/api/v1 */
+  /** Tokagent Cloud API base URL. Default: https://tokagentcloud.ai/api/v1 */
   baseUrl?: string;
   /** Cached API key (stored encrypted via gateway auth). */
   apiKey?: string;
@@ -580,7 +580,7 @@ export type CloudConfig = {
  * n8n workflow integration configuration.
  *
  * Two paths populate N8N_HOST + N8N_API_KEY for `@elizaos/plugin-n8n-workflow`:
- *   1. Eliza Cloud gateway — when `cloud.apiKey` is set and `cloud.enabled` is
+ *   1. Tokagent Cloud gateway — when `cloud.apiKey` is set and `cloud.enabled` is
  *      not false, the cloud gateway handles the n8n instance. The runtime
  *      pumps `${cloud.baseUrl}/api/v1/agents/${agentId}/n8n` into N8N_HOST and
  *      `cloud.apiKey` into N8N_API_KEY.
@@ -704,11 +704,11 @@ export type ConnectorFieldValue =
  */
 export type ConnectorConfig = { [key: string]: ConnectorFieldValue };
 
-export type ElizaConfig = {
+export type TokagentConfig = {
   meta?: {
     /** Explicit onboarding completion marker. Reset clears the entire state dir. */
     onboardingComplete?: boolean;
-    /** Last Eliza version that wrote this config. */
+    /** Last Tokagent version that wrote this config. */
     lastTouchedVersion?: string;
     /** ISO timestamp when this config was last written. */
     lastTouchedAt?: string;
@@ -742,12 +742,12 @@ export type ElizaConfig = {
   update?: UpdateConfig;
   browser?: BrowserConfig;
   ui?: {
-    /** Accent color for Eliza UI chrome (hex). */
+    /** Accent color for Tokagent UI chrome (hex). */
     seamColor?: string;
     /** User's preferred UI theme. Set during onboarding. */
     theme?:
-      | "eliza"
-      | "eliza"
+      | "tokagent"
+      | "tokagent"
       | "qt314"
       | "web2000"
       | "programmer"
@@ -795,7 +795,7 @@ export type ElizaConfig = {
   embedding?: EmbeddingConfig;
   /** Database provider and connection configuration (local-only feature). */
   database?: DatabaseConfig;
-  /** Eliza Cloud integration for remote agent provisioning and inference. */
+  /** Tokagent Cloud integration for remote agent provisioning and inference. */
   cloud?: CloudConfig;
   /** n8n workflow integration (cloud gateway or local sidecar). */
   n8n?: N8nConfig;
@@ -848,13 +848,13 @@ export type ElizaConfig = {
       }
     >;
   };
-  /** ERC-8004 agent registry and ElizaMaker NFT collection configuration. */
+  /** ERC-8004 agent registry and TokagentMaker NFT collection configuration. */
   registry?: {
     /** Ethereum mainnet (or local Anvil) RPC URL. */
     mainnetRpc?: string;
-    /** ElizaAgentRegistry contract address. */
+    /** TokagentAgentRegistry contract address. */
     registryAddress?: string;
-    /** ElizaMaker collection contract address. */
+    /** TokagentMaker collection contract address. */
     collectionAddress?: string;
   };
   /** Feature flags for plugin auto-enable. */
@@ -879,7 +879,7 @@ export type ConfigFileSnapshot = {
   raw: string | null;
   parsed: unknown;
   valid: boolean;
-  config: ElizaConfig;
+  config: TokagentConfig;
   hash?: string;
   issues: ConfigValidationIssue[];
   warnings: ConfigValidationIssue[];

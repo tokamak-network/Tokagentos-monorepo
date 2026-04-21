@@ -1,4 +1,4 @@
-# Eliza Cloud Backend And Monetization
+# Tokagent Cloud Backend And Monetization
 
 ## Why Use Cloud As The Backend
 
@@ -40,7 +40,7 @@ The existing app auth flow expects:
 - `redirect_uri`
 - optional `state`
 
-The user signs into Eliza Cloud, the app is validated, and the user is redirected back with a token. This means users logging into the app can use Eliza Cloud as the backend identity and service layer instead of a separate auth stack.
+The user signs into Tokagent Cloud, the app is validated, and the user is redirected back with a token. This means users logging into the app can use Tokagent Cloud as the backend identity and service layer instead of a separate auth stack.
 
 ## Billing And Credits
 
@@ -52,7 +52,7 @@ Cloud already exposes:
 - payment methods
 - billing history
 
-In Eliza, billing is intended to stay inside the app where possible, with hosted URLs treated as fallback.
+In Tokagent, billing is intended to stay inside the app where possible, with hosted URLs treated as fallback.
 
 ## Current App Monetization Model In This Repo
 
@@ -91,9 +91,9 @@ The Cloud UI also includes affiliate markup flows where a code can add markup to
 
 Prefer these implementation surfaces:
 
-- `eliza/cloud/packages/db/schemas/app-billing.ts`
-- `eliza/cloud/packages/db/schemas/apps.ts`
-- `eliza/cloud/packages/db/schemas/redeemable-earnings.ts`
-- `eliza/cloud/packages/ui/src/components/apps/app-monetization-settings.tsx`
-- `eliza/cloud/packages/ui/src/components/apps/app-earnings-dashboard.tsx`
-- `eliza/cloud/packages/ui/src/components/auth/authorize-content.tsx`
+- `tokagent/cloud/packages/db/schemas/app-billing.ts`
+- `tokagent/cloud/packages/db/schemas/apps.ts`
+- `tokagent/cloud/packages/db/schemas/redeemable-earnings.ts`
+- `tokagent/cloud/packages/ui/src/components/apps/app-monetization-settings.tsx`
+- `tokagent/cloud/packages/ui/src/components/apps/app-earnings-dashboard.tsx`
+- `tokagent/cloud/packages/ui/src/components/auth/authorize-content.tsx`

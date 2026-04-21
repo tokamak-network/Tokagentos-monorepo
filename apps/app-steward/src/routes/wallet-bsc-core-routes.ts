@@ -11,9 +11,9 @@
  *   POST /api/wallet/production-defaults
  */
 import type http from "node:http";
-import { loadElizaConfig, saveElizaConfig } from "@elizaos/agent/config/config";
-import { readCompatJsonBody } from "@elizaos/app-core/api/compat-route-shared";
-import { sendJson, sendJsonError } from "@elizaos/app-core/api/response";
+import { loadTokagentConfig, saveTokagentConfig } from "@tokagentos/agent/config/config";
+import { readCompatJsonBody } from "@tokagentos/app-core/api/compat-route-shared";
+import { sendJson, sendJsonError } from "@tokagentos/app-core/api/response";
 import {
   buildBscTradePreflight,
   buildBscTradeQuote,
@@ -32,7 +32,7 @@ import {
 } from "./server-wallet-trade";
 
 function isAgentAutomationRequest(req: http.IncomingMessage): boolean {
-  return req.headers["x-eliza-agent-automation"] === "1";
+  return req.headers["x-tokagent-agent-automation"] === "1";
 }
 
 export async function handleWalletBscCoreRoutes(
@@ -47,7 +47,7 @@ export async function handleWalletBscCoreRoutes(
   );
   const pathname = url.pathname;
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
 
   return handleWalletBscRoutes({
     req,
@@ -71,7 +71,7 @@ export async function handleWalletBscCoreRoutes(
       resolveTradePermissionMode: resolveTradePermissionMode as never,
       isAgentAutomationRequest,
       canUseLocalTradeExecution: canUseLocalTradeExecution as never,
-      saveElizaConfig,
+      saveTokagentConfig,
     },
   });
 }

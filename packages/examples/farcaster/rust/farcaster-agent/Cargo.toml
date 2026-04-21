@@ -2,15 +2,15 @@
 name = "farcaster-agent"
 version = "0.1.0"
 edition = "2021"
-description = "Farcaster agent example using elizaOS with OpenAI"
+description = "Farcaster agent example using tokagentOS with OpenAI"
 license = "MIT"
 
 [dependencies]
-# elizaOS SDK
-elizaos = "2.0.0"
-elizaos-plugin-sql = "2.0.0"
-elizaos-plugin-openai = "2.0.0"
-elizaos-plugin-farcaster = { version = "2.0.0", features = ["native"] }
+# tokagentOS SDK
+tokagentos = "2.0.0"
+tokagentos-plugin-sql = "2.0.0"
+tokagentos-plugin-openai = "2.0.0"
+tokagentos-plugin-farcaster = { version = "2.0.0", features = ["native"] }
 
 # Async runtime
 tokio = { version = "1.40", features = ["full"] }

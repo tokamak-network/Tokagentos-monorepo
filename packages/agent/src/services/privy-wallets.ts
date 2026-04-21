@@ -1,4 +1,4 @@
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 
 export type PrivyWalletChain = "ethereum" | "solana";
 

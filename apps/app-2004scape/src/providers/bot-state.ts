@@ -1,4 +1,4 @@
-import type { IAgentRuntime, Memory, Provider, State } from "@elizaos/core";
+import type { IAgentRuntime, Memory, Provider, State } from "@tokagentos/core";
 import type { BotState } from "../sdk/types.js";
 
 function formatSkills(state: BotState): string {

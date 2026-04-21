@@ -15,7 +15,7 @@ declare module "../../../types/service.ts" {
 	}
 }
 
-declare module "@elizaos/core" {
+declare module "@tokagentos/core" {
 	interface ServiceTypeRegistry {
 		EXPERIENCE: "EXPERIENCE";
 	}

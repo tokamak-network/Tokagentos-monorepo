@@ -1,21 +1,21 @@
 {
-  "name": "@elizaos/rust",
+  "name": "@tokagentos/rust",
   "version": "2.0.0-alpha.223",
-  "description": "elizaOS Core - Rust runtime and types",
+  "description": "tokagentOS Core - Rust runtime and types",
   "type": "module",
-  "main": "pkg/node/elizaos.js",
+  "main": "pkg/node/tokagentos.js",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "browser": {
-        "import": "./pkg/web/elizaos.js",
-        "default": "./pkg/web/elizaos.js"
+        "import": "./pkg/web/tokagentos.js",
+        "default": "./pkg/web/tokagentos.js"
       },
       "node": {
-        "import": "./pkg/node/elizaos.js",
-        "default": "./pkg/node/elizaos.js"
+        "import": "./pkg/node/tokagentos.js",
+        "default": "./pkg/node/tokagentos.js"
       },
-      "default": "./pkg/node/elizaos.js"
+      "default": "./pkg/node/tokagentos.js"
     }
   },
   "files": [
@@ -37,7 +37,7 @@
     "example:wasm:benchmark": "bun run examples/wasm/benchmark.ts",
     "test:wasm": "./wasm-test.sh"
   },
-  "author": "elizaOS",
+  "author": "tokagentOS",
   "license": "MIT",
   "publishConfig": {
     "access": "public"

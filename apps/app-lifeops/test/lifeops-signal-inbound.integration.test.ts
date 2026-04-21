@@ -12,9 +12,9 @@ import { createServer, type IncomingMessage, type ServerResponse } from "node:ht
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { ChannelType, stringToUuid, type UUID } from "@elizaos/core";
-import { sendJson, sendJsonError, readJsonBody } from "@elizaos/agent/api/http-helpers";
-import { decodePathComponent } from "@elizaos/agent/api/server-helpers";
+import { ChannelType, stringToUuid, type UUID } from "@tokagentos/core";
+import { sendJson, sendJsonError, readJsonBody } from "@tokagentos/agent/api/http-helpers";
+import { decodePathComponent } from "@tokagentos/agent/api/server-helpers";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { itIf } from "../../../../test/helpers/conditional-tests.ts";
 import { createLifeOpsTestRuntime } from "./helpers/runtime.ts";
@@ -130,27 +130,27 @@ describe("Integration: Signal inbound read", () => {
 
   beforeEach(async () => {
     oauthDir = await mkdtemp(path.join(os.tmpdir(), "lifeops-signal-inbound-"));
-    prevOAuthDir = process.env.ELIZA_OAUTH_DIR;
-    prevStateDir = process.env.ELIZA_STATE_DIR;
+    prevOAuthDir = process.env.TOKAGENT_OAUTH_DIR;
+    prevStateDir = process.env.TOKAGENT_STATE_DIR;
     prevSignalHttpUrl = process.env.SIGNAL_HTTP_URL;
-    prevDisableProactive = process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
-    process.env.ELIZA_OAUTH_DIR = oauthDir;
-    process.env.ELIZA_STATE_DIR = path.join(oauthDir, "state");
-    await mkdir(process.env.ELIZA_STATE_DIR, { recursive: true });
-    process.env.ELIZA_DISABLE_PROACTIVE_AGENT = "1";
+    prevDisableProactive = process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
+    process.env.TOKAGENT_OAUTH_DIR = oauthDir;
+    process.env.TOKAGENT_STATE_DIR = path.join(oauthDir, "state");
+    await mkdir(process.env.TOKAGENT_STATE_DIR, { recursive: true });
+    process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = "1";
   });
 
   afterEach(async () => {
     if (runtime) { await runtime.cleanup(); runtime = undefined; }
     if (stub) { await stub.close(); stub = undefined; }
-    if (prevOAuthDir === undefined) delete process.env.ELIZA_OAUTH_DIR;
-    else process.env.ELIZA_OAUTH_DIR = prevOAuthDir;
-    if (prevStateDir === undefined) delete process.env.ELIZA_STATE_DIR;
-    else process.env.ELIZA_STATE_DIR = prevStateDir;
+    if (prevOAuthDir === undefined) delete process.env.TOKAGENT_OAUTH_DIR;
+    else process.env.TOKAGENT_OAUTH_DIR = prevOAuthDir;
+    if (prevStateDir === undefined) delete process.env.TOKAGENT_STATE_DIR;
+    else process.env.TOKAGENT_STATE_DIR = prevStateDir;
     if (prevSignalHttpUrl === undefined) delete process.env.SIGNAL_HTTP_URL;
     else process.env.SIGNAL_HTTP_URL = prevSignalHttpUrl;
-    if (prevDisableProactive === undefined) delete process.env.ELIZA_DISABLE_PROACTIVE_AGENT;
-    else process.env.ELIZA_DISABLE_PROACTIVE_AGENT = prevDisableProactive;
+    if (prevDisableProactive === undefined) delete process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT;
+    else process.env.TOKAGENT_DISABLE_PROACTIVE_AGENT = prevDisableProactive;
     await rm(oauthDir, { recursive: true, force: true });
   });
 

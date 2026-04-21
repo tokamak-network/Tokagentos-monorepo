@@ -31,7 +31,7 @@ import {
   type TalkModeTranscriptEvent,
 } from "../bridge/native-plugins";
 import { resolveApiUrl } from "../utils";
-import { getElizaApiToken } from "../utils/eliza-globals";
+import { getTokagentApiToken } from "../utils/tokagent-globals";
 import {
   isTtsDebugEnabled,
   ttsDebug,
@@ -838,7 +838,7 @@ export function useVoiceChat(options: VoiceChatOptions): VoiceChatState {
             speed: elConfig.speed ?? 1.0,
           },
         };
-        const apiToken = getElizaApiToken()?.trim() ?? "";
+        const apiToken = getTokagentApiToken()?.trim() ?? "";
         const proxyRequestBody = JSON.stringify({
           ...requestBody,
           voiceId,
@@ -848,8 +848,8 @@ export function useVoiceChat(options: VoiceChatOptions): VoiceChatState {
 
         /**
          * Server-side TTS when the browser has no `xi-api-key`.
-         * Always try Eliza Cloud (`/api/tts/cloud`) first — that is where a
-         * persisted Eliza Cloud API key is used. `voiceMode` may still be
+         * Always try Tokagent Cloud (`/api/tts/cloud`) first — that is where a
+         * persisted Tokagent Cloud API key is used. `voiceMode` may still be
          * `own-key` when the UI has not yet marked cloud as connected (e.g.
          * disconnect preference, status poll race), which previously routed
          * here to `/api/tts/elevenlabs` only; The framework does not implement that
@@ -866,13 +866,13 @@ export function useVoiceChat(options: VoiceChatOptions): VoiceChatState {
               ...(apiToken ? { Authorization: `Bearer ${apiToken}` } : {}),
               ...(isTtsDebugEnabled() && dbg
                 ? {
-                    "x-elizaos-tts-message-id": encodeURIComponent(
+                    "x-tokagentos-tts-message-id": encodeURIComponent(
                       dbg.messageId,
                     ),
-                    "x-elizaos-tts-clip-segment": encodeURIComponent(
+                    "x-tokagentos-tts-clip-segment": encodeURIComponent(
                       task.segment,
                     ),
-                    "x-elizaos-tts-full-preview": encodeURIComponent(
+                    "x-tokagentos-tts-full-preview": encodeURIComponent(
                       dbg.fullAssistTextPreview,
                     ),
                   }
@@ -1332,7 +1332,7 @@ export function useVoiceChat(options: VoiceChatOptions): VoiceChatState {
                     ? `${error.name}: ${error.message.slice(0, 200)}`
                     : String(error).slice(0, 200),
                 ttsTarget: describeTtsCloudFetchTargetForDebug(),
-                hadBearer: Boolean(getElizaApiToken()?.trim()),
+                hadBearer: Boolean(getTokagentApiToken()?.trim()),
               });
               usingAudioAnalysisRef.current = false;
               setUsingAudioAnalysis(false);

@@ -1,16 +1,16 @@
 /**
- * Queries the npm registry for new elizaos versions on the user's
+ * Queries the npm registry for new tokagentos versions on the user's
  * configured release channel (stable/beta/nightly).
  */
 
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
-import type { ReleaseChannel, UpdateConfig } from "../config/types.eliza.js";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
+import type { ReleaseChannel, UpdateConfig } from "../config/types.tokagent.js";
 import { VERSION } from "../runtime/version.js";
 import { compareSemver } from "./version-compat.js";
 
 const CHECK_INTERVAL_SECONDS = 14_400; // 4 hours
 const REGISTRY_TIMEOUT_MS = 8_000;
-const NPM_REGISTRY_PACKUMENT_URL = "https://registry.npmjs.org/elizaos";
+const NPM_REGISTRY_PACKUMENT_URL = "https://registry.npmjs.org/tokagentos";
 
 /** npm dist-tag corresponding to each release channel. */
 export const CHANNEL_DIST_TAGS: Readonly<Record<ReleaseChannel, string>> = {
@@ -59,7 +59,7 @@ function shouldSkipCheck(cfg: UpdateConfig | undefined): boolean {
 
 /** Resolve the effective release channel from config, env, or default. */
 export function resolveChannel(cfg: UpdateConfig | undefined): ReleaseChannel {
-  const env = process.env.ELIZA_UPDATE_CHANNEL?.trim().toLowerCase();
+  const env = process.env.TOKAGENT_UPDATE_CHANNEL?.trim().toLowerCase();
   if (env === "stable" || env === "beta" || env === "nightly") return env;
   return cfg?.channel ?? "stable";
 }
@@ -71,7 +71,7 @@ export function resolveChannel(cfg: UpdateConfig | undefined): ReleaseChannel {
 export async function checkForUpdate(options?: {
   force?: boolean;
 }): Promise<UpdateCheckResult> {
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const updateCfg = config.update;
   const channel = resolveChannel(updateCfg);
   const distTag = CHANNEL_DIST_TAGS[channel];
@@ -122,7 +122,7 @@ export async function checkForUpdate(options?: {
   const updateAvailable = cmp !== null && cmp < 0;
 
   try {
-    saveElizaConfig({
+    saveTokagentConfig({
       ...config,
       update: {
         ...config.update,
@@ -135,7 +135,7 @@ export async function checkForUpdate(options?: {
     // registry gets queried on every startup — worth surfacing.
     const msg = String(err);
     process.stderr.write(
-      `[eliza] Warning: could not save update-check metadata: ${msg}\n`,
+      `[tokagent] Warning: could not save update-check metadata: ${msg}\n`,
     );
   }
 

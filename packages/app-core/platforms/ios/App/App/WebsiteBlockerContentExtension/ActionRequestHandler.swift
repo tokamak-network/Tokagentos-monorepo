@@ -16,7 +16,7 @@ final class ActionRequestHandler: NSObject, NSExtensionRequestHandling {
 }
 
 private enum WebsiteBlockerContentBlockerStore {
-    static let appGroupIdentifier = "group.ai.elizaos.app"
+    static let appGroupIdentifier = "group.ai.tokagentos.app"
     static let stateKey = "website_blocker_state_v1"
 
     private struct StoredState: Codable {
@@ -28,7 +28,7 @@ private enum WebsiteBlockerContentBlockerStore {
         let rules = buildRules(for: loadActiveWebsites())
         let data = try JSONSerialization.data(withJSONObject: rules, options: [])
         let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("elizaos-website-blocker-rules", isDirectory: true)
+            .appendingPathComponent("tokagentos-website-blocker-rules", isDirectory: true)
             .appendingPathComponent("blockerList.json")
         try FileManager.default.createDirectory(
             at: url.deletingLastPathComponent(),

@@ -156,7 +156,7 @@ function isValidSkillName(name: string): boolean {
 
 /**
  * Render a SKILL.md file with provenance frontmatter. Kept inline (rather
- * than depending on `@elizaos/skills`) to avoid a new package edge from this
+ * than depending on `@tokagentos/skills`) to avoid a new package edge from this
  * evaluator file.
  */
 function renderSkillFile(params: {

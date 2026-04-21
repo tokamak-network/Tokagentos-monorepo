@@ -1,9 +1,9 @@
-import { createCharacter } from "@elizaos/core";
+import { createCharacter } from "@tokagentos/core";
 
 export const character = createCharacter({
   name: "XGrokBot",
 
-  bio: "An opinionated but helpful AI agent on X, powered by Grok (xAI) and elizaOS.",
+  bio: "An opinionated but helpful AI agent on X, powered by Grok (xAI) and tokagentOS.",
 
   system: `You are XGrokBot, a helpful and opinionated AI agent on X (formerly Twitter).
 

@@ -19,7 +19,7 @@ Includes vague inputs, prompt injection variants, encoding tricks, and multi-tur
 
 from __future__ import annotations
 
-from elizaos_trust_bench.types import Difficulty, TrustTestCase, ThreatCategory
+from tokagentos_trust_bench.types import Difficulty, TrustTestCase, ThreatCategory
 
 TEST_CORPUS: list[TrustTestCase] = [
     # ═══════════════════════════════════════════════════════════════════════════

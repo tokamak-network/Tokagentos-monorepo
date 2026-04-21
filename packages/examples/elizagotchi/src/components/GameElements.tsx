@@ -1,5 +1,5 @@
 /**
- * Game Elements - Additional SVG components for the Elizagotchi game
+ * Game Elements - Additional SVG components for the Tokagentgotchi game
  * Includes: Poop, Food, Hearts, Action Icons, etc.
  */
 

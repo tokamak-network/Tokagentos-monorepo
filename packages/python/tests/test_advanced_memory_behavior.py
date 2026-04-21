@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import pytest
 
-from elizaos.features.advanced_memory.memory_service import MemoryService
-from elizaos.features.advanced_memory.types import LongTermMemoryCategory
-from elizaos.runtime import AgentRuntime
-from elizaos.types.agent import Character
-from elizaos.types.components import ProviderResult
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid
+from tokagentos.features.advanced_memory.memory_service import MemoryService
+from tokagentos.features.advanced_memory.types import LongTermMemoryCategory
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.agent import Character
+from tokagentos.types.components import ProviderResult
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid
 
 
 @pytest.mark.skip(reason="MemoryService requires runtime settings.get() which isn't implemented")

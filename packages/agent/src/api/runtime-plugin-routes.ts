@@ -1,13 +1,13 @@
 /**
- * Dispatches elizaOS AgentRuntime plugin routes (runtime.routes) on the Eliza
+ * Dispatches tokagentOS AgentRuntime plugin routes (runtime.routes) on the Tokagent
  * raw Node HTTP server. Core registers paths like `/music-player/stream`; without
  * this bridge those handlers never run.
  */
 
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { AgentRuntime, Route } from "@elizaos/core";
+import type { AgentRuntime, Route } from "@tokagentos/core";
 
-const EXPRESS_SHIM = Symbol("elizaExpressResponseShim");
+const EXPRESS_SHIM = Symbol("tokagentExpressResponseShim");
 
 export function matchPluginRoutePath(
   pattern: string,

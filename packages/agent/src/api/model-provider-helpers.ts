@@ -7,7 +7,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { logger } from "@elizaos/core";
+import { logger } from "@tokagentos/core";
 import { resolveModelsCacheDir } from "../config/paths.js";
 
 export function getModelOptions(): {
@@ -42,7 +42,7 @@ export function getModelOptions(): {
     description: string;
   }>;
 } {
-  // All models available via Eliza Cloud (Vercel AI Gateway).
+  // All models available via Tokagent Cloud (Vercel AI Gateway).
   // IDs use "provider/model" format to match the cloud API routing.
   // Every tier exposes the full catalog so users can assign any model to any slot.
   const allModels = [
@@ -637,8 +637,8 @@ export function getInventoryProviderOptions(): Array<{
       description: "Ethereum, Base, Arbitrum, Optimism, Polygon.",
       rpcProviders: [
         {
-          id: "eliza-cloud",
-          name: "Eliza Cloud",
+          id: "tokagent-cloud",
+          name: "Tokagent Cloud",
           description: "Managed RPC. No setup needed.",
           envKey: null,
           requiresKey: false,
@@ -672,8 +672,8 @@ export function getInventoryProviderOptions(): Array<{
       description: "BNB Smart Chain tokens, NFTs, and trades.",
       rpcProviders: [
         {
-          id: "eliza-cloud",
-          name: "Eliza Cloud",
+          id: "tokagent-cloud",
+          name: "Tokagent Cloud",
           description: "Managed RPC. No setup needed.",
           envKey: null,
           requiresKey: false,
@@ -714,8 +714,8 @@ export function getInventoryProviderOptions(): Array<{
       description: "Solana mainnet tokens and NFTs.",
       rpcProviders: [
         {
-          id: "eliza-cloud",
-          name: "Eliza Cloud",
+          id: "tokagent-cloud",
+          name: "Tokagent Cloud",
           description: "Managed RPC. No setup needed.",
           envKey: null,
           requiresKey: false,

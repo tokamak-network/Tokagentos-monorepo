@@ -5,7 +5,7 @@ import fs from "fs-extra";
 import { createUniqueUuid } from "../../../entities.ts";
 import { logger } from "../../../logger.ts";
 import type { EventPayload } from "../../../types/events.ts";
-import type { Plugin as ElizaPlugin } from "../../../types/plugin.ts";
+import type { Plugin as TokagentPlugin } from "../../../types/plugin.ts";
 import type { IAgentRuntime } from "../../../types/runtime.ts";
 import type { ServiceTypeName } from "../../../types/service.ts";
 import { Service } from "../../../types/service.ts";
@@ -89,7 +89,7 @@ export class PluginManagerService extends Service implements PluginRegistry {
 
 	public plugins: Map<string, PluginState> = new Map();
 	private pluginManagerConfig: PluginManagerConfig;
-	private originalPlugins: ElizaPlugin[] = [];
+	private originalPlugins: TokagentPlugin[] = [];
 	private originalActions: Set<string> = new Set();
 	private originalProviders: Set<string> = new Set();
 	private originalEvaluators: Set<string> = new Set();
@@ -339,7 +339,7 @@ export class PluginManagerService extends Service implements PluginRegistry {
 		);
 	}
 
-	async registerPlugin(plugin: ElizaPlugin): Promise<string> {
+	async registerPlugin(plugin: TokagentPlugin): Promise<string> {
 		const pluginId = createUniqueUuid(this.runtime, plugin.name);
 
 		if (this.plugins.has(pluginId)) {
@@ -397,7 +397,7 @@ export class PluginManagerService extends Service implements PluginRegistry {
 		this.componentRegistry.get(pluginId)?.push(registration);
 	}
 
-	private async registerPluginComponents(plugin: ElizaPlugin): Promise<void> {
+	private async registerPluginComponents(plugin: TokagentPlugin): Promise<void> {
 		const pluginState = Array.from(this.plugins.values()).find(
 			(p) => p.plugin === plugin,
 		);
@@ -479,7 +479,7 @@ export class PluginManagerService extends Service implements PluginRegistry {
 		this.runtime.plugins.push(plugin);
 	}
 
-	private async unregisterPluginComponents(plugin: ElizaPlugin): Promise<void> {
+	private async unregisterPluginComponents(plugin: TokagentPlugin): Promise<void> {
 		const pluginState = Array.from(this.plugins.values()).find(
 			(p) => p.plugin === plugin,
 		);

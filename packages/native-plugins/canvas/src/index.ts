@@ -6,6 +6,6 @@ export * from "./definitions";
 
 const loadWeb = () => import("./web").then((m) => new m.CanvasWeb());
 
-export const Canvas = registerPlugin<CanvasPlugin>("ElizaCanvas", {
+export const Canvas = registerPlugin<CanvasPlugin>("TokagentCanvas", {
   web: loadWeb,
 });

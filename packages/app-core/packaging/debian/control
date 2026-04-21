@@ -1,21 +1,21 @@
-Source: elizaos-app
+Source: tokagentos-app
 Section: misc
 Priority: optional
-Maintainer: elizaos <dev@app.elizaos.ai>
+Maintainer: tokagentos <dev@app.tokagentos.ai>
 Build-Depends: debhelper-compat (= 13), nodejs (>= 22.12.0), npm
 Standards-Version: 4.6.2
-Homepage: https://app.elizaos.ai
-Vcs-Git: https://github.com/elizaos/elizaos-app.git
-Vcs-Browser: https://github.com/elizaos/elizaos-app
+Homepage: https://app.tokagentos.ai
+Vcs-Git: https://github.com/tokagentos/tokagentos-app.git
+Vcs-Browser: https://github.com/tokagentos/tokagentos-app
 Rules-Requires-Root: no
 
-Package: elizaos-app
+Package: tokagentos-app
 Architecture: all
 Depends: nodejs (>= 22.12.0), ${misc:Depends}
 Recommends: npm, systemd
-Description: Personal AI assistant built on elizaOS
- elizaOS App is a personal AI assistant you run on your own devices, built
- on elizaOS. It provides zero-config onboarding, multi-provider AI
+Description: Personal AI assistant built on tokagentOS
+ tokagentOS App is a personal AI assistant you run on your own devices, built
+ on tokagentOS. It provides zero-config onboarding, multi-provider AI
  support, a web dashboard, and a plugin system.
  .
  Features:

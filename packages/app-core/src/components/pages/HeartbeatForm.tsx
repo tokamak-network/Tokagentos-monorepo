@@ -8,7 +8,7 @@ import {
   PagePanel,
   StatusDot,
   Textarea,
-} from "@elizaos/ui";
+} from "@tokagentos/ui";
 import { useEffect, useMemo, useState } from "react";
 import { client } from "../../api";
 import type { N8nWorkflow, TriggerSummary } from "../../api/client";

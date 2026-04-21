@@ -1,4 +1,4 @@
-import { cn, Field, FieldDescription, FieldLabel } from "@elizaos/ui";
+import { cn, Field, FieldDescription, FieldLabel } from "@tokagentos/ui";
 import type * as React from "react";
 
 export function SettingsField({

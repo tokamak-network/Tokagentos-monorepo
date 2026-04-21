@@ -3,8 +3,8 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { Plugin } from "@elizaos/core";
-import { AgentRuntime, createCharacter, logger } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
+import { AgentRuntime, createCharacter, logger } from "@tokagentos/core";
 
 export interface TestRuntimeOptions {
   /** Name for the test agent character. Defaults to "TestAgent". */
@@ -51,7 +51,7 @@ async function flushPendingTrajectoryWrites(
 ): Promise<void> {
   try {
     const { flushTrajectoryWrites } = await import(
-      "../../eliza/agent/src/runtime/trajectory-storage"
+      "../../tokagent/agent/src/runtime/trajectory-storage"
     );
     await flushTrajectoryWrites(runtime);
   } catch {
@@ -76,7 +76,7 @@ export async function createTestRuntime(
 ): Promise<TestRuntimeResult> {
   const pgliteDir =
     options?.pgliteDir ??
-    fs.mkdtempSync(path.join(os.tmpdir(), "eliza-test-pglite-"));
+    fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-test-pglite-"));
   const removePgliteDirOnCleanup =
     options?.removePgliteDirOnCleanup ?? options?.pgliteDir === undefined;
 

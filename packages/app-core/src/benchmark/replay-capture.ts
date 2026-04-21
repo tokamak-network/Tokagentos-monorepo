@@ -1,4 +1,4 @@
-import { asRecord } from "@elizaos/shared/type-guards";
+import { asRecord } from "@tokagentos/shared/type-guards";
 import z from "zod";
 
 const UnknownRecord = z.record(z.string(), z.unknown());

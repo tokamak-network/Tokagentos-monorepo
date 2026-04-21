@@ -71,7 +71,7 @@ function makeRuntimeWithSavedKey(apiKey: string) {
   const runtime: Partial<NonNullable<CloudBillingRouteState["runtime"]>> = {
     getService: () => null,
     getSetting: (key: string) =>
-      key === "ELIZAOS_CLOUD_API_KEY" ? apiKey : undefined,
+      key === "TOKAGENTOS_CLOUD_API_KEY" ? apiKey : undefined,
   };
   return runtime as CloudBillingRouteState["runtime"];
 }
@@ -116,7 +116,7 @@ describe("cloud proxy auth resolution", () => {
     const state: CloudBillingRouteState = {
       config: {
         cloud: {
-          baseUrl: "https://www.elizacloud.ai",
+          baseUrl: "https://www.tokagentcloud.ai",
           serviceKey: "svc-key",
         },
       },
@@ -154,7 +154,7 @@ describe("cloud proxy auth resolution", () => {
       async (input: RequestInfo | URL, init?: RequestInit) => {
         const url = String(input);
         expect(url).toBe(
-          "https://www.elizacloud.ai/api/compat/agents?limit=10",
+          "https://www.tokagentcloud.ai/api/compat/agents?limit=10",
         );
         expect((init?.headers as Record<string, string>).Authorization).toBe(
           "Bearer runtime-session-key",
@@ -174,7 +174,7 @@ describe("cloud proxy auth resolution", () => {
     const state: CloudCompatRouteState = {
       config: {
         cloud: {
-          baseUrl: "https://www.elizacloud.ai",
+          baseUrl: "https://www.tokagentcloud.ai",
         },
       },
       runtime: makeRuntimeWithCloudAuth("runtime-session-key"),
@@ -237,7 +237,7 @@ describe("cloud proxy auth resolution", () => {
     const state: CloudBillingRouteState = {
       config: {
         cloud: {
-          baseUrl: "https://www.elizacloud.ai",
+          baseUrl: "https://www.tokagentcloud.ai",
         },
       },
       runtime: makeRuntimeWithSavedKey("runtime-setting-key"),

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { api } from '../lib/api'
 import type { ChatMessage } from '../types'
 
-export function ElizaChat() {
+export function TokagentChat() {
     const [messages, setMessages] = useState<ChatMessage[]>([])
     const [inputMessage, setInputMessage] = useState('')
     const [loading, setLoading] = useState(false)
@@ -18,7 +18,7 @@ export function ElizaChat() {
             {
                 id: '0',
                 role: 'assistant',
-                content: 'Hi — I’m Eliza. What would you like to do today?',
+                content: 'Hi — I’m Tokagent. What would you like to do today?',
                 timestamp: Date.now(),
                 confidence: 1,
             },
@@ -52,7 +52,7 @@ export function ElizaChat() {
         setLoading(true)
 
         try {
-            const result = await api.chatWithEliza({
+            const result = await api.chatWithTokagent({
                 message: inputMessage,
                 sessionId,
                 userId: 'demo-user',
@@ -106,7 +106,7 @@ export function ElizaChat() {
             <div className="chat-header">
                 <div className="chat-title">
                     <span className="chat-icon">🤖</span>
-                        <h2>Eliza</h2>
+                        <h2>Tokagent</h2>
                 </div>
                     <div className="chat-subtitle">Classic chat • in-memory sessions</div>
             </div>

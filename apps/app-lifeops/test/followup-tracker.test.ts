@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import type { IAgentRuntime, Memory, UUID } from "@elizaos/core";
+import type { IAgentRuntime, Memory, UUID } from "@tokagentos/core";
 import {
   FOLLOWUP_DEFAULT_THRESHOLD_DAYS,
   FOLLOWUP_MEMORY_TABLE,

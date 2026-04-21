@@ -2,7 +2,7 @@
 """
 MINT Benchmark CLI Runner
 
-Run the MINT benchmark evaluation on ElizaOS Python runtime.
+Run the MINT benchmark evaluation on TokagentOS Python runtime.
 
 Usage:
     python run_benchmark.py [options]
@@ -36,7 +36,7 @@ sys.path.insert(0, str(benchmark_root / "packages" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-openai" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-vercel-ai-gateway" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-xai" / "python"))
-sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-eliza-classic" / "python"))
+sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-tokagent-classic" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-sql" / "python"))
 sys.path.insert(0, str(benchmark_root / "plugins" / "plugin-trajectory-logger" / "python"))
 
@@ -58,7 +58,7 @@ def setup_logging(verbose: bool = False) -> None:
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Run MINT benchmark on ElizaOS Python runtime",
+        description="Run MINT benchmark on TokagentOS Python runtime",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
@@ -66,7 +66,7 @@ def parse_args() -> argparse.Namespace:
     # Model/runtime selection
     parser.add_argument(
         "--provider",
-        choices=["mock", "eliza-classic", "openai", "gateway", "xai"],
+        choices=["mock", "tokagent-classic", "openai", "gateway", "xai"],
         default="openai",
         help="Model provider to use (default: openai). Use --provider mock for testing without LLM.",
     )
@@ -153,7 +153,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--no-trajectory-logging",
         action="store_true",
-        help="Disable elizaOS trajectory logging export (enabled by default for runtime providers)",
+        help="Disable tokagentOS trajectory logging export (enabled by default for runtime providers)",
     )
     parser.add_argument(
         "--trajectory-dataset",
@@ -223,20 +223,20 @@ def _load_dotenv_file(path: Path) -> None:
             os.environ[k] = v
 
 
-async def _create_eliza_runtime(
+async def _create_tokagent_runtime(
     provider: str, verbose: bool, *, enable_trajectory_logging: bool, use_docker: bool = True
 ) -> object:
     """Create and initialize an AgentRuntime with the selected model provider plugin.
 
     The runtime is configured with:
     - A database adapter (sql plugin) for the canonical message pipeline
-    - The selected model provider plugin (openai, gateway, xai, eliza-classic)
+    - The selected model provider plugin (openai, gateway, xai, tokagent-classic)
     - The MINT benchmark plugin (EXECUTE_CODE action + MINT_CONTEXT provider)
     - A custom messageHandlerTemplate tuned for MINT tasks
     """
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
-    from elizaos.types.model import ModelType
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
+    from tokagentos.types.model import ModelType
 
     from benchmarks.mint.executor import PythonExecutor
     from benchmarks.mint.plugin import create_mint_plugin, MINT_MESSAGE_TEMPLATE
@@ -244,7 +244,7 @@ async def _create_eliza_runtime(
     plugins: list[object] = []
     # Ensure a database adapter exists so the canonical message pipeline works end-to-end.
     # This matches examples/chat (TypeScript) + examples/telegram (Python) behavior.
-    from elizaos_plugin_sql import sql_plugin
+    from tokagentos_plugin_sql import sql_plugin
 
     plugins.append(sql_plugin)
 
@@ -253,7 +253,7 @@ async def _create_eliza_runtime(
             raise ValueError(
                 "OPENAI_API_KEY is not set. Provide it via environment variables or --dotenv."
             )
-        from elizaos_plugin_openai import get_openai_plugin
+        from tokagentos_plugin_openai import get_openai_plugin
 
         plugins.append(get_openai_plugin())
     elif provider == "gateway":
@@ -266,7 +266,7 @@ async def _create_eliza_runtime(
                 "AI_GATEWAY_API_KEY / AIGATEWAY_API_KEY / VERCEL_OIDC_TOKEN is not set. "
                 "Provide it via environment variables or --dotenv."
             )
-        from elizaos_plugin_gateway.plugin import get_gateway_plugin
+        from tokagentos_plugin_gateway.plugin import get_gateway_plugin
 
         plugins.append(get_gateway_plugin())
     elif provider == "xai":
@@ -274,13 +274,13 @@ async def _create_eliza_runtime(
             raise ValueError(
                 "XAI_API_KEY is not set. Provide it via environment variables or --dotenv."
             )
-        from elizaos_plugin_xai.plugin import get_xai_elizaos_plugin
+        from tokagentos_plugin_xai.plugin import get_xai_tokagentos_plugin
 
-        plugins.append(get_xai_elizaos_plugin())
-    elif provider == "eliza-classic":
-        from elizaos_plugin_eliza_classic.plugin import get_eliza_classic_plugin
+        plugins.append(get_xai_tokagentos_plugin())
+    elif provider == "tokagent-classic":
+        from tokagentos_plugin_tokagent_classic.plugin import get_tokagent_classic_plugin
 
-        plugins.append(get_eliza_classic_plugin())
+        plugins.append(get_tokagent_classic_plugin())
     else:
         raise ValueError(f"Unknown provider: {provider}")
 
@@ -292,7 +292,7 @@ async def _create_eliza_runtime(
     # Optional: enable end-to-end trajectory capture for training/benchmarks.
     if enable_trajectory_logging:
         try:
-            from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
+            from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
 
             plugins.append(get_trajectory_logger_plugin())
         except Exception:
@@ -300,7 +300,7 @@ async def _create_eliza_runtime(
             pass
 
     # Create a complete Character with all fields for full provider support
-    from elizaos.types.agent import StyleGuides
+    from tokagentos.types.agent import StyleGuides
 
     character = Character(
         name="MINT-Benchmark",
@@ -358,7 +358,7 @@ async def run_benchmark(
 
         trajectory_logger_service: object | None = None
         if provider != "mock":
-            runtime = await _create_eliza_runtime(
+            runtime = await _create_tokagent_runtime(
                 provider,
                 verbose=verbose,
                 enable_trajectory_logging=enable_trajectory_logging,
@@ -428,7 +428,7 @@ def main() -> int:
     setup_logging(args.verbose)
 
     print("=" * 60)
-    print("MINT BENCHMARK - ElizaOS Python Runtime Evaluation")
+    print("MINT BENCHMARK - TokagentOS Python Runtime Evaluation")
     print("=" * 60)
     print()
 

@@ -1,11 +1,11 @@
 import path from "node:path";
 
-/** CLI name — reads from APP_CLI_NAME env var, defaults to "eliza". */
-const CLI_NAME = process.env.APP_CLI_NAME?.trim() || "eliza";
+/** CLI name — reads from APP_CLI_NAME env var, defaults to "tokagent". */
+const CLI_NAME = process.env.APP_CLI_NAME?.trim() || "tokagent";
 
 /** Matches a CLI command with optional package-runner prefix. */
 export const CLI_PREFIX_RE =
-  /^(?:((?:pnpm|bun|npm|bunx|npx)\s+))?(?:eliza|elizaos)\b/;
+  /^(?:((?:pnpm|bun|npm|bunx|npx)\s+))?(?:tokagent|tokagentos)\b/;
 
 export function resolveCliName(argv: string[] = process.argv): string {
   const argv1 = argv[1];

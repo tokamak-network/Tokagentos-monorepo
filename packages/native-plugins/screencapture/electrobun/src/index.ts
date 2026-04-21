@@ -5,7 +5,7 @@
  * fast-path through the shared desktop bridge when available.
  */
 
-import { invokeDesktopBridgeRequest } from "@elizaos/app-core";
+import { invokeDesktopBridgeRequest } from "@tokagentos/app-core";
 import type {
   ScreenCapturePlugin,
   ScreenshotOptions,

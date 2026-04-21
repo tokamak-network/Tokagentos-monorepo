@@ -1,7 +1,7 @@
 """
-Atropos integration for elizaOS TextWorld.
+Atropos integration for tokagentOS TextWorld.
 
-This module provides the bridge between elizaOS TextWorld gameplay and
+This module provides the bridge between tokagentOS TextWorld gameplay and
 the Atropos RL training framework. It handles:
 - Trajectory collection during gameplay
 - Tokenization with proper mask boundaries
@@ -56,15 +56,15 @@ import json
 import logging
 from typing import TYPE_CHECKING, Any
 
-from elizaos_atropos_textworld.types import (
+from tokagentos_atropos_textworld.types import (
     Turn,
     Trajectory,
     GameState,
     EpisodeResult,
 )
-from elizaos_atropos_textworld.environment import TextWorldEnvironment
-from elizaos_atropos_textworld.agent import (
-    ElizaOSAgent,
+from tokagentos_atropos_textworld.environment import TextWorldEnvironment
+from tokagentos_atropos_textworld.agent import (
+    TokagentOSAgent,
     create_heuristic_policy,
 )
 
@@ -95,7 +95,7 @@ class AtroposConfig:
         game_type: str = "treasure_hunt",
         difficulty: str = "medium",
         max_tokens: int = 4096,
-        use_elizaos: bool = True,
+        use_tokagentos: bool = True,
         win_bonus: float = 0.3,
         efficiency_weight: float = 0.2,
         trust_remote_code: bool = False,
@@ -112,7 +112,7 @@ class AtroposConfig:
             max_tokens: Maximum token length for trajectories. Longer games get
                 truncated. 4096 is a safe default for most models, but Llama-3.2
                 supports 128k if needed. Truncation loses late-game context.
-            use_elizaos: Whether to use elizaOS agent (True) or heuristic (False).
+            use_tokagentos: Whether to use tokagentOS agent (True) or heuristic (False).
                 Heuristic is faster (no API calls) but produces lower-quality data.
                 Use heuristic for baselines and testing.
             win_bonus: Bonus score (0.0-1.0) added for winning the game.
@@ -132,7 +132,7 @@ class AtroposConfig:
         self.game_type = game_type
         self.difficulty = difficulty
         self.max_tokens = max_tokens
-        self.use_elizaos = use_elizaos
+        self.use_tokagentos = use_tokagentos
         self.win_bonus = win_bonus
         self.efficiency_weight = efficiency_weight
         self.trust_remote_code = trust_remote_code
@@ -188,7 +188,7 @@ Respond with exactly one command from the available options."""
 
         Args:
             seed: Game seed for reproducibility
-            agent_type: Type of agent (elizaos, heuristic, etc.) - stored for analysis
+            agent_type: Type of agent (tokagentos, heuristic, etc.) - stored for analysis
         """
         self._current = Trajectory(seed=seed, agent_type=agent_type)
         self._current.turns.append(
@@ -602,7 +602,7 @@ async def generate_training_data(
     verbose: bool = False,
 ) -> list[dict]:
     """
-    Generate Atropos training data from elizaOS gameplay.
+    Generate Atropos training data from tokagentOS gameplay.
     
     WHY OFFLINE GENERATION:
     This function generates training data WITHOUT running Atropos. This is useful for:
@@ -637,15 +637,15 @@ async def generate_training_data(
     collector = TrajectoryCollector()
     formatter = AtroposFormatter(config)
 
-    # Initialize agent if using elizaOS (otherwise use heuristics)
+    # Initialize agent if using tokagentOS (otherwise use heuristics)
     # We create it once and reuse - AgentRuntime init is expensive
-    agent: ElizaOSAgent | None = None
-    if config.use_elizaos:
-        agent = ElizaOSAgent()
+    agent: TokagentOSAgent | None = None
+    if config.use_tokagentos:
+        agent = TokagentOSAgent()
         await agent.initialize()
 
     trajectories: list[dict] = []
-    agent_type = "elizaos" if config.use_elizaos else "heuristic"
+    agent_type = "tokagentos" if config.use_tokagentos else "heuristic"
 
     try:
         for ep in range(num_episodes):
@@ -747,13 +747,13 @@ def create_atropos_env_class():
         """
         game_type: str = Field(default="treasure_hunt")
         difficulty: str = Field(default="medium")
-        use_elizaos: bool = Field(default=True)
+        use_tokagentos: bool = Field(default=True)
         win_bonus: float = Field(default=0.3)
         efficiency_weight: float = Field(default=0.2)
 
     class TextWorldAtroposEnv(BaseEnv):
         """
-        Atropos BaseEnv for elizaOS TextWorld training.
+        Atropos BaseEnv for tokagentOS TextWorld training.
         
         This class implements Atropos's BaseEnv interface:
         - setup(): Initialize resources (called once at start)
@@ -767,7 +767,7 @@ def create_atropos_env_class():
         trajectories - recreating per-trajectory would be way too slow.
         """
 
-        name = "elizaos-textworld"  # Identifies this env to Atropos
+        name = "tokagentos-textworld"  # Identifies this env to Atropos
         env_config_cls = TextWorldAtroposConfig
 
         def __init__(self, config, server_configs, **kwargs):
@@ -775,7 +775,7 @@ def create_atropos_env_class():
             # These are initialized in setup(), not here
             # WHY: __init__ should be fast; setup() does the slow stuff
             self.env: TextWorldEnvironment | None = None
-            self.agent: ElizaOSAgent | None = None
+            self.agent: TokagentOSAgent | None = None
             self.collector = TrajectoryCollector()
             self.formatter: AtroposFormatter | None = None
             self._seed = 0
@@ -795,20 +795,20 @@ def create_atropos_env_class():
 
             atropos_config = AtroposConfig(
                 tokenizer_name=self.config.tokenizer_name,
-                use_elizaos=self.config.use_elizaos,
+                use_tokagentos=self.config.use_tokagentos,
                 win_bonus=self.config.win_bonus,
                 efficiency_weight=self.config.efficiency_weight,
             )
             self.formatter = AtroposFormatter(atropos_config)
 
-            if self.config.use_elizaos:
-                self.agent = ElizaOSAgent()
+            if self.config.use_tokagentos:
+                self.agent = TokagentOSAgent()
                 await self.agent.initialize()
 
             logger.info(
                 f"TextWorldAtroposEnv setup complete: "
                 f"game_type={self.config.game_type}, "
-                f"use_elizaos={self.config.use_elizaos}"
+                f"use_tokagentos={self.config.use_tokagentos}"
             )
 
         async def get_next_item(self):
@@ -844,7 +844,7 @@ def create_atropos_env_class():
                 (ScoredDataGroup, []) - group of trajectories and empty stats list
             """
             trajectories: list[Trajectory] = []
-            agent_type = "elizaos" if self.config.use_elizaos else "heuristic"
+            agent_type = "tokagentos" if self.config.use_tokagentos else "heuristic"
 
             # Generate group_size trajectories from same starting state
             for _ in range(self.config.group_size):

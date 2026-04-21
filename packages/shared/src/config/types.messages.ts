@@ -1,4 +1,4 @@
-import type { GroupChatConfig, NativeCommandsSetting } from "@elizaos/core";
+import type { GroupChatConfig, NativeCommandsSetting } from "@tokagentos/core";
 
 // --- Queue types (merged from types.queue.ts) ---
 

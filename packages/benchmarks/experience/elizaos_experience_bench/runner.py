@@ -7,14 +7,14 @@ import time
 from collections.abc import Callable
 from dataclasses import asdict
 
-from elizaos_experience_bench.evaluators import (
+from tokagentos_experience_bench.evaluators import (
     LearningCycleEvaluator,
     RerankingEvaluator,
     RetrievalEvaluator,
 )
-from elizaos_experience_bench.evaluators.hard_cases import HardCaseEvaluator
-from elizaos_experience_bench.generator import ExperienceGenerator
-from elizaos_experience_bench.types import (
+from tokagentos_experience_bench.evaluators.hard_cases import HardCaseEvaluator
+from tokagentos_experience_bench.generator import ExperienceGenerator
+from tokagentos_experience_bench.types import (
     BenchmarkConfig,
     BenchmarkResult,
     BenchmarkSuite,
@@ -166,23 +166,23 @@ class ExperienceBenchmarkRunner:
 
             print(f"  Time: {elapsed:.2f}s")
 
-        # --- Eliza Agent benchmark (async, requires runtime) ---
-        if BenchmarkSuite.ELIZA_AGENT in self.config.suites:
-            print(f"\n[ExperienceBench] ELIZA_AGENT suite is configured.")
-            print(f"  Use run_eliza_agent() or the CLI --mode eliza-agent to run it.")
+        # --- Tokagent Agent benchmark (async, requires runtime) ---
+        if BenchmarkSuite.TOKAGENT_AGENT in self.config.suites:
+            print(f"\n[ExperienceBench] TOKAGENT_AGENT suite is configured.")
+            print(f"  Use run_tokagent_agent() or the CLI --mode tokagent-agent to run it.")
             print(f"  (It requires an async runtime and model plugin.)")
 
         print(f"\n[ExperienceBench] Done. Total experiences: {result.total_experiences}, Total queries: {result.total_queries}")
         return result
 
-    async def run_eliza_agent(
+    async def run_tokagent_agent(
         self,
         model_plugin_factory: "Callable | None" = None,
         progress_callback: "Callable[[str, int, int], None] | None" = None,
     ) -> BenchmarkResult:
-        """Run the Eliza agent experience benchmark.
+        """Run the Tokagent agent experience benchmark.
 
-        This runs the experience benchmark through a real Eliza agent,
+        This runs the experience benchmark through a real Tokagent agent,
         testing the full pipeline: Provider -> Model -> Action -> Evaluator.
 
         Args:
@@ -190,16 +190,16 @@ class ExperienceBenchmarkRunner:
             progress_callback: Optional callback(phase, completed, total).
 
         Returns:
-            BenchmarkResult with eliza_agent metrics populated.
+            BenchmarkResult with tokagent_agent metrics populated.
         """
-        from elizaos_experience_bench.eliza_runner import (
+        from tokagentos_experience_bench.tokagent_runner import (
             AgentBenchmarkConfig,
-            ElizaAgentExperienceRunner,
-            run_eliza_agent_experience_benchmark,
+            TokagentAgentExperienceRunner,
+            run_tokagent_agent_experience_benchmark,
         )
 
-        print(f"\n[ExperienceBench] Running ELIZA AGENT benchmark...")
-        print(f"  This tests the full Eliza canonical flow:")
+        print(f"\n[ExperienceBench] Running TOKAGENT AGENT benchmark...")
+        print(f"  This tests the full Tokagent canonical flow:")
         print(f"  Provider -> MESSAGE_HANDLER_TEMPLATE -> Actions -> Evaluators")
 
         agent_config = AgentBenchmarkConfig(
@@ -210,7 +210,7 @@ class ExperienceBenchmarkRunner:
             top_k_values=self.config.top_k_values,
         )
 
-        agent_result = await run_eliza_agent_experience_benchmark(
+        agent_result = await run_tokagent_agent_experience_benchmark(
             model_plugin_factory=model_plugin_factory,
             config=agent_config,
             progress_callback=progress_callback,
@@ -225,7 +225,7 @@ class ExperienceBenchmarkRunner:
         )
 
         if agent_result.agent_metrics is not None:
-            result.eliza_agent = agent_result.agent_metrics
+            result.tokagent_agent = agent_result.agent_metrics
 
         if agent_result.direct_retrieval_metrics is not None:
             result.retrieval = agent_result.direct_retrieval_metrics
@@ -289,16 +289,16 @@ def _serialize_result(result: BenchmarkResult) -> dict:
                 for c in result.hard_cases.categories
             ],
         }
-    if result.eliza_agent:
-        out["eliza_agent"] = {
-            "learning_success_rate": result.eliza_agent.learning_success_rate,
-            "total_experiences_recorded": result.eliza_agent.total_experiences_recorded,
-            "total_experiences_in_service": result.eliza_agent.total_experiences_in_service,
-            "avg_learning_latency_ms": result.eliza_agent.avg_learning_latency_ms,
-            "agent_recall_rate": result.eliza_agent.agent_recall_rate,
-            "agent_keyword_incorporation_rate": result.eliza_agent.agent_keyword_incorporation_rate,
-            "avg_retrieval_latency_ms": result.eliza_agent.avg_retrieval_latency_ms,
-            "direct_recall_rate": result.eliza_agent.direct_recall_rate,
-            "direct_mrr": result.eliza_agent.direct_mrr,
+    if result.tokagent_agent:
+        out["tokagent_agent"] = {
+            "learning_success_rate": result.tokagent_agent.learning_success_rate,
+            "total_experiences_recorded": result.tokagent_agent.total_experiences_recorded,
+            "total_experiences_in_service": result.tokagent_agent.total_experiences_in_service,
+            "avg_learning_latency_ms": result.tokagent_agent.avg_learning_latency_ms,
+            "agent_recall_rate": result.tokagent_agent.agent_recall_rate,
+            "agent_keyword_incorporation_rate": result.tokagent_agent.agent_keyword_incorporation_rate,
+            "avg_retrieval_latency_ms": result.tokagent_agent.avg_retrieval_latency_ms,
+            "direct_recall_rate": result.tokagent_agent.direct_recall_rate,
+            "direct_mrr": result.tokagent_agent.direct_mrr,
         }
     return out

@@ -25,7 +25,7 @@ from .protocol import ExtractionResult, SocialAlphaSystem, UserTrustScore
 from .systems.oracle import OracleSystem
 from .systems.smart_baseline import SmartBaselineSystem
 from .systems.full_system import FullSystem
-from .systems.eliza_system import ElizaSystem
+from .systems.tokagent_system import TokagentSystem
 from .suites import ExtractSuite, RankSuite, DetectSuite, ProfitSuite
 
 console = Console()
@@ -399,15 +399,15 @@ def main(
         if api_base:
             os.environ["OPENAI_BASE_URL"] = api_base
         sys_instance = FullSystem(cache_dir=cache_dir, model=model or "gpt-4o-mini")
-    elif system_name == "eliza":
+    elif system_name == "tokagent":
         cache_dir = data_path / ".." / ".benchmark_cache"
-        console.print(f"\n[bold blue]System: ElizaSystem (Eliza AgentRuntime + social-alpha plugin)[/]")
+        console.print(f"\n[bold blue]System: TokagentSystem (Tokagent AgentRuntime + social-alpha plugin)[/]")
         console.print(f"  Cache dir: {cache_dir.resolve()}")
         from dotenv import load_dotenv
         load_dotenv(Path(__file__).resolve().parents[3] / ".env")  # load from workspace root
         if api_base:
             os.environ["OPENAI_BASE_URL"] = api_base
-        sys_instance = ElizaSystem(cache_dir=cache_dir, model=model or "gpt-4o-mini")
+        sys_instance = TokagentSystem(cache_dir=cache_dir, model=model or "gpt-4o-mini")
     else:
         sys_instance = BaselineSystem()
         console.print(f"\nSystem: [bold]{sys_instance.__class__.__name__}[/]")

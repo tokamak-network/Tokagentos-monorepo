@@ -5,7 +5,7 @@ Usage:
     python run_benchmark.py
     python run_benchmark.py --handler oracle
     python run_benchmark.py --handler oracle --output results.json
-    python run_benchmark.py --handler eliza              # LLM-based detection via Eliza runtime
+    python run_benchmark.py --handler tokagent              # LLM-based detection via Tokagent runtime
     python run_benchmark.py --categories prompt_injection social_engineering
     python run_benchmark.py --difficulty easy medium
     python run_benchmark.py --threshold 0.8
@@ -18,9 +18,9 @@ from pathlib import Path
 # Add benchmark path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from elizaos_trust_bench.baselines import PerfectHandler, RandomHandler
-from elizaos_trust_bench.runner import TrustBenchmarkRunner
-from elizaos_trust_bench.types import BenchmarkConfig, Difficulty, ThreatCategory
+from tokagentos_trust_bench.baselines import PerfectHandler, RandomHandler
+from tokagentos_trust_bench.runner import TrustBenchmarkRunner
+from tokagentos_trust_bench.types import BenchmarkConfig, Difficulty, ThreatCategory
 
 
 def _discover_handler_names() -> list[str]:
@@ -32,17 +32,17 @@ def _discover_handler_names() -> list[str]:
     names: list[str] = ["oracle", "random"]
 
     try:
-        from elizaos_trust_bench.real_handler import RealTrustHandler  # noqa: F401
+        from tokagentos_trust_bench.real_handler import RealTrustHandler  # noqa: F401
 
         names.append("real")
     except ImportError:
         pass
 
     try:
-        from elizaos_trust_bench.eliza_handler import ELIZAOS_AVAILABLE
+        from tokagentos_trust_bench.tokagent_handler import TOKAGENTOS_AVAILABLE
 
-        if ELIZAOS_AVAILABLE:
-            names.append("eliza")
+        if TOKAGENTOS_AVAILABLE:
+            names.append("tokagent")
     except ImportError:
         pass
 
@@ -61,21 +61,21 @@ def _create_handler(
     - oracle: Ground truth (perfect score, validates benchmark framework)
     - random: Coin flip baseline (validates benchmark discriminates)
     - real: Pattern-based detection via trust plugin's SecurityModule
-    - eliza: LLM-based detection via a full ElizaOS AgentRuntime (requires
-             OPENAI_API_KEY and elizaos + elizaos-plugin-openai packages)
+    - tokagent: LLM-based detection via a full TokagentOS AgentRuntime (requires
+             OPENAI_API_KEY and tokagentos + tokagentos-plugin-openai packages)
     """
     if name == "oracle":
         return PerfectHandler()
     if name == "random":
         return RandomHandler()
     if name == "real":
-        from elizaos_trust_bench.real_handler import RealTrustHandler
+        from tokagentos_trust_bench.real_handler import RealTrustHandler
 
         return RealTrustHandler()
-    if name == "eliza":
-        from elizaos_trust_bench.eliza_handler import ElizaTrustHandler
+    if name == "tokagent":
+        from tokagentos_trust_bench.tokagent_handler import TokagentTrustHandler
 
-        return ElizaTrustHandler(
+        return TokagentTrustHandler(
             model_provider=model_provider,
             model_name=model_name,
         )
@@ -97,7 +97,7 @@ Examples:
   python run_benchmark.py                                    # Run with oracle handler
   python run_benchmark.py --handler random                   # Run with random handler
   python run_benchmark.py --handler real                     # Pattern-based detection
-  python run_benchmark.py --handler eliza                    # LLM-based detection (Eliza)
+  python run_benchmark.py --handler tokagent                    # LLM-based detection (Tokagent)
   python run_benchmark.py --categories prompt_injection      # Only test prompt injection
   python run_benchmark.py --difficulty hard                   # Only hard cases
   python run_benchmark.py --threshold 0.8 --output out.json  # Set pass threshold + output
@@ -106,7 +106,7 @@ Handler descriptions:
   oracle  Ground truth oracle — validates benchmark framework (should score 100%%)
   random  Coin flip baseline — validates benchmark discriminates good from bad
   real    Pattern-based detection using the trust plugin's SecurityModule
-  eliza   LLM-based detection using a full ElizaOS agent with OpenAI
+  tokagent   LLM-based detection using a full TokagentOS agent with OpenAI
         """,
     )
     parser.add_argument(
@@ -154,13 +154,13 @@ Handler descriptions:
         type=str,
         choices=["openai", "groq", "openrouter", "anthropic", "google", "ollama"],
         default=None,
-        help="Model provider to use for --handler eliza (default: auto-detect)",
+        help="Model provider to use for --handler tokagent (default: auto-detect)",
     )
     parser.add_argument(
         "--model",
         type=str,
         default=None,
-        help="Model name for --handler eliza (e.g. qwen3-32b)",
+        help="Model name for --handler tokagent (e.g. qwen3-32b)",
     )
     args = parser.parse_args()
 
@@ -182,7 +182,7 @@ Handler descriptions:
         output_path=args.output,
     )
 
-    # Create the handler on demand (eliza handler is expensive to instantiate)
+    # Create the handler on demand (tokagent handler is expensive to instantiate)
     print(f"[TrustBench] Creating handler: {args.handler}")
     handler = _create_handler(
         args.handler,
@@ -193,7 +193,7 @@ Handler descriptions:
     runner = TrustBenchmarkRunner(config)
     result = runner.run_and_report(handler, output_path=args.output)
 
-    # Clean up eliza handler resources if it was used
+    # Clean up tokagent handler resources if it was used
     if hasattr(handler, "close") and callable(getattr(handler, "close")):
         handler.close()  # type: ignore[union-attr]
 

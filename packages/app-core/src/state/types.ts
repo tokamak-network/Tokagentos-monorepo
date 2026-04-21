@@ -3,7 +3,7 @@ import type {
   WalletEntry,
   WalletPrimaryMap,
   WalletSource,
-} from "@elizaos/shared/contracts/wallet";
+} from "@tokagentos/shared/contracts/wallet";
 import type { Dispatch, SetStateAction } from "react";
 import type {
   AgentStatus,
@@ -134,7 +134,7 @@ export const ONBOARDING_STEPS: OnboardingStepMeta[] = [
   },
 ];
 
-export type OnboardingMode = "basic" | "advanced" | "elizacloudonly";
+export type OnboardingMode = "basic" | "advanced" | "tokagentcloudonly";
 
 export type FlaminaGuideTopic =
   | "provider"
@@ -482,26 +482,26 @@ export interface AppState {
   /** Custom companion world URL from content pack (overrides day/night default). */
   customWorldUrl: string;
 
-  // Eliza Cloud
-  elizaCloudEnabled: boolean;
-  elizaCloudVoiceProxyAvailable: boolean;
-  elizaCloudConnected: boolean;
-  elizaCloudHasPersistedKey: boolean;
-  elizaCloudCredits: number | null;
-  elizaCloudCreditsLow: boolean;
-  elizaCloudCreditsCritical: boolean;
-  /** Eliza Cloud returned 401 on balance check — inference will fail until the key is fixed. */
-  elizaCloudAuthRejected: boolean;
-  /** Non-fatal credits/API message from Eliza Cloud (e.g. unexpected response, network). */
-  elizaCloudCreditsError: string | null;
-  elizaCloudTopUpUrl: string;
-  elizaCloudUserId: string | null;
+  // Tokagent Cloud
+  tokagentCloudEnabled: boolean;
+  tokagentCloudVoiceProxyAvailable: boolean;
+  tokagentCloudConnected: boolean;
+  tokagentCloudHasPersistedKey: boolean;
+  tokagentCloudCredits: number | null;
+  tokagentCloudCreditsLow: boolean;
+  tokagentCloudCreditsCritical: boolean;
+  /** Tokagent Cloud returned 401 on balance check — inference will fail until the key is fixed. */
+  tokagentCloudAuthRejected: boolean;
+  /** Non-fatal credits/API message from Tokagent Cloud (e.g. unexpected response, network). */
+  tokagentCloudCreditsError: string | null;
+  tokagentCloudTopUpUrl: string;
+  tokagentCloudUserId: string | null;
   /** Last `reason` from GET /api/cloud/status (e.g. API-key-only vs OAuth). */
-  elizaCloudStatusReason: string | null;
+  tokagentCloudStatusReason: string | null;
   cloudDashboardView: "overview" | "billing";
-  elizaCloudLoginBusy: boolean;
-  elizaCloudLoginError: string | null;
-  elizaCloudDisconnecting: boolean;
+  tokagentCloudLoginBusy: boolean;
+  tokagentCloudLoginError: string | null;
+  tokagentCloudDisconnecting: boolean;
 
   // Multi-agent profiles
   activeAgentProfile: AgentProfile | null;
@@ -605,7 +605,7 @@ export interface AppState {
   onboardingBlooioPhoneNumber: string;
   onboardingGithubToken: string;
   onboardingSubscriptionTab: "token" | "oauth";
-  onboardingElizaCloudTab: "login" | "apikey";
+  onboardingTokagentCloudTab: "login" | "apikey";
   onboardingSelectedChains: Set<string>;
   onboardingRpcSelections: Record<string, string>;
   onboardingRpcKeys: Record<string, string>;

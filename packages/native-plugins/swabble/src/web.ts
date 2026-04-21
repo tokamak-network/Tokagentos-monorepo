@@ -61,7 +61,7 @@ interface ElectrobunRendererRpc {
 }
 
 type DesktopBridgeWindow = Window & {
-  __ELIZA_ELECTROBUN_RPC__?: ElectrobunRendererRpc;
+  __TOKAGENT_ELECTROBUN_RPC__?: ElectrobunRendererRpc;
 };
 
 function getDesktopBridgeWindow(): DesktopBridgeWindow | null {
@@ -74,7 +74,7 @@ function getDesktopBridgeWindow(): DesktopBridgeWindow | null {
 
 function getElectrobunRendererRpc(): ElectrobunRendererRpc | null {
   const w = getDesktopBridgeWindow();
-  return w?.__ELIZA_ELECTROBUN_RPC__ ?? null;
+  return w?.__TOKAGENT_ELECTROBUN_RPC__ ?? null;
 }
 
 async function invokeDesktopBridgeRequest<T>(options: {

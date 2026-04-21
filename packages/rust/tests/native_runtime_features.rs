@@ -2,10 +2,10 @@
 
 use anyhow::Result;
 use async_trait::async_trait;
-use elizaos::native_features::RelationshipsService;
-use elizaos::runtime::{AgentRuntime, RuntimeModelHandler, RuntimeOptions};
-use elizaos::types::agent::{Bio, Character};
-use elizaos::types::{
+use tokagentos::native_features::RelationshipsService;
+use tokagentos::runtime::{AgentRuntime, RuntimeModelHandler, RuntimeOptions};
+use tokagentos::types::agent::{Bio, Character};
+use tokagentos::types::{
     Content, Memory, Plugin, PluginDefinition, ProviderDefinition, ProviderHandler, ProviderResult,
     State, UUID,
 };

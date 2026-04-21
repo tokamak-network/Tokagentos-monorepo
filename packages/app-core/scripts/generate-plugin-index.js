@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
  * Generate plugins.json — a static manifest of all available plugins
- * that ships with the eliza package.
+ * that ships with the tokagent package.
  *
- * Fetches plugin metadata from the elizaos-plugins registry and writes
- * plugins.json to the eliza package root.
+ * Fetches plugin metadata from the tokagentos-plugins registry and writes
+ * plugins.json to the tokagent package root.
  *
- * Run from the eliza package directory:
+ * Run from the tokagent package directory:
  *   node scripts/generate-plugin-index.js
  */
 import fs from "node:fs";
@@ -22,7 +22,7 @@ const overridesPath = path.join(__dirname, "plugin-metadata-overrides.json");
 
 // Registry URL
 const GENERATED_REGISTRY_URL =
-  "https://raw.githubusercontent.com/elizaos-plugins/registry/next/generated-registry.json";
+  "https://raw.githubusercontent.com/tokagentos-plugins/registry/next/generated-registry.json";
 
 // ---------------------------------------------------------------------------
 // Category classification
@@ -123,7 +123,7 @@ const NATIVE_RUNTIME_FEATURE_PLUGIN_IDS = new Set([
 ]);
 
 export const PLUGIN_SETUP_GUIDE_ROOT =
-  "https://docs.eliza.ai/plugin-setup-guide";
+  "https://docs.tokagent.ai/plugin-setup-guide";
 
 const SETUP_GUIDE_ANCHORS = {
   openai: "#openai",
@@ -136,7 +136,7 @@ const SETUP_GUIDE_ANCHORS = {
   "local-ai": "#local-ai",
   "vercel-ai-gateway": "#vercel-ai-gateway",
   discord: "#discord",
-  telegram: "https://docs.elizaos.ai/guides/tutorial-telegram-bot",
+  telegram: "https://docs.tokagentos.ai/guides/tutorial-telegram-bot",
   twitter: "#twitter--x",
   slack: "#slack",
   whatsapp: "#whatsapp",
@@ -173,14 +173,14 @@ const SETUP_GUIDE_ANCHORS = {
   "custom-rtmp": "#custom-rtmp",
 };
 
-const ELIZA_REPO_ROOT = "https://github.com/elizaOS/eliza";
+const TOKAGENT_REPO_ROOT = "https://github.com/tokagentOS/tokagent";
 const TAG_STOPWORDS = new Set([
   "plugin",
   "plugins",
-  "eliza",
-  "elizaos",
-  "elizaos-plugin",
-  "elizaos-plugins",
+  "tokagent",
+  "tokagentos",
+  "tokagentos-plugin",
+  "tokagentos-plugins",
   "feature",
 ]);
 const TAG_ALIASES = new Map([
@@ -254,7 +254,7 @@ function deriveRepositoryUrl(npmName, dirName) {
     return undefined;
   }
   if (!dirName?.startsWith("plugin-")) return undefined;
-  return `${ELIZA_REPO_ROOT}/tree/main/packages/${dirName}`;
+  return `${TOKAGENT_REPO_ROOT}/tree/main/packages/${dirName}`;
 }
 
 function isRecord(value) {
@@ -326,9 +326,9 @@ function extractPackageMetadata(pkg, dirName, npmName) {
     pkg.agentConfig?.pluginParameters,
   );
   const configKeys =
-    Array.isArray(pkg.elizaos?.configKeys) &&
-    pkg.elizaos.configKeys.every((value) => typeof value === "string")
-      ? [...pkg.elizaos.configKeys]
+    Array.isArray(pkg.tokagentos?.configKeys) &&
+    pkg.tokagentos.configKeys.every((value) => typeof value === "string")
+      ? [...pkg.tokagentos.configKeys]
       : pluginParameters
         ? Object.keys(pluginParameters)
         : [];
@@ -339,13 +339,13 @@ function extractPackageMetadata(pkg, dirName, npmName) {
     repository:
       normalizeRepositoryUrl(pkg.repository) ??
       deriveRepositoryUrl(npmName, dirName),
-    icon: pkg.logoUrl ?? pkg.elizaos?.logoUrl ?? pkg.icon ?? undefined,
+    icon: pkg.logoUrl ?? pkg.tokagentos?.logoUrl ?? pkg.icon ?? undefined,
     tags: normalizeTags(pkg.keywords ?? []),
     configKeys,
     pluginParameters,
     configUiHints:
       normalizeConfigUiHints(pkg.agentConfig?.configUiHints) ??
-      normalizeConfigUiHints(pkg.elizaos?.configUiHints),
+      normalizeConfigUiHints(pkg.tokagentos?.configUiHints),
   };
 }
 
@@ -368,13 +368,13 @@ function readLocalPackageMetadata(dirName, npmName) {
     path.join(packageRoot, "packages", dirName, "package.json"),
     path.join(
       packageRoot,
-      "eliza",
+      "tokagent",
       "plugins",
       dirName,
       "typescript",
       "package.json",
     ),
-    path.join(packageRoot, "eliza", "plugins", dirName, "package.json"),
+    path.join(packageRoot, "tokagent", "plugins", dirName, "package.json"),
   ];
 
   let metadata = {
@@ -903,7 +903,7 @@ async function main() {
     });
   }
 
-  // Vendored @elizaos plugins not yet in elizaos-plugins/registry.
+  // Vendored @elizaos plugins not yet in tokagentos-plugins/registry.
   const localAdditionsPath = path.join(
     __dirname,
     "plugin-index-local-additions.json",

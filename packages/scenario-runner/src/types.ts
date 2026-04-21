@@ -1,6 +1,6 @@
 /**
  * Internal types for the scenario runner. Scenario definitions themselves are
- * ambient via the `@elizaos/scenario-schema` type shim in
+ * ambient via the `@tokagentos/scenario-schema` type shim in
  * `test/scenarios/scenario-schema-shim.d.ts`; this file only models the
  * runner's execution & report state.
  */
@@ -17,7 +17,7 @@ import type {
   ScenarioFinalCheck,
   ScenarioTurn,
   ScenarioTurnExecution,
-} from "@elizaos/scenario-schema";
+} from "@tokagentos/scenario-schema";
 
 export type FinalCheckStatus =
   | "passed"

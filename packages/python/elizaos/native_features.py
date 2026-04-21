@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from elizaos.features.advanced_capabilities.actions import (
+from tokagentos.features.advanced_capabilities.actions import (
     add_contact_action,
     remove_contact_action,
     schedule_follow_up_action,
@@ -11,20 +11,20 @@ from elizaos.features.advanced_capabilities.actions import (
     update_contact_action,
     update_entity_action,
 )
-from elizaos.features.advanced_capabilities.evaluators import (
+from tokagentos.features.advanced_capabilities.evaluators import (
     reflection_evaluator,
     relationship_extraction_evaluator,
 )
-from elizaos.features.advanced_capabilities.providers import (
+from tokagentos.features.advanced_capabilities.providers import (
     contacts_provider,
     facts_provider,
     follow_ups_provider,
     knowledge_provider,
     relationships_provider,
 )
-from elizaos.features.advanced_capabilities.services import FollowUpService, RelationshipsService
-from elizaos.services.trajectories import TrajectoriesService
-from elizaos.types import Plugin
+from tokagentos.features.advanced_capabilities.services import FollowUpService, RelationshipsService
+from tokagentos.services.trajectories import TrajectoriesService
+from tokagentos.types import Plugin
 
 NativeRuntimeFeature = Literal["knowledge", "relationships", "trajectories"]
 

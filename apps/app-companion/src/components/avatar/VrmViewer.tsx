@@ -12,7 +12,7 @@ import {
   type CompanionVrmPowerMode,
   getVrmCount,
   getVrmUrl,
-} from "@elizaos/app-core";
+} from "@tokagentos/app-core";
 import { useEffect, useEffectEvent, useRef } from "react";
 import {
   type CameraProfile,
@@ -68,7 +68,7 @@ type VrmEngineDebugRegistryEntry = {
 
 declare global {
   interface Window {
-    __ELIZA_VRM_ENGINES__?: VrmEngineDebugRegistryEntry[];
+    __TOKAGENT_VRM_ENGINES__?: VrmEngineDebugRegistryEntry[];
     __captureVrmPreviews__?: typeof captureVrmPreviews;
   }
 }
@@ -91,7 +91,7 @@ async function captureVrmPreviews(options?: {
   const height = options?.height ?? 768;
 
   // Try to reuse the existing world-stage engine, fall back to any available engine
-  const registry = window.__ELIZA_VRM_ENGINES__ ?? [];
+  const registry = window.__TOKAGENT_VRM_ENGINES__ ?? [];
   const registryEntry =
     registry.find((e) => e.role === "world-stage") ?? registry[0] ?? null;
   const engine = registryEntry?.engine ?? null;
@@ -264,7 +264,7 @@ export function VrmViewer(props: VrmViewerProps) {
     if (!import.meta.env.DEV) return;
     if (typeof window === "undefined") return;
     const engine = engineRef.current;
-    const registry = window.__ELIZA_VRM_ENGINES__ ?? [];
+    const registry = window.__TOKAGENT_VRM_ENGINES__ ?? [];
     const id = debugRegistryIdRef.current;
     const nextEntry: VrmEngineDebugRegistryEntry | null = engine
       ? {
@@ -276,7 +276,7 @@ export function VrmViewer(props: VrmViewerProps) {
         }
       : null;
 
-    window.__ELIZA_VRM_ENGINES__ = nextEntry
+    window.__TOKAGENT_VRM_ENGINES__ = nextEntry
       ? [...registry.filter((entry) => entry.id !== id), nextEntry]
       : registry.filter((entry) => entry.id !== id);
   });

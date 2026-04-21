@@ -7,12 +7,12 @@ import {
   type Memory,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { plugin as localdbPlugin } from "@elizaos/plugin-localdb";
 import {
-  ELIZAGOTCHI_STATE_UPDATED_EVENT,
-  type ElizagotchiStateUpdatedPayload,
-  elizagotchiPlugin,
+  TOKAGENTGOTCHI_STATE_UPDATED_EVENT,
+  type TokagentgotchiStateUpdatedPayload,
+  tokagentgotchiPlugin,
 } from "./plugin";
 import type { AnimationType, PetState, SaveData } from "./types";
 
@@ -23,15 +23,15 @@ import type { AnimationType, PetState, SaveData } from "./types";
 let runtimeInstance: AgentRuntime | null = null;
 let initializationPromise: Promise<AgentRuntime> | null = null;
 
-const userId = stringToUuid("elizagotchi-user");
-const roomId = stringToUuid("elizagotchi-room");
-const worldId = stringToUuid("elizagotchi-world");
+const userId = stringToUuid("tokagentgotchi-user");
+const roomId = stringToUuid("tokagentgotchi-room");
+const worldId = stringToUuid("tokagentgotchi-world");
 
 // ============================================================================
 // Agent log subscriptions (enable/disable in UI)
 // ============================================================================
 
-export type ElizagotchiAgentLogEntry = {
+export type TokagentgotchiAgentLogEntry = {
   id: string;
   timestamp: number;
   kind: "ACTION_STARTED" | "ACTION_COMPLETED";
@@ -40,12 +40,12 @@ export type ElizagotchiAgentLogEntry = {
   text?: string;
 };
 
-type AgentLogListener = (entry: ElizagotchiAgentLogEntry) => void;
+type AgentLogListener = (entry: TokagentgotchiAgentLogEntry) => void;
 
 const agentLogListeners = new Set<AgentLogListener>();
 let agentLogRegistered = false;
 
-function pushAgentLog(entry: ElizagotchiAgentLogEntry): void {
+function pushAgentLog(entry: TokagentgotchiAgentLogEntry): void {
   for (const listener of agentLogListeners) {
     listener(entry);
   }
@@ -54,12 +54,12 @@ function pushAgentLog(entry: ElizagotchiAgentLogEntry): void {
 async function initializeRuntime(): Promise<AgentRuntime> {
   const runtime = new AgentRuntime({
     character: {
-      name: "Elizagotchi Agent",
+      name: "Tokagentgotchi Agent",
       bio: [
         "A virtual pet simulation agent. The pet's state lives inside the agent runtime.",
       ],
     },
-    plugins: [localdbPlugin, elizagotchiPlugin],
+    plugins: [localdbPlugin, tokagentgotchiPlugin],
   });
 
   await runtime.initialize();
@@ -69,8 +69,8 @@ async function initializeRuntime(): Promise<AgentRuntime> {
     roomId,
     worldId,
     userName: "Player",
-    source: "elizagotchi-ui",
-    channelId: "elizagotchi",
+    source: "tokagentgotchi-ui",
+    channelId: "tokagentgotchi",
     type: ChannelType.DM,
   });
 
@@ -136,7 +136,7 @@ async function initializeRuntime(): Promise<AgentRuntime> {
   return runtime;
 }
 
-export async function getElizagotchiRuntime(): Promise<AgentRuntime> {
+export async function getTokagentgotchiRuntime(): Promise<AgentRuntime> {
   if (runtimeInstance) return runtimeInstance;
   if (initializationPromise) return initializationPromise;
 
@@ -151,7 +151,7 @@ export async function getElizagotchiRuntime(): Promise<AgentRuntime> {
 // Public API: send commands through the agent message pipeline
 // ============================================================================
 
-export type ElizagotchiClientEvent = {
+export type TokagentgotchiClientEvent = {
   type: string;
   text?: string;
   animation?: AnimationType;
@@ -159,10 +159,10 @@ export type ElizagotchiClientEvent = {
   saveData?: SaveData;
 };
 
-export async function sendElizagotchiCommand(
+export async function sendTokagentgotchiCommand(
   text: string,
-): Promise<ElizagotchiClientEvent | null> {
-  const runtime = await getElizagotchiRuntime();
+): Promise<TokagentgotchiClientEvent | null> {
+  const runtime = await getTokagentgotchiRuntime();
   if (!runtime.messageService) {
     throw new Error("Runtime message service not available");
   }
@@ -179,7 +179,7 @@ export async function sendElizagotchiCommand(
     },
   });
 
-  let lastEvent: ElizagotchiClientEvent | null = null;
+  let lastEvent: TokagentgotchiClientEvent | null = null;
 
   await runtime.messageService.handleMessage(
     runtime,
@@ -218,25 +218,25 @@ export async function sendElizagotchiCommand(
   return lastEvent;
 }
 
-export async function subscribeElizagotchiState(
-  onState: (payload: ElizagotchiStateUpdatedPayload) => void,
+export async function subscribeTokagentgotchiState(
+  onState: (payload: TokagentgotchiStateUpdatedPayload) => void,
 ): Promise<() => void> {
-  const runtime = await getElizagotchiRuntime();
+  const runtime = await getTokagentgotchiRuntime();
   type OnHandler = Parameters<AgentRuntime["on"]>[1];
   type OnPayload = OnHandler extends (data: infer D) => void ? D : never;
 
   const handler = (payload: OnPayload) =>
-    onState(payload as ElizagotchiStateUpdatedPayload);
+    onState(payload as TokagentgotchiStateUpdatedPayload);
 
-  runtime.on(ELIZAGOTCHI_STATE_UPDATED_EVENT, handler);
-  return () => runtime.off(ELIZAGOTCHI_STATE_UPDATED_EVENT, handler);
+  runtime.on(TOKAGENTGOTCHI_STATE_UPDATED_EVENT, handler);
+  return () => runtime.off(TOKAGENTGOTCHI_STATE_UPDATED_EVENT, handler);
 }
 
-export async function subscribeElizagotchiAgentLog(
+export async function subscribeTokagentgotchiAgentLog(
   listener: AgentLogListener,
 ): Promise<() => void> {
   // Ensure runtime (and thus event registration) is initialized.
-  await getElizagotchiRuntime();
+  await getTokagentgotchiRuntime();
 
   agentLogListeners.add(listener);
   return () => {

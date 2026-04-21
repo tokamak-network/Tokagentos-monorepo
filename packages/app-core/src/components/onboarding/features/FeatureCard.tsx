@@ -1,4 +1,4 @@
-import { Button, Spinner } from "@elizaos/ui";
+import { Button, Spinner } from "@tokagentos/ui";
 
 export type FeatureStatus =
   | "disconnected"

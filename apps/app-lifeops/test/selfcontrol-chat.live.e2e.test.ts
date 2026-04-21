@@ -16,7 +16,7 @@ import {
 import { createLiveRuntimeChildEnv } from "../../../packages/app-core/test/helpers/live-child-env.ts";
 
 const LIVE_TESTS_ENABLED =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const REPO_ROOT = path.resolve(import.meta.dirname, "..", "..", "..", "..");
 const ENV_PATH = path.join(REPO_ROOT, ".env");
 
@@ -184,9 +184,9 @@ async function waitForWebsiteBlockStatus(
 async function startLiveRuntime(options?: {
   includeProviderPlugin?: boolean;
 }): Promise<StartedRuntime> {
-  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "eliza-selfcontrol-"));
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "tokagent-selfcontrol-"));
   const stateDir = path.join(tempRoot, "state");
-  const configPath = path.join(tempRoot, "eliza.json");
+  const configPath = path.join(tempRoot, "tokagent.json");
   const hostsFilePath = path.join(tempRoot, "hosts");
   const apiPort = await getFreePort();
   const logs: string[] = [];
@@ -213,17 +213,17 @@ async function startLiveRuntime(options?: {
     "utf8",
   );
 
-  const child = spawn("bun", ["run", "start:eliza"], {
+  const child = spawn("bun", ["run", "start:tokagent"], {
     cwd: REPO_ROOT,
     env: createLiveRuntimeChildEnv({
       ...(selectedLiveProvider?.env ?? {}),
-      ELIZA_CONFIG_PATH: configPath,
-      ELIZA_STATE_DIR: stateDir,
-      ELIZA_PORT: String(apiPort),
-      ELIZA_API_PORT: String(apiPort),
+      TOKAGENT_CONFIG_PATH: configPath,
+      TOKAGENT_STATE_DIR: stateDir,
+      TOKAGENT_PORT: String(apiPort),
+      TOKAGENT_API_PORT: String(apiPort),
       WEBSITE_BLOCKER_HOSTS_FILE_PATH: hostsFilePath,
       SELFCONTROL_HOSTS_FILE_PATH: hostsFilePath,
-      ELIZA_DISABLE_LOCAL_EMBEDDINGS: "1",
+      TOKAGENT_DISABLE_LOCAL_EMBEDDINGS: "1",
       ALLOW_NO_DATABASE: "",
       DISCORD_API_TOKEN: "",
       DISCORD_BOT_TOKEN: "",

@@ -365,9 +365,9 @@ const LandingPage: React.FC = () => {
               implementation errors. Tool-calling benchmarks are useful for
               improving an LLM's usage of a single toolkit, but not for a wider
               ecosystem of applications built on diverse tooling. For example,
-              many Solana AI teams use ElizaOS, and are unable to use the Solana
-              Agent Kit evals. We would have loved to share results with ElizaOS
-              agents, since we found that many ElizaOS agents are so strongly
+              many Solana AI teams use TokagentOS, and are unable to use the Solana
+              Agent Kit evals. We would have loved to share results with TokagentOS
+              agents, since we found that many TokagentOS agents are so strongly
               guided by their character files that they will fail basic single
               tool call evaluations. But alas, the tool-calling benchmarks were
               specific to Solana Agent Kit.{" "}

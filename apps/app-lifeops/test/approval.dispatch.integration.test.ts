@@ -9,7 +9,7 @@
  * stub and exercise the actual client.
  */
 import crypto from "node:crypto";
-import type { AgentRuntime, Memory, UUID } from "@elizaos/core";
+import type { AgentRuntime, Memory, UUID } from "@tokagentos/core";
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { approveRequestAction } from "../src/actions/approval.js";
 import {

@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 
-from elizaos.character import (
+from tokagentos.character import (
     CharacterLoadError,
     CharacterValidationError,
     build_character_plugins,
@@ -13,7 +13,7 @@ from elizaos.character import (
     parse_character,
     validate_character_config,
 )
-from elizaos.types import Character
+from tokagentos.types import Character
 
 
 class TestParseCharacter:

@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING
 
-from elizaos_atropos_reasoning.types import Answer, Problem
+from tokagentos_atropos_reasoning.types import Answer, Problem
 
 if TYPE_CHECKING:
     pass

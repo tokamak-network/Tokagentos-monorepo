@@ -1,4 +1,4 @@
-"""Solana benchmark providers for ElizaOS."""
+"""Solana benchmark providers for TokagentOS."""
 
 from .solana_context import solana_context_provider
 

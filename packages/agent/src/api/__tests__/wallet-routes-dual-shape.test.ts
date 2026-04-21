@@ -14,7 +14,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../cloud/bridge-client.js", () => ({
-  ElizaCloudClient: class ElizaCloudClientMock {},
+  TokagentCloudClient: class TokagentCloudClientMock {},
 }));
 
 vi.mock("../../cloud/cloud-wallet.js", async () => {
@@ -32,7 +32,7 @@ import {
   getOrCreateClientAddressKey,
   provisionCloudWalletsBestEffort,
 } from "../../cloud/cloud-wallet.js";
-import type { ElizaConfig } from "../../config/config.js";
+import type { TokagentConfig } from "../../config/config.js";
 import {
   DEFAULT_WALLET_ROUTE_DEPENDENCIES,
   handleWalletRoutes,
@@ -45,7 +45,7 @@ function makeCtx(
     pathname: string;
     method: string;
     body?: unknown;
-    config?: ElizaConfig;
+    config?: TokagentConfig;
     depsOverrides?: Partial<WalletRouteDependencies>;
   },
 ): {
@@ -53,13 +53,13 @@ function makeCtx(
   sent: { status: number; body: unknown };
   restarts: string[];
   immediateRestarts: string[];
-  savedConfigs: ElizaConfig[];
+  savedConfigs: TokagentConfig[];
 } {
   const sent = { status: 0, body: undefined as unknown };
   const restarts: string[] = [];
   const immediateRestarts: string[] = [];
-  const savedConfigs: ElizaConfig[] = [];
-  const config = overrides.config ?? ({} as ElizaConfig);
+  const savedConfigs: TokagentConfig[] = [];
+  const config = overrides.config ?? ({} as TokagentConfig);
 
   const ctx: WalletRouteContext = {
     req: {} as http.IncomingMessage,
@@ -68,7 +68,7 @@ function makeCtx(
     pathname: overrides.pathname,
     config,
     saveConfig: (c) => {
-      savedConfigs.push(JSON.parse(JSON.stringify(c)) as ElizaConfig);
+      savedConfigs.push(JSON.parse(JSON.stringify(c)) as TokagentConfig);
     },
     ensureWalletKeysInEnvAndConfig: () => false,
     resolveWalletExportRejection: () => null,
@@ -112,7 +112,7 @@ beforeEach(async () => {
   tmpStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "wallet-routes-"));
   process.env.MILADY_STATE_DIR = tmpStateDir;
   delete process.env.ENABLE_CLOUD_WALLET;
-  delete process.env.ELIZAOS_CLOUD_API_KEY;
+  delete process.env.TOKAGENTOS_CLOUD_API_KEY;
   delete process.env.WALLET_SOURCE_EVM;
   delete process.env.WALLET_SOURCE_SOLANA;
 });
@@ -172,7 +172,7 @@ describe("GET /api/wallet/config — dual-wallet shape", () => {
         },
         primary: { evm: "cloud", solana: "local" },
       },
-    } as unknown as ElizaConfig;
+    } as unknown as TokagentConfig;
 
     const { ctx, sent } = makeCtx({
       pathname: "/api/wallet/config",
@@ -224,7 +224,7 @@ describe("GET /api/wallet/config — dual-wallet shape", () => {
         },
         primary: { evm: "local", solana: "cloud" },
       },
-    } as unknown as ElizaConfig;
+    } as unknown as TokagentConfig;
 
     const { ctx, sent } = makeCtx({
       pathname: "/api/wallet/config",
@@ -245,7 +245,7 @@ describe("GET /api/wallet/config — dual-wallet shape", () => {
     process.env.ENABLE_CLOUD_WALLET = "1";
     const config = {
       wallet: { cloud: { evm: { walletAddress: "" } } },
-    } as unknown as ElizaConfig;
+    } as unknown as TokagentConfig;
     const { ctx, sent } = makeCtx({
       pathname: "/api/wallet/config",
       method: "GET",
@@ -367,7 +367,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
     process.env.ENABLE_CLOUD_WALLET = "1";
     const config = {
       cloud: { apiKey: "test-key", baseUrl: "http://127.0.0.1:1" },
-    } as unknown as ElizaConfig;
+    } as unknown as TokagentConfig;
     const { ctx, sent } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
       method: "POST",
@@ -405,8 +405,8 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.elizacloud.ai" },
-    } as unknown as ElizaConfig;
+      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
+    } as unknown as TokagentConfig;
     const { ctx, sent, restarts, immediateRestarts, savedConfigs } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
       method: "POST",
@@ -414,7 +414,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "ELIZAOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
       } as never,
       restartRuntime: vi.fn(async () => true),
     });
@@ -490,8 +490,8 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.elizacloud.ai" },
-    } as unknown as ElizaConfig;
+      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
+    } as unknown as TokagentConfig;
     const { ctx, sent, savedConfigs } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
       method: "POST",
@@ -499,7 +499,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "ELIZAOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
       } as never,
     });
 
@@ -570,8 +570,8 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.elizacloud.ai" },
-    } as unknown as ElizaConfig;
+      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
+    } as unknown as TokagentConfig;
     const { ctx, sent, savedConfigs } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
       method: "POST",
@@ -579,7 +579,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "ELIZAOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
       } as never,
     });
 
@@ -637,7 +637,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.elizacloud.ai" },
+      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
       wallet: {
         cloud: {
           evm: {
@@ -647,7 +647,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
           },
         },
       },
-    } as unknown as ElizaConfig;
+    } as unknown as TokagentConfig;
     const { ctx, sent, savedConfigs } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
       method: "POST",
@@ -655,7 +655,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "ELIZAOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
       } as never,
     });
 
@@ -703,7 +703,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.elizacloud.ai" },
+      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
       wallet: {
         cloud: {
           evm: {
@@ -718,7 +718,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
           },
         },
       },
-    } as unknown as ElizaConfig;
+    } as unknown as TokagentConfig;
     const { ctx, sent } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
       method: "POST",
@@ -726,7 +726,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "ELIZAOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
       } as never,
     });
 
@@ -739,15 +739,15 @@ describe("POST /api/wallet/refresh-cloud", () => {
 });
 
 describe("PUT /api/wallet/config", () => {
-  it("enables the cloud wallet feature flag when all rpc providers use Eliza Cloud", async () => {
+  it("enables the cloud wallet feature flag when all rpc providers use Tokagent Cloud", async () => {
     const { ctx, sent, restarts, immediateRestarts } = makeCtx({
       pathname: "/api/wallet/config",
       method: "PUT",
       body: {
         selections: {
-          evm: "eliza-cloud",
-          bsc: "eliza-cloud",
-          solana: "eliza-cloud",
+          evm: "tokagent-cloud",
+          bsc: "tokagent-cloud",
+          solana: "tokagent-cloud",
         },
         walletNetwork: "mainnet",
       },

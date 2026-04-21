@@ -9,7 +9,7 @@ export default [
       {
         file: "dist/plugin.js",
         format: "iife",
-        name: "capacitorElizaCamera",
+        name: "capacitorTokagentCamera",
         globals: {
           "@capacitor/core": "capacitorExports",
         },

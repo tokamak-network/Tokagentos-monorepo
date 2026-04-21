@@ -3,7 +3,7 @@ Tests for AgentBench types.
 """
 
 
-from elizaos_agentbench.types import (
+from tokagentos_agentbench.types import (
     AgentBenchEnvironment,
     AgentBenchTask,
     AgentBenchResult,

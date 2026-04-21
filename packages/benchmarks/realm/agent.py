@@ -2,14 +2,14 @@
 REALM-Bench Planning Agent
 
 Agent that executes planning tasks for the REALM benchmark.
-Integrates with ElizaOS runtime using the FULL canonical message handling loop.
+Integrates with TokagentOS runtime using the FULL canonical message handling loop.
 
 This agent:
-1. Uses ElizaOS AgentRuntime with basicCapabilities enabled
+1. Uses TokagentOS AgentRuntime with basicCapabilities enabled
 2. Processes messages through message_service.handle_message()
 3. Uses custom REALM actions (GENERATE_PLAN, EXECUTE_STEP, ADAPT_PLAN)
 4. Uses custom REALM providers for task context injection
-5. Integrates with elizaos-plugin-trajectory-logger for training data export
+5. Integrates with tokagentos-plugin-trajectory-logger for training data export
 """
 
 from __future__ import annotations
@@ -37,8 +37,8 @@ logger = logging.getLogger(__name__)
 
 # Try to import trajectory logger plugin for training data export
 try:
-    from elizaos_plugin_trajectory_logger import get_trajectory_logger_plugin
-    from elizaos_plugin_trajectory_logger.runtime_service import (
+    from tokagentos_plugin_trajectory_logger import get_trajectory_logger_plugin
+    from tokagentos_plugin_trajectory_logger.runtime_service import (
         TrajectoryExportConfig,
         TrajectoryLoggerRuntimeService,
     )
@@ -49,20 +49,20 @@ except ImportError:
     TrajectoryExportConfig = None  # type: ignore[misc, assignment]
     get_trajectory_logger_plugin = None  # type: ignore[misc, assignment]
     TRAJECTORY_LOGGER_AVAILABLE = False
-    logger.debug("[REALMAgent] Trajectory logger plugin not available - install elizaos-plugin-trajectory-logger for training export")
+    logger.debug("[REALMAgent] Trajectory logger plugin not available - install tokagentos-plugin-trajectory-logger for training export")
 
 
-# Try to import ElizaOS - required for canonical agent usage
+# Try to import TokagentOS - required for canonical agent usage
 try:
-    from elizaos.runtime import AgentRuntime
-    from elizaos.types.agent import Character
-    from elizaos.types.environment import Entity, Room
-    from elizaos.types.memory import Memory, MemoryType, MessageMetadata
-    from elizaos.types.model import ModelType
-    from elizaos.types.plugin import Plugin
-    from elizaos.types.primitives import Content, as_uuid
+    from tokagentos.runtime import AgentRuntime
+    from tokagentos.types.agent import Character
+    from tokagentos.types.environment import Entity, Room
+    from tokagentos.types.memory import Memory, MemoryType, MessageMetadata
+    from tokagentos.types.model import ModelType
+    from tokagentos.types.plugin import Plugin
+    from tokagentos.types.primitives import Content, as_uuid
 
-    ELIZAOS_AVAILABLE = True
+    TOKAGENTOS_AVAILABLE = True
 except ImportError:
     AgentRuntime = None  # type: ignore[misc, assignment]
     Character = None  # type: ignore[misc, assignment]
@@ -75,8 +75,8 @@ except ImportError:
     Plugin = None  # type: ignore[misc, assignment]
     Content = None  # type: ignore[misc, assignment]
     as_uuid = None  # type: ignore[misc, assignment]
-    ELIZAOS_AVAILABLE = False
-    logger.warning("[REALMAgent] ElizaOS not available - install elizaos package for full agent support")
+    TOKAGENTOS_AVAILABLE = False
+    logger.warning("[REALMAgent] TokagentOS not available - install tokagentos package for full agent support")
 
 
 def get_model_provider_plugin() -> Optional["Plugin"]:
@@ -89,26 +89,26 @@ def get_model_provider_plugin() -> Optional["Plugin"]:
     Returns:
         Plugin configured for the available model provider, or None if none available.
     """
-    if not ELIZAOS_AVAILABLE:
+    if not TOKAGENTOS_AVAILABLE:
         return None
     
-    # OpenAI (supports ElizaOS runtime plugin in Python)
+    # OpenAI (supports TokagentOS runtime plugin in Python)
     if os.environ.get("OPENAI_API_KEY"):
         try:
-            from elizaos_plugin_openai import create_openai_elizaos_plugin
+            from tokagentos_plugin_openai import create_openai_tokagentos_plugin
 
             logger.info("[REALMAgent] Using OpenAI model provider")
-            return create_openai_elizaos_plugin()
+            return create_openai_tokagentos_plugin()
         except ImportError:
             logger.warning("[REALMAgent] OPENAI_API_KEY set but OpenAI plugin not installed")
 
-    # Anthropic (Python package exists in this repo, but no ElizaOS runtime plugin wrapper yet)
+    # Anthropic (Python package exists in this repo, but no TokagentOS runtime plugin wrapper yet)
     if os.environ.get("ANTHROPIC_API_KEY"):
         logger.warning(
             "[REALMAgent] ANTHROPIC_API_KEY set but no Python runtime plugin wrapper is available"
         )
 
-    # Groq (Python package exists in this repo, but no ElizaOS runtime plugin wrapper yet)
+    # Groq (Python package exists in this repo, but no TokagentOS runtime plugin wrapper yet)
     if os.environ.get("GROQ_API_KEY"):
         logger.warning(
             "[REALMAgent] GROQ_API_KEY set but no Python runtime plugin wrapper is available"
@@ -201,9 +201,9 @@ REALM_CHARACTER_CONFIG: dict[str, object] = {
 
 class REALMAgent:
     """
-    Agent for solving REALM benchmark tasks using canonical ElizaOS message handling.
+    Agent for solving REALM benchmark tasks using canonical TokagentOS message handling.
     
-    This agent uses the FULL ElizaOS agent loop:
+    This agent uses the FULL TokagentOS agent loop:
     - AgentRuntime with basicCapabilities enabled (default)
     - MessageService.handle_message() for processing
     - Custom REALM actions (GENERATE_PLAN, EXECUTE_STEP, ADAPT_PLAN, COMPLETE_TASK)
@@ -236,7 +236,7 @@ class REALMAgent:
         Initialize REALM agent.
 
         Args:
-            runtime: Optional pre-configured ElizaOS runtime
+            runtime: Optional pre-configured TokagentOS runtime
             max_steps: Maximum execution steps per task
             execution_model: How to execute plan (sequential/parallel/dag)
             enable_adaptation: Enable plan adaptation on failure
@@ -268,18 +268,18 @@ class REALMAgent:
 
     async def initialize(self) -> None:
         """
-        Initialize the agent runtime with full ElizaOS capabilities.
+        Initialize the agent runtime with full TokagentOS capabilities.
         
         This sets up:
-        1. The ElizaOS AgentRuntime with basicCapabilities (enabled by default)
+        1. The TokagentOS AgentRuntime with basicCapabilities (enabled by default)
         2. A model provider plugin (OpenAI, Anthropic, etc.)
         3. The REALM benchmark plugin with planning actions/providers
         """
         if self._initialized:
             return
 
-        if not ELIZAOS_AVAILABLE:
-            logger.warning("[REALMAgent] ElizaOS not available - running in heuristic-only mode")
+        if not TOKAGENTOS_AVAILABLE:
+            logger.warning("[REALMAgent] TokagentOS not available - running in heuristic-only mode")
             self._initialized = True
             return
 
@@ -401,7 +401,7 @@ class REALMAgent:
         composes state from RECENT_MESSAGES.  We need a room and at least two
         entities (benchmark user + agent) so that lookups succeed.
         """
-        if not self.runtime or not ELIZAOS_AVAILABLE:
+        if not self.runtime or not TOKAGENTOS_AVAILABLE:
             return
         if Entity is None or Room is None:
             return
@@ -451,7 +451,7 @@ class REALMAgent:
         test_case: Optional[REALMTestCase] = None,
     ) -> PlanningTrajectory:
         """
-        Solve a REALM benchmark task using the full ElizaOS agent loop.
+        Solve a REALM benchmark task using the full TokagentOS agent loop.
 
         Args:
             task: The REALM task to solve
@@ -507,13 +507,13 @@ class REALMAgent:
 
         try:
             # Use full agent loop if:
-            # 1. ElizaOS is available
+            # 1. TokagentOS is available
             # 2. Runtime is initialized
             # 3. REALM plugin is loaded
             # 4. Model provider is available (required for message handling)
             # 5. use_llm is enabled
             use_full_loop = (
-                ELIZAOS_AVAILABLE
+                TOKAGENTOS_AVAILABLE
                 and self.runtime
                 and self._realm_plugin
                 and self._has_model_provider
@@ -521,12 +521,12 @@ class REALMAgent:
             )
             
             if use_full_loop:
-                logger.info("[REALMAgent] Using full ElizaOS agent loop")
+                logger.info("[REALMAgent] Using full TokagentOS agent loop")
                 await self._solve_with_agent_loop(task, test_case, trajectory)
             else:
                 logger.info(
                     f"[REALMAgent] Using heuristic mode "
-                    f"(elizaos={ELIZAOS_AVAILABLE}, runtime={self.runtime is not None}, "
+                    f"(tokagentos={TOKAGENTOS_AVAILABLE}, runtime={self.runtime is not None}, "
                     f"plugin={self._realm_plugin is not None}, model={self._has_model_provider}, "
                     f"use_llm={self.use_llm})"
                 )
@@ -595,7 +595,7 @@ class REALMAgent:
         trajectory: PlanningTrajectory,
     ) -> None:
         """
-        Solve task using the full ElizaOS runtime message handling loop.
+        Solve task using the full TokagentOS runtime message handling loop.
 
         Each iteration sends a message through
         ``runtime.message_service.handle_message()`` which:
@@ -807,7 +807,7 @@ class REALMAgent:
         trajectory: PlanningTrajectory,
     ) -> None:
         """
-        Send a message through the full ElizaOS message handling loop.
+        Send a message through the full TokagentOS message handling loop.
         
         This uses runtime.message_service.handle_message() which:
         1. Saves message to memory
@@ -816,7 +816,7 @@ class REALMAgent:
         4. Processes selected actions
         5. Runs evaluators
         """
-        if not self.runtime or not ELIZAOS_AVAILABLE:
+        if not self.runtime or not TOKAGENTOS_AVAILABLE:
             return
 
         # Create message memory
@@ -905,7 +905,7 @@ class REALMAgent:
         traj_id: str | None,
     ) -> None:
         """
-        Solve task using heuristic planning (fallback when ElizaOS not available).
+        Solve task using heuristic planning (fallback when TokagentOS not available).
         """
         # Generate plan from expected actions or available tools
         plan: list[PlanningAction] = []
@@ -1066,7 +1066,7 @@ class REALMAgent:
             Path to exported file, or None if no trajectories or export unavailable
         """
         if not TRAJECTORY_LOGGER_AVAILABLE or TrajectoryExportConfig is None:
-            logger.warning("[REALMAgent] Trajectory export not available - install elizaos-plugin-trajectory-logger")
+            logger.warning("[REALMAgent] Trajectory export not available - install tokagentos-plugin-trajectory-logger")
             return None
             
         if not self._completed_trajectories:
@@ -1103,7 +1103,7 @@ class REALMAgent:
             Path to exported file, or None if no trajectories or export unavailable
         """
         if not TRAJECTORY_LOGGER_AVAILABLE or TrajectoryExportConfig is None:
-            logger.warning("[REALMAgent] Trajectory export not available - install elizaos-plugin-trajectory-logger")
+            logger.warning("[REALMAgent] Trajectory export not available - install tokagentos-plugin-trajectory-logger")
             return None
             
         if not self._completed_trajectories:
@@ -1139,7 +1139,7 @@ class REALMAgent:
 
 class MockREALMAgent:
     """
-    Mock agent for testing benchmark infrastructure without ElizaOS/LLM.
+    Mock agent for testing benchmark infrastructure without TokagentOS/LLM.
 
     Returns expected results to verify benchmark correctness.
     """

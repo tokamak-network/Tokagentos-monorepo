@@ -1,11 +1,11 @@
 /**
- * Restart infrastructure for Eliza.
+ * Restart infrastructure for Tokagent.
  *
  * Provides a pluggable restart handler so the restart action (and the
  * `/api/agent/restart` endpoint) work in every host environment:
  *
  *   - **CLI** (default): exits with {@link RESTART_EXIT_CODE} (75). The runner
- *     script (`eliza/packages/app-core/scripts/run-node.mjs`) catches this, rebuilds if source files
+ *     script (`tokagent/packages/app-core/scripts/run-node.mjs`) catches this, rebuilds if source files
  *     changed, and relaunches.
  *   - **Dev-server / API**: the host registers a handler via
  *     {@link setRestartHandler} that stops the current runtime, creates a new
@@ -20,7 +20,7 @@ import process from "node:process";
 
 /**
  * Special exit code that tells the CLI runner to restart the process.
- * Must stay in sync with `RESTART_EXIT_CODE` in `eliza/packages/app-core/scripts/run-node.mjs`.
+ * Must stay in sync with `RESTART_EXIT_CODE` in `tokagent/packages/app-core/scripts/run-node.mjs`.
  */
 export const RESTART_EXIT_CODE = 75;
 

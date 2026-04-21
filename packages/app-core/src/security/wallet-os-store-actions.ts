@@ -1,4 +1,4 @@
-import { loadElizaConfig, saveElizaConfig } from "@elizaos/agent/config/config";
+import { loadTokagentConfig, saveTokagentConfig } from "@tokagentos/agent/config/config";
 import { deriveAgentVaultId } from "./agent-vault-id";
 import type { SecureStoreSecretKind } from "./platform-secure-store";
 import { createNodePlatformSecureStore } from "./platform-secure-store-node";
@@ -37,7 +37,7 @@ export async function migrateWalletPrivateKeysToOsStore(): Promise<MigrateWallet
   }
 
   const vaultId = deriveAgentVaultId();
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
   const persisted =
     config.env && typeof config.env === "object" && !Array.isArray(config.env)
       ? (config.env as Record<string, unknown>)
@@ -84,7 +84,7 @@ export async function migrateWalletPrivateKeysToOsStore(): Promise<MigrateWallet
     } else {
       config.env = nextEnv as typeof config.env;
     }
-    saveElizaConfig(config);
+    saveTokagentConfig(config);
   }
 
   return { migrated, failed };

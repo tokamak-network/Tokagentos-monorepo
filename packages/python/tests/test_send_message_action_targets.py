@@ -5,14 +5,14 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from elizaos.features.advanced_capabilities.actions.send_message import (
+from tokagentos.features.advanced_capabilities.actions.send_message import (
     send_message_action as advanced_send_message_action,
 )
-from elizaos.features.advanced_capabilities.actions.send_message import (
+from tokagentos.features.advanced_capabilities.actions.send_message import (
     send_message_action as basic_capabilities_send_message_action,
 )
-from elizaos.types.memory import Memory
-from elizaos.types.primitives import Content, as_uuid
+from tokagentos.types.memory import Memory
+from tokagentos.types.primitives import Content, as_uuid
 
 
 def _make_runtime() -> MagicMock:

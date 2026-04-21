@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deploy elizaOS Vercel Edge Functions
+# Deploy tokagentOS Vercel Edge Functions
 #
 # Usage:
 #   ./scripts/deploy.sh           # Preview deployment
@@ -12,7 +12,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 cd "$PROJECT_DIR"
 
-echo "🚀 Deploying elizaOS Vercel Edge Functions"
+echo "🚀 Deploying tokagentOS Vercel Edge Functions"
 echo ""
 
 # Check for Vercel CLI

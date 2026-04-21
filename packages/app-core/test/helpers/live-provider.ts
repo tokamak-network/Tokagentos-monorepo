@@ -21,7 +21,7 @@ try {
   // dotenv optional
 }
 
-const ELIZA_CLOUD_OPENAI_BASE_URL = "https://elizacloud.ai/api/v1";
+const TOKAGENT_CLOUD_OPENAI_BASE_URL = "https://tokagentcloud.ai/api/v1";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -51,8 +51,8 @@ function providerKeyMatchesSelection(
 function getLiveTestModelOverride(kind: "small" | "large"): string | null {
   const key =
     kind === "small"
-      ? ["MILADY_LIVE_TEST_SMALL_MODEL", "ELIZA_LIVE_TEST_SMALL_MODEL"]
-      : ["MILADY_LIVE_TEST_LARGE_MODEL", "ELIZA_LIVE_TEST_LARGE_MODEL"];
+      ? ["MILADY_LIVE_TEST_SMALL_MODEL", "TOKAGENT_LIVE_TEST_SMALL_MODEL"]
+      : ["MILADY_LIVE_TEST_LARGE_MODEL", "TOKAGENT_LIVE_TEST_LARGE_MODEL"];
 
   for (const name of key) {
     const value = getTrimmedEnv(name);
@@ -70,7 +70,7 @@ function getLiveTestBaseUrlOverride(
   const suffix = providerName.toUpperCase().replace(/-/g, "_");
   for (const name of [
     `MILADY_LIVE_TEST_${suffix}_BASE_URL`,
-    `ELIZA_LIVE_TEST_${suffix}_BASE_URL`,
+    `TOKAGENT_LIVE_TEST_${suffix}_BASE_URL`,
   ]) {
     const value = getTrimmedEnv(name);
     if (value) {
@@ -97,8 +97,8 @@ function readCloudApiKey(value: unknown): string {
 
 function loadConfiguredCloudApiKey(): string {
   const configuredPath =
-    process.env.ELIZA_CONFIG_PATH?.trim() ||
-    path.join(os.homedir(), ".eliza", "eliza.json");
+    process.env.TOKAGENT_CONFIG_PATH?.trim() ||
+    path.join(os.homedir(), ".tokagent", "tokagent.json");
 
   try {
     const raw = fs.readFileSync(configuredPath, "utf8");
@@ -132,9 +132,9 @@ export type LiveProviderConfig = {
 export const LIVE_PROVIDER_ENV_KEYS = new Set<string>([
   "SMALL_MODEL",
   "LARGE_MODEL",
-  "ELIZAOS_CLOUD_API_KEY",
-  "ELIZA_CLOUD_API_KEY",
-  "ELIZA_DISABLE_SUBSCRIPTION_CREDENTIALS",
+  "TOKAGENTOS_CLOUD_API_KEY",
+  "TOKAGENT_CLOUD_API_KEY",
+  "TOKAGENT_DISABLE_SUBSCRIPTION_CREDENTIALS",
 ]);
 
 const PROVIDERS: Array<{
@@ -144,7 +144,7 @@ const PROVIDERS: Array<{
    *  primary name and is always set in the propagated env when discovered. */
   keyEnvVars: string[];
   /** Additional env var names checked during discovery only (e.g. CI-scoped
-   *  `ELIZA_E2E_*` aliases). When one of these holds the key, it is
+   *  `TOKAGENT_E2E_*` aliases). When one of these holds the key, it is
    *  propagated under the canonical `keyEnvVars[0]` name so plugins find it. */
   keyEnvVarAliases?: string[];
   baseUrlEnvVar?: string;
@@ -158,7 +158,7 @@ const PROVIDERS: Array<{
     name: "groq",
     plugin: "@elizaos/plugin-groq",
     keyEnvVars: ["GROQ_API_KEY"],
-    keyEnvVarAliases: ["ELIZA_E2E_GROQ_API_KEY"],
+    keyEnvVarAliases: ["TOKAGENT_E2E_GROQ_API_KEY"],
     defaultBaseUrl: "https://api.groq.com/openai/v1",
     smallModelEnvVar: "GROQ_SMALL_MODEL",
     largeModelEnvVar: "GROQ_LARGE_MODEL",
@@ -169,7 +169,7 @@ const PROVIDERS: Array<{
     name: "openai",
     plugin: "@elizaos/plugin-openai",
     keyEnvVars: ["OPENAI_API_KEY"],
-    keyEnvVarAliases: ["ELIZA_E2E_OPENAI_API_KEY"],
+    keyEnvVarAliases: ["TOKAGENT_E2E_OPENAI_API_KEY"],
     baseUrlEnvVar: "OPENAI_BASE_URL",
     defaultBaseUrl: "https://api.openai.com/v1",
     smallModelEnvVar: "OPENAI_SMALL_MODEL",
@@ -181,7 +181,7 @@ const PROVIDERS: Array<{
     name: "anthropic",
     plugin: "@elizaos/plugin-anthropic",
     keyEnvVars: ["ANTHROPIC_API_KEY"],
-    keyEnvVarAliases: ["ELIZA_E2E_ANTHROPIC_API_KEY"],
+    keyEnvVarAliases: ["TOKAGENT_E2E_ANTHROPIC_API_KEY"],
     defaultBaseUrl: "https://api.anthropic.com",
     smallModelEnvVar: "ANTHROPIC_SMALL_MODEL",
     largeModelEnvVar: "ANTHROPIC_LARGE_MODEL",
@@ -192,7 +192,7 @@ const PROVIDERS: Array<{
     name: "google",
     plugin: "@elizaos/plugin-google-genai",
     keyEnvVars: ["GOOGLE_GENERATIVE_AI_API_KEY", "GOOGLE_API_KEY"],
-    keyEnvVarAliases: ["ELIZA_E2E_GOOGLE_GENERATIVE_AI_API_KEY"],
+    keyEnvVarAliases: ["TOKAGENT_E2E_GOOGLE_GENERATIVE_AI_API_KEY"],
     defaultBaseUrl: "https://generativelanguage.googleapis.com/v1beta",
     smallModelEnvVar: "GOOGLE_SMALL_MODEL",
     largeModelEnvVar: "GOOGLE_LARGE_MODEL",
@@ -203,7 +203,7 @@ const PROVIDERS: Array<{
     name: "openrouter",
     plugin: "@elizaos/plugin-openrouter",
     keyEnvVars: ["OPENROUTER_API_KEY"],
-    keyEnvVarAliases: ["ELIZA_E2E_OPENROUTER_API_KEY"],
+    keyEnvVarAliases: ["TOKAGENT_E2E_OPENROUTER_API_KEY"],
     defaultBaseUrl: "https://openrouter.ai/api/v1",
     smallModelEnvVar: "OPENROUTER_SMALL_MODEL",
     largeModelEnvVar: "OPENROUTER_LARGE_MODEL",
@@ -268,7 +268,7 @@ export function selectLiveProvider(
     const env: Record<string, string> = {};
     // Propagate the discovered key under every canonical name so plugin code
     // reading e.g. `GROQ_API_KEY` finds it even when the source env only had
-    // the scoped alias `ELIZA_E2E_GROQ_API_KEY`.
+    // the scoped alias `TOKAGENT_E2E_GROQ_API_KEY`.
     for (const envVar of def.keyEnvVars) {
       env[envVar] = apiKey;
     }
@@ -292,8 +292,8 @@ export function selectLiveProvider(
   }
 
   const cloudApiKey =
-    getTrimmedEnv("ELIZAOS_CLOUD_API_KEY") ||
-    getTrimmedEnv("ELIZA_CLOUD_API_KEY") ||
+    getTrimmedEnv("TOKAGENTOS_CLOUD_API_KEY") ||
+    getTrimmedEnv("TOKAGENT_CLOUD_API_KEY") ||
     configuredCloudApiKey;
   if (cloudApiKey && !preferredProvider) {
     const smallModel = getTrimmedEnv("OPENAI_SMALL_MODEL") || "gpt-5.4-mini";
@@ -305,13 +305,13 @@ export function selectLiveProvider(
     return {
       name: "openai",
       apiKey: cloudApiKey,
-      baseUrl: ELIZA_CLOUD_OPENAI_BASE_URL,
+      baseUrl: TOKAGENT_CLOUD_OPENAI_BASE_URL,
       smallModel,
       largeModel,
       pluginPackage: "@elizaos/plugin-openai",
       env: {
         OPENAI_API_KEY: cloudApiKey,
-        OPENAI_BASE_URL: ELIZA_CLOUD_OPENAI_BASE_URL,
+        OPENAI_BASE_URL: TOKAGENT_CLOUD_OPENAI_BASE_URL,
         OPENAI_SMALL_MODEL: smallModel,
         OPENAI_LARGE_MODEL: largeModel,
         SMALL_MODEL: smallModel,
@@ -339,12 +339,12 @@ export function requireLiveProvider(
 }
 
 /**
- * Check if ELIZA_LIVE_TEST is enabled.
+ * Check if TOKAGENT_LIVE_TEST is enabled.
  */
 export function isLiveTestEnabled(): boolean {
   return (
     process.env.MILADY_LIVE_TEST === "1" ||
-    process.env.ELIZA_LIVE_TEST === "1" ||
+    process.env.TOKAGENT_LIVE_TEST === "1" ||
     process.env.LIVE === "1"
   );
 }
@@ -362,8 +362,8 @@ export function availableProviderNames(): LiveProviderName[] {
     ).map((def) => def.name),
   );
   if (
-    getTrimmedEnv("ELIZAOS_CLOUD_API_KEY") ||
-    getTrimmedEnv("ELIZA_CLOUD_API_KEY") ||
+    getTrimmedEnv("TOKAGENTOS_CLOUD_API_KEY") ||
+    getTrimmedEnv("TOKAGENT_CLOUD_API_KEY") ||
     configuredCloudApiKey
   ) {
     providers.add("openai");
@@ -386,7 +386,7 @@ export function buildIsolatedLiveProviderEnv(
     }
   }
 
-  nextEnv.ELIZA_DISABLE_SUBSCRIPTION_CREDENTIALS = "1";
+  nextEnv.TOKAGENT_DISABLE_SUBSCRIPTION_CREDENTIALS = "1";
 
   return nextEnv;
 }

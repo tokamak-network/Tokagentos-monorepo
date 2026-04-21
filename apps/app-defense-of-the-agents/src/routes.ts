@@ -1,4 +1,4 @@
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import type {
   AppLaunchDiagnostic,
   AppLaunchResult,
@@ -6,7 +6,7 @@ import type {
   AppRunSessionContext,
   AppSessionActionResult,
   AppSessionState,
-} from "@elizaos/shared/contracts/apps";
+} from "@tokagentos/shared/contracts/apps";
 
 const APP_NAME = "@elizaos/app-defense-of-the-agents";
 const APP_DISPLAY_NAME = "Defense of the Agents";
@@ -406,10 +406,10 @@ function resolveAgentName(
 
   const agentId = runtimeLike?.agentId?.trim();
   if (agentId) {
-    return `eliza-${agentId.slice(0, 8)}`;
+    return `tokagent-${agentId.slice(0, 8)}`;
   }
 
-  return "Eliza";
+  return "Tokagent";
 }
 
 function resolveSessionContext(
@@ -469,8 +469,8 @@ function buildViewerShellInjection(
 ): string {
   const viewerBaseUrl = new URL("./", viewerUrl).toString();
 
-  return `<base id="eliza-defense-viewer-base" href="${viewerBaseUrl}">
-<style id="eliza-defense-embedded-style">
+  return `<base id="tokagent-defense-viewer-base" href="${viewerBaseUrl}">
+<style id="tokagent-defense-embedded-style">
 html, body { background: #000 !important; }
 #landing-overlay,
 #auth-modal,
@@ -498,7 +498,7 @@ html, body { background: #000 !important; }
 #bottom-hud {
   transform: translateX(-50%) !important;
 }
-#eliza-defense-spectator-banner {
+#tokagent-defense-spectator-banner {
   position: fixed;
   top: 14px;
   left: 14px;
@@ -512,16 +512,16 @@ html, body { background: #000 !important; }
   color: #f6ead2;
   font: 12px "Friz Quadrata", "Palatino Linotype", serif;
 }
-#eliza-defense-spectator-banner .eliza-defense-title {
+#tokagent-defense-spectator-banner .tokagent-defense-title {
   color: #fcd312;
   font-size: 15px;
   margin-bottom: 6px;
 }
-#eliza-defense-spectator-banner .eliza-defense-body {
+#tokagent-defense-spectator-banner .tokagent-defense-body {
   color: rgba(246, 234, 210, 0.82);
   line-height: 1.5;
 }
-#eliza-defense-spectator-banner .eliza-defense-link {
+#tokagent-defense-spectator-banner .tokagent-defense-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -533,11 +533,11 @@ html, body { background: #000 !important; }
   text-decoration: none;
   background: rgba(63, 48, 12, 0.48);
 }
-#eliza-defense-spectator-banner .eliza-defense-link:hover {
+#tokagent-defense-spectator-banner .tokagent-defense-link:hover {
   background: rgba(92, 70, 17, 0.62);
 }
 </style>
-<script id="eliza-defense-embedded-bootstrap">
+<script id="tokagent-defense-embedded-bootstrap">
 (() => {
   const agentName = ${JSON.stringify(agentName)};
   const fullSiteUrl = ${JSON.stringify(viewerUrl)};
@@ -590,28 +590,28 @@ html, body { background: #000 !important; }
 
   const ensureBanner = () => {
     if (
-      document.getElementById("eliza-defense-spectator-banner") ||
+      document.getElementById("tokagent-defense-spectator-banner") ||
       !document.body
     ) {
       return false;
     }
 
     const banner = document.createElement("div");
-    banner.id = "eliza-defense-spectator-banner";
+    banner.id = "tokagent-defense-spectator-banner";
 
     const title = document.createElement("div");
-    title.className = "eliza-defense-title";
+    title.className = "tokagent-defense-title";
     title.textContent = agentName
       ? "Watching " + agentName
       : "Watching Defense of the Agents";
 
     const body = document.createElement("div");
-    body.className = "eliza-defense-body";
+    body.className = "tokagent-defense-body";
     body.textContent =
-      "Eliza is steering this agent from the adjacent panel. Open the full site if you want to log in or join the battle yourself.";
+      "Tokagent is steering this agent from the adjacent panel. Open the full site if you want to log in or join the battle yourself.";
 
     const link = document.createElement("a");
-    link.className = "eliza-defense-link";
+    link.className = "tokagent-defense-link";
     link.href = fullSiteUrl;
     link.target = "_blank";
     link.rel = "noopener noreferrer";
@@ -665,8 +665,8 @@ html, body { background: #000 !important; }
         scoreboardPanel.style.top = "54px";
       }
 
-      if (document.documentElement.dataset.elizaDefenseViewer !== "embedded") {
-        document.documentElement.dataset.elizaDefenseViewer = "embedded";
+      if (document.documentElement.dataset.tokagentDefenseViewer !== "embedded") {
+        document.documentElement.dataset.tokagentDefenseViewer = "embedded";
       }
 
       ensureBanner();

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Deploy elizaOS Supabase Edge Functions
+# Deploy tokagentOS Supabase Edge Functions
 
 set -e
 
@@ -10,7 +10,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 FUNCTION_NAME="${1:-all}"
 BUILD_WASM="${BUILD_WASM:-false}"
 
-echo "🚀 Deploying elizaOS Supabase Edge Functions"
+echo "🚀 Deploying tokagentOS Supabase Edge Functions"
 echo ""
 
 # Check if supabase CLI is installed
@@ -29,7 +29,7 @@ if ! supabase projects list &> /dev/null; then
 fi
 
 # Build WASM if requested
-if [[ "$BUILD_WASM" == "true" ]] || [[ "$FUNCTION_NAME" == "eliza-chat-wasm" ]] || [[ "$FUNCTION_NAME" == "all" ]]; then
+if [[ "$BUILD_WASM" == "true" ]] || [[ "$FUNCTION_NAME" == "tokagent-chat-wasm" ]] || [[ "$FUNCTION_NAME" == "all" ]]; then
     if [[ -d "$PROJECT_DIR/rust" ]]; then
         echo "🔧 Building WASM module..."
         "$SCRIPT_DIR/build-wasm.sh"
@@ -73,7 +73,7 @@ echo "Don't forget to set your secrets:"
 echo "  supabase secrets set OPENAI_API_KEY=your-key"
 echo ""
 echo "Test your deployment:"
-echo "  curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/eliza-chat \\"
+echo "  curl -X POST https://YOUR_PROJECT.supabase.co/functions/v1/tokagent-chat \\"
 echo "    -H 'Content-Type: application/json' \\"
 echo "    -H 'Authorization: Bearer YOUR_ANON_KEY' \\"
 echo "    -d '{\"message\": \"Hello!\"}'"

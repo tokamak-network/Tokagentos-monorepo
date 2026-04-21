@@ -1,7 +1,7 @@
 {
-	"name": "@elizaos/skills",
+	"name": "@tokagentos/skills",
 	"version": "2.0.0-alpha.223",
-	"description": "Bundled skills and skill loading utilities for elizaOS agents",
+	"description": "Bundled skills and skill loading utilities for tokagentOS agents",
 	"type": "module",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -28,25 +28,25 @@
 		"README.md"
 	],
 	"keywords": [
-		"elizaos",
+		"tokagentos",
 		"skills",
 		"agent",
 		"ai",
 		"llm",
 		"automation"
 	],
-	"author": "elizaOS",
+	"author": "tokagentOS",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/elizaos/eliza.git",
+		"url": "git+https://github.com/tokagentos/tokagent.git",
 		"directory": "packages/skills"
 	},
 	"engines": {
 		"node": ">=22.0.0"
 	},
 	"dependencies": {
-		"@elizaos/core": "workspace:*",
+		"@tokagentos/core": "workspace:*",
 		"yaml": "^2.8.2"
 	},
 	"devDependencies": {

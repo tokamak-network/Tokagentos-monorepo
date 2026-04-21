@@ -1,4 +1,4 @@
-import type { LifeOpsBrowserCompanionSyncResponse } from "@elizaos/shared/contracts/lifeops";
+import type { LifeOpsBrowserCompanionSyncResponse } from "@tokagentos/shared/contracts/lifeops";
 import type {
   CompanionConfig,
   CompanionSessionCompleteRequest,
@@ -45,7 +45,7 @@ export class LifeOpsBrowserRelayClient {
       Authorization: `Bearer ${this.config.pairingToken}`,
       "Content-Type": "application/json",
       "X-LifeOps-Browser-Companion-Id": this.config.companionId,
-      "X-Eliza-Browser-Companion-Id": this.config.companionId,
+      "X-Tokagent-Browser-Companion-Id": this.config.companionId,
     };
   }
 

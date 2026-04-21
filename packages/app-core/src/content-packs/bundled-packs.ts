@@ -8,7 +8,7 @@
 import type {
   ContentPackManifest,
   ResolvedContentPack,
-} from "@elizaos/shared/contracts/content-pack";
+} from "@tokagentos/shared/contracts/content-pack";
 
 interface BundledPackDef {
   id: string;

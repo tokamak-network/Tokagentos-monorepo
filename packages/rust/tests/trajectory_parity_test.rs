@@ -1,8 +1,8 @@
 #![cfg(all(feature = "native", not(feature = "wasm")))]
 
 use anyhow::Result;
-use elizaos::runtime::{AgentRuntime, RuntimeModelHandler, RuntimeOptions};
-use elizaos::types::Character;
+use tokagentos::runtime::{AgentRuntime, RuntimeModelHandler, RuntimeOptions};
+use tokagentos::types::Character;
 use serde_json::Value;
 use std::sync::Arc;
 
@@ -26,7 +26,7 @@ async fn test_trajectory_parity_logging() -> Result<()> {
     runtime.set_trajectory_step_id(Some(step_id.clone()));
 
     // 3. Test compose_state with phase
-    let message = elizaos::types::Memory::default();
+    let message = tokagentos::types::Memory::default();
     let _state = runtime.compose_state(&message).await?;
 
     // Verify provider logs

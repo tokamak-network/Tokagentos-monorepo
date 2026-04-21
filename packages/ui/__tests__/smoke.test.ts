@@ -10,7 +10,7 @@ function isReactComponent(value: unknown): boolean {
   );
 }
 
-describe("@elizaos/ui", () => {
+describe("@tokagentos/ui", () => {
   it("exports the package entry point", async () => {
     const mod = await import("../src/index.ts");
     expect(mod).toBeDefined();

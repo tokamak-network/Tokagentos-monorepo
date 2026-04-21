@@ -2199,7 +2199,7 @@ function isBenchmarkMode(state: Pick<State, "values">): boolean {
  * - Attachment processing
  * - Message deletion and channel clearing
  *
- * This is the standard message handler used by elizaOS and can be replaced
+ * This is the standard message handler used by tokagentOS and can be replaced
  * with custom implementations via the IMessageService interface.
  */
 export class DefaultMessageService implements IMessageService {

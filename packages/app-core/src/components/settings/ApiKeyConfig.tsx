@@ -1,4 +1,4 @@
-import { Button, useTimeout } from "@elizaos/ui";
+import { Button, useTimeout } from "@tokagentos/ui";
 import { useCallback, useState } from "react";
 import { client, type PluginParamDef } from "../../api";
 import {

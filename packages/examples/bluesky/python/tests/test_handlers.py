@@ -116,7 +116,7 @@ class TestHandleMentionReceived:
             nonlocal captured_callback
             captured_callback = callback
             # Simulate calling the callback with a response
-            from elizaos import Content
+            from tokagentos import Content
 
             await callback(Content(text="Test response!"))
             return MagicMock(did_respond=True, mode="actions")

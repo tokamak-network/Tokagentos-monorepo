@@ -1,11 +1,11 @@
-import { type IAgentRuntime, logger, Service } from "@elizaos/core";
+import { type IAgentRuntime, logger, Service } from "@tokagentos/core";
 import {
-  type ElizaConfig,
-  loadElizaConfig,
-  saveElizaConfig,
+  type TokagentConfig,
+  loadTokagentConfig,
+  saveTokagentConfig,
 } from "../config/config.js";
 
-export const CHARACTER_PERSISTENCE_SERVICE = "eliza_character_persistence";
+export const CHARACTER_PERSISTENCE_SERVICE = "tokagent_character_persistence";
 
 type RuntimeCharacterLike = {
   name?: string;
@@ -35,7 +35,7 @@ type PersistCharacterResult = {
   error?: string;
 };
 
-type AgentConfigLike = NonNullable<ElizaConfig["agents"]>["list"] extends
+type AgentConfigLike = NonNullable<TokagentConfig["agents"]>["list"] extends
   | Array<infer T>
   | undefined
   ? T
@@ -54,7 +54,7 @@ function cloneJson<T>(value: T): T {
 }
 
 export function syncCharacterIntoConfig(
-  config: ElizaConfig,
+  config: TokagentConfig,
   character: RuntimeCharacterLike,
 ): AgentConfigLike {
   if (!config.agents) config.agents = {};
@@ -170,17 +170,17 @@ function buildPersistedCharacterData(
   return persisted;
 }
 
-export class ElizaCharacterPersistenceService extends Service {
+export class TokagentCharacterPersistenceService extends Service {
   static serviceType = CHARACTER_PERSISTENCE_SERVICE;
 
   static async start(
     runtime: IAgentRuntime,
-  ): Promise<ElizaCharacterPersistenceService> {
-    return new ElizaCharacterPersistenceService(runtime);
+  ): Promise<TokagentCharacterPersistenceService> {
+    return new TokagentCharacterPersistenceService(runtime);
   }
 
   capabilityDescription =
-    "Persists runtime character changes to Eliza config and agent storage";
+    "Persists runtime character changes to Tokagent config and agent storage";
 
   async persistCharacter(
     params: PersistCharacterParams = {},
@@ -189,9 +189,9 @@ export class ElizaCharacterPersistenceService extends Service {
       this.runtime.character) as RuntimeCharacterLike;
 
     try {
-      const config = loadElizaConfig();
+      const config = loadTokagentConfig();
       const nextAgent = syncCharacterIntoConfig(config, runtimeCharacter);
-      saveElizaConfig(config);
+      saveTokagentConfig(config);
 
       const persistedCharacter = buildPersistedCharacterData(runtimeCharacter);
       const runtimeMetadata =

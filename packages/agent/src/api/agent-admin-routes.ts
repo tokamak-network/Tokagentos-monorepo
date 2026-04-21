@@ -1,10 +1,10 @@
 import path from "node:path";
-import type { AgentRuntime, UUID } from "@elizaos/core";
+import type { AgentRuntime, UUID } from "@tokagentos/core";
 import {
   getDefaultStylePreset,
   normalizeCharacterLanguage,
-} from "@elizaos/shared/onboarding-presets";
-import { loadElizaConfig, saveElizaConfig } from "../config/config.js";
+} from "@tokagentos/shared/onboarding-presets";
+import { loadTokagentConfig, saveTokagentConfig } from "../config/config.js";
 import { resolveUserPath } from "../config/paths.js";
 import { detectRuntimeModel } from "./agent-model.js";
 import { clearPersistedOnboardingConfig } from "./provider-switch-config.js";
@@ -70,7 +70,7 @@ export interface AgentAdminRouteContext
 }
 
 function resolveResetPgliteDataDir(
-  config: ReturnType<typeof loadElizaConfig>,
+  config: ReturnType<typeof loadTokagentConfig>,
   stateDir: string,
 ): string {
   const explicitDataDir = process.env.PGLITE_DATA_DIR?.trim();
@@ -85,7 +85,7 @@ function resolveResetPgliteDataDir(
 
   const workspaceDir =
     config.agents?.defaults?.workspace ?? `${stateDir}/workspace`;
-  return path.join(resolveUserPath(workspaceDir), ".eliza", ".elizadb");
+  return path.join(resolveUserPath(workspaceDir), ".tokagent", ".tokagentdb");
 }
 
 export async function handleAgentAdminRoutes(
@@ -173,18 +173,18 @@ export async function handleAgentAdminRoutes(
       }
 
       const stateDir = resolveStateDir();
-      const config = loadElizaConfig();
+      const config = loadTokagentConfig();
       const dataDir = resolveResetPgliteDataDir(config, stateDir);
-      if (path.basename(dataDir) !== ".elizadb") {
+      if (path.basename(dataDir) !== ".tokagentdb") {
         logWarn(
-          `[eliza-api] Refusing to delete unexpected PGlite dir during reset: "${dataDir}"`,
+          `[tokagent-api] Refusing to delete unexpected PGlite dir during reset: "${dataDir}"`,
         );
       } else if (stateDirExists(dataDir)) {
         removeStateDir(dataDir);
       }
 
       clearPersistedOnboardingConfig(config);
-      saveElizaConfig(config);
+      saveTokagentConfig(config);
 
       state.agentState = "stopped";
       state.agentName = resolveDefaultAgentName(config);
@@ -208,7 +208,7 @@ export async function handleAgentAdminRoutes(
     return true;
   }
 
-  if (method === "POST" && pathname === "/api@elizaos/agent/reset") {
+  if (method === "POST" && pathname === "/api@tokagentos/agent/reset") {
     try {
       if (state.runtime) {
         await state.runtime.stop();
@@ -221,7 +221,7 @@ export async function handleAgentAdminRoutes(
       const isSafe = isSafeResetStateDir(resolvedState, home);
       if (!isSafe) {
         logWarn(
-          `[eliza-api] Refusing to delete unsafe state dir: "${resolvedState}"`,
+          `[tokagent-api] Refusing to delete unsafe state dir: "${resolvedState}"`,
         );
         error(
           res,

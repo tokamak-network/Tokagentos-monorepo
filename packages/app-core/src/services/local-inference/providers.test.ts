@@ -15,14 +15,14 @@ const ENV_KEYS = [
   "OPENAI_API_KEY",
   "GROK_API_KEY",
   "XAI_API_KEY",
-  "ELIZA_CLOUD_TOKEN",
-  "ELIZACLOUD_TOKEN",
-  "ELIZAOS_API_KEY",
+  "TOKAGENT_CLOUD_TOKEN",
+  "TOKAGENTCLOUD_TOKEN",
+  "TOKAGENTOS_API_KEY",
   "GOOGLE_API_KEY",
   "GEMINI_API_KEY",
   "MISTRAL_API_KEY",
-  "ELIZA_DEVICE_BRIDGE_ENABLED",
-  "ELIZA_STATE_DIR",
+  "TOKAGENT_DEVICE_BRIDGE_ENABLED",
+  "TOKAGENT_STATE_DIR",
 ];
 
 describe("provider snapshot (real env-state readers)", () => {
@@ -36,7 +36,7 @@ describe("provider snapshot (real env-state readers)", () => {
       saved[k] = process.env[k];
       delete process.env[k];
     }
-    process.env.ELIZA_STATE_DIR = tmpState;
+    process.env.TOKAGENT_STATE_DIR = tmpState;
   });
 
   afterEach(async () => {
@@ -61,7 +61,7 @@ describe("provider snapshot (real env-state readers)", () => {
       "grok",
       "google",
       "mistral",
-      "elizacloud",
+      "tokagentcloud",
     ]) {
       expect(ids).toContain(expected);
     }
@@ -92,13 +92,13 @@ describe("provider snapshot (real env-state readers)", () => {
     expect(snap.find((s) => s.id === "google")?.enableState.enabled).toBe(true);
   });
 
-  it("device-bridge requires ELIZA_DEVICE_BRIDGE_ENABLED=1", async () => {
+  it("device-bridge requires TOKAGENT_DEVICE_BRIDGE_ENABLED=1", async () => {
     let snap = await snapshotProviders();
     expect(
       snap.find((s) => s.id === "milady-device-bridge")?.enableState.enabled,
     ).toBe(false);
 
-    process.env.ELIZA_DEVICE_BRIDGE_ENABLED = "1";
+    process.env.TOKAGENT_DEVICE_BRIDGE_ENABLED = "1";
     snap = await snapshotProviders();
     expect(
       snap.find((s) => s.id === "milady-device-bridge")?.enableState.enabled,

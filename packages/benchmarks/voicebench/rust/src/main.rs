@@ -1,14 +1,14 @@
 use anyhow::{Context, Result};
 use base64::engine::general_purpose::{STANDARD as BASE64_STANDARD, URL_SAFE as BASE64_URL_SAFE};
 use base64::Engine as _;
-use elizaos::runtime::{AgentRuntime, RuntimeOptions};
-use elizaos::services::IMessageService;
-use elizaos::types::agent::{Character, CharacterSettings};
-use elizaos::types::components::HandlerCallback;
-use elizaos::types::memory::{Memory, MemoryMetadata};
-use elizaos::types::primitives::{as_uuid, Content, UUID};
-use elizaos_plugin_elevenlabs::create_elevenlabs_elizaos_plugin;
-use elizaos_plugin_groq::create_groq_elizaos_plugin;
+use tokagentos::runtime::{AgentRuntime, RuntimeOptions};
+use tokagentos::services::IMessageService;
+use tokagentos::types::agent::{Character, CharacterSettings};
+use tokagentos::types::components::HandlerCallback;
+use tokagentos::types::memory::{Memory, MemoryMetadata};
+use tokagentos::types::primitives::{as_uuid, Content, UUID};
+use tokagentos_plugin_elevenlabs::create_elevenlabs_tokagentos_plugin;
+use tokagentos_plugin_groq::create_groq_tokagentos_plugin;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::collections::HashMap;
@@ -552,7 +552,7 @@ fn load_character() -> Result<Character> {
     let path = shared_dir().join("character.json");
     let raw = fs::read_to_string(&path)
         .with_context(|| format!("Failed to read character: {}", path.display()))?;
-    let mut character = elizaos::parse_character(&raw).with_context(|| "Invalid character JSON")?;
+    let mut character = tokagentos::parse_character(&raw).with_context(|| "Invalid character JSON")?;
 
     if character.settings.is_none() {
         character.settings = Some(CharacterSettings::default());
@@ -581,9 +581,9 @@ async fn create_runtime(
     character: &Character,
     agent_id: UUID,
 ) -> Result<Arc<AgentRuntime>> {
-    let mut plugins = vec![create_groq_elizaos_plugin()?];
+    let mut plugins = vec![create_groq_tokagentos_plugin()?];
     if profile == "elevenlabs" {
-        plugins.push(create_elevenlabs_elizaos_plugin()?);
+        plugins.push(create_elevenlabs_tokagentos_plugin()?);
     }
 
     let runtime = AgentRuntime::new(RuntimeOptions {

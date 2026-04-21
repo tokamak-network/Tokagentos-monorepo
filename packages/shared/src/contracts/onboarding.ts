@@ -58,7 +58,7 @@ export interface StylePreset {
 export type OnboardingProviderFamily =
   | "anthropic"
   | "deepseek"
-  | "elizacloud"
+  | "tokagentcloud"
   | "gemini"
   | "grok"
   | "groq"
@@ -74,7 +74,7 @@ export type OnboardingProviderId =
   | "anthropic"
   | "anthropic-subscription"
   | "deepseek"
-  | "elizacloud"
+  | "tokagentcloud"
   | "gemini"
   | "grok"
   | "groq"
@@ -119,7 +119,7 @@ export interface ProviderOption {
 }
 
 export interface CloudProviderOption {
-  id: "elizacloud";
+  id: "tokagentcloud";
   name: string;
   description: string;
 }
@@ -205,13 +205,13 @@ export const SUBSCRIPTION_PROVIDER_SELECTIONS = [
 
 export const ONBOARDING_PROVIDER_CATALOG = [
   {
-    id: "elizacloud",
-    name: "Eliza Cloud",
+    id: "tokagentcloud",
+    name: "Tokagent Cloud",
     envKey: null,
-    pluginName: "@elizaos/plugin-elizacloud",
+    pluginName: "@elizaos/plugin-tokagentcloud",
     keyPrefix: null,
-    description: "Managed hosting for Eliza agents and bundled infrastructure.",
-    family: "elizacloud",
+    description: "Managed hosting for Tokagent agents and bundled infrastructure.",
+    family: "tokagentcloud",
     authMode: "cloud",
     group: "cloud",
     order: 10,
@@ -224,7 +224,7 @@ export const ONBOARDING_PROVIDER_CATALOG = [
     pluginName: "@elizaos/plugin-anthropic",
     keyPrefix: null,
     description:
-      "Powers task agents via Claude Code CLI. For the main agent, use Eliza Cloud or a direct API key.",
+      "Powers task agents via Claude Code CLI. For the main agent, use Tokagent Cloud or a direct API key.",
     family: "anthropic",
     authMode: "subscription",
     group: "subscription",
@@ -385,8 +385,8 @@ export const ONBOARDING_PROVIDER_CATALOG = [
 
 export const ONBOARDING_CLOUD_PROVIDER_OPTIONS = [
   {
-    id: "elizacloud",
-    name: "Eliza Cloud",
+    id: "tokagentcloud",
+    name: "Tokagent Cloud",
     description:
       "Managed cloud infrastructure. Wallets, LLMs, and RPCs included.",
   },
@@ -394,7 +394,7 @@ export const ONBOARDING_CLOUD_PROVIDER_OPTIONS = [
 
 export type OnboardingLocalProviderId = Exclude<
   OnboardingProviderId,
-  "elizacloud"
+  "tokagentcloud"
 >;
 
 interface OnboardingCloudModelPreferences {
@@ -462,7 +462,7 @@ function readOnboardingCloudModelPreferences(
 export interface OnboardingCloudManagedConnection
   extends OnboardingCloudModelPreferences {
   kind: "cloud-managed";
-  cloudProvider: "elizacloud";
+  cloudProvider: "tokagentcloud";
   apiKey?: string;
 }
 
@@ -858,7 +858,7 @@ export function hasExplicitCanonicalRuntimeConfig(
   );
 }
 
-function buildElizaCloudTextRoute(args: {
+function buildTokagentCloudTextRoute(args: {
   nanoModel?: string;
   smallModel?: string;
   mediumModel?: string;
@@ -872,9 +872,9 @@ function buildElizaCloudTextRoute(args: {
   mediaDescriptionModel?: string;
 }): ServiceRouteConfig {
   return {
-    backend: "elizacloud",
+    backend: "tokagentcloud",
     transport: "cloud-proxy",
-    accountId: "elizacloud",
+    accountId: "tokagentcloud",
     ...pickOnboardingCloudModelPreferences(args),
   };
 }
@@ -922,10 +922,10 @@ function resolveLegacyDeploymentTargetInConfig(
 
   if (
     cloudRuntime === "cloud" &&
-    cloudProvider === "elizacloud" &&
+    cloudProvider === "tokagentcloud" &&
     cloudAgentId
   ) {
-    return { runtime: "cloud", provider: "elizacloud" };
+    return { runtime: "cloud", provider: "tokagentcloud" };
   }
 
   return { runtime: "local" };
@@ -957,7 +957,7 @@ function resolveLegacyServiceRoutingInConfig(
         ...(remotePrimaryModel ? { primaryModel: remotePrimaryModel } : {}),
       };
     } else if (inferLegacyCloudInferenceSelection(config)) {
-      next.llmText = buildElizaCloudTextRoute({
+      next.llmText = buildTokagentCloudTextRoute({
         smallModel: readConfigString(models, "small"),
         largeModel: readConfigString(models, "large"),
       });
@@ -1007,9 +1007,9 @@ function resolveLegacyServiceRoutingInConfig(
       continue;
     }
     next[capability] = {
-      backend: "elizacloud",
+      backend: "tokagentcloud",
       transport: "cloud-proxy",
-      accountId: "elizacloud",
+      accountId: "tokagentcloud",
     };
   }
 
@@ -1100,10 +1100,10 @@ export function resolveLinkedAccountsInConfig(
   const next: LinkedAccountsConfig = { ...explicit };
   const cloud = asConfigRecord(config?.cloud);
   const hasCloudKey = Boolean(normalizeSecretString(cloud?.apiKey));
-  const existingCloudAccount = next.elizacloud;
+  const existingCloudAccount = next.tokagentcloud;
 
   if (hasCloudKey && (!existingCloudAccount || !existingCloudAccount.status)) {
-    next.elizacloud = {
+    next.tokagentcloud = {
       ...existingCloudAccount,
       status: "linked",
       source: existingCloudAccount?.source ?? "api-key",
@@ -1176,10 +1176,10 @@ function deriveOnboardingConnectionFromRuntimeConfig(
       ? readOnboardingEnvSecret(config, localProviderOption.envKey)
       : undefined;
 
-  if (llmText?.transport === "cloud-proxy" && backend === "elizacloud") {
+  if (llmText?.transport === "cloud-proxy" && backend === "tokagentcloud") {
     return {
       kind: "cloud-managed",
-      cloudProvider: "elizacloud",
+      cloudProvider: "tokagentcloud",
       ...pickOnboardingCloudModelPreferences(llmText),
     };
   }
@@ -1196,13 +1196,13 @@ function deriveOnboardingConnectionFromRuntimeConfig(
       ...(deploymentTarget.remoteAccessToken
         ? { remoteAccessToken: deploymentTarget.remoteAccessToken }
         : {}),
-      ...(backend && backend !== "elizacloud" ? { provider: backend } : {}),
+      ...(backend && backend !== "tokagentcloud" ? { provider: backend } : {}),
       ...(routeApiKey ? { apiKey: routeApiKey } : {}),
       ...(llmText.primaryModel ? { primaryModel: llmText.primaryModel } : {}),
     };
   }
 
-  if (backend && backend !== "elizacloud") {
+  if (backend && backend !== "tokagentcloud") {
     return {
       kind: "local-provider",
       provider: backend,
@@ -1237,14 +1237,14 @@ function resolveConfiguredLocalProviderFromSignals(
   );
   if (
     storedSubscriptionProvider &&
-    storedSubscriptionProvider !== "elizacloud" &&
+    storedSubscriptionProvider !== "tokagentcloud" &&
     !requiresAdditionalRuntimeProvider(storedSubscriptionProvider)
   ) {
     return storedSubscriptionProvider;
   }
 
   for (const provider of ONBOARDING_PROVIDER_CATALOG) {
-    if (provider.id === "elizacloud") {
+    if (provider.id === "tokagentcloud") {
       continue;
     }
     const providerId = provider.id as OnboardingLocalProviderId;
@@ -1270,7 +1270,7 @@ export function normalizePersistedOnboardingConnection(
   if (connection.kind === "cloud-managed") {
     return {
       kind: "cloud-managed",
-      cloudProvider: "elizacloud",
+      cloudProvider: "tokagentcloud",
       apiKey: normalizeSecretString(connection.apiKey),
       ...readOnboardingCloudModelPreferences(connection),
     };
@@ -1278,7 +1278,7 @@ export function normalizePersistedOnboardingConnection(
 
   if (connection.kind === "local-provider") {
     const provider = normalizeOnboardingProviderId(connection.provider);
-    if (!provider || provider === "elizacloud") {
+    if (!provider || provider === "tokagentcloud") {
       return null;
     }
     return {
@@ -1299,7 +1299,7 @@ export function normalizePersistedOnboardingConnection(
       kind: "remote-provider",
       remoteApiBase,
       remoteAccessToken: normalizeSecretString(connection.remoteAccessToken),
-      provider: provider && provider !== "elizacloud" ? provider : undefined,
+      provider: provider && provider !== "tokagentcloud" ? provider : undefined,
       apiKey: normalizeSecretString(connection.apiKey),
       primaryModel: readConfigString(connection, "primaryModel"),
     };
@@ -1353,12 +1353,12 @@ export function deriveOnboardingCredentialPersistencePlan(args: {
 
   if (
     llmRoute?.transport === "cloud-proxy" &&
-    normalizeOnboardingProviderId(llmRoute.backend) === "elizacloud" &&
+    normalizeOnboardingProviderId(llmRoute.backend) === "tokagentcloud" &&
     cloudApiKey
   ) {
     return {
       llmSelection: {
-        backend: "elizacloud",
+        backend: "tokagentcloud",
         transport: "cloud-proxy",
         apiKey: cloudApiKey,
         ...pickOnboardingCloudModelPreferences(llmRoute),
@@ -1369,7 +1369,7 @@ export function deriveOnboardingCredentialPersistencePlan(args: {
 
   if (llmRoute?.transport === "direct" && llmApiKey) {
     const provider = normalizeOnboardingProviderId(llmRoute.backend);
-    if (provider && provider !== "elizacloud") {
+    if (provider && provider !== "tokagentcloud") {
       return {
         llmSelection: {
           backend: provider,
@@ -1388,7 +1388,7 @@ export function deriveOnboardingCredentialPersistencePlan(args: {
     const provider = normalizeOnboardingProviderId(llmRoute.backend);
     const remoteApiBase =
       llmRoute.remoteApiBase ?? deploymentTarget?.remoteApiBase;
-    if (provider && provider !== "elizacloud" && remoteApiBase) {
+    if (provider && provider !== "tokagentcloud" && remoteApiBase) {
       return {
         llmSelection: {
           backend: provider,
@@ -1419,7 +1419,7 @@ export function stripOnboardingConnectionSecrets(
   if (connection.kind === "cloud-managed") {
     return {
       kind: "cloud-managed",
-      cloudProvider: "elizacloud",
+      cloudProvider: "tokagentcloud",
       ...pickOnboardingCloudModelPreferences(connection),
     };
   }
@@ -1480,7 +1480,7 @@ export function inferCompatibilityOnboardingConnection(
   if (
     !cloudExplicitlyDisabled &&
     (cloud?.enabled === true ||
-      cloudProvider === "elizacloud" ||
+      cloudProvider === "tokagentcloud" ||
       readConfigString(cloud, "inferenceMode") === "cloud" ||
       nanoModel ||
       smallModel ||
@@ -1490,7 +1490,7 @@ export function inferCompatibilityOnboardingConnection(
   ) {
     return {
       kind: "cloud-managed",
-      cloudProvider: "elizacloud",
+      cloudProvider: "tokagentcloud",
       apiKey: cloudApiKey,
       nanoModel,
       smallModel,
@@ -1548,7 +1548,7 @@ function inferLegacyCloudInferenceSelection(
 
   return Boolean(
     cloud?.enabled === true ||
-      cloudProvider === "elizacloud" ||
+      cloudProvider === "tokagentcloud" ||
       inferenceMode === "cloud" ||
       nanoModel ||
       smallModel ||
@@ -1565,7 +1565,7 @@ export function isCloudInferenceSelectedInConfig(
   const llmText = routing?.llmText;
   return Boolean(
     llmText?.transport === "cloud-proxy" &&
-      normalizeOnboardingProviderId(llmText.backend) === "elizacloud",
+      normalizeOnboardingProviderId(llmText.backend) === "tokagentcloud",
   );
 }
 

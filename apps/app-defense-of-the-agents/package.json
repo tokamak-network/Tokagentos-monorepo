@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Eliza app integration for Defense of the Agents.",
+  "description": "Tokagent app integration for Defense of the Agents.",
   "main": "./src/index.ts",
   "exports": {
     "./package.json": "./package.json",
@@ -14,7 +14,7 @@
   "homepage": "https://www.defenseoftheagents.com/",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaos/eliza.git"
+    "url": "https://github.com/tokagentos/tokagent.git"
   },
   "scripts": {
     "test": "vitest run --config vitest.config.ts"
@@ -26,12 +26,12 @@
     "strategy"
   ],
   "dependencies": {
-    "@elizaos/app-core": "workspace:*",
-    "@elizaos/core": "workspace:*",
-    "@elizaos/shared": "workspace:*",
-    "@elizaos/ui": "workspace:*"
+    "@tokagentos/app-core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
+    "@tokagentos/shared": "workspace:*",
+    "@tokagentos/ui": "workspace:*"
   },
-  "elizaos": {
+  "tokagentos": {
     "kind": "app",
     "app": {
       "displayName": "Defense of the Agents",

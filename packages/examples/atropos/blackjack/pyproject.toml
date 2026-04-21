@@ -3,16 +3,16 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "elizaos-atropos-blackjack"
+name = "tokagentos-atropos-blackjack"
 version = "2.0.0"
-description = "Blackjack environment for ElizaOS RL training with Atropos"
+description = "Blackjack environment for TokagentOS RL training with Atropos"
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [
-    { name = "elizaOS Contributors" }
+    { name = "tokagentOS Contributors" }
 ]
-keywords = ["elizaos", "atropos", "reinforcement-learning", "blackjack", "gymnasium"]
+keywords = ["tokagentos", "atropos", "reinforcement-learning", "blackjack", "gymnasium"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -22,7 +22,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
-    "elizaos>=2.0.0a4",
+    "tokagentos>=2.0.0a4",
     "gymnasium>=0.29.0",
     "pydantic>=2.0.0",
 ]
@@ -34,14 +34,14 @@ dev = [
     "pytest-cov>=4.1.0",
 ]
 openai = [
-    "elizaos-plugin-openai>=2.0.0a4",
+    "tokagentos-plugin-openai>=2.0.0a4",
 ]
 
 [project.scripts]
-elizaos-blackjack = "elizaos_atropos_blackjack.cli:main"
+tokagentos-blackjack = "tokagentos_atropos_blackjack.cli:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["elizaos_atropos_blackjack"]
+packages = ["tokagentos_atropos_blackjack"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

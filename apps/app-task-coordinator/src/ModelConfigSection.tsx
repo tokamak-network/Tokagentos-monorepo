@@ -1,11 +1,11 @@
-import { useApp } from "@elizaos/app-core";
+import { useApp } from "@tokagentos/app-core";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectValue,
-} from "@elizaos/ui/components/ui/select";
-import { SettingsControls } from "@elizaos/ui/components/ui/settings-controls";
+} from "@tokagentos/ui/components/ui/select";
+import { SettingsControls } from "@tokagentos/ui/components/ui/settings-controls";
 import type {
   AgentTab,
   AiderProvider,

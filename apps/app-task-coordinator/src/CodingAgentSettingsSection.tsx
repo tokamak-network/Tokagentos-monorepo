@@ -1,4 +1,4 @@
-import { type AgentPreflightResult, client, useApp } from "@elizaos/app-core";
+import { type AgentPreflightResult, client, useApp } from "@tokagentos/app-core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AgentTabsSection } from "./AgentTabsSection";
 import {
@@ -23,7 +23,7 @@ import { LlmProviderSection } from "./LlmProviderSection";
 import { ModelConfigSection } from "./ModelConfigSection";
 
 export function CodingAgentSettingsSection() {
-  const { t, elizaCloudConnected } = useApp();
+  const { t, tokagentCloudConnected } = useApp();
 
   const [activeTab, setActiveTab] = useState<AgentTab | null>(null);
   const [loading, setLoading] = useState(true);
@@ -154,13 +154,13 @@ export function CodingAgentSettingsSection() {
     return () => controller.abort();
   }, []);
 
-  // If the user previously chose "cloud" but Eliza Cloud has since been
+  // If the user previously chose "cloud" but Tokagent Cloud has since been
   // disconnected, fall back to "subscription" rather than leaving the
   // selector pointed at an unusable provider.
   const rawLlmProvider = (prefs.PARALLAX_LLM_PROVIDER ||
     "subscription") as LlmProvider;
   const llmProvider: LlmProvider =
-    rawLlmProvider === "cloud" && !elizaCloudConnected
+    rawLlmProvider === "cloud" && !tokagentCloudConnected
       ? "subscription"
       : rawLlmProvider;
   const isCloud = llmProvider === "cloud";
@@ -208,7 +208,7 @@ export function CodingAgentSettingsSection() {
 
   // Debounced auto-save. Coalesces rapid keystrokes (e.g. typing an
   // API key character-by-character) into a single POST so we don't
-  // persist 40+ partial-key snapshots to `eliza.json` and don't
+  // persist 40+ partial-key snapshots to `tokagent.json` and don't
   // leave the config in a half-written state if one request fails
   // mid-flight.
   //

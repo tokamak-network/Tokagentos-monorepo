@@ -5,13 +5,13 @@ description: "Real-time messaging infrastructure and Socket.IO integration"
 
 ## Overview
 
-The messaging infrastructure provides real-time communication between clients and the ElizaOS server using Socket.IO. This enables instant message delivery, presence tracking, and bidirectional communication.
+The messaging infrastructure provides real-time communication between clients and the TokagentOS server using Socket.IO. This enables instant message delivery, presence tracking, and bidirectional communication.
 
 ## Architecture
 
-### How WebSockets Work in ElizaOS
+### How WebSockets Work in TokagentOS
 
-The project uses **Socket.IO** (not raw WebSockets) for real-time communication between clients and the Eliza server.
+The project uses **Socket.IO** (not raw WebSockets) for real-time communication between clients and the Tokagent server.
 
 ```mermaid
 flowchart TD
@@ -20,13 +20,13 @@ flowchart TD
         B[Extension Socket.IO Client]
     end
 
-    subgraph "Eliza NextJS App"
+    subgraph "Tokagent NextJS App"
         C[SocketIOManager]
         D[Socket.IO Client]
     end
 
-    subgraph "Eliza Server"
-        E[Eliza Server<br/>localhost:3000]
+    subgraph "Tokagent Server"
+        E[Tokagent Server<br/>localhost:3000]
         F[Socket.IO Server]
     end
 
@@ -55,7 +55,7 @@ flowchart TD
 
 ### Key Components
 
-1. **Direct Connection**: Socket.IO connects directly to the Eliza server (default: `http://localhost:3000`)
+1. **Direct Connection**: Socket.IO connects directly to the Tokagent server (default: `http://localhost:3000`)
 2. **Channel-Based Communication**: Messages are organized by channels
 3. **Message Filtering**: Clients filter incoming broadcasts by channel/room ID
 
@@ -106,7 +106,7 @@ const roomId = "your-room-id"; // This should match the agent/channel ID
 
 // 2. CRITICAL: Join the room when connected
 socket.on("connect", function () {
-  console.log("[SUCCESS] Connected to Eliza, socket ID:", socket.id);
+  console.log("[SUCCESS] Connected to Tokagent, socket ID:", socket.id);
 
   // JOIN THE ROOM - This is required to receive broadcasts!
   socket.emit("message", {
@@ -148,7 +148,7 @@ socket.on("connection_established", function (data) {
 });
 
 // 5. Send a message (make sure format is exact)
-function sendMessageToEliza(text) {
+function sendMessageToTokagent(text) {
   const messagePayload = {
     type: 2, // SEND_MESSAGE
     payload: {
@@ -195,7 +195,7 @@ import { io } from "socket.io-client";
 
 const SOCKET_URL = "http://localhost:3000";
 
-class ElizaSocketClient {
+class TokagentSocketClient {
   constructor(entityId, roomId) {
     this.entityId = entityId;
     this.roomId = roomId;
@@ -211,7 +211,7 @@ class ElizaSocketClient {
     });
 
     this.socket.on("connect", () => {
-      console.log("Connected to Eliza");
+      console.log("Connected to Tokagent");
       this.joinRoom();
     });
 
@@ -276,7 +276,7 @@ class ElizaSocketClient {
 }
 
 // Usage
-const client = new ElizaSocketClient("my-extension-id", "agent-room-id");
+const client = new TokagentSocketClient("my-extension-id", "agent-room-id");
 client.connect();
 
 // Send a message
@@ -417,7 +417,7 @@ const socket = io(SOCKET_URL, {
 
 ### The Problem
 
-Your extension can send messages to Eliza (server receives them), but doesn't receive responses back.
+Your extension can send messages to Tokagent (server receives them), but doesn't receive responses back.
 
 ### Root Causes
 
@@ -559,11 +559,11 @@ class SocketIOService extends Service {
 ## Reference Implementation
 
 <Card
-  title="Eliza NextJS Starter"
+  title="Tokagent NextJS Starter"
   icon="github"
-  href="https://github.com/elizaOS/eliza-nextjs-starter"
+  href="https://github.com/tokagentOS/tokagent-nextjs-starter"
 >
-  A complete working example demonstrating Socket.IO integration with Eliza,
+  A complete working example demonstrating Socket.IO integration with Tokagent,
   including real-time messaging, agent participation management, and
   comprehensive error handling.
 </Card>
@@ -681,10 +681,10 @@ Response:
 
 ### Stream Extractors (Advanced)
 
-For plugin developers, ElizaOS provides stream extractors to control what content is streamed from LLM responses.
+For plugin developers, TokagentOS provides stream extractors to control what content is streamed from LLM responses.
 
 ```typescript
-import { IStreamExtractor } from "@elizaos/core";
+import { IStreamExtractor } from "@tokagentos/core";
 
 interface IStreamExtractor {
   /** Whether extraction is complete */

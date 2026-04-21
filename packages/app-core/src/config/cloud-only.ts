@@ -6,7 +6,7 @@ export function shouldUseCloudOnlyBranding(options: {
   if (options.isDev) return false;
 
   // Mobile (iOS/Android) is always cloud-only — no local runtime available.
-  // Users must connect to ElizaCloud or a remote instance.
+  // Users must connect to TokagentCloud or a remote instance.
   if (options.isNativePlatform) return true;
 
   // Desktop shells inject an explicit backend before React boots. When that

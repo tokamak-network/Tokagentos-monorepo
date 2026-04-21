@@ -1,6 +1,6 @@
 /**
  * Desktop Steward sidecar — implemented in `@elizaos/app-steward`.
- * Re-exported here so consumers can import from `@elizaos/app-core` only.
+ * Re-exported here so consumers can import from `@tokagentos/app-core` only.
  */
 export {
   createDesktopStewardSidecar,

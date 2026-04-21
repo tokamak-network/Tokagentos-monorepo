@@ -452,7 +452,7 @@ export const skillRefinementEvaluator: Evaluator = {
 				// trajectories tagged with this skill and rewrites the SKILL.md
 				// body via the optimizer instead of by single-shot LLM diff.
 				//
-				// We dynamic-import the optimizer module so @elizaos/core does
+				// We dynamic-import the optimizer module so @tokagentos/core does
 				// not gain a hard dependency on @elizaos/app-training; the
 				// import resolves only when the training package is installed
 				// (which is the case in this monorepo). When the import fails,
@@ -585,7 +585,7 @@ interface GradientRefinementResult {
  * installed, when there are too few trajectories to optimize against, or
  * when the optimization did not improve over the baseline.
  *
- * Uses dynamic import so @elizaos/core does not gain a hard dependency on
+ * Uses dynamic import so @tokagentos/core does not gain a hard dependency on
  * @elizaos/app-training.
  */
 async function tryGradientRefinement(

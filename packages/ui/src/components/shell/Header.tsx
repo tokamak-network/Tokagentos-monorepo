@@ -2,11 +2,11 @@ import {
   InferenceCloudAlertButton,
   resolveCompanionInferenceNotice,
 } from "@elizaos/app-companion/ui";
-import { CloudStatusBadge } from "@elizaos/app-core/components/cloud/CloudStatusBadge";
-import { LanguageDropdown } from "@elizaos/app-core/components/shared/LanguageDropdown";
-import { ThemeToggle } from "@elizaos/app-core/components/shared/ThemeToggle";
-import { getTabGroups, type TabGroup } from "@elizaos/app-core/navigation";
-import { useApp } from "@elizaos/app-core/state";
+import { CloudStatusBadge } from "@tokagentos/app-core/components/cloud/CloudStatusBadge";
+import { LanguageDropdown } from "@tokagentos/app-core/components/shared/LanguageDropdown";
+import { ThemeToggle } from "@tokagentos/app-core/components/shared/ThemeToggle";
+import { getTabGroups, type TabGroup } from "@tokagentos/app-core/navigation";
+import { useApp } from "@tokagentos/app-core/state";
 import { ListTodo, Menu, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -70,13 +70,13 @@ export function Header({
   onToggleTasksPanel,
 }: HeaderProps) {
   const {
-    elizaCloudEnabled,
-    elizaCloudConnected,
-    elizaCloudCredits,
-    elizaCloudCreditsCritical,
-    elizaCloudCreditsLow,
-    elizaCloudAuthRejected,
-    elizaCloudCreditsError,
+    tokagentCloudEnabled,
+    tokagentCloudConnected,
+    tokagentCloudCredits,
+    tokagentCloudCreditsCritical,
+    tokagentCloudCreditsLow,
+    tokagentCloudAuthRejected,
+    tokagentCloudCreditsError,
     tab,
     setTab,
     setState,
@@ -151,10 +151,10 @@ export function Header({
   const chatInferenceNotice = useMemo(() => {
     if (tab !== "chat") return null;
     return resolveCompanionInferenceNotice({
-      elizaCloudConnected,
-      elizaCloudAuthRejected,
-      elizaCloudCreditsError,
-      elizaCloudEnabled,
+      tokagentCloudConnected,
+      tokagentCloudAuthRejected,
+      tokagentCloudCreditsError,
+      tokagentCloudEnabled,
       chatLastUsageModel: chatLastUsage?.model,
       hasInterruptedAssistant: (conversationMessages ?? []).some(
         (m) => m.role === "assistant" && m.interrupted,
@@ -164,10 +164,10 @@ export function Header({
   }, [
     chatLastUsage?.model,
     conversationMessages,
-    elizaCloudAuthRejected,
-    elizaCloudConnected,
-    elizaCloudCreditsError,
-    elizaCloudEnabled,
+    tokagentCloudAuthRejected,
+    tokagentCloudConnected,
+    tokagentCloudCreditsError,
+    tokagentCloudEnabled,
     tab,
     t,
   ]);
@@ -268,12 +268,12 @@ export function Header({
                   ) : null}
                   {showCloudStatus ? (
                     <CloudStatusBadge
-                      connected={elizaCloudConnected}
-                      credits={elizaCloudCredits}
-                      creditsLow={elizaCloudCreditsLow}
-                      creditsCritical={elizaCloudCreditsCritical}
-                      authRejected={elizaCloudAuthRejected}
-                      creditsError={elizaCloudCreditsError}
+                      connected={tokagentCloudConnected}
+                      credits={tokagentCloudCredits}
+                      creditsLow={tokagentCloudCreditsLow}
+                      creditsCritical={tokagentCloudCreditsCritical}
+                      authRejected={tokagentCloudAuthRejected}
+                      creditsError={tokagentCloudCreditsError}
                       t={t}
                       onClick={openCloudBilling}
                       dataTestId="header-cloud-status"

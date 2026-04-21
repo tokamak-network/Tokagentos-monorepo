@@ -1,7 +1,7 @@
 import { logger } from "../../../logger.ts";
 import type {
 	ActionResult,
-	Action as ElizaAction,
+	Action as TokagentAction,
 	Evaluator,
 	IAgentRuntime,
 	Memory,
@@ -80,7 +80,7 @@ export abstract class TrustAwarePlugin implements Plugin {
 	/**
 	 * Wrap an action with trust and permission checking
 	 */
-	protected wrapAction(action: ElizaAction): ElizaAction {
+	protected wrapAction(action: TokagentAction): TokagentAction {
 		const originalHandler = action.handler;
 		const originalValidate = action.validate;
 
@@ -232,7 +232,7 @@ export abstract class TrustAwarePlugin implements Plugin {
 	// Required Plugin properties
 	abstract name: string;
 	abstract description: string;
-	abstract actions?: ElizaAction[];
+	abstract actions?: TokagentAction[];
 	abstract providers?: Provider[];
 	abstract evaluators?: Evaluator[];
 	abstract services?: ServiceClass[];

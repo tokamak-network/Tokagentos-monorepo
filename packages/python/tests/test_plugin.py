@@ -1,10 +1,10 @@
 import pytest
 
-from elizaos.plugin import (
+from tokagentos.plugin import (
     PluginLoadError,
     resolve_plugin_dependencies,
 )
-from elizaos.types import Plugin
+from tokagentos.types import Plugin
 
 
 class TestResolveDependencies:

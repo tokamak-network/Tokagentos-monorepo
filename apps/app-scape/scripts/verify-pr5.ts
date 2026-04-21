@@ -17,7 +17,7 @@
  * scope here.
  *
  * Run:
- *   BOT_SDK_TOKEN=dev-secret bun eliza/apps/app-scape/scripts/verify-pr5.ts
+ *   BOT_SDK_TOKEN=dev-secret bun tokagent/apps/app-scape/scripts/verify-pr5.ts
  */
 
 import { BotSdk } from "@elizaos/app-scape";

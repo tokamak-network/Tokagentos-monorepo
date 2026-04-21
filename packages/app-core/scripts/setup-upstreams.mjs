@@ -18,17 +18,17 @@ const __dirname = path.dirname(__filename);
 const DEFAULT_REPO_ROOT = path.resolve(__dirname, "..");
 
 export const LOCAL_UPSTREAM_SKIP_ENVS = [
-  "ELIZA_SKIP_LOCAL_UPSTREAMS",
-  "ELIZA_SKIP_LOCAL_UPSTREAMS",
+  "TOKAGENT_SKIP_LOCAL_UPSTREAMS",
+  "TOKAGENT_SKIP_LOCAL_UPSTREAMS",
 ];
 export const LOCAL_UPSTREAM_FORCE_ENVS = [
-  "ELIZA_FORCE_LOCAL_UPSTREAMS",
-  "ELIZA_FORCE_LOCAL_UPSTREAMS",
+  "TOKAGENT_FORCE_LOCAL_UPSTREAMS",
+  "TOKAGENT_FORCE_LOCAL_UPSTREAMS",
 ];
-export const ELIZA_GIT_URL = "https://github.com/elizaos/eliza.git";
-export const ELIZA_BRANCH = "develop";
-export const ELIZA_REQUIRED_FILES = ["package.json"];
-export const ELIZA_BUILD_STEPS = [
+export const TOKAGENT_GIT_URL = "https://github.com/tokagentos/tokagent.git";
+export const TOKAGENT_BRANCH = "develop";
+export const TOKAGENT_REQUIRED_FILES = ["package.json"];
+export const TOKAGENT_BUILD_STEPS = [
   {
     // Fresh CI checkouts do not track generated protobuf types for @elizaos/core.
     // Build the package once so src/types/generated exists before root typecheck/tests.
@@ -38,25 +38,25 @@ export const ELIZA_BUILD_STEPS = [
       "src",
       "types",
       "generated",
-      "eliza",
+      "tokagent",
       "v1",
       "agent_pb.ts",
     ),
     cwd: path.join("packages", "typescript"),
     args: ["run", "build"],
-    label: "@elizaos/core",
+    label: "@tokagentos/core",
   },
   {
     check: path.join("packages", "prompts", "dist", "typescript", "index.ts"),
     cwd: path.join("packages", "prompts"),
     args: ["run", "build:typescript"],
-    label: "@elizaos/prompts",
+    label: "@tokagentos/prompts",
   },
   {
     check: path.join("packages", "skills", "dist", "index.js"),
     cwd: path.join("packages", "skills"),
     args: ["run", "build"],
-    label: "@elizaos/skills",
+    label: "@tokagentos/skills",
   },
 ];
 
@@ -133,15 +133,15 @@ function getForceEnvKey(env = process.env) {
   return LOCAL_UPSTREAM_FORCE_ENVS.find((key) => env[key] === "1") ?? null;
 }
 
-export function getRepoElizaRoot(repoRoot = DEFAULT_REPO_ROOT) {
-  return path.resolve(repoRoot, "eliza");
+export function getRepoTokagentRoot(repoRoot = DEFAULT_REPO_ROOT) {
+  return path.resolve(repoRoot, "tokagent");
 }
 
 export function getRepoPluginsRoot(repoRoot = DEFAULT_REPO_ROOT) {
-  return path.resolve(repoRoot, "eliza", "plugins");
+  return path.resolve(repoRoot, "tokagent", "plugins");
 }
 
-export function getElizaWorkspaceSkipReason(
+export function getTokagentWorkspaceSkipReason(
   repoRoot = DEFAULT_REPO_ROOT,
   { env = process.env, pathExists = existsSync } = {},
 ) {
@@ -167,29 +167,29 @@ export function getElizaWorkspaceSkipReason(
   return null;
 }
 
-export function shouldSetupElizaWorkspace(
+export function shouldSetupTokagentWorkspace(
   repoRoot = DEFAULT_REPO_ROOT,
   options,
 ) {
-  return getElizaWorkspaceSkipReason(repoRoot, options) === null;
+  return getTokagentWorkspaceSkipReason(repoRoot, options) === null;
 }
 
-export function hasRequiredElizaWorkspaceFiles(
-  elizaRoot,
+export function hasRequiredTokagentWorkspaceFiles(
+  tokagentRoot,
   { pathExists = existsSync } = {},
 ) {
-  return ELIZA_REQUIRED_FILES.every((relativePath) =>
-    pathExists(path.join(elizaRoot, relativePath)),
+  return TOKAGENT_REQUIRED_FILES.every((relativePath) =>
+    pathExists(path.join(tokagentRoot, relativePath)),
   );
 }
 
-export function hasInstalledElizaDependencies(
-  elizaRoot,
+export function hasInstalledTokagentDependencies(
+  tokagentRoot,
   { pathExists = existsSync } = {},
 ) {
   return (
-    pathExists(path.join(elizaRoot, "node_modules", ".bun")) &&
-    pathExists(path.join(elizaRoot, "node_modules", ".bin"))
+    pathExists(path.join(tokagentRoot, "node_modules", ".bun")) &&
+    pathExists(path.join(tokagentRoot, "node_modules", ".bin"))
   );
 }
 
@@ -215,10 +215,10 @@ function getPackageLinkEntries(repoRoot, packageName, targetPath) {
   }));
 }
 
-function discoverElizaPackageDirs(elizaRoot) {
+function discoverTokagentPackageDirs(tokagentRoot) {
   const packageDirs = [];
   for (const parentDir of ["packages", "plugins"]) {
-    const searchRoot = path.join(elizaRoot, parentDir);
+    const searchRoot = path.join(tokagentRoot, parentDir);
     if (!existsSync(searchRoot)) {
       continue;
     }
@@ -286,12 +286,12 @@ function discoverPluginPackageDirs(pluginsRoot) {
   return packageDirs;
 }
 
-export function getElizaPackageLinks(
+export function getTokagentPackageLinks(
   repoRoot = DEFAULT_REPO_ROOT,
-  elizaRoot = getRepoElizaRoot(repoRoot),
+  tokagentRoot = getRepoTokagentRoot(repoRoot),
 ) {
   const links = [];
-  for (const packageDir of discoverElizaPackageDirs(elizaRoot)) {
+  for (const packageDir of discoverTokagentPackageDirs(tokagentRoot)) {
     const packageJson = readPackageJson(packageDir);
     links.push(
       ...getPackageLinkEntries(repoRoot, packageJson?.name, packageDir),
@@ -317,13 +317,13 @@ export function getPluginPackageLinks(
 export function getUpstreamPackageLinks(
   repoRoot = DEFAULT_REPO_ROOT,
   {
-    elizaRoot = getRepoElizaRoot(repoRoot),
+    tokagentRoot = getRepoTokagentRoot(repoRoot),
     pluginsRoot = getRepoPluginsRoot(repoRoot),
   } = {},
 ) {
   const combinedByTarget = new Map();
 
-  for (const link of getElizaPackageLinks(repoRoot, elizaRoot)) {
+  for (const link of getTokagentPackageLinks(repoRoot, tokagentRoot)) {
     combinedByTarget.set(link.linkPath, link);
   }
 
@@ -563,7 +563,7 @@ export function ensurePluginDependencyLinks(
   return linkedDependencies;
 }
 
-export function getPublishedElizaPackageSpecs(repoRoot = DEFAULT_REPO_ROOT) {
+export function getPublishedTokagentPackageSpecs(repoRoot = DEFAULT_REPO_ROOT) {
   const rootPackageJson = readPackageJson(repoRoot);
   if (!rootPackageJson) {
     return [];
@@ -595,10 +595,10 @@ export function getPublishedElizaPackageSpecs(repoRoot = DEFAULT_REPO_ROOT) {
   return [...collectedSpecs.entries()];
 }
 
-export function ensurePublishedElizaPackageLinks(repoRoot = DEFAULT_REPO_ROOT) {
+export function ensurePublishedTokagentPackageLinks(repoRoot = DEFAULT_REPO_ROOT) {
   let linkedEntries = 0;
 
-  for (const [packageName, preferredVersion] of getPublishedElizaPackageSpecs(
+  for (const [packageName, preferredVersion] of getPublishedTokagentPackageSpecs(
     repoRoot,
   )) {
     const installedPackageDir = findInstalledPackageDir(
@@ -634,10 +634,10 @@ export function ensurePublishedElizaPackageLinks(repoRoot = DEFAULT_REPO_ROOT) {
   return linkedEntries;
 }
 
-async function ensureRepoLocalEliza(repoRoot) {
-  const elizaRoot = getRepoElizaRoot(repoRoot);
-  if (hasRequiredElizaWorkspaceFiles(elizaRoot)) {
-    return elizaRoot;
+async function ensureRepoLocalTokagent(repoRoot) {
+  const tokagentRoot = getRepoTokagentRoot(repoRoot);
+  if (hasRequiredTokagentWorkspaceFiles(tokagentRoot)) {
+    return tokagentRoot;
   }
 
   if (existsSync(path.join(repoRoot, ".git"))) {
@@ -645,76 +645,76 @@ async function ensureRepoLocalEliza(repoRoot) {
     try {
       await runCommand(
         "git",
-        ["submodule", "update", "--init", "--recursive", "--", "eliza"],
+        ["submodule", "update", "--init", "--recursive", "--", "tokagent"],
         {
           cwd: repoRoot,
-          label: "git submodule update eliza",
+          label: "git submodule update tokagent",
         },
       );
     } catch (error) {
-      if (existsSync(elizaRoot)) {
+      if (existsSync(tokagentRoot)) {
         throw error;
       }
 
       console.warn(
-        `[setup-upstreams] Could not initialize eliza as a tracked submodule. Falling back to a direct clone (${error instanceof Error ? error.message : String(error)}).`,
+        `[setup-upstreams] Could not initialize tokagent as a tracked submodule. Falling back to a direct clone (${error instanceof Error ? error.message : String(error)}).`,
       );
     }
   }
 
-  if (!hasRequiredElizaWorkspaceFiles(elizaRoot) && !existsSync(elizaRoot)) {
+  if (!hasRequiredTokagentWorkspaceFiles(tokagentRoot) && !existsSync(tokagentRoot)) {
     console.log(
-      `[setup-upstreams] Cloning ${ELIZA_GIT_URL} (${ELIZA_BRANCH}) into ${toDisplayPath(elizaRoot)}`,
+      `[setup-upstreams] Cloning ${TOKAGENT_GIT_URL} (${TOKAGENT_BRANCH}) into ${toDisplayPath(tokagentRoot)}`,
     );
     await runCommand(
       "git",
       [
         "clone",
         "--branch",
-        ELIZA_BRANCH,
+        TOKAGENT_BRANCH,
         "--single-branch",
-        ELIZA_GIT_URL,
-        elizaRoot,
+        TOKAGENT_GIT_URL,
+        tokagentRoot,
       ],
       {
         cwd: repoRoot,
-        label: "git clone eliza",
+        label: "git clone tokagent",
       },
     );
   }
 
-  if (!hasRequiredElizaWorkspaceFiles(elizaRoot)) {
+  if (!hasRequiredTokagentWorkspaceFiles(tokagentRoot)) {
     throw new Error(
-      `Repo-local eliza workspace at ${toDisplayPath(elizaRoot)} is missing required files after setup.`,
+      `Repo-local tokagent workspace at ${toDisplayPath(tokagentRoot)} is missing required files after setup.`,
     );
   }
 
-  return elizaRoot;
+  return tokagentRoot;
 }
 
-async function ensureElizaDependencies(elizaRoot) {
-  if (hasInstalledElizaDependencies(elizaRoot)) {
+async function ensureTokagentDependencies(tokagentRoot) {
+  if (hasInstalledTokagentDependencies(tokagentRoot)) {
     return;
   }
 
   console.log(
-    `[setup-upstreams] Installing eliza workspace dependencies in ${toDisplayPath(elizaRoot)}`,
+    `[setup-upstreams] Installing tokagent workspace dependencies in ${toDisplayPath(tokagentRoot)}`,
   );
   await runCommand("bun", ["install"], {
-    cwd: elizaRoot,
-    label: "bun install (eliza)",
+    cwd: tokagentRoot,
+    label: "bun install (tokagent)",
   });
 }
 
-async function ensureElizaBuildOutputs(elizaRoot) {
-  for (const step of ELIZA_BUILD_STEPS) {
-    if (existsSync(path.join(elizaRoot, step.check))) {
+async function ensureTokagentBuildOutputs(tokagentRoot) {
+  for (const step of TOKAGENT_BUILD_STEPS) {
+    if (existsSync(path.join(tokagentRoot, step.check))) {
       continue;
     }
 
     console.log(`[setup-upstreams] Building ${step.label}`);
     await runCommand("bun", step.args, {
-      cwd: path.join(elizaRoot, step.cwd),
+      cwd: path.join(tokagentRoot, step.cwd),
       label: `bun ${step.args.join(" ")} (${step.label})`,
     });
   }
@@ -747,13 +747,13 @@ export async function ensurePluginBuildOutputs(
 export function linkUpstreamPackages(
   repoRoot = DEFAULT_REPO_ROOT,
   {
-    elizaRoot = getRepoElizaRoot(repoRoot),
+    tokagentRoot = getRepoTokagentRoot(repoRoot),
     pluginsRoot = getRepoPluginsRoot(repoRoot),
   } = {},
 ) {
   let updatedLinks = 0;
   for (const { linkPath, targetPath } of getUpstreamPackageLinks(repoRoot, {
-    elizaRoot,
+    tokagentRoot,
     pluginsRoot,
   })) {
     if (createPackageLink(linkPath, targetPath)) {
@@ -764,10 +764,10 @@ export function linkUpstreamPackages(
 }
 
 export async function setupUpstreams(repoRoot = DEFAULT_REPO_ROOT) {
-  const skipReason = getElizaWorkspaceSkipReason(repoRoot);
+  const skipReason = getTokagentWorkspaceSkipReason(repoRoot);
   if (skipReason) {
     if (skipReason.endsWith("=1")) {
-      ensurePublishedElizaPackageLinks(repoRoot);
+      ensurePublishedTokagentPackageLinks(repoRoot);
     }
     console.log(`[setup-upstreams] Skipping: ${skipReason}`);
     return { skipped: true, reason: skipReason };
@@ -785,15 +785,15 @@ export async function setupUpstreams(repoRoot = DEFAULT_REPO_ROOT) {
     );
   }
 
-  const elizaRoot = await ensureRepoLocalEliza(repoRoot);
-  await ensureElizaDependencies(elizaRoot);
-  await ensureElizaBuildOutputs(elizaRoot);
+  const tokagentRoot = await ensureRepoLocalTokagent(repoRoot);
+  await ensureTokagentDependencies(tokagentRoot);
+  await ensureTokagentBuildOutputs(tokagentRoot);
 
   const pluginsRoot = getRepoPluginsRoot(repoRoot);
   ensurePluginDependencyLinks(repoRoot, pluginsRoot);
   await ensurePluginBuildOutputs(pluginsRoot);
   const updatedLinks = linkUpstreamPackages(repoRoot, {
-    elizaRoot,
+    tokagentRoot,
     pluginsRoot,
   });
 
@@ -809,7 +809,7 @@ export async function setupUpstreams(repoRoot = DEFAULT_REPO_ROOT) {
 
   return {
     skipped: false,
-    elizaRoot,
+    tokagentRoot,
     pluginsRoot: existsSync(pluginsRoot) ? pluginsRoot : null,
     linkedEntries: updatedLinks,
   };

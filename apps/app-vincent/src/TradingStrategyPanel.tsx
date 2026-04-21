@@ -5,7 +5,7 @@
  * Start/Stop buttons that POST to /api/vincent/trading/start|stop.
  */
 
-import { Button, StatusBadge } from "@elizaos/app-core";
+import { Button, StatusBadge } from "@tokagentos/app-core";
 import { Activity, Pause, Play, RefreshCw, Settings2 } from "lucide-react";
 import { useCallback, useState } from "react";
 import type { VincentStrategy } from "./useVincentDashboard";

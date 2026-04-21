@@ -1,7 +1,7 @@
 //! Environment types (Rust-native)
 //!
 //! This module defines the core environment types for worlds, rooms, entities,
-//! and their relationships within the elizaOS runtime.
+//! and their relationships within the tokagentOS runtime.
 
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

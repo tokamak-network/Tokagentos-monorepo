@@ -1,7 +1,7 @@
 /**
  * Wipes **renderer-local** state after the server already ran `POST /api/agent/reset`.
  *
- * **WHY:** post-wipe, persisted active server + API base + Eliza Cloud flags
+ * **WHY:** post-wipe, persisted active server + API base + Tokagent Cloud flags
  * could still point at cloud/remote, so onboarding never appeared “fresh.”
  * **WHY dependency injection:** `AppProvider` wires real `client` and setters;
  * tests inject mocks to assert order and error handling without jsdom.
@@ -18,7 +18,7 @@ export type CompleteResetLocalStateDeps = {
   clearPersistedAvatarIndex: () => void;
   setClientBaseUrl: (url: string | null) => void;
   setClientToken: (token: string | null) => void;
-  clearElizaCloudSessionUi: () => void;
+  clearTokagentCloudSessionUi: () => void;
   markOnboardingReset: () => void;
   resetAvatarSelection: () => void;
   clearConversationLists: () => void;
@@ -40,7 +40,7 @@ export async function completeResetLocalStateAfterServerWipe(
   d.clearPersistedAvatarIndex();
   d.setClientBaseUrl(null);
   d.setClientToken(null);
-  d.clearElizaCloudSessionUi();
+  d.clearTokagentCloudSessionUi();
   d.markOnboardingReset();
   d.resetAvatarSelection();
   d.clearConversationLists();

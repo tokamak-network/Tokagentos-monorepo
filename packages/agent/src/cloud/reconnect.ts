@@ -2,8 +2,8 @@
  * Heartbeat monitor with auto-reconnect via exponential backoff.
  */
 
-import { logger } from "@elizaos/core";
-import type { ElizaCloudClient } from "./bridge-client.js";
+import { logger } from "@tokagentos/core";
+import type { TokagentCloudClient } from "./bridge-client.js";
 
 export interface ConnectionMonitorCallbacks {
   onDisconnect: () => void;
@@ -19,7 +19,7 @@ export class ConnectionMonitor {
   private reconnecting = false;
 
   constructor(
-    private client: ElizaCloudClient,
+    private client: TokagentCloudClient,
     private agentId: string,
     private callbacks: ConnectionMonitorCallbacks,
     private heartbeatIntervalMs: number = 30_000,

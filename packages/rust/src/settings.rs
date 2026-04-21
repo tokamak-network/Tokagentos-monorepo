@@ -1,4 +1,4 @@
-//! Settings and secret helpers for elizaOS
+//! Settings and secret helpers for tokagentOS
 
 use aes::Aes256;
 use aes_gcm::aead::{Aead, Payload};
@@ -12,14 +12,14 @@ use sha2::{Digest, Sha256};
 pub fn get_salt() -> String {
     let salt = std::env::var("SECRET_SALT").unwrap_or_else(|_| "secretsalt".to_string());
     let node_env = std::env::var("NODE_ENV").unwrap_or_default().to_lowercase();
-    let allow_default = std::env::var("ELIZA_ALLOW_DEFAULT_SECRET_SALT")
+    let allow_default = std::env::var("TOKAGENT_ALLOW_DEFAULT_SECRET_SALT")
         .unwrap_or_default()
         .to_lowercase()
         == "true";
     if node_env == "production" && salt == "secretsalt" && !allow_default {
         panic!(
             "SECRET_SALT must be set to a non-default value in production. \
-Set ELIZA_ALLOW_DEFAULT_SECRET_SALT=true to override (not recommended)."
+Set TOKAGENT_ALLOW_DEFAULT_SECRET_SALT=true to override (not recommended)."
         );
     }
     salt
@@ -35,7 +35,7 @@ pub fn encrypt_string_value(value: &str, salt: &str) -> String {
     let key = derive_key(salt);
     let iv_full = uuid::Uuid::new_v4().into_bytes(); // random bytes
     let iv: [u8; 12] = iv_full[..12].try_into().expect("slice has 12 bytes");
-    let aad = b"elizaos:settings:v2";
+    let aad = b"tokagentos:settings:v2";
 
     let gcm = Aes256Gcm::new_from_slice(&key).expect("valid key");
     let nonce = Nonce::from_slice(&iv);
@@ -86,7 +86,7 @@ pub fn decrypt_string_value(value: &str, salt: &str) -> String {
             combined.extend_from_slice(&tag);
 
             let key = derive_key(salt);
-            let aad = b"elizaos:settings:v2";
+            let aad = b"tokagentos:settings:v2";
             let gcm = match Aes256Gcm::new_from_slice(&key) {
                 Ok(c) => c,
                 Err(_) => return value.to_string(),

@@ -39,7 +39,7 @@ function jsonResponse(body: unknown, init: ResponseInit = {}): Response {
 beforeEach(() => {
   originalFetch = global.fetch;
   for (const k of Object.keys(process.env)) {
-    if (k.startsWith("ELIZA_CALENDLY_")) delete process.env[k];
+    if (k.startsWith("TOKAGENT_CALENDLY_")) delete process.env[k];
   }
 });
 
@@ -50,13 +50,13 @@ afterEach(() => {
 });
 
 describe("readCalendlyCredentialsFromEnv", () => {
-  test("returns null when ELIZA_CALENDLY_TOKEN is not set", () => {
+  test("returns null when TOKAGENT_CALENDLY_TOKEN is not set", () => {
     expect(readCalendlyCredentialsFromEnv()).toBeNull();
   });
 
   test("returns credentials object when token is set", () => {
-    process.env.ELIZA_CALENDLY_TOKEN = "tok-123";
-    process.env.ELIZA_CALENDLY_USER_URI = "https://api.calendly.com/users/u1";
+    process.env.TOKAGENT_CALENDLY_TOKEN = "tok-123";
+    process.env.TOKAGENT_CALENDLY_USER_URI = "https://api.calendly.com/users/u1";
     const creds = readCalendlyCredentialsFromEnv();
     expect(creds).not.toBeNull();
     expect(creds!.personalAccessToken).toBe("tok-123");
@@ -185,8 +185,8 @@ describe("calendlyAction", () => {
   });
 
   test("list_event_types subaction returns items", async () => {
-    process.env.ELIZA_CALENDLY_TOKEN = "tok";
-    process.env.ELIZA_CALENDLY_USER_URI = "https://api.calendly.com/users/u1";
+    process.env.TOKAGENT_CALENDLY_TOKEN = "tok";
+    process.env.TOKAGENT_CALENDLY_USER_URI = "https://api.calendly.com/users/u1";
 
     global.fetch = vi.fn(async (input: RequestInfo | URL) => {
       const url = typeof input === "string" ? input : input.toString();

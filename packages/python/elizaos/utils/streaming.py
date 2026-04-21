@@ -18,7 +18,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import StrEnum
 
-from elizaos.types.state import SchemaRow, StreamEvent
+from tokagentos.types.state import SchemaRow, StreamEvent
 
 # Maximum allowed chunk size to prevent memory issues
 MAX_CHUNK_SIZE = 1024 * 1024  # 1MB

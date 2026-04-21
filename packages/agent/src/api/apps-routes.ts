@@ -1,7 +1,7 @@
 import { promises as fs } from "node:fs";
 import type http from "node:http";
 import path from "node:path";
-import type { IAgentRuntime } from "@elizaos/core";
+import type { IAgentRuntime } from "@tokagentos/core";
 import {
   type AppRunActionResult,
   type AppRunSummary,
@@ -784,10 +784,10 @@ export async function handleAppsRoutes(
         result.error?.includes("requires a running agent runtime")
       ) {
         // Fall back to the app-core installer which writes directly to
-        // ~/.eliza/plugins/installed without depending on a plugin-manager
+        // ~/.tokagent/plugins/installed without depending on a plugin-manager
         // service. The runtime plugin resolver already searches that dir.
         const { installPlugin: installPluginDirect } = (await import(
-          /* webpackIgnore: true */ "@elizaos/app-core/services/plugin-installer"
+          /* webpackIgnore: true */ "@tokagentos/app-core/services/plugin-installer"
         )) as {
           installPlugin: (
             name: string,

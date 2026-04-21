@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import type http from "node:http";
-import { loadElizaConfig } from "@elizaos/agent/config/config";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import type { StewardSignRequest } from "../types/steward";
 import { ethers } from "ethers";
 import { deriveSolanaAddress } from "../api/wallet";
@@ -20,12 +20,12 @@ export function safeParseBigInt(value: string): bigint {
 import {
   readCompatJsonBody,
   type CompatRuntimeState,
-} from "@elizaos/app-core/api/compat-route-shared";
-import { ensureCompatApiAuthorized } from "@elizaos/app-core/api/auth";
+} from "@tokagentos/app-core/api/compat-route-shared";
+import { ensureCompatApiAuthorized } from "@tokagentos/app-core/api/auth";
 import {
   sendJsonError as sendJsonErrorResponse,
   sendJson as sendJsonResponse,
-} from "@elizaos/app-core/api/response";
+} from "@tokagentos/app-core/api/response";
 import { isStewardConfigured, signViaSteward } from "./steward-bridge";
 
 function normalizeHexData(value: unknown): string | undefined {
@@ -153,7 +153,7 @@ const RPC_CACHE_TTL_MS = 30_000;
 function resolvePreferredRpcUrl(chainId: number): string | null {
   const now = Date.now();
   if (!cachedRpcReadiness || now - cachedRpcReadinessAt > RPC_CACHE_TTL_MS) {
-    cachedRpcReadiness = resolveWalletRpcReadiness(loadElizaConfig());
+    cachedRpcReadiness = resolveWalletRpcReadiness(loadTokagentConfig());
     cachedRpcReadinessAt = now;
   }
   const readiness = cachedRpcReadiness;

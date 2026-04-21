@@ -8,8 +8,8 @@ import {
   type Character,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
-import type { AutonomyService } from "@elizaos/core";
+} from "@tokagentos/core";
+import type { AutonomyService } from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 import anthropicPlugin from "@elizaos/plugin-anthropic";
 import googleGenAIPlugin from "@elizaos/plugin-google-genai";
@@ -231,8 +231,8 @@ type CharacterConfig = {
 
 function buildCharacter(config: CharacterConfig): Character {
   return createCharacter({
-    name: "Eliza",
-    username: "eliza",
+    name: "Tokagent",
+    username: "tokagent",
     bio: [
       "An autonomous agent that explores Polymarket opportunities.",
       "Uses available tools to scan markets and place orders responsibly.",
@@ -338,7 +338,7 @@ function buildSettingsFields(
   const fields: SettingsField[] = [];
   if (fieldOptions.includeProvider) {
     fields.push({
-      key: "ELIZA_LLM_PROVIDER",
+      key: "TOKAGENT_LLM_PROVIDER",
       label: "LLM Provider",
       type: "select",
       options: PROVIDER_OPTIONS,
@@ -347,7 +347,7 @@ function buildSettingsFields(
   }
   fields.push(
     {
-      key: "ELIZA_LLM_MODEL",
+      key: "TOKAGENT_LLM_MODEL",
       label: "LLM Model",
       value: model,
       required: true,
@@ -513,7 +513,7 @@ function buildLlmPlugins(provider: LlmProvider | null): Array<typeof openaiPlugi
 function buildRuntimeSettings(provider: LlmProvider | null): Record<string, string | undefined> {
   const model = resolveRuntimeModel(provider);
   const smallModel =
-    process.env.ELIZA_LLM_SMALL_MODEL ?? process.env.LLM_SMALL_MODEL ?? model ?? undefined;
+    process.env.TOKAGENT_LLM_SMALL_MODEL ?? process.env.LLM_SMALL_MODEL ?? model ?? undefined;
   const settings: Record<string, string | undefined> = {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY,
@@ -553,7 +553,7 @@ async function createRuntimeSession(
 ): Promise<RuntimeSession> {
   const configBundle = buildCharacterSettings(options, config);
   const character = buildCharacter(configBundle);
-  const agentId = stringToUuid(character.name ?? "eliza");
+  const agentId = stringToUuid(character.name ?? "tokagent");
   const llmProvider = resolveRuntimeProvider();
   const llmPlugins = buildLlmPlugins(llmProvider);
 

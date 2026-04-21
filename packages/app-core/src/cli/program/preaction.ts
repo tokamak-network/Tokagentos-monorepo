@@ -1,4 +1,4 @@
-import { isTruthyEnvValue } from "@elizaos/shared/env-utils";
+import { isTruthyEnvValue } from "@tokagentos/shared/env-utils";
 import type { Command } from "commander";
 import { setVerbose } from "../../utils/globals";
 import { getCommandPath, getVerboseFlag, hasHelpOrVersion } from "../argv";
@@ -30,7 +30,7 @@ export function registerPreActionHooks(
     }
     const commandPath = getCommandPath(argv, 2);
     const hideBanner =
-      isTruthyEnvValue(process.env.ELIZA_HIDE_BANNER) ||
+      isTruthyEnvValue(process.env.TOKAGENT_HIDE_BANNER) ||
       commandPath[0] === "update" ||
       commandPath[0] === "completion";
     if (!hideBanner) {

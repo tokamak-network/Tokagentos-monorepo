@@ -1,6 +1,6 @@
 # Rust-WASM Examples
 
-This directory contains examples demonstrating elizaOS with the **Rust core compiled to WebAssembly**.
+This directory contains examples demonstrating tokagentOS with the **Rust core compiled to WebAssembly**.
 
 ## Examples
 

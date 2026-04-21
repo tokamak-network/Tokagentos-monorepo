@@ -1,7 +1,7 @@
 """
-Tests for full ElizaOS Runtime Integration.
+Tests for full TokagentOS Runtime Integration.
 
-These tests verify that the ART demos use the CANONICAL ElizaOS pattern:
+These tests verify that the ART demos use the CANONICAL TokagentOS pattern:
 - Full AgentRuntime with character and plugins
 - Message processing through message_service.handle_message
 - Actions registered and invoked properly
@@ -27,7 +27,7 @@ class TestARTRuntimeConfig:
 
     def test_default_config(self):
         """Test default configuration values."""
-        from elizaos_art.eliza_integration.runtime_integration import ARTRuntimeConfig
+        from tokagentos_art.tokagent_integration.runtime_integration import ARTRuntimeConfig
 
         config = ARTRuntimeConfig()
 
@@ -38,7 +38,7 @@ class TestARTRuntimeConfig:
 
     def test_custom_config(self):
         """Test custom configuration."""
-        from elizaos_art.eliza_integration.runtime_integration import ARTRuntimeConfig
+        from tokagentos_art.tokagent_integration.runtime_integration import ARTRuntimeConfig
 
         config = ARTRuntimeConfig(
             agent_id="custom-agent",
@@ -57,8 +57,8 @@ class TestGameStateProvider:
 
     def test_create_game_state_provider(self):
         """Test creating a game state provider."""
-        from elizaos_art.eliza_integration.runtime_integration import create_game_state_provider
-        from elizaos_art.games.game_2048 import Game2048Environment
+        from tokagentos_art.tokagent_integration.runtime_integration import create_game_state_provider
+        from tokagentos_art.games.game_2048 import Game2048Environment
 
         env = Game2048Environment()
         state_holder = {}
@@ -72,9 +72,9 @@ class TestGameStateProvider:
     @pytest.mark.asyncio
     async def test_provider_returns_context(self):
         """Test that provider returns proper context."""
-        from elizaos_art.eliza_integration.runtime_integration import create_game_state_provider
-        from elizaos_art.games.game_2048 import Game2048Environment
-        from elizaos_art.games.game_2048.types import Game2048State
+        from tokagentos_art.tokagent_integration.runtime_integration import create_game_state_provider
+        from tokagentos_art.games.game_2048 import Game2048Environment
+        from tokagentos_art.games.game_2048.types import Game2048State
 
         env = Game2048Environment()
         await env.initialize()
@@ -101,8 +101,8 @@ class TestGameAction:
 
     def test_create_game_action(self):
         """Test creating a game action."""
-        from elizaos_art.eliza_integration.runtime_integration import create_game_action
-        from elizaos_art.games.game_2048 import Game2048Environment, Game2048HeuristicAgent
+        from tokagentos_art.tokagent_integration.runtime_integration import create_game_action
+        from tokagentos_art.games.game_2048 import Game2048Environment, Game2048HeuristicAgent
 
         env = Game2048Environment()
         agent = Game2048HeuristicAgent()
@@ -122,8 +122,8 @@ class TestARTPlugin:
 
     def test_create_art_plugin(self):
         """Test creating the ART plugin."""
-        from elizaos_art.eliza_integration.runtime_integration import create_art_plugin
-        from elizaos_art.games.game_2048 import Game2048Environment, Game2048HeuristicAgent
+        from tokagentos_art.tokagent_integration.runtime_integration import create_art_plugin
+        from tokagentos_art.games.game_2048 import Game2048Environment, Game2048HeuristicAgent
 
         env = Game2048Environment()
         agent = Game2048HeuristicAgent()
@@ -142,10 +142,10 @@ class TestARTPlugin:
 class TestTrajectoryConversion:
     """Tests for trajectory format conversion."""
 
-    def test_convert_to_eliza_trajectory(self):
-        """Test converting ART trajectory to Eliza format."""
-        from elizaos_art.eliza_integration.trajectory_adapter import convert_to_eliza_trajectory
-        from elizaos_art.base import Trajectory
+    def test_convert_to_tokagent_trajectory(self):
+        """Test converting ART trajectory to Tokagent format."""
+        from tokagentos_art.tokagent_integration.trajectory_adapter import convert_to_tokagent_trajectory
+        from tokagentos_art.base import Trajectory
 
         art_traj = Trajectory(
             trajectory_id="test-123",
@@ -160,12 +160,12 @@ class TestTrajectoryConversion:
             metrics={"steps": 1},
         )
 
-        eliza_traj = convert_to_eliza_trajectory(art_traj, "test-agent")
+        tokagent_traj = convert_to_tokagent_trajectory(art_traj, "test-agent")
 
-        assert eliza_traj["trajectoryId"] == "test-123"
-        assert eliza_traj["agentId"] == "test-agent"
-        assert eliza_traj["scenarioId"] == "scenario-456"
-        assert eliza_traj["totalReward"] == 1.5
+        assert tokagent_traj["trajectoryId"] == "test-123"
+        assert tokagent_traj["agentId"] == "test-agent"
+        assert tokagent_traj["scenarioId"] == "scenario-456"
+        assert tokagent_traj["totalReward"] == 1.5
 
 
 class TestVectorIndex:
@@ -173,7 +173,7 @@ class TestVectorIndex:
 
     def test_vector_add_and_search(self, temp_data_dir):
         """Test adding vectors and searching."""
-        from elizaos_art.eliza_integration.storage_adapter import SimpleHNSW
+        from tokagentos_art.tokagent_integration.storage_adapter import SimpleHNSW
 
         index = SimpleHNSW(dimensions=3)
 
@@ -191,7 +191,7 @@ class TestVectorIndex:
 
     def test_vector_save_and_load(self, temp_data_dir):
         """Test saving and loading vector index."""
-        from elizaos_art.eliza_integration.storage_adapter import SimpleHNSW
+        from tokagentos_art.tokagent_integration.storage_adapter import SimpleHNSW
 
         index = SimpleHNSW(dimensions=3)
         index.add("vec-1", [1.0, 0.0, 0.0])
@@ -211,11 +211,11 @@ class TestVectorIndex:
 class TestEnvironmentStateTypes:
     """Tests for environment state types."""
 
-    def test_eliza_environment_state(self):
-        """Test ElizaEnvironmentState creation."""
-        from elizaos_art.eliza_integration.trajectory_adapter import ElizaEnvironmentState
+    def test_tokagent_environment_state(self):
+        """Test TokagentEnvironmentState creation."""
+        from tokagentos_art.tokagent_integration.trajectory_adapter import TokagentEnvironmentState
 
-        state = ElizaEnvironmentState(
+        state = TokagentEnvironmentState(
             timestamp=1234567890,
             agent_balance=1000.0,
             agent_points=50.0,
@@ -227,11 +227,11 @@ class TestEnvironmentStateTypes:
         assert d["agentBalance"] == 1000.0
         assert d["custom"]["game"] == "2048"
 
-    def test_eliza_llm_call(self):
-        """Test ElizaLLMCall creation."""
-        from elizaos_art.eliza_integration.trajectory_adapter import ElizaLLMCall
+    def test_tokagent_llm_call(self):
+        """Test TokagentLLMCall creation."""
+        from tokagentos_art.tokagent_integration.trajectory_adapter import TokagentLLMCall
 
-        call = ElizaLLMCall(
+        call = TokagentLLMCall(
             model="llama-3.2-3b",
             system_prompt="You are a game player.",
             user_prompt="What move?",
@@ -251,7 +251,7 @@ class TestModelDownload:
 
     def test_get_recommended_model(self):
         """Test model recommendation based on memory."""
-        from elizaos_art.eliza_integration.local_ai_adapter import get_recommended_model
+        from tokagentos_art.tokagent_integration.local_ai_adapter import get_recommended_model
 
         # High memory
         model = get_recommended_model(16.0)
@@ -272,9 +272,9 @@ class TestGRPOTrainer:
     @pytest.mark.asyncio
     async def test_trainer_initialization(self, temp_data_dir):
         """Test trainer initialization."""
-        from elizaos_art.trainer import GRPOTrainer
-        from elizaos_art.base import TrainingConfig
-        from elizaos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
+        from tokagentos_art.trainer import GRPOTrainer
+        from tokagentos_art.base import TrainingConfig
+        from tokagentos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
 
         env = TicTacToeEnvironment()
         agent = TicTacToeHeuristicAgent()
@@ -291,9 +291,9 @@ class TestGRPOTrainer:
     @pytest.mark.asyncio
     async def test_trainer_rollout(self, temp_data_dir):
         """Test trainer rollout collection."""
-        from elizaos_art.trainer import GRPOTrainer
-        from elizaos_art.base import TrainingConfig
-        from elizaos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
+        from tokagentos_art.trainer import GRPOTrainer
+        from tokagentos_art.base import TrainingConfig
+        from tokagentos_art.games.tic_tac_toe import TicTacToeEnvironment, TicTacToeHeuristicAgent
 
         env = TicTacToeEnvironment()
         agent = TicTacToeHeuristicAgent()
@@ -316,7 +316,7 @@ class TestRulerScorer:
 
     def test_ruler_scorer_creation(self):
         """Test creating RULER scorer."""
-        from elizaos_art.trainer import RulerScorer
+        from tokagentos_art.trainer import RulerScorer
 
         scorer = RulerScorer(
             judge_model="gpt-5-mini",
@@ -333,7 +333,7 @@ class TestTrainingState:
     @pytest.mark.asyncio
     async def test_training_state_save_load(self, temp_data_dir):
         """Test saving and loading training state."""
-        from elizaos_art.trainer import TrainingState
+        from tokagentos_art.trainer import TrainingState
 
         state = TrainingState(
             step=50,

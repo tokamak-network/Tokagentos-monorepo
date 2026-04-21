@@ -12,7 +12,7 @@ import {
   MemoryType,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import inmemorydbPlugin from "@elizaos/plugin-inmemorydb";
 import localAiPlugin from "@elizaos/plugin-local-ai";
 import { type ShellService, shellPlugin } from "@elizaos/plugin-shell";

@@ -1,7 +1,7 @@
-// Module augmentation for @elizaos/core Action type to add Eliza-specific fields.
-import type { Action } from "@elizaos/core";
+// Module augmentation for @tokagentos/core Action type to add Tokagent-specific fields.
+import type { Action } from "@tokagentos/core";
 
-declare module "@elizaos/core" {
+declare module "@tokagentos/core" {
   interface Action {
     /** When true, suppresses the post-action continuation prompt. */
     suppressPostActionContinuation?: boolean;

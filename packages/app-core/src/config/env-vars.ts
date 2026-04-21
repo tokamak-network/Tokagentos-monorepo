@@ -2,15 +2,15 @@ import {
   collectConfigEnvVars as upstreamCollectConfigEnvVars,
   collectConnectorEnvVars as upstreamCollectConnectorEnvVars,
   CONNECTOR_ENV_MAP as upstreamConnectorEnvMap,
-} from "@elizaos/agent/config/env-vars";
+} from "@tokagentos/agent/config/env-vars";
 
 const COMPAT_BLOCKED_STARTUP_ENV_KEYS = new Set([
-  "ELIZA_API_TOKEN",
-  "ELIZA_API_TOKEN",
-  "ELIZA_WALLET_EXPORT_TOKEN",
-  "ELIZA_WALLET_EXPORT_TOKEN",
-  "ELIZA_TERMINAL_RUN_TOKEN",
-  "ELIZA_TERMINAL_RUN_TOKEN",
+  "TOKAGENT_API_TOKEN",
+  "TOKAGENT_API_TOKEN",
+  "TOKAGENT_WALLET_EXPORT_TOKEN",
+  "TOKAGENT_WALLET_EXPORT_TOKEN",
+  "TOKAGENT_TERMINAL_RUN_TOKEN",
+  "TOKAGENT_TERMINAL_RUN_TOKEN",
 ]);
 const TELEGRAM_ACCOUNT_ENV_MAP = {
   phone: "TELEGRAM_ACCOUNT_PHONE",

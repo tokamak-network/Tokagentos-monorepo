@@ -1,5 +1,5 @@
 /**
- * ElizaClient class — core infrastructure only.
+ * TokagentClient class — core infrastructure only.
  *
  * Separated from client.ts so domain augmentation files can import the class
  * without circular dependency issues.
@@ -7,7 +7,7 @@
 
 import { getBootConfig, setBootConfig } from "../config/boot-config";
 import { stripAssistantStageDirections } from "../utils/assistant-text";
-import { getElizaApiBase, getElizaApiToken } from "../utils/eliza-globals";
+import { getTokagentApiBase, getTokagentApiToken } from "../utils/tokagent-globals";
 import { mergeStreamingText } from "../utils/streaming-text";
 import type {
   ChatTokenUsage,
@@ -27,13 +27,13 @@ import { ApiError } from "./client-types";
 const GENERIC_NO_RESPONSE_TEXT =
   "Sorry, I couldn't generate a response right now. Please try again.";
 const DEFAULT_FETCH_TIMEOUT_MS = 10_000;
-const LOCAL_STORAGE_API_BASE_KEY = "elizaos_api_base";
+const LOCAL_STORAGE_API_BASE_KEY = "tokagentos_api_base";
 
 // ---------------------------------------------------------------------------
 // Client
 // ---------------------------------------------------------------------------
 
-export class ElizaClient {
+export class TokagentClient {
   private _baseUrl: string;
   private _userSetBase: boolean;
   private _token: string | null;
@@ -73,11 +73,11 @@ export class ElizaClient {
   }
 
   constructor(baseUrl?: string, token?: string) {
-    this.clientId = ElizaClient.generateClientId();
+    this.clientId = TokagentClient.generateClientId();
     this._token = token?.trim() || null;
 
     const bootBase = getBootConfig().apiBase;
-    const injectedBase = getElizaApiBase();
+    const injectedBase = getTokagentApiBase();
     const storedBase =
       typeof window !== "undefined" && window.localStorage
         ? window.localStorage.getItem(LOCAL_STORAGE_API_BASE_KEY)
@@ -106,7 +106,7 @@ export class ElizaClient {
     // Only skip if the user explicitly called setBaseUrl() themselves.
     if (!this._userSetBase) {
       const bootBase = getBootConfig().apiBase;
-      const injectedBase = getElizaApiBase();
+      const injectedBase = getTokagentApiBase();
       const preferredBase = bootBase ?? injectedBase;
       if (preferredBase && preferredBase !== this._baseUrl) {
         this._baseUrl = preferredBase;
@@ -120,7 +120,7 @@ export class ElizaClient {
     const bootToken = getBootConfig().apiToken;
     if (typeof bootToken === "string" && bootToken.trim())
       return bootToken.trim();
-    const injectedToken = getElizaApiToken();
+    const injectedToken = getTokagentApiToken();
     if (injectedToken) return injectedToken;
     return null;
   }
@@ -235,10 +235,10 @@ export class ElizaClient {
         ...init,
         signal: abortController.signal,
         headers: {
-          "X-ElizaOS-Client-Id": this.clientId,
+          "X-TokagentOS-Client-Id": this.clientId,
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
           ...(this._uiLanguage
-            ? { "X-ElizaOS-UI-Language": this._uiLanguage }
+            ? { "X-TokagentOS-UI-Language": this._uiLanguage }
             : {}),
           ...init?.headers,
         },
@@ -735,7 +735,7 @@ export class ElizaClient {
         }
         // Terminal event: stop reading immediately instead of waiting for the
         // server to close the body (some stacks leave the stream open briefly).
-        void reader.cancel("elizaos-sse-terminal-done").catch(() => {});
+        void reader.cancel("tokagentos-sse-terminal-done").catch(() => {});
         return;
       }
 
@@ -765,7 +765,7 @@ export class ElizaClient {
         ({ done, value } = await Promise.race([readPromise, timeoutPromise]));
       } catch (streamErr) {
         console.warn("[api-client] SSE stream interrupted:", streamErr);
-        void reader.cancel("elizaos-sse-idle-timeout").catch(() => {});
+        void reader.cancel("tokagentos-sse-idle-timeout").catch(() => {});
         break;
       }
       if (done || !value) break;
@@ -795,7 +795,7 @@ export class ElizaClient {
         : this.normalizeAssistantText(doneText ?? fullText);
     return {
       text: resolvedText,
-      agentName: doneAgentName ?? "Eliza",
+      agentName: doneAgentName ?? "Tokagent",
       completed: receivedDone,
       ...(doneNoResponseReason
         ? { noResponseReason: doneNoResponseReason }

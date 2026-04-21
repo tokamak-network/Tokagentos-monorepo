@@ -41,7 +41,7 @@ export const searchPluginAction: Action = {
 	],
 
 	description:
-		"Search for plugins in the ElizaOS registry by functionality, features, and natural language descriptions.",
+		"Search for plugins in the TokagentOS registry by functionality, features, and natural language descriptions.",
 
 	examples: [
 		[
@@ -217,7 +217,7 @@ export const getPluginDetailsAction: Action = {
 			{
 				name: "{{agentName}}",
 				content: {
-					text: "**@elizaos/plugin-solana** Details:\n\nDescription: Comprehensive Solana blockchain integration\n\nTags: blockchain, solana, defi, transaction\n\nVersion: 2.0.0-alpha.3\nRepository: https://github.com/elizaos-plugins/plugin-solana",
+					text: "**@elizaos/plugin-solana** Details:\n\nDescription: Comprehensive Solana blockchain integration\n\nTags: blockchain, solana, defi, transaction\n\nVersion: 2.0.0-alpha.3\nRepository: https://github.com/tokagentos-plugins/plugin-solana",
 				},
 			},
 		],

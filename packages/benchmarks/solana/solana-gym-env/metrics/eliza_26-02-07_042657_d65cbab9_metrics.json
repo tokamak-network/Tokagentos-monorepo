@@ -1,7 +1,7 @@
 {
   "model": "claude-sonnet-4-20250514",
   "run_index": 0,
-  "run_id": "eliza_26-02-07_042657_d65cbab9",
+  "run_id": "tokagent_26-02-07_042657_d65cbab9",
   "start_time": "2026-02-07T04:26:57.834575",
   "environment_config": "voyager/environments/basic_env.json",
   "messages": [
@@ -481,12 +481,12 @@
     {
       "step": 16,
       "template": "llm_exploration",
-      "error": "{\"serialized_tx\": null, \"error\": \"provided secretKey is invalid\", \"details\": \"Error: provided secretKey is invalid\\n    at fromSecretKey (/Users/shawwalters/eliza-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/node_modules/@solana/web3.js/lib/index.cjs.js:8994:21)\\n    at executeSkill (/Users/shawwalters/eliza-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/eliza_skill.ts:13:25)\\n    at runSkill (/Users/shawwalters/eliza-workspace/benchmarks/solana/solana-gym-env"
+      "error": "{\"serialized_tx\": null, \"error\": \"provided secretKey is invalid\", \"details\": \"Error: provided secretKey is invalid\\n    at fromSecretKey (/Users/shawwalters/tokagent-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/node_modules/@solana/web3.js/lib/index.cjs.js:8994:21)\\n    at executeSkill (/Users/shawwalters/tokagent-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/tokagent_skill.ts:13:25)\\n    at runSkill (/Users/shawwalters/tokagent-workspace/benchmarks/solana/solana-gym-env"
     },
     {
       "step": 17,
       "template": "llm_exploration",
-      "error": "{\"serialized_tx\": null, \"error\": \"Transaction too large: 2062 > 1232\", \"details\": \"Error: Transaction too large: 2062 > 1232\\n    at assert (/Users/shawwalters/eliza-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/node_modules/@solana/web3.js/lib/index.cjs.js:607:15)\\n    at _serialize (/Users/shawwalters/eliza-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/node_modules/@solana/web3.js/lib/index.cjs.js:1882:5)\\n    at executeSkill (/Users/shawwalters/eliza-worksp"
+      "error": "{\"serialized_tx\": null, \"error\": \"Transaction too large: 2062 > 1232\", \"details\": \"Error: Transaction too large: 2062 > 1232\\n    at assert (/Users/shawwalters/tokagent-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/node_modules/@solana/web3.js/lib/index.cjs.js:607:15)\\n    at _serialize (/Users/shawwalters/tokagent-workspace/benchmarks/solana/solana-gym-env/voyager/skill_runner/node_modules/@solana/web3.js/lib/index.cjs.js:1882:5)\\n    at executeSkill (/Users/shawwalters/tokagent-worksp"
     }
   ],
   "end_time": "2026-02-07T04:34:36.121022",

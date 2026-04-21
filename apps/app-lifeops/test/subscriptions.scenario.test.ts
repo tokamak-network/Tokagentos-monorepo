@@ -10,7 +10,7 @@
  * subscriptions action handle novel/unseen user phrasings.
  */
 import { describe, expect, test } from "vitest";
-import type { Content, Memory } from "@elizaos/core";
+import type { Content, Memory } from "@tokagentos/core";
 import { subscriptionsAction } from "../src/actions/subscriptions.js";
 import { LifeOpsRepository } from "../src/lifeops/repository.js";
 import { createLifeOpsChatTestRuntime } from "./helpers/lifeops-chat-runtime.js";

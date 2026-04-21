@@ -4,7 +4,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 
 import {
-  ELIZA_AGENT_VAULT_SERVICE,
+  TOKAGENT_AGENT_VAULT_SERVICE,
   keychainAccountForSecretKind,
 } from "./agent-vault-id";
 import type {
@@ -163,7 +163,7 @@ class MacOSKeychainPlatformSecureStore implements PlatformSecureStore {
         [
           "find-generic-password",
           "-s",
-          ELIZA_AGENT_VAULT_SERVICE,
+          TOKAGENT_AGENT_VAULT_SERVICE,
           "-a",
           account,
           "-w",
@@ -194,7 +194,7 @@ class MacOSKeychainPlatformSecureStore implements PlatformSecureStore {
         [
           "add-generic-password",
           "-s",
-          ELIZA_AGENT_VAULT_SERVICE,
+          TOKAGENT_AGENT_VAULT_SERVICE,
           "-a",
           account,
           "-U",
@@ -219,7 +219,7 @@ class MacOSKeychainPlatformSecureStore implements PlatformSecureStore {
       await execFileAsync("security", [
         "delete-generic-password",
         "-s",
-        ELIZA_AGENT_VAULT_SERVICE,
+        TOKAGENT_AGENT_VAULT_SERVICE,
         "-a",
         account,
       ]);
@@ -249,7 +249,7 @@ class LinuxSecretToolPlatformSecureStore implements PlatformSecureStore {
     try {
       const { stdout } = await execFileAsync(
         "secret-tool",
-        ["lookup", "service", ELIZA_AGENT_VAULT_SERVICE, "account", account],
+        ["lookup", "service", TOKAGENT_AGENT_VAULT_SERVICE, "account", account],
         { encoding: "utf8" },
       );
       const value = stdout.trim();
@@ -279,9 +279,9 @@ class LinuxSecretToolPlatformSecureStore implements PlatformSecureStore {
       await secretToolStoreWithStdin(
         [
           "store",
-          "--label=Eliza agent wallet",
+          "--label=Tokagent agent wallet",
           "service",
-          ELIZA_AGENT_VAULT_SERVICE,
+          TOKAGENT_AGENT_VAULT_SERVICE,
           "account",
           account,
         ],
@@ -306,7 +306,7 @@ class LinuxSecretToolPlatformSecureStore implements PlatformSecureStore {
       await execFileAsync("secret-tool", [
         "clear",
         "service",
-        ELIZA_AGENT_VAULT_SERVICE,
+        TOKAGENT_AGENT_VAULT_SERVICE,
         "account",
         account,
       ]);
@@ -349,13 +349,13 @@ export function createNodePlatformSecureStore(): PlatformSecureStore {
 }
 
 /**
- * Opt in: `ELIZA_WALLET_OS_STORE=1` / `true` / `on` / `yes`.
+ * Opt in: `TOKAGENT_WALLET_OS_STORE=1` / `true` / `on` / `yes`.
  *
  * Defaults to **off** until the macOS argv exposure is resolved via
  * Security.framework / Bun FFI. Users who accept the risk can enable
  * explicitly.
  */
 export function isWalletOsStoreReadEnabled(): boolean {
-  const raw = process.env.ELIZA_WALLET_OS_STORE?.trim().toLowerCase();
+  const raw = process.env.TOKAGENT_WALLET_OS_STORE?.trim().toLowerCase();
   return raw === "1" || raw === "true" || raw === "on" || raw === "yes";
 }

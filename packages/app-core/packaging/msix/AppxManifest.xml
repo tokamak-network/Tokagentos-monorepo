@@ -6,14 +6,14 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="ElizaOS.App"
-    Publisher="CN=elizaOS"
+    Name="TokagentOS.App"
+    Publisher="CN=tokagentOS"
     Version="0.0.0.0"
     ProcessorArchitecture="x64" />
 
   <Properties>
-    <DisplayName>elizaOS App</DisplayName>
-    <PublisherDisplayName>elizaOS</PublisherDisplayName>
+    <DisplayName>tokagentOS App</DisplayName>
+    <PublisherDisplayName>tokagentOS</PublisherDisplayName>
     <Logo>assets\StoreLogo.png</Logo>
     <Description>Personal AI assistant — cute agents for the acceleration</Description>
   </Properties>
@@ -27,11 +27,11 @@
   </Resources>
 
   <Applications>
-    <Application Id="ElizaOSApp"
+    <Application Id="TokagentOSApp"
       Executable="launcher.exe"
       EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-        DisplayName="elizaOS App"
+        DisplayName="tokagentOS App"
         Description="Personal AI assistant"
         BackgroundColor="transparent"
         Square150x150Logo="assets\Square150x150Logo.png"
@@ -40,7 +40,7 @@
       </uap:VisualElements>
       <Extensions>
         <uap:Extension Category="windows.protocol">
-          <uap:Protocol Name="elizaos-app" />
+          <uap:Protocol Name="tokagentos-app" />
         </uap:Extension>
       </Extensions>
     </Application>

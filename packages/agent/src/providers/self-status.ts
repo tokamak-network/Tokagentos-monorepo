@@ -1,11 +1,11 @@
-import type { AwarenessRegistry } from "@elizaos/agent/awareness/registry";
+import type { AwarenessRegistry } from "@tokagentos/agent/awareness/registry";
 import type {
   IAgentRuntime,
   Memory,
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 
 export function createSelfStatusProvider(
   registry: AwarenessRegistry,

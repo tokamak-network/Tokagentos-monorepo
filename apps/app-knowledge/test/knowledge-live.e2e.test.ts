@@ -17,7 +17,7 @@ import {
   selectLiveProvider,
 } from "../../../../test/helpers/live-provider";
 import { createRealTestRuntime } from "../../../../test/helpers/real-runtime";
-import { createElizaPlugin } from "@elizaos/agent/runtime/eliza-plugin";
+import { createTokagentPlugin } from "@tokagentos/agent/runtime/tokagent-plugin";
 
 const envPath = path.resolve(import.meta.dirname, "..", "..", "..", "..", ".env");
 try {
@@ -40,9 +40,9 @@ async function startKnowledgeServer(): Promise<StartedKnowledgeServer> {
   const runtimeResult = await createRealTestRuntime({
     withLLM: true,
     preferredProvider: LIVE_PROVIDER?.name,
-    plugins: [createElizaPlugin({ agentId: "main" })],
+    plugins: [createTokagentPlugin({ agentId: "main" })],
   });
-  const { startApiServer } = await import("@elizaos/agent/api/server");
+  const { startApiServer } = await import("@tokagentos/agent/api/server");
   const server = await startApiServer({
     port: 0,
     runtime: runtimeResult.runtime,

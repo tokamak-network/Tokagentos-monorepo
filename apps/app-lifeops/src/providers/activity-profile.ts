@@ -4,14 +4,14 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@elizaos/core";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/core";
+import { logger } from "@tokagentos/core";
 import { resolveCurrentBucket } from "../activity-profile/analyzer.js";
 import { PROACTIVE_TASK_TAGS } from "../activity-profile/proactive-worker.js";
 import { readProfileFromMetadata } from "../activity-profile/service.js";
 import { resolveDefaultTimeZone } from "../lifeops/defaults.js";
 import { getLocalDateKey, getZonedDateParts } from "../lifeops/time.js";
-import { hasAdminAccess } from "@elizaos/agent/security";
+import { hasAdminAccess } from "@tokagentos/agent/security";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);

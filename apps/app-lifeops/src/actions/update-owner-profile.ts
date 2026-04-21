@@ -1,10 +1,10 @@
-import type { Action, ActionExample, HandlerOptions } from "@elizaos/core";
+import type { Action, ActionExample, HandlerOptions } from "@tokagentos/core";
 import {
   normalizeLifeOpsOwnerProfilePatch,
   persistConfiguredOwnerName,
   updateLifeOpsOwnerProfile,
 } from "../lifeops/owner-profile.js";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 
 type OwnerProfileParameters = {
   name?: string;

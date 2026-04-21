@@ -3,8 +3,8 @@ from typing import Any
 import pytest
 from google.protobuf.struct_pb2 import Value
 
-from elizaos.runtime import AgentRuntime
-from elizaos.types import (
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types import (
     Action,
     ActionParameter,
     ActionParameterSchema,

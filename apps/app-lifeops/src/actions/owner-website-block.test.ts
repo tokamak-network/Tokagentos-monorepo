@@ -5,7 +5,7 @@ import type {
   Memory,
   State,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const accessMocks = vi.hoisted(() => ({

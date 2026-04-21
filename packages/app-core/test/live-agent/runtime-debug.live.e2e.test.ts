@@ -7,7 +7,7 @@ import {
   createCharacter,
   logger,
   type Plugin,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import dotenv from "dotenv";
 import { expect, it } from "vitest";
 import { describeIf } from "../../../../../test/helpers/conditional-tests.ts";
@@ -18,7 +18,7 @@ const packageRoot = path.resolve(testDir, "..");
 dotenv.config({ path: path.resolve(packageRoot, "..", "..", ".env") });
 
 const liveModelTestsEnabled =
-  process.env.MILADY_LIVE_TEST === "1" || process.env.ELIZA_LIVE_TEST === "1";
+  process.env.MILADY_LIVE_TEST === "1" || process.env.TOKAGENT_LIVE_TEST === "1";
 const selectedLiveProvider = liveModelTestsEnabled
   ? selectLiveProvider()
   : null;

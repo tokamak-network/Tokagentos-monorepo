@@ -1,6 +1,6 @@
 # Database and runtime files
-**/.eliza/
-**/.elizadb/
+**/.tokagent/
+**/.tokagentdb/
 **/pg_wal/
 **/pg_stat/
 

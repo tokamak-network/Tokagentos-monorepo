@@ -1,5 +1,5 @@
 /**
- * x402 (HTTP 402 Payment Required) handler for Eliza Cloud relays.
+ * x402 (HTTP 402 Payment Required) handler for Tokagent Cloud relays.
  *
  * Spec reference: https://www.x402.org
  *
@@ -24,7 +24,7 @@
  * upstream as a generic HTTP error.
  */
 
-import { type IAgentRuntime, logger } from "@elizaos/core";
+import { type IAgentRuntime, logger } from "@tokagentos/core";
 
 /**
  * One acceptable payment option as advertised by the server.
@@ -168,7 +168,7 @@ export class PaymentRequiredError extends Error {
   ) {
     const text =
       message ??
-      `Eliza Cloud returned HTTP 402 — your credit balance can't cover this call. ${requirements.length} payment option(s) available.`;
+      `Tokagent Cloud returned HTTP 402 — your credit balance can't cover this call. ${requirements.length} payment option(s) available.`;
     super(text);
     this.name = "PaymentRequiredError";
     this.requirements = requirements;

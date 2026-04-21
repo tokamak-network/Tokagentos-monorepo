@@ -4,13 +4,13 @@ import {
   isLoopbackRemoteAddress,
   readCompatJsonBody,
   type CompatRuntimeState,
-} from "@elizaos/app-core/api/compat-route-shared";
-import { ensureCompatApiAuthorized } from "@elizaos/app-core/api/auth";
+} from "@tokagentos/app-core/api/compat-route-shared";
+import { ensureCompatApiAuthorized } from "@tokagentos/app-core/api/auth";
 import {
   sendJsonError as sendJsonErrorResponse,
   sendJson as sendJsonResponse,
-} from "@elizaos/app-core/api/response";
-import { logger } from "@elizaos/core";
+} from "@tokagentos/app-core/api/response";
+import { logger } from "@tokagentos/core";
 import { getWalletAddresses } from "../api/wallet";
 import {
   approveStewardTransaction,

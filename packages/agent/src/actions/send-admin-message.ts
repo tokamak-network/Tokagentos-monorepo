@@ -5,12 +5,12 @@ import type {
   IAgentRuntime,
   Memory,
   UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import {
   logger,
   resolveCanonicalOwnerIdForMessage,
   stringToUuid,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { hasAdminAccess } from "../security/access.js";
 import { hasContextSignalSyncForKey } from "./context-signal.js";
 
@@ -52,7 +52,7 @@ export const sendAdminMessageAction: Action = {
     "SEND_OWNER_MESSAGE",
   ],
   description:
-    "Send a message to the owner/admin via their Eliza app. Use when you need to notify, alert, or communicate with the owner.",
+    "Send a message to the owner/admin via their Tokagent app. Use when you need to notify, alert, or communicate with the owner.",
 
   validate: async (runtime, message, state) => {
     if (!(await hasAdminAccess(runtime, message))) return false;
@@ -118,7 +118,7 @@ export const sendAdminMessageAction: Action = {
         err instanceof Error ? err.message : String(err),
       );
       return {
-        text: "Failed to send message to admin. The Eliza app may not be connected.",
+        text: "Failed to send message to admin. The Tokagent app may not be connected.",
         success: false,
         values: { success: false, error: "SEND_FAILED" },
         data: { actionName: "SEND_ADMIN_MESSAGE", urgency },

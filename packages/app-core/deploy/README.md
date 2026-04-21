@@ -1,6 +1,6 @@
 # Deployment Toolkit
 
-This directory contains the generic deployment assets for elizaOS apps: Dockerfiles, compose files, node rollout scripts, Cloudflare proxy sources, and the cloud-agent runtime helpers.
+This directory contains the generic deployment assets for tokagentOS apps: Dockerfiles, compose files, node rollout scripts, Cloudflare proxy sources, and the cloud-agent runtime helpers.
 
 ## Layout
 
@@ -12,7 +12,7 @@ This directory contains the generic deployment assets for elizaOS apps: Dockerfi
 - `docker-compose.supabase-db.yml` — optional local Postgres service
 - `docker-setup.sh` — local image build plus compose-based onboarding flow
 - `deploy-to-nodes.sh` — image load / restart helper for remote Docker nodes
-- `cloudflare/eliza-cloud-proxy/` — proxy worker source and Wrangler example
+- `cloudflare/tokagent-cloud-proxy/` — proxy worker source and Wrangler example
 
 ## App Overrides
 
@@ -29,35 +29,35 @@ Create a repo-root `deploy/deploy.env` and override only what differs from `depl
 ```bash
 # Build a local image and walk through setup.
 cd deploy
-bash ../eliza/packages/app-core/deploy/docker-setup.sh
+bash ../tokagent/packages/app-core/deploy/docker-setup.sh
 
 # Load the current image onto configured nodes.
 cd deploy
-bash ../eliza/packages/app-core/deploy/deploy-to-nodes.sh --status
+bash ../tokagent/packages/app-core/deploy/deploy-to-nodes.sh --status
 ```
 
 ## Variables
 
 | Variable | Purpose | Default |
 | --- | --- | --- |
-| `APP_NAME` | App/project name used by compose and helper output | `eliza` |
+| `APP_NAME` | App/project name used by compose and helper output | `tokagent` |
 | `APP_ENTRYPOINT` | Runtime entrypoint copied into images | `app.mjs` |
 | `APP_CMD_START` | Startup command for the full app container | `node --import ./node_modules/tsx/dist/loader.mjs app.mjs start` |
-| `APP_IMAGE` | Local Docker image name | `eliza:local` |
+| `APP_IMAGE` | Local Docker image name | `tokagent:local` |
 | `APP_REGISTRY` | Optional registry prefix used by node rollout image matching | _empty_ |
 | `APP_PORT` | Primary app/API port inside the container | `2138` |
 | `APP_GATEWAY_PORT` | Gateway listener port | `18789` |
 | `APP_BRIDGE_PORT` | Cloud bridge port | `18790` |
 | `APP_GATEWAY_BIND` | Gateway bind preset passed to the CLI | `lan` |
-| `APP_STATE_DIR` | In-container state/config directory | `/home/node/.eliza` |
-| `APP_CONFIG_DIR` | Host-side config directory mounted into the container | `${HOME}/.eliza` |
-| `APP_WORKSPACE_DIR` | Host-side workspace directory mounted into the container | `${HOME}/.eliza/workspace` |
-| `APP_DB_NAME` | Database name for the Postgres helper compose file | `eliza` |
+| `APP_STATE_DIR` | In-container state/config directory | `/home/node/.tokagent` |
+| `APP_CONFIG_DIR` | Host-side config directory mounted into the container | `${HOME}/.tokagent` |
+| `APP_WORKSPACE_DIR` | Host-side workspace directory mounted into the container | `${HOME}/.tokagent/workspace` |
+| `APP_DB_NAME` | Database name for the Postgres helper compose file | `tokagent` |
 | `APP_API_BIND` | Default API bind address baked into the image | `127.0.0.1` |
 | `OCI_SOURCE` | OCI source metadata | _empty_ |
-| `OCI_TITLE` | OCI image title | `elizaOS Agent` |
-| `OCI_DESCRIPTION` | OCI image description | `elizaOS agent runtime` |
+| `OCI_TITLE` | OCI image title | `tokagentOS Agent` |
+| `OCI_DESCRIPTION` | OCI image description | `tokagentOS agent runtime` |
 | `OCI_LICENSES` | OCI image license metadata | `MIT` |
-| `CF_WORKER_NAME` | Suggested Cloudflare worker name | `eliza-cloud-proxy` |
+| `CF_WORKER_NAME` | Suggested Cloudflare worker name | `tokagent-cloud-proxy` |
 | `CF_ALLOWED_ORIGINS` | Allowed CORS origins for the proxy worker | _empty_ |
 | `CF_PROXY_PATH_PREFIXES` | Comma-separated path prefixes forwarded by the proxy worker | _empty_ |

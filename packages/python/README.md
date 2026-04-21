@@ -1,6 +1,6 @@
-# elizaOS Core (Python)
+# tokagentOS Core (Python)
 
-The Python implementation of elizaOS Core - the runtime and types for elizaOS AI agents.
+The Python implementation of tokagentOS Core - the runtime and types for tokagentOS AI agents.
 
 ## Installation
 
@@ -8,7 +8,7 @@ The Python implementation of elizaOS Core - the runtime and types for elizaOS AI
 
 ```bash
 # From the repo root
-cd eliza
+cd tokagent
 
 # Create and activate virtual environment
 python -m venv venv
@@ -27,7 +27,7 @@ pip install -e plugins/plugin-inmemorydb/python
 ### From PyPI
 
 ```bash
-pip install elizaos elizaos-plugin-openai elizaos-plugin-inmemorydb
+pip install tokagentos tokagentos-plugin-openai tokagentos-plugin-inmemorydb
 ```
 
 ## Quick Start
@@ -54,16 +54,16 @@ from dotenv import load_dotenv
 load_dotenv()  # Load .env file
 
 from uuid6 import uuid7
-from elizaos import Character, ChannelType, Content, Memory
-from elizaos.runtime import AgentRuntime
-from elizaos_plugin_openai import get_openai_plugin
-from elizaos_plugin_inmemorydb import plugin as inmemorydb_plugin
+from tokagentos import Character, ChannelType, Content, Memory
+from tokagentos.runtime import AgentRuntime
+from tokagentos_plugin_openai import get_openai_plugin
+from tokagentos_plugin_inmemorydb import plugin as inmemorydb_plugin
 
 async def main() -> None:
     # Define your agent's character
     character = Character(
-        name="Eliza",
-        username="eliza",
+        name="Tokagent",
+        username="tokagent",
         bio="A helpful AI assistant.",
         system="You are helpful and concise.",
     )
@@ -159,7 +159,7 @@ Some deterministic/offline backends may return **plain text** instead. In that c
 ## Plugin System
 
 ```python
-from elizaos import Plugin, Action, Provider
+from tokagentos import Plugin, Action, Provider
 
 my_plugin = Plugin(
     name="my-plugin",
@@ -219,10 +219,10 @@ pip-compile requirements-dev.in -o requirements-dev.lock
 pytest
 
 # Type checking
-mypy elizaos
+mypy tokagentos
 
 # Linting
-ruff check elizaos
+ruff check tokagentos
 ```
 
 ## Examples

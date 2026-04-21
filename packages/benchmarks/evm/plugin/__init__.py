@@ -1,9 +1,9 @@
 """
-ElizaOS Plugin for the EVM Benchmark.
+TokagentOS Plugin for the EVM Benchmark.
 
-This plugin provides canonical ElizaOS actions and providers for EVM
+This plugin provides canonical TokagentOS actions and providers for EVM
 exploration during benchmarking.  It enables the agent to interact with
-an Anvil node through the standard ElizaOS action system.
+an Anvil node through the standard TokagentOS action system.
 
 Actions:
     EXECUTE_CODE — Write TypeScript, run via Bun, get reward feedback.
@@ -12,7 +12,7 @@ Providers:
     EVM_CONTEXT — Inject discovery state, contract catalog, chain info.
 """
 
-from elizaos.types import Plugin
+from tokagentos.types import Plugin
 
 from .actions import EVM_ACTIONS
 from .providers import EVM_PROVIDERS
@@ -25,7 +25,7 @@ def create_evm_bench_plugin() -> Plugin:
     return Plugin(
         name="evm-bench",
         description=(
-            "EVM Benchmark plugin for ElizaOS — provides the EXECUTE_CODE action "
+            "EVM Benchmark plugin for TokagentOS — provides the EXECUTE_CODE action "
             "for running TypeScript skills on an EVM chain and the EVM_CONTEXT "
             "provider for injecting discovery state and contract catalog."
         ),

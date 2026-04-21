@@ -1,4 +1,4 @@
-package ai.elizaos.app;
+package ai.tokagentos.app;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -28,8 +28,8 @@ public class GatewayConnectionService extends Service {
     private static final int NOTIFICATION_ID = 1;
 
     // Intent actions
-    private static final String ACTION_STOP = "ai.elizaos.app.action.STOP_GATEWAY";
-    private static final String ACTION_UPDATE_STATUS = "ai.elizaos.app.action.UPDATE_STATUS";
+    private static final String ACTION_STOP = "ai.tokagentos.app.action.STOP_GATEWAY";
+    private static final String ACTION_UPDATE_STATUS = "ai.tokagentos.app.action.UPDATE_STATUS";
 
     // Extras
     private static final String EXTRA_STATUS = "status";
@@ -48,7 +48,7 @@ public class GatewayConnectionService extends Service {
         super.onCreate();
         ensureNotificationChannel();
 
-        Notification notification = buildNotification("elizaOS Gateway", "Starting…");
+        Notification notification = buildNotification("tokagentOS Gateway", "Starting…");
 
         // API 34+ requires explicit foreground service type when calling startForeground().
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -110,7 +110,7 @@ public class GatewayConnectionService extends Service {
             "Gateway Connection",
             NotificationManager.IMPORTANCE_LOW
         );
-        channel.setDescription("Shows elizaOS gateway connection status");
+        channel.setDescription("Shows tokagentOS gateway connection status");
         channel.setShowBadge(false);
 
         NotificationManager mgr = getSystemService(NotificationManager.class);
@@ -155,15 +155,15 @@ public class GatewayConnectionService extends Service {
 
         switch (currentStatus) {
             case STATUS_CONNECTED:
-                title = "elizaOS Gateway · Connected";
+                title = "tokagentOS Gateway · Connected";
                 text = "WebSocket connection active";
                 break;
             case STATUS_RECONNECTING:
-                title = "elizaOS Gateway · Reconnecting";
+                title = "tokagentOS Gateway · Reconnecting";
                 text = "Attempting to restore connection…";
                 break;
             default:
-                title = "elizaOS Gateway";
+                title = "tokagentOS Gateway";
                 text = "Disconnected";
                 break;
         }

@@ -125,7 +125,7 @@ declare module "telegram/sessions" {
     [key: string]: unknown;
   }
 }
-declare module "@elizaos/plugin-elizacloud";
+declare module "@elizaos/plugin-tokagentcloud";
 declare module "@elizaos/plugin-commands";
 declare module "@elizaos/plugin-cron";
 declare module "@elizaos/plugin-edge-tts";
@@ -146,7 +146,7 @@ declare module "@elizaos/app-knowledge/routes" {
 }
 
 declare module "@elizaos/app-knowledge/service-loader" {
-  import type { AgentRuntime, Memory, UUID } from "@elizaos/core";
+  import type { AgentRuntime, Memory, UUID } from "@tokagentos/core";
 
   export type KnowledgeLoadFailReason =
     | "timeout"
@@ -271,8 +271,8 @@ declare module "abitype" {
   export type TypedDataType = string;
 }
 
-declare module "@elizaos/core/roles" {
-  import type { IAgentRuntime, Memory, UUID } from "@elizaos/core";
+declare module "@tokagentos/core/roles" {
+  import type { IAgentRuntime, Memory, UUID } from "@tokagentos/core";
 
   export type RoleName = "OWNER" | "ADMIN" | "USER" | "GUEST";
   export type RoleGrantSource = "owner" | "manual" | "connector_admin";
@@ -385,7 +385,7 @@ declare module "@elizaos/core/roles" {
 }
 
 declare module "@elizaos/plugin-sql" {
-  import type { Plugin } from "@elizaos/core";
+  import type { Plugin } from "@tokagentos/core";
 
   export const PGLITE_ERROR_CODES: {
     ACTIVE_LOCK: string;

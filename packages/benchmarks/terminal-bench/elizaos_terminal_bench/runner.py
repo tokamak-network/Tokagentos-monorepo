@@ -12,14 +12,14 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional
 
-from elizaos_terminal_bench.agent import TerminalAgent
-from elizaos_terminal_bench.dataset import TerminalBenchDataset
-from elizaos_terminal_bench.environment import TerminalEnvironment
-from elizaos_terminal_bench.evaluator import (
+from tokagentos_terminal_bench.agent import TerminalAgent
+from tokagentos_terminal_bench.dataset import TerminalBenchDataset
+from tokagentos_terminal_bench.environment import TerminalEnvironment
+from tokagentos_terminal_bench.evaluator import (
     TerminalBenchEvaluator,
     format_report_markdown,
 )
-from elizaos_terminal_bench.types import (
+from tokagentos_terminal_bench.types import (
     TaskCategory,
     TaskDifficulty,
     TerminalBenchConfig,
@@ -30,7 +30,7 @@ from elizaos_terminal_bench.types import (
 )
 
 if TYPE_CHECKING:
-    from elizaos.runtime import AgentRuntime
+    from tokagentos.runtime import AgentRuntime
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class TerminalBenchRunner:
         Initialize the benchmark runner.
 
         Args:
-            runtime: Optional ElizaOS runtime for LLM access
+            runtime: Optional TokagentOS runtime for LLM access
             config: Benchmark configuration (uses defaults if not provided)
         """
         self.runtime = runtime
@@ -269,16 +269,16 @@ class TerminalBenchRunner:
                 await env.stop()
 
         # Choose agent based on configuration
-        if self.config.use_eliza_agent:
-            # Full ElizaOS agent with message_service, actions, providers
-            return await self._run_with_eliza_agent(task)
+        if self.config.use_tokagent_agent:
+            # Full TokagentOS agent with message_service, actions, providers
+            return await self._run_with_tokagent_agent(task)
         else:
             # Standalone agent with direct API calls
             return await self._run_with_standalone_agent(task)
 
-    async def _run_with_eliza_agent(self, task: TerminalTask) -> TerminalBenchResult:
-        """Run task with full ElizaOS agent (canonical)."""
-        from elizaos_terminal_bench.eliza_agent import ElizaTerminalAgent
+    async def _run_with_tokagent_agent(self, task: TerminalTask) -> TerminalBenchResult:
+        """Run task with full TokagentOS agent (canonical)."""
+        from tokagentos_terminal_bench.tokagent_agent import TokagentTerminalAgent
 
         # Create environment
         env = TerminalEnvironment(
@@ -290,8 +290,8 @@ class TerminalBenchRunner:
         try:
             await env.start(task)
 
-            # Create ElizaOS agent
-            agent = ElizaTerminalAgent(
+            # Create TokagentOS agent
+            agent = TokagentTerminalAgent(
                 environment=env,
                 max_iterations=self.config.max_iterations,
                 model_name=self.config.model_name,
@@ -319,7 +319,7 @@ class TerminalBenchRunner:
             )
 
         except Exception as e:
-            logger.error(f"Error running task {task.task_id} with Eliza agent: {e}")
+            logger.error(f"Error running task {task.task_id} with Tokagent agent: {e}")
             return TerminalBenchResult(
                 task_id=task.task_id,
                 success=False,
@@ -533,7 +533,7 @@ async def run_terminal_bench(
     Convenience function to run Terminal-Bench evaluation.
 
     Args:
-        runtime: Optional ElizaOS runtime
+        runtime: Optional TokagentOS runtime
         config: Optional configuration
         use_sample_tasks: Use sample tasks for testing
 

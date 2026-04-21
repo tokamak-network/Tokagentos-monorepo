@@ -1,25 +1,25 @@
 {
-  "name": "@elizaos/agent",
+  "name": "@tokagentos/agent",
   "version": "2.0.0-alpha.223",
-  "description": "Standalone elizaOS-based agent and backend server package.",
+  "description": "Standalone tokagentOS-based agent and backend server package.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/elizaos/eliza",
+  "homepage": "https://github.com/tokagentos/tokagent",
   "repository": {
     "type": "git",
-    "url": "https://github.com/elizaos/eliza.git",
+    "url": "https://github.com/tokagentos/tokagent.git",
     "directory": "packages/agent"
   },
   "keywords": [
-    "eliza",
+    "tokagent",
     "agent",
     "backend",
     "runtime",
-    "elizaos"
+    "tokagentos"
   ],
   "main": "src/index.ts",
   "bin": {
-    "eliza-autonomous": "./src/bin.ts"
+    "tokagent-autonomous": "./src/bin.ts"
   },
   "scripts": {
     "clean": "rm -rf dist",
@@ -77,7 +77,7 @@
     "./providers/*": "./src/providers/*.ts",
     "./runtime": "./src/runtime/index.ts",
     "./runtime/*": "./src/runtime/*.ts",
-    "./runtime/eliza": "./src/runtime/eliza.ts",
+    "./runtime/tokagent": "./src/runtime/tokagent.ts",
     "./runtime/restart": "./src/runtime/restart.ts",
     "./security": "./src/security/index.ts",
     "./security/*": "./src/security/*.ts",
@@ -131,20 +131,20 @@
   "dependencies": {
     "@clack/prompts": "^1.0.0",
     "@elizaos/app-companion": "workspace:*",
-    "@elizaos/app-elizamaker": "workspace:*",
+    "@elizaos/app-tokagentmaker": "workspace:*",
     "@elizaos/app-knowledge": "workspace:*",
     "@elizaos/app-lifeops": "workspace:*",
     "@elizaos/app-steward": "workspace:*",
     "@elizaos/app-task-coordinator": "workspace:*",
     "@elizaos/app-training": "workspace:*",
-    "@elizaos/core": "workspace:*",
+    "@tokagentos/core": "workspace:*",
     "@elizaos/plugin-agent-orchestrator": "workspace:*",
     "@elizaos/plugin-ollama": "workspace:*",
     "@elizaos/plugin-pdf": "workspace:*",
     "@elizaos/plugin-solana": "workspace:*",
     "@elizaos/plugin-sql": "workspace:*",
-    "@elizaos/shared": "workspace:*",
-    "@elizaos/skills": "workspace:*",
+    "@tokagentos/shared": "workspace:*",
+    "@tokagentos/skills": "workspace:*",
     "@hapi/boom": "^10.0.1",
     "@noble/curves": "^2.0.1",
     "@whiskeysockets/baileys": "7.0.0-rc.9",

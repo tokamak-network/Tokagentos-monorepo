@@ -1,1 +1,1 @@
-export * from "@elizaos/shared/contracts/drop";
+export * from "@tokagentos/shared/contracts/drop";

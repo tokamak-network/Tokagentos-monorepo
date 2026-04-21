@@ -1,8 +1,8 @@
 /**
  * Shared types, constants, and utility functions for plugin resolution.
  *
- * Extracted from eliza.ts to break circular dependencies between
- * eliza.ts and plugin-resolver.ts.
+ * Extracted from tokagent.ts to break circular dependencies between
+ * tokagent.ts and plugin-resolver.ts.
  *
  * @module plugin-types
  */
@@ -13,10 +13,10 @@ import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { logger, type Plugin } from "@elizaos/core";
+import { logger, type Plugin } from "@tokagentos/core";
 
-import type { ElizaConfig } from "../config/config.js";
-import type { PluginInstallRecord } from "../config/types.eliza.js";
+import type { TokagentConfig } from "../config/config.js";
+import type { PluginInstallRecord } from "../config/types.tokagent.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -44,16 +44,16 @@ export interface PluginModuleShape {
 /**
  * Static plugin registry.
  *
- * Populated by eliza.ts at module-load time with all statically-imported
+ * Populated by tokagent.ts at module-load time with all statically-imported
  * plugin modules. Defined here (as a mutable record) so that
- * plugin-resolver.ts can read it without importing eliza.ts, breaking the
+ * plugin-resolver.ts can read it without importing tokagent.ts, breaking the
  * circular dependency.
  */
-export const STATIC_ELIZA_PLUGINS: Record<string, unknown> = {};
+export const STATIC_TOKAGENT_PLUGINS: Record<string, unknown> = {};
 
-/** Subdirectory under the Eliza state dir for drop-in custom plugins. */
+/** Subdirectory under the Tokagent state dir for drop-in custom plugins. */
 export const CUSTOM_PLUGINS_DIRNAME = "plugins/custom";
-/** Subdirectory under the Eliza state dir for ejected plugins. */
+/** Subdirectory under the Tokagent state dir for ejected plugins. */
 export const EJECTED_PLUGINS_DIRNAME = "plugins/ejected";
 
 // ---------------------------------------------------------------------------
@@ -211,7 +211,7 @@ export function mergeDropInPlugins(params: {
     if (denyList.has(name) || installRecords[name]) continue;
     if (corePluginNames.has(name)) {
       skipped.push(
-        `[eliza] Custom plugin "${name}" collides with core plugin — skipping`,
+        `[tokagent] Custom plugin "${name}" collides with core plugin — skipping`,
       );
       continue;
     }
@@ -223,7 +223,7 @@ export function mergeDropInPlugins(params: {
   return { accepted, skipped };
 }
 
-export function resolveElizaPluginImportSpecifier(
+export function resolveTokagentPluginImportSpecifier(
   pluginName: string,
   runtimeModuleUrl = import.meta.url,
 ): string {
@@ -294,7 +294,7 @@ export function ensureBrowserServerLink(): boolean {
     const stagehandDir = findPluginBrowserStagehandDir(thisDir);
     if (!stagehandDir) {
       logger.debug(
-        "[eliza] plugin-browser: no stagehand-server under plugins/plugin-browser — " +
+        "[tokagent] plugin-browser: no stagehand-server under plugins/plugin-browser — " +
           "run node scripts/link-browser-server.mjs or add the plugin checkout",
       );
       return false;
@@ -307,7 +307,7 @@ export function ensureBrowserServerLink(): boolean {
       existsSync(path.join(stagehandDir, "src", "index.ts"))
     ) {
       logger.info(
-        `[eliza] Stagehand server not built — attempting auto-build...`,
+        `[tokagent] Stagehand server not built — attempting auto-build...`,
       );
       try {
         const cp = createRequire(import.meta.url)(
@@ -328,15 +328,15 @@ export function ensureBrowserServerLink(): boolean {
           stdio: "ignore",
           timeout: 60_000,
         });
-        logger.info(`[eliza] Stagehand server built successfully`);
+        logger.info(`[tokagent] Stagehand server built successfully`);
       } catch (buildErr) {
-        logger.debug(`[eliza] Auto-build failed: ${formatError(buildErr)}`);
+        logger.debug(`[tokagent] Auto-build failed: ${formatError(buildErr)}`);
       }
     }
 
     if (!existsSync(stagehandIndex)) {
       logger.debug(
-        "[eliza] plugin-browser: stagehand-server present but dist/index.js missing — build it",
+        "[tokagent] plugin-browser: stagehand-server present but dist/index.js missing — build it",
       );
       return false;
     }
@@ -344,18 +344,18 @@ export function ensureBrowserServerLink(): boolean {
     // Create symlink: dist/server -> stagehand-server
     symlinkSync(stagehandDir, serverDir, "dir");
     logger.info(
-      `[eliza] Linked browser server: ${serverDir} -> ${stagehandDir}`,
+      `[tokagent] Linked browser server: ${serverDir} -> ${stagehandDir}`,
     );
     return true;
   } catch (err) {
-    logger.debug(`[eliza] Could not link browser server: ${formatError(err)}`);
+    logger.debug(`[tokagent] Could not link browser server: ${formatError(err)}`);
     return false;
   }
 }
 
 /** @internal Exported for testing. */
 export function repairBrokenInstallRecord(
-  config: ElizaConfig,
+  config: TokagentConfig,
   pluginName: string,
 ): boolean {
   const record = config.plugins?.installs?.[pluginName];

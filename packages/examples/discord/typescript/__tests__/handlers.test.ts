@@ -7,7 +7,7 @@ import { character } from "../character";
 
 describe("Discord Character", () => {
   it("should have required character fields", () => {
-    expect(character.name).toBe("DiscordEliza");
+    expect(character.name).toBe("DiscordTokagent");
     expect(character.bio).toBeDefined();
     expect(character.system).toBeDefined();
   });

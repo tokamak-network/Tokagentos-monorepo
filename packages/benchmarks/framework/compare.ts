@@ -151,7 +151,7 @@ function printComparison(results: Map<RuntimeName, BenchmarkResult>): void {
   // Header
   const first = results.get(runtimes[0])!;
   console.log("╔══════════════════════════════════════════════════════════════════════════╗");
-  console.log("║                    Eliza Framework Benchmark Comparison                 ║");
+  console.log("║                    Tokagent Framework Benchmark Comparison                 ║");
   console.log("╠══════════════════════════════════════════════════════════════════════════╣");
   console.log(`║  Date: ${first.timestamp.split("T")[0]}                                                        ║`);
   console.log(`║  System: ${first.system.os} ${first.system.arch}                                       ║`.slice(0, 76) + "║");

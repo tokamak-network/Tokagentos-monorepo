@@ -2,8 +2,8 @@ import type {
   Action,
   ActionExample,
   IAgentRuntime,
-} from "@elizaos/core";
-import { hasOwnerAccess } from "@elizaos/agent/security";
+} from "@tokagentos/core";
+import { hasOwnerAccess } from "@tokagentos/agent/security";
 import {
   FOLLOWUP_DEFAULT_THRESHOLD_DAYS,
   computeOverdueFollowups,

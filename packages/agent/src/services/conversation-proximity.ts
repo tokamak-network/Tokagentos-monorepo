@@ -7,7 +7,7 @@
  * (no LLM calls) and lightweight — designed to run on every message.
  */
 
-import type { IAgentRuntime, Memory, UUID } from "@elizaos/core";
+import type { IAgentRuntime, Memory, UUID } from "@tokagentos/core";
 
 /** How many recent messages to look back at for co-participants. */
 const PROXIMITY_WINDOW_SIZE = 10;

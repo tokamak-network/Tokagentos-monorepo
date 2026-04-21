@@ -2,7 +2,7 @@
  * Storage Interface Definitions
  *
  * Defines the contract that all storage backends must implement.
- * Designed for ElizaOS native storage patterns.
+ * Designed for TokagentOS native storage patterns.
  */
 
 import type {

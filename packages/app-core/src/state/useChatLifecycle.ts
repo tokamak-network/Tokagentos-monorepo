@@ -5,7 +5,7 @@
  * desktop notifications, and full-reset flows.
  */
 
-import { getDefaultStylePreset } from "@elizaos/shared/onboarding-presets";
+import { getDefaultStylePreset } from "@tokagentos/shared/onboarding-presets";
 import { type MutableRefObject, useCallback, useEffect, useRef } from "react";
 import type {
   Conversation,
@@ -14,7 +14,7 @@ import type {
 } from "../api";
 import { type AgentStatus, client, type StreamEventEnvelope } from "../api";
 import { invokeDesktopBridgeRequest, isElectrobunRuntime } from "../bridge";
-import { dispatchElizaCloudStatusUpdated } from "../events";
+import { dispatchTokagentCloudStatusUpdated } from "../events";
 import { alertDesktopMessage, confirmDesktopAction } from "../utils";
 import { completeResetLocalStateAfterServerWipe as runCompleteResetLocalStateAfterServerWipe } from "./complete-reset-local-state-after-wipe";
 import { handleResetAppliedFromMainCore } from "./handle-reset-applied-from-main";
@@ -29,7 +29,7 @@ import type { OnboardingMode, OnboardingStep } from "./types";
 
 // ── Helpers (file-local) ────────────────────────────────────────────
 
-const RESET_LOG_PREFIX = "[eliza][reset]";
+const RESET_LOG_PREFIX = "[tokagent][reset]";
 
 function logResetDebug(
   message: string,
@@ -55,7 +55,7 @@ function logResetWarn(message: string, detail?: unknown): void {
 }
 
 /** Publish server cloud snapshot for chat TTS (`useVoiceChat` + `loadVoiceConfig`). */
-function publishElizaCloudVoiceSnapshot(
+function publishTokagentCloudVoiceSnapshot(
   setCloudVoiceProxyAvailable: (value: boolean) => void,
   setHasPersistedKey: (value: boolean) => void,
   snapshot: {
@@ -67,7 +67,7 @@ function publishElizaCloudVoiceSnapshot(
 ): void {
   setCloudVoiceProxyAvailable(snapshot.cloudVoiceProxyAvailable);
   setHasPersistedKey(snapshot.hasPersistedApiKey);
-  dispatchElizaCloudStatusUpdated({
+  dispatchTokagentCloudStatusUpdated({
     connected: snapshot.apiConnected,
     enabled: snapshot.enabled,
     hasPersistedApiKey: snapshot.hasPersistedApiKey,
@@ -131,20 +131,20 @@ export interface UseChatLifecycleDeps {
   activeConversationIdRef: MutableRefObject<string | null>;
 
   // Cloud state
-  elizaCloudPreferDisconnectedUntilLoginRef: MutableRefObject<boolean>;
-  setElizaCloudEnabled: (v: boolean) => void;
-  setElizaCloudConnected: (v: boolean) => void;
-  setElizaCloudVoiceProxyAvailable: (v: boolean) => void;
-  setElizaCloudHasPersistedKey: (v: boolean) => void;
-  setElizaCloudCredits: (v: number | null) => void;
-  setElizaCloudCreditsLow: (v: boolean) => void;
-  setElizaCloudCreditsCritical: (v: boolean) => void;
-  setElizaCloudAuthRejected: (v: boolean) => void;
-  setElizaCloudCreditsError: (v: string | null) => void;
-  setElizaCloudTopUpUrl: (v: string) => void;
-  setElizaCloudUserId: (v: string | null) => void;
-  setElizaCloudStatusReason: (v: string | null) => void;
-  setElizaCloudLoginError: (v: string | null) => void;
+  tokagentCloudPreferDisconnectedUntilLoginRef: MutableRefObject<boolean>;
+  setTokagentCloudEnabled: (v: boolean) => void;
+  setTokagentCloudConnected: (v: boolean) => void;
+  setTokagentCloudVoiceProxyAvailable: (v: boolean) => void;
+  setTokagentCloudHasPersistedKey: (v: boolean) => void;
+  setTokagentCloudCredits: (v: number | null) => void;
+  setTokagentCloudCreditsLow: (v: boolean) => void;
+  setTokagentCloudCreditsCritical: (v: boolean) => void;
+  setTokagentCloudAuthRejected: (v: boolean) => void;
+  setTokagentCloudCreditsError: (v: string | null) => void;
+  setTokagentCloudTopUpUrl: (v: string) => void;
+  setTokagentCloudUserId: (v: string | null) => void;
+  setTokagentCloudStatusReason: (v: string | null) => void;
+  setTokagentCloudLoginError: (v: string | null) => void;
 
   // Onboarding setters
   onboardingCompletionCommittedRef: MutableRefObject<boolean>;
@@ -215,20 +215,20 @@ export function useChatLifecycle(deps: UseChatLifecycleDeps) {
     setConversationMessages,
     setConversations,
     activeConversationIdRef,
-    elizaCloudPreferDisconnectedUntilLoginRef,
-    setElizaCloudEnabled,
-    setElizaCloudConnected,
-    setElizaCloudVoiceProxyAvailable,
-    setElizaCloudHasPersistedKey,
-    setElizaCloudCredits,
-    setElizaCloudCreditsLow,
-    setElizaCloudCreditsCritical,
-    setElizaCloudAuthRejected,
-    setElizaCloudCreditsError,
-    setElizaCloudTopUpUrl,
-    setElizaCloudUserId,
-    setElizaCloudStatusReason,
-    setElizaCloudLoginError,
+    tokagentCloudPreferDisconnectedUntilLoginRef,
+    setTokagentCloudEnabled,
+    setTokagentCloudConnected,
+    setTokagentCloudVoiceProxyAvailable,
+    setTokagentCloudHasPersistedKey,
+    setTokagentCloudCredits,
+    setTokagentCloudCreditsLow,
+    setTokagentCloudCreditsCritical,
+    setTokagentCloudAuthRejected,
+    setTokagentCloudCreditsError,
+    setTokagentCloudTopUpUrl,
+    setTokagentCloudUserId,
+    setTokagentCloudStatusReason,
+    setTokagentCloudLoginError,
     onboardingCompletionCommittedRef,
     setOnboardingUiRevealNonce,
     setOnboardingLoading,
@@ -344,7 +344,7 @@ export function useChatLifecycle(deps: UseChatLifecycleDeps) {
     try {
       setAgentStatus({
         ...(agentStatus ?? {
-          agentName: "Eliza",
+          agentName: "Tokagent",
           model: undefined,
           uptime: undefined,
           startedAt: undefined,
@@ -577,13 +577,13 @@ export function useChatLifecycle(deps: UseChatLifecycleDeps) {
         clearPersistedAvatarIndex: clearAvatarIndex,
         setClientBaseUrl: (url) => client.setBaseUrl(url),
         setClientToken: (token) => client.setToken(token),
-        clearElizaCloudSessionUi: () => {
-          elizaCloudPreferDisconnectedUntilLoginRef.current = false;
-          setElizaCloudEnabled(false);
-          setElizaCloudConnected(false);
-          publishElizaCloudVoiceSnapshot(
-            setElizaCloudVoiceProxyAvailable,
-            setElizaCloudHasPersistedKey,
+        clearTokagentCloudSessionUi: () => {
+          tokagentCloudPreferDisconnectedUntilLoginRef.current = false;
+          setTokagentCloudEnabled(false);
+          setTokagentCloudConnected(false);
+          publishTokagentCloudVoiceSnapshot(
+            setTokagentCloudVoiceProxyAvailable,
+            setTokagentCloudHasPersistedKey,
             {
               apiConnected: false,
               enabled: false,
@@ -591,15 +591,15 @@ export function useChatLifecycle(deps: UseChatLifecycleDeps) {
               hasPersistedApiKey: false,
             },
           );
-          setElizaCloudCredits(null);
-          setElizaCloudCreditsLow(false);
-          setElizaCloudCreditsCritical(false);
-          setElizaCloudAuthRejected(false);
-          setElizaCloudCreditsError(null);
-          setElizaCloudTopUpUrl("/cloud/billing");
-          setElizaCloudUserId(null);
-          setElizaCloudStatusReason(null);
-          setElizaCloudLoginError(null);
+          setTokagentCloudCredits(null);
+          setTokagentCloudCreditsLow(false);
+          setTokagentCloudCreditsCritical(false);
+          setTokagentCloudAuthRejected(false);
+          setTokagentCloudCreditsError(null);
+          setTokagentCloudTopUpUrl("/cloud/billing");
+          setTokagentCloudUserId(null);
+          setTokagentCloudStatusReason(null);
+          setTokagentCloudLoginError(null);
         },
         markOnboardingReset: () => {
           onboardingCompletionCommittedRef.current = false;
@@ -681,20 +681,20 @@ export function useChatLifecycle(deps: UseChatLifecycleDeps) {
       setLogs,
       activeConversationIdRef,
       onboardingCompletionCommittedRef,
-      elizaCloudPreferDisconnectedUntilLoginRef,
-      setElizaCloudEnabled,
-      setElizaCloudConnected,
-      setElizaCloudVoiceProxyAvailable,
-      setElizaCloudHasPersistedKey,
-      setElizaCloudCredits,
-      setElizaCloudCreditsLow,
-      setElizaCloudCreditsCritical,
-      setElizaCloudAuthRejected,
-      setElizaCloudCreditsError,
-      setElizaCloudTopUpUrl,
-      setElizaCloudUserId,
-      setElizaCloudStatusReason,
-      setElizaCloudLoginError,
+      tokagentCloudPreferDisconnectedUntilLoginRef,
+      setTokagentCloudEnabled,
+      setTokagentCloudConnected,
+      setTokagentCloudVoiceProxyAvailable,
+      setTokagentCloudHasPersistedKey,
+      setTokagentCloudCredits,
+      setTokagentCloudCreditsLow,
+      setTokagentCloudCreditsCritical,
+      setTokagentCloudAuthRejected,
+      setTokagentCloudCreditsError,
+      setTokagentCloudTopUpUrl,
+      setTokagentCloudUserId,
+      setTokagentCloudStatusReason,
+      setTokagentCloudLoginError,
       setSelectedVrmIndex,
       setCustomVrmUrl,
       setCustomBackgroundUrl,
@@ -799,7 +799,7 @@ export function useChatLifecycle(deps: UseChatLifecycleDeps) {
       },
     );
     logResetInfo(
-      "handleReset: tip — reset logs also appear in this window (filter [eliza][reset]); API terminal only shows server-side routes",
+      "handleReset: tip — reset logs also appear in this window (filter [tokagent][reset]); API terminal only shows server-side routes",
     );
     try {
       logResetDebug("handleReset: calling client.resetAgent()");

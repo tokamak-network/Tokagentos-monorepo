@@ -2,7 +2,7 @@
 /**
  * Apply compatibility patches to workspace plugin submodules.
  *
- * These patches fix type errors introduced by @elizaos/core API changes that
+ * These patches fix type errors introduced by @tokagentos/core API changes that
  * haven't been merged upstream yet. Each patch is stored under
  * scripts/workspace-plugin-patches/ and applied idempotently via
  * `git apply --check` / `git apply`.
@@ -12,8 +12,8 @@
  * - The patch has already been applied (git apply --check fails with "already applied")
  * - The upstream repo has fixed the issue (patch doesn't apply to current code)
  *
- * Remove a patch file once the corresponding elizaos-plugins PR is merged and
- * the eliza submodule pointer is bumped past it.
+ * Remove a patch file once the corresponding tokagentos-plugins PR is merged and
+ * the tokagent submodule pointer is bumped past it.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
@@ -30,10 +30,10 @@ const patchDir = resolve(__dirname, "workspace-plugin-patches");
  * Convention: patch file is named `<plugin-name>-<description>.patch`.
  */
 export const PLUGIN_PATCH_DIRS = {
-  "plugin-anthropic": "eliza/plugins/plugin-anthropic",
-  "plugin-google-genai": "eliza/plugins/plugin-google-genai",
-  "plugin-personality": "eliza/plugins/plugin-personality",
-  "plugin-agent-skills": "eliza/plugins/plugin-agent-skills",
+  "plugin-anthropic": "tokagent/plugins/plugin-anthropic",
+  "plugin-google-genai": "tokagent/plugins/plugin-google-genai",
+  "plugin-personality": "tokagent/plugins/plugin-personality",
+  "plugin-agent-skills": "tokagent/plugins/plugin-agent-skills",
 };
 
 export function resolvePluginDir(patchFile, { rootDir = root } = {}) {

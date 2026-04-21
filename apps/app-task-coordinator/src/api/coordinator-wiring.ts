@@ -1,4 +1,4 @@
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 
 /**
  * Minimal subset of ServerState needed for coordinator bridge wiring.
@@ -88,7 +88,7 @@ export async function wireCoordinatorBridgesWhenReady<S extends WirableState>(
 
     if (result.chat && result.ws && result.eventRouting) {
       logger.debug?.(
-        `[eliza-api] Coordinator bridges wired immediately (${context})`,
+        `[tokagent-api] Coordinator bridges wired immediately (${context})`,
       );
       return result;
     }
@@ -97,7 +97,7 @@ export async function wireCoordinatorBridgesWhenReady<S extends WirableState>(
     const runtime = state.runtime;
     if (!runtime) {
       logger.warn(
-        `[eliza-api] Coordinator wiring skipped (${context}): no runtime`,
+        `[tokagent-api] Coordinator wiring skipped (${context}): no runtime`,
       );
       return result;
     }
@@ -111,7 +111,7 @@ export async function wireCoordinatorBridgesWhenReady<S extends WirableState>(
       const svc = discoverCoordinator(runtime);
       if (svc) {
         serviceFound = true;
-        logger.debug?.(`[eliza-api] coordinator service detected (${context})`);
+        logger.debug?.(`[tokagent-api] coordinator service detected (${context})`);
         break;
       }
     }
@@ -120,7 +120,7 @@ export async function wireCoordinatorBridgesWhenReady<S extends WirableState>(
       // Service never appeared — log at debug level only. This is normal
       // if the orchestrator plugin is disabled or not configured.
       logger.debug?.(
-        `[eliza-api] coordinator not available after ${POLL_TIMEOUT_MS / 1000}s (${context}) — coding agent features disabled`,
+        `[tokagent-api] coordinator not available after ${POLL_TIMEOUT_MS / 1000}s (${context}) — coding agent features disabled`,
       );
       return result;
     }
@@ -136,7 +136,7 @@ export async function wireCoordinatorBridgesWhenReady<S extends WirableState>(
 
       if (result.chat && result.ws && result.eventRouting) {
         logger.debug?.(
-          `[eliza-api] Coordinator bridges wired after service load (${context}, attempt ${attempt + 1})`,
+          `[tokagent-api] Coordinator bridges wired after service load (${context}, attempt ${attempt + 1})`,
         );
         return result;
       }
@@ -154,12 +154,12 @@ export async function wireCoordinatorBridgesWhenReady<S extends WirableState>(
       !!wireSwarmSynthesis,
     );
     logger.warn(
-      `[eliza-api] Coordinator wiring incomplete after ${MAX_RETRIES} retries (${context})`,
+      `[tokagent-api] Coordinator wiring incomplete after ${MAX_RETRIES} retries (${context})`,
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     logger.warn(
-      `[eliza-api] Coordinator wiring error (${context}): ${message}`,
+      `[tokagent-api] Coordinator wiring error (${context}): ${message}`,
     );
   }
 

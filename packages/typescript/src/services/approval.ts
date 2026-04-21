@@ -1,7 +1,7 @@
 /**
  * ApprovalService
  *
- * A robust abstraction for task-based approvals in Eliza.
+ * A robust abstraction for task-based approvals in Tokagent.
  * Provides a unified interface for requesting approvals, handling choices,
  * and managing approval workflows.
  *

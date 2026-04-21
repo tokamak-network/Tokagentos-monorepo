@@ -14,11 +14,11 @@ from decimal import Decimal
 from enum import Enum
 from pathlib import Path
 
-from elizaos_vending_bench.agent import LLMProvider, VendingAgent
-from elizaos_vending_bench.environment import VendingEnvironment
-from elizaos_vending_bench.evaluator import CoherenceEvaluator
-from elizaos_vending_bench.reporting import VendingBenchReporter
-from elizaos_vending_bench.types import (
+from tokagentos_vending_bench.agent import LLMProvider, VendingAgent
+from tokagentos_vending_bench.environment import VendingEnvironment
+from tokagentos_vending_bench.evaluator import CoherenceEvaluator
+from tokagentos_vending_bench.reporting import VendingBenchReporter
+from tokagentos_vending_bench.types import (
     LEADERBOARD_SCORES,
     LeaderboardComparison,
     VendingBenchConfig,

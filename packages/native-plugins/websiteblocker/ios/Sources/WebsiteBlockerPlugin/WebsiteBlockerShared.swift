@@ -7,8 +7,8 @@ struct WebsiteBlockerStoredState: Codable {
 }
 
 enum WebsiteBlockerShared {
-    static let appGroupIdentifier = "group.com.elizaos.eliza"
-    static let contentBlockerIdentifier = "com.elizaos.eliza.WebsiteBlockerContentExtension"
+    static let appGroupIdentifier = "group.com.tokagentos.tokagent"
+    static let contentBlockerIdentifier = "com.tokagentos.tokagent.WebsiteBlockerContentExtension"
     static let stateKey = "website_blocker_state_v1"
     static let iso8601Formatter = ISO8601DateFormatter()
 
@@ -107,7 +107,7 @@ enum WebsiteBlockerShared {
 
         guard let defaults = sharedDefaults() else {
             throw NSError(
-                domain: "ElizaWebsiteBlocker",
+                domain: "TokagentWebsiteBlocker",
                 code: 1,
                 userInfo: [NSLocalizedDescriptionKey: "The iPhone website blocker app group is not available in this build."]
             )
@@ -151,7 +151,7 @@ enum WebsiteBlockerShared {
         let rules = buildContentBlockerRules(for: websites)
         let data = try JSONSerialization.data(withJSONObject: rules, options: [])
         let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("eliza-website-blocker-rules", isDirectory: true)
+            .appendingPathComponent("tokagent-website-blocker-rules", isDirectory: true)
             .appendingPathComponent("blockerList.json")
         try FileManager.default.createDirectory(
             at: url.deletingLastPathComponent(),
@@ -172,7 +172,7 @@ enum WebsiteBlockerShared {
                 guard let state else {
                     continuation.resume(
                         throwing: NSError(
-                            domain: "ElizaWebsiteBlocker",
+                            domain: "TokagentWebsiteBlocker",
                             code: 2,
                             userInfo: [NSLocalizedDescriptionKey: "Safari did not return the Website Blocker extension state."]
                         )

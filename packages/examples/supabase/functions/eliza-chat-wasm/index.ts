@@ -1,14 +1,14 @@
 /**
- * elizaOS Supabase Edge Function (with optional Rust WASM acceleration)
+ * tokagentOS Supabase Edge Function (with optional Rust WASM acceleration)
  *
- * Uses the canonical elizaOS runtime with messageService.handleMessage pattern.
+ * Uses the canonical tokagentOS runtime with messageService.handleMessage pattern.
  *
  * NOTE: The WASM module can accelerate parsing and validation operations,
- * but the core message processing goes through the elizaOS runtime.
+ * but the core message processing goes through the tokagentOS runtime.
  *
  * Build the WASM module (optional):
  *   cd examples/supabase/rust
- *   wasm-pack build --target web --out-dir ../functions/eliza-chat-wasm/wasm
+ *   wasm-pack build --target web --out-dir ../functions/tokagent-chat-wasm/wasm
  */
 
 // Deno runtime types for Supabase Edge Functions
@@ -19,7 +19,7 @@ declare const Deno: {
   serve(handler: (req: Request) => Promise<Response> | Response): void;
 };
 
-// Import elizaOS packages via npm specifiers (Deno-compatible)
+// Import tokagentOS packages via npm specifiers (Deno-compatible)
 import {
   AgentRuntime,
   ChannelType,
@@ -30,7 +30,7 @@ import {
   type Plugin,
   stringToUuid,
   type UUID,
-} from "@elizaos/core";
+} from "@tokagentos/core";
 import { openaiPlugin } from "@elizaos/plugin-openai";
 
 // ============================================================================
@@ -87,12 +87,12 @@ async function initWasm(): Promise<WasmModule | null> {
 
   try {
     // Try to import the WASM module if built
-    // const wasm = await import("./wasm/eliza_chat_wasm.js");
+    // const wasm = await import("./wasm/tokagent_chat_wasm.js");
     // await wasm.default();
     // wasmModule = wasm;
-    console.log("[elizaOS] WASM module not available, using TypeScript");
+    console.log("[tokagentOS] WASM module not available, using TypeScript");
   } catch {
-    console.log("[elizaOS] WASM module not built, using TypeScript fallback");
+    console.log("[tokagentOS] WASM module not built, using TypeScript fallback");
   }
 
   return wasmModule;
@@ -103,7 +103,7 @@ async function initWasm(): Promise<WasmModule | null> {
 // ============================================================================
 
 function getCharacter(): Character {
-  const name = Deno.env.get("CHARACTER_NAME") ?? "Eliza";
+  const name = Deno.env.get("CHARACTER_NAME") ?? "Tokagent";
   const bio = Deno.env.get("CHARACTER_BIO") ?? "A helpful AI assistant.";
 
   return createCharacter({
@@ -135,7 +135,7 @@ async function getRuntime(): Promise<IAgentRuntime> {
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
-    console.log("[elizaOS] Initializing runtime...");
+    console.log("[tokagentOS] Initializing runtime...");
 
     const character = getCharacter();
 
@@ -146,7 +146,7 @@ async function getRuntime(): Promise<IAgentRuntime> {
 
     await newRuntime.initialize();
 
-    console.log("[elizaOS] Runtime initialized successfully");
+    console.log("[tokagentOS] Runtime initialized successfully");
     runtime = newRuntime;
     return newRuntime;
   })();
@@ -155,7 +155,7 @@ async function getRuntime(): Promise<IAgentRuntime> {
     return await initPromise;
   } catch (error) {
     initError = error instanceof Error ? error.message : "Unknown error";
-    console.error("[elizaOS] Runtime initialization failed:", initError);
+    console.error("[tokagentOS] Runtime initialization failed:", initError);
     throw error;
   }
 }
@@ -213,7 +213,7 @@ async function handleChat(req: Request): Promise<Response> {
       typeof body.userId === "string" ? body.userId : crypto.randomUUID()
     ) as UUID;
 
-    console.log(`[elizaOS] Processing message for user ${userId}`);
+    console.log(`[tokagentOS] Processing message for user ${userId}`);
 
     // Get runtime
     let rt: IAgentRuntime;
@@ -251,7 +251,7 @@ async function handleChat(req: Request): Promise<Response> {
       },
     });
 
-    // Process through the FULL elizaOS pipeline
+    // Process through the FULL tokagentOS pipeline
     let responseText = "";
     await rt.messageService?.handleMessage(rt, messageMemory, async (content) => {
       if (content?.text) {
@@ -266,11 +266,11 @@ async function handleChat(req: Request): Promise<Response> {
       timestamp: new Date().toISOString(),
     };
 
-    console.log("[elizaOS] Message processed successfully");
+    console.log("[tokagentOS] Message processed successfully");
     return jsonResponse(chatResponse);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
-    console.error("[elizaOS] Chat error:", errorMessage);
+    console.error("[tokagentOS] Chat error:", errorMessage);
     return errorResponse("Internal server error", 500, "INTERNAL_ERROR");
   }
 }
@@ -278,7 +278,7 @@ async function handleChat(req: Request): Promise<Response> {
 function handleHealth(): Response {
   const health: HealthResponse = {
     status: runtime ? "healthy" : initError ? "unhealthy" : "initializing",
-    runtime: "elizaos-supabase-wasm",
+    runtime: "tokagentos-supabase-wasm",
     version: "2.0.0",
     wasmEnabled: wasmModule !== null,
   };
@@ -294,7 +294,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
   const method = req.method;
   const path = url.pathname;
 
-  console.log(`[elizaOS] ${method} ${path}`);
+  console.log(`[tokagentOS] ${method} ${path}`);
 
   // Handle CORS preflight
   if (method === "OPTIONS") {
@@ -313,7 +313,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
   }
 
   // Root health check
-  if ((path === "/" || path.endsWith("/eliza-chat-wasm")) && method === "GET") {
+  if ((path === "/" || path.endsWith("/tokagent-chat-wasm")) && method === "GET") {
     return handleHealth();
   }
 

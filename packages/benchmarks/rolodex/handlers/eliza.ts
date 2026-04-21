@@ -1,7 +1,7 @@
 /**
- * Eliza Handler — LLM-based extraction via a real AgentRuntime.
+ * Tokagent Handler — LLM-based extraction via a real AgentRuntime.
  *
- * This handler creates a real Eliza AgentRuntime with:
+ * This handler creates a real Tokagent AgentRuntime with:
  *   - An in-memory database (enhanced for components/relationships/entities)
  *   - The plugin-rolodex (evaluator, services)
  *   - The plugin-openai (model handlers for LLM calls)
@@ -24,8 +24,8 @@ import type {
   Resolution,
 } from '../types';
 
-import { AgentRuntime } from '../../../eliza/packages/typescript/src/runtime';
-import { InMemoryDatabaseAdapter } from '../../../eliza/packages/typescript/src/database/inMemoryAdapter';
+import { AgentRuntime } from '../../../tokagent/packages/typescript/src/runtime';
+import { InMemoryDatabaseAdapter } from '../../../tokagent/packages/typescript/src/database/inMemoryAdapter';
 import type {
   Entity,
   Component,
@@ -36,9 +36,9 @@ import type {
   MetadataValue,
   Plugin,
   IAgentRuntime,
-} from '../../../eliza/packages/typescript/src/types';
-import { stringToUuid } from '../../../eliza/packages/typescript/src/utils';
-import { ChannelType } from '../../../eliza/packages/typescript/src/types/primitives';
+} from '../../../tokagent/packages/typescript/src/types';
+import { stringToUuid } from '../../../tokagent/packages/typescript/src/utils';
+import { ChannelType } from '../../../tokagent/packages/typescript/src/types/primitives';
 
 import { relationshipExtractionEvaluator } from '../../../plugins/plugin-rolodex/typescript/src/evaluators/relationshipExtraction';
 import { rolodexPlugin } from '../../../plugins/plugin-rolodex/typescript/src/index';
@@ -271,8 +271,8 @@ function resolveName(name: string, nameMap: Map<string, string>): string | null 
 // Handler Implementation
 // ──────────────────────────────────────────────
 
-export const elizaHandler: Handler = {
-  name: 'Eliza (LLM)',
+export const tokagentHandler: Handler = {
+  name: 'Tokagent (LLM)',
 
   async setup(): Promise<void> {
     const adapter = new BenchmarkAdapter();
@@ -297,7 +297,7 @@ export const elizaHandler: Handler = {
   },
 
   async extract(conv: Conversation, _world: GroundTruthWorld): Promise<Extraction> {
-    if (!runtime) throw new Error('Eliza handler not initialized — call setup() first');
+    if (!runtime) throw new Error('Tokagent handler not initialized — call setup() first');
     const start = performance.now();
     const traces: string[] = [];
     const nameMap = buildNameMap(conv);

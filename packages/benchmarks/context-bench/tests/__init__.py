@@ -1,1 +1,1 @@
-"""Tests for elizaos-context-bench."""
+"""Tests for tokagentos-context-bench."""

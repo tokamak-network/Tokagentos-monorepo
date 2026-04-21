@@ -55,7 +55,7 @@ SWE-bench uses real GitHub issues from popular Python repositories:
 python >= 3.10
 docker  # For sandboxed execution
 git
-elizaos
+tokagentos
 unidiff  # Patch parsing
 gitpython
 pytest
@@ -112,7 +112,7 @@ Pass `--swebench-namespace none` (or omit the flag if you configure it in code) 
 }
 ```
 
-## Implementation Plan for ElizaOS Python
+## Implementation Plan for TokagentOS Python
 
 ### Phase 1: Core Framework (Week 1)
 
@@ -318,8 +318,8 @@ class RepositoryManager:
 #### 3.1 Code Navigation Tools
 ```python
 # benchmarks/swe-bench/tools.py
-from elizaos.types.components import Action, ActionResult
-from elizaos.types.json_schema import json_schema
+from tokagentos.types.components import Action, ActionResult
+from tokagentos.types.json_schema import json_schema
 
 @json_schema
 class SearchCodeParams:
@@ -409,8 +409,8 @@ list_files_action = Action(
 #### 3.2 SWE Agent
 ```python
 # benchmarks/swe-bench/agent.py
-from elizaos.runtime import AgentRuntime
-from elizaos.types.agent import Character
+from tokagentos.runtime import AgentRuntime
+from tokagentos.types.agent import Character
 
 class SWEAgent:
     def __init__(self, runtime: AgentRuntime, repo_manager: RepositoryManager):
@@ -660,11 +660,11 @@ class SWEBenchRunner:
         )
 ```
 
-### Phase 6: ElizaOS Plugin (Week 6)
+### Phase 6: TokagentOS Plugin (Week 6)
 
 ```python
 # benchmarks/swe-bench/plugin.py
-from elizaos.types.plugin import Plugin
+from tokagentos.types.plugin import Plugin
 
 swe_bench_plugin = Plugin(
     name="swe-bench",
@@ -705,11 +705,11 @@ swe_bench_plugin = Plugin(
 - [x] Docker-based test evaluation
 - [x] Baseline implementation complete (24% resolve rate)
 
-## ElizaOS Implementation
+## TokagentOS Implementation
 
 ### Implemented Components
 
-The complete SWE-bench benchmark implementation for ElizaOS Python includes:
+The complete SWE-bench benchmark implementation for TokagentOS Python includes:
 
 | Component | File | Description |
 |-----------|------|-------------|
@@ -717,10 +717,10 @@ The complete SWE-bench benchmark implementation for ElizaOS Python includes:
 | Dataset Loader | `dataset.py` | HuggingFace dataset integration |
 | Repository Manager | `repo_manager.py` | Git operations and file management |
 | Code Tools | `tools.py` | SEARCH_CODE, READ_FILE, EDIT_FILE, LIST_FILES, SUBMIT |
-| SWE Agent | `agent.py` | Agent loop with ElizaOS runtime |
+| SWE Agent | `agent.py` | Agent loop with TokagentOS runtime |
 | Evaluator | `evaluator.py` | Docker-based and basic validation |
 | Runner | `runner.py` | Benchmark orchestration and reporting |
-| Plugin | `plugin.py` | ElizaOS plugin integration |
+| Plugin | `plugin.py` | TokagentOS plugin integration |
 | CLI | `cli.py` | Command-line interface |
 
 ### Running the Benchmark
@@ -807,9 +807,9 @@ This produces `mode=agent` reports in `benchmark_results/swe-bench/`:
 - `swe-bench-lite-agent-YYYYMMDD_HHMMSS.json`
 - `swe-bench-lite-agent-YYYYMMDD_HHMMSS.md`
 
-### Canonical ElizaOS Integration
+### Canonical TokagentOS Integration
 
-The SWE-bench implementation uses the **full canonical ElizaOS agent flow** with no bypasses:
+The SWE-bench implementation uses the **full canonical TokagentOS agent flow** with no bypasses:
 
 #### Architecture
 

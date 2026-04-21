@@ -1,10 +1,10 @@
 """
-ElizaOS Atropos Reasoning Gym Environment
+TokagentOS Atropos Reasoning Gym Environment
 
-A reasoning and problem-solving environment for training ElizaOS agents.
+A reasoning and problem-solving environment for training TokagentOS agents.
 """
 
-from elizaos_atropos_reasoning.types import (
+from tokagentos_atropos_reasoning.types import (
     TaskType,
     Difficulty,
     Problem,
@@ -13,9 +13,9 @@ from elizaos_atropos_reasoning.types import (
     EpisodeResult,
     BenchmarkResult,
 )
-from elizaos_atropos_reasoning.environment import ReasoningEnvironment
-from elizaos_atropos_reasoning.agent import ReasoningAgent
-from elizaos_atropos_reasoning.evaluator import evaluate_answer, normalize_answer
+from tokagentos_atropos_reasoning.environment import ReasoningEnvironment
+from tokagentos_atropos_reasoning.agent import ReasoningAgent
+from tokagentos_atropos_reasoning.evaluator import evaluate_answer, normalize_answer
 
 __version__ = "1.0.0"
 

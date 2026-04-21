@@ -15,14 +15,14 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { AgentRuntime } from "@elizaos/core";
+import type { AgentRuntime } from "@tokagentos/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
   createLifeOpsTestRuntime,
   type RealTestRuntimeResult,
 } from "./helpers/runtime.js";
 import { saveEnv } from "../../../../test/helpers/test-utils";
-import { resolveOAuthDir } from "@elizaos/agent/config/paths";
+import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
 import {
   addDaysToLocalDate,
   buildUtcDateFromLocalParts,
@@ -244,14 +244,14 @@ describe("life-ops calendar data layer (real PGLite)", () => {
 
   beforeAll(async () => {
     envBackup = saveEnv(
-      "ELIZA_STATE_DIR",
-      "ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
+      "TOKAGENT_STATE_DIR",
+      "TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID",
     );
     stateDir = await fs.promises.mkdtemp(
       path.join(os.tmpdir(), "lifeops-cal-data-"),
     );
-    process.env.ELIZA_STATE_DIR = stateDir;
-    process.env.ELIZA_GOOGLE_OAUTH_DESKTOP_CLIENT_ID = "test-client";
+    process.env.TOKAGENT_STATE_DIR = stateDir;
+    process.env.TOKAGENT_GOOGLE_OAUTH_DESKTOP_CLIENT_ID = "test-client";
 
     testResult = await createLifeOpsTestRuntime({ characterName: AGENT_ID });
     runtime = testResult.runtime;

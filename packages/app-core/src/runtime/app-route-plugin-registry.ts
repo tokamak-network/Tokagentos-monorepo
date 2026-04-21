@@ -1,4 +1,4 @@
-import type { Plugin } from "@elizaos/core";
+import type { Plugin } from "@tokagentos/core";
 
 export type AppRoutePluginLoader = () => Plugin | Promise<Plugin>;
 
@@ -12,7 +12,7 @@ interface AppRoutePluginRegistryStore {
 }
 
 const APP_ROUTE_PLUGIN_REGISTRY_KEY = Symbol.for(
-  "elizaos.app.route-plugin-registry",
+  "tokagentos.app.route-plugin-registry",
 );
 
 function getRegistryStore(): AppRoutePluginRegistryStore {

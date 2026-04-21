@@ -1,5 +1,5 @@
 /**
- * Channel Utilities for elizaOS
+ * Channel Utilities for tokagentOS
  *
  * Generic cross-platform utilities for messaging channels.
  * These utilities are platform-agnostic and can be used by any channel plugin.

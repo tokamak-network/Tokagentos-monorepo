@@ -16,7 +16,7 @@ import SafariServices
 typealias PlatformViewController = NSViewController
 #endif
 
-let extensionBundleIdentifier = "com.elizaos.Chat-with-Webpage.Extension"
+let extensionBundleIdentifier = "com.tokagentos.Chat-with-Webpage.Extension"
 
 class ViewController: PlatformViewController, WKNavigationDelegate, WKScriptMessageHandler {
 

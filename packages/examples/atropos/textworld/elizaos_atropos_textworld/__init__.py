@@ -1,12 +1,12 @@
 """
-elizaOS Atropos TextWorld Environment
+tokagentOS Atropos TextWorld Environment
 
-A TextWorld environment for training elizaOS agents using text-based games.
+A TextWorld environment for training tokagentOS agents using text-based games.
 Includes integration with the Atropos RL framework for trajectory collection
 and model training.
 """
 
-from elizaos_atropos_textworld.types import (
+from tokagentos_atropos_textworld.types import (
     GameType,
     Difficulty,
     GameState,
@@ -18,14 +18,14 @@ from elizaos_atropos_textworld.types import (
     Turn,
     Trajectory,
 )
-from elizaos_atropos_textworld.environment import TextWorldEnvironment
-from elizaos_atropos_textworld.agent import (
+from tokagentos_atropos_textworld.environment import TextWorldEnvironment
+from tokagentos_atropos_textworld.agent import (
     TextWorldAgent,
-    ElizaOSAgent,
+    TokagentOSAgent,
     create_heuristic_policy,
     create_random_policy,
 )
-from elizaos_atropos_textworld.game_generator import GameGenerator
+from tokagentos_atropos_textworld.game_generator import GameGenerator
 
 __version__ = "1.0.0"
 
@@ -45,7 +45,7 @@ __all__ = [
     "TextWorldEnvironment",
     # Agents
     "TextWorldAgent",
-    "ElizaOSAgent",
+    "TokagentOSAgent",
     "create_heuristic_policy",
     "create_random_policy",
     # Generator
@@ -63,8 +63,8 @@ def get_atropos_integration():
     
     Example:
         >>> atropos = get_atropos_integration()
-        >>> config = atropos.AtroposConfig(use_elizaos=True)
+        >>> config = atropos.AtroposConfig(use_tokagentos=True)
         >>> data = await atropos.generate_training_data(100, config)
     """
-    from elizaos_atropos_textworld import atropos_integration
+    from tokagentos_atropos_textworld import atropos_integration
     return atropos_integration

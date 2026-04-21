@@ -31,12 +31,12 @@ function getCliName() {
         let name = pkg.name;
         if (name.startsWith("@")) name = name.split("/")[1];
         if (
-          name === "elizaos" ||
-          name === "elizaos" ||
-          name.includes("eliza")
+          name === "tokagentos" ||
+          name === "tokagentos" ||
+          name.includes("tokagent")
         )
-          return "eliza";
-        if (name === "elizaos" || name.includes("eliza")) return "eliza";
+          return "tokagent";
+        if (name === "tokagentos" || name.includes("tokagent")) return "tokagent";
         return name;
       }
     }
@@ -46,13 +46,13 @@ function getCliName() {
 
   // Fallbacks based on directory structure
   if (
-    process.cwd().includes("eliza-workspace") ||
-    process.cwd().includes("eliza")
+    process.cwd().includes("tokagent-workspace") ||
+    process.cwd().includes("tokagent")
   ) {
-    return "eliza";
+    return "tokagent";
   }
 
-  return "eliza";
+  return "tokagent";
 }
 
 const cliName = getCliName();
@@ -177,8 +177,8 @@ function installWindows() {
 
 function main() {
   const disableFlag =
-    process.env.ELIZA_NO_VISION_DEPS === "1" ||
-    process.env.ELIZA_NO_VISION_DEPS === "1";
+    process.env.TOKAGENT_NO_VISION_DEPS === "1" ||
+    process.env.TOKAGENT_NO_VISION_DEPS === "1";
   if (disableFlag) {
     return;
   }

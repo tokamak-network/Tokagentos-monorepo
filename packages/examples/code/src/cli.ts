@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 /**
- * Non-interactive CLI mode for Eliza Code
+ * Non-interactive CLI mode for Tokagent Code
  *
  * Usage:
- *   eliza-code --help                    Show help
- *   eliza-code --version                 Show version
- *   eliza-code "message"                 Send a message and get response
- *   eliza-code --file <path>             Read message from file
- *   echo "message" | eliza-code          Read message from stdin
- *   eliza-code --json "message"          Output response as JSON
- *   eliza-code --stream "message"        Stream response as it's generated
+ *   tokagent-code --help                    Show help
+ *   tokagent-code --version                 Show version
+ *   tokagent-code "message"                 Send a message and get response
+ *   tokagent-code --file <path>             Read message from file
+ *   echo "message" | tokagent-code          Read message from stdin
+ *   tokagent-code --json "message"          Output response as JSON
+ *   tokagent-code --stream "message"        Stream response as it's generated
  */
 
 import * as fs from "node:fs/promises";
@@ -18,7 +18,7 @@ import { v4 as uuidv4 } from "uuid";
 import { initializeAgent, shutdownAgent } from "./lib/agent.js";
 import { getAgentClient } from "./lib/agent-client.js";
 import { getCwd, setCwd } from "./lib/cwd.js";
-import { ensureSessionIdentity, getMainRoomElizaId } from "./lib/identity.js";
+import { ensureSessionIdentity, getMainRoomTokagentId } from "./lib/identity.js";
 import { loadEnv } from "./lib/load-env.js";
 import { resolveModelProvider } from "./lib/model-provider.js";
 import { loadSession, type SessionState, saveSession } from "./lib/session.js";
@@ -57,10 +57,10 @@ interface CLIResult {
 const VERSION = "1.0.0";
 
 const HELP_TEXT = `
-Eliza Code - Async Coding Agent CLI
+Tokagent Code - Async Coding Agent CLI
 
 Usage:
-  eliza-code [options] [message]
+  tokagent-code [options] [message]
 
 Options:
   -h, --help              Show this help message
@@ -72,16 +72,16 @@ Options:
   -i, --interactive       Force interactive mode (TUI)
 
 Examples:
-  eliza-code "What files are in the current directory?"
-  eliza-code --json "Review the code in src/index.ts"
-  eliza-code --file prompt.txt
-  eliza-code --cwd /path/to/project "Run the tests"
-  echo "Explain this code" | eliza-code
+  tokagent-code "What files are in the current directory?"
+  tokagent-code --json "Review the code in src/index.ts"
+  tokagent-code --file prompt.txt
+  tokagent-code --cwd /path/to/project "Run the tests"
+  echo "Explain this code" | tokagent-code
 
 Environment Variables:
   OPENAI_API_KEY          Required (if using OpenAI). Your OpenAI API key
   ANTHROPIC_API_KEY       Required (if using Anthropic). Your Anthropic API key
-  ELIZA_CODE_PROVIDER     Optional. Force provider: openai|anthropic
+  TOKAGENT_CODE_PROVIDER     Optional. Force provider: openai|anthropic
   LOG_LEVEL               Log level (default: fatal for CLI)
 `;
 
@@ -232,7 +232,7 @@ function createDefaultSessionState(): SessionState {
     messages: [],
     createdAt: new Date(),
     taskIds: [],
-    elizaRoomId: getMainRoomElizaId(identity),
+    tokagentRoomId: getMainRoomTokagentId(identity),
   };
 
   return {
@@ -408,7 +408,7 @@ export async function main(
 
   // Handle version
   if (options.version) {
-    console.log(`eliza-code v${VERSION}`);
+    console.log(`tokagent-code v${VERSION}`);
     return 0;
   }
 
@@ -422,14 +422,14 @@ export async function main(
     const provider = resolveModelProvider(process.env);
     if (provider === "anthropic" && !process.env.ANTHROPIC_API_KEY?.trim()) {
       console.error(
-        "Error: ANTHROPIC_API_KEY environment variable is required (ELIZA_CODE_PROVIDER=anthropic)",
+        "Error: ANTHROPIC_API_KEY environment variable is required (TOKAGENT_CODE_PROVIDER=anthropic)",
       );
       console.error("Set it in your environment or in a .env file");
       return 1;
     }
     if (provider === "openai" && !process.env.OPENAI_API_KEY?.trim()) {
       console.error(
-        "Error: OPENAI_API_KEY environment variable is required (ELIZA_CODE_PROVIDER=openai)",
+        "Error: OPENAI_API_KEY environment variable is required (TOKAGENT_CODE_PROVIDER=openai)",
       );
       console.error("Set it in your environment or in a .env file");
       return 1;
