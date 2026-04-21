@@ -544,6 +544,24 @@ export function hydrateGitSubmoduleWorkspace(options: {
     return;
   }
 
+  // Upstream elizaos/eliza hardcodes `eliza/packages/...` paths in a
+  // few runtime scripts (e.g., dev-ui.mjs spawning the dev-server). Our
+  // template puts the submodule under `tokagent/` instead, so those
+  // hardcoded paths would 404 at runtime. Create an `eliza` symlink
+  // pointing at the submodule path so either name resolves.
+  if (options.upstream.path !== "eliza") {
+    const elizaAlias = path.join(options.projectRoot, "eliza");
+    if (!fs.existsSync(elizaAlias)) {
+      try {
+        fs.symlinkSync(options.upstream.path, elizaAlias, "dir");
+      } catch {
+        // Non-fatal — upstream scripts that rely on the alias will
+        // surface their own errors later if the symlink couldn't be
+        // created (e.g., on filesystems that don't support symlinks).
+      }
+    }
+  }
+
   const requiredSubmodules = options.upstream.requiredSubmodules ?? [];
   const localRepoRoot = resolveLocalRepoRoot(options.upstream.repo);
 
