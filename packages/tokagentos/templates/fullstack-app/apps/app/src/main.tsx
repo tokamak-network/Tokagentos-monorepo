@@ -1,5 +1,7 @@
 import "@elizaos/app-core/styles/styles.css";
 import "@elizaos/app-core/styles/brand-gold.css";
+// Tokamak brand override — must follow brand-gold.css so --accent wins.
+import "./brand-purple.css";
 
 import "@elizaos/app-core/platform/native-plugin-entrypoints";
 

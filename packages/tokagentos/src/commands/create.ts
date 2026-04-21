@@ -1,4 +1,5 @@
 import * as fs from "node:fs";
+import * as os from "node:os";
 import * as path from "node:path";
 import * as clack from "@clack/prompts";
 import pc from "picocolors";
@@ -215,6 +216,7 @@ async function promptProjectName(
 async function promptLlmProvider(
   initial: string | undefined,
   yes: boolean,
+  required: boolean,
 ): Promise<LlmProvider> {
   if (initial) {
     const match = findLlmProvider(initial);
@@ -224,14 +226,30 @@ async function promptLlmProvider(
       );
       process.exit(1);
     }
+    if (required && !match.envVar) {
+      clack.cancel(
+        `--llm '${initial}' is not a real provider for fullstack-app. Pick one that requires an API key (openai, anthropic, google, groq, openrouter, xai, deepseek).`,
+      );
+      process.exit(1);
+    }
     return match;
   }
   if (yes) {
+    if (required) {
+      clack.cancel(
+        "fullstack-app requires --llm <provider> and --api-key <key> when using --yes. Provider options: openai, anthropic, google, groq, openrouter, xai, deepseek.",
+      );
+      process.exit(1);
+    }
     return findLlmProvider("skip") as LlmProvider;
   }
+  // Hide providers without an API key (ollama, skip) when one is required.
+  const options = LLM_PROVIDERS.filter((p) => !required || p.envVar.length > 0);
   const choice = await clack.select({
-    message: "Which LLM provider do you want to pre-configure?",
-    options: LLM_PROVIDERS.map((p) => ({
+    message: required
+      ? "Which LLM provider will this project use? (required)"
+      : "Which LLM provider do you want to pre-configure?",
+    options: options.map((p) => ({
       value: p.id,
       label: p.label,
       hint: p.envVar || undefined,
@@ -246,6 +264,7 @@ async function promptApiKey(
   provider: LlmProvider,
   initial: string | undefined,
   yes: boolean,
+  required: boolean,
 ): Promise<string | undefined> {
   if (!provider.envVar) {
     return undefined;
@@ -254,18 +273,71 @@ async function promptApiKey(
     return initial;
   }
   if (yes) {
+    if (required) {
+      clack.cancel(
+        `--llm ${provider.id} needs --api-key <key> when using --yes. Get one from the provider's dashboard and pass it via --api-key.`,
+      );
+      process.exit(1);
+    }
     return undefined;
   }
-  const input = await clack.password({
-    message: `Enter your ${provider.label} API key (leave empty to skip):`,
-    mask: "·",
-  });
-  if (clack.isCancel(input)) {
-    clack.cancel("Operation cancelled.");
-    process.exit(0);
+  while (true) {
+    const input = await clack.password({
+      message: required
+        ? `Enter your ${provider.label} API key (required):`
+        : `Enter your ${provider.label} API key (leave empty to skip):`,
+      mask: "·",
+    });
+    if (clack.isCancel(input)) {
+      clack.cancel("Operation cancelled.");
+      process.exit(0);
+    }
+    const trimmed = (input as string).trim();
+    if (trimmed.length > 0) return trimmed;
+    if (!required) return undefined;
+    clack.log.warn(`API key is required for ${provider.label}. Try again.`);
   }
-  const trimmed = (input as string).trim();
-  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+/**
+ * Pre-complete the app's onboarding state so the UI skips the provider/
+ * API-key prompt (the user already supplied both at `tokagentos create`
+ * time). The app looks up state from `<ELIZA_STATE_DIR>/<namespace>.json`
+ * — default state dir is `~/.eliza/` and namespace is the project name
+ * passed via `bun run dev --name=<project>`. See upstream's
+ * packages/agent/src/config/paths.ts (resolveConfigPath) and
+ * packages/app-core/src/state/onboarding-bootstrap.ts (the check reads
+ * `config.meta.onboardingComplete === true`).
+ *
+ * If a config file already exists at the path, we leave it alone
+ * (respects prior user state). If it doesn't, we write a minimal
+ * {"meta":{"onboardingComplete":true}} plus a service routing hint
+ * for the selected provider. The runtime fills in the rest.
+ */
+function preCompleteOnboarding(
+  projectName: string,
+  provider: LlmProvider,
+): void {
+  if (!provider.envVar) return; // ollama / skip — no key set, don't claim done
+  const stateDir = path.join(os.homedir(), ".eliza");
+  const configPath = path.join(stateDir, `${projectName}.json`);
+  try {
+    fs.mkdirSync(stateDir, { recursive: true });
+    if (fs.existsSync(configPath)) return; // don't clobber existing state
+    const config = {
+      meta: { onboardingComplete: true },
+      serviceRouting: {
+        llmText: {
+          backend: provider.id,
+          transport: "local",
+        },
+      },
+    };
+    fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
+  } catch {
+    // Non-fatal — user can click through the onboarding flow once if
+    // filesystem prevents the write.
+  }
 }
 
 /**
@@ -377,14 +449,25 @@ export async function create(
       : buildFullstackTemplateValues(finalProjectName);
 
   // LLM provider + API key — only meaningful for templates that run an
-  // agent; plugin scaffolds don't need them.
-  const llmProvider =
-    template.id === "fullstack-app"
-      ? await promptLlmProvider(options.llm, Boolean(options.yes))
-      : (findLlmProvider("skip") as LlmProvider);
+  // agent; plugin scaffolds don't need them. For fullstack-app we require
+  // a provider + key so the scaffolded project has everything it needs
+  // to boot the agent and skip the UI onboarding flow.
+  const isFullstack = template.id === "fullstack-app";
+  const llmProvider = isFullstack
+    ? await promptLlmProvider(
+        options.llm,
+        Boolean(options.yes),
+        /* required */ true,
+      )
+    : (findLlmProvider("skip") as LlmProvider);
   const apiKey =
     llmProvider.envVar.length > 0
-      ? await promptApiKey(llmProvider, options.apiKey, Boolean(options.yes))
+      ? await promptApiKey(
+          llmProvider,
+          options.apiKey,
+          Boolean(options.yes),
+          /* required */ isFullstack,
+        )
       : undefined;
 
   if (!options.yes) {
@@ -448,6 +531,8 @@ export async function create(
     spinner.message(
       `Wrote ${llmProvider.envVar} to .env (${llmProvider.label})`,
     );
+    // Pre-complete onboarding so the UI doesn't prompt for the key again.
+    preCompleteOnboarding(finalProjectName, llmProvider);
   }
 
   spinner.stop("Project created successfully!");

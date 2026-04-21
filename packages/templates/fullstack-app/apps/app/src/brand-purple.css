@@ -1,0 +1,49 @@
+/**
+ * Tokamak brand override — replaces the gold accent from brand-gold.css
+ * with the purple/fuchsia/cyan TAL palette. Must be imported AFTER
+ * brand-gold.css so these declarations win.
+ *
+ * Palette source: Tokamak-AI-Layer/frontend/tailwind.config.ts
+ *   brand         #A855F7 (purple)
+ *   brand-dark    #7C3AED
+ *   brand-light   #C084FC
+ *   fuchsia       #D946EF
+ *   cyan          #06B6D4
+ */
+
+:root {
+	/* Core named shades (mirror brand-gold.css variable names so any ref to
+	 * --classic-gold or --highlight-gold through the app still points at
+	 * palette-correct colors). */
+	--deep-gold: #7c3aed; /* dark purple — was #d8a000 */
+	--classic-gold: #a855f7; /* primary purple — was #f0b90b */
+	--highlight-gold: #c084fc; /* light purple — was #f3ba2f */
+	--champagne-gold: #f3e8ff; /* very light lavender — was #f5f7fa */
+	--burnished-gold: #9333ea; /* slightly darker purple — was #e9b52c */
+
+	--gold-glow: rgba(168, 85, 247, 0.18); /* purple glow */
+
+	/* Semantic accents (these are what components reference). */
+	--accent: #a855f7;
+	--accent-rgb: 168, 85, 247;
+	--accent-hover: #c084fc;
+	--accent-muted: #7c3aed;
+	--accent-subtle: rgba(168, 85, 247, 0.12);
+	--accent-foreground: #ffffff;
+
+	--primary: #a855f7;
+	--primary-foreground: #ffffff;
+
+	--ring: #c084fc;
+	--border-hover: #a855f7;
+
+	--warn: #d946ef; /* fuchsia for warnings */
+	--warn-muted: rgba(217, 70, 239, 0.7);
+	--warn-subtle: rgba(217, 70, 239, 0.14);
+
+	--focus: rgba(168, 85, 247, 0.22);
+	--focus-ring: 0 0 0 2px rgba(168, 85, 247, 0.38);
+
+	--link-color: #a855f7;
+	--link-hover-color: #c084fc;
+}
