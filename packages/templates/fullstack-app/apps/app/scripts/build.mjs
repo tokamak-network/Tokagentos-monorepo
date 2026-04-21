@@ -5,7 +5,7 @@ import { spawn } from "node:child_process";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { resolveTokagentAssetBaseUrls } from "../../../tokagent/packages/app-core/scripts/lib/asset-cdn.mjs";
+import { resolveElizaAssetBaseUrls } from "../../../tokagent/packages/app-core/scripts/lib/asset-cdn.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const appDir = path.resolve(__dirname, "..");
@@ -36,7 +36,7 @@ const bunExecutable = path
 const fullSetup = process.env.TOKAGENT_BUILD_FULL_SETUP === "1";
 
 function run(command, args, cwd) {
-  const { appAssetBaseUrl } = resolveTokagentAssetBaseUrls();
+  const { appAssetBaseUrl } = resolveElizaAssetBaseUrls();
   const env = {
     ...process.env,
     ...(appAssetBaseUrl
@@ -80,6 +80,6 @@ if (fullSetup) {
 }
 
 await run(bunExecutable, ["run", "build:web"], appDir);
-if (resolveTokagentAssetBaseUrls().appAssetBaseUrl) {
+if (resolveElizaAssetBaseUrls().appAssetBaseUrl) {
   await run(process.execPath, [pruneCdnAssetsScript], repoRoot);
 }

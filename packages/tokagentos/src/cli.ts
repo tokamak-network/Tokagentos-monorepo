@@ -69,6 +69,14 @@ applyHelpTheme(
 		.option("--github-username <username>", "Plugin GitHub username override")
 		.option("--repo-url <url>", "Plugin repository URL override")
 		.option("--skip-upstream", "Skip initializing the upstream tokagent checkout")
+		.option(
+			"--llm <provider>",
+			"LLM provider to pre-configure: openai | anthropic | google | groq | openrouter | xai | deepseek | ollama | skip",
+		)
+		.option(
+			"--api-key <key>",
+			"API key for the selected LLM provider (written to .env). Requires --llm.",
+		)
 		.action(create),
 );
 

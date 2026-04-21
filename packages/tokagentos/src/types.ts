@@ -34,6 +34,8 @@ export interface CreateOptions {
   githubUsername?: string;
   repoUrl?: string;
   skipUpstream?: boolean;
+  llm?: string;
+  apiKey?: string;
 }
 
 export interface InfoOptions {

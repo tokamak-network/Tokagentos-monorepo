@@ -16,7 +16,8 @@
     "tokagent/apps/*",
     "tokagent/plugins/*",
     "tokagent/plugins/plugin-*/typescript",
-    "tokagent/packages/*"
+    "tokagent/packages/*",
+    "tokagent/cloud/packages/services/*"
   ],
   "scripts": {
     "build": "bun run --cwd apps/app build",

@@ -157,7 +157,7 @@ function resolveTokagentCoreBundlePath(): string {
   );
 }
 
-// The dev script sets TOKAGENT_API_PORT; default to 31337 for standalone vite dev.
+// The dev script sets ELIZA_API_PORT; default to 31337 for standalone vite dev.
 const apiPort = resolveDesktopApiPort(process.env);
 const uiPort = resolveDesktopUiPort(process.env);
 const enableAppSourceMaps = process.env.TOKAGENT_APP_SOURCEMAP === "1";

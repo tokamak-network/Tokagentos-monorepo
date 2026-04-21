@@ -81,7 +81,7 @@ export default {
       codesign: process.env.ELECTROBUN_SKIP_CODESIGN !== "1",
       notarize:
         process.env.ELECTROBUN_SKIP_CODESIGN !== "1" &&
-        process.env.TOKAGENT_ELECTROBUN_NOTARIZE !== "0",
+        process.env.ELIZA_ELECTROBUN_NOTARIZE !== "0",
       defaultRenderer: "native",
       icons: "assets/appIcon.iconset",
       entitlements: {

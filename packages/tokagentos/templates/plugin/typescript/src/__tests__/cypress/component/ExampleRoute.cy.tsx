@@ -15,14 +15,14 @@ interface TimeResponse {
 }
 
 // Define TOKAGENT config interface
-interface TokagentConfig {
+interface ElizaConfig {
   agentId: string;
   apiBase?: string; // Make optional to fix type error
 }
 
 // Local window type extension to avoid global declaration conflicts
-interface WindowWithTokagentConfig extends Window {
-  TOKAGENT_CONFIG?: TokagentConfig;
+interface WindowWithElizaConfig extends Window {
+  ELIZA_CONFIG?: ElizaConfig;
 }
 
 describe("ExampleRoute Component Tests", () => {
@@ -78,7 +78,7 @@ describe("ExampleRoute Component Tests", () => {
   };
 
   const ExampleRoute = () => {
-    const [config] = React.useState((window as WindowWithTokagentConfig).TOKAGENT_CONFIG);
+    const [config] = React.useState((window as WindowWithElizaConfig).ELIZA_CONFIG);
     const apiBase = config?.apiBase || "http://localhost:3000";
 
     React.useEffect(() => {
@@ -118,7 +118,7 @@ describe("ExampleRoute Component Tests", () => {
     it("should show error when agent ID is missing", () => {
       // Clear the config before mounting
       cy.window().then((win) => {
-        (win as WindowWithTokagentConfig).TOKAGENT_CONFIG = undefined;
+        (win as WindowWithElizaConfig).ELIZA_CONFIG = undefined;
       });
 
       cy.mount(<ExampleRoute />);
@@ -133,7 +133,7 @@ describe("ExampleRoute Component Tests", () => {
 
       // Set config before mounting
       cy.window().then((win) => {
-        (win as WindowWithTokagentConfig).TOKAGENT_CONFIG = {
+        (win as WindowWithElizaConfig).ELIZA_CONFIG = {
           agentId: testAgentId,
           apiBase: "http://localhost:3000",
         };
@@ -149,9 +149,9 @@ describe("ExampleRoute Component Tests", () => {
 
   describe("API Communication", () => {
     beforeEach(() => {
-      // Set up TOKAGENT_CONFIG
+      // Set up ELIZA_CONFIG
       cy.window().then((win) => {
-        (win as WindowWithTokagentConfig).TOKAGENT_CONFIG = {
+        (win as WindowWithElizaConfig).ELIZA_CONFIG = {
           agentId: "test-agent-123",
           apiBase: "http://localhost:3000",
         };
@@ -274,7 +274,7 @@ describe("ExampleRoute Component Tests", () => {
       const customApiBase = "https://api.example.com";
 
       cy.window().then((win) => {
-        (win as WindowWithTokagentConfig).TOKAGENT_CONFIG = {
+        (win as WindowWithElizaConfig).ELIZA_CONFIG = {
           agentId: "test-agent",
           apiBase: customApiBase,
         };
@@ -299,7 +299,7 @@ describe("ExampleRoute Component Tests", () => {
 
     it("should use default API base when not provided", () => {
       cy.window().then((win) => {
-        (win as WindowWithTokagentConfig).TOKAGENT_CONFIG = {
+        (win as WindowWithElizaConfig).ELIZA_CONFIG = {
           agentId: "test-agent",
           // No apiBase provided - this is now valid with optional apiBase
         };
@@ -326,7 +326,7 @@ describe("ExampleRoute Component Tests", () => {
   describe("Accessibility", () => {
     beforeEach(() => {
       cy.window().then((win) => {
-        (win as WindowWithTokagentConfig).TOKAGENT_CONFIG = {
+        (win as WindowWithElizaConfig).ELIZA_CONFIG = {
           agentId: "test-agent",
           apiBase: "http://localhost:3000",
         };
@@ -377,7 +377,7 @@ describe("ExampleRoute Component Tests", () => {
  *    - Use data-testid attributes for reliable element selection
  *
  * 2. CONFIGURATION TESTING
- *    - Always test with and without TOKAGENT_CONFIG
+ *    - Always test with and without ELIZA_CONFIG
  *    - Test with invalid/malformed configurations
  *    - Verify error states and fallbacks
  *

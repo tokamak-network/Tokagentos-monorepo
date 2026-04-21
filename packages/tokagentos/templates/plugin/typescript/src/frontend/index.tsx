@@ -6,8 +6,8 @@ import React from "react";
 
 const queryClient = new QueryClient();
 
-// Define the interface for the TOKAGENT_CONFIG
-interface TokagentConfig {
+// Define the interface for the ELIZA_CONFIG
+interface ElizaConfig {
   agentId: string;
   apiBase: string;
 }
@@ -77,10 +77,10 @@ function TimeDisplay({ apiBase }: { apiBase: string }) {
  * Main Example route component
  */
 function ExampleRoute() {
-  interface WindowWithTokagentConfig extends Window {
-    TOKAGENT_CONFIG?: TokagentConfig;
+  interface WindowWithElizaConfig extends Window {
+    ELIZA_CONFIG?: ElizaConfig;
   }
-  const config = (window as WindowWithTokagentConfig).TOKAGENT_CONFIG;
+  const config = (window as WindowWithElizaConfig).ELIZA_CONFIG;
   const agentId = config?.agentId;
   const apiBase = config?.apiBase || "http://localhost:3000";
 

@@ -350,7 +350,7 @@ async function startAppServer(apiBaseUrl: string): Promise<{
   server: ViteDevServer;
   baseUrl: string;
 }> {
-  process.env.TOKAGENT_API_PORT = new URL(apiBaseUrl).port;
+  process.env.ELIZA_API_PORT = new URL(apiBaseUrl).port;
   const port = await getFreePort();
   const server = await createViteServer({
     configFile: path.join(appRoot, "vite.config.ts"),

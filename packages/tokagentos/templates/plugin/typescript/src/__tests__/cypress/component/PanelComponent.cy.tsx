@@ -11,19 +11,19 @@ interface TimeResponse {
 }
 
 // Local window type extension to avoid global declaration conflicts
-interface TokagentConfig {
+interface ElizaConfig {
   agentId: string;
   apiBase?: string;
 }
 
-interface WindowWithTokagentConfig extends Window {
-  TOKAGENT_CONFIG?: TokagentConfig;
+interface WindowWithElizaConfig extends Window {
+  ELIZA_CONFIG?: ElizaConfig;
 }
 
 // Enhanced Panel Component with time display
 const EnhancedPanelComponent: React.FC<{ agentId: string }> = ({ agentId }) => {
   const apiBase =
-    (window as WindowWithTokagentConfig).TOKAGENT_CONFIG?.apiBase || "http://localhost:3000";
+    (window as WindowWithElizaConfig).ELIZA_CONFIG?.apiBase || "http://localhost:3000";
 
   const {
     data: timeData,
@@ -121,9 +121,9 @@ describe("PanelComponent Tests", () => {
     });
 
     beforeEach(() => {
-      // Set up TOKAGENT_CONFIG for API testing
+      // Set up ELIZA_CONFIG for API testing
       cy.window().then((win) => {
-        (win as WindowWithTokagentConfig).TOKAGENT_CONFIG = {
+        (win as WindowWithElizaConfig).ELIZA_CONFIG = {
           agentId: "test-agent",
           apiBase: "http://localhost:3000",
         };
