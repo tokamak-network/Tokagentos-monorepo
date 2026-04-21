@@ -48,11 +48,15 @@
     "ai",
     "agent"
   ],
-  "author": "tokagentOS Team",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tokagentos/tokagent"
+    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "directory": "tokagentos"
   },
   "homepage": "https://tokagentos.ai",
   "engines": {

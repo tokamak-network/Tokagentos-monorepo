@@ -4,11 +4,11 @@
   "description": "Standalone tokagentOS-based agent and backend server package.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/tokagentos/tokagent",
+  "homepage": "https://tokagentos.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tokagentos/tokagent.git",
-    "directory": "packages/agent"
+    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "directory": "tokagentos"
   },
   "keywords": [
     "tokagent",

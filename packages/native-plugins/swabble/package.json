@@ -29,14 +29,18 @@
     "electrobun/",
     "*.podspec"
   ],
-  "author": "tokagentOS",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT",
   "dependencies": {
     "@tokagentos/app-core": "workspace:*"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tokagentOS/tokagent"
+    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "directory": "tokagentos"
   },
   "scripts": {
     "build": "npm run clean && tsc && rollup -c rollup.config.mjs",

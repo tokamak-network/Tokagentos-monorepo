@@ -11,10 +11,11 @@
     "./routes": "./src/routes.ts",
     "./ui": "./src/ui/index.ts"
   },
-  "homepage": "https://www.defenseoftheagents.com/",
+  "homepage": "https://tokagentos.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tokagentos/tokagent.git"
+    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "directory": "tokagentos"
   },
   "scripts": {
     "test": "vitest run --config vitest.config.ts"
@@ -36,7 +37,7 @@
     "app": {
       "displayName": "Defense of the Agents",
       "category": "game",
-    "heroImage": "assets/hero.png",
+      "heroImage": "assets/hero.png",
       "launchType": "connect",
       "launchUrl": "https://www.defenseoftheagents.com/",
       "capabilities": [

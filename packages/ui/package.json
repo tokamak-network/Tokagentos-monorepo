@@ -4,11 +4,11 @@
   "description": "Shared UI primitives, composites, and layout utilities for tokagentOS apps.",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://github.com/tokagentOS/tokagent",
+  "homepage": "https://tokagentos.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tokagentOS/tokagent.git",
-    "directory": "packages/ui"
+    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "directory": "tokagentos"
   },
   "keywords": [
     "tokagentos",

@@ -25,7 +25,10 @@
     "dist/",
     "README.md"
   ],
-  "author": "tokagentOS",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT",
   "scripts": {
     "build": "npm run clean && tsc && rollup -c rollup.config.mjs",

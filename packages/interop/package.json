@@ -34,7 +34,10 @@
     "@types/node": "^25.0.3",
     "typescript": "^6.0.0"
   },
-  "author": "tokagentOS",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT",
   "publishConfig": {
     "access": "public"

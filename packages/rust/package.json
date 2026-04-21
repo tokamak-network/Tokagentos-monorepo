@@ -37,7 +37,10 @@
     "example:wasm:benchmark": "bun run examples/wasm/benchmark.ts",
     "test:wasm": "./wasm-test.sh"
   },
-  "author": "tokagentOS",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT",
   "publishConfig": {
     "access": "public"

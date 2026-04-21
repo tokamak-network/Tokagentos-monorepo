@@ -12,6 +12,9 @@
     "format:check": "uv run ruff format --check .",
     "typecheck": "sh ./scripts/typecheck-or-skip.sh"
   },
-  "author": "tokagentOS",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT"
 }

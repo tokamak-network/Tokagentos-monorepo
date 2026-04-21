@@ -9,14 +9,18 @@
   "packageType": "plugin",
   "platform": "node",
   "license": "UNLICENSED",
-  "author": "${GITHUB_USERNAME}",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "keywords": [
     "plugin",
     "tokagentos"
   ],
   "repository": {
     "type": "git",
-    "url": "${REPO_URL}"
+    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "directory": "tokagentos"
   },
   "homepage": "https://tokagentos.ai",
   "bugs": {

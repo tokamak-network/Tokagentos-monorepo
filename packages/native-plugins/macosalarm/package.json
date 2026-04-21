@@ -37,7 +37,10 @@
     "typescript": "^5.6.0",
     "vitest": "^4.0.0"
   },
-  "author": "tokagentOS",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT",
   "milady": {
     "platforms": [

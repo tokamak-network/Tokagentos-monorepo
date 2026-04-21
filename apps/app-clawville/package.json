@@ -10,10 +10,11 @@
     ".": "./src/index.ts",
     "./routes": "./src/routes.ts"
   },
-  "homepage": "https://clawville.world/",
+  "homepage": "https://tokagentos.ai",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tokagentos/tokagent.git"
+    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "directory": "tokagentos"
   },
   "keywords": [
     "game",
@@ -35,7 +36,7 @@
     "app": {
       "displayName": "ClawVille",
       "category": "game",
-    "heroImage": "assets/hero.png",
+      "heroImage": "assets/hero.png",
       "launchType": "connect",
       "launchUrl": "https://clawville.world/game",
       "capabilities": [

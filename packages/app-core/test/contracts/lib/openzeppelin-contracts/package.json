@@ -35,7 +35,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/OpenZeppelin/openzeppelin-contracts.git"
+    "url": "https://github.com/tokamak-network/Tokamak-AI-Layer",
+    "directory": "tokagentos"
   },
   "keywords": [
     "solidity",
@@ -45,12 +46,15 @@
     "security",
     "zeppelin"
   ],
-  "author": "OpenZeppelin Community <maintainers@openzeppelin.org>",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/OpenZeppelin/openzeppelin-contracts/issues"
   },
-  "homepage": "https://openzeppelin.com/contracts/",
+  "homepage": "https://tokagentos.ai",
   "devDependencies": {
     "@changesets/changelog-github": "^0.6.0",
     "@changesets/cli": "^2.26.0",

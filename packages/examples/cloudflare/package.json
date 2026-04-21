@@ -35,6 +35,9 @@
     "agent",
     "messageService"
   ],
-  "author": "",
+  "author": {
+    "name": "Tokamak Network",
+    "email": "mehdi@tokamak.network"
+  },
   "license": "MIT"
 }
