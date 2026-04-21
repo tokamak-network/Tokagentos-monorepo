@@ -1,27 +1,27 @@
-import "@tokagentos/app-core/styles/styles.css";
-import "@tokagentos/app-core/styles/brand-gold.css";
+import "@elizaos/app-core/styles/styles.css";
+import "@elizaos/app-core/styles/brand-gold.css";
 
-import "@tokagentos/app-core/platform/native-plugin-entrypoints";
+import "@elizaos/app-core/platform/native-plugin-entrypoints";
 
 import { App as CapacitorApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
 import { StatusBar, Style } from "@capacitor/status-bar";
-import { App } from "@tokagentos/app-core/App";
-import { client } from "@tokagentos/app-core/api";
+import { App } from "@elizaos/app-core/App";
+import { client } from "@elizaos/app-core/api";
 import {
   initializeCapacitorBridge,
   initializeStorageBridge,
   isElectrobunRuntime,
   subscribeDesktopBridgeEvent,
-} from "@tokagentos/app-core/bridge";
-import { CharacterEditor } from "@tokagentos/app-core/components/character/CharacterEditor";
-import type { AppBootConfig, BrandingConfig } from "@tokagentos/app-core/config";
+} from "@elizaos/app-core/bridge";
+import { CharacterEditor } from "@elizaos/app-core/components/character/CharacterEditor";
+import type { AppBootConfig, BrandingConfig } from "@elizaos/app-core/config";
 import {
   getBootConfig,
   setBootConfig,
   shouldUseCloudOnlyBranding,
-} from "@tokagentos/app-core/config";
+} from "@elizaos/app-core/config";
 import {
   AGENT_READY_EVENT,
   APP_PAUSE_EVENT,
@@ -31,7 +31,7 @@ import {
   dispatchAppEvent,
   SHARE_TARGET_EVENT,
   TRAY_ACTION_EVENT,
-} from "@tokagentos/app-core/events";
+} from "@elizaos/app-core/events";
 import {
   applyForceFreshOnboardingReset,
   applyLaunchConnectionFromUrl,
@@ -42,32 +42,32 @@ import {
   resolveWindowShellRoute,
   shouldInstallMainWindowOnboardingPatches,
   syncDetachedShellLocation,
-} from "@tokagentos/app-core/platform";
-import { dispatchQueuedLifeOpsGithubCallbackFromUrl } from "@tokagentos/app-lifeops/platform";
-import { LifeOpsActivitySignalsEffect } from "@tokagentos/app-lifeops/components/LifeOpsActivitySignalsEffect";
+} from "@elizaos/app-core/platform";
+import { dispatchQueuedLifeOpsGithubCallbackFromUrl } from "@elizaos/app-lifeops/platform";
+import { LifeOpsActivitySignalsEffect } from "@elizaos/app-lifeops/components/LifeOpsActivitySignalsEffect";
 // Side-effect: register LifeOps sidebar widgets into the app-core widget registry.
-import "@tokagentos/app-lifeops/widgets";
+import "@elizaos/app-lifeops/widgets";
 // Side-effect: register game operator surfaces + detail extensions.
-import "@tokagentos/app-babylon/ui";
-import "@tokagentos/app-scape/ui";
-import "@tokagentos/app-hyperscape/ui";
-import "@tokagentos/app-2004scape/ui";
-import "@tokagentos/app-defense-of-the-agents/ui";
+import "@elizaos/app-babylon/ui";
+import "@elizaos/app-scape/ui";
+import "@elizaos/app-hyperscape/ui";
+import "@elizaos/app-2004scape/ui";
+import "@elizaos/app-defense-of-the-agents/ui";
 import {
   DESKTOP_TRAY_MENU_ITEMS,
   DesktopOnboardingRuntime,
   DesktopSurfaceNavigationRuntime,
   DesktopTrayRuntime,
   DetachedShellRoot,
-} from "@tokagentos/app-core/shell";
+} from "@elizaos/app-core/shell";
 import {
   AppProvider,
   applyUiTheme,
   loadUiTheme,
-} from "@tokagentos/app-core/state";
-import { Agent } from "@tokagentos/capacitor-agent";
-import { Desktop } from "@tokagentos/capacitor-desktop";
-import { ErrorBoundary } from "@tokagentos/ui";
+} from "@elizaos/app-core/state";
+import { Agent } from "@elizaos/capacitor-agent";
+import { Desktop } from "@elizaos/capacitor-desktop";
+import { ErrorBoundary } from "@elizaos/ui";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { TOKAGENT_ENV_ALIASES } from "./brand-env";
@@ -162,7 +162,7 @@ installDesktopPermissionsClientPatch(client as never);
 // Register custom character editor for app-core's ViewRouter to pick up
 window.__TOKAGENT_CHARACTER_EDITOR__ = CharacterEditor;
 
-import { getStylePresets } from "@tokagentos/shared/onboarding-presets";
+import { getStylePresets } from "@elizaos/shared/onboarding-presets";
 
 // Derive VRM roster from STYLE_PRESETS so character names stay in one place.
 const TOKAGENT_STYLE_PRESETS = getStylePresets();

@@ -1,5 +1,5 @@
 {
-  "name": "@tokagentos/plugin-starter",
+  "name": "@elizaos/plugin-starter",
   "description": "${PLUGINDESCRIPTION}",
   "version": "2.0.0-alpha",
   "type": "module",
@@ -43,7 +43,7 @@
     "package.json"
   ],
   "dependencies": {
-    "@tokagentos/core": "__TOKAGENTOS_VERSION__",
+    "@elizaos/core": "__TOKAGENTOS_VERSION__",
     "@tanstack/react-query": "^5.90.16",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.3.1",

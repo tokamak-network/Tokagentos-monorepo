@@ -9,8 +9,8 @@ import type {
   Provider,
   ProviderResult,
   State,
-} from "@tokagentos/core";
-import { logger } from "@tokagentos/core";
+} from "@elizaos/core";
+import { logger } from "@elizaos/core";
 import { RustPluginTestSuite } from "./__tests__/e2e/rust-plugin.e2e";
 
 /**

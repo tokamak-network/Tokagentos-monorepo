@@ -1,5 +1,5 @@
 {
-  "name": "@tokagentos/rust-plugin-starter",
+  "name": "@elizaos/rust-plugin-starter",
   "private": true,
   "description": "Starter template for tokagentOS Rust plugins with cross-language support",
   "version": "2.0.0-alpha",
@@ -41,7 +41,7 @@
     "package.json"
   ],
   "dependencies": {
-    "@tokagentos/core": "__TOKAGENTOS_VERSION__"
+    "@elizaos/core": "__TOKAGENTOS_VERSION__"
   },
   "devDependencies": {
     "typescript": "^6.0.0"

@@ -8,22 +8,22 @@
     "moduleResolution": "bundler",
     "baseUrl": ".",
     "paths": {
-      "@tokagentos/app-core": ["src/type-stubs/app-core/index.d.ts"],
-      "@tokagentos/app-core/App": ["src/type-stubs/app-core/App.d.ts"],
-      "@tokagentos/app-core/api": ["src/type-stubs/app-core/api.d.ts"],
-      "@tokagentos/app-core/bridge": ["src/type-stubs/app-core/bridge.d.ts"],
-      "@tokagentos/app-core/components/character/CharacterEditor": [
+      "@elizaos/app-core": ["src/type-stubs/app-core/index.d.ts"],
+      "@elizaos/app-core/App": ["src/type-stubs/app-core/App.d.ts"],
+      "@elizaos/app-core/api": ["src/type-stubs/app-core/api.d.ts"],
+      "@elizaos/app-core/bridge": ["src/type-stubs/app-core/bridge.d.ts"],
+      "@elizaos/app-core/components/character/CharacterEditor": [
         "src/type-stubs/app-core/CharacterEditor.d.ts"
       ],
-      "@tokagentos/app-core/config": ["src/type-stubs/app-core/config.d.ts"],
-      "@tokagentos/app-core/events": ["src/type-stubs/app-core/events.d.ts"],
-      "@tokagentos/app-core/platform": ["src/type-stubs/app-core/platform.d.ts"],
-      "@tokagentos/app-core/platform/native-plugin-entrypoints": [
+      "@elizaos/app-core/config": ["src/type-stubs/app-core/config.d.ts"],
+      "@elizaos/app-core/events": ["src/type-stubs/app-core/events.d.ts"],
+      "@elizaos/app-core/platform": ["src/type-stubs/app-core/platform.d.ts"],
+      "@elizaos/app-core/platform/native-plugin-entrypoints": [
         "src/type-stubs/app-core/native-plugin-entrypoints.d.ts"
       ],
-      "@tokagentos/app-core/shell": ["src/type-stubs/app-core/shell.d.ts"],
-      "@tokagentos/app-core/state": ["src/type-stubs/app-core/state.d.ts"],
-      "@tokagentos/shared/onboarding-presets": [
+      "@elizaos/app-core/shell": ["src/type-stubs/app-core/shell.d.ts"],
+      "@elizaos/app-core/state": ["src/type-stubs/app-core/state.d.ts"],
+      "@elizaos/shared/onboarding-presets": [
         "src/type-stubs/shared/onboarding-presets.d.ts"
       ]
     },

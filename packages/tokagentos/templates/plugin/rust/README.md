@@ -43,7 +43,7 @@ cargo build --release --features ffi
 ### In TypeScript
 
 ```typescript
-import { loadWasmPlugin } from "@tokagentos/interop";
+import { loadWasmPlugin } from "@elizaos/interop";
 
 const plugin = await loadWasmPlugin({
   wasmPath: "./dist/tokagentos_plugin_starter.wasm",

@@ -22,7 +22,7 @@ import {
   type Task,
   type UUID,
   type World,
-} from "@tokagentos/core";
+} from "@elizaos/core";
 import { v4 as uuidv4 } from "uuid";
 import { vi } from "vitest";
 

@@ -1,48 +1,48 @@
-declare module "@tokagentos/capacitor-agent" {
+declare module "@elizaos/capacitor-agent" {
   export { Agent } from "../../../tokagent/packages/native-plugins/agent/src/index";
   export type * from "../../../tokagent/packages/native-plugins/agent/src/index";
 }
 
-declare module "@tokagentos/capacitor-camera" {
+declare module "@elizaos/capacitor-camera" {
   export * from "../../../tokagent/packages/native-plugins/camera/src/index";
 }
 
-declare module "@tokagentos/capacitor-canvas" {
+declare module "@elizaos/capacitor-canvas" {
   export * from "../../../tokagent/packages/native-plugins/canvas/src/index";
 }
 
-declare module "@tokagentos/capacitor-desktop" {
+declare module "@elizaos/capacitor-desktop" {
   export { Desktop } from "../../../tokagent/packages/native-plugins/desktop/src/index";
   export type * from "../../../tokagent/packages/native-plugins/desktop/src/index";
 }
 
-declare module "@tokagentos/capacitor-gateway" {
+declare module "@elizaos/capacitor-gateway" {
   export * from "../../../tokagent/packages/native-plugins/gateway/src/index";
 }
 
-declare module "@tokagentos/capacitor-location" {
+declare module "@elizaos/capacitor-location" {
   export * from "../../../tokagent/packages/native-plugins/location/src/index";
 }
 
-declare module "@tokagentos/capacitor-mobile-signals" {
+declare module "@elizaos/capacitor-mobile-signals" {
   export * from "../../../tokagent/packages/native-plugins/mobile-signals/src/index";
 }
 
-declare module "@tokagentos/capacitor-screencapture" {
+declare module "@elizaos/capacitor-screencapture" {
   export * from "../../../tokagent/packages/native-plugins/screencapture/src/index";
 }
 
-declare module "@tokagentos/capacitor-swabble" {
+declare module "@elizaos/capacitor-swabble" {
   export * from "../../../tokagent/packages/native-plugins/swabble/src/index";
 }
 
-declare module "@tokagentos/capacitor-talkmode" {
+declare module "@elizaos/capacitor-talkmode" {
   export * from "../../../tokagent/packages/native-plugins/talkmode/src/index";
 }
 
-declare module "@tokagentos/capacitor-websiteblocker" {
+declare module "@elizaos/capacitor-websiteblocker" {
   export * from "../../../tokagent/packages/native-plugins/websiteblocker/src/index";
 }
 
-declare module "@tokagentos/signal-native";
+declare module "@elizaos/signal-native";
 declare module "qrcode";

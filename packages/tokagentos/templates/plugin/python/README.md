@@ -42,7 +42,7 @@ await runtime.register_plugin(plugin)
 The TypeScript runtime can load Python plugins via IPC:
 
 ```typescript
-import { loadPythonPlugin } from "@tokagentos/interop";
+import { loadPythonPlugin } from "@elizaos/interop";
 
 const plugin = await loadPythonPlugin({
   moduleName: "tokagentos_plugin_starter",

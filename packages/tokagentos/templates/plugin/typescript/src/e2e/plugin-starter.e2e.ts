@@ -1,4 +1,4 @@
-import type { Content, HandlerCallback, IAgentRuntime, State, TestSuite } from "@tokagentos/core";
+import type { Content, HandlerCallback, IAgentRuntime, State, TestSuite } from "@elizaos/core";
 
 /**
  * E2E (End-to-End) Test Suite for tokagentOS Plugins

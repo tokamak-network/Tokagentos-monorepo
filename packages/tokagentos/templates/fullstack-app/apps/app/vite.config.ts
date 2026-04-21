@@ -2,18 +2,18 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { colorizeDevSettingsStartupBanner } from "@tokagentos/shared/dev-settings-banner-style";
-import { prependDevSubsystemFigletHeading } from "@tokagentos/shared/dev-settings-figlet-heading";
+import { colorizeDevSettingsStartupBanner } from "@elizaos/shared/dev-settings-banner-style";
+import { prependDevSubsystemFigletHeading } from "@elizaos/shared/dev-settings-figlet-heading";
 import {
   type DevSettingsRow,
   formatDevSettingsTable,
-} from "@tokagentos/shared/dev-settings-table";
+} from "@elizaos/shared/dev-settings-table";
 import {
   resolveDesktopApiPort,
   resolveDesktopApiPortPreference,
   resolveDesktopUiPort,
   resolveDesktopUiPortPreference,
-} from "@tokagentos/shared/runtime-env";
+} from "@elizaos/shared/runtime-env";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
 import { defineConfig, type Plugin, transformWithEsbuild } from "vite";
@@ -26,7 +26,7 @@ const nativePluginsRoot = path.join(tokagentRoot, "packages", "native-plugins");
 const appCoreSrcRoot = path.join(tokagentRoot, "packages/app-core/src");
 
 /**
- * Pinned @tokagentos/core from the repo root (must match the agent/runtime lock).
+ * Pinned @elizaos/core from the repo root (must match the agent/runtime lock).
  */
 function getTokagentPinnedTokagentCoreVersion(): string {
   try {
@@ -37,8 +37,8 @@ function getTokagentPinnedTokagentCoreVersion(): string {
       overrides?: Record<string, string>;
     };
     const spec =
-      raw.dependencies?.["@tokagentos/core"] ??
-      raw.overrides?.["@tokagentos/core"] ??
+      raw.dependencies?.["@elizaos/core"] ??
+      raw.overrides?.["@elizaos/core"] ??
       "";
     const v = String(spec)
       .trim()
@@ -61,7 +61,7 @@ function tokagentCoreAlphaPrerelease(dir: string): number {
 
 /**
  * Bun stores a full npm tarball under node_modules/.bun even when the workspace
- * symlink for @tokagentos/core points at an unbuilt local tokagent checkout.
+ * symlink for @elizaos/core points at an unbuilt local tokagent checkout.
  *
  * **WHY sort:** `readdir` order is arbitrary; picking `alpha.12` over `alpha.109`
  * mismatches the API and tends to blank the Electrobun webview.
@@ -72,8 +72,8 @@ function findTokagentCoreBundleInBunStore(
   const bunDir = path.join(tokagentRoot, "node_modules/.bun");
   const rel =
     kind === "browser"
-      ? "node_modules/@tokagentos/core/dist/browser/index.browser.js"
-      : "node_modules/@tokagentos/core/dist/node/index.node.js";
+      ? "node_modules/@elizaos/core/dist/browser/index.browser.js"
+      : "node_modules/@elizaos/core/dist/node/index.node.js";
   if (!fs.existsSync(bunDir)) return null;
   let entries: string[];
   try {
@@ -102,13 +102,13 @@ function findTokagentCoreBundleInBunStore(
 }
 
 /**
- * Resolved file path for bundling `@tokagentos/core` in the renderer.
+ * Resolved file path for bundling `@elizaos/core` in the renderer.
  * Linked tokagent checkouts sometimes omit `dist/` until `bun run build`;
  * prefer the source browser entry when present, otherwise fall back to
  * built artifacts and then the bun install cache copy.
  */
 function resolveTokagentCoreBundlePath(): string {
-  const pkgDir = path.dirname(_require.resolve("@tokagentos/core/package.json"));
+  const pkgDir = path.dirname(_require.resolve("@elizaos/core/package.json"));
   const sourceBrowserEntry = path.join(pkgDir, "src/index.browser.ts");
   const browserEntry = path.join(pkgDir, "dist/browser/index.browser.js");
   const nodeEntry = path.join(pkgDir, "dist/node/index.node.js");
@@ -122,7 +122,7 @@ function resolveTokagentCoreBundlePath(): string {
     return rootBrowserEntry;
   if (fs.existsSync(nodeEntry)) {
     console.warn(
-      "[tokagent][vite] @tokagentos/core dist/browser is missing; using dist/node for the client bundle. " +
+      "[tokagent][vite] @elizaos/core dist/browser is missing; using dist/node for the client bundle. " +
         "For a linked tokagent workspace, run `bun run build` in that checkout (e.g. packages/typescript). " +
         "Or reinstall with TOKAGENT_SKIP_LOCAL_TOKAGENT=1 to use the published npm package.",
     );
@@ -130,7 +130,7 @@ function resolveTokagentCoreBundlePath(): string {
   }
   if (fs.existsSync(rootNodeEntry) && hasNodeShimTarget) {
     console.warn(
-      "[tokagent][vite] @tokagentos/core dist/browser is missing; using dist/index.node.js for the client bundle. " +
+      "[tokagent][vite] @elizaos/core dist/browser is missing; using dist/index.node.js for the client bundle. " +
         "This usually means the local core workspace only has a flat dist/ build artifact.",
     );
     return rootNodeEntry;
@@ -138,7 +138,7 @@ function resolveTokagentCoreBundlePath(): string {
   const bunBrowser = findTokagentCoreBundleInBunStore("browser");
   if (bunBrowser) {
     console.warn(
-      `[tokagent][vite] Linked @tokagentos/core at ${pkgDir} has no dist/; using bun cache build at ${bunBrowser}. ` +
+      `[tokagent][vite] Linked @elizaos/core at ${pkgDir} has no dist/; using bun cache build at ${bunBrowser}. ` +
         "Run `bun run build` in your tokagent checkout or TOKAGENT_SKIP_LOCAL_TOKAGENT=1 bun install to align versions.",
     );
     return bunBrowser;
@@ -146,12 +146,12 @@ function resolveTokagentCoreBundlePath(): string {
   const bunNode = findTokagentCoreBundleInBunStore("node");
   if (bunNode) {
     console.warn(
-      `[tokagent][vite] Linked @tokagentos/core at ${pkgDir} has no dist/; using bun cache node bundle at ${bunNode}.`,
+      `[tokagent][vite] Linked @elizaos/core at ${pkgDir} has no dist/; using bun cache node bundle at ${bunNode}.`,
     );
     return bunNode;
   }
   throw new Error(
-    `[tokagent][vite] @tokagentos/core has no built artifacts under ${pkgDir} and none in node_modules/.bun. ` +
+    `[tokagent][vite] @elizaos/core has no built artifacts under ${pkgDir} and none in node_modules/.bun. ` +
       "Expected src/index.browser.ts, dist/browser/index.browser.js, dist/index.browser.js, dist/node/index.node.js, or dist/index.node.js. " +
       "Build your local tokagent workspace or run `TOKAGENT_SKIP_LOCAL_TOKAGENT=1 bun install`.",
   );
@@ -553,7 +553,7 @@ function nativeModuleStubPlugin(): Plugin {
     "pty-state-capture",
     "electron",
     "undici",
-    "@tokagentos/plugin-local-embedding",
+    "@elizaos/plugin-local-embedding",
   ]);
   const nativeScopeRe = /^@node-llama-cpp\//;
 
@@ -562,7 +562,7 @@ function nativeModuleStubPlugin(): Plugin {
     enforce: "pre",
     resolveId(id) {
       // Intercept ALL node: builtins before Vite externalizes them.
-      // The @tokagentos/core node entry uses many Node APIs (crypto, fs, module,
+      // The @elizaos/core node entry uses many Node APIs (crypto, fs, module,
       // etc.) at the top level.  Rather than stubbing each one individually,
       // we return a Proxy-based virtual module for any node: import.
       if (id.startsWith("node:")) return VIRTUAL_PREFIX + id;
@@ -623,7 +623,7 @@ function nativeModuleStubPlugin(): Plugin {
           "const handler = { get: (_, p) => (p === Symbol.toPrimitive ? () => 0 : typeof p === 'string' ? (() => {}) : undefined) };",
           "const stub = new Proxy({}, handler);",
           "export default stub;",
-          // Known named exports used by @tokagentos/plugin-local-embedding and
+          // Known named exports used by @elizaos/plugin-local-embedding and
           // other consumers — extend as needed:
           "export const getLlama = () => Promise.resolve(stub);",
           "export const LlamaLogLevel = Object.freeze({ error: 0, warn: 1, info: 2, debug: 3 });",
@@ -731,7 +731,7 @@ function nativeModuleStubPlugin(): Plugin {
       }
 
       // node:* builtins — return a Proxy-based module that provides any
-      // named export as a no-op function.  This handles @tokagentos/core's node
+      // named export as a no-op function.  This handles @elizaos/core's node
       // entry which uses createRequire, randomUUID, fs, etc. at the top level.
       if (modName.startsWith("node:")) {
         // Dynamic: read the real Node module's export names at config time
@@ -742,14 +742,14 @@ function nativeModuleStubPlugin(): Plugin {
       // Generic fallback for other native modules
       return "export default {};\n";
     },
-    // Patch @tokagentos/core browser entry at transform time to add missing
+    // Patch @elizaos/core browser entry at transform time to add missing
     // exports and fix browser-incompatible patterns.
     transform(code, id) {
       const isCoreDistFile =
         id.endsWith("index.browser.js") || id.endsWith("index.node.js");
       const normId = id.split(path.sep).join("/");
       const isCorePackagePath =
-        normId.includes("/node_modules/@tokagentos/core/") ||
+        normId.includes("/node_modules/@elizaos/core/") ||
         normId.includes("packages/typescript/dist/");
       if (!isCoreDistFile || !isCorePackagePath) return null;
 
@@ -763,7 +763,7 @@ function nativeModuleStubPlugin(): Plugin {
         "(function(){function A(){} A.prototype.getStore=function(){return undefined};A.prototype.run=function(s,fn){return fn.apply(void 0,[].slice.call(arguments,2))};A.prototype.enterWith=function(){};A.prototype.disable=function(){};return{AsyncLocalStorage:A}})()",
       );
       // Names that downstream plugins (plugin-secrets-manager, agent runtime)
-      // import from @tokagentos/core but that are missing from the browser entry.
+      // import from @elizaos/core but that are missing from the browser entry.
       const missingExports: Record<string, string> = {
         resolveSecretKeyAlias: "function(k){return k}",
         SECRET_KEY_ALIASES: "{}",
@@ -848,7 +848,7 @@ function watchWorkspacePackagesPlugin(): Plugin {
 }
 
 /**
- * Serve @tokagentos/app-companion's public/ assets alongside the app's own
+ * Serve @elizaos/app-companion's public/ assets alongside the app's own
  * public/ directory. In dev the companion dir is served as a fallback
  * middleware; in build the files are copied into the output.
  */
@@ -950,7 +950,7 @@ export default defineConfig({
     target: "es2022",
   },
   resolve: {
-    dedupe: ["react", "react-dom", "three", "@tokagentos/app-core"],
+    dedupe: ["react", "react-dom", "three", "@elizaos/app-core"],
     alias: [
       // Bare Node built-in polyfills for browser — pathe provides ESM path,
       // events is pre-bundled via optimizeDeps.
@@ -1061,10 +1061,10 @@ export default defineConfig({
         return createPackageExportAliases({
           packageDir: sharedPkgDir,
           packageExports: sharedPkg.exports,
-          packageName: "@tokagentos/shared",
+          packageName: "@elizaos/shared",
         });
       })(),
-      // Force local @tokagentos/app-core when workspace-linked (prevents stale
+      // Force local @elizaos/app-core when workspace-linked (prevents stale
       // bun cache copies from overriding the symlinked local source).
       ...(() => {
         const appCorePkgPath = path.resolve(
@@ -1077,7 +1077,7 @@ export default defineConfig({
         const generatedAliases = createPackageExportAliases({
           packageDir: appCorePkgDir,
           packageExports: appCorePkg.exports,
-          packageName: "@tokagentos/app-core",
+          packageName: "@elizaos/app-core",
           preferJsAlias: true,
         });
         const uiPkgPath = path.resolve(tokagentRoot, "packages/ui/package.json");
@@ -1085,7 +1085,7 @@ export default defineConfig({
         const uiPkg = JSON.parse(fs.readFileSync(uiPkgPath, "utf8"));
         const _autonomousSource = path.resolve(
           tokagentRoot,
-          "node_modules/@tokagentos/agent/packages/agent/src",
+          "node_modules/@elizaos/agent/packages/agent/src",
         );
 
         return [
@@ -1093,12 +1093,12 @@ export default defineConfig({
           ...createPackageExportAliases({
             packageDir: uiPkgDir,
             packageExports: uiPkg.exports,
-            packageName: "@tokagentos/ui",
+            packageName: "@elizaos/ui",
           }),
-          // NOTE: @tokagentos/agent barrel re-exports server-only code (tokagent.ts,
+          // NOTE: @elizaos/agent barrel re-exports server-only code (tokagent.ts,
           // server.ts) that imports native modules (node-llama-cpp, node:module).
           // Nothing in the browser needs the barrel — only subpath imports like
-          // @tokagentos/agent/contracts/onboarding are used.  Map the bare import
+          // @elizaos/agent/contracts/onboarding are used.  Map the bare import
           // to an empty module so Vite never traverses the server-side tree.
           {
             find: /^@tokagentos\/agent$/,
@@ -1107,7 +1107,7 @@ export default defineConfig({
               "platform/empty-node-module.ts",
             ),
           },
-          // @tokagentos/core — force ALL copies (including nested ones in plugins
+          // @elizaos/core — force ALL copies (including nested ones in plugins
           // like plugin-secrets-manager that ship their own older core) to the
           // main workspace copy's browser entry.  The browser entry has all
           // needed exports and avoids pulling in createRequire/node:fs/etc.
@@ -1207,12 +1207,12 @@ export default defineConfig({
       "node-llama-cpp",
       "@node-llama-cpp/mac-arm64-metal",
       // Contains native-only pty-state-capture import; skip pre-bundling.
-      "@tokagentos/plugin-agent-orchestrator",
-      // @tokagentos/plugin-secrets-manager is now built into @tokagentos/core features
+      "@elizaos/plugin-agent-orchestrator",
+      // @elizaos/plugin-secrets-manager is now built into @elizaos/core features
       // Node-only HTTP client — crashes in browser, stub via nativeModuleStubPlugin
       "undici",
       // Native LLM embedding — uses node-llama-cpp, never runs in browser
-      "@tokagentos/plugin-local-embedding",
+      "@elizaos/plugin-local-embedding",
     ],
   },
   build: {

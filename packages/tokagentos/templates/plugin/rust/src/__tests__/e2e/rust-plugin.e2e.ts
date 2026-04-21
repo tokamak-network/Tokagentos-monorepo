@@ -4,7 +4,7 @@ import type {
   IAgentRuntime,
   State,
   TestSuite,
-} from "@tokagentos/core";
+} from "@elizaos/core";
 
 /**
  * E2E (End-to-End) Test Suite for Rust Plugin Starter

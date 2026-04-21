@@ -12,8 +12,8 @@ import type {
   RouteRequest,
   RouteResponse,
   State,
-} from "@tokagentos/core";
-import { logger, ModelType, Service } from "@tokagentos/core";
+} from "@elizaos/core";
+import { logger, ModelType, Service } from "@elizaos/core";
 import { z } from "zod";
 import { StarterPluginTestSuite } from "./e2e/plugin-starter.e2e";
 
@@ -268,7 +268,7 @@ export const starterPlugin: Plugin = {
   actions: [helloWorldAction],
   providers: [helloWorldProvider],
   tests: [StarterPluginTestSuite],
-  // dependencies: ['@tokagentos/plugin-knowledge'], <--- plugin dependencies go here (if requires another plugin)
+  // dependencies: ['@elizaos/plugin-knowledge'], <--- plugin dependencies go here (if requires another plugin)
 };
 
 export default starterPlugin;

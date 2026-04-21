@@ -39,7 +39,7 @@ async function build() {
           external: [
             "dotenv",
             "node:*",
-            "@tokagentos/core",
+            "@elizaos/core",
             "zod",
           ],
           naming: {

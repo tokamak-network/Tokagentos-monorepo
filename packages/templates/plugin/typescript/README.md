@@ -79,7 +79,7 @@ describe("Plugin Configuration", () => {
 
 ```typescript
 // Example: src/__tests__/e2e/starter-plugin.ts
-import { type TestSuite } from "@tokagentos/core";
+import { type TestSuite } from "@elizaos/core";
 
 export const StarterPluginTestSuite: TestSuite = {
   name: "plugin_starter_test_suite",

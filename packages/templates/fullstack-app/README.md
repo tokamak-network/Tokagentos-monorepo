@@ -43,4 +43,4 @@ bun run --cwd apps/app build
 - The generated project is meant to be its own repo, with `tokagent/` pinned independently through the submodule.
 - The default brand kit is intentionally minimal. The source-of-truth files are `apps/app/public/favicon.svg` and `apps/app/public/splash-bg.svg`.
 - `bun run --cwd apps/app brand:assets` regenerates the derived desktop assets: `public/splash-bg.jpg`, `electrobun/assets/appIcon.png`, `electrobun/assets/appIcon.ico`, and `electrobun/assets/appIcon.iconset/`.
-- `apps/app/public/logos/*` is still required because `@tokagentos/app-core` maps provider IDs to those fixed asset paths during onboarding and settings flows.
+- `apps/app/public/logos/*` is still required because `@elizaos/app-core` maps provider IDs to those fixed asset paths during onboarding and settings flows.

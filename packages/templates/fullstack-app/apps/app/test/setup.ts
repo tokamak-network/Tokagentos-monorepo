@@ -44,7 +44,7 @@ function ensureStorage(
 }
 
 // ---------------------------------------------------------------------------
-// Mock @tokagentos/app-core bridge modules — the real electrobun RPC module
+// Mock @elizaos/app-core bridge modules — the real electrobun RPC module
 // relies on native Electrobun bindings that are unavailable in the test
 // environment.
 // ---------------------------------------------------------------------------
@@ -154,7 +154,7 @@ function createBridgeMock(extraExports: Record<string, unknown> = {}) {
   };
 }
 
-vi.mock("@tokagentos/app-core", () =>
+vi.mock("@elizaos/app-core", () =>
   createBridgeMock({
     platform: "web",
     isWeb: () => true,
