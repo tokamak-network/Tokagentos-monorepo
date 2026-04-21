@@ -547,6 +547,16 @@ export function hydrateGitSubmoduleWorkspace(options: {
   const requiredSubmodules = options.upstream.requiredSubmodules ?? [];
   const localRepoRoot = resolveLocalRepoRoot(options.upstream.repo);
 
+  // Init ALL submodules recursively first so the upstream package's
+  // transitive workspace:* deps (plugins listed in upstream/package.json
+  // but not explicitly in requiredSubmodules) resolve. The per-path loop
+  // below then re-runs with optional --reference against a local fork.
+  execFileSync(
+    "git",
+    ["submodule", "update", "--init", "--recursive"],
+    { cwd: submoduleRoot, stdio: "inherit" },
+  );
+
   for (const submodulePath of requiredSubmodules) {
     const command = ["submodule", "update", "--init", "--recursive"];
     let localSubmoduleRoot: string | undefined;
