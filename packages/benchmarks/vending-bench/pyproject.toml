@@ -49,9 +49,9 @@ dev = [
 vending-bench = "tokagentos_vending_bench.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/tokagentos/tokagent"
+Homepage = "https://github.com/elizaos/eliza"
 Documentation = "https://tokagentos.ai/docs/benchmarks/vending-bench"
-Repository = "https://github.com/tokagentos/tokagent/tree/main/benchmarks/vending-bench"
+Repository = "https://github.com/elizaos/eliza/tree/main/benchmarks/vending-bench"
 Paper = "https://arxiv.org/abs/2502.15840"
 Leaderboard = "https://andonlabs.com/evals/vending-bench"
 

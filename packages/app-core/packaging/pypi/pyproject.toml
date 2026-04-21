@@ -43,9 +43,9 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://app.tokagentos.ai"
-Repository = "https://github.com/tokagentos/tokagentos-app"
+Repository = "https://github.com/elizaos/elizaos-app"
 Documentation = "https://docs.app.tokagentos.ai"
-Issues = "https://github.com/tokagentos/tokagentos-app/issues"
+Issues = "https://github.com/elizaos/elizaos-app/issues"
 
 [project.scripts]
 tokagentos-app = "tokagentos_app.cli:main"

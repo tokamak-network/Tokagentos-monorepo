@@ -28,8 +28,8 @@
   </description>
 
   <url type="homepage">https://app.tokagentos.ai</url>
-  <url type="bugtracker">https://github.com/tokagentos/tokagentos-app/issues</url>
-  <url type="vcs-browser">https://github.com/tokagentos/tokagentos-app</url>
+  <url type="bugtracker">https://github.com/elizaos/elizaos-app/issues</url>
+  <url type="vcs-browser">https://github.com/elizaos/elizaos-app</url>
   <url type="help">https://docs.app.tokagentos.ai</url>
 
   <provides>

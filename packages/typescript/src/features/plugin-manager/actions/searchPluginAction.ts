@@ -217,7 +217,7 @@ export const getPluginDetailsAction: Action = {
 			{
 				name: "{{agentName}}",
 				content: {
-					text: "**@tokagentos/plugin-solana** Details:\n\nDescription: Comprehensive Solana blockchain integration\n\nTags: blockchain, solana, defi, transaction\n\nVersion: 2.0.0-alpha.3\nRepository: https://github.com/tokagentos-plugins/plugin-solana",
+					text: "**@tokagentos/plugin-solana** Details:\n\nDescription: Comprehensive Solana blockchain integration\n\nTags: blockchain, solana, defi, transaction\n\nVersion: 2.0.0-alpha.3\nRepository: https://github.com/elizaos-plugins/plugin-solana",
 				},
 			},
 		],

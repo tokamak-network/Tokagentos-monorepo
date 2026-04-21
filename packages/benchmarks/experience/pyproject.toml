@@ -46,8 +46,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/tokagentos/tokagent"
-Repository = "https://github.com/tokagentos/tokagent"
+Homepage = "https://github.com/elizaos/eliza"
+Repository = "https://github.com/elizaos/eliza"
 
 [tool.setuptools.packages.find]
 where = ["."]

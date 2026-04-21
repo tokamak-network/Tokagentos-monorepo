@@ -1,6 +1,6 @@
 # tokagentos-app
 
-**Dynamic Python loader for [tokagentOS App](https://github.com/tokagentos/tokagentos-app)** — a personal AI assistant built on [tokagentOS](https://github.com/tokagentos).
+**Dynamic Python loader for [tokagentOS App](https://github.com/elizaos/elizaos-app)** — a personal AI assistant built on [tokagentOS](https://github.com/elizaos).
 
 This package provides an `tokagentos-app` command that automatically manages the Node.js-based tokagentOS App runtime. Install via pip, run like any CLI tool.
 
@@ -75,8 +75,8 @@ tokagentOS App is a personal AI assistant you run on your own devices. It provid
 ## Links
 
 - [Documentation](https://docs.app.tokagentos.ai)
-- [GitHub](https://github.com/tokagentos/tokagentos-app)
-- [tokagentOS](https://github.com/tokagentos)
+- [GitHub](https://github.com/elizaos/elizaos-app)
+- [tokagentOS](https://github.com/elizaos)
 
 ## License
 

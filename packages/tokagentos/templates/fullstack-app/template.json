@@ -7,7 +7,7 @@
   "languages": ["typescript"],
   "upstream": {
     "path": "tokagent",
-    "repo": "https://github.com/tokagentos/tokagent.git",
+    "repo": "https://github.com/elizaos/eliza.git",
     "branch": "develop",
     "mode": "git-submodule",
     "requiredSubmodules": [

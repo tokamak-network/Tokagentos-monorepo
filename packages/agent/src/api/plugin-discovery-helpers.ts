@@ -1053,7 +1053,7 @@ const PLUGIN_SETUP_GUIDE_ROOT = "https://docs.tokagent.ai/plugin-setup-guide";
 const PLUGIN_SETUP_GUIDE_URL_OVERRIDES: Record<string, string> = {
   discord: "https://docs.tokagentos.ai/plugin-registry/platform/discord",
 };
-const TOKAGENT_REPO_ROOT = "https://github.com/tokagentos/tokagent";
+const TOKAGENT_REPO_ROOT = "https://github.com/elizaos/eliza";
 const PLUGIN_METADATA_TAG_STOPWORDS = new Set([
   "plugin",
   "plugins",

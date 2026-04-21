@@ -1,6 +1,6 @@
 # __APP_NAME__
 
-A Milady-style fullstack app workspace built on [tokagentOS](https://github.com/tokagentos/tokagent).
+A Milady-style fullstack app workspace built on [tokagentOS](https://github.com/elizaos/eliza).
 
 ## Layout
 

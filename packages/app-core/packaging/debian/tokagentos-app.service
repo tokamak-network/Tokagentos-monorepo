@@ -1,6 +1,6 @@
 [Unit]
 Description=tokagentOS App — Personal AI Assistant
-Documentation=https://github.com/tokagentos/tokagentos-app
+Documentation=https://github.com/elizaos/elizaos-app
 After=network-online.target
 Wants=network-online.target
 

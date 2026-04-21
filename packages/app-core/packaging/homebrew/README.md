@@ -30,10 +30,10 @@ Before publishing, replace placeholder hashes:
 **For the cask (DMG files):**
 ```bash
 # Download and hash ARM64 DMG
-curl -sL https://github.com/tokagentos/tokagentos-app/releases/download/v2.0.0-alpha.21/TokagentOSApp-2.0.0-alpha.21-arm64.dmg | shasum -a 256
+curl -sL https://github.com/elizaos/elizaos-app/releases/download/v2.0.0-alpha.21/TokagentOSApp-2.0.0-alpha.21-arm64.dmg | shasum -a 256
 
 # Download and hash Intel DMG
-curl -sL https://github.com/tokagentos/tokagentos-app/releases/download/v2.0.0-alpha.21/TokagentOSApp-2.0.0-alpha.21.dmg | shasum -a 256
+curl -sL https://github.com/elizaos/elizaos-app/releases/download/v2.0.0-alpha.21/TokagentOSApp-2.0.0-alpha.21.dmg | shasum -a 256
 ```
 
 **For the formula (npm tarball):**

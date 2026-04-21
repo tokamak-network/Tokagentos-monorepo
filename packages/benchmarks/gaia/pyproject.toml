@@ -68,10 +68,10 @@ tokagentos = [
 gaia-benchmark = "tokagentos_gaia.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/tokagentos/tokagent"
+Homepage = "https://github.com/elizaos/eliza"
 Documentation = "https://tokagentos.ai/docs/benchmarks/gaia"
-Repository = "https://github.com/tokagentos/tokagent"
-"Bug Tracker" = "https://github.com/tokagentos/tokagent/issues"
+Repository = "https://github.com/elizaos/eliza"
+"Bug Tracker" = "https://github.com/elizaos/eliza/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["tokagentos_gaia"]

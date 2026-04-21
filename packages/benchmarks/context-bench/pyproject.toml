@@ -47,8 +47,8 @@ all = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/tokagentos/tokagent"
-Repository = "https://github.com/tokagentos/tokagent"
+Homepage = "https://github.com/elizaos/eliza"
+Repository = "https://github.com/elizaos/eliza"
 Documentation = "https://docs.tokagentos.org"
 
 [tool.setuptools.packages.find]

@@ -28,7 +28,7 @@ describe("TemplatesManifest", () => {
   test("supports template collections", () => {
     const manifest: TemplatesManifest = {
       generatedAt: "2026-04-14T00:00:00.000Z",
-      repoUrl: "https://github.com/tokagentos/tokagent",
+      repoUrl: "https://github.com/elizaos/eliza",
       templates: [
         {
           description: "Fullstack workspace",

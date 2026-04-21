@@ -60,7 +60,7 @@ describe("LifeOps Browser release versioning", () => {
     const release = parseReleaseVersion("2.0.0");
 
     expect(buildGitHubReleasePageUrl("tokagentos/tokagent", release)).toBe(
-      "https://github.com/tokagentos/tokagent/releases/tag/v2.0.0",
+      "https://github.com/elizaos/eliza/releases/tag/v2.0.0",
     );
     expect(
       buildGitHubReleaseAssetDownloadUrl(
@@ -69,7 +69,7 @@ describe("LifeOps Browser release versioning", () => {
         "lifeops-browser-chrome-v2.0.0.zip",
       ),
     ).toBe(
-      "https://github.com/tokagentos/tokagent/releases/download/v2.0.0/lifeops-browser-chrome-v2.0.0.zip",
+      "https://github.com/elizaos/eliza/releases/download/v2.0.0/lifeops-browser-chrome-v2.0.0.zip",
     );
   });
 

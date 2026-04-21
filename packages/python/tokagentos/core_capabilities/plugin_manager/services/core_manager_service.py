@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger("tokagentos.plugin_manager.core_manager")
 
-_CORE_GIT_URL = "https://github.com/tokagentos/tokagent.git"
+_CORE_GIT_URL = "https://github.com/elizaos/eliza.git"
 _CORE_BRANCH = "develop"
 _CORE_PACKAGE_NAME = "@tokagentos/core"
 

@@ -7,7 +7,7 @@
  * the installed core — causing silent import failures that take down every
  * model provider.
  *
- * @see https://github.com/tokagentos/tokagent/issues/10
+ * @see https://github.com/elizaos/eliza/issues/10
  */
 
 // ---------------------------------------------------------------------------
@@ -268,7 +268,7 @@ export function diagnoseNoAIProvider(
       `@tokagentos/core. This usually means the plugin version is ahead of the ` +
       `installed core version. Pin the affected plugins to a version compatible ` +
       `with your installed @tokagentos/core, or upgrade core. ` +
-      `See: https://github.com/tokagentos/tokagent/issues/10`
+      `See: https://github.com/elizaos/eliza/issues/10`
     );
   }
 

@@ -124,7 +124,7 @@ function App() {
           Only trade with funds you can afford to lose.
         </p>
         <p style={{ marginTop: '8px' }}>
-          Built with TokagentOS • <a href="https://github.com/tokagentos/tokagent" style={{ color: 'var(--accent-primary)' }}>GitHub</a>
+          Built with TokagentOS • <a href="https://github.com/elizaos/eliza" style={{ color: 'var(--accent-primary)' }}>GitHub</a>
         </p>
       </footer>
     </div>

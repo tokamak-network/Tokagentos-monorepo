@@ -624,13 +624,13 @@
     ],
     "primary": {
       "type": "github",
-      "href": "https://github.com/tokagentos/tokagent"
+      "href": "https://github.com/elizaos/eliza"
     }
   },
   "footer": {
     "socials": {
       "x": "https://x.com/tokagentos",
-      "github": "https://github.com/tokagentos/tokagent",
+      "github": "https://github.com/elizaos/eliza",
       "discord": "https://discord.gg/ai16z",
       "youtube": "https://www.youtube.com/@tokagentOSDeveloper",
       "linkedin": "https://www.linkedin.com/company/tokagentlabs"

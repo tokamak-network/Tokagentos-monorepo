@@ -170,7 +170,7 @@ describe("screen-time handler — real PGLite", () => {
           profileId: "screen-time-profile",
           windowId: "window-1",
           tabId: "tab-1",
-          url: "https://github.com/tokagentos/tokagentos",
+          url: "https://github.com/elizaos/elizaos",
           title: "tokagentOS",
           activeInWindow: true,
           focusedWindow: true,

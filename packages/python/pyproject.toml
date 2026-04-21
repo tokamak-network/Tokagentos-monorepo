@@ -48,9 +48,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/tokagentos/tokagent"
+Homepage = "https://github.com/elizaos/eliza"
 Documentation = "https://tokagentos.ai/docs"
-Repository = "https://github.com/tokagentos/tokagent"
+Repository = "https://github.com/elizaos/eliza"
 
 [tool.hatch.build.targets.wheel]
 packages = ["tokagentos"]

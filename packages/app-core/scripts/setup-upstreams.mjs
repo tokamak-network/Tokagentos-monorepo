@@ -25,7 +25,7 @@ export const LOCAL_UPSTREAM_FORCE_ENVS = [
   "TOKAGENT_FORCE_LOCAL_UPSTREAMS",
   "TOKAGENT_FORCE_LOCAL_UPSTREAMS",
 ];
-export const TOKAGENT_GIT_URL = "https://github.com/tokagentos/tokagent.git";
+export const TOKAGENT_GIT_URL = "https://github.com/elizaos/eliza.git";
 export const TOKAGENT_BRANCH = "develop";
 export const TOKAGENT_REQUIRED_FILES = ["package.json"];
 export const TOKAGENT_BUILD_STEPS = [

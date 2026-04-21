@@ -57,7 +57,7 @@ export const DEFAULT_BRANDING: BrandingConfig = {
   docsUrl: "https://docs.tokagentos.ai",
   appUrl: "https://app.tokagentos.ai",
   bugReportUrl:
-    "https://github.com/tokagentos/tokagent/issues/new?template=bug_report.yml",
+    "https://github.com/elizaos/eliza/issues/new?template=bug_report.yml",
   hashtag: "#TokagentAgent",
   fileExtension: ".tokagent-agent",
   packageScope: "tokagentos",

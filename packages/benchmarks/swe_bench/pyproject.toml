@@ -48,9 +48,9 @@ dev = [
 swe-bench = "benchmarks.swe_bench.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/tokagentos/tokagent"
+Homepage = "https://github.com/elizaos/eliza"
 Documentation = "https://tokagentos.ai/docs/benchmarks/swe-bench"
-Repository = "https://github.com/tokagentos/tokagent/tree/main/benchmarks/swe-bench"
+Repository = "https://github.com/elizaos/eliza/tree/main/benchmarks/swe-bench"
 
 [tool.hatch.build.targets.wheel]
 packages = ["benchmarks"]

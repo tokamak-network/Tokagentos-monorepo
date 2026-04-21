@@ -11,7 +11,7 @@ import { getRegistryEntry } from "./pluginRegistryService.ts";
 
 const execAsync = promisify(exec);
 
-const CORE_GIT_URL = "https://github.com/tokagentos/tokagent.git";
+const CORE_GIT_URL = "https://github.com/elizaos/eliza.git";
 const CORE_BRANCH = "develop";
 const CORE_PACKAGE_NAME = "@tokagentos/core";
 const _DEFAULT_CORE_PATHS = ["../packages/typescript/src/index.node.ts"];

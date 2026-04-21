@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: tokagentos-app
 Upstream-Contact: dev@app.tokagentos.ai
-Source: https://github.com/tokagentos/tokagentos-app
+Source: https://github.com/elizaos/elizaos-app
 
 Files: *
 Copyright: 2024-2026 tokagentos

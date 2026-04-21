@@ -15,7 +15,7 @@ import {
 
 const execFileAsync = promisify(execFile);
 
-const CORE_GIT_URL = "https://github.com/tokagentos/tokagent.git";
+const CORE_GIT_URL = "https://github.com/elizaos/eliza.git";
 const CORE_BRANCH = "develop";
 const CORE_PACKAGE_NAME = "@tokagentos/core";
 const DEFAULT_CORE_PATHS = ["../packages/typescript/src/index.node.ts"];

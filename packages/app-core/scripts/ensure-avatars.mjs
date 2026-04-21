@@ -44,7 +44,7 @@ const UNUSED_ANIMATION_PATHS = [
 
 // tokagentos/avatars is an org-owned repo in the tokagentos GitHub organization.
 // Pinned to a specific commit for reproducible installs (supply-chain safety).
-const AVATARS_REPO = "https://github.com/tokagentos/avatars.git";
+const AVATARS_REPO = "https://github.com/elizaos/avatars.git";
 const AVATARS_COMMIT = "50f6bf0ad6db583581d4cbaeb377ca005b45195b";
 const AVATARS_REF = process.env.TOKAGENT_AVATARS_REF?.trim() || "";
 const TAG = "[ensure-avatars]";

@@ -6,7 +6,7 @@ authors = ["tokagentOS Contributors"]
 # Multi-language support for tokagentOS
 description = "Core runtime and types for tokagentOS - Rust implementation"
 license = "MIT"
-repository = "https://github.com/tokagentos/tokagent"
+repository = "https://github.com/elizaos/eliza"
 keywords = ["ai", "agent", "runtime", "wasm"]
 categories = ["wasm", "web-programming"]
 include = ["src/**/*", "Cargo.toml", "build.rs", "proto/**/*"]

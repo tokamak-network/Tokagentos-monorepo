@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-21T10:48:42.785Z",
-  "repoUrl": "https://github.com/tokagentos/tokagent",
+  "generatedAt": "2026-04-21T12:59:54.118Z",
+  "repoUrl": "https://github.com/elizaos/eliza",
   "templates": [
     {
       "id": "fullstack-app",
@@ -14,7 +14,7 @@
       ],
       "upstream": {
         "path": "tokagent",
-        "repo": "https://github.com/tokagentos/tokagent.git",
+        "repo": "https://github.com/elizaos/eliza.git",
         "branch": "develop",
         "mode": "git-submodule",
         "requiredSubmodules": [

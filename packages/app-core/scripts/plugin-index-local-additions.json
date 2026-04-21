@@ -6,7 +6,7 @@
     "npmName": "@tokagentos/plugin-music-library",
     "category": "feature",
     "version": "1.0.0",
-    "repository": "https://github.com/tokagentos-plugins/plugin-music-library",
+    "repository": "https://github.com/elizaos-plugins/plugin-music-library",
     "pluginDeps": ["sql", "music-player"]
   },
   {
@@ -16,6 +16,6 @@
     "npmName": "@tokagentos/plugin-music-player",
     "category": "feature",
     "version": "1.0.0",
-    "repository": "https://github.com/tokagentos-plugins/plugin-music-player"
+    "repository": "https://github.com/elizaos-plugins/plugin-music-player"
   }
 ]

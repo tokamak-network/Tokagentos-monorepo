@@ -5,7 +5,7 @@ managed:
   enabled: true
   override:
     - file_option: go_package_prefix
-      value: github.com/tokagentos/tokagent/gen/go
+      value: github.com/elizaos/eliza/gen/go
 
 plugins:
   # TypeScript generation using @bufbuild/protobuf
