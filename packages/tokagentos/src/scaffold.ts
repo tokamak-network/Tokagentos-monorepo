@@ -609,6 +609,88 @@ export function hydrateGitSubmoduleWorkspace(options: {
     options.upstream.requiredWorkspaces ?? [],
   );
   ensureUpstreamCompatibilityFiles(submoduleRoot);
+
+  const patchResult = applyTokagentScaffoldPatches({
+    dryRun: options.dryRun,
+    submoduleRoot,
+  });
+
+  if (patchResult.missing.length > 0) {
+    throw new Error(
+      `scaffold-patches target paths missing — upstream reorganization? ` +
+        `Missing: ${patchResult.missing.join(", ")}`,
+    );
+  }
+}
+
+/**
+ * Overlay Tokagent-specific patches onto a freshly-hydrated upstream clone.
+ * Each file under `scaffold-patches/` is copied to the same relative path
+ * inside `<submoduleRoot>/` (i.e., the user's `<project>/tokagent/` directory).
+ *
+ * Returns a list of relative paths that were overlaid so the caller can log
+ * them. Conflicts (target path missing) throw with a clear error — upstream
+ * reorganizations must be reconciled in scaffold-patches before the next
+ * tokagentos release.
+ */
+export function applyTokagentScaffoldPatches(options: {
+  dryRun?: boolean;
+  submoduleRoot: string;
+}): { applied: string[]; missing: string[] } {
+  const applied: string[] = [];
+  const missing: string[] = [];
+
+  const patchesRoot = path.join(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "..",
+    "scaffold-patches",
+  );
+
+  if (!fs.existsSync(patchesRoot)) {
+    // No patches declared — nothing to do.
+    return { applied, missing };
+  }
+
+  const walk = (dir: string): string[] => {
+    const entries: string[] = [];
+    for (const name of fs.readdirSync(dir)) {
+      if (SKIP_NAMES.has(name)) continue;
+      const full = path.join(dir, name);
+      const stat = fs.statSync(full);
+      if (stat.isDirectory()) {
+        entries.push(...walk(full));
+      } else if (stat.isFile()) {
+        entries.push(full);
+      }
+    }
+    return entries;
+  };
+
+  const patchFiles = walk(patchesRoot);
+
+  for (const patchPath of patchFiles) {
+    const relativePath = path.relative(patchesRoot, patchPath);
+    // Exclude README.md from being overlaid — it's documentation.
+    if (relativePath === "README.md") continue;
+
+    const targetPath = path.join(options.submoduleRoot, relativePath);
+
+    if (!fs.existsSync(path.dirname(targetPath))) {
+      // Target parent dir missing — upstream layout may have changed.
+      missing.push(relativePath);
+      continue;
+    }
+
+    if (options.dryRun) {
+      applied.push(relativePath);
+      continue;
+    }
+
+    fs.copyFileSync(patchPath, targetPath);
+    applied.push(relativePath);
+  }
+
+  return { applied, missing };
 }
 
 export function initializeGitSubmodule(options: {
