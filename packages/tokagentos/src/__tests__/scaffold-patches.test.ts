@@ -6,11 +6,16 @@ import { applyTokagentScaffoldPatches } from "../scaffold.js";
 
 function makeTempSubmoduleTree(): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-patch-test-"));
-  // Recreate upstream layout enough for the patch target to exist.
+  // Recreate upstream layout enough for all patch targets to exist.
   fs.mkdirSync(path.join(root, "packages/agent/src/runtime"), { recursive: true });
   fs.writeFileSync(
     path.join(root, "packages/agent/src/runtime/core-plugins.ts"),
     "// upstream default\nexport const CORE_PLUGINS = [\"@elizaos/plugin-sql\"];\n",
+  );
+  fs.mkdirSync(path.join(root, "packages/app-core/src/navigation"), { recursive: true });
+  fs.writeFileSync(
+    path.join(root, "packages/app-core/src/navigation/index.ts"),
+    "// upstream navigation stub\n",
   );
   return root;
 }
@@ -81,6 +86,38 @@ describe("applyTokagentScaffoldPatches", () => {
       "utf-8",
     );
     expect(after).toEqual(before);
+
+    // cleanup
+    fs.rmSync(root, { force: true, recursive: true });
+  });
+
+  it("overlays navigation/index.ts with Tokagent tab set", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-nav-"));
+    fs.mkdirSync(path.join(root, "packages/app-core/src/navigation"), { recursive: true });
+    fs.writeFileSync(
+      path.join(root, "packages/app-core/src/navigation/index.ts"),
+      "// upstream navigation stub\n",
+    );
+
+    const result = applyTokagentScaffoldPatches({ submoduleRoot: root });
+
+    expect(result.applied).toContain(
+      path.join("packages", "app-core", "src", "navigation", "index.ts"),
+    );
+    const navSource = fs.readFileSync(
+      path.join(root, "packages/app-core/src/navigation/index.ts"),
+      "utf-8",
+    );
+    // Must keep Chat, Automations, Settings
+    expect(navSource).toMatch(/label:\s*"Chat"/);
+    expect(navSource).toMatch(/label:\s*"Automations"/);
+    expect(navSource).toMatch(/label:\s*"Settings"/);
+    // Must NOT contain the removed tab groups
+    expect(navSource).not.toMatch(/label:\s*"Apps"/);
+    expect(navSource).not.toMatch(/label:\s*"Character"/);
+    expect(navSource).not.toMatch(/label:\s*"Wallet"/);
+    expect(navSource).not.toMatch(/label:\s*"Browser"/);
+    expect(navSource).not.toMatch(/label:\s*"Stream"/);
 
     // cleanup
     fs.rmSync(root, { force: true, recursive: true });
