@@ -23,6 +23,7 @@
     "dist",
     "templates",
     "templates-manifest.json",
+    "scaffold-patches",
     "README.md"
   ],
   "scripts": {
