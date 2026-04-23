@@ -1,21 +1,40 @@
 /**
  * Navigation — tabs + onboarding.
- *
- * Tokagent scaffold-patch: restricts ALL_TAB_GROUPS to Chat, Automations, and
- * Settings. The upstream groups (Apps, Character, Wallet, Browser, Stream) are
- * intentionally removed for the Tokagent DeFi product.
- *
- * Type exports and helper signatures are kept identical to upstream so
- * downstream consumers (navigation hooks, view routers) type-check without
- * modification.
  */
 
+/// <reference types="vite/client" />
+
+import { Capacitor } from "@capacitor/core";
 import type { LucideIcon } from "lucide-react";
-import { Clock3, MessageSquare, Settings } from "lucide-react";
+import {
+  Clock3,
+  Gamepad2,
+  MessageSquare,
+  Monitor,
+  PencilLine,
+  Phone,
+  Radio,
+  Settings,
+  Wallet,
+} from "lucide-react";
+
+/** Apps are enabled by default; opt-out via VITE_ENABLE_APPS=false. */
+export const APPS_ENABLED =
+  String(import.meta.env.VITE_ENABLE_APPS ?? "true").toLowerCase() !== "false";
+
+/** Stream routes stay addressable; the nav hides the tab unless streaming is enabled. */
+export const STREAM_ENABLED = true;
+/** Companion tab — enabled by default; opt-out via VITE_ENABLE_COMPANION_MODE=false. */
+export const COMPANION_ENABLED =
+  String(import.meta.env.VITE_ENABLE_COMPANION_MODE ?? "true").toLowerCase() !==
+  "false";
 
 /** Built-in tab identifiers. */
 export type BuiltinTab =
   | "chat"
+  | "phone"
+  | "messages"
+  | "contacts"
   | "lifeops"
   | "tasks"
   | "automations"
@@ -50,6 +69,27 @@ export type BuiltinTab =
  */
 export type Tab = BuiltinTab | (string & {});
 
+export const APPS_TOOL_TABS = [
+  "lifeops",
+  "plugins",
+  "skills",
+  "fine-tuning",
+  "trajectories",
+  "relationships",
+  "memories",
+  "runtime",
+  "database",
+  "logs",
+  // Legacy hidden alias for old /advanced routes.
+  "advanced",
+] as const satisfies readonly Tab[];
+
+const APPS_TOOL_TAB_SET = new Set<Tab>(APPS_TOOL_TABS);
+
+export function isAppsToolTab(tab: Tab): boolean {
+  return APPS_TOOL_TAB_SET.has(tab);
+}
+
 export interface TabGroup {
   label: string;
   tabs: Tab[];
@@ -57,10 +97,45 @@ export interface TabGroup {
   description?: string;
 }
 
+export interface AndroidPhoneSurfaceDetection {
+  platform?: string;
+  isNative?: boolean;
+  search?: string;
+  hash?: string;
+}
+
+function hasAndroidTestFlag(search: string, hash: string): boolean {
+  const searchParams = new URLSearchParams(search);
+  if (searchParams.get("android") === "true") return true;
+  const hashQuery = hash.includes("?") ? hash.slice(hash.indexOf("?")) : "";
+  if (!hashQuery) return false;
+  return new URLSearchParams(hashQuery).get("android") === "true";
+}
+
+export function isAndroidPhoneSurfaceEnabled(
+  detection: AndroidPhoneSurfaceDetection = {},
+): boolean {
+  const search =
+    detection.search ??
+    (typeof window === "undefined" ? "" : window.location.search);
+  const hash =
+    detection.hash ??
+    (typeof window === "undefined" ? "" : window.location.hash);
+  if (hasAndroidTestFlag(search, hash)) return true;
+
+  const platform = detection.platform ?? Capacitor.getPlatform();
+  const isNative = detection.isNative ?? Capacitor.isNativePlatform();
+  return isNative && platform === "android";
+}
+
 /**
- * Tokagent product tab groups — Chat, Automations, Settings only.
- * Connectors tab is excluded from Chat since we are not shipping connector
- * plugins in this product.
+ * Tokagent product: tab groups trimmed to Chat / Automations / Settings.
+ *
+ * Upstream ships 9 tab groups (Chat, Phone, Apps, Character, Wallet, Browser,
+ * Stream, Automations, Settings). The Tokagent DeFi product doesn't ship most
+ * of them, so they're intentionally filtered here. Everything ELSE in this
+ * file (helpers, type exports, path resolution) is preserved from upstream so
+ * downstream consumers that import other names continue to work.
  */
 export const ALL_TAB_GROUPS: TabGroup[] = [
   {
@@ -73,7 +148,7 @@ export const ALL_TAB_GROUPS: TabGroup[] = [
     label: "Automations",
     tabs: ["automations"],
     icon: Clock3,
-    description: "Tasks, scheduled tasks, and recurring workflows",
+    description: "Scheduled tasks and recurring workflows",
   },
   {
     label: "Settings",
@@ -91,26 +166,28 @@ export interface DynamicNavTab {
   label: string;
   /** Which existing TabGroup to join, or a new group label to create. */
   navGroup?: string;
-  /** Icon for new groups (lucide component). Falls back to Settings. */
+  /** Icon for new groups (lucide component). Falls back to Gamepad2. */
   icon?: LucideIcon;
   /** Description for new groups. */
   description?: string;
 }
 
-/**
- * Compute visible tab groups.
- *
- * The `streamEnabled`, `walletEnabled`, and `browserEnabled` parameters are
- * accepted for API compatibility with upstream callers but are ignored —
- * groups are always the three Tokagent-configured tabs.
- */
+/** Compute visible tab groups. Pass feature flags explicitly for React reactivity. */
 export function getTabGroups(
-  _streamEnabled?: boolean,
-  _walletEnabled?: boolean,
-  _browserEnabled?: boolean,
+  streamEnabled = STREAM_ENABLED,
+  walletEnabled = true,
+  browserEnabled = true,
   dynamicTabs?: DynamicNavTab[],
+  phoneSurfaceEnabled = isAndroidPhoneSurfaceEnabled(),
 ): TabGroup[] {
-  const groups: TabGroup[] = ALL_TAB_GROUPS.map((g) => ({ ...g, tabs: [...g.tabs] }));
+  const groups = ALL_TAB_GROUPS.filter(
+    (g) =>
+      (APPS_ENABLED || g.label !== "Apps") &&
+      (phoneSurfaceEnabled || g.label !== "Phone") &&
+      (streamEnabled || g.label !== "Stream") &&
+      (walletEnabled || g.label !== "Wallet") &&
+      (browserEnabled || g.label !== "Browser"),
+  );
 
   // Merge dynamic plugin-provided nav-page tabs into groups.
   if (dynamicTabs?.length) {
@@ -127,7 +204,7 @@ export function getTabGroups(
         groups.push({
           label: dt.label,
           tabs: [dt.tabId],
-          icon: dt.icon ?? Settings,
+          icon: dt.icon ?? Gamepad2,
           description: dt.description,
         });
       }
@@ -139,6 +216,9 @@ export function getTabGroups(
 
 const TAB_PATHS: Record<BuiltinTab, string> = {
   chat: "/chat",
+  phone: "/phone",
+  messages: "/messages",
+  contacts: "/contacts",
   lifeops: "/apps/lifeops",
   tasks: "/apps/tasks",
   browser: "/browser",
@@ -149,7 +229,7 @@ const TAB_PATHS: Record<BuiltinTab, string> = {
   "character-select": "/character/select",
   automations: "/automations",
   triggers: "/automations",
-  inventory: "/inventory",
+  inventory: "/wallet",
   knowledge: "/character/knowledge",
   connectors: "/connectors",
   plugins: "/apps/plugins",
@@ -172,6 +252,7 @@ const TAB_PATHS: Record<BuiltinTab, string> = {
 const LEGACY_PATHS: Record<string, Tab> = {
   "/game": "apps",
   "/agent": "character",
+  "/inventory": "inventory",
   "/wallets": "inventory",
   "/features": "plugins",
   "/admin": "fine-tuning",
@@ -209,6 +290,10 @@ const PATH_TO_TAB = new Map(
 function normalizePathForLookup(pathname: string, basePath = ""): string {
   const base = normalizeBasePath(basePath);
   let p = pathname || "/";
+  const queryIndex = p.indexOf("?");
+  if (queryIndex >= 0) p = p.slice(0, queryIndex);
+  const hashIndex = p.indexOf("#");
+  if (hashIndex >= 0) p = p.slice(0, hashIndex);
   if (base) {
     if (p === base) p = "/";
     else if (p.startsWith(`${base}/`)) p = p.slice(base.length);
@@ -222,6 +307,17 @@ export function pathForTab(tab: Tab, basePath = ""): string {
   const base = normalizeBasePath(basePath);
   const p = TAB_PATHS[tab as BuiltinTab] ?? `/${tab}`;
   return base ? `${base}${p}` : p;
+}
+
+export function canonicalPathForPath(
+  pathname: string,
+  basePath = "",
+): string | null {
+  const normalized = normalizePathForLookup(pathname, basePath);
+  const legacyTab = LEGACY_PATHS[normalized];
+  if (!legacyTab) return null;
+  const canonical = pathForTab(legacyTab, basePath);
+  return canonical === pathname ? null : canonical;
 }
 
 export function isRouteRootPath(pathname: string, basePath = ""): boolean {
@@ -265,6 +361,27 @@ export function tabFromPath(pathname: string, basePath = ""): Tab | null {
     normalized === "/automations/node-catalog"
   ) {
     return "automations";
+  }
+
+  // Companion disabled unless explicitly feature-flagged
+  if (
+    !COMPANION_ENABLED &&
+    (normalized === "/companion" ||
+      normalized === "/apps/companion" ||
+      normalized === "/character-select" ||
+      normalized === "/character/select")
+  ) {
+    return "chat";
+  }
+
+  // Apps disabled in production builds — redirect to chat
+  if (
+    !APPS_ENABLED &&
+    (normalized === "/apps" ||
+      normalized.startsWith("/apps/") ||
+      normalized === "/game")
+  ) {
+    return "chat";
   }
 
   // /apps/<sub> — known tool tabs resolve to their tab; everything else is an app slug
@@ -329,6 +446,12 @@ export function titleForTab(tab: Tab): string {
   switch (tab) {
     case "chat":
       return "Chat";
+    case "phone":
+      return "Phone";
+    case "messages":
+      return "Messages";
+    case "contacts":
+      return "Contacts";
     case "lifeops":
       return "LifeOps";
     case "browser":
