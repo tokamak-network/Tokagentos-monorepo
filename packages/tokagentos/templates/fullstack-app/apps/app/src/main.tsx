@@ -3,7 +3,13 @@ import "@elizaos/app-core/styles/brand-gold.css";
 // Tokamak brand override — must follow brand-gold.css so --accent wins.
 import "./brand-purple.css";
 
-import "@elizaos/app-core/platform/native-plugin-entrypoints";
+// Native Capacitor bridge registration is only needed for iOS/Android builds.
+// The Tokagent product targets desktop + web only; including
+// `@elizaos/app-core/platform/native-plugin-entrypoints` pulls in 15
+// side-effect imports of `@elizaos/capacitor-*` packages whose dist/ may not
+// all be built during `bun run dev`, causing vite import-analysis to fail at
+// page load. Capacitor types used elsewhere (Agent/Desktop) still resolve —
+// their specific packages get built by the dev-ui pipeline.
 
 import { App as CapacitorApp } from "@capacitor/app";
 import { Capacitor } from "@capacitor/core";
