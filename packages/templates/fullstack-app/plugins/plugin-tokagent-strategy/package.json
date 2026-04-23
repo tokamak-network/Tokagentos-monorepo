@@ -29,6 +29,7 @@
     "@tokagentos/core": "workspace:*"
   },
   "dependencies": {
+    "@tokagent/plugin-tokagent-perps": "workspace:*",
     "@tokagent/plugin-tokagent-shared": "workspace:*",
     "viem": "^2.21.0",
     "zod": "^3.23.8"

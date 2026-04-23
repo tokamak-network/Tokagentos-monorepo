@@ -227,33 +227,73 @@ describe("perpFundingArbKind", () => {
     });
   });
 
-  describe("execute — stub", () => {
-    it("throws with 'not yet implemented' message mentioning HyperliquidAdapter", async () => {
+  describe("execute — real implementation", () => {
+    it("throws when context is undefined (evaluate not called first)", async () => {
       await expect(
         perpFundingArbKind.execute(DEFAULT_PARAMS, VAULT, undefined, FAKE_RUNTIME),
-      ).rejects.toThrow(/not yet implemented/);
+      ).rejects.toThrow(/context/);
     });
 
-    it("error message mentions HyperliquidAdapter integration", async () => {
+    it("throws with deployment instructions when helper address is not set", async () => {
+      const noHelperRuntime = { getSetting: (_k: string) => undefined } as any;
       let caught: Error | undefined;
       try {
-        await perpFundingArbKind.execute(DEFAULT_PARAMS, VAULT, undefined, FAKE_RUNTIME);
+        await perpFundingArbKind.execute(
+          DEFAULT_PARAMS,
+          VAULT,
+          { longSymbol: "BTC", shortSymbol: "ETH" },
+          noHelperRuntime,
+        );
       } catch (e) {
         caught = e as Error;
       }
       expect(caught).toBeInstanceOf(Error);
-      expect(caught!.message).toContain("HyperliquidAdapter");
+      expect(caught!.message).toContain("TokagentHyperEvmHelper is not deployed");
     });
 
-    it("error message mentions testing mode workaround", async () => {
+    it("throws when helper address is the zero-address placeholder", async () => {
+      const zeroHelperRuntime = {
+        getSetting: (k: string) =>
+          k === "TOKAGENT_HYPERLIQUID_HELPER_ADDRESS"
+            ? "0x0000000000000000000000000000000000000000"
+            : undefined,
+      } as any;
       let caught: Error | undefined;
       try {
-        await perpFundingArbKind.execute(DEFAULT_PARAMS, VAULT, undefined, FAKE_RUNTIME);
+        await perpFundingArbKind.execute(
+          DEFAULT_PARAMS,
+          VAULT,
+          { longSymbol: "BTC", shortSymbol: "ETH" },
+          zeroHelperRuntime,
+        );
       } catch (e) {
         caught = e as Error;
       }
       expect(caught).toBeInstanceOf(Error);
-      expect(caught!.message).toContain("testing");
+      expect(caught!.message).toContain("not deployed");
+    });
+
+    it("throws with private key error when private key is missing", async () => {
+      const helperRuntime = {
+        getSetting: (k: string) =>
+          k === "TOKAGENT_HYPERLIQUID_HELPER_ADDRESS"
+            ? "0x" + "1".repeat(40)
+            : undefined,
+      } as any;
+      let caught: Error | undefined;
+      try {
+        await perpFundingArbKind.execute(
+          DEFAULT_PARAMS,
+          VAULT,
+          { longSymbol: "BTC", shortSymbol: "ETH" },
+          helperRuntime,
+        );
+      } catch (e) {
+        caught = e as Error;
+      }
+      expect(caught).toBeInstanceOf(Error);
+      // Should fail on private key resolution
+      expect(caught!.message.toLowerCase()).toMatch(/private|key|tokagent/i);
     });
   });
 

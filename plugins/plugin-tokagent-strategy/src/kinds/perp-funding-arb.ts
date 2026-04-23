@@ -1,14 +1,30 @@
 /**
- * perp-funding-arb — detect funding rate spreads across Hyperliquid perps.
+ * perp-funding-arb — detect funding rate spreads across Hyperliquid perps and trade them.
  *
  * evaluate: fully implemented — real HTTP call to HL info endpoint, real spread computation.
- * execute: stub — throws a clear error with the missing-capability explanation.
+ * execute: submits two CoreWriter limit orders (long + short) in one vault.executeBatch call.
+ *
+ * Prerequisites (documented in README):
+ *   1. Deploy TokagentHyperEvmHelper on HyperEVM and set TOKAGENT_HYPERLIQUID_HELPER_ADDRESS.
+ *   2. Fund vault with HYPE for HyperCore gas.
+ *   3. Register vault as API wallet on Hyperliquid.
+ *   4. Seed first position via REST API to initialize leverage > 0.
  *
  * Run in "testing" status to get real evaluate output without any trades being placed.
  */
 
 import { z } from "zod";
 import type { StrategyKindImpl } from "../types.js";
+import {
+  buildLimitOrderCall,
+  resolveAssetInfo,
+} from "@tokagent/plugin-tokagent-perps";
+import {
+  TokagentVaultClient,
+  getPublicClient,
+  getWalletClient,
+  resolveAgentPrivateKey,
+} from "@tokagent/plugin-tokagent-shared";
 
 // ─── Param schema ─────────────────────────────────────────────────────────────
 
@@ -128,11 +144,100 @@ export const perpFundingArbKind: StrategyKindImpl<Params> = {
     };
   },
 
-  async execute(_params, _vault, _context, _runtime) {
-    throw new Error(
-      "perp-funding-arb execute() not yet implemented — requires HyperliquidAdapter integration " +
-        "with TokagentVault. In 'testing' mode the evaluate step runs but no positions are opened. " +
-        "File a follow-up PR to implement perp writes through the vault.",
-    );
+  async execute(params, vault, context, runtime) {
+    if (!context || typeof context !== "object") {
+      throw new Error("execute called without evaluate context");
+    }
+    const { longSymbol, shortSymbol } = context as {
+      longSymbol: string;
+      shortSymbol: string;
+    };
+
+    // ── Resolve infrastructure ──────────────────────────────────────────────
+
+    const helperAddr = (
+      runtime.getSetting("TOKAGENT_HYPERLIQUID_HELPER_ADDRESS") as string | undefined
+    )?.trim();
+
+    const PLACEHOLDER = "0x0000000000000000000000000000000000000000";
+    if (!helperAddr || helperAddr === PLACEHOLDER) {
+      throw new Error(
+        "TokagentHyperEvmHelper is not deployed. " +
+          "Deploy contracts/script/deploy/DeployTokagentHyperEvmHelper.s.sol on HyperEVM, " +
+          "then set TOKAGENT_HYPERLIQUID_HELPER_ADDRESS in your agent config.",
+      );
+    }
+
+    const vaultAddress = vault.address;
+    const chainId      = vault.chainId; // should be 999 for HyperEVM
+
+    let privateKey: `0x${string}`;
+    try {
+      // Cast: IAgentRuntime.getSetting returns string|number|boolean|null but
+      // AgentRuntimeLike expects string|undefined. The values we care about are strings.
+      privateKey = resolveAgentPrivateKey(runtime as unknown as Parameters<typeof resolveAgentPrivateKey>[0]);
+    } catch (e) {
+      throw new Error(
+        `Cannot resolve agent private key: ${e instanceof Error ? e.message : String(e)}`,
+      );
+    }
+
+    const apiUrl =
+      (runtime.getSetting("HYPERLIQUID_API_URL") as string | undefined) ??
+      "https://api.hyperliquid.xyz";
+
+    // ── Fetch asset info for both legs ────────────────────────────────────
+
+    const controller = new AbortController();
+    const timeout    = setTimeout(() => controller.abort(), 15_000);
+
+    let longInfo:  { assetIndex: number; szDecimals: number; markPx: number };
+    let shortInfo: { assetIndex: number; szDecimals: number; markPx: number };
+
+    try {
+      [longInfo, shortInfo] = await Promise.all([
+        resolveAssetInfo(longSymbol,  apiUrl, controller.signal),
+        resolveAssetInfo(shortSymbol, apiUrl, controller.signal),
+      ]);
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    // ── Build both CoreWriter calls ───────────────────────────────────────
+
+    const longCall = buildLimitOrderCall({
+      symbol:       longSymbol,
+      side:         "long",
+      sizeUsd:      params.maxPositionUsd,
+      markPx:       longInfo.markPx,
+      assetIndex:   longInfo.assetIndex,
+      szDecimals:   longInfo.szDecimals,
+      helperAddress: helperAddr,
+    });
+
+    const shortCall = buildLimitOrderCall({
+      symbol:       shortSymbol,
+      side:         "short",
+      sizeUsd:      params.maxPositionUsd,
+      markPx:       shortInfo.markPx,
+      assetIndex:   shortInfo.assetIndex,
+      szDecimals:   shortInfo.szDecimals,
+      helperAddress: helperAddr,
+    });
+
+    // ── Submit both legs in one executeBatch (atomic from vault POV) ──────
+
+    const publicClient = getPublicClient(chainId);
+    const walletClient = getWalletClient(chainId, privateKey);
+    const client       = new TokagentVaultClient(vaultAddress, publicClient, walletClient);
+
+    const txHash = await client.executeBatch([longCall, shortCall]);
+
+    return {
+      summary:
+        `Opened ${longSymbol} long + ${shortSymbol} short at ` +
+        `$${params.maxPositionUsd} per leg. Tx: ${txHash}`,
+      txHashes: [txHash as `0x${string}`],
+    };
   },
 };
