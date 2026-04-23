@@ -1,0 +1,33 @@
+import type { Plugin } from "@tokagentos/core";
+import { deployTokagentVaultAction } from "./actions/deploy-vault.js";
+import { listStrategiesAction } from "./actions/list-strategies.js";
+import { startStrategyAction, stopStrategyAction } from "./actions/start-stop.js";
+import { activeStrategiesProvider } from "./providers/strategies.js";
+import { StrategyRunnerService } from "./services/strategy-runner.js";
+
+// Re-exports so kind-implementer plugins (or follow-up work) can register kinds.
+export { registerKind, getKind, listKinds } from "./kind-registry.js";
+export type {
+  Strategy,
+  StrategyKind,
+  StrategyStatus,
+  StrategyTickEntry,
+  StrategyKindImpl,
+} from "./types.js";
+export { STRATEGY_SCHEMA } from "./persistence.js";
+
+export const tokagentStrategyPlugin: Plugin = {
+  name: "tokagent-strategy",
+  description:
+    "Strategy engine for Tokagent vaults — compose, persist, and run automated DeFi strategies.",
+  actions: [
+    deployTokagentVaultAction,
+    listStrategiesAction,
+    startStrategyAction,
+    stopStrategyAction,
+  ],
+  providers: [activeStrategiesProvider],
+  services: [StrategyRunnerService],
+};
+
+export default tokagentStrategyPlugin;

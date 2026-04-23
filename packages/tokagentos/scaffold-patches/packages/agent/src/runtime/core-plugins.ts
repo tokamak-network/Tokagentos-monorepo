@@ -18,6 +18,7 @@ export const CORE_PLUGINS: readonly string[] = [
   "@tokagent/plugin-tokagent-yield",
   "@tokagent/plugin-tokagent-perps",
   "@tokagent/plugin-tokagent-polymarket",
+  "@tokagent/plugin-tokagent-strategy",
 ];
 
 /**

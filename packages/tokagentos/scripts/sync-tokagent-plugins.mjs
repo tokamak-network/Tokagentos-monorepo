@@ -25,6 +25,7 @@ const PLUGINS = [
   "plugin-tokagent-yield",
   "plugin-tokagent-perps",
   "plugin-tokagent-polymarket",
+  "plugin-tokagent-strategy",
 ];
 
 const EXCLUDES = ["node_modules", "dist", ".turbo", "tsconfig.tsbuildinfo"];
