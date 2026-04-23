@@ -131,13 +131,25 @@ const CORE_PACKAGES = [
 
 /**
  * Plugin paths relative to the upstream submodule root (`tokagent/`).
- * Only keep plugins that are still loaded by core-plugins.ts or auto-enabled
- * by plugin-auto-enable.ts (e.g. LLM providers picked by the user).
+ * These must all resolve at runtime because upstream's
+ * packages/agent/src/runtime/eliza.ts imports each one statically — even the
+ * ones we don't register via CORE_PLUGINS (scaffold-patches/core-plugins.ts).
+ * The static imports are evaluated at module-load time regardless of whether
+ * the plugin is later added to the runtime's plugin list.
  */
 const PLUGIN_PATHS = [
+  // Plugins that eliza.ts in packages/agent imports statically:
+  "plugins/plugin-agent-skills/typescript",
   "plugins/plugin-anthropic/typescript",
   "plugins/plugin-local-embedding/typescript",
+  "plugins/plugin-pdf/typescript",
   "plugins/plugin-sql/typescript",
+  // Plugins that upstream apps (lifeops, etc.) in tokagent/apps/* import
+  // statically. app-lifeops' telegram-local-client imports plugin-telegram,
+  // and parts of the runtime reference agent-orchestrator + signal:
+  "plugins/plugin-agent-orchestrator",
+  "plugins/plugin-signal/typescript",
+  "plugins/plugin-telegram",
 ];
 
 /**
