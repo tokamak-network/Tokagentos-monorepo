@@ -62,8 +62,42 @@ export const AAVE_V3_POLYGON: ProtocolPack = {
   ],
 } as const;
 
+// ---------------------------------------------------------------------------
+// Hyperliquid Perps on HyperEVM (chain 999)
+// Selectors:
+//   bridgeHype(uint256)       => 0xf4e0b185  (keccak256 first 4 bytes)
+//   dispatchCoreWriter(bytes) => 0xa62c829a
+// ---------------------------------------------------------------------------
+
+// NOTE: TokagentHyperEvmHelper address is a placeholder. Deploy TokagentHyperEvmHelper.s.sol
+// on HyperEVM (chain 999), then update this constant (or wire via runtime config in a future PR).
+// Until set to a real address, the hyperliquid-perps-hyperevm pack cannot be used.
+const HYPERLIQUID_HELPER_HYPEREVM: Address = '0x0000000000000000000000000000000000000000';
+
+const BRIDGE_HYPE_SELECTOR = '0xf4e0b185' as const;
+const DISPATCH_COREWRITER_SELECTOR = '0xa62c829a' as const;
+
+export const HYPERLIQUID_PERPS_HYPEREVM: ProtocolPack = {
+  id: 'hyperliquid-perps-hyperevm',
+  chainId: 999,
+  displayName: 'Hyperliquid Perps (HyperEVM)',
+  entries: [
+    {
+      target: HYPERLIQUID_HELPER_HYPEREVM,
+      selector: BRIDGE_HYPE_SELECTOR,
+      humanLabel: 'Helper.bridgeHype',
+    },
+    {
+      target: HYPERLIQUID_HELPER_HYPEREVM,
+      selector: DISPATCH_COREWRITER_SELECTOR,
+      humanLabel: 'Helper.dispatchCoreWriter',
+    },
+  ],
+  approvals: [],
+} as const;
+
 /** All registered protocol packs. New packs are added in subsequent PRs. */
-export const PACKS: readonly ProtocolPack[] = [AAVE_V3_POLYGON];
+export const PACKS: readonly ProtocolPack[] = [AAVE_V3_POLYGON, HYPERLIQUID_PERPS_HYPEREVM];
 
 /**
  * Find a pack by id + chainId. Returns undefined if not found.

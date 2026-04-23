@@ -22,6 +22,7 @@ export {
 // Protocol packs
 export {
   AAVE_V3_POLYGON,
+  HYPERLIQUID_PERPS_HYPEREVM,
   PACKS,
   findPack,
   listPacksForChain,
