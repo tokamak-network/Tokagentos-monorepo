@@ -131,19 +131,25 @@ const CORE_PACKAGES = [
 
 /**
  * Plugin paths relative to the upstream submodule root (`tokagent/`).
- * This matches what the agent runtime imports statically in eliza.ts.
+ * Only keep plugins that are still loaded by core-plugins.ts or auto-enabled
+ * by plugin-auto-enable.ts (e.g. LLM providers picked by the user).
  */
 const PLUGIN_PATHS = [
-  "plugins/plugin-agent-skills/typescript",
-  "plugins/plugin-agent-orchestrator/typescript",
   "plugins/plugin-anthropic/typescript",
   "plugins/plugin-local-embedding/typescript",
-  "plugins/plugin-pdf/typescript",
   "plugins/plugin-sql/typescript",
-  // Some plugins live at the plugin-<name>/ root (no /typescript/ subfolder).
-  // Upstream apps (e.g. app-lifeops) import subpaths from these.
-  "plugins/plugin-telegram",
-  "plugins/plugin-edge-tts/typescript",
+];
+
+/**
+ * Tokagent product plugin paths relative to the PROJECT ROOT (not tokagent/).
+ * These plugins are shipped inside the template at plugins/plugin-tokagent-*/
+ * and are NOT upstream submodule packages.
+ */
+const TOKAGENT_PLUGIN_PATHS = [
+  "plugins/plugin-tokagent-shared",
+  "plugins/plugin-tokagent-yield",
+  "plugins/plugin-tokagent-perps",
+  "plugins/plugin-tokagent-polymarket",
 ];
 
 /**
@@ -201,6 +207,34 @@ function buildPackage(rel) {
   }
 }
 
+/**
+ * Build one Tokagent product plugin from the project root (NOT under tokagent/).
+ * These plugins live at plugins/plugin-tokagent-*/ at the project root,
+ * shipped as part of the fullstack-app template — not upstream submodule packages.
+ * Same return/throw semantics as buildPackage().
+ */
+function buildTokagentPlugin(rel) {
+  // rel is relative to the project root, e.g. "plugins/plugin-tokagent-shared"
+  if (!existsSync(join(rel, "package.json"))) return "skipped";
+  if (hasBuildOutput(rel)) return "present";
+  console.log(`[ensure-plugin-builds] building tokagent plugin ${rel}...`);
+  try {
+    execFileSync("bun", ["run", "build"], { cwd: rel, stdio: "inherit" });
+    return "built";
+  } catch (err) {
+    if (hasBuildOutput(rel)) {
+      console.warn(
+        `[ensure-plugin-builds] ${rel}: build exited non-zero but dist/ has output — continuing (likely a DTS-only failure).`,
+      );
+      return "js-only";
+    }
+    console.error(
+      `[ensure-plugin-builds] ${rel}: build failed with no JS output.`,
+    );
+    throw err;
+  }
+}
+
 const counts = { built: 0, "js-only": 0, skipped: 0, present: 0 };
 
 // Core packages FIRST — plugin DTS generation imports from @elizaos/core
@@ -219,10 +253,21 @@ for (const rel of CORE_PACKAGES) {
   pointExportsAtDist(dir);
 }
 
-// Now plugins that the runtime statically imports.
+// Now upstream plugins that the runtime statically imports.
 for (const rel of PLUGIN_PATHS) {
   try {
     counts[buildPackage(rel)] += 1;
+  } catch (err) {
+    console.error(err instanceof Error ? err.message : err);
+    process.exit(1);
+  }
+}
+
+// Tokagent product plugins — shipped at the project root under plugins/,
+// NOT inside the tokagent/ submodule. Use a separate builder (no prefix).
+for (const rel of TOKAGENT_PLUGIN_PATHS) {
+  try {
+    counts[buildTokagentPlugin(rel)] += 1;
   } catch (err) {
     console.error(err instanceof Error ? err.message : err);
     process.exit(1);
