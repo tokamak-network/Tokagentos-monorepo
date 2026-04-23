@@ -20,7 +20,7 @@ async function build() {
     outdir: "./dist",
     target: "node",
     format: "esm",
-    external: ["viem", "@tokagent/plugin-tokagent-shared", "@tokagentos/core"],
+    external: ["viem", "@tokagent/plugin-tokagent-shared", "@elizaos/core"],
     sourcemap: "external",
   });
 

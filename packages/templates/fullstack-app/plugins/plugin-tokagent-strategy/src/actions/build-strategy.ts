@@ -5,8 +5,8 @@
  */
 
 import { randomUUID } from "node:crypto";
-import type { Action, ActionResult, IAgentRuntime } from "@tokagentos/core";
-import { ModelType } from "@tokagentos/core";
+import type { Action, ActionResult, IAgentRuntime } from "@elizaos/core";
+import { ModelType } from "@elizaos/core";
 import { getKind } from "../kind-registry.js";
 import { saveStrategy } from "../persistence.js";
 import type { Strategy, StrategyKind } from "../types.js";

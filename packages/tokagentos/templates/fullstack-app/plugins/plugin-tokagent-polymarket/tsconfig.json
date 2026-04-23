@@ -12,8 +12,8 @@
     "declaration": false,
     "types": ["node"],
     "paths": {
-      "@tokagentos/core": ["../../packages/typescript/src/index.node.ts"],
-      "@tokagentos/core/*": ["../../packages/typescript/src/*"]
+      "@elizaos/core": ["../../packages/typescript/src/index.node.ts"],
+      "@elizaos/core/*": ["../../packages/typescript/src/*"]
     }
   },
   "include": ["src/**/*"]

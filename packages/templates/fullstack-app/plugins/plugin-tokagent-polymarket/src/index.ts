@@ -1,4 +1,4 @@
-import type { Plugin } from '@tokagentos/core';
+import type { Plugin } from '@elizaos/core';
 import { describePolymarketMarketAction } from './actions/describe-polymarket-market.js';
 import { polymarketPositionsProvider } from './providers/polymarket-positions.js';
 

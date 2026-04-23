@@ -49,7 +49,7 @@ export interface StrategyKindImpl<P = unknown> {
   evaluate(
     params: P,
     vault: { chainId: number; address: Address },
-    runtime: import("@tokagentos/core").IAgentRuntime,
+    runtime: import("@elizaos/core").IAgentRuntime,
   ): Promise<{
     shouldExecute: boolean;
     summary: string;       // e.g., "BTC funding 0.012%/hr, ETH 0.004%/hr — spread 80bps above threshold"
@@ -59,7 +59,7 @@ export interface StrategyKindImpl<P = unknown> {
     params: P,
     vault: { chainId: number; address: Address },
     context: Record<string, unknown> | undefined,
-    runtime: import("@tokagentos/core").IAgentRuntime,
+    runtime: import("@elizaos/core").IAgentRuntime,
   ): Promise<{
     summary: string;       // e.g., "Opened BTC long 0.5x, ETH short 0.5x. txs: 0x..., 0x..."
     txHashes?: Hex[];

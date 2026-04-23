@@ -1,4 +1,4 @@
-import { Service, type IAgentRuntime } from "@tokagentos/core";
+import { Service, type IAgentRuntime } from "@elizaos/core";
 import { appendTick, listActiveStrategies, updateStrategy, type AgentRuntimeLike } from "../persistence.js";
 import { getKind } from "../kind-registry.js";
 import type { Strategy } from "../types.js";

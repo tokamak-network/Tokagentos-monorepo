@@ -1,4 +1,4 @@
-import type { Action, ActionResult } from "@tokagentos/core";
+import type { Action, ActionResult } from "@elizaos/core";
 import {
   TokagentFactoryClient,
   getChainConfig,

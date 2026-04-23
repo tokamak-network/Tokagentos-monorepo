@@ -8,8 +8,7 @@
  * Without --check: copies files.
  * With --check: exits 1 if any drift is detected (for CI).
  */
-import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -29,6 +28,27 @@ const PLUGINS = [
 ];
 
 const EXCLUDES = ["node_modules", "dist", ".turbo", "tsconfig.tsbuildinfo"];
+
+// Files whose @tokagentos/core references must be rewritten to @elizaos/core
+// when copied into the template. The local monorepo uses @tokagentos/core for
+// its typescript package; scaffolded projects pull upstream elizaos/eliza
+// where the canonical scope is @elizaos. Plugins develop against the local
+// name but must ship with the upstream name. Applied to .ts and package.json
+// file contents only.
+const RENAME_EXTENSIONS = new Set([".ts", ".json"]);
+const SCOPE_FROM = "@tokagentos/core";
+const SCOPE_TO = "@elizaos/core";
+
+function applyScopeRename(buf, relPath) {
+  const ext = relPath.includes(".") ? "." + relPath.split(".").pop() : "";
+  if (!RENAME_EXTENSIONS.has(ext)) return buf;
+  const text = buf.toString("utf8");
+  if (!text.includes(SCOPE_FROM)) return buf;
+  // Replace whole-token `@tokagentos/core` — inside quotes, imports, JSON values.
+  // No regex needed since the token is unambiguous.
+  const rewritten = text.split(SCOPE_FROM).join(SCOPE_TO);
+  return Buffer.from(rewritten, "utf8");
+}
 
 const check = process.argv.includes("--check");
 
@@ -62,11 +82,11 @@ for (const plugin of PLUGINS) {
   for (const srcFile of files) {
     const rel = relative(srcRoot, srcFile);
     const dstFile = join(dstRoot, rel);
+    const srcBuf = applyScopeRename(readFileSync(srcFile), rel);
     let drift = false;
     if (!existsSync(dstFile)) {
       drift = true;
     } else {
-      const srcBuf = readFileSync(srcFile);
       const dstBuf = readFileSync(dstFile);
       if (Buffer.compare(srcBuf, dstBuf) !== 0) drift = true;
     }
@@ -77,7 +97,7 @@ for (const plugin of PLUGINS) {
         console.error(`drift: ${plugin}/${rel}`);
       } else {
         mkdirSync(dirname(dstFile), { recursive: true });
-        execFileSync("cp", [srcFile, dstFile]);
+        writeFileSync(dstFile, srcBuf);
         console.log(`sync: copied ${plugin}/${rel}`);
       }
     }

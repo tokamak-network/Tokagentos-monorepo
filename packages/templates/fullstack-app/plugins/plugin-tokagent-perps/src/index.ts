@@ -1,4 +1,4 @@
-import type { Plugin } from '@tokagentos/core';
+import type { Plugin } from '@elizaos/core';
 import { getPerpsMarketInfoAction } from './actions/get-perps-market-info.js';
 import { openPerpPositionAction } from './actions/open-perp-position.js';
 import { closePerpPositionAction } from './actions/close-perp-position.js';

@@ -1,5 +1,5 @@
-import type { Provider, ProviderResult } from '@tokagentos/core';
-import type { IAgentRuntime, Memory, State } from '@tokagentos/core';
+import type { Provider, ProviderResult } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 import { getPublicClient } from '@tokagent/plugin-tokagent-shared';
 import type { Address } from 'viem';
 import {

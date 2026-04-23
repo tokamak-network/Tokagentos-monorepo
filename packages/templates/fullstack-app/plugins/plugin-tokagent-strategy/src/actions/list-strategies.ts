@@ -1,4 +1,4 @@
-import type { Action, ActionResult, IAgentRuntime } from "@tokagentos/core";
+import type { Action, ActionResult, IAgentRuntime } from "@elizaos/core";
 import { loadStrategies } from "../persistence.js";
 
 /** Adapt IAgentRuntime.getSetting (returns string|number|boolean|null) to AgentRuntimeLike. */

@@ -1,10 +1,10 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
-// ─── Mock @tokagentos/core ────────────────────────────────────────────────────
+// ─── Mock @elizaos/core ────────────────────────────────────────────────────
 
 const mockUseModel = vi.fn();
 
-vi.mock("@tokagentos/core", () => ({
+vi.mock("@elizaos/core", () => ({
   ModelType: {
     TEXT_LARGE: "TEXT_LARGE",
   },

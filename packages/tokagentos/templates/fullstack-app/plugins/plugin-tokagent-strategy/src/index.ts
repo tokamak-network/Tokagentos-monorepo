@@ -1,4 +1,4 @@
-import type { Plugin } from "@tokagentos/core";
+import type { Plugin } from "@elizaos/core";
 import { deployTokagentVaultAction } from "./actions/deploy-vault.js";
 import { buildStrategyAction } from "./actions/build-strategy.js";
 import { listStrategiesAction } from "./actions/list-strategies.js";

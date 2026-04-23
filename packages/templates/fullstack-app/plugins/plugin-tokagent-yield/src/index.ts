@@ -1,4 +1,4 @@
-import type { Plugin } from '@tokagentos/core';
+import type { Plugin } from '@elizaos/core';
 import { depositToAaveAction } from './actions/deposit-to-aave.js';
 import { withdrawFromAaveAction } from './actions/withdraw-from-aave.js';
 import { aavePositionsProvider } from './providers/aave-positions.js';

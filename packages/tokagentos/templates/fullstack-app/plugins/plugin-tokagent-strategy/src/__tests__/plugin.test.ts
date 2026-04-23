@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
-// Stub @tokagentos/core so we don't need the compiled dist when running tests.
-vi.mock("@tokagentos/core", () => {
+// Stub @elizaos/core so we don't need the compiled dist when running tests.
+vi.mock("@elizaos/core", () => {
   class Service {
     // biome-ignore lint/suspicious/noExplicitAny: test stub
     protected runtime: any;

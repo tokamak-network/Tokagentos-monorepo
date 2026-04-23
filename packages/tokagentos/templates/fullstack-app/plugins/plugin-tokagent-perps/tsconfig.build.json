@@ -13,8 +13,8 @@
     "rootDir": "src",
     "types": ["node"],
     "paths": {
-      "@tokagentos/core": ["../../packages/typescript/dist/index.node.d.ts"],
-      "@tokagentos/core/*": ["../../packages/typescript/dist/*"]
+      "@elizaos/core": ["../../packages/typescript/dist/index.node.d.ts"],
+      "@elizaos/core/*": ["../../packages/typescript/dist/*"]
     }
   },
   "include": ["src/**/*"],

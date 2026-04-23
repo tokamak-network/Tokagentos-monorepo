@@ -1,5 +1,5 @@
-import type { Action, ActionResult, HandlerOptions } from '@tokagentos/core';
-import type { IAgentRuntime, Memory, State } from '@tokagentos/core';
+import type { Action, ActionResult, HandlerOptions } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 import { TokagentVaultClient } from '@tokagent/plugin-tokagent-shared';
 import {
   getPublicClient,

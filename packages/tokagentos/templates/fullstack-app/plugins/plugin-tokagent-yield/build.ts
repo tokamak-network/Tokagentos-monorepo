@@ -3,7 +3,7 @@
  * Build script for @tokagent/plugin-tokagent-yield.
  * Produces ESM + .d.ts in dist/.
  *
- * Type declarations are generated with skipLibCheck and treat @tokagentos/core
+ * Type declarations are generated with skipLibCheck and treat @elizaos/core
  * as an external (its types are already provided by the workspace package at
  * runtime — plugins do not need to re-emit them).
  */
@@ -21,7 +21,7 @@ async function build() {
     outdir: "./dist",
     target: "node",
     format: "esm",
-    external: ["viem", "@tokagent/plugin-tokagent-shared", "@tokagentos/core"],
+    external: ["viem", "@tokagent/plugin-tokagent-shared", "@elizaos/core"],
     sourcemap: "external",
   });
 

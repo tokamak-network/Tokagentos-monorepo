@@ -1,4 +1,4 @@
-import type { Provider, ProviderResult, IAgentRuntime } from "@tokagentos/core";
+import type { Provider, ProviderResult, IAgentRuntime } from "@elizaos/core";
 import { listActiveStrategies } from "../persistence.js";
 
 function toRuntimeLike(runtime: IAgentRuntime) {

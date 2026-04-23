@@ -1,4 +1,4 @@
-import type { Action, ActionResult, IAgentRuntime } from "@tokagentos/core";
+import type { Action, ActionResult, IAgentRuntime } from "@elizaos/core";
 import { getStrategy, updateStrategy } from "../persistence.js";
 import { getKind } from "../kind-registry.js";
 import type { StrategyStatus } from "../types.js";

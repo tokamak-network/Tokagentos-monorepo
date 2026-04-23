@@ -1,5 +1,5 @@
-import type { Provider, ProviderResult } from '@tokagentos/core';
-import type { IAgentRuntime, Memory, State } from '@tokagentos/core';
+import type { Provider, ProviderResult } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 import { DEFAULT_DATA_URL, PM_FETCH_TIMEOUT_MS } from '../types.js';
 import type { PolymarketPosition } from '../types.js';
 

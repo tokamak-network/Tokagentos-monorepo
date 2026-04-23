@@ -1,5 +1,5 @@
-import type { Action, ActionResult, HandlerOptions } from '@tokagentos/core';
-import type { IAgentRuntime, Memory, State } from '@tokagentos/core';
+import type { Action, ActionResult, HandlerOptions } from '@elizaos/core';
+import type { IAgentRuntime, Memory, State } from '@elizaos/core';
 import { DEFAULT_HL_API_URL, HL_FETCH_TIMEOUT_MS } from '../types.js';
 import type { AssetCtx } from '../types.js';
 

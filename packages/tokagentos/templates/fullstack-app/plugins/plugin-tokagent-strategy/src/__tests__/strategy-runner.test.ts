@@ -1,8 +1,8 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
 import type { Strategy } from "../types.js";
 
-// ─── Mock @tokagentos/core to provide a stub Service base class ──────────────
-vi.mock("@tokagentos/core", () => {
+// ─── Mock @elizaos/core to provide a stub Service base class ──────────────
+vi.mock("@elizaos/core", () => {
   class Service {
     // biome-ignore lint/suspicious/noExplicitAny: test stub
     protected runtime: any;
