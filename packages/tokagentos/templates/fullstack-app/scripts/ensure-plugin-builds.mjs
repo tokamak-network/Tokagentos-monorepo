@@ -142,7 +142,7 @@ const PLUGIN_PATHS = [
 
 /**
  * Tokagent product plugin paths relative to the PROJECT ROOT (not tokagent/).
- * These plugins are shipped inside the template at plugins/plugin-tokagent-*/
+ * These plugins are shipped inside the template at `plugins/plugin-tokagent-<name>`
  * and are NOT upstream submodule packages.
  */
 const TOKAGENT_PLUGIN_PATHS = [
@@ -210,7 +210,7 @@ function buildPackage(rel) {
 
 /**
  * Build one Tokagent product plugin from the project root (NOT under tokagent/).
- * These plugins live at plugins/plugin-tokagent-*/ at the project root,
+ * These plugins live at `plugins/plugin-tokagent-<name>` at the project root,
  * shipped as part of the fullstack-app template — not upstream submodule packages.
  * Same return/throw semantics as buildPackage().
  */
