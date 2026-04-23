@@ -11,9 +11,9 @@ describe('tokagentPerpsPlugin', () => {
     expect(typeof tokagentPerpsPlugin.description).toBe('string');
   });
 
-  it('exports exactly 1 action', () => {
+  it('exports exactly 3 actions', () => {
     expect(Array.isArray(tokagentPerpsPlugin.actions)).toBe(true);
-    expect(tokagentPerpsPlugin.actions?.length).toBe(1);
+    expect(tokagentPerpsPlugin.actions?.length).toBe(3);
   });
 
   it('exports exactly 1 provider', () => {
@@ -23,6 +23,20 @@ describe('tokagentPerpsPlugin', () => {
 
   it('has GET_PERPS_MARKET_INFO action', () => {
     const action = tokagentPerpsPlugin.actions?.find((a) => a.name === 'GET_PERPS_MARKET_INFO');
+    expect(action).toBeDefined();
+    expect(typeof action?.handler).toBe('function');
+    expect(typeof action?.validate).toBe('function');
+  });
+
+  it('has OPEN_PERP_POSITION action', () => {
+    const action = tokagentPerpsPlugin.actions?.find((a) => a.name === 'OPEN_PERP_POSITION');
+    expect(action).toBeDefined();
+    expect(typeof action?.handler).toBe('function');
+    expect(typeof action?.validate).toBe('function');
+  });
+
+  it('has CLOSE_PERP_POSITION action', () => {
+    const action = tokagentPerpsPlugin.actions?.find((a) => a.name === 'CLOSE_PERP_POSITION');
     expect(action).toBeDefined();
     expect(typeof action?.handler).toBe('function');
     expect(typeof action?.validate).toBe('function');
