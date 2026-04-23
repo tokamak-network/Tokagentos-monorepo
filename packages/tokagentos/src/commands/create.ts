@@ -341,10 +341,18 @@ function preCompleteOnboarding(
 }
 
 /**
- * Append or create <projectRoot>/.env with the selected provider's key.
- * If a .env already exists and already has the var set, leaves it alone
- * (the scaffolded project's own .env.example flow remains source of truth
- * for placeholder variables; we only set the user-supplied API key).
+ * Create or update <projectRoot>/.env for a fresh scaffold.
+ *
+ * Strategy:
+ *   1. If .env does not exist and .env.example does, start from the example.
+ *      The example carries all the Tokagent config variables with safe
+ *      defaults (TOKAGENT_EXECUTION_MODE=vault) and commented placeholders
+ *      for the private key / vault addresses / RPC overrides. The user only
+ *      has to uncomment + fill.
+ *   2. Uncomment the selected LLM provider's env var line and set the user's
+ *      API key. Leave other provider lines commented.
+ *   3. If a user-supplied .env already existed (e.g., re-running the CLI),
+ *      only update/insert the API key line — don't overwrite anything else.
  */
 function writeLlmEnvFile(
   projectRoot: string,
@@ -353,22 +361,42 @@ function writeLlmEnvFile(
 ): void {
   if (!provider.envVar || !apiKey) return;
   const envPath = path.join(projectRoot, ".env");
-  const line = `${provider.envVar}=${apiKey}`;
+  const examplePath = path.join(projectRoot, ".env.example");
+  const apiKeyLine = `${provider.envVar}=${apiKey}`;
+
+  // Case 1: .env exists — preserve user edits; only patch the API key line.
   if (fs.existsSync(envPath)) {
     const existing = fs.readFileSync(envPath, "utf8");
-    const re = new RegExp(`^${provider.envVar}=.*$`, "m");
-    if (re.test(existing)) {
-      fs.writeFileSync(envPath, existing.replace(re, line));
-    } else {
-      const sep = existing.endsWith("\n") ? "" : "\n";
-      fs.writeFileSync(envPath, `${existing}${sep}${line}\n`);
+    const activeRe = new RegExp(`^${provider.envVar}=.*$`, "m");
+    if (activeRe.test(existing)) {
+      fs.writeFileSync(envPath, existing.replace(activeRe, apiKeyLine));
+      return;
     }
-  } else {
-    fs.writeFileSync(
-      envPath,
-      `# API key set by \`tokagentos create --llm ${provider.id}\`.\n${line}\n`,
-    );
+    // Try to uncomment a commented placeholder line.
+    const commentedRe = new RegExp(`^#\\s*${provider.envVar}=.*$`, "m");
+    if (commentedRe.test(existing)) {
+      fs.writeFileSync(envPath, existing.replace(commentedRe, apiKeyLine));
+      return;
+    }
+    // Neither active nor commented — append.
+    const sep = existing.endsWith("\n") ? "" : "\n";
+    fs.writeFileSync(envPath, `${existing}${sep}${apiKeyLine}\n`);
+    return;
   }
+
+  // Case 2: fresh .env — start from .env.example if present, else minimal file.
+  let base: string;
+  if (fs.existsSync(examplePath)) {
+    base = fs.readFileSync(examplePath, "utf8");
+  } else {
+    base = `# API key set by \`tokagentos create --llm ${provider.id}\`.\n`;
+  }
+  // Uncomment the selected provider's line; leave the others commented.
+  const commentedRe = new RegExp(`^#\\s*${provider.envVar}=.*$`, "m");
+  const filled = commentedRe.test(base)
+    ? base.replace(commentedRe, apiKeyLine)
+    : `${base.endsWith("\n") ? base : `${base}\n`}${apiKeyLine}\n`;
+  fs.writeFileSync(envPath, filled);
 }
 
 async function promptPluginValues(

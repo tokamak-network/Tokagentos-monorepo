@@ -151,6 +151,12 @@ export const ALL_TAB_GROUPS: TabGroup[] = [
     description: "Scheduled tasks and recurring workflows",
   },
   {
+    label: "Wallet",
+    tabs: ["inventory"],
+    icon: Wallet,
+    description: "Crypto wallets and token balances",
+  },
+  {
     label: "Settings",
     tabs: ["settings"],
     icon: Settings,
