@@ -15,6 +15,19 @@ const StrategyTickEntrySchema = z.object({
   result: z.string(),
 });
 
+const BacktestRunSchema = z.object({
+  runAt: z.number(),
+  rangeFromMs: z.number(),
+  rangeToMs: z.number(),
+  totalTicks: z.number(),
+  signalCount: z.number(),
+  pnlPctHypothetical: z.number(),
+  sharpeHypothetical: z.number(),
+  maxDrawdownPct: z.number(),
+  summary: z.string(),
+  warnings: z.array(z.string()),
+});
+
 export const STRATEGY_SCHEMA: z.ZodType<Strategy> = z.object({
   id: z.string(),
   name: z.string(),
@@ -33,6 +46,7 @@ export const STRATEGY_SCHEMA: z.ZodType<Strategy> = z.object({
   lastTickAt: z.number().optional(),
   lastError: z.string().optional(),
   tickHistory: z.array(StrategyTickEntrySchema),
+  backtestResults: z.array(BacktestRunSchema).optional(),
 }) as z.ZodType<Strategy>;
 
 // ─── In-process mutex ────────────────────────────────────────────────────────

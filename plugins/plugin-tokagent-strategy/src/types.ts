@@ -1,4 +1,5 @@
 import type { Address, Hex } from "viem";
+import type { BacktestRun, BacktestContext, BacktestResult } from "./backtest/types.js";
 
 export type StrategyKind =
   | "perp-funding-arb"
@@ -30,7 +31,8 @@ export interface Strategy {
   createdAt: number;
   lastTickAt?: number;
   lastError?: string;
-  tickHistory: StrategyTickEntry[];  // capped at 50 most recent entries
+  tickHistory: StrategyTickEntry[];     // capped at 50 most recent entries
+  backtestResults?: BacktestRun[];      // capped at 5 most recent backtest runs
 }
 
 /**
@@ -62,4 +64,13 @@ export interface StrategyKindImpl<P = unknown> {
     summary: string;       // e.g., "Opened BTC long 0.5x, ETH short 0.5x. txs: 0x..., 0x..."
     txHashes?: Hex[];
   }>;
+  /**
+   * Optional: run the strategy's evaluate logic against historical data to produce
+   * a simulated P&L trace. Not all kinds implement this.
+   */
+  backtest?(
+    params: P,
+    ctx: BacktestContext,
+    vault: { chainId: number; address: Address },
+  ): Promise<BacktestResult>;
 }
