@@ -12,11 +12,11 @@ vi.mock("@tokagentos/core", () => {
     static async start(runtime: any) { return new Service(runtime); }
     async stop() {}
   }
-  return { Service };
+  return { Service, ModelType: { TEXT_LARGE: "TEXT_LARGE" } };
 });
 
 import tokagentStrategyPlugin from "../index.js";
-import { STRATEGY_SCHEMA, registerKind, getKind, listKinds } from "../index.js";
+import { STRATEGY_SCHEMA, registerKind, getKind, listKinds, registerBuiltinKinds } from "../index.js";
 
 describe("tokagentStrategyPlugin", () => {
   it("has the correct name", () => {
@@ -29,9 +29,9 @@ describe("tokagentStrategyPlugin", () => {
     expect(tokagentStrategyPlugin.description.length).toBeGreaterThan(10);
   });
 
-  it("exports exactly 4 actions", () => {
+  it("exports exactly 5 actions", () => {
     expect(Array.isArray(tokagentStrategyPlugin.actions)).toBe(true);
-    expect(tokagentStrategyPlugin.actions?.length).toBe(4);
+    expect(tokagentStrategyPlugin.actions?.length).toBe(5);
   });
 
   it("exports exactly 1 provider", () => {
@@ -72,6 +72,18 @@ describe("tokagentStrategyPlugin", () => {
     const action = tokagentStrategyPlugin.actions?.find((a) => a.name === "STOP_STRATEGY");
     expect(action).toBeDefined();
     expect(typeof action?.handler).toBe("function");
+  });
+
+  it("has BUILD_STRATEGY action", () => {
+    const action = tokagentStrategyPlugin.actions?.find((a) => a.name === "BUILD_STRATEGY");
+    expect(action).toBeDefined();
+    expect(typeof action?.handler).toBe("function");
+    expect(Array.isArray(action?.parameters)).toBe(true);
+    expect((action?.parameters?.length ?? 0) > 0).toBe(true);
+  });
+
+  it("has an init hook", () => {
+    expect(typeof tokagentStrategyPlugin.init).toBe("function");
   });
 
   it("has activeStrategies provider", () => {
@@ -119,11 +131,30 @@ describe("kind-registry exports", () => {
     expect(typeof listKinds).toBe("function");
   });
 
-  it("getKind returns undefined for unregistered kind", () => {
-    expect(getKind("perp-funding-arb")).toBeUndefined();
-  });
-
   it("listKinds returns an array", () => {
     expect(Array.isArray(listKinds())).toBe(true);
+  });
+});
+
+describe("registerBuiltinKinds", () => {
+  it("is exported and is a function", () => {
+    expect(typeof registerBuiltinKinds).toBe("function");
+  });
+
+  it("registers all 3 built-in kinds after being called", () => {
+    registerBuiltinKinds();
+    expect(listKinds()).toContain("yield-auto-compound");
+    expect(listKinds()).toContain("polymarket-value-hunt");
+    expect(listKinds()).toContain("perp-funding-arb");
+  });
+
+  it("each registered kind has evaluate and execute", () => {
+    registerBuiltinKinds();
+    for (const k of ["yield-auto-compound", "polymarket-value-hunt", "perp-funding-arb"] as const) {
+      const impl = getKind(k);
+      expect(impl).toBeDefined();
+      expect(typeof impl?.evaluate).toBe("function");
+      expect(typeof impl?.execute).toBe("function");
+    }
   });
 });
