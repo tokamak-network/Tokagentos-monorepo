@@ -69,10 +69,10 @@ export const AAVE_V3_POLYGON: ProtocolPack = {
 //   dispatchCoreWriter(bytes) => 0xa62c829a
 // ---------------------------------------------------------------------------
 
-// NOTE: TokagentHyperEvmHelper address is a placeholder. Deploy TokagentHyperEvmHelper.s.sol
-// on HyperEVM (chain 999), then update this constant (or wire via runtime config in a future PR).
-// Until set to a real address, the hyperliquid-perps-hyperevm pack cannot be used.
-const HYPERLIQUID_HELPER_HYPEREVM: Address = '0x0000000000000000000000000000000000000000';
+// Deployed TokagentHyperEvmHelper on HyperEVM mainnet (chain 999) at tx
+// 0xb...f1 (see contracts/broadcast/DeployTokagentHyperEvmHelper.s.sol/999/run-latest.json).
+// The helper is stateless; same address can be reused by any number of vaults.
+const HYPERLIQUID_HELPER_HYPEREVM: Address = '0x8350777738059f29f639e493ea96e20d2f58171c';
 
 const BRIDGE_HYPE_SELECTOR = '0xf4e0b185' as const;
 const DISPATCH_COREWRITER_SELECTOR = '0xa62c829a' as const;
