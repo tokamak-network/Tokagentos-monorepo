@@ -8,6 +8,7 @@
 
 import { z } from "zod";
 import type { StrategyKindImpl } from "../types.js";
+import type { BacktestContext, BacktestResult } from "../backtest/types.js";
 
 // ─── Param schema ─────────────────────────────────────────────────────────────
 
@@ -155,5 +156,14 @@ export const polymarketValueHuntKind: StrategyKindImpl<Params> = {
       "polymarket-value-hunt is alert-only; execute should not be called. " +
         "The strategy's shouldExecute is always false — the evaluate summary IS the output.",
     );
+  },
+
+  async backtest(_params: Params, _ctx: BacktestContext, _vault: { chainId: number; address: `0x${string}` }): Promise<BacktestResult> {
+    return {
+      supported: false,
+      reason:
+        "polymarket-value-hunt is alert-only — no positions taken, so no P&L to backtest. " +
+        "Consider tracking alert hit rate via the tickHistory instead.",
+    };
   },
 };

@@ -14,6 +14,9 @@ import {
   resolveAgentPrivateKey,
 } from "@tokagent/plugin-tokagent-shared";
 import type { StrategyKindImpl } from "../types.js";
+import { runBacktest } from "../backtest/engine.js";
+import { fetchAaveRateHistory } from "../backtest/data-sources.js";
+import type { BacktestContext, BacktestResult } from "../backtest/types.js";
 
 // ─── Addresses (Polygon mainnet) ─────────────────────────────────────────────
 
@@ -199,5 +202,69 @@ export const yieldAutoCompoundKind: StrategyKindImpl<Params> = {
       summary: `Supplied $${amountHuman.toFixed(2)} USDC.e to Aave v3 on Polygon via vault ${vault.address}.`,
       txHashes: [txHash],
     };
+  },
+
+  async backtest(
+    _params: Params,
+    ctx: BacktestContext,
+    vault: { chainId: number; address: `0x${string}` },
+  ): Promise<BacktestResult> {
+    if (vault.chainId !== POLYGON_CHAIN_ID) {
+      return {
+        supported: false,
+        reason: `yield-auto-compound backtest only supports Polygon (137), not ${vault.chainId}`,
+      };
+    }
+
+    // Aave USDC.e reserve address on Polygon (lowercase for subgraph)
+    const reserveId = "0x2791bca1f2de4661ed88a30c99a7a9449aa84174";
+    const dataPoints = await fetchAaveRateHistory(reserveId, ctx.fromMs, ctx.toMs);
+
+    if (dataPoints.length < 2) {
+      return {
+        supported: true,
+        run: {
+          runAt: Date.now(),
+          rangeFromMs: ctx.fromMs,
+          rangeToMs: ctx.toMs,
+          totalTicks: 0,
+          signalCount: 0,
+          pnlPctHypothetical: 0,
+          sharpeHypothetical: 0,
+          maxDrawdownPct: 0,
+          summary: "Insufficient historical data to backtest",
+          warnings: [
+            "fewer than 2 datapoints from Aave subgraph — try a longer range",
+          ],
+        },
+      };
+    }
+
+    // Model: assume funds are always supplied (yield-auto-compound avoids idle time).
+    // At each tick, accrue (liquidityRate * stepMs / yearMs) of the position.
+    // This is the APY path through the backtest window.
+    const yearMs = 365 * 24 * 3600 * 1000;
+
+    const run = runBacktest({
+      rangeFromMs: ctx.fromMs,
+      rangeToMs: ctx.toMs,
+      stepMs: ctx.stepMs,
+      dataPoints,
+      evaluator: (_tickTs, recent) => {
+        const latest = recent[recent.length - 1];
+        if (!latest) return { shouldExecute: false, pnlDelta: 0 };
+        const apy = Number(latest.liquidityRate ?? 0);
+        const pnlDelta = apy * (ctx.stepMs / yearMs);
+        return { shouldExecute: true, pnlDelta };
+      },
+    });
+
+    run.warnings.push(
+      "Backtest assumes funds are always supplied — no idle time modelled.",
+      "P&L is APY × time fraction; actual P&L depends on principal size and compounding.",
+      "Aave rate data sourced from The Graph subgraph — may have gaps.",
+    );
+
+    return { supported: true, run };
   },
 };
