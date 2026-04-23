@@ -11,9 +11,9 @@
   },
   "workspaces": [
     "apps/*",
+    "plugins/*",
     "tokagent/packages/native-plugins/*",
     "tokagent/packages/app-core/platforms/electrobun",
-    "tokagent/apps/*",
     "tokagent/plugins/*",
     "tokagent/plugins/plugin-*/typescript",
     "tokagent/packages/*",

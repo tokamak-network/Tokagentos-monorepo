@@ -45,16 +45,6 @@ import {
   shouldInstallMainWindowOnboardingPatches,
   syncDetachedShellLocation,
 } from "@elizaos/app-core/platform";
-import { dispatchQueuedLifeOpsGithubCallbackFromUrl } from "@elizaos/app-lifeops/platform";
-import { LifeOpsActivitySignalsEffect } from "@elizaos/app-lifeops/components/LifeOpsActivitySignalsEffect";
-// Side-effect: register LifeOps sidebar widgets into the app-core widget registry.
-import "@elizaos/app-lifeops/widgets";
-// Side-effect: register game operator surfaces + detail extensions.
-import "@elizaos/app-babylon/ui";
-import "@elizaos/app-scape/ui";
-import "@elizaos/app-hyperscape/ui";
-import "@elizaos/app-2004scape/ui";
-import "@elizaos/app-defense-of-the-agents/ui";
 import {
   DESKTOP_TRAY_MENU_ITEMS,
   DesktopOnboardingRuntime,
@@ -164,14 +154,8 @@ installDesktopPermissionsClientPatch(client as never);
 // Register custom character editor for app-core's ViewRouter to pick up
 window.__TOKAGENT_CHARACTER_EDITOR__ = CharacterEditor;
 
-import { getStylePresets } from "@elizaos/shared/onboarding-presets";
-
-// Derive VRM roster from STYLE_PRESETS so character names stay in one place.
-const TOKAGENT_STYLE_PRESETS = getStylePresets();
-
-const TOKAGENT_VRM_ASSETS = TOKAGENT_STYLE_PRESETS.slice()
-  .sort((a, b) => a.avatarIndex - b.avatarIndex)
-  .map((p) => ({ title: p.name, slug: `tokagent-${p.avatarIndex}` }));
+// Single VRM asset for the Tokagent DeFi operator character.
+const TOKAGENT_VRM_ASSETS = [{ title: "Tokagent", slug: "tokagent-0" }];
 
 const tokagentBootConfig: AppBootConfig = {
   branding: TOKAGENT_BRANDING,
@@ -181,7 +165,7 @@ const tokagentBootConfig: AppBootConfig = {
   cloudApiBase:
     (import.meta.env.VITE_CLOUD_BASE as string) ?? "https://www.tokagentcloud.ai",
   vrmAssets: TOKAGENT_VRM_ASSETS,
-  onboardingStyles: TOKAGENT_STYLE_PRESETS,
+  onboardingStyles: [],
   characterEditor: CharacterEditor,
   characterCatalog: TOKAGENT_CHARACTER_CATALOG,
   envAliases: TOKAGENT_ENV_ALIASES,
@@ -301,13 +285,8 @@ function handleDeepLink(url: string): void {
     case "chat":
       window.location.hash = "#chat";
       break;
-    case "lifeops":
-      window.location.hash = "#lifeops";
-      dispatchQueuedLifeOpsGithubCallbackFromUrl(url);
-      break;
     case "settings":
       window.location.hash = "#settings";
-      dispatchQueuedLifeOpsGithubCallbackFromUrl(url);
       break;
     case "connect": {
       const gatewayUrl = parsed.searchParams.get("url");
@@ -448,7 +427,6 @@ function mountReactApp(): void {
               <DesktopOnboardingRuntime />
               <DesktopSurfaceNavigationRuntime />
               <DesktopTrayRuntime />
-              <LifeOpsActivitySignalsEffect />
               <App />
             </>
           )}
