@@ -29,9 +29,9 @@ describe("tokagentStrategyPlugin", () => {
     expect(tokagentStrategyPlugin.description.length).toBeGreaterThan(10);
   });
 
-  it("exports exactly 5 actions", () => {
+  it("exports exactly 6 actions", () => {
     expect(Array.isArray(tokagentStrategyPlugin.actions)).toBe(true);
-    expect(tokagentStrategyPlugin.actions?.length).toBe(5);
+    expect(tokagentStrategyPlugin.actions?.length).toBe(6);
   });
 
   it("exports exactly 1 provider", () => {

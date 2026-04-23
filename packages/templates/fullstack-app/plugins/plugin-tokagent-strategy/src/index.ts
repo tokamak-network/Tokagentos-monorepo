@@ -3,6 +3,7 @@ import { deployTokagentVaultAction } from "./actions/deploy-vault.js";
 import { buildStrategyAction } from "./actions/build-strategy.js";
 import { listStrategiesAction } from "./actions/list-strategies.js";
 import { startStrategyAction, stopStrategyAction } from "./actions/start-stop.js";
+import { backtestStrategyAction } from "./actions/backtest-strategy.js";
 import { activeStrategiesProvider } from "./providers/strategies.js";
 import { StrategyRunnerService } from "./services/strategy-runner.js";
 import { registerBuiltinKinds } from "./kinds/index.js";
@@ -16,6 +17,7 @@ export type {
   StrategyTickEntry,
   StrategyKindImpl,
 } from "./types.js";
+export type { BacktestRun, BacktestResult, BacktestContext, StrategyBacktestImpl } from "./backtest/types.js";
 export { STRATEGY_SCHEMA } from "./persistence.js";
 export { registerBuiltinKinds } from "./kinds/index.js";
 
@@ -32,6 +34,7 @@ export const tokagentStrategyPlugin: Plugin = {
     listStrategiesAction,
     startStrategyAction,
     stopStrategyAction,
+    backtestStrategyAction,
   ],
   providers: [activeStrategiesProvider],
   services: [StrategyRunnerService],
