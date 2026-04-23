@@ -34,7 +34,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:packaged": "node ./scripts/packaged-smoke.mjs",
-    "prepublishOnly": "bun run build"
+    "sync:plugins": "node scripts/sync-tokagent-plugins.mjs",
+    "sync:plugins:check": "node scripts/sync-tokagent-plugins.mjs --check",
+    "prepublishOnly": "bun run sync:plugins && bun run build"
   },
   "dependencies": {
     "@clack/prompts": "^1.0.0",
