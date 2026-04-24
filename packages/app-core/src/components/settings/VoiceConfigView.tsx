@@ -31,10 +31,86 @@ import {
   sanitizeApiKey,
   VOICE_PROVIDERS,
 } from "../../voice";
-import {
-  CloudConnectionStatus,
-  CloudSourceModeToggle,
-} from "../cloud/CloudSourceControls";
+
+// ── Inlined cloud-source controls ────────────────────────────────────
+
+type CloudSourceMode = "cloud" | "own-key";
+
+function CloudSourceModeToggle({
+  mode,
+  onChange,
+  cloudLabel = "Tokagent Cloud",
+  ownKeyLabel = "Own API Key",
+}: {
+  mode: CloudSourceMode;
+  onChange: (mode: CloudSourceMode) => void;
+  cloudLabel?: string;
+  ownKeyLabel?: string;
+}) {
+  return (
+    <div className="inline-flex overflow-hidden rounded-lg bg-bg-muted shadow-sm">
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+          mode === "cloud"
+            ? "bg-accent text-accent-fg hover:bg-accent/90 hover:text-accent-fg"
+            : "bg-transparent text-muted hover:bg-bg-hover hover:text-txt"
+        }`}
+        onClick={() => onChange("cloud")}
+      >
+        {cloudLabel}
+      </Button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+          mode === "own-key"
+            ? "bg-accent text-accent-fg hover:bg-accent/90 hover:text-accent-fg"
+            : "bg-transparent text-muted hover:bg-bg-hover hover:text-txt"
+        }`}
+        onClick={() => onChange("own-key")}
+      >
+        {ownKeyLabel}
+      </Button>
+    </div>
+  );
+}
+
+function CloudConnectionStatus({
+  connected,
+  disconnectedText,
+}: {
+  connected: boolean;
+  disconnectedText: string;
+}) {
+  const { t } = useApp();
+  const connectedText = "Connected to Tokagent Cloud";
+  return (
+    <div
+      className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-bg-muted/90 px-3 py-2.5"
+      role="status"
+      aria-live="polite"
+    >
+      <span className="text-xs text-txt">
+        {connected ? connectedText : disconnectedText}
+      </span>
+      <span
+        className={`rounded-full border px-1.5 py-0.5 text-2xs font-medium ${
+          connected
+            ? "border-ok/30 bg-ok-subtle text-txt"
+            : "border-warn/35 bg-warn-subtle text-txt"
+        }`}
+      >
+        {connected ? t("appsview.Active") : t("cloudsourcecontrols.Offline")}
+      </span>
+    </div>
+  );
+}
+
+// ── Constants ─────────────────────────────────────────────────────────
 
 const DEFAULT_ELEVEN_FAST_MODEL = "eleven_flash_v2_5";
 

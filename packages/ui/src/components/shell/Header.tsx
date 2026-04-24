@@ -2,7 +2,6 @@ import {
   InferenceCloudAlertButton,
   resolveCompanionInferenceNotice,
 } from "@tokagentos/app-companion/ui";
-import { CloudStatusBadge } from "@tokagentos/app-core/components/cloud/CloudStatusBadge";
 import { LanguageDropdown } from "@tokagentos/app-core/components/shared/LanguageDropdown";
 import { ThemeToggle } from "@tokagentos/app-core/components/shared/ThemeToggle";
 import { getTabGroups, type TabGroup } from "@tokagentos/app-core/navigation";
@@ -137,16 +136,9 @@ export function Header({
   // The mode-selector pill only appears inside the companion overlay header.
   const activeShellView = "desktop" as const;
   const showNavigationMenu = true;
-  const showCloudStatus = !hideCloudCredits;
   const headerFrameClassName = "";
   const headerShellClassName =
     "border-transparent bg-transparent shadow-none ring-0 backdrop-blur-none";
-
-  const openCloudBilling = () => {
-    setState("cloudDashboardView", "billing");
-    setTab("settings");
-    setMobileMenuOpen(false);
-  };
 
   const chatInferenceNotice = useMemo(() => {
     if (tab !== "chat") return null;
@@ -264,19 +256,6 @@ export function Header({
                     <InferenceCloudAlertButton
                       notice={chatInferenceNotice}
                       onClick={handleChatInferenceAlertClick}
-                    />
-                  ) : null}
-                  {showCloudStatus ? (
-                    <CloudStatusBadge
-                      connected={tokagentCloudConnected}
-                      credits={tokagentCloudCredits}
-                      creditsLow={tokagentCloudCreditsLow}
-                      creditsCritical={tokagentCloudCreditsCritical}
-                      authRejected={tokagentCloudAuthRejected}
-                      creditsError={tokagentCloudCreditsError}
-                      t={t}
-                      onClick={openCloudBilling}
-                      dataTestId="header-cloud-status"
                     />
                   ) : null}
                 </>

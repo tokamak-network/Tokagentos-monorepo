@@ -19,7 +19,7 @@ import {
 import {
   buildManagedDiscordSettingsReturnUrl,
   resolveManagedDiscordAgentChoice,
-} from "./cloud-dashboard-utils";
+} from "./managed-discord-utils";
 import { PluginConfigForm, TelegramPluginConfig } from "./PluginConfigForm";
 import {
   connectorDisplayName,
