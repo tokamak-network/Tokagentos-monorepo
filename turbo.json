@@ -55,9 +55,6 @@
     "@elizaos/plugin-discord-root#build": {
       "outputs": []
     },
-    "@elizaos/plugin-elizacloud-root#build": {
-      "outputs": []
-    },
     "@elizaos/plugin-groq-root#build": {
       "outputs": []
     },

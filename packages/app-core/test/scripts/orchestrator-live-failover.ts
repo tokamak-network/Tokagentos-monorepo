@@ -5,7 +5,6 @@ import path from "node:path";
 import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import type { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
 import { PTYService } from "@elizaos/plugin-agent-orchestrator";
-import { elizaOSCloudPlugin } from "../../packages/plugin-elizacloud/typescript/index.ts";
 import { createTestRuntime } from "../helpers/pglite-runtime";
 
 async function waitFor(

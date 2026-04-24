@@ -20,14 +20,12 @@
         "requiredSubmodules": [
           "plugins/plugin-local-ai",
           "plugins/plugin-ollama",
-          "plugins/plugin-sql",
-          "plugins/plugin-elizacloud"
+          "plugins/plugin-sql"
         ],
         "requiredWorkspaces": [
           "plugins/plugin-local-ai/typescript",
           "plugins/plugin-ollama/typescript",
-          "plugins/plugin-sql/typescript",
-          "plugins/plugin-elizacloud/typescript"
+          "plugins/plugin-sql/typescript"
         ]
       }
     },

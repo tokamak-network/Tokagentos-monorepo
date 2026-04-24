@@ -205,19 +205,6 @@ export const SUBSCRIPTION_PROVIDER_SELECTIONS = [
 
 export const ONBOARDING_PROVIDER_CATALOG = [
   {
-    id: "tokagentcloud",
-    name: "Tokagent Cloud",
-    envKey: null,
-    pluginName: "@elizaos/plugin-elizacloud",
-    keyPrefix: null,
-    description: "Managed hosting for Tokagent agents and bundled infrastructure.",
-    family: "tokagentcloud",
-    authMode: "cloud",
-    group: "cloud",
-    order: 10,
-    recommended: true,
-  },
-  {
     id: "anthropic-subscription",
     name: "Claude Subscription",
     envKey: null,
@@ -1244,9 +1231,6 @@ function resolveConfiguredLocalProviderFromSignals(
   }
 
   for (const provider of ONBOARDING_PROVIDER_CATALOG) {
-    if (provider.id === "tokagentcloud") {
-      continue;
-    }
     const providerId = provider.id as OnboardingLocalProviderId;
     const detected = getOnboardingProviderSignalEnvKeys(providerId).some(
       (key) => Boolean(readOnboardingEnvString(config, key)),

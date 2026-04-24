@@ -157,7 +157,6 @@ function buildRuntimeConfig(
 ): MiladyConfig {
   const allow = new Set(baseConfig.plugins?.allow ?? []);
   allow.add("@elizaos/plugin-discord");
-  allow.add("@elizaos/plugin-elizacloud");
 
   return {
     logging: {

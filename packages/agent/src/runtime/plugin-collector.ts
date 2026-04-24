@@ -269,8 +269,6 @@ export function collectPluginNames(
     }
   }
 
-  // Remove elizacloud — cloud provider plugin is not part of this product.
-  pluginsToLoad.delete("@elizaos/plugin-elizacloud");
 
   // Optional feature plugins from config.plugins.entries
   const pluginsConfig = config.plugins as
@@ -345,8 +343,6 @@ export function collectPluginNames(
     }
   }
 
-  // Remove elizacloud from any additive paths that may have re-introduced it.
-  pluginsToLoad.delete("@elizaos/plugin-elizacloud");
 
   for (const optionalCore of OPTIONAL_CORE_PLUGINS) {
     const resolved = resolvePluginPackageAlias(optionalCore);
