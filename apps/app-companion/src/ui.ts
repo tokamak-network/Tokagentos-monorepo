@@ -1,4 +1,4 @@
-export * from "./components/avatar/MathEnvironment.ts";
+export * from "./components/avatar/AuroraEnvironment.ts";
 export * from "./components/avatar/mixamoVRMRigMap.ts";
 export * from "./components/avatar/retargetMixamoFbxToVrm.ts";
 export * from "./components/avatar/retargetMixamoGltfToVrm.ts";

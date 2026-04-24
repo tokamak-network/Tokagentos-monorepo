@@ -12,7 +12,7 @@ import {
   VRMUtils,
 } from "@pixiv/three-vrm";
 import * as THREE from "three";
-import { MathEnvironment } from "./MathEnvironment";
+import { AuroraEnvironment as MathEnvironment } from "./AuroraEnvironment";
 import { SceneOverlayManager } from "./SceneOverlayManager";
 import type {
   TeleportSparkleParticle,
