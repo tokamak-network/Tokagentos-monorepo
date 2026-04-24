@@ -6,17 +6,6 @@
 	path = plugins/plugin-anthropic
 	url = https://github.com/elizaos-plugins/plugin-anthropic.git
 	branch = alpha
-[submodule "plugins/plugin-cli"]
-	path = plugins/plugin-cli
-	url = https://github.com/elizaos-plugins/plugin-cli.git
-[submodule "plugins/plugin-commands"]
-	path = plugins/plugin-commands
-	url = https://github.com/elizaos-plugins/plugin-commands.git
-	branch = alpha
-[submodule "plugins/plugin-cron"]
-	path = plugins/plugin-cron
-	url = https://github.com/elizaos-plugins/plugin-cron.git
-	branch = alpha
 [submodule "plugins/plugin-discord"]
 	path = plugins/plugin-discord
 	url = https://github.com/elizaos-plugins/plugin-discord.git
@@ -48,14 +37,6 @@
 	path = plugins/plugin-local-embedding
 	url = https://github.com/elizaos-plugins/plugin-local-embedding.git
 	branch = alpha
-[submodule "plugins/plugin-music-library"]
-	path = plugins/plugin-music-library
-	url = https://github.com/elizaos-plugins/plugin-music-library.git
-	branch = alpha
-[submodule "plugins/plugin-music-player"]
-	path = plugins/plugin-music-player
-	url = https://github.com/elizaos-plugins/plugin-music-player.git
-	branch = alpha
 [submodule "plugins/plugin-ollama"]
 	path = plugins/plugin-ollama
 	url = https://github.com/elizaos-plugins/plugin-ollama.git
@@ -76,17 +57,9 @@
 	path = plugins/plugin-selfcontrol
 	url = https://github.com/elizaos-plugins/plugin-selfcontrol.git
 	branch = alpha
-[submodule "plugins/plugin-shell"]
-	path = plugins/plugin-shell
-	url = https://github.com/elizaos-plugins/plugin-shell.git
-	branch = alpha
 [submodule "plugins/plugin-shopify"]
 	path = plugins/plugin-shopify
 	url = https://github.com/tokagentOS-plugins/plugin-shopify.git
-	branch = alpha
-[submodule "plugins/plugin-solana"]
-	path = plugins/plugin-solana
-	url = https://github.com/elizaos-plugins/plugin-solana.git
 	branch = alpha
 [submodule "plugins/plugin-sql"]
 	path = plugins/plugin-sql

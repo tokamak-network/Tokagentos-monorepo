@@ -1,6 +1,0 @@
-{
-  "name": "@elizaos/plugin-music-library",
-  "version": "0.0.0-stub",
-  "private": true,
-  "description": "Stub package.json for upstream submodule plugins/plugin-music-library. Run 'git submodule update --init plugins/plugin-music-library' to populate."
-}

@@ -111,11 +111,6 @@ export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
   // Gate behind ENABLE_EVM_PLUGIN=1 until the spec registration is fixed.
   ENABLE_EVM_PLUGIN: "@elizaos/plugin-evm",
   SOLANA_PRIVATE_KEY: "@elizaos/plugin-solana",
-  LASTFM_API_KEY: "@elizaos/plugin-music-library",
-  GENIUS_API_KEY: "@elizaos/plugin-music-library",
-  THEAUDIODB_API_KEY: "@elizaos/plugin-music-library",
-  SPOTIFY_CLIENT_ID: "@elizaos/plugin-music-library",
-  SPOTIFY_CLIENT_SECRET: "@elizaos/plugin-music-library",
   RS_SDK_BOT_NAME: "@tokagentos/app-2004scape",
   SHOPIFY_ACCESS_TOKEN: "@elizaos/plugin-shopify",
 };
@@ -141,10 +136,7 @@ const FEATURE_PLUGINS: Record<string, string> = {
   // Media generation plugins
   fal: "@elizaos/plugin-fal",
   suno: "@elizaos/plugin-suno",
-  musicLibrary: "@elizaos/plugin-music-library",
-  musicPlayer: "@elizaos/plugin-music-player",
   vision: "@elizaos/plugin-vision",
-  computeruse: "@elizaos/plugin-computeruse",
   repoprompt: "@elizaos/plugin-repoprompt",
   claudeCodeWorkbench: "@elizaos/plugin-claude-code-workbench",
   rs2004scape: "@tokagentos/app-2004scape",

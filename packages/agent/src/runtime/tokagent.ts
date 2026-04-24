@@ -1003,7 +1003,6 @@ export { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS };
 const _OPTIONAL_NATIVE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-browser", // requires browser server binary
   "@elizaos/plugin-vision", // requires @tensorflow/tfjs-node native addon
-  "@elizaos/plugin-computeruse", // requires platform-specific binaries
 ];
 
 // CHANNEL_PLUGIN_MAP, PROVIDER_PLUGIN_MAP, and OPTIONAL_PLUGIN_MAP live in

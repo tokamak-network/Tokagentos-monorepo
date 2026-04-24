@@ -45,10 +45,8 @@ export const OPTIONAL_CORE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-code", // code writing and file operations
   "@elizaos/plugin-repoprompt", // RepoPrompt CLI integration and workflow orchestration
   "@elizaos/plugin-claude-code-workbench", // Claude Code companion workflows for this monorepo
-  "@elizaos/plugin-computeruse", // computer use automation (requires platform-specific binaries)
   "@elizaos/plugin-browser", // browser automation (requires stagehand-server)
   "@elizaos/plugin-vision", // vision/image understanding (feature-gated)
-  "@elizaos/plugin-cli", // CLI interface
   "@elizaos/plugin-discord", // Discord bot integration
   "@elizaos/plugin-discord-local", // Local Discord desktop integration for macOS
   "@elizaos/plugin-bluebubbles", // BlueBubbles-backed iMessage integration for macOS
@@ -57,8 +55,6 @@ export const OPTIONAL_CORE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-twitch", // Twitch integration
   "@elizaos/plugin-edge-tts", // text-to-speech (Microsoft Edge TTS)
   "@elizaos/plugin-elevenlabs", // ElevenLabs text-to-speech
-  "@elizaos/plugin-music-library", // music metadata, library, playlists, YouTube search
-  "@elizaos/plugin-music-player", // music playback engine + streaming routes
   // "@elizaos/plugin-directives", // directive processing - not yet ready
   // "@elizaos/plugin-mcp", // MCP protocol support - not yet ready
   // "@elizaos/plugin-scheduling", // scheduling - not yet ready

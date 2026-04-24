@@ -132,7 +132,6 @@ export const OPTIONAL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   selfcontrol: "@tokagentos/app-lifeops",
   cron: "@elizaos/plugin-cron",
   cua: "@elizaos/plugin-cua",
-  computeruse: "@elizaos/plugin-computeruse",
   obsidian: "@elizaos/plugin-obsidian",
   repoprompt: "@elizaos/plugin-repoprompt",
   repoPrompt: "@elizaos/plugin-repoprompt",

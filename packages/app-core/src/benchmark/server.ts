@@ -363,34 +363,6 @@ export async function startBenchmarkServer() {
     }
   }
 
-  // Load computer use plugin if enabled
-  if (process.env.TOKAGENT_ENABLE_COMPUTERUSE) {
-    try {
-      process.env.COMPUTERUSE_ENABLED ??= "true";
-      process.env.COMPUTERUSE_MODE ??= "local";
-      const localComputerusePath =
-        "../../../plugins/plugin-computeruse/typescript/src/index.ts";
-      const computeruseModule = (await import(localComputerusePath)) as Record<
-        string,
-        unknown
-      >;
-      const computerusePlugin =
-        computeruseModule.computerusePlugin ??
-        computeruseModule.computerUsePlugin ??
-        computeruseModule.default;
-      if (computerusePlugin) {
-        plugins.push(toPlugin(computerusePlugin, localComputerusePath));
-        tokagentLogger.info(
-          "[bench] Loaded local plugin: @elizaos/plugin-computeruse",
-        );
-      }
-    } catch (error: unknown) {
-      tokagentLogger.debug(
-        `[bench] Computer use plugin not available: ${formatUnknownError(error)}`,
-      );
-    }
-  }
-
   // Load mock plugin for testing (file is gitignored for local-only use)
   if (
     process.env.TOKAGENT_BENCH_MOCK === "true" ||
