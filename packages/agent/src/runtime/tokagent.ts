@@ -54,7 +54,6 @@ export {
 // resolvePlugins is re-exported via index.ts from ./plugin-resolver
 
 import * as pluginAppCompanion from "@tokagentos/app-companion/plugin";
-import * as pluginAppLifeops from "@tokagentos/app-lifeops/plugin";
 import {
   AgentRuntime,
   AutonomyService,
@@ -319,7 +318,6 @@ Object.assign(STATIC_TOKAGENT_PLUGINS, {
     ? { "@elizaos/plugin-elizacloud": pluginTokagentcloud }
     : {}),
   // trust: now built-in core capability (ENABLE_TRUST)
-  "@tokagentos/app-lifeops": pluginAppLifeops,
   "@tokagentos/app-companion": pluginAppCompanion,
   "@elizaos/plugin-discord-local": discordLocalPlugin,
   // personality: now built-in advanced capability (advancedCapabilities: true)
@@ -2990,14 +2988,6 @@ export async function startTokagent(
           ? ` | connection: ${postgresUrl.replace(/:\/\/([^:]+):([^@]+)@/, "://$1:***@")}`
           : ""),
     );
-  }
-
-  // 2d-iii. OG tracking code initialization
-  try {
-    const { initializeOGCode } = await import("@tokagentos/app-tokagentmaker");
-    initializeOGCode();
-  } catch {
-    // Silent — OG tracking is non-critical
   }
 
   // 2d-ii. Allow destructive migrations (e.g. dropping tables removed between
