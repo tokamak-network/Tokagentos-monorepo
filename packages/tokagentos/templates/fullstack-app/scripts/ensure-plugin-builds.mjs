@@ -155,6 +155,11 @@ const PLUGIN_PATHS = [
   // wallet-scoped questions using the hot-wallet address (TOKAGENT_PRIVATE_KEY
   // or EVM_PRIVATE_KEY).
   "plugins/plugin-evm/typescript",
+  // Edge TTS — upstream's ensure-text-to-speech-handler.ts in
+  // tokagent/packages/app-core dynamically imports this at runtime. Without its
+  // dist/ built, `bun run dev` crashes on "Cannot find module
+  // '@elizaos/plugin-edge-tts/node'" during runtime bootstrap.
+  "plugins/plugin-edge-tts/typescript",
 ];
 
 /**

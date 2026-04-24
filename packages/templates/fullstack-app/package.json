@@ -16,7 +16,8 @@
     "tokagent/packages/app-core/platforms/electrobun",
     "tokagent/plugins/*",
     "tokagent/plugins/plugin-*/typescript",
-    "tokagent/packages/*"
+    "tokagent/packages/*",
+    "tokagent/packages/native-plugins/*"
   ],
   "scripts": {
     "build": "bun run --cwd apps/app build",
