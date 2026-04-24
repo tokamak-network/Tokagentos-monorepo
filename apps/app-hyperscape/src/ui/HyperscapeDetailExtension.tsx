@@ -1,6 +1,0 @@
-import { HyperscapeOperatorSurface } from "./HyperscapeOperatorSurface";
-import type { AppDetailExtensionProps } from "@tokagentos/app-core/components/apps/extensions/types";
-
-export function HyperscapeDetailExtension({ app }: AppDetailExtensionProps) {
-  return <HyperscapeOperatorSurface appName={app.name} variant="detail" />;
-}

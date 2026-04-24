@@ -131,12 +131,6 @@
   "dependencies": {
     "@clack/prompts": "^1.0.0",
     "@tokagentos/app-companion": "workspace:*",
-    "@tokagentos/app-tokagentmaker": "workspace:*",
-    "@tokagentos/app-knowledge": "workspace:*",
-    "@tokagentos/app-lifeops": "workspace:*",
-    "@tokagentos/app-steward": "workspace:*",
-    "@tokagentos/app-task-coordinator": "workspace:*",
-    "@tokagentos/app-training": "workspace:*",
     "@tokagentos/core": "workspace:*",
     "@elizaos/plugin-agent-orchestrator": "workspace:*",
     "@elizaos/plugin-ollama": "workspace:*",

@@ -28,7 +28,6 @@
     "./emotes/*": "./src/emotes/*.ts"
   },
   "dependencies": {
-    "@tokagentos/app-task-coordinator": "workspace:*",
     "@tokagentos/ui": "workspace:*",
     "@tokagentos/core": "workspace:*",
     "lucide-react": "^1.0.0"
