@@ -22,6 +22,7 @@
     "harness": "bun run --cwd agent start",
     "dev:core": "bun run --cwd packages/typescript dev",
     "start:debug": "NODE_NO_WARNINGS=1 LOG_LEVEL=debug bun run --cwd agent start",
+    "check:env-sync": "node scripts/check-env-sync.mjs",
     "build": "node scripts/run-with-python-shim.mjs turbo run build",
     "build:typescript": "turbo run build --filter=!@tokagentos/python --filter=!@tokagentos/rust --filter=!@tokagentos/computeruse --filter=!@tokagentos/computeruse-nodejs --filter=!@tokagentos/computeruse-root --filter=!@mediar-ai/workflow",
     "build:client": "turbo run build --filter=@tokagentos/client",
