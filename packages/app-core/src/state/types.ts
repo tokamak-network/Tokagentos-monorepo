@@ -136,13 +136,6 @@ export const ONBOARDING_STEPS: OnboardingStepMeta[] = [
 
 export type OnboardingMode = "basic" | "advanced" | "tokagentcloudonly";
 
-export type FlaminaGuideTopic =
-  | "provider"
-  | "rpc"
-  | "permissions"
-  | "voice"
-  | "features";
-
 export interface OnboardingNextOptions {
   allowPermissionBypass?: boolean;
   omitRuntimeProvider?: boolean;
@@ -498,7 +491,6 @@ export interface AppState {
   tokagentCloudUserId: string | null;
   /** Last `reason` from GET /api/cloud/status (e.g. API-key-only vs OAuth). */
   tokagentCloudStatusReason: string | null;
-  cloudDashboardView: "overview" | "billing";
   tokagentCloudLoginBusy: boolean;
   tokagentCloudLoginError: string | null;
   tokagentCloudDisconnecting: boolean;

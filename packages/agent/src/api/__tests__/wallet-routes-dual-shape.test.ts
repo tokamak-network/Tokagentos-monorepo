@@ -112,7 +112,6 @@ beforeEach(async () => {
   tmpStateDir = await fs.mkdtemp(path.join(os.tmpdir(), "wallet-routes-"));
   process.env.MILADY_STATE_DIR = tmpStateDir;
   delete process.env.ENABLE_CLOUD_WALLET;
-  delete process.env.TOKAGENTOS_CLOUD_API_KEY;
   delete process.env.WALLET_SOURCE_EVM;
   delete process.env.WALLET_SOURCE_SOLANA;
 });
@@ -405,7 +404,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
+      cloud: { apiKey: "runtime-saved-key", baseUrl: "https://www.tokagentcloud.ai" },
     } as unknown as TokagentConfig;
     const { ctx, sent, restarts, immediateRestarts, savedConfigs } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
@@ -414,7 +413,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "SOME_OTHER_SETTING" ? "unused" : undefined,
       } as never,
       restartRuntime: vi.fn(async () => true),
     });
@@ -490,7 +489,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
+      cloud: { apiKey: "runtime-saved-key", baseUrl: "https://www.tokagentcloud.ai" },
     } as unknown as TokagentConfig;
     const { ctx, sent, savedConfigs } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
@@ -499,7 +498,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "SOME_OTHER_SETTING" ? "unused" : undefined,
       } as never,
     });
 
@@ -570,7 +569,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
+      cloud: { apiKey: "runtime-saved-key", baseUrl: "https://www.tokagentcloud.ai" },
     } as unknown as TokagentConfig;
     const { ctx, sent, savedConfigs } = makeCtx({
       pathname: "/api/wallet/refresh-cloud",
@@ -579,7 +578,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "SOME_OTHER_SETTING" ? "unused" : undefined,
       } as never,
     });
 
@@ -637,7 +636,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
+      cloud: { apiKey: "runtime-saved-key", baseUrl: "https://www.tokagentcloud.ai" },
       wallet: {
         cloud: {
           evm: {
@@ -655,7 +654,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "SOME_OTHER_SETTING" ? "unused" : undefined,
       } as never,
     });
 
@@ -703,7 +702,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
     });
 
     const config = {
-      cloud: { baseUrl: "https://www.tokagentcloud.ai" },
+      cloud: { apiKey: "runtime-saved-key", baseUrl: "https://www.tokagentcloud.ai" },
       wallet: {
         cloud: {
           evm: {
@@ -726,7 +725,7 @@ describe("POST /api/wallet/refresh-cloud", () => {
       runtime: {
         agentId: "agent-123",
         getSetting: (key: string) =>
-          key === "TOKAGENTOS_CLOUD_API_KEY" ? "runtime-saved-key" : undefined,
+          key === "SOME_OTHER_SETTING" ? "unused" : undefined,
       } as never,
     });
 

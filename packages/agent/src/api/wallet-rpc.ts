@@ -174,15 +174,10 @@ function normalizeSecret(value: string | null | undefined): string | null {
 }
 
 function resolveRuntimeCloudApiKey(
-  runtime?: CloudApiKeyRuntimeLike,
+  _runtime?: CloudApiKeyRuntimeLike,
 ): string | null {
-  const fromSetting = runtime?.getSetting?.("TOKAGENTOS_CLOUD_API_KEY");
-  if (typeof fromSetting === "string") {
-    return normalizeSecret(fromSetting);
-  }
-
-  const fromSecrets = runtime?.character?.secrets?.TOKAGENTOS_CLOUD_API_KEY;
-  return typeof fromSecrets === "string" ? normalizeSecret(fromSecrets) : null;
+  // Cloud API key access removed — Tokagent Cloud is not part of this product.
+  return null;
 }
 
 export function resolveWalletNetworkMode(
@@ -287,7 +282,7 @@ export function resolveCloudApiBaseUrl(
   rawBaseUrl?: string | null,
 ): string | null {
   const candidate =
-    normalizeSecret(rawBaseUrl ?? process.env.TOKAGENTOS_CLOUD_BASE_URL) ??
+    normalizeSecret(rawBaseUrl) ??
     DEFAULT_CLOUD_API_BASE_URL;
   try {
     const parsed = new URL(candidate);
@@ -310,9 +305,7 @@ export function resolveCloudApiKey(
   runtime?: CloudApiKeyRuntimeLike,
 ): string | null {
   return normalizeSecret(
-    config?.cloud?.apiKey ??
-      resolveRuntimeCloudApiKey(runtime) ??
-      process.env.TOKAGENTOS_CLOUD_API_KEY,
+    config?.cloud?.apiKey ?? resolveRuntimeCloudApiKey(runtime),
   );
 }
 
@@ -320,9 +313,7 @@ function buildCloudRpcProxyUrl(
   pathname: string,
   options: WalletRpcResolutionOptions = {},
 ): string | null {
-  const cloudApiKey = normalizeSecret(
-    options.cloudApiKey ?? process.env.TOKAGENTOS_CLOUD_API_KEY,
-  );
+  const cloudApiKey = normalizeSecret(options.cloudApiKey);
   const cloudManagedAccess = options.cloudManagedAccess ?? Boolean(cloudApiKey);
   if (!cloudManagedAccess || !cloudApiKey) {
     return null;

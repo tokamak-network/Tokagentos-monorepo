@@ -46,7 +46,6 @@ import { FeatureTogglesSection } from "../settings/FeatureTogglesSection";
 import { PermissionsSection } from "../settings/PermissionsSection";
 import { ProviderSwitcher } from "../settings/ProviderSwitcher";
 import { TrainingSettingsPanel } from "../settings/TrainingSettings";
-import { CloudDashboard } from "./TokagentCloudDashboard";
 import { ReleaseCenterView } from "./ReleaseCenterView";
 
 interface SettingsSectionDef {
@@ -63,13 +62,6 @@ const SETTINGS_CONTENT_WIDTH_CLASS = "w-full min-h-0";
 const SETTINGS_SECTION_STACK_CLASS = "space-y-6 pb-14 sm:space-y-8 sm:pb-16";
 
 const SETTINGS_SECTIONS: SettingsSectionDef[] = [
-  {
-    id: "cloud",
-    label: "providerswitcher.tokagentCloud",
-    description: "settings.sections.cloud.desc",
-    keywords: ["cloud", "billing", "credits", "auth", "subscription"],
-    keywordKeys: ["settings.keyword.cloud", "settings.keyword.billing"],
-  },
   {
     // One section for every model source — cloud providers, local llama.cpp
     // engine, and paired-device bridge all live here. Multiple can be
@@ -187,13 +179,10 @@ const SETTINGS_SECTIONS: SettingsSectionDef[] = [
   {
     id: "feature-toggles",
     label: "Features",
-    description: "Opt in to LifeOps capabilities like flight booking, push, and browser automation.",
+    description: "Opt in to LifeOps capabilities like push notifications and browser automation.",
     keywords: [
       "feature",
       "toggle",
-      "flight",
-      "booking",
-      "duffel",
       "push",
       "notification",
       "browser",
@@ -887,7 +876,7 @@ export function SettingsView({
   initialSection?: string;
 } = {}) {
   const { t, loadPlugins } = useApp();
-  const [activeSection, setActiveSection] = useState(initialSection ?? "cloud");
+  const [activeSection, setActiveSection] = useState(initialSection ?? "ai-model");
   const [searchQuery, setSearchQuery] = useState("");
   const shellRef = useRef<HTMLDivElement>(null);
 
@@ -1066,17 +1055,6 @@ export function SettingsView({
 
   const sectionsContent = (
     <>
-      {visibleSectionIds.has("cloud") && (
-        <SettingsSection
-          id="cloud"
-          className="relative overflow-hidden"
-          bodyClassName="p-0"
-          ref={registerContentItem("cloud")}
-        >
-          <CloudDashboard />
-        </SettingsSection>
-      )}
-
       {visibleSectionIds.has("ai-model") && (
         <SettingsSection
           id="ai-model"
@@ -1170,7 +1148,7 @@ export function SettingsView({
         <SettingsSection
           id="feature-toggles"
           title="Features"
-          description="Opt in to LifeOps capabilities like flight booking, push, and browser automation."
+          description="Opt in to LifeOps capabilities like push notifications and browser automation."
           ref={registerContentItem("feature-toggles")}
         >
           <FeatureTogglesSection />

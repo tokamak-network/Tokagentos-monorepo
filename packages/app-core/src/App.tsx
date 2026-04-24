@@ -25,7 +25,6 @@ import { getOverlayApp } from "./components/apps/overlay-app-registry";
 import { CharacterEditor } from "./components/character/CharacterEditor";
 import { SaveCommandModal } from "./components/chat/SaveCommandModal";
 import { TasksEventsPanel } from "./components/chat/TasksEventsPanel";
-import { DeferredSetupChecklist } from "./components/cloud/FlaminaGuide";
 import { ConversationsSidebar } from "./components/conversations/ConversationsSidebar";
 import { CustomActionEditor } from "./components/custom-actions/CustomActionEditor";
 import { CustomActionsPanel } from "./components/custom-actions/CustomActionsPanel";
@@ -65,7 +64,6 @@ import { useActivityEvents } from "./hooks/useActivityEvents";
 import { APPS_ENABLED, isAppsToolTab } from "./navigation";
 import { isIOS, isNative } from "./platform/init";
 import { useApp } from "./state";
-import type { FlaminaGuideTopic } from "./state/types";
 
 const CHAT_MOBILE_BREAKPOINT_PX = 820;
 
@@ -415,24 +413,6 @@ export function App() {
     setEditingAction(null);
   }, []);
 
-  const handleDeferredTaskOpen = useCallback(
-    (task: FlaminaGuideTopic) => {
-      if (task === "voice") {
-        setTab("voice");
-        return;
-      }
-      if (task === "permissions") {
-        setSettingsInitialSection("permissions");
-      } else if (task === "provider") {
-        setSettingsInitialSection("ai-model");
-      } else {
-        setSettingsInitialSection(null);
-      }
-      setTab("settings");
-    },
-    [setTab],
-  );
-
   useEffect(() => {
     if (typeof window === "undefined") return;
     const handleResize = () => {
@@ -574,13 +554,7 @@ export function App() {
               <>
                 <div className="flex flex-col flex-1 min-h-0 min-w-0 overflow-hidden pt-2 px-2">
                   {isChat ? (
-                    <>
-                      <DeferredSetupChecklist
-                        className="mb-3"
-                        onOpenTask={handleDeferredTaskOpen}
-                      />
-                      <ChatView />
-                    </>
+                    <ChatView />
                   ) : (
                     <ConnectorsPageView />
                   )}
@@ -642,13 +616,7 @@ export function App() {
                 <ConversationsSidebar key="chat-sidebar-desktop" />
                 <div className="flex flex-col flex-1 min-h-0 min-w-0 overflow-hidden">
                   {isChat ? (
-                    <>
-                      <DeferredSetupChecklist
-                        className="mx-3 mb-3 mt-3 xl:mx-5"
-                        onOpenTask={handleDeferredTaskOpen}
-                      />
-                      <ChatView key="chat-view-desktop" />
-                    </>
+                    <ChatView key="chat-view-desktop" />
                   ) : (
                     <ConnectorsPageView />
                   )}
@@ -787,7 +755,6 @@ export function App() {
       mobileChatControls,
       characterHeaderActions,
       tasksEventsPanelOpen,
-      handleDeferredTaskOpen,
       activityEvents,
       clearActivityEvents,
       customActionsPanelOpen,

@@ -1085,10 +1085,8 @@ export async function resolvePlugins(
         // under tokagent-dist/plugins/* or from packaged node_modules.
         mod = await importOfficialPluginFromNodeModules();
       } else {
-        // Built-in/npm plugin — prefer a bundled static import regardless of
-        // naming convention (short-name plugins like "agent-orchestrator" are
-        // registered in STATIC_TOKAGENT_PLUGINS and would otherwise fail a bare
-        // node_modules resolution).
+        // Built-in/npm plugin — prefer a bundled static import registered in
+        // STATIC_TOKAGENT_PLUGINS, which would otherwise fail a bare node_modules resolution.
         mod = staticTokagentPlugin
           ? (staticTokagentPlugin as PluginModuleShape)
           : ((await import(pluginName)) as PluginModuleShape);

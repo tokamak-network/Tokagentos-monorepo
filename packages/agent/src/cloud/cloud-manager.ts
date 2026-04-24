@@ -49,9 +49,8 @@ export class CloudManager {
       throw new Error(urlError);
     }
 
-    // rawUrl is already normalized above — don't re-normalize, which would
-    // re-read TOKAGENTOS_CLOUD_BASE_URL and could produce a different URL than
-    // the one we just validated.
+    // rawUrl is already normalized above — don't re-normalize, which could
+    // produce a different URL than the one we just validated.
     this.client = new TokagentCloudClient(rawUrl, apiKey);
     logger.info(`[cloud-manager] Client initialised (baseUrl=${rawUrl})`);
   }

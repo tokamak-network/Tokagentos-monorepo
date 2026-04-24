@@ -264,9 +264,7 @@ export async function startBenchmarkServer() {
 
   // Plugins to skip in benchmark context — these require external auth or
   // interfere with benchmark operation
-  const skipPlugins = new Set([
-    "@elizaos/plugin-elizacloud", // Requires tokagentOS cloud auth, conflicts with local LLM
-  ]);
+  const skipPlugins = new Set([]);
 
   // Load all CORE_PLUGINS — these are what the production Tokagent runtime uses
   for (const pluginName of CORE_PLUGINS) {
@@ -359,34 +357,6 @@ export async function startBenchmarkServer() {
     } catch (error: unknown) {
       tokagentLogger.debug(
         `[bench] OpenAI plugin not available: ${formatUnknownError(error)}`,
-      );
-    }
-  }
-
-  // Load computer use plugin if enabled
-  if (process.env.TOKAGENT_ENABLE_COMPUTERUSE) {
-    try {
-      process.env.COMPUTERUSE_ENABLED ??= "true";
-      process.env.COMPUTERUSE_MODE ??= "local";
-      const localComputerusePath =
-        "../../../plugins/plugin-computeruse/typescript/src/index.ts";
-      const computeruseModule = (await import(localComputerusePath)) as Record<
-        string,
-        unknown
-      >;
-      const computerusePlugin =
-        computeruseModule.computerusePlugin ??
-        computeruseModule.computerUsePlugin ??
-        computeruseModule.default;
-      if (computerusePlugin) {
-        plugins.push(toPlugin(computerusePlugin, localComputerusePath));
-        tokagentLogger.info(
-          "[bench] Loaded local plugin: @elizaos/plugin-computeruse",
-        );
-      }
-    } catch (error: unknown) {
-      tokagentLogger.debug(
-        `[bench] Computer use plugin not available: ${formatUnknownError(error)}`,
       );
     }
   }

@@ -4,7 +4,7 @@
  * secrets-manager, plugin-manager) have been moved to core and are no longer
  * in this list.
  */
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { TokagentConfig } from "../config/types.js";
 import { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS } from "./core-plugins.js";
 import { collectPluginNames } from "./plugin-collector.js";
@@ -12,31 +12,11 @@ import { collectPluginNames } from "./plugin-collector.js";
 /** A sample of optional plugins to verify gating behavior. */
 const SAMPLE_OPTIONAL = [
   "@elizaos/plugin-pdf",
-  "@elizaos/plugin-cli",
+  "@elizaos/plugin-obsidian",
   "@elizaos/plugin-discord",
 ] as const;
 
 describe("optional core plugins (require explicit opt-in)", () => {
-  const prevCloudKey = process.env.TOKAGENTOS_CLOUD_API_KEY;
-  const prevCloudEnabled = process.env.TOKAGENTOS_CLOUD_ENABLED;
-
-  beforeEach(() => {
-    delete process.env.TOKAGENTOS_CLOUD_API_KEY;
-    delete process.env.TOKAGENTOS_CLOUD_ENABLED;
-  });
-
-  afterEach(() => {
-    if (prevCloudKey !== undefined) {
-      process.env.TOKAGENTOS_CLOUD_API_KEY = prevCloudKey;
-    } else {
-      delete process.env.TOKAGENTOS_CLOUD_API_KEY;
-    }
-    if (prevCloudEnabled !== undefined) {
-      process.env.TOKAGENTOS_CLOUD_ENABLED = prevCloudEnabled;
-    } else {
-      delete process.env.TOKAGENTOS_CLOUD_ENABLED;
-    }
-  });
 
   it("sample optional plugins are in OPTIONAL_CORE_PLUGINS but not CORE_PLUGINS", () => {
     for (const pkg of SAMPLE_OPTIONAL) {
@@ -75,7 +55,7 @@ describe("optional core plugins (require explicit opt-in)", () => {
       plugins: {
         entries: {
           pdf: {},
-          cli: { enabled: false },
+          obsidian: { enabled: false },
           discord: { enabled: true },
         },
       },
@@ -83,7 +63,7 @@ describe("optional core plugins (require explicit opt-in)", () => {
     // Empty entry object should not enable
     expect(names.has("@elizaos/plugin-pdf")).toBe(false);
     // Explicitly disabled
-    expect(names.has("@elizaos/plugin-cli")).toBe(false);
+    expect(names.has("@elizaos/plugin-obsidian")).toBe(false);
     // Explicitly enabled
     expect(names.has("@elizaos/plugin-discord")).toBe(true);
   });

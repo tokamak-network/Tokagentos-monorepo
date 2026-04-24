@@ -25,10 +25,15 @@ import {
 	knowledgePluginCore,
 	knowledgePluginHeadless,
 } from "../features/knowledge/index";
-import { trajectoriesPlugin } from "../features/trajectories/index";
 import { FollowUpService } from "../services/followUp";
 import { RelationshipsService } from "../services/relationships";
 import type { Plugin } from "../types/plugin";
+
+// trajectoriesPlugin stub — feature directory removed upstream
+const trajectoriesPlugin: Plugin = {
+	name: "trajectories",
+	description: "Trajectory run-logging (stub — feature removed).",
+};
 
 export type NativeRuntimeFeature =
 	| "knowledge"

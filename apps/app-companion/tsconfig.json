@@ -22,12 +22,6 @@
     "sourceMap": false,
     "baseUrl": "../../",
     "paths": {
-      "@tokagentos/app-lifeops": ["./apps/app-lifeops/src/index.ts"],
-      "@tokagentos/app-lifeops/*": ["./apps/app-lifeops/src/*"],
-      "@tokagentos/app-task-coordinator": ["./apps/app-task-coordinator/src/index.ts"],
-      "@tokagentos/app-task-coordinator/*": ["./apps/app-task-coordinator/src/*"],
-      "@tokagentos/app-steward": ["./apps/app-steward/src/index.ts"],
-      "@tokagentos/app-steward/*": ["./apps/app-steward/src/*"],
       "@tokagentos/app-core": ["./packages/app-core/src/index.ts"],
       "@tokagentos/app-core/*": ["./packages/app-core/src/*"],
       "@tokagentos/ui": ["./packages/ui/src/index.ts"],

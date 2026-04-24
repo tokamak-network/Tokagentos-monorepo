@@ -22,8 +22,6 @@ export * from "./chat/MessageContent";
 export * from "./chat/SaveCommandModal";
 export * from "./chat/TasksEventsPanel";
 export * from "./chat/widgets/shared";
-export * from "./cloud/CloudSourceControls";
-
 export * from "./config-ui";
 export * from "./connectors/BlueBubblesStatusPanel";
 export * from "./connectors/ConnectorSetupPanel";
@@ -52,7 +50,6 @@ export * from "./pages/ConfigPageView";
 export * from "./pages/ConnectorsPageView";
 export * from "./pages/DatabasePageView";
 export * from "./pages/DatabaseView";
-export * from "./pages/TokagentCloudDashboard";
 export * from "./pages/HeartbeatsView";
 export * from "./pages/InventoryView";
 export * from "./pages/KnowledgeView";

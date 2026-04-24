@@ -112,7 +112,6 @@ export const ALWAYS_ON_PLUGIN_IDS = new Set([
   "plugin-manager",
   "cli",
   "code",
-  "edge-tts",
   "pdf",
   "clipboard",
   "secrets-manager",
@@ -564,7 +563,6 @@ export const DEFAULT_ICONS: Record<string, LucideIcon> = {
   zalouser: Circle,
   wechat: Phone,
   // Features — voice & audio
-  "edge-tts": Volume2,
   elevenlabs: Mic,
   tts: Volume2,
   "simple-voice": Mic,
@@ -754,7 +752,6 @@ export function pluginResourceLinkLabel(t: TranslateFn, key: string): string {
 /** Map plugin IDs to fine-grained sub-groups for the "Feature" category. */
 export const FEATURE_SUBGROUP: Record<string, string> = {
   // Voice & Audio
-  "edge-tts": "voice",
   elevenlabs: "voice",
   tts: "voice",
   "simple-voice": "voice",

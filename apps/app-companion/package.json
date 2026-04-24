@@ -28,7 +28,6 @@
     "./emotes/*": "./src/emotes/*.ts"
   },
   "dependencies": {
-    "@tokagentos/app-task-coordinator": "workspace:*",
     "@tokagentos/ui": "workspace:*",
     "@tokagentos/core": "workspace:*",
     "lucide-react": "^1.0.0"
@@ -56,7 +55,7 @@
   },
   "tokagentos": {
     "app": {
-      "displayName": "Milady Companion",
+      "displayName": "Tokagent Companion",
       "category": "game",
       "heroImage": "assets/hero.png"
     }

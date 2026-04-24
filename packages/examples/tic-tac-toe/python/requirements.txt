@@ -1,6 +1,0 @@
-# tokagentOS Python packages (optional - game runs standalone)
-# tokagentos>=2.0.0a4
-
-# No external dependencies required - pure Python implementation
-# The game uses minimax algorithm and does not require any LLM
-

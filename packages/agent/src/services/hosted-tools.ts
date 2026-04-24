@@ -1,4 +1,3 @@
-import { resolveCloudApiBaseUrl } from "../cloud/base-url.js";
 import type {
   BrowserWorkspaceCommand,
   BrowserWorkspaceTab,
@@ -57,51 +56,19 @@ function normalizeApiKey(value: string | undefined): string | null {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+// Hosted cloud tooling is not part of this product.
 export function isHostedCloudToolingConfigured(
-  env: NodeJS.ProcessEnv = process.env,
+  _env: NodeJS.ProcessEnv = process.env,
 ): boolean {
-  return Boolean(normalizeApiKey(env.TOKAGENTOS_CLOUD_API_KEY));
-}
-
-function resolveHostedCloudBaseUrl(env: NodeJS.ProcessEnv): string {
-  return resolveCloudApiBaseUrl(env.TOKAGENTOS_CLOUD_BASE_URL);
+  return false;
 }
 
 async function requestHostedCloudTool<T>(
-  pathname: string,
-  init: RequestInit | undefined,
-  env: NodeJS.ProcessEnv,
+  _pathname: string,
+  _init: RequestInit | undefined,
+  _env: NodeJS.ProcessEnv,
 ): Promise<T> {
-  const apiKey = normalizeApiKey(env.TOKAGENTOS_CLOUD_API_KEY);
-  if (!apiKey) {
-    throw new Error("Tokagent Cloud hosted tools are not configured.");
-  }
-
-  const response = await fetch(`${resolveHostedCloudBaseUrl(env)}${pathname}`, {
-    ...init,
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-      ...(init?.headers ?? {}),
-    },
-    signal: AbortSignal.timeout(60_000),
-  });
-
-  const text = await response.text();
-  const data = text.trim().length > 0 ? JSON.parse(text) : null;
-
-  if (!response.ok) {
-    const message =
-      data && typeof data === "object"
-        ? ((data as { error?: unknown }).error as string | undefined)
-        : undefined;
-    throw new Error(
-      message || `Hosted tools request failed (${response.status})`,
-    );
-  }
-
-  return data as T;
+  throw new Error("Tokagent Cloud hosted tools are not configured.");
 }
 
 export async function searchHostedCloudWeb(

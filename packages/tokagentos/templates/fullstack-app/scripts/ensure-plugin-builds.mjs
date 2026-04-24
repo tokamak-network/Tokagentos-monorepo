@@ -150,9 +150,6 @@ const PLUGIN_PATHS = [
   "plugins/plugin-agent-orchestrator",
   "plugins/plugin-signal/typescript",
   "plugins/plugin-telegram",
-  // Dynamically imported by app-core/src/runtime/ensure-text-to-speech-handler.ts
-  // via `await import("@elizaos/plugin-edge-tts/node")`:
-  "plugins/plugin-edge-tts/typescript",
   // EVM wallet / chain-data plugin — provides read-only balance + transfer
   // actions to the agent. Registered in CORE_PLUGINS so the agent can answer
   // wallet-scoped questions using the hot-wallet address (TOKAGENT_PRIVATE_KEY

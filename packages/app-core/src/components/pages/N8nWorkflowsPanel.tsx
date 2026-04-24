@@ -80,7 +80,7 @@ function N8nStatusBanner({
   dismissed,
   retrying,
 }: N8nStatusBannerProps) {
-  const { t, setTab, setState } = useApp();
+  const { t, setTab } = useApp();
 
   if (loading || !status) return null;
 
@@ -114,7 +114,6 @@ function N8nStatusBanner({
             size="sm"
             className="h-8 px-4 text-xs"
             onClick={() => {
-              setState("cloudDashboardView", "overview");
               setTab("settings");
             }}
           >
@@ -147,7 +146,6 @@ function N8nStatusBanner({
             size="sm"
             className="h-8 px-4 text-xs"
             onClick={() => {
-              setState("cloudDashboardView", "overview");
               setTab("settings");
             }}
           >

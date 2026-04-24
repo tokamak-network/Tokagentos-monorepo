@@ -10,7 +10,6 @@ import type { AgentRuntime, Media, UUID } from "@tokagentos/core";
 import type { TokagentConfig } from "../config/config.js";
 import type { AppManager } from "../services/app-manager.js";
 import type { SandboxManager } from "../services/sandbox-manager.js";
-import type { CloudRouteState } from "./cloud-routes.js";
 import type { ConnectorHealthMonitor } from "./connector-health.js";
 // PluginEntry and PluginParamDef are defined here to avoid a circular dependency
 // with plugin-discovery-helpers.ts (which imports from server-helpers.ts).
@@ -239,8 +238,8 @@ export interface ServerState {
   conversationRestorePromise: Promise<void> | null;
   /** Tombstones for conversation IDs explicitly deleted by the user. */
   deletedConversationIds: Set<string>;
-  /** Cloud manager for Tokagent Cloud integration (null when cloud is disabled). */
-  cloudManager: CloudRouteState["cloudManager"];
+  /** Cloud manager — always null (cloud integration removed). */
+  cloudManager: null;
   sandboxManager: SandboxManager | null;
   /** App manager for launching and managing tokagentOS apps. */
   appManager: AppManager;

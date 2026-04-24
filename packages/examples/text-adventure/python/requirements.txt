@@ -1,7 +1,0 @@
-# tokagentOS Python packages
-tokagentos>=2.0.0a4
-tokagentos-plugin-openai>=2.0.0a4
-
-# For async support
-asyncio>=3.4.0
-

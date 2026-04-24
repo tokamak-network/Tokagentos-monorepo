@@ -5,7 +5,6 @@ import { BrowserWorkspaceView } from "../components/pages/BrowserWorkspaceView";
 import { ChatView } from "../components/pages/ChatView";
 import { ConfigPageView } from "../components/pages/ConfigPageView";
 import { ConnectorsPageView } from "../components/pages/ConnectorsPageView";
-import { CloudDashboard } from "../components/pages/TokagentCloudDashboard";
 import { HeartbeatsView } from "../components/pages/HeartbeatsView";
 import { PluginsPageView } from "../components/pages/PluginsPageView";
 import { ReleaseCenterView } from "../components/pages/ReleaseCenterView";
@@ -34,8 +33,6 @@ function DetachedSettingsSectionView({
   switch (section) {
     case "ai-model":
       return <ProviderSwitcher />;
-    case "cloud":
-      return <CloudDashboard />;
     case "coding-agents":
       return <CodingAgentSettingsSection />;
     case "wallet-rpc":

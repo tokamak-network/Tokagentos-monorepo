@@ -1,81 +1,47 @@
 # TokagentOS
 
-> A fork of [elizaOS](https://github.com/elizaos/eliza), restyled for Tokamak.
+Tokamak's autonomous DeFi agent framework. Runs on-chain strategies across HyperEVM (Hyperliquid perps), Polygon (Aave yield), and Polymarket via a web-based operator UI or in headless daemon mode.
 
-TokagentOS is the Tokamak Network's fork of the elizaOS agent framework and CLI. It preserves the upstream codebase's structure and functionality, renamed throughout and restyled to match the Tokamak visual identity.
+Built on a fork of [elizaOS](https://github.com/elizaos/eliza) — see [NOTICE.md](./NOTICE.md) for attribution.
 
-## Install the CLI
+## Runtime modes
 
-Published as [`@tokagent/tokagentos`](https://www.npmjs.com/package/@tokagent/tokagentos) on npm. Install globally:
+Select via `TOKAGENT_EXECUTION_MODE` in `.env`:
 
-```bash
-bun install -g @tokagent/tokagentos@alpha
-tokagentos --help
-```
+- **`daemon`** — headless; `StrategyRunnerService` ticks, actions sign via the operator private key in env. No UI served.
+- **`operator`** — daemon + local React UI on `SERVER_PORT`. Four tabs: Chat / Automations / Wallet / Settings.
 
-Or pin an exact version:
-
-```bash
-bun install -g @tokagent/tokagentos@2.0.0-alpha.224
-```
-
-Or run it one-off without installing:
-
-```bash
-bunx @tokagent/tokagentos create
-```
-
-The npm package is `@tokagent/tokagentos`; the CLI binary it installs is `tokagentos`.
-
-### Dev install (from this repo)
+## Quick start
 
 ```bash
 cd tokagentos
 bun install
-cd packages/tokagentos
-bun run build
-bun link                    # registers `tokagentos` on $PATH
-tokagentos --help
+cp .env.example .env
+# Fill in: ANTHROPIC_API_KEY, TOKAGENT_PRIVATE_KEY, TOKAGENT_VAULT_ADDRESS
+bun run start
 ```
 
-To remove the link later: `bun unlink tokagentos`.
+## Plugins
 
-### Install from a local tarball
+In-tree Tokagent plugins:
+- `plugin-tokagent-strategy` — strategy engine + `StrategyRunnerService`
+- `plugin-tokagent-perps` — Hyperliquid perpetuals on HyperEVM
+- `plugin-tokagent-polymarket` — Polymarket prediction markets
+- `plugin-tokagent-yield` — Aave v3 yield on Polygon
+- `plugin-tokagent-shared` — shared vault bindings, chain config, wallet helpers
 
-Useful for testing a release candidate without publishing:
+AI providers and messaging channels are env-gated — set the relevant API key to auto-enable.
+
+## CLI
+
+The `tokagentos` CLI scaffolds new projects from templates:
 
 ```bash
-cd tokagentos/packages/tokagentos
-bun run build
-bun pm pack                 # produces @tokagent-tokagentos-<version>.tgz
-bun install -g ./@tokagent-tokagentos-<version>.tgz
+bunx @tokagent/tokagentos create my-agent --provider anthropic
 ```
 
-## Publish a new version
-
-```bash
-cd tokagentos/packages/tokagentos
-npm version <2.0.0-alpha.N> --no-git-tag-version    # or --preid alpha
-npm publish --access public --tag alpha              # prepublishOnly runs `bun run build`
-```
-
-Installs by end users then pull the new version:
-
-```bash
-bun install -g @tokagent/tokagentos@alpha
-```
-
-## What changed from upstream
-
-- Product and package namespace renamed (`@elizaos/*` → `@tokagentos/*` for packages maintained in this fork; CLI itself publishes as `@tokagent/tokagentos`)
-- CLI binary renamed (`elizaos` → `tokagentos`)
-- CLI visual output restyled (gradient banner, TAL palette)
-- Plugin submodules still reference upstream `github.com/elizaos-plugins/*` and are not modified by this fork
-
-## Attribution
-
-See [`NOTICE.md`](./NOTICE.md) and [`LICENSE`](./LICENSE).
+See `packages/tokagentos/README.md` for full CLI usage.
 
 ## License
 
-MIT, inherited from upstream elizaOS.
+MIT, inherited from upstream elizaOS. See [LICENSE](./LICENSE).

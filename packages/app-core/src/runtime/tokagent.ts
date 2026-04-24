@@ -55,10 +55,6 @@ import {
 import { detectEmbeddingPreset } from "./embedding-presets.js";
 import { shouldWarmupLocalEmbeddingModel } from "./embedding-warmup-policy.js";
 import { ensureLocalInferenceHandler } from "./ensure-local-inference-handler.js";
-import {
-  ensureTextToSpeechHandler,
-  isEdgeTtsDisabled as isTextToSpeechEdgeTtsDisabled,
-} from "./ensure-text-to-speech-handler.js";
 import { updateStartupEmbeddingProgress } from "./startup-overlay.js";
 
 const AUTONOMY_WORLD_ID = stringToUuid("00000000-0000-0000-0000-000000000001");
@@ -70,9 +66,6 @@ const INTERNAL_CHANNEL_PLUGIN_OVERRIDES = {
   wechat: "tokagentoswechat",
 } as const;
 
-/** Swarm / PTY paths call TEXT_TO_SPEECH; Edge TTS supplies that model with no API key. */
-const AGENT_ORCHESTRATOR_PLUGIN = "agent-orchestrator";
-const EDGE_TTS_PLUGIN = "@elizaos/plugin-edge-tts";
 const require = createRequire(import.meta.url);
 const DIRECT_HELP_FLAGS = new Set(["-h", "--help", "help"]);
 const DIRECT_VERSION_FLAGS = new Set(["-v", "-V", "--version", "version"]);
@@ -168,15 +161,7 @@ export function collectPluginNames(
   ...args: Parameters<typeof upstreamCollectPluginNames>
 ): ReturnType<typeof upstreamCollectPluginNames> {
   syncBrandEnvAliases();
-  const [config] = args;
   const result = upstreamCollectPluginNames(...args);
-  if (
-    result.has(AGENT_ORCHESTRATOR_PLUGIN) &&
-    !isTextToSpeechEdgeTtsDisabled(config) &&
-    !result.has(EDGE_TTS_PLUGIN)
-  ) {
-    result.add(EDGE_TTS_PLUGIN);
-  }
   syncBrandEnvAliases();
   return result;
 }
@@ -404,7 +389,6 @@ async function repairRuntimeAfterBoot(
   runtime: AgentRuntime,
 ): Promise<AgentRuntime> {
   await ensureRuntimeSqlCompatibility(runtime);
-  await ensureTextToSpeechHandler(runtime);
   await ensureLocalInferenceHandler(runtime);
   await ensureAutonomyBootstrapContext(runtime);
 

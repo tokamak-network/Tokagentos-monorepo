@@ -5,7 +5,6 @@ import path from "node:path";
 import type { AgentRuntime, IAgentRuntime } from "@tokagentos/core";
 import type { SwarmCoordinator } from "@elizaos/plugin-agent-orchestrator";
 import { PTYService } from "@elizaos/plugin-agent-orchestrator";
-import { elizaOSCloudPlugin } from "../../packages/plugin-elizacloud/typescript/index.ts";
 import { createTestRuntime } from "../helpers/pglite-runtime";
 
 async function waitFor(
@@ -46,14 +45,14 @@ function loadCloudApiKey(): string {
     return fromEnv;
   }
 
-  const configPath = path.join(os.homedir(), ".milady", "milady.json");
+  const configPath = path.join(os.homedir(), ".tokagent", "tokagent.json");
   const parsed = JSON.parse(
     fs.readFileSync(configPath, "utf8"),
   ) as MiladyConfig;
   const fromConfig = parsed.cloud?.apiKey?.trim();
   if (!fromConfig) {
     throw new Error(
-      "TOKAGENTOS_CLOUD_API_KEY is not configured in the environment or ~/.milady/milady.json",
+      "TOKAGENTOS_CLOUD_API_KEY is not configured in the environment or ~/.tokagent/tokagent.json",
     );
   }
   return fromConfig;
@@ -122,7 +121,7 @@ async function main(): Promise<void> {
     "Expected both live failover frameworks to be installed",
   );
 
-  workdir = fs.mkdtempSync(path.join(os.tmpdir(), "milady-live-failover-"));
+  workdir = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-live-failover-"));
   const outputFile = path.join(workdir, "failover-proof.txt");
   const sentinel = `LIVE_FAILOVER_${Date.now()}`;
   const thread = await coordinator.createTaskThread({

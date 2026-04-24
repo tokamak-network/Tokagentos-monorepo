@@ -31,18 +31,15 @@ on:
           - tokagentos-plugin-xai
           - tokagentos-plugin-discord
           # Independent plugins
-          - tokagentos-plugin-agent-orchestrator
           - tokagentos-plugin-anthropic
           - tokagentos-plugin-bluesky
           - tokagentos-plugin-browser
           - tokagentos-plugin-code
-          - tokagentos-plugin-computeruse
           - tokagentos-plugin-elevenlabs
           - tokagentos-plugin-eliza-classic
           - tokagentos-plugin-evm
           - tokagentos-plugin-experience
           - tokagentos-plugin-farcaster
-          - tokagentos-plugin-github
           - tokagentos-plugin-google-genai
           - tokagentos-plugin-groq
           - tokagentos-plugin-inmemorydb
@@ -60,9 +57,7 @@ on:
           - tokagentos-plugin-roblox
           - tokagentos-plugin-rss
           - tokagentos-plugin-s3-storage
-          - tokagentos-plugin-shell
           - tokagentos-plugin-simple-voice
-          - tokagentos-plugin-solana
           - tokagentos-plugin-tee
           - tokagentos-plugin-telegram
           - tokagentos-plugin-trajectory-logger
@@ -523,8 +518,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: tokagentos-plugin-agent-orchestrator
-            path: plugins/plugin-agent-orchestrator/rust
           - name: tokagentos-plugin-anthropic
             path: plugins/plugin-anthropic/rust
           - name: tokagentos-plugin-bluesky
@@ -533,8 +526,6 @@ jobs:
             path: plugins/plugin-browser/rust
           - name: tokagentos-plugin-code
             path: plugins/plugin-code/rust
-          - name: tokagentos-plugin-computeruse
-            path: plugins/plugin-computeruse/rust
           - name: tokagentos-plugin-elevenlabs
             path: plugins/plugin-elevenlabs/rust
           - name: tokagentos-plugin-eliza-classic
@@ -545,8 +536,6 @@ jobs:
             path: plugins/plugin-experience/rust
           - name: tokagentos-plugin-farcaster
             path: plugins/plugin-farcaster/rust
-          - name: tokagentos-plugin-github
-            path: plugins/plugin-github/rust
           - name: tokagentos-plugin-google-genai
             path: plugins/plugin-google-genai/rust
           - name: tokagentos-plugin-groq
@@ -581,12 +570,8 @@ jobs:
             path: plugins/plugin-rss/rust
           - name: tokagentos-plugin-s3-storage
             path: plugins/plugin-s3-storage/rust
-          - name: tokagentos-plugin-shell
-            path: plugins/plugin-shell/rust
           - name: tokagentos-plugin-simple-voice
             path: plugins/plugin-simple-voice/rust
-          - name: tokagentos-plugin-solana
-            path: plugins/plugin-solana/rust
           - name: tokagentos-plugin-tee
             path: plugins/plugin-tee/rust
           - name: tokagentos-plugin-telegram

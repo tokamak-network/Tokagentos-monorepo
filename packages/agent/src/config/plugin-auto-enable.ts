@@ -99,8 +99,6 @@ export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
   MISTRAL_API_KEY: "@elizaos/plugin-mistral",
   COHERE_API_KEY: "@elizaos/plugin-cohere",
   PERPLEXITY_API_KEY: "@elizaos/plugin-perplexity",
-  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-elizacloud",
-  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-elizacloud",
   CUA_API_KEY: "@elizaos/plugin-cua",
   CUA_HOST: "@elizaos/plugin-cua",
   OBSIDIAN_VAULT_PATH: "@elizaos/plugin-obsidian",
@@ -112,12 +110,6 @@ export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
   // crashes with 'Action spec not found: BRIDGE' during startup.
   // Gate behind ENABLE_EVM_PLUGIN=1 until the spec registration is fixed.
   ENABLE_EVM_PLUGIN: "@elizaos/plugin-evm",
-  SOLANA_PRIVATE_KEY: "@elizaos/plugin-solana",
-  LASTFM_API_KEY: "@elizaos/plugin-music-library",
-  GENIUS_API_KEY: "@elizaos/plugin-music-library",
-  THEAUDIODB_API_KEY: "@elizaos/plugin-music-library",
-  SPOTIFY_CLIENT_ID: "@elizaos/plugin-music-library",
-  SPOTIFY_CLIENT_SECRET: "@elizaos/plugin-music-library",
   RS_SDK_BOT_NAME: "@tokagentos/app-2004scape",
   SHOPIFY_ACCESS_TOKEN: "@elizaos/plugin-shopify",
 };
@@ -126,15 +118,10 @@ const FEATURE_PLUGINS: Record<string, string> = {
   browser: "@elizaos/plugin-browser",
   cua: "@elizaos/plugin-cua",
   obsidian: "@elizaos/plugin-obsidian",
-  cron: "@elizaos/plugin-cron",
-  shell: "@elizaos/plugin-shell",
-  executeCode: "@elizaos/plugin-executecode",
   imageGen: "@elizaos/plugin-image-generation",
-  tts: "@elizaos/plugin-edge-tts",
   stt: "@elizaos/plugin-stt",
   agentSkills: "@elizaos/plugin-agent-skills",
   // directives: "@elizaos/plugin-directives", // not yet ready — package doesn't exist
-  commands: "@elizaos/plugin-commands",
   diagnosticsOtel: "@elizaos/plugin-diagnostics-otel",
   webhooks: "@elizaos/plugin-webhooks",
   gmailWatch: "@elizaos/plugin-gmail-watch",
@@ -143,10 +130,7 @@ const FEATURE_PLUGINS: Record<string, string> = {
   // Media generation plugins
   fal: "@elizaos/plugin-fal",
   suno: "@elizaos/plugin-suno",
-  musicLibrary: "@elizaos/plugin-music-library",
-  musicPlayer: "@elizaos/plugin-music-player",
   vision: "@elizaos/plugin-vision",
-  computeruse: "@elizaos/plugin-computeruse",
   repoprompt: "@elizaos/plugin-repoprompt",
   claudeCodeWorkbench: "@elizaos/plugin-claude-code-workbench",
   rs2004scape: "@tokagentos/app-2004scape",
@@ -477,20 +461,6 @@ export function applyPluginAutoEnable(
       STEWARD_TOKAGENT_PLUGIN_SHORT_ID,
       changes,
       "env: STEWARD_API_URL",
-    );
-  }
-
-  const cloudProvisioned = env.TOKAGENT_CLOUD_PROVISIONED === "1";
-  if (
-    cloudProvisioned &&
-    pluginsConfig.entries["edge-tts"]?.enabled !== false
-  ) {
-    addToAllowlist(
-      pluginsConfig.allow,
-      "@elizaos/plugin-edge-tts",
-      "edge-tts",
-      changes,
-      "cloud-provisioned voice output",
     );
   }
 

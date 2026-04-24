@@ -54,7 +54,6 @@ export {
 // resolvePlugins is re-exported via index.ts from ./plugin-resolver
 
 import * as pluginAppCompanion from "@tokagentos/app-companion/plugin";
-import * as pluginAppLifeops from "@tokagentos/app-lifeops/plugin";
 import {
   AgentRuntime,
   AutonomyService,
@@ -150,54 +149,6 @@ import rolesPlugin from "./roles.js";
 import { shouldEnableTrajectoryLoggingByDefault } from "./trajectory-persistence.js";
 
 const require = createRequire(import.meta.url);
-// Agent orchestrator ships as the standalone @elizaos/plugin-agent-orchestrator package.
-// Use top-level dynamic import because the package is ESM-only and fails under
-// createRequire() in bun runtime; the await is resolved before module consumers read the binding.
-let pluginAgentOrchestrator: unknown = null;
-try {
-  pluginAgentOrchestrator = await import("@elizaos/plugin-agent-orchestrator");
-} catch {
-  pluginAgentOrchestrator = null;
-}
-// Keep plugin-shell behind a guarded runtime require too. The published alpha
-// tarball can declare dist/index.js without actually shipping it, which breaks
-// CLI/bootstrap in published-only CI.
-let pluginShell: unknown = null;
-try {
-  pluginShell = require("@elizaos/plugin-shell");
-} catch {
-  pluginShell = null;
-}
-// Keep plugin-commands behind a guarded runtime require. Some published alpha
-// builds advertise dist/index.js without actually shipping it, and a static
-// ESM import here makes the CLI fail before it can print --help/--version.
-let pluginCommands: unknown = null;
-try {
-  pluginCommands = require("@elizaos/plugin-commands");
-} catch {
-  pluginCommands = null;
-}
-// plugin-plugin-manager, plugin-secrets-manager, and plugin-trust are now
-// built-in core capabilities in @tokagentos/core. Enable via character settings:
-// ENABLE_PLUGIN_MANAGER, ENABLE_SECRETS_MANAGER, ENABLE_TRUST.
-// Keep plugin-cron behind a guarded runtime require for the same reason. Some
-// published alpha builds resolve through package.json but are missing the
-// shipped dist/index.js entry, which breaks CLI bootstrap before help/version.
-let pluginCron: unknown = null;
-try {
-  pluginCron = require("@elizaos/plugin-cron");
-} catch {
-  pluginCron = null;
-}
-// Keep plugin-elizacloud behind a guarded runtime require as well. Some
-// published alpha builds advertise dist/node/index.node.js but do not ship
-// that ESM entry, which breaks CLI bootstrap in published-only CI.
-let pluginTokagentcloud: unknown = null;
-try {
-  pluginTokagentcloud = require("@elizaos/plugin-elizacloud");
-} catch {
-  pluginTokagentcloud = null;
-}
 // Keep plugin-ollama behind a guarded runtime require as well. Some published
 // alpha builds advertise dist/node/index.node.js but do not ship that ESM
 // entry, which breaks CLI bootstrap and startup smokes in published-only CI.
@@ -303,23 +254,13 @@ Object.assign(STATIC_TOKAGENT_PLUGINS, {
   "@elizaos/plugin-sql": pluginSql,
   "@elizaos/plugin-local-embedding": pluginLocalEmbedding,
   // secrets-manager: now built-in core capability (ENABLE_SECRETS_MANAGER)
-  ...(pluginAgentOrchestrator
-    ? { "agent-orchestrator": pluginAgentOrchestrator }
-    : {}),
-  ...(pluginCron ? { "@elizaos/plugin-cron": pluginCron } : {}),
-  ...(pluginShell ? { "@elizaos/plugin-shell": pluginShell } : {}),
   // plugin-manager: now built-in core capability (ENABLE_PLUGIN_MANAGER)
   "@elizaos/plugin-agent-skills": pluginAgentSkills,
-  ...(pluginCommands ? { "@elizaos/plugin-commands": pluginCommands } : {}),
   "@elizaos/plugin-pdf": pluginPdf,
   ...(pluginOpenai ? { "@elizaos/plugin-openai": pluginOpenai } : {}),
   "@elizaos/plugin-anthropic": pluginAnthropic,
   ...(pluginOllama ? { "@elizaos/plugin-ollama": pluginOllama } : {}),
-  ...(pluginTokagentcloud
-    ? { "@elizaos/plugin-elizacloud": pluginTokagentcloud }
-    : {}),
   // trust: now built-in core capability (ENABLE_TRUST)
-  "@tokagentos/app-lifeops": pluginAppLifeops,
   "@tokagentos/app-companion": pluginAppCompanion,
   "@elizaos/plugin-discord-local": discordLocalPlugin,
   // personality: now built-in advanced capability (advancedCapabilities: true)
@@ -1017,7 +958,6 @@ export { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS };
 const _OPTIONAL_NATIVE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-browser", // requires browser server binary
   "@elizaos/plugin-vision", // requires @tensorflow/tfjs-node native addon
-  "@elizaos/plugin-computeruse", // requires platform-specific binaries
 ];
 
 // CHANNEL_PLUGIN_MAP, PROVIDER_PLUGIN_MAP, and OPTIONAL_PLUGIN_MAP live in
@@ -1051,25 +991,6 @@ export function isEnvKeyAllowedForForwarding(key: string): boolean {
     return false;
   if (/(ACCESS_TOKEN|REFRESH_TOKEN|SESSION_TOKEN|AUTH_TOKEN)$/i.test(key))
     return false;
-  // Block tokagentCloud connection keys — these must only come from config.cloud
-  // via applyCloudConfigToEnv(). Forwarding them from config.env.vars into
-  // runtime.settings would let a stale env-var shadow the live cloud key that
-  // the app sets when the user connects through the UI.
-  if (
-    upper === "TOKAGENTOS_CLOUD_API_KEY" ||
-    upper === "TOKAGENTOS_CLOUD_ENABLED" ||
-    upper === "TOKAGENTOS_CLOUD_BASE_URL" ||
-    upper === "TOKAGENTOS_CLOUD_NANO_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_MEDIUM_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_SMALL_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_LARGE_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_MEGA_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_PLANNER_MODEL"
-  )
-    return false;
   return true;
 }
 
@@ -1091,24 +1012,6 @@ function assertPersistentDatabaseRequired(
       `Tokagent requires persistent database storage and does not permit ALLOW_NO_DATABASE (agent ${runtime.agentId}). Remove ALLOW_NO_DATABASE from config/env and use @elizaos/plugin-sql.`,
     );
   }
-}
-
-function isTokagentCloudManagedProcessEnvKey(key: string): boolean {
-  const upper = key.toUpperCase();
-  return (
-    upper === "TOKAGENTOS_CLOUD_API_KEY" ||
-    upper === "TOKAGENTOS_CLOUD_ENABLED" ||
-    upper === "TOKAGENTOS_CLOUD_BASE_URL" ||
-    upper === "TOKAGENTOS_CLOUD_NANO_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_MEDIUM_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_SMALL_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_LARGE_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_MEGA_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL" ||
-    upper === "TOKAGENTOS_CLOUD_PLANNER_MODEL"
-  );
 }
 
 // findPluginBrowserStagehandDir, ensureBrowserServerLink,
@@ -1250,248 +1153,24 @@ export async function autoResolveDiscordAppId(): Promise<void> {
 }
 
 /**
- * Fetch GitHub OAuth token from cloud if available and no local token is set.
- * Called during async runtime init after cloud config is applied.
- *
- * Flow: If the agent has a managed GitHub connection in the cloud, and no
- * local GITHUB_TOKEN is set, fetch the OAuth token from the cloud API and
- * inject it into process.env so plugins (plugin-github, git-workspace-service)
- * can use it for API calls and git credential helpers.
+ * No-op stub: cloud GitHub token fetch removed from TokagentOS.
+ * @internal Exported for testing.
  */
-/** @internal Exported for testing. */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function autoFetchCloudGithubToken(
-  agentId?: string,
+  _agentId?: string,
 ): Promise<void> {
-  // Skip if a local token is already configured
-  if (process.env.GITHUB_TOKEN || process.env.GITHUB_PAT) return;
-
-  // Need cloud credentials and an agent ID
-  const cloudApiKey = process.env.TOKAGENTOS_CLOUD_API_KEY?.trim();
-  const cloudBaseUrl =
-    process.env.TOKAGENTOS_CLOUD_BASE_URL?.trim() || "https://api.tokagentcloud.ai";
-  if (!cloudApiKey || !agentId) return;
-
-  const managedNs = process.env.TOKAGENT_CLOUD_MANAGED_AGENTS_API_SEGMENT?.trim();
-  if (!managedNs) return;
-
-  try {
-    const url = `${cloudBaseUrl}/api/v1/${managedNs}/agents/${encodeURIComponent(agentId)}/github/token`;
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${cloudApiKey}`,
-        Accept: "application/json",
-      },
-      signal: AbortSignal.timeout(10_000),
-    });
-
-    if (!res.ok) {
-      // 404 = no GitHub connection for this agent, which is fine
-      if (res.status !== 404) {
-        logger.warn(
-          `[tokagent] Failed to fetch cloud GitHub token: ${res.status}`,
-        );
-      }
-      return;
-    }
-
-    const body = (await res.json()) as {
-      success?: boolean;
-      data?: { accessToken?: string; githubUsername?: string };
-    };
-    if (!body.success || !body.data?.accessToken) return;
-
-    process.env.GITHUB_TOKEN = body.data.accessToken;
-    logger.info(
-      `[tokagent] Fetched GitHub token from cloud for @${body.data.githubUsername || "unknown"}`,
-    );
-  } catch (err) {
-    logger.warn(`[tokagent] Could not fetch cloud GitHub token: ${err}`);
-  }
+  return;
 }
 
 /**
- * Propagate cloud config from Tokagent config into process.env so the
- * TokagentCloud plugin can discover settings at startup.
+ * No-op stub: cloud plugin removed from TokagentOS.
+ * Retained as exported symbol to avoid cascading TS errors at call sites.
+ * @internal Exported for testing.
  */
-/** @internal Exported for testing. */
-export function applyCloudConfigToEnv(config: TokagentConfig): void {
-  migrateLegacyRuntimeConfig(config as Record<string, unknown>);
-  const cloud = config.cloud;
-
-  const isCloudContainer = process.env.TOKAGENT_CLOUD_PROVISIONED === "1";
-  if (!cloud && !isCloudContainer) return;
-  const topology = resolveTokagentCloudTopology(config as Record<string, unknown>);
-
-  // Cloud inference is selected from the canonical onboarding connection, not
-  // just from raw cloud flags. This keeps linked cloud auth from re-enabling
-  // Tokagent Cloud after the user has switched to a local or remote provider.
-  const effectivelyEnabled = topology.services.inference || isCloudContainer;
-  const shouldLoadCloudPlugin = topology.shouldLoadPlugin || isCloudContainer;
-
-  const setCloudUsageEnv = (key: string, enabled: boolean): void => {
-    if (enabled) {
-      process.env[key] = "true";
-    } else {
-      delete process.env[key];
-    }
-  };
-
-  if (isTokagentSettingsDebugEnabled()) {
-    const c = (cloud ?? {}) as Record<string, unknown>;
-    logger.debug(
-      `[tokagent][settings][runtime] applyCloudConfigToEnv inference=${effectivelyEnabled} shouldLoadPlugin=${shouldLoadCloudPlugin} isCloudContainer=${isCloudContainer} cloud=${JSON.stringify(settingsDebugCloudSummary(c))}`,
-    );
-  }
-
-  setCloudUsageEnv("TOKAGENTOS_CLOUD_USE_INFERENCE", effectivelyEnabled);
-  setCloudUsageEnv(
-    "TOKAGENTOS_CLOUD_USE_TTS",
-    topology.services.tts || isCloudContainer,
-  );
-  setCloudUsageEnv("TOKAGENTOS_CLOUD_USE_MEDIA", topology.services.media);
-  setCloudUsageEnv(
-    "TOKAGENTOS_CLOUD_USE_EMBEDDINGS",
-    topology.services.embeddings,
-  );
-  setCloudUsageEnv("TOKAGENTOS_CLOUD_USE_RPC", topology.services.rpc);
-
-  if (effectivelyEnabled) {
-    process.env.TOKAGENTOS_CLOUD_ENABLED = "true";
-  } else {
-    delete process.env.TOKAGENTOS_CLOUD_ENABLED;
-  }
-
-  if (shouldLoadCloudPlugin) {
-    logger.info(
-      `[tokagent] Cloud config: inference=${topology.services.inference}, runtime=${topology.runtime}, hasApiKey=${Boolean(cloud?.apiKey || process.env.TOKAGENTOS_CLOUD_API_KEY)}, baseUrl=${cloud?.baseUrl ?? "(default)"}, isCloudContainer=${isCloudContainer}`,
-    );
-    // Only propagate the API key when cloud is enabled AND it is a real
-    // credential — never set the literal "[REDACTED]" placeholder (which can
-    // leak into the config via UI round-trips through the redacted GET → PUT
-    // cycle). WHY: when enabled is false (BYOK / disconnected), leaving the key
-    // in process.env still auto-loads @elizaos/plugin-elizacloud and steals
-    // TEXT_LARGE even if the JSON says cloud is off.
-    const isRealApiKey =
-      cloud?.apiKey && cloud.apiKey.trim().toUpperCase() !== "[REDACTED]";
-    if (isRealApiKey) {
-      process.env.TOKAGENTOS_CLOUD_API_KEY = cloud.apiKey;
-    } else if (!isCloudContainer) {
-      delete process.env.TOKAGENTOS_CLOUD_API_KEY;
-    }
-    if (cloud?.baseUrl) {
-      process.env.TOKAGENTOS_CLOUD_BASE_URL = cloud.baseUrl;
-    } else if (!isCloudContainer) {
-      delete process.env.TOKAGENTOS_CLOUD_BASE_URL;
-    }
-  } else {
-    delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_API_KEY;
-    delete process.env.TOKAGENTOS_CLOUD_BASE_URL;
-  }
-
-  // Propagate model names so the cloud plugin picks them up. Falls back to
-  // sensible defaults when cloud is enabled but no explicit selection exists.
-  // Skip when inferenceMode is "byok"/"local" or services.inference is off —
-  // user's own keys handle models.
-  // If the user chose a subscription provider, treat that as "byok" unless
-  // they explicitly set inferenceMode to "cloud".
-  const llmText = resolveServiceRoutingInConfig(
-    config as Record<string, unknown>,
-  )?.llmText;
-  const models = (config as Record<string, unknown>).models as
-    | {
-        nano?: string;
-        small?: string;
-        medium?: string;
-        large?: string;
-        mega?: string;
-      }
-    | undefined;
-  if (effectivelyEnabled) {
-    const nano = llmText?.nanoModel || models?.nano || "openai/gpt-5.4-nano";
-    const small =
-      llmText?.smallModel || models?.small || "minimax/minimax-m2.7";
-    const medium = llmText?.mediumModel || models?.medium || small;
-    const large =
-      llmText?.largeModel || models?.large || "anthropic/claude-sonnet-4.6";
-    const mega = llmText?.megaModel || models?.mega || large;
-    const responseHandlerModel =
-      llmText?.responseHandlerModel || llmText?.shouldRespondModel;
-    const actionPlannerModel =
-      llmText?.actionPlannerModel || llmText?.plannerModel;
-    process.env.SMALL_MODEL = small;
-    process.env.NANO_MODEL = nano;
-    process.env.MEDIUM_MODEL = medium;
-    process.env.LARGE_MODEL = large;
-    process.env.MEGA_MODEL = mega;
-    if (responseHandlerModel) {
-      process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL = responseHandlerModel;
-      process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL = responseHandlerModel;
-    } else {
-      delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
-    }
-    if (actionPlannerModel) {
-      process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL = actionPlannerModel;
-      process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL = actionPlannerModel;
-    } else {
-      delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
-    }
-    process.env.TOKAGENTOS_CLOUD_NANO_MODEL = nano;
-    process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL = medium;
-    process.env.TOKAGENTOS_CLOUD_SMALL_MODEL = small;
-    process.env.TOKAGENTOS_CLOUD_LARGE_MODEL = large;
-    process.env.TOKAGENTOS_CLOUD_MEGA_MODEL = mega;
-  } else if (shouldLoadCloudPlugin) {
-    // Cloud plugin may still be active for non-inference services; keep model
-    // routing local by clearing the cloud model aliases.
-    delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
-    delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
-    delete process.env.NANO_MODEL;
-    delete process.env.MEDIUM_MODEL;
-    delete process.env.SMALL_MODEL;
-    delete process.env.LARGE_MODEL;
-    delete process.env.MEGA_MODEL;
-  }
-
-  // Propagate per-service disable flags so downstream code can check them
-  // without needing direct access to the TokagentConfig object.
-  if (!topology.services.tts) {
-    process.env.TOKAGENT_CLOUD_TTS_DISABLED = "true";
-  } else {
-    delete process.env.TOKAGENT_CLOUD_TTS_DISABLED;
-  }
-  if (!topology.services.media) {
-    process.env.TOKAGENT_CLOUD_MEDIA_DISABLED = "true";
-  } else {
-    delete process.env.TOKAGENT_CLOUD_MEDIA_DISABLED;
-  }
-  if (!topology.services.embeddings) {
-    process.env.TOKAGENT_CLOUD_EMBEDDINGS_DISABLED = "true";
-  } else {
-    delete process.env.TOKAGENT_CLOUD_EMBEDDINGS_DISABLED;
-  }
-  if (!topology.services.rpc) {
-    process.env.TOKAGENT_CLOUD_RPC_DISABLED = "true";
-  } else {
-    delete process.env.TOKAGENT_CLOUD_RPC_DISABLED;
-  }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function applyCloudConfigToEnv(_config: TokagentConfig): void {
+  return;
 }
 
 /**
@@ -1532,8 +1211,7 @@ export function applyX402ConfigToEnv(config: TokagentConfig): void {
  *      `N8nConfig` in types.tokagent.ts.
  *   4. Otherwise: leave unset. The plugin's init() no-ops without credentials.
  *
- * Called from startTokagent() after applyCloudConfigToEnv so cloud settings are
- * already reflected in process.env.
+ * Called from startTokagent() after connector secrets are applied.
  *
  * @internal Exported for testing.
  */
@@ -2340,26 +2018,6 @@ function installActionAliases(runtime: AgentRuntime): void {
     );
   }
 
-  // Compatibility alias: older prompts/docs still reference CODE_TASK,
-  // while agent-orchestrator exposes CREATE_TASK.
-  const createTaskAction = actions.find(
-    (action) => action?.name?.toUpperCase() === "CREATE_TASK",
-  );
-  if (createTaskAction) {
-    const similes = Array.isArray(createTaskAction.similes)
-      ? createTaskAction.similes
-      : [];
-    const hasCodeTaskAlias = similes.some(
-      (simile) => simile.toUpperCase() === "CODE_TASK",
-    );
-    if (!hasCodeTaskAlias) {
-      createTaskAction.similes = [...similes, "CODE_TASK"];
-      logger.info(
-        "[tokagent] Added action alias CODE_TASK -> CREATE_TASK for agent-orchestrator",
-      );
-    }
-  }
-
   runtimeWithAliases.__tokagentActionAliasesInstalled = true;
 }
 
@@ -2528,10 +2186,6 @@ export function buildCharacterFromConfig(config: TokagentConfig): Character {
     "MSTEAMS_APP_PASSWORD",
     "MATTERMOST_BOT_TOKEN",
     "MATTERMOST_BASE_URL",
-    // TokagentCloud secrets
-    "TOKAGENTOS_CLOUD_API_KEY",
-    "TOKAGENTOS_CLOUD_BASE_URL",
-    "TOKAGENTOS_CLOUD_ENABLED",
     // Wallet / blockchain secrets
     "EVM_PRIVATE_KEY",
     "SOLANA_PRIVATE_KEY",
@@ -2940,15 +2594,12 @@ export async function startTokagent(
   // 2e. Propagate arbitrary env vars from config.env into process.env.
   // Tokagent stores user-defined env vars (plugin settings, API URLs, etc.)
   // in config.env; tokagentOS plugins read them via process.env / getSetting.
-  // Skip TOKAGENTOS_CLOUD_* — applyCloudConfigToEnv() owns those; otherwise a
-  // stale key in config.env refills process.env after disconnect cleared it.
   if (
     config.env &&
     typeof config.env === "object" &&
     !Array.isArray(config.env)
   ) {
     for (const [key, value] of Object.entries(config.env)) {
-      if (isTokagentCloudManagedProcessEnvKey(key)) continue;
       if (typeof value === "string" && !process.env[key]) {
         process.env[key] = value;
       }
@@ -2962,7 +2613,6 @@ export async function startTokagent(
       for (const [key, value] of Object.entries(
         vars as Record<string, unknown>,
       )) {
-        if (isTokagentCloudManagedProcessEnvKey(key)) continue;
         if (typeof value === "string" && !process.env[key]) {
           process.env[key] = value;
         }
@@ -2990,14 +2640,6 @@ export async function startTokagent(
           ? ` | connection: ${postgresUrl.replace(/:\/\/([^:]+):([^@]+)@/, "://$1:***@")}`
           : ""),
     );
-  }
-
-  // 2d-iii. OG tracking code initialization
-  try {
-    const { initializeOGCode } = await import("@tokagentos/app-tokagentmaker");
-    initializeOGCode();
-  } catch {
-    // Silent — OG tracking is non-critical
   }
 
   // 2d-ii. Allow destructive migrations (e.g. dropping tables removed between
@@ -3088,9 +2730,8 @@ export async function startTokagent(
   await autoFetchCloudGithubToken(config.cloud?.agentId?.trim() || agentId);
 
   // 5b. Pump N8N_HOST + N8N_API_KEY into process.env for
-  //     @elizaos/plugin-n8n-workflow. Must run AFTER applyCloudConfigToEnv
-  //     (2b above) and AFTER agentId is derived — the cloud gateway URL
-  //     embeds the agent id. Prefer the persisted cloud-agent id when set;
+  //     @elizaos/plugin-n8n-workflow. Must run AFTER agentId is derived.
+  //     Prefer the persisted cloud-agent id when set;
   //     fall back to the derived local agent slug.
   applyN8nConfigToEnv(config, config.cloud?.agentId?.trim() || agentId);
 
@@ -3889,11 +3530,9 @@ export async function startTokagent(
           // Reload config from disk (updated by API)
           const freshConfig = loadTokagentConfig();
 
-          // Propagate secrets & cloud config into process.env so plugins
-          // (especially plugin-elizacloud) can discover them.  The initial
-          // startup does this in startTokagent(); the hot-reload must repeat it
-          // because the config may have changed (e.g. cloud enabled during
-          // onboarding).
+          // Propagate secrets into process.env so plugins can discover them.
+          // The initial startup does this in startTokagent(); the hot-reload
+          // must repeat it because the config may have changed.
           applyConnectorSecretsToEnv(freshConfig);
           await autoResolveDiscordAppId();
           applyCloudConfigToEnv(freshConfig);

@@ -57,35 +57,6 @@ export const PLUGIN_WIDGET_MAP: Record<
       defaultEnabled: true,
     },
   ],
-  "agent-orchestrator": [
-    {
-      id: "agent-orchestrator.apps",
-      pluginId: "agent-orchestrator",
-      slot: "chat-sidebar",
-      label: "App Runs",
-      icon: "Activity",
-      order: 150,
-      defaultEnabled: true,
-    },
-    {
-      id: "agent-orchestrator.tasks",
-      pluginId: "agent-orchestrator",
-      slot: "chat-sidebar",
-      label: "Tasks",
-      icon: "ListTodo",
-      order: 200,
-      defaultEnabled: true,
-    },
-    {
-      id: "agent-orchestrator.activity",
-      pluginId: "agent-orchestrator",
-      slot: "chat-sidebar",
-      label: "Activity",
-      icon: "Activity",
-      order: 300,
-      defaultEnabled: true,
-    },
-  ],
 };
 
 /** Resolve widget declarations for a plugin by ID. */

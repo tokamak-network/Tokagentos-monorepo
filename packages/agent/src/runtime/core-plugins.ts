@@ -9,7 +9,7 @@
  * Plugins that depend on PTY/native workspace tooling.
  * Keep them out of cloud images where those binaries are intentionally absent.
  */
-export const DESKTOP_ONLY_PLUGINS: readonly string[] = ["agent-orchestrator"];
+export const DESKTOP_ONLY_PLUGINS: readonly string[] = [];
 
 /** Core plugins that should always be loaded. collectPluginNames() seeds from this list only. */
 export const CORE_PLUGINS: readonly string[] = [
@@ -17,11 +17,7 @@ export const CORE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-local-embedding", // local embeddings — required for memory
   // @tokagentos/app-form — now built-in as advanced capability (form); enabled when advancedCapabilities: true
   "@tokagentos/app-companion", // VRM companion emotes; actions gated until app session is active
-  // @elizaos/plugin-agent-orchestrator — opt-in via TOKAGENT_AGENT_ORCHESTRATOR (Tokagent app enables by default)
-  "@elizaos/plugin-cron", // scheduled jobs and automation
-  "@elizaos/plugin-shell", // shell command execution
   "@elizaos/plugin-agent-skills", // skill execution and marketplace runtime
-  "@elizaos/plugin-commands", // slash command handling (skills auto-register as /commands)
   "@tokagentos/app-lifeops", // LifeOps: personal ops — tasks, goals, calendar, inbox, browser companions, website blocking
   // Built-in runtime capabilities (no longer external plugins):
   // - experience, form, clipboard, personality: advanced capabilities (advancedCapabilities: true)
@@ -45,20 +41,15 @@ export const OPTIONAL_CORE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-code", // code writing and file operations
   "@elizaos/plugin-repoprompt", // RepoPrompt CLI integration and workflow orchestration
   "@elizaos/plugin-claude-code-workbench", // Claude Code companion workflows for this monorepo
-  "@elizaos/plugin-computeruse", // computer use automation (requires platform-specific binaries)
   "@elizaos/plugin-browser", // browser automation (requires stagehand-server)
   "@elizaos/plugin-vision", // vision/image understanding (feature-gated)
-  "@elizaos/plugin-cli", // CLI interface
   "@elizaos/plugin-discord", // Discord bot integration
   "@elizaos/plugin-discord-local", // Local Discord desktop integration for macOS
   "@elizaos/plugin-bluebubbles", // BlueBubbles-backed iMessage integration for macOS
   "@elizaos/plugin-telegram", // Telegram bot integration
   "@elizaos/plugin-signal", // Signal user-account integration
   "@elizaos/plugin-twitch", // Twitch integration
-  "@elizaos/plugin-edge-tts", // text-to-speech (Microsoft Edge TTS)
   "@elizaos/plugin-elevenlabs", // ElevenLabs text-to-speech
-  "@elizaos/plugin-music-library", // music metadata, library, playlists, YouTube search
-  "@elizaos/plugin-music-player", // music playback engine + streaming routes
   // "@elizaos/plugin-directives", // directive processing - not yet ready
   // "@elizaos/plugin-mcp", // MCP protocol support - not yet ready
   // "@elizaos/plugin-scheduling", // scheduling - not yet ready

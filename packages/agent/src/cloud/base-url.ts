@@ -26,9 +26,7 @@ function trimApiPath(pathname: string): string {
 }
 
 export function normalizeCloudSiteUrl(rawUrl?: string): string {
-  // Allow cloud-provisioned containers to override the base URL via env var
-  const envOverride = process.env.TOKAGENTOS_CLOUD_BASE_URL?.trim();
-  const candidate = envOverride || rawUrl?.trim() || DEFAULT_CLOUD_SITE_URL;
+  const candidate = rawUrl?.trim() || DEFAULT_CLOUD_SITE_URL;
 
   try {
     const parsed = new URL(candidate);

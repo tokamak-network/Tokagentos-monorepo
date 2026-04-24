@@ -1,6 +1,5 @@
 /**
- * Local stub for CoordinationLLMResponse — removed from
- * @elizaos/plugin-agent-orchestrator 2.x.
+ * Local stub for CoordinationLLMResponse.
  */
 export interface CoordinationLLMResponse {
   action: string;

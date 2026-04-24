@@ -291,7 +291,6 @@ type RootPackageJson = {
 };
 const cloudAgentTemplateReleaseDependencies = [
   "@tokagentos/core",
-  "@elizaos/plugin-elizacloud",
   "@elizaos/plugin-sql",
 ] as const;
 

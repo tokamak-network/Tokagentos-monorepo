@@ -5,19 +5,6 @@ import {
 
 export const DEFAULT_ONBOARDING_PROVIDER_OPTIONS = [
   {
-    id: "tokagentcloud",
-    name: "Tokagent Cloud",
-    envKey: null,
-    pluginName: "@elizaos/plugin-elizacloud",
-    keyPrefix: null,
-    description: "Managed hosting for Tokagent agents and bundled infrastructure.",
-    family: "tokagentcloud",
-    authMode: "cloud",
-    group: "cloud",
-    order: 10,
-    recommended: true,
-  },
-  {
     id: "anthropic-subscription",
     name: "Claude Subscription",
     envKey: null,

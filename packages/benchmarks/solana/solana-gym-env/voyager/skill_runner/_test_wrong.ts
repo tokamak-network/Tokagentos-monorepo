@@ -1,1 +1,0 @@
-export function wrongName(): string { return 'hi'; }
