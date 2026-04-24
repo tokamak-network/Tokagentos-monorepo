@@ -55,7 +55,7 @@
   },
   "tokagentos": {
     "app": {
-      "displayName": "Milady Companion",
+      "displayName": "Tokagent Companion",
       "category": "game",
       "heroImage": "assets/hero.png"
     }
