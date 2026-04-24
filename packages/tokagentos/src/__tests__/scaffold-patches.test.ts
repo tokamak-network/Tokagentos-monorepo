@@ -17,6 +17,13 @@ function makeTempSubmoduleTree(): string {
     path.join(root, "packages/app-core/src/navigation/index.ts"),
     "// upstream navigation stub\n",
   );
+  // native-plugin-entrypoints: upstream bulk-registers 15 Capacitor bridges;
+  // the Tokagent overlay replaces it with a no-op (web-only product).
+  fs.mkdirSync(path.join(root, "packages/app-core/src/platform"), { recursive: true });
+  fs.writeFileSync(
+    path.join(root, "packages/app-core/src/platform/native-plugin-entrypoints.ts"),
+    "// upstream capacitor bridge registrations\n",
+  );
   return root;
 }
 
@@ -108,14 +115,14 @@ describe("applyTokagentScaffoldPatches", () => {
       path.join(root, "packages/app-core/src/navigation/index.ts"),
       "utf-8",
     );
-    // Must keep Chat, Automations, Settings
+    // Must keep Chat, Automations, Wallet, Settings (Tokagent DeFi tab set)
     expect(navSource).toMatch(/label:\s*"Chat"/);
     expect(navSource).toMatch(/label:\s*"Automations"/);
+    expect(navSource).toMatch(/label:\s*"Wallet"/);
     expect(navSource).toMatch(/label:\s*"Settings"/);
-    // Must NOT contain the removed tab groups
+    // Must NOT contain the removed tab groups (general-purpose / consumer tabs)
     expect(navSource).not.toMatch(/label:\s*"Apps"/);
     expect(navSource).not.toMatch(/label:\s*"Character"/);
-    expect(navSource).not.toMatch(/label:\s*"Wallet"/);
     expect(navSource).not.toMatch(/label:\s*"Browser"/);
     expect(navSource).not.toMatch(/label:\s*"Stream"/);
 

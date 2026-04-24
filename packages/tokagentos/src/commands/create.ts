@@ -78,18 +78,6 @@ const LLM_PROVIDERS: readonly LlmProvider[] = [
     hint: "sk-or-v1-…",
   },
   {
-    id: "xai",
-    label: "xAI (Grok)",
-    envVar: "XAI_API_KEY",
-    hint: "xai-…",
-  },
-  {
-    id: "deepseek",
-    label: "DeepSeek",
-    envVar: "DEEPSEEK_API_KEY",
-    hint: "sk-…",
-  },
-  {
     id: "ollama",
     label: "Ollama (local, no API key)",
     envVar: "",
@@ -228,7 +216,7 @@ async function promptLlmProvider(
     }
     if (required && !match.envVar) {
       clack.cancel(
-        `--llm '${initial}' is not a real provider for fullstack-app. Pick one that requires an API key (openai, anthropic, google, groq, openrouter, xai, deepseek).`,
+        `--llm '${initial}' is not a real provider for fullstack-app. Pick one that requires an API key (openai, anthropic, google, groq, openrouter).`,
       );
       process.exit(1);
     }
@@ -237,7 +225,7 @@ async function promptLlmProvider(
   if (yes) {
     if (required) {
       clack.cancel(
-        "fullstack-app requires --llm <provider> and --api-key <key> when using --yes. Provider options: openai, anthropic, google, groq, openrouter, xai, deepseek.",
+        "fullstack-app requires --llm <provider> and --api-key <key> when using --yes. Provider options: openai, anthropic, google, groq, openrouter.",
       );
       process.exit(1);
     }
@@ -302,12 +290,12 @@ async function promptApiKey(
 /**
  * Pre-complete the app's onboarding state so the UI skips the provider/
  * API-key prompt (the user already supplied both at `tokagentos create`
- * time). The app looks up state from `<ELIZA_STATE_DIR>/<namespace>.json`
- * — default state dir is `~/.eliza/` and namespace is the project name
- * passed via `bun run dev --name=<project>`. See upstream's
- * packages/agent/src/config/paths.ts (resolveConfigPath) and
- * packages/app-core/src/state/onboarding-bootstrap.ts (the check reads
- * `config.meta.onboardingComplete === true`).
+ * time). The app looks up state from `~/.eliza/<namespace>.json` — this
+ * path is the upstream runtime convention (packages/agent/src/config/paths.ts
+ * resolveConfigPath). The namespace is the project name passed via
+ * `bun run dev --name=<project>`. The check reads
+ * `config.meta.onboardingComplete === true` (packages/app-core/src/state/
+ * onboarding-bootstrap.ts).
  *
  * If a config file already exists at the path, we leave it alone
  * (respects prior user state). If it doesn't, we write a minimal
