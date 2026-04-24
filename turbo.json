@@ -32,15 +32,6 @@
       "env": ["LOG_LEVEL"],
       "outputs": ["dist/**"]
     },
-    "@elizaos/plugin-cli-root#build": {
-      "outputs": []
-    },
-    "@elizaos/plugin-commands-root#build": {
-      "outputs": []
-    },
-    "@elizaos/plugin-cron-root#build": {
-      "outputs": []
-    },
     "@elizaos/plugin-discord-root#build": {
       "outputs": []
     },
@@ -62,12 +53,6 @@
     "@elizaos/plugin-openrouter-root#build": {
       "outputs": []
     },
-    "@elizaos/plugin-shell-root#build": {
-      "outputs": []
-    },
-    "@elizaos/plugin-solana-root#build": {
-      "outputs": []
-    },
     "@elizaos/plugin-sql-root#build": {
       "outputs": []
     },
@@ -80,20 +65,8 @@
     "lint:check": {
       "outputs": []
     },
-    "lint:rust": {
-      "outputs": []
-    },
     "typecheck": {
       "dependsOn": ["@tokagentos/core#build"],
-      "outputs": []
-    },
-    "typecheck:rust": {
-      "outputs": []
-    },
-    "lint:python": {
-      "outputs": []
-    },
-    "typecheck:python": {
       "outputs": []
     },
     "format": {
@@ -114,7 +87,7 @@
     "test": {
       "dependsOn": [],
       "outputs": ["coverage/**"],
-      "inputs": ["src/**/*.ts", "src/**/*.js", "__tests__/**/*", "*.test.*", "package.json", "tests/**/*", "python/tests/**/*"],
+      "inputs": ["src/**/*.ts", "src/**/*.js", "__tests__/**/*", "*.test.*", "package.json", "tests/**/*"],
       "cache": false
     },
     "migrate": {
