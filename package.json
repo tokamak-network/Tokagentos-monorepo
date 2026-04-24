@@ -165,7 +165,6 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.0.0",
-    "@elizaos/plugin-agent-orchestrator": "workspace:*",
     "@elizaos/plugin-anthropic": "workspace:*",
     "@elizaos/plugin-groq": "workspace:*",
     "@elizaos/plugin-local-embedding": "workspace:*",

@@ -9,7 +9,7 @@
  * Plugins that depend on PTY/native workspace tooling.
  * Keep them out of cloud images where those binaries are intentionally absent.
  */
-export const DESKTOP_ONLY_PLUGINS: readonly string[] = ["agent-orchestrator"];
+export const DESKTOP_ONLY_PLUGINS: readonly string[] = [];
 
 /** Core plugins that should always be loaded. collectPluginNames() seeds from this list only. */
 export const CORE_PLUGINS: readonly string[] = [
@@ -17,7 +17,6 @@ export const CORE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-local-embedding", // local embeddings — required for memory
   // @tokagentos/app-form — now built-in as advanced capability (form); enabled when advancedCapabilities: true
   "@tokagentos/app-companion", // VRM companion emotes; actions gated until app session is active
-  // @elizaos/plugin-agent-orchestrator — opt-in via TOKAGENT_AGENT_ORCHESTRATOR (Tokagent app enables by default)
   "@elizaos/plugin-agent-skills", // skill execution and marketplace runtime
   "@tokagentos/app-lifeops", // LifeOps: personal ops — tasks, goals, calendar, inbox, browser companions, website blocking
   // Built-in runtime capabilities (no longer external plugins):

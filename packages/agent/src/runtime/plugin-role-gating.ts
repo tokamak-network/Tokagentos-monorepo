@@ -43,9 +43,6 @@ const ROLE_GATED_PLUGINS: Readonly<Record<string, RoleGate>> = {
   // Blockchain — financial actions
   "@elizaos/plugin-evm": "admin",
 
-  // Orchestration — spawns agents, PTY sessions, workspaces
-  "agent-orchestrator": "admin",
-
   // Secrets — sets env vars, manages encrypted secrets
   "@elizaos/plugin-secrets-manager": "owner",
 
@@ -80,22 +77,6 @@ const ROLE_GATED_PLUGINS: Readonly<Record<string, RoleGate>> = {
 // ---------------------------------------------------------------------------
 
 const ACTION_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
-  // --- agent-orchestrator: escalate dangerous actions to owner ---
-  SPAWN_AGENT: "owner",
-  SEND_TO_AGENT: "owner",
-  STOP_AGENT: "owner",
-  TASK_CONTROL: "owner",
-  PROVISION_WORKSPACE: "owner",
-  MANAGE_ISSUES: "owner",
-  CREATE_TASK: "owner",
-
-  // --- orchestrator coding-agent actions ---
-  SPAWN_CODING_AGENT: "owner",
-  SEND_TO_CODING_AGENT: "owner",
-  STOP_CODING_AGENT: "owner",
-  START_CODING_TASK: "owner",
-  // PROVISION_WORKSPACE / MANAGE_ISSUES already covered above
-
   // --- plugin-discord: destructive/moderative actions ---
   DELETE_MESSAGE: "admin",
   EDIT_MESSAGE: "admin",
@@ -135,10 +116,6 @@ const ACTION_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
 // ---------------------------------------------------------------------------
 
 const PROVIDER_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
-  // Orchestrator
-  ACTIVE_WORKSPACE_CONTEXT: "admin",
-  CODING_AGENT_EXAMPLES: "admin",
-
   // Secrets
   SECRETS_STATUS: "admin",
   SECRETS_INFO: "admin",

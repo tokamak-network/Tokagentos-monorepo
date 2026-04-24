@@ -347,15 +347,6 @@ import {
 } from "./plugin-discovery-helpers.js";
 
 const nodeRequire = createRequire(import.meta.url);
-// Dynamic import (not require) because the plugin is ESM-only and bun's
-// createRequire cannot load ESM packages. Top-level await is settled before
-// any consumer reads the binding.
-let agentOrchestratorCompat: unknown = null;
-try {
-  agentOrchestratorCompat = await import("@elizaos/plugin-agent-orchestrator");
-} catch {
-  agentOrchestratorCompat = null;
-}
 
 // Re-export for downstream consumers (e.g. @tokagentos/app-core)
 export {
@@ -373,21 +364,6 @@ export {
 
 // ConnectorRouteHandler imported from server-types.ts
 import type { ConnectorRouteHandler } from "./server-types.js";
-
-type OrchestratorFallbackRouteHandler = (
-  req: http.IncomingMessage,
-  res: http.ServerResponse,
-  pathname: string,
-  method?: string,
-) => Promise<boolean>;
-
-interface OrchestratorPluginFallbackModule {
-  createCodingAgentRouteHandler?: (
-    runtime: AgentRuntime,
-    coordinator?: unknown,
-  ) => OrchestratorFallbackRouteHandler;
-  getCoordinator?: (runtime: AgentRuntime) => unknown;
-}
 
 function getAgentEventSvc(
   runtime: AgentRuntime | null,
@@ -3881,31 +3857,6 @@ async function handleRequest(
         res,
       );
     }
-
-    // Prefer @elizaos/plugin-agent-orchestrator route handler so the full coordinator
-    // contract is served from the embedded runtime (replaces the old plugin).
-    if (!handled)
-      try {
-        const orchestratorPlugin =
-          agentOrchestratorCompat as OrchestratorPluginFallbackModule | null;
-        if (orchestratorPlugin?.createCodingAgentRouteHandler) {
-          const coordinator = orchestratorPlugin.getCoordinator?.(
-            state.runtime,
-          );
-          const handler = orchestratorPlugin.createCodingAgentRouteHandler(
-            state.runtime,
-            coordinator,
-          );
-          handled = await (handler as ConnectorRouteHandler)(
-            req,
-            res,
-            pathname,
-            req.method ?? "GET",
-          );
-        }
-      } catch {
-        // Compat layer unavailable — final fallback below handles coding-agents routes.
-      }
 
     // Final fallback: handle coding-agents routes using the plugin's CODE_TASK compatibility service.
     if (!handled && pathname.startsWith("/api/coding-agents")) {

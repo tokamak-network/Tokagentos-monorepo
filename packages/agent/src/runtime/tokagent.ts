@@ -149,15 +149,6 @@ import rolesPlugin from "./roles.js";
 import { shouldEnableTrajectoryLoggingByDefault } from "./trajectory-persistence.js";
 
 const require = createRequire(import.meta.url);
-// Agent orchestrator ships as the standalone @elizaos/plugin-agent-orchestrator package.
-// Use top-level dynamic import because the package is ESM-only and fails under
-// createRequire() in bun runtime; the await is resolved before module consumers read the binding.
-let pluginAgentOrchestrator: unknown = null;
-try {
-  pluginAgentOrchestrator = await import("@elizaos/plugin-agent-orchestrator");
-} catch {
-  pluginAgentOrchestrator = null;
-}
 // Keep plugin-ollama behind a guarded runtime require as well. Some published
 // alpha builds advertise dist/node/index.node.js but do not ship that ESM
 // entry, which breaks CLI bootstrap and startup smokes in published-only CI.
@@ -263,9 +254,6 @@ Object.assign(STATIC_TOKAGENT_PLUGINS, {
   "@elizaos/plugin-sql": pluginSql,
   "@elizaos/plugin-local-embedding": pluginLocalEmbedding,
   // secrets-manager: now built-in core capability (ENABLE_SECRETS_MANAGER)
-  ...(pluginAgentOrchestrator
-    ? { "agent-orchestrator": pluginAgentOrchestrator }
-    : {}),
   // plugin-manager: now built-in core capability (ENABLE_PLUGIN_MANAGER)
   "@elizaos/plugin-agent-skills": pluginAgentSkills,
   "@elizaos/plugin-pdf": pluginPdf,
@@ -2028,26 +2016,6 @@ function installActionAliases(runtime: AgentRuntime): void {
     logger.info(
       "[tokagent] Disabled manual COMPACT_SESSION action; auto-compaction remains enabled",
     );
-  }
-
-  // Compatibility alias: older prompts/docs still reference CODE_TASK,
-  // while agent-orchestrator exposes CREATE_TASK.
-  const createTaskAction = actions.find(
-    (action) => action?.name?.toUpperCase() === "CREATE_TASK",
-  );
-  if (createTaskAction) {
-    const similes = Array.isArray(createTaskAction.similes)
-      ? createTaskAction.similes
-      : [];
-    const hasCodeTaskAlias = similes.some(
-      (simile) => simile.toUpperCase() === "CODE_TASK",
-    );
-    if (!hasCodeTaskAlias) {
-      createTaskAction.similes = [...similes, "CODE_TASK"];
-      logger.info(
-        "[tokagent] Added action alias CODE_TASK -> CREATE_TASK for agent-orchestrator",
-      );
-    }
   }
 
   runtimeWithAliases.__tokagentActionAliasesInstalled = true;

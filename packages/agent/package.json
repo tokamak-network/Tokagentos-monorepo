@@ -132,7 +132,6 @@
     "@clack/prompts": "^1.0.0",
     "@tokagentos/app-companion": "workspace:*",
     "@tokagentos/core": "workspace:*",
-    "@elizaos/plugin-agent-orchestrator": "workspace:*",
     "@elizaos/plugin-ollama": "workspace:*",
     "@elizaos/plugin-pdf": "workspace:*",
     "@elizaos/plugin-sql": "workspace:*",

@@ -20,27 +20,6 @@ import { CORE_PLUGINS, OPTIONAL_CORE_PLUGINS } from "./core-plugins.js";
 
 const OPTIONAL_CORE_PLUGIN_NAMES = new Set<string>(OPTIONAL_CORE_PLUGINS);
 
-/**
- * Agent orchestrator ships as the standalone @elizaos/plugin-agent-orchestrator package;
- * Tokagent loads it via STATIC_TOKAGENT_PLUGINS["agent-orchestrator"].
- */
-function orchestratorCompatPluginRequested(config: TokagentConfig): boolean {
-  const agentEntry = config.agents?.list?.[0];
-  const fromEntry = agentEntry?.agentOrchestrator;
-  const fromDefaults = config.agents?.defaults?.agentOrchestrator;
-  if (typeof fromEntry === "boolean") {
-    return fromEntry;
-  }
-  if (typeof fromDefaults === "boolean") {
-    return fromDefaults;
-  }
-  const raw = process.env.TOKAGENT_AGENT_ORCHESTRATOR?.trim().toLowerCase();
-  if (raw === "0" || raw === "false" || raw === "no") {
-    return false;
-  }
-  return raw === "1" || raw === "true" || raw === "yes";
-}
-
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -222,13 +201,6 @@ export function collectPluginNames(
     if (reasons && !reasons.has(name)) reasons.set(name, reason);
   };
   for (const core of CORE_PLUGINS) track(core, "CORE_PLUGINS");
-  if (orchestratorCompatPluginRequested(config)) {
-    pluginsToLoad.add("agent-orchestrator");
-    track(
-      "agent-orchestrator",
-      "agent-orchestrator (@elizaos/plugin-agent-orchestrator)",
-    );
-  }
   if (localEmbeddingsExplicitlyDisabled) {
     pluginsToLoad.delete("@elizaos/plugin-local-embedding");
   }
