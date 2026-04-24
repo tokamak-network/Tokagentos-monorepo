@@ -215,21 +215,6 @@ export {
 	knowledgePluginHeadless,
 	knowledgeProvider,
 } from "./knowledge/index.ts";
-export type {
-	TrajectoryExportOptions,
-	TrajectoryListItem,
-	TrajectoryListOptions,
-	TrajectoryListResult,
-	TrajectoryStats,
-	TrajectoryZipEntry,
-	TrajectoryZipExportOptions,
-	TrajectoryZipExportResult,
-} from "./trajectories/index.ts";
-export {
-	TrajectoriesService,
-	trajectoriesPlugin,
-} from "./trajectories/index.ts";
-
 // ─── Exports ──────────────────────────────────────────────────────────────────
 
 export { pluginManagerCapability, secretsCapability, trustCapability };
