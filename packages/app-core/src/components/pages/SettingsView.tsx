@@ -187,13 +187,10 @@ const SETTINGS_SECTIONS: SettingsSectionDef[] = [
   {
     id: "feature-toggles",
     label: "Features",
-    description: "Opt in to LifeOps capabilities like flight booking, push, and browser automation.",
+    description: "Opt in to LifeOps capabilities like push notifications and browser automation.",
     keywords: [
       "feature",
       "toggle",
-      "flight",
-      "booking",
-      "duffel",
       "push",
       "notification",
       "browser",
@@ -1170,7 +1167,7 @@ export function SettingsView({
         <SettingsSection
           id="feature-toggles"
           title="Features"
-          description="Opt in to LifeOps capabilities like flight booking, push, and browser automation."
+          description="Opt in to LifeOps capabilities like push notifications and browser automation."
           ref={registerContentItem("feature-toggles")}
         >
           <FeatureTogglesSection />

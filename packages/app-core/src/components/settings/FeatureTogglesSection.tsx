@@ -8,12 +8,11 @@
  * deactivate them, which preserves the contract that Cloud is the source
  * of truth for managed entitlements (Commandment 4).
  *
- * Travel features (`travel.*`, `cloud.duffel`) get a Cloud-aware UX:
+ * Travel features (`travel.*`) get a Cloud-aware UX:
  *  - Cloud-linked, Cloud-managed row → "Enabled via Tokagent Cloud · 20%
  *    service fee" badge and a disabled switch (managed upstream).
- *  - Not Cloud-linked → "Sign in to Tokagent Cloud to enable, or toggle on
- *    locally (requires your own Duffel API key)" hint, and the Sync
- *    button switches to a "Sign in to Cloud" CTA wired into the existing
+ *  - Not Cloud-linked → "Sign in to Tokagent Cloud to enable" hint, and the
+ *    Sync button switches to a "Sign in to Cloud" CTA wired into the existing
  *    `handleCloudLogin` flow from `useApp`.
  */
 
@@ -56,7 +55,6 @@ const CLOUD_TRAVEL_KEYS: ReadonlySet<string> = new Set([
   "travel.search_hotel",
   "travel.book_flight",
   "travel.book_hotel",
-  "cloud.duffel",
 ]);
 
 function isCloudTravelKey(key: string): boolean {
@@ -282,8 +280,7 @@ export function FeatureTogglesSection() {
                   )}
                   {showCloudHint && (
                     <p className="text-xs-tight text-muted">
-                      Sign in to Tokagent Cloud to enable, or toggle on locally
-                      (requires your own Duffel API key).
+                      Sign in to Tokagent Cloud to enable.
                     </p>
                   )}
                 </div>
