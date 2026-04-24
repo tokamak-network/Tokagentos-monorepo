@@ -13,12 +13,10 @@
     "apps/*",
     "plugins/*",
     "tokagent/apps/*",
-    "tokagent/packages/native-plugins/*",
     "tokagent/packages/app-core/platforms/electrobun",
     "tokagent/plugins/*",
     "tokagent/plugins/plugin-*/typescript",
-    "tokagent/packages/*",
-    "tokagent/cloud/packages/services/*"
+    "tokagent/packages/*"
   ],
   "scripts": {
     "build": "bun run --cwd apps/app build",

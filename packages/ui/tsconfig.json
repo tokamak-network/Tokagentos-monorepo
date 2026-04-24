@@ -12,37 +12,12 @@
     "noEmit": true,
     "baseUrl": "../../",
     "paths": {
-      "@tokagentos/app-lifeops": ["./apps/app-lifeops/src/index.ts"],
-      "@tokagentos/app-lifeops/*": ["./apps/app-lifeops/src/*"],
-      "@tokagentos/app-lifeops/types": ["./apps/app-lifeops/src/types/index.ts"],
-      "@tokagentos/app-task-coordinator": [
-        "./apps/app-task-coordinator/src/index.ts"
-      ],
-      "@tokagentos/app-task-coordinator/*": [
-        "./apps/app-task-coordinator/src/*"
-      ],
-      "@tokagentos/app-steward": ["./apps/app-steward/src/index.ts"],
-      "@tokagentos/app-steward/*": ["./apps/app-steward/src/*"],
-      "@tokagentos/app-shopify": ["./apps/app-shopify/src/index.ts"],
-      "@tokagentos/app-shopify/*": ["./apps/app-shopify/src/*"],
-      "@tokagentos/app-training": ["./apps/app-training/src/index.ts"],
-      "@tokagentos/app-training/*": ["./apps/app-training/src/*"],
-      "@tokagentos/app-vincent": ["./apps/app-vincent/src/index.ts"],
-      "@tokagentos/app-vincent/*": ["./apps/app-vincent/src/*"],
-      "@elizaos/plugin-lifeops-browser": [
-        "./plugins/plugin-lifeops-browser/src/index.ts"
-      ],
-      "@elizaos/plugin-lifeops-browser/*": [
-        "./plugins/plugin-lifeops-browser/src/*"
-      ],
       "@tokagentos/app-core": ["./packages/app-core/src/index.ts"],
       "@tokagentos/app-core/*": ["./packages/app-core/src/*"],
       "@tokagentos/agent": ["./packages/agent/src/index.ts"],
       "@tokagentos/agent/*": ["./packages/agent/src/*"],
       "@tokagentos/app-companion": ["./apps/app-companion/src/index.ts"],
       "@tokagentos/app-companion/*": ["./apps/app-companion/src/*"],
-      "@tokagentos/app-tokagentmaker": ["./apps/app-tokagentmaker/src/index.ts"],
-      "@tokagentos/app-tokagentmaker/*": ["./apps/app-tokagentmaker/src/*"],
       "@tokagentos/shared": ["./packages/shared/src/index.ts"],
       "@tokagentos/shared/*": ["./packages/shared/src/*"],
       "@tokagentos/skills": ["./packages/skills/src/index.ts"],
