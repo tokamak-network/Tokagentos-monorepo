@@ -14,9 +14,12 @@
  *   - permissions     (desktop/filesystem/camera permissions — web-only target)
  *   - learned-skills  (skills & trajectory training)
  *   - auto-training   (auto-train / fine-tune pipelines)
+ *   - wallet-rpc      (wallet/RPC config — Tokagent agents read
+ *                      TOKAGENT_PRIVATE_KEY / POLYGON_RPC_URL / HYPERLIQUID_API_URL
+ *                      straight from .env, no user-facing UI needed)
  *
- * Kept sections: identity, ai-model, appearance, capabilities, wallet-rpc,
- * updates, advanced.
+ * Kept sections: identity, ai-model, appearance, capabilities, updates,
+ * advanced.
  *
  * Everything else in this file should track upstream verbatim — only edit the
  * SETTINGS_SECTIONS literal below when adding/removing sections. If upstream
@@ -241,23 +244,6 @@ const SETTINGS_SECTIONS: SettingsSectionDef[] = [
     ],
     keywordKeys: ["settings.keyword.wallet", "settings.keyword.browser"],
     level: "advanced",
-  },
-  {
-    id: "wallet-rpc",
-    label: "settings.sections.walletrpc.label",
-    description: "settings.sections.walletrpc.desc",
-    keywords: [
-      "wallet",
-      "rpc",
-      "evm",
-      "solana",
-      "api key",
-      "alchemy",
-      "quicknode",
-      "helius",
-      "birdeye",
-    ],
-    keywordKeys: ["settings.keyword.wallet", "settings.keyword.apiKey"],
   },
   {
     id: "updates",
