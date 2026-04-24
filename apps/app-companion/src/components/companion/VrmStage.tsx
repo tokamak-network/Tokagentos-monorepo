@@ -21,6 +21,7 @@ import type {
   VrmEngine,
   VrmEngineState,
 } from "../avatar/VrmEngine";
+import { useRuntimeEmoteDispatcher } from "../../emotes/runtime-emote-dispatcher";
 import { VrmViewer, type VrmViewerProps } from "../avatar/VrmViewer";
 
 const AVATAR_CHANGE_WAVE_DELAY_MS = 650;
@@ -73,6 +74,7 @@ export const VrmStage = memo(function VrmStage({
   useRenderGuard("VrmStage");
 
   const engineRef = useRef<VrmEngine | null>(null);
+  useRuntimeEmoteDispatcher(engineRef);
   const avatarChangeWaveTimerRef = useRef<number | null>(null);
   const hasMountedRef = useRef(false);
   const prevVrmPathRef = useRef(vrmPath);
