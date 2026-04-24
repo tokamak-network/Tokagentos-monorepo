@@ -119,7 +119,6 @@ const FEATURE_PLUGINS: Record<string, string> = {
   cua: "@elizaos/plugin-cua",
   obsidian: "@elizaos/plugin-obsidian",
   imageGen: "@elizaos/plugin-image-generation",
-  tts: "@elizaos/plugin-edge-tts",
   stt: "@elizaos/plugin-stt",
   agentSkills: "@elizaos/plugin-agent-skills",
   // directives: "@elizaos/plugin-directives", // not yet ready — package doesn't exist
@@ -462,20 +461,6 @@ export function applyPluginAutoEnable(
       STEWARD_TOKAGENT_PLUGIN_SHORT_ID,
       changes,
       "env: STEWARD_API_URL",
-    );
-  }
-
-  const cloudProvisioned = env.TOKAGENT_CLOUD_PROVISIONED === "1";
-  if (
-    cloudProvisioned &&
-    pluginsConfig.entries["edge-tts"]?.enabled !== false
-  ) {
-    addToAllowlist(
-      pluginsConfig.allow,
-      "@elizaos/plugin-edge-tts",
-      "edge-tts",
-      changes,
-      "cloud-provisioned voice output",
     );
   }
 

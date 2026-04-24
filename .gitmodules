@@ -10,10 +10,6 @@
 	path = plugins/plugin-discord
 	url = https://github.com/elizaos-plugins/plugin-discord.git
 	branch = alpha
-[submodule "plugins/plugin-edge-tts"]
-	path = plugins/plugin-edge-tts
-	url = https://github.com/elizaos-plugins/plugin-edge-tts.git
-	branch = alpha
 [submodule "plugins/plugin-evm"]
 	path = plugins/plugin-evm
 	url = https://github.com/elizaos-plugins/plugin-evm.git

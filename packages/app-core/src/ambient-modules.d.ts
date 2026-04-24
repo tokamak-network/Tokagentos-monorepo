@@ -25,8 +25,6 @@ declare module "@elizaos/plugin-groq" {
   export default groqPlugin;
 }
 
-declare module "@elizaos/plugin-edge-tts";
-declare module "@elizaos/plugin-edge-tts/node";
 declare module "@tokagentos/signal-native";
 
 declare module "three/examples/jsm/libs/meshopt_decoder.module.js" {

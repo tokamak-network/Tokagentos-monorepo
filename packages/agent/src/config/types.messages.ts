@@ -87,7 +87,7 @@ export type TtsConfig = {
     model?: string;
     voice?: string;
   };
-  /** Microsoft Edge (node-edge-tts) configuration. */
+  /** Microsoft Edge TTS configuration. */
   edge?: {
     /** Explicitly allow Edge TTS usage (no API key required). */
     enabled?: boolean;

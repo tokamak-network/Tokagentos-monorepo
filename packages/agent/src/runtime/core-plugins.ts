@@ -50,7 +50,6 @@ export const OPTIONAL_CORE_PLUGINS: readonly string[] = [
   "@elizaos/plugin-telegram", // Telegram bot integration
   "@elizaos/plugin-signal", // Signal user-account integration
   "@elizaos/plugin-twitch", // Twitch integration
-  "@elizaos/plugin-edge-tts", // text-to-speech (Microsoft Edge TTS)
   "@elizaos/plugin-elevenlabs", // ElevenLabs text-to-speech
   // "@elizaos/plugin-directives", // directive processing - not yet ready
   // "@elizaos/plugin-mcp", // MCP protocol support - not yet ready

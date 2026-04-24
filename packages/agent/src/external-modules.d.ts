@@ -124,8 +124,6 @@ declare module "telegram/sessions" {
     [key: string]: unknown;
   }
 }
-declare module "@elizaos/plugin-edge-tts";
-declare module "@elizaos/plugin-edge-tts/node";
 declare module "@elizaos/plugin-local-embedding";
 declare module "@elizaos/plugin-ollama";
 declare module "@elizaos/plugin-openai";
