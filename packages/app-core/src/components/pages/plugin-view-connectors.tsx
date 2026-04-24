@@ -159,7 +159,7 @@ function ConnectorPluginCard({
   testResults,
   togglingPlugins,
 }: ConnectorPluginCardProps) {
-  const { tokagentCloudConnected, setActionNotice, setState, setTab } = useApp();
+  const { tokagentCloudConnected, setActionNotice, setTab } = useApp();
   const [managedDiscordBusy, setManagedDiscordBusy] = useState(false);
   const [managedDiscordAgents, setManagedDiscordAgents] = useState<
     CloudCompatAgent[]
@@ -207,10 +207,6 @@ function ConnectorPluginCard({
   const pluginLinks = getPluginResourceLinks(plugin, {
     draftConfig: pluginConfigs[plugin.id],
   });
-  const openCloudAgentsView = () => {
-    setState("cloudDashboardView", "overview");
-    setTab("settings");
-  };
   const ensureManagedDiscordGatewayProvisioned = async (
     agent: CloudCompatAgent,
   ): Promise<boolean> => {
@@ -265,7 +261,6 @@ function ConnectorPluginCard({
     }
 
     if (!tokagentCloudConnected) {
-      setState("cloudDashboardView", "billing");
       setTab("settings");
       setActionNotice(
         t("pluginsview.ManagedDiscordRequiresCloud", {
@@ -331,7 +326,6 @@ function ConnectorPluginCard({
         gatewayDeploying,
       });
     } catch (error) {
-      openCloudAgentsView();
       setActionNotice(
         error instanceof Error
           ? error.message
@@ -373,7 +367,6 @@ function ConnectorPluginCard({
         gatewayDeploying,
       });
     } catch (error) {
-      openCloudAgentsView();
       setActionNotice(
         error instanceof Error
           ? error.message

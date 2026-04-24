@@ -16,11 +16,7 @@
  */
 
 import { canRunLocal } from "../platform/init";
-import type {
-  FlaminaGuideTopic,
-  OnboardingStep,
-  OnboardingStepMeta,
-} from "../state/types";
+import type { OnboardingStep, OnboardingStepMeta } from "../state/types";
 import { ONBOARDING_STEPS } from "../state/types";
 
 /** Linear step ids for the unified onboarding flow. */
@@ -126,16 +122,12 @@ export function shouldUseCloudOnboardingFastTrack(args: {
   );
 }
 
-/** Flamina companion guide topic for advanced onboarding mode, or null. */
+/**
+ * Companion guide topic for advanced onboarding mode, or null.
+ * FlaminaGuide component was removed — always returns null.
+ */
 export function getFlaminaTopicForOnboardingStep(
-  step: OnboardingStep,
-): FlaminaGuideTopic | null {
-  switch (step) {
-    case "providers":
-      return "provider";
-    case "features":
-      return "features";
-    default:
-      return null;
-  }
+  _step: OnboardingStep,
+): string | null {
+  return null;
 }

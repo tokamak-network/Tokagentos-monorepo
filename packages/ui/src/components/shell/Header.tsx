@@ -42,7 +42,6 @@ interface HeaderProps {
   mobileLeft?: ReactNode;
   pageRightExtras?: ReactNode;
   transparent?: boolean;
-  hideCloudCredits?: boolean;
   tasksEventsPanelOpen?: boolean;
   onToggleTasksPanel?: () => void;
 }
@@ -64,16 +63,12 @@ export function Header({
   mobileLeft,
   pageRightExtras,
   transparent: _transparent = false,
-  hideCloudCredits = false,
   tasksEventsPanelOpen = false,
   onToggleTasksPanel,
 }: HeaderProps) {
   const {
     tokagentCloudEnabled,
     tokagentCloudConnected,
-    tokagentCloudCredits,
-    tokagentCloudCreditsCritical,
-    tokagentCloudCreditsLow,
     tokagentCloudAuthRejected,
     tokagentCloudCreditsError,
     tab,
@@ -166,12 +161,9 @@ export function Header({
 
   const handleChatInferenceAlertClick = useCallback(() => {
     if (!chatInferenceNotice) return;
-    if (chatInferenceNotice.kind === "cloud") {
-      setState("cloudDashboardView", "billing");
-    }
     setTab("settings");
     setMobileMenuOpen(false);
-  }, [chatInferenceNotice, setState, setTab]);
+  }, [chatInferenceNotice, setTab]);
 
   const renderMobileMenuThemeToggle = () => (
     <div

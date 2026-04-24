@@ -91,7 +91,6 @@ export function CloudRpcStatus({
               variant="link"
               size="sm"
               onClick={() => {
-                setState("cloudDashboardView", "billing");
                 setTab("settings");
               }}
               className="ml-1.5 text-2xs h-auto p-0"

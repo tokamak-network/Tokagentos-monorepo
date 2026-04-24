@@ -90,7 +90,7 @@ export const Default: Story = {
               <SelectValue placeholder="Select environment" />
             </SettingsControls.SelectTrigger>
             <SelectContent>
-              <SelectItem value="cloud">Tokagent Cloud</SelectItem>
+              <SelectItem value="cloud">Cloud</SelectItem>
               <SelectItem value="desktop">Desktop local runtime</SelectItem>
               <SelectItem value="relay">Browser relay</SelectItem>
             </SelectContent>

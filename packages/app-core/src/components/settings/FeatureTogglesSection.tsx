@@ -2,24 +2,14 @@
  * FeatureTogglesSection — opt-in registry for LifeOps capabilities.
  *
  * Reads `/api/cloud/features` for the canonical list (defaults +
- * local/cloud overrides) and toggles via `/api/cloud/features/sync` and the
- * `TOGGLE_LIFEOPS_FEATURE` chat action's underlying upsert. Cloud-managed
- * rows are read-only locally — the user has to remove the Cloud package to
- * deactivate them, which preserves the contract that Cloud is the source
- * of truth for managed entitlements (Commandment 4).
- *
- * Travel features (`travel.*`) get a Cloud-aware UX:
- *  - Cloud-linked, Cloud-managed row → "Enabled via Tokagent Cloud · 20%
- *    service fee" badge and a disabled switch (managed upstream).
- *  - Not Cloud-linked → "Sign in to Tokagent Cloud to enable" hint, and the
- *    Sync button switches to a "Sign in to Cloud" CTA wired into the existing
- *    `handleCloudLogin` flow from `useApp`.
+ * local/cloud overrides) and toggles via the `TOGGLE_LIFEOPS_FEATURE`
+ * chat action's underlying upsert. Cloud-managed rows are read-only
+ * locally — the user has to remove the Cloud package to deactivate them.
  */
 
 import { Button, Switch } from "@tokagentos/ui";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { client } from "../../api";
-import { useApp } from "../../state";
 
 type FeatureSource = "default" | "local" | "cloud";
 
@@ -38,27 +28,8 @@ interface FeaturesResponse {
   readonly features: ReadonlyArray<FeatureRowDto>;
 }
 
-interface SyncResponse extends FeaturesResponse {
-  readonly synced: number;
-}
-
 interface ToggleResponse {
   readonly feature: FeatureRowDto;
-}
-
-/** Feature keys that are Cloud-default-on when the user is signed into
- *  Tokagent Cloud. Mirrors `CLOUD_LINKED_DEFAULT_ON` in
- *  feature-flags.types.ts; duplicated here to avoid pulling the
- *  app-lifeops package into the React bundle. */
-const CLOUD_TRAVEL_KEYS: ReadonlySet<string> = new Set([
-  "travel.search_flight",
-  "travel.search_hotel",
-  "travel.book_flight",
-  "travel.book_hotel",
-]);
-
-function isCloudTravelKey(key: string): boolean {
-  return CLOUD_TRAVEL_KEYS.has(key);
 }
 
 function sourceBadge(source: FeatureSource): {
@@ -86,14 +57,10 @@ function sourceBadge(source: FeatureSource): {
 }
 
 export function FeatureTogglesSection() {
-  const { tokagentCloudConnected, handleCloudLogin } = useApp();
   const [features, setFeatures] = useState<FeatureRowDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyKey, setBusyKey] = useState<string | null>(null);
-  const [syncing, setSyncing] = useState(false);
-  const [syncedNote, setSyncedNote] = useState<string | null>(null);
-  const [signInBusy, setSignInBusy] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -142,65 +109,7 @@ export function FeatureTogglesSection() {
     [],
   );
 
-  const handleSync = useCallback(async () => {
-    setSyncing(true);
-    setSyncedNote(null);
-    setError(null);
-    try {
-      const res = await client.fetch<SyncResponse>(
-        "/api/cloud/features/sync",
-        { method: "POST" },
-      );
-      setFeatures([...res.features]);
-      setSyncedNote(`Synced ${res.synced} cloud-managed feature(s).`);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setSyncing(false);
-    }
-  }, []);
-
-  const handleSignIn = useCallback(async () => {
-    setSignInBusy(true);
-    setError(null);
-    try {
-      await handleCloudLogin();
-      // After login the cloud-features sync route will auto-promote
-      // travel keys; refresh the list to pick that up.
-      await load();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setSignInBusy(false);
-    }
-  }, [handleCloudLogin, load]);
-
-  const headerCta = useMemo(() => {
-    if (!tokagentCloudConnected) {
-      return (
-        <Button
-          variant="outline"
-          size="sm"
-          className="!mt-0 h-9 rounded-lg"
-          onClick={() => void handleSignIn()}
-          disabled={signInBusy}
-        >
-          {signInBusy ? "Opening sign-in…" : "Sign in to Cloud"}
-        </Button>
-      );
-    }
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        className="!mt-0 h-9 rounded-lg"
-        onClick={() => void handleSync()}
-        disabled={syncing}
-      >
-        {syncing ? "Syncing…" : "Sync from Cloud"}
-      </Button>
-    );
-  }, [tokagentCloudConnected, handleSignIn, handleSync, signInBusy, syncing]);
+  const handleRefresh = useCallback(() => void load(), [load]);
 
   return (
     <div className="border-t border-border/40 pt-4">
@@ -212,17 +121,20 @@ export function FeatureTogglesSection() {
             or call out to a paid third party is off until you opt in.
           </p>
         </div>
-        {headerCta}
+        <Button
+          variant="outline"
+          size="sm"
+          className="!mt-0 h-9 rounded-lg"
+          onClick={handleRefresh}
+          disabled={loading}
+        >
+          {loading ? "Loading…" : "Refresh"}
+        </Button>
       </div>
 
       {error && (
         <div className="mb-3 rounded-lg border border-danger/30 bg-danger/5 px-2.5 py-2 text-xs leading-relaxed text-danger">
           {error}
-        </div>
-      )}
-      {syncedNote && !error && (
-        <div className="mb-3 rounded-lg border border-ok/30 bg-ok/5 px-2.5 py-2 text-xs leading-relaxed text-ok">
-          {syncedNote}
         </div>
       )}
 
@@ -232,12 +144,8 @@ export function FeatureTogglesSection() {
         <ul className="space-y-2">
           {features.map((feature) => {
             const badge = sourceBadge(feature.source);
-            const cloudTravel = isCloudTravelKey(feature.featureKey);
             const isCloudManaged = feature.source === "cloud";
             const isBusy = busyKey === feature.featureKey;
-            const showCloudFeeTag = cloudTravel && isCloudManaged;
-            const showCloudHint =
-              cloudTravel && !tokagentCloudConnected && !isCloudManaged;
             return (
               <li
                 key={feature.featureKey}
@@ -258,12 +166,7 @@ export function FeatureTogglesSection() {
                     >
                       {badge.label}
                     </span>
-                    {showCloudFeeTag && (
-                      <span className="rounded border border-accent/40 bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-                        Enabled via Tokagent Cloud · 20% service fee
-                      </span>
-                    )}
-                    {feature.costsMoney && !showCloudFeeTag && (
+                    {feature.costsMoney && (
                       <span className="rounded border border-warn/40 bg-warn/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-warn">
                         Costs money
                       </span>
@@ -274,13 +177,8 @@ export function FeatureTogglesSection() {
                   </p>
                   {isCloudManaged && (
                     <p className="text-xs-tight text-muted">
-                      Managed by your Tokagent Cloud package — disable it from
-                      the Cloud dashboard.
-                    </p>
-                  )}
-                  {showCloudHint && (
-                    <p className="text-xs-tight text-muted">
-                      Sign in to Tokagent Cloud to enable.
+                      Managed by your cloud package — disable it from the Cloud
+                      dashboard.
                     </p>
                   )}
                 </div>
