@@ -181,14 +181,7 @@ import {
   writeSseJson as writeSseJsonFromChatRoutes,
 } from "./chat-routes.js";
 import { resolveClientChatAdminEntityId } from "./client-chat-admin.js";
-import { handleCloudBillingRoute } from "./cloud-billing-routes.js";
-import { handleCloudCompatRoute } from "./cloud-compat-routes.js";
 import { isCloudProvisionedContainer } from "./cloud-provisioning.js";
-import { handleCloudRelayRoute } from "./cloud-relay-routes.js";
-import { type CloudRouteState, handleCloudRoute } from "./cloud-routes.js";
-import { handleCloudFeaturesRoute } from "./cloud-features-routes.js";
-import { handleCloudStatusRoutes } from "./cloud-status-routes.js";
-import { handleDuffelRelayRoute } from "./duffel-relay-routes.js";
 import { handleConfigRoutes } from "./config-routes.js";
 import { ConnectorHealthMonitor } from "./connector-health.js";
 import { handleConnectorRoutes } from "./connector-routes.js";
@@ -3501,28 +3494,6 @@ async function handleRequest(
   // Extracted to @elizaos/plugin-imessage setup-routes.ts (Plugin.routes).
   // The plugin registers rawPath routes that serve the same legacy paths.
 
-  // ── Cloud relay status (/api/cloud/relay-status) ──────────────────────
-  if (pathname === "/api/cloud/relay-status") {
-    const handled = await handleCloudRelayRoute(
-      req,
-      res,
-      pathname,
-      method,
-      {
-        runtime: state.runtime
-          ? {
-              getService: (type: string) =>
-                (
-                  state.runtime as { getService: (t: string) => unknown }
-                ).getService(type),
-            }
-          : undefined,
-      },
-      { json, error, readJsonBody },
-    );
-    if (handled) return;
-  }
-
   // Telegram setup routes: now handled by @elizaos/plugin-telegram via
   // runtime plugin routes (rawPath: true). See plugin-telegram/src/setup-routes.ts.
 
@@ -3741,68 +3712,6 @@ async function handleRequest(
   // @tokagentos/app-steward plugin routes. See apps/app-steward/src/plugin.ts.
   // ═══════════════════════════════════════════════════════════════════════
 
-  // ── Cloud routes (/api/cloud/*) ─────────────────────────────────────────
-  if (pathname.startsWith("/api/cloud/")) {
-    // Cloud-managed feature flag sync — must run before the generic
-    // cloud passthrough so /api/cloud/features hits the local upserter.
-    const featuresHandled = await handleCloudFeaturesRoute(
-      req,
-      res,
-      pathname,
-      method,
-      { config: state.config, runtime: state.runtime },
-    );
-    if (featuresHandled) return;
-
-    // Duffel travel relay — must run before the generic cloud passthrough
-    // so the upstream Duffel + billing path is hit, not the bare cloud
-    // proxy that would land on /api/v1/duffel/* with no markup logic.
-    const duffelHandled = await handleDuffelRelayRoute(
-      req,
-      res,
-      pathname,
-      method,
-      { config: state.config, runtime: state.runtime },
-    );
-    if (duffelHandled) return;
-
-    const billingHandled = await handleCloudBillingRoute(
-      req,
-      res,
-      pathname,
-      method,
-      { config: state.config, runtime: state.runtime },
-    );
-    if (billingHandled) return;
-
-    // Compat proxy routes — transparent proxy to Tokagent Cloud v2 /api/compat/*
-    const compatHandled = await handleCloudCompatRoute(
-      req,
-      res,
-      pathname,
-      method,
-      { config: state.config, runtime: state.runtime },
-    );
-    if (compatHandled) return;
-
-    const cloudState: CloudRouteState = {
-      config: state.config,
-      cloudManager: state.cloudManager,
-      runtime: state.runtime,
-      saveConfig: saveTokagentConfig,
-      createTelemetrySpan: createIntegrationTelemetrySpan,
-      restartRuntime,
-    };
-    const handled = await handleCloudRoute(
-      req,
-      res,
-      pathname,
-      method,
-      cloudState,
-    );
-    if (handled) return;
-  }
-
   // ── Sandbox routes (/api/sandbox/*) ────────────────────────────────────
   if (pathname.startsWith("/api/sandbox")) {
     const handled = await handleSandboxRoute(req, res, pathname, method, {
@@ -4010,20 +3919,6 @@ async function handleRequest(
     }
 
     if (handled) return;
-  }
-
-  if (
-    await handleCloudStatusRoutes({
-      req,
-      res,
-      method,
-      pathname,
-      config: state.config,
-      runtime: state.runtime,
-      json,
-    })
-  ) {
-    return;
   }
 
   // ── App routes (/api/apps/*) ──────────────────────────────────────────

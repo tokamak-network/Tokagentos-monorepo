@@ -4,8 +4,7 @@
  * desktop install and so each call is metered against the user's Cloud
  * credit balance with a creator markup.
  *
- * Pattern mirrors `cloud-billing-routes.ts` (commandment 4 — BFF is
- * auth + proxy + usage write, nothing else):
+ * Pattern (commandment 4 — BFF is auth + proxy + usage write, nothing else):
  *
  *   1. Resolve the user's Tokagent Cloud API key (runtime CLOUD_AUTH service
  *      first, then saved config).
