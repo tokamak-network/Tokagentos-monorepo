@@ -158,36 +158,6 @@ try {
 } catch {
   pluginAgentOrchestrator = null;
 }
-// Keep plugin-shell behind a guarded runtime require too. The published alpha
-// tarball can declare dist/index.js without actually shipping it, which breaks
-// CLI/bootstrap in published-only CI.
-let pluginShell: unknown = null;
-try {
-  pluginShell = require("@elizaos/plugin-shell");
-} catch {
-  pluginShell = null;
-}
-// Keep plugin-commands behind a guarded runtime require. Some published alpha
-// builds advertise dist/index.js without actually shipping it, and a static
-// ESM import here makes the CLI fail before it can print --help/--version.
-let pluginCommands: unknown = null;
-try {
-  pluginCommands = require("@elizaos/plugin-commands");
-} catch {
-  pluginCommands = null;
-}
-// plugin-plugin-manager, plugin-secrets-manager, and plugin-trust are now
-// built-in core capabilities in @tokagentos/core. Enable via character settings:
-// ENABLE_PLUGIN_MANAGER, ENABLE_SECRETS_MANAGER, ENABLE_TRUST.
-// Keep plugin-cron behind a guarded runtime require for the same reason. Some
-// published alpha builds resolve through package.json but are missing the
-// shipped dist/index.js entry, which breaks CLI bootstrap before help/version.
-let pluginCron: unknown = null;
-try {
-  pluginCron = require("@elizaos/plugin-cron");
-} catch {
-  pluginCron = null;
-}
 // Keep plugin-ollama behind a guarded runtime require as well. Some published
 // alpha builds advertise dist/node/index.node.js but do not ship that ESM
 // entry, which breaks CLI bootstrap and startup smokes in published-only CI.
@@ -296,11 +266,8 @@ Object.assign(STATIC_TOKAGENT_PLUGINS, {
   ...(pluginAgentOrchestrator
     ? { "agent-orchestrator": pluginAgentOrchestrator }
     : {}),
-  ...(pluginCron ? { "@elizaos/plugin-cron": pluginCron } : {}),
-  ...(pluginShell ? { "@elizaos/plugin-shell": pluginShell } : {}),
   // plugin-manager: now built-in core capability (ENABLE_PLUGIN_MANAGER)
   "@elizaos/plugin-agent-skills": pluginAgentSkills,
-  ...(pluginCommands ? { "@elizaos/plugin-commands": pluginCommands } : {}),
   "@elizaos/plugin-pdf": pluginPdf,
   ...(pluginOpenai ? { "@elizaos/plugin-openai": pluginOpenai } : {}),
   "@elizaos/plugin-anthropic": pluginAnthropic,

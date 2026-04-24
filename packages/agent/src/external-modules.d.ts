@@ -124,14 +124,11 @@ declare module "telegram/sessions" {
     [key: string]: unknown;
   }
 }
-declare module "@elizaos/plugin-commands";
-declare module "@elizaos/plugin-cron";
 declare module "@elizaos/plugin-edge-tts";
 declare module "@elizaos/plugin-edge-tts/node";
 declare module "@elizaos/plugin-local-embedding";
 declare module "@elizaos/plugin-ollama";
 declare module "@elizaos/plugin-openai";
-declare module "@elizaos/plugin-shell";
 declare module "@tokagentos/signal-native";
 declare module "qrcode";
 

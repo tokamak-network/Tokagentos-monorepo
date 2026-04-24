@@ -42,7 +42,6 @@ const ROLE_GATE_RANK: Record<RoleGate, number> = {
 const ROLE_GATED_PLUGINS: Readonly<Record<string, RoleGate>> = {
   // Blockchain — financial actions
   "@elizaos/plugin-evm": "admin",
-  "@elizaos/plugin-solana": "admin",
 
   // Orchestration — spawns agents, PTY sessions, workspaces
   "agent-orchestrator": "admin",
@@ -55,12 +54,6 @@ const ROLE_GATED_PLUGINS: Readonly<Record<string, RoleGate>> = {
 
   // Trust — policy / trust signals (matches plugin `name` from plugin-trust)
   trust: "admin",
-
-  // Shell — arbitrary command execution
-  shell: "owner",
-
-  // Cron — scheduled job management
-  cron: "admin",
 
   // Cloud — provisioning, billing, agent lifecycle
   tokagentOSCloud: "admin",
@@ -103,11 +96,6 @@ const ACTION_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
   START_CODING_TASK: "owner",
   // PROVISION_WORKSPACE / MANAGE_ISSUES already covered above
 
-  // --- plugin-cron: create/delete/update are owner, list/run are admin ---
-  CREATE_CRON: "owner",
-  DELETE_CRON: "owner",
-  UPDATE_CRON: "owner",
-
   // --- plugin-discord: destructive/moderative actions ---
   DELETE_MESSAGE: "admin",
   EDIT_MESSAGE: "admin",
@@ -147,10 +135,6 @@ const ACTION_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
 // ---------------------------------------------------------------------------
 
 const PROVIDER_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
-  // Shell
-  shellHistoryProvider: "admin",
-  terminalUsage: "admin",
-
   // Orchestrator
   ACTIVE_WORKSPACE_CONTEXT: "admin",
   CODING_AGENT_EXAMPLES: "admin",
@@ -159,9 +143,6 @@ const PROVIDER_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
   SECRETS_STATUS: "admin",
   SECRETS_INFO: "admin",
   MISSING_SECRETS: "admin",
-
-  // Cron
-  cronContext: "admin",
 
   // Cloud
   tokagentcloud_status: "admin",

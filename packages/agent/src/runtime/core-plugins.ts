@@ -18,10 +18,7 @@ export const CORE_PLUGINS: readonly string[] = [
   // @tokagentos/app-form — now built-in as advanced capability (form); enabled when advancedCapabilities: true
   "@tokagentos/app-companion", // VRM companion emotes; actions gated until app session is active
   // @elizaos/plugin-agent-orchestrator — opt-in via TOKAGENT_AGENT_ORCHESTRATOR (Tokagent app enables by default)
-  "@elizaos/plugin-cron", // scheduled jobs and automation
-  "@elizaos/plugin-shell", // shell command execution
   "@elizaos/plugin-agent-skills", // skill execution and marketplace runtime
-  "@elizaos/plugin-commands", // slash command handling (skills auto-register as /commands)
   "@tokagentos/app-lifeops", // LifeOps: personal ops — tasks, goals, calendar, inbox, browser companions, website blocking
   // Built-in runtime capabilities (no longer external plugins):
   // - experience, form, clipboard, personality: advanced capabilities (advancedCapabilities: true)

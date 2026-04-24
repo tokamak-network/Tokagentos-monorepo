@@ -118,7 +118,6 @@ export const OPTIONAL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   // multi-hour landmine. Keep these in sync with AUTH_PROVIDER_PLUGINS
   // in packages/agent/src/config/plugin-auto-enable.ts.
   evm: "@elizaos/plugin-evm",
-  solana: "@elizaos/plugin-solana",
   browser: "@elizaos/plugin-browser",
   /** Tokagent desktop browser workspace + Steward; package is `@tokagentos/app-browser`. */
   "app-browser": "@tokagentos/app-browser",
@@ -130,7 +129,6 @@ export const OPTIONAL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   lifeopsBrowser: "@elizaos/plugin-lifeops-browser",
   vision: "@elizaos/plugin-vision",
   selfcontrol: "@tokagentos/app-lifeops",
-  cron: "@elizaos/plugin-cron",
   cua: "@elizaos/plugin-cua",
   obsidian: "@elizaos/plugin-obsidian",
   repoprompt: "@elizaos/plugin-repoprompt",
@@ -179,7 +177,6 @@ export function collectPluginNames(
   reasons?: PluginLoadReasons,
 ): Set<string> {
   migrateLegacyRuntimeConfig(config as Record<string, unknown>);
-  const shellPluginDisabled = config.features?.shellEnabled === false;
   const localEmbeddingsExplicitlyDisabled = (() => {
     const raw = process.env.TOKAGENT_DISABLE_LOCAL_EMBEDDINGS;
     if (!raw) return false;
@@ -378,11 +375,6 @@ export function collectPluginNames(
 
   // Remove elizacloud from any additive paths that may have re-introduced it.
   pluginsToLoad.delete("@elizaos/plugin-elizacloud");
-
-  // Enforce feature gating last so allow-list entries cannot bypass it.
-  if (shellPluginDisabled) {
-    pluginsToLoad.delete("@elizaos/plugin-shell");
-  }
 
   for (const optionalCore of OPTIONAL_CORE_PLUGINS) {
     const resolved = resolvePluginPackageAlias(optionalCore);

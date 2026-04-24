@@ -110,7 +110,6 @@ export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
   // crashes with 'Action spec not found: BRIDGE' during startup.
   // Gate behind ENABLE_EVM_PLUGIN=1 until the spec registration is fixed.
   ENABLE_EVM_PLUGIN: "@elizaos/plugin-evm",
-  SOLANA_PRIVATE_KEY: "@elizaos/plugin-solana",
   RS_SDK_BOT_NAME: "@tokagentos/app-2004scape",
   SHOPIFY_ACCESS_TOKEN: "@elizaos/plugin-shopify",
 };
@@ -119,15 +118,11 @@ const FEATURE_PLUGINS: Record<string, string> = {
   browser: "@elizaos/plugin-browser",
   cua: "@elizaos/plugin-cua",
   obsidian: "@elizaos/plugin-obsidian",
-  cron: "@elizaos/plugin-cron",
-  shell: "@elizaos/plugin-shell",
-  executeCode: "@elizaos/plugin-executecode",
   imageGen: "@elizaos/plugin-image-generation",
   tts: "@elizaos/plugin-edge-tts",
   stt: "@elizaos/plugin-stt",
   agentSkills: "@elizaos/plugin-agent-skills",
   // directives: "@elizaos/plugin-directives", // not yet ready — package doesn't exist
-  commands: "@elizaos/plugin-commands",
   diagnosticsOtel: "@elizaos/plugin-diagnostics-otel",
   webhooks: "@elizaos/plugin-webhooks",
   gmailWatch: "@elizaos/plugin-gmail-watch",
