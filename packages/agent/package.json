@@ -136,7 +136,6 @@
     "@elizaos/plugin-pdf": "workspace:*",
     "@elizaos/plugin-sql": "workspace:*",
     "@tokagentos/shared": "workspace:*",
-    "@tokagentos/skills": "workspace:*",
     "@hapi/boom": "^10.0.1",
     "@noble/curves": "^2.0.1",
     "@whiskeysockets/baileys": "7.0.0-rc.9",

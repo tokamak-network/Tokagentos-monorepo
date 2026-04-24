@@ -22,17 +22,6 @@
       "outputs": ["dist/**"],
       "inputs": ["src/**", "build.ts", "tsconfig.declarations.json"]
     },
-    "@tokagentos/rust#build": {
-      "dependsOn": [],
-      "outputs": ["pkg/**", "target/release/**"],
-      "inputs": ["src/**", "Cargo.toml", "build.sh"]
-    },
-    "@tokagentos/python#build": {
-      "dependsOn": [],
-      "outputs": ["tokagentos.egg-info/**"],
-      "inputs": ["tokagentos/**", "pyproject.toml"],
-      "cache": false
-    },
     "@tokagentos/client#build": {
       "dependsOn": ["^build"],
       "env": ["LOG_LEVEL"],
@@ -88,9 +77,6 @@
     "lint": {
       "outputs": []
     },
-    "@tokagentos/interop#lint": {
-      "outputs": []
-    },
     "lint:check": {
       "outputs": []
     },
@@ -130,14 +116,6 @@
       "outputs": ["coverage/**"],
       "inputs": ["src/**/*.ts", "src/**/*.js", "__tests__/**/*", "*.test.*", "package.json", "tests/**/*", "python/tests/**/*"],
       "cache": false
-    },
-    "@tokagentos/rust#test": {
-      "outputs": [],
-      "inputs": ["src/**", "tests/**"]
-    },
-    "@tokagentos/python#test": {
-      "outputs": [],
-      "inputs": ["tokagentos/**", "tests/**"]
     },
     "migrate": {
       "dependsOn": ["@tokagentos/core#build"],
