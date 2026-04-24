@@ -379,11 +379,17 @@ function writeLlmEnvFile(
   } else {
     base = `# API key set by \`tokagentos create --llm ${provider.id}\`.\n`;
   }
-  // Uncomment the selected provider's line; leave the others commented.
+  // Replace an active or commented placeholder line; append if neither exists.
+  const activeRe2 = new RegExp(`^${provider.envVar}=.*$`, "m");
   const commentedRe = new RegExp(`^#\\s*${provider.envVar}=.*$`, "m");
-  const filled = commentedRe.test(base)
-    ? base.replace(commentedRe, apiKeyLine)
-    : `${base.endsWith("\n") ? base : `${base}\n`}${apiKeyLine}\n`;
+  let filled: string;
+  if (activeRe2.test(base)) {
+    filled = base.replace(activeRe2, apiKeyLine);
+  } else if (commentedRe.test(base)) {
+    filled = base.replace(commentedRe, apiKeyLine);
+  } else {
+    filled = `${base.endsWith("\n") ? base : `${base}\n`}${apiKeyLine}\n`;
+  }
   fs.writeFileSync(envPath, filled);
 }
 
