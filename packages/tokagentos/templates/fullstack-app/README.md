@@ -44,3 +44,14 @@ bun run --cwd apps/app build
 - The default brand kit is intentionally minimal. The source-of-truth files are `apps/app/public/favicon.svg` and `apps/app/public/splash-bg.svg`.
 - `bun run --cwd apps/app brand:assets` regenerates the derived desktop assets: `public/splash-bg.jpg`, `electrobun/assets/appIcon.png`, `electrobun/assets/appIcon.ico`, and `electrobun/assets/appIcon.iconset/`.
 - `apps/app/public/logos/*` is still required because `@elizaos/app-core` maps provider IDs to those fixed asset paths during onboarding and settings flows.
+
+## Companion avatar
+
+The default `tokagent-0` VRM bundled with your scaffolded project is a
+**placeholder** — it's a recolor of an upstream character. The commissioned
+Tokagent Pro Humanoid avatar ships in a later release as a file swap only
+(drop the new `.vrm` into `tokagent/apps/app-companion/public/vrms/`), no
+code changes required.
+
+The scene behind the character (Aurora lime-on-dark) and the 6-emote set
+(idle / thinking / speaking / acknowledge / alert / success) are final.
