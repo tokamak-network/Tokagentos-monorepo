@@ -57,16 +57,7 @@ const ALLOW_REGISTRY_FETCH =
   process.env.TOKAGENT_RUNTIME_COPY_ALLOW_REGISTRY_FETCH === "1";
 const DEP_SKIP = new Set(["typescript", "@types/node", "lucide-react"]);
 const ALWAYS_HOISTED_PACKAGES = new Set(["@tokagentos/core"]);
-const PACKAGED_DEPENDENCY_SKIPS = new Map<string, Set<string>>([
-  [
-    "@elizaos/plugin-cron",
-    new Set([
-      // The desktop/runtime bundle does not expose the Tokagent CLI surface.
-      // Cron only imports plugin-cli to register commands at module load.
-      "@elizaos/plugin-cli",
-    ]),
-  ],
-]);
+const PACKAGED_DEPENDENCY_SKIPS = new Map<string, Set<string>>();
 const PLATFORM_ALIASES = new Map<string, string>([
   ["android", "android"],
   ["aix", "aix"],
@@ -361,35 +352,11 @@ export function shouldSkipPackagedDependency(
   );
 }
 
-export function stripPackagedCronCliRegistration(source: string): string {
-  return source.replace(
-    'import { defineCliCommand, registerCliCommand } from "@elizaos/plugin-cli";',
-    [
-      "// Packaged desktop/runtime bundles do not expose the Tokagent CLI registry.",
-      "const defineCliCommand = () => null;",
-      "const registerCliCommand = () => {};",
-    ].join("\n"),
-  );
-}
-
 function patchCopiedPackageRuntimeSurface(
-  name: string,
-  packageDir: string,
+  _name: string,
+  _packageDir: string,
 ): void {
-  if (name !== "@elizaos/plugin-cron") {
-    return;
-  }
-
-  const cronEntryPath = path.join(packageDir, "dist", "index.js");
-  if (!fs.existsSync(cronEntryPath)) {
-    return;
-  }
-
-  const original = fs.readFileSync(cronEntryPath, "utf8");
-  const rewritten = stripPackagedCronCliRegistration(original);
-  if (rewritten !== original) {
-    fs.writeFileSync(cronEntryPath, rewritten);
-  }
+  // No plugin-specific patching needed (plugin-cron/plugin-cli removed in Task 3.3).
 }
 
 export function shouldCopyPackageEntry(entry: string): boolean {

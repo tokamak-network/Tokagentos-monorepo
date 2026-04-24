@@ -5,9 +5,9 @@
  * routing and immediately loads the skill's full instructions, then responds
  * with the skill context + user args so the agent can act on them directly.
  *
- * Works with @elizaos/plugin-commands — skills are registered as commands
- * in the registry during tokagent-plugin init(), and this action handles the
- * dispatch when a skill command is detected.
+ * Skill slugs were previously registered via the plugin-commands integration, which was
+ * removed in Task 3.3. The action is now dormant (validate() always returns false) but
+ * kept in place so the plugin structure remains intact.
  */
 
 import type {
@@ -22,20 +22,12 @@ import { logger } from "@tokagentos/core";
 import { hasRoleAccess } from "../security/access.js";
 import type { AgentSkillsServiceLike } from "../types/agent-skills.js";
 
-/** Set of registered skill slugs — populated by registerSkillCommands(). */
-const registeredSkillSlugs = new Set<string>();
-
 /**
- * Called from tokagent-plugin init() after skills are loaded.
- * Populates the set so validate() can match quickly.
+ * Set of registered skill slugs.
+ * Previously populated via plugin-commands integration (removed in Task 3.3).
+ * Kept as an empty set so skillCommandAction validate() gracefully returns false.
  */
-export function addRegisteredSkillSlug(slug: string): void {
-  registeredSkillSlugs.add(slug.toLowerCase());
-}
-
-export function clearRegisteredSkillSlugs(): void {
-  registeredSkillSlugs.clear();
-}
+const registeredSkillSlugs = new Set<string>();
 
 /**
  * Extract skill slug from a slash-command message.

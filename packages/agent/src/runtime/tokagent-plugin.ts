@@ -23,11 +23,7 @@ import { restartAction } from "../actions/restart.js";
 import { searchConversationsAction } from "../actions/search-conversations.js";
 import { sendAdminMessageAction } from "../actions/send-admin-message.js";
 import { setUserNameAction } from "../actions/set-user-name.js";
-import {
-  addRegisteredSkillSlug,
-  clearRegisteredSkillSlugs,
-  skillCommandAction,
-} from "../actions/skill-command.js";
+import { skillCommandAction } from "../actions/skill-command.js";
 import { terminalAction } from "../actions/terminal.js";
 import { webSearchAction } from "../actions/web-search.js";
 import { lateJoinWhitelistEvaluator } from "../evaluators/late-join-whitelist.js";
@@ -102,85 +98,6 @@ export function createTokagentPlugin(config?: TokagentPluginConfig): Plugin {
       setCustomActionsRuntime(runtime);
       // Proactive agent (activity-profile) is now initialized by @tokagentos/app-lifeops plugin init.
 
-      // ── Auto-register skills as slash commands ───────────────────────
-      // Runs after plugin-agent-skills init so getLoadedSkills() is populated.
-      // Uses a deferred check because skill loading is async and may complete
-      // after this init() returns.
-      const registerSkillsAsCommands = () => {
-        try {
-          const skillsService = runtime.getService(
-            "AGENT_SKILLS_SERVICE",
-          ) as unknown as
-            | {
-                getLoadedSkills: () => Array<{
-                  slug: string;
-                  name: string;
-                  description: string;
-                }>;
-              }
-            | undefined;
-          if (!skillsService) return false;
-
-          const skills = skillsService.getLoadedSkills();
-          if (skills.length === 0) return false;
-
-          // Dynamically import plugin-commands registry (may not be loaded)
-          let registerCommand: (cmd: Record<string, unknown>) => void;
-          let initForRuntime: (agentId: string) => void;
-          try {
-            const cmds = require("@elizaos/plugin-commands");
-            registerCommand = cmds.registerCommand;
-            initForRuntime = cmds.initForRuntime;
-          } catch {
-            return false; // plugin-commands not available
-          }
-
-          // Ensure the command store is scoped to this runtime
-          initForRuntime(runtime.agentId);
-          clearRegisteredSkillSlugs();
-
-          let registered = 0;
-          for (const skill of skills) {
-            const slug = skill.slug.toLowerCase();
-            try {
-              registerCommand({
-                key: `skill-${slug}`,
-                description: skill.description.substring(0, 80),
-                textAliases: [`/${slug}`],
-                scope: "both",
-                category: "skills",
-                acceptsArgs: true,
-                args: [
-                  {
-                    name: "input",
-                    description: "Task or question for this skill",
-                    captureRemaining: true,
-                  },
-                ],
-              });
-              addRegisteredSkillSlug(slug);
-              registered++;
-            } catch {
-              // Command may already be registered (e.g. /stop conflicts)
-            }
-          }
-
-          if (registered > 0) {
-            const { logger } = require("@tokagentos/core");
-            logger.info(
-              `[tokagent] Registered ${registered} skills as slash commands`,
-            );
-          }
-          return true;
-        } catch {
-          return false;
-        }
-      };
-
-      // Try immediately, then retry after a delay for async skill loading
-      if (!registerSkillsAsCommands()) {
-        setTimeout(registerSkillsAsCommands, 5000);
-      }
     },
 
     providers: [
