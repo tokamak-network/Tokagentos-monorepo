@@ -55,16 +55,9 @@ export const AI_PROVIDER_PLUGINS: readonly string[] = [
   "@elizaos/plugin-groq",
   "@elizaos/plugin-xai",
   "@homunculuslabs/plugin-zai",
-  "@elizaos/plugin-elizacloud",
 ];
 
-/**
- * Self-declared plugin names (the `name` property on the plugin object) that
- * correspond to AI provider plugins.  Some plugins use a short internal name
- * (e.g. "tokagentOSCloud") that differs from the npm package name.  The
- * diagnostic must recognise both forms to avoid false-positive warnings.
- */
-const AI_PROVIDER_PLUGIN_ALIASES: readonly string[] = ["tokagentOSCloud"];
+const AI_PROVIDER_PLUGIN_ALIASES: readonly string[] = [];
 
 // ---------------------------------------------------------------------------
 // Semver comparison (simplified for alpha tags)
@@ -248,8 +241,7 @@ export function diagnoseNoAIProvider(
   if (failedProviders.length === 0) {
     return (
       "No AI provider plugin was loaded. Set an API key environment variable " +
-      "(e.g. ANTHROPIC_API_KEY, OPENAI_API_KEY, OPENROUTER_API_KEY) or log in " +
-      "to Tokagent Cloud (TOKAGENTOS_CLOUD_API_KEY) to enable at least one model provider."
+      "(e.g. ANTHROPIC_API_KEY, OPENAI_API_KEY, OPENROUTER_API_KEY) to enable at least one model provider."
     );
   }
 

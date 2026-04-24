@@ -108,11 +108,6 @@ const ACTION_ROLE_OVERRIDES: Readonly<Record<string, RoleGate>> = {
   DELETE_CRON: "owner",
   UPDATE_CRON: "owner",
 
-  // --- plugin-elizacloud: provisioning/billing are owner ---
-  PROVISION_CLOUD_AGENT: "owner",
-  FREEZE_CLOUD_AGENT: "owner",
-  RESUME_CLOUD_AGENT: "owner",
-
   // --- plugin-discord: destructive/moderative actions ---
   DELETE_MESSAGE: "admin",
   EDIT_MESSAGE: "admin",

@@ -430,18 +430,6 @@ function resolveKey(
   const ev = process.env[envVar]?.trim();
   if (ev && !isRedactedSecret(ev)) return ev;
 
-  const explicitCloudTts = process.env.TOKAGENTOS_CLOUD_USE_TTS === "true";
-  const legacyCloudTts =
-    process.env.TOKAGENTOS_CLOUD_USE_TTS === undefined &&
-    process.env.TOKAGENTOS_CLOUD_ENABLED === "true" &&
-    process.env.TOKAGENT_CLOUD_TTS_DISABLED !== "true";
-  if (explicitCloudTts || legacyCloudTts) {
-    const cloudKey = process.env.TOKAGENTOS_CLOUD_API_KEY?.trim();
-    if (cloudKey && !isRedactedSecret(cloudKey)) {
-      return cloudKey;
-    }
-  }
-
   return null;
 }
 

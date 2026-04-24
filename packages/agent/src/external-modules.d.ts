@@ -125,7 +125,6 @@ declare module "telegram/sessions" {
     [key: string]: unknown;
   }
 }
-declare module "@elizaos/plugin-elizacloud";
 declare module "@elizaos/plugin-commands";
 declare module "@elizaos/plugin-cron";
 declare module "@elizaos/plugin-edge-tts";

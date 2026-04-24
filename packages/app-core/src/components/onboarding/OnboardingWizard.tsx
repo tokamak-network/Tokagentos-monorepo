@@ -5,7 +5,6 @@ import { applyUiTheme } from "../../state/persistence";
 import { useApp } from "../../state/useApp";
 import { LanguageDropdown } from "../shared/LanguageDropdown";
 import { ConnectionStep } from "./ConnectionStep";
-import { DeploymentStep } from "./DeploymentStep";
 import { FeaturesStep } from "./FeaturesStep";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { OnboardingStepNav } from "./OnboardingStepNav";
@@ -48,8 +47,6 @@ export function OnboardingWizard() {
 
   function renderStep() {
     switch (onboardingStep) {
-      case "deployment":
-        return <DeploymentStep />;
       case "providers":
         return <ConnectionStep />;
       case "features":

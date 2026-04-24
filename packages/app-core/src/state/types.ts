@@ -491,7 +491,6 @@ export interface AppState {
   tokagentCloudUserId: string | null;
   /** Last `reason` from GET /api/cloud/status (e.g. API-key-only vs OAuth). */
   tokagentCloudStatusReason: string | null;
-  cloudDashboardView: "overview" | "billing";
   tokagentCloudLoginBusy: boolean;
   tokagentCloudLoginError: string | null;
   tokagentCloudDisconnecting: boolean;

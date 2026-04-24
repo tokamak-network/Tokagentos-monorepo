@@ -141,10 +141,6 @@ function ensureCloudContainerCharacterDefaults(
   // The client-side voice resolver reads config.ui.presetId and maps it to the
   // character's voicePresetId, so having presetId set is sufficient.
 
-  // Ensure serviceRouting is set for cloud inference so the cloud topology
-  // resolver recognises this as a cloud-inference container and keeps the
-  // TOKAGENTOS_CLOUD_* env vars alive (applyCloudConfigToEnv deletes them when
-  // shouldLoadPlugin is false).
   const configRecord = config as Record<string, unknown>;
   if (!configRecord.serviceRouting) {
     configRecord.serviceRouting = {
@@ -578,17 +574,6 @@ export async function handleOnboardingRoutes(
           normalizeServiceRoutingConfig(config.serviceRouting),
       });
 
-      delete process.env.TOKAGENTOS_CLOUD_ENABLED;
-      delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
-      delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
-
       if (config.models && typeof config.models === "object") {
         const legacyModels = config.models as Record<string, unknown>;
         delete legacyModels.nano;
@@ -598,11 +583,6 @@ export async function handleOnboardingRoutes(
         delete legacyModels.mega;
       }
 
-      if (
-        !isCloudInferenceSelectedInConfig(config as Record<string, unknown>)
-      ) {
-        delete process.env.TOKAGENTOS_CLOUD_API_KEY;
-      }
     }
     if (hasCanonicalRuntimeConfig && config.agents?.defaults?.model) {
       delete config.agents.defaults.model.primary;

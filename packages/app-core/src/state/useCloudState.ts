@@ -105,9 +105,6 @@ export function useCloudState({
   const [tokagentCloudStatusReason, setTokagentCloudStatusReason] = useState<
     string | null
   >(null);
-  const [cloudDashboardView, setCloudDashboardView] = useState<
-    "overview" | "billing"
-  >("overview");
   const [tokagentCloudLoginBusy, setTokagentCloudLoginBusy] = useState(false);
   const [tokagentCloudLoginError, setTokagentCloudLoginError] = useState<
     string | null
@@ -629,8 +626,6 @@ export function useCloudState({
     setTokagentCloudUserId,
     tokagentCloudStatusReason,
     setTokagentCloudStatusReason,
-    cloudDashboardView,
-    setCloudDashboardView,
     tokagentCloudLoginBusy,
     setTokagentCloudLoginBusy,
     tokagentCloudLoginError,

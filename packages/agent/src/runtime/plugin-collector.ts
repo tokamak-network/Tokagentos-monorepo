@@ -13,11 +13,6 @@
  * @module plugin-collector
  */
 import {
-  type ResolvedTokagentCloudTopology,
-  resolveTokagentCloudTopology,
-} from "@tokagentos/shared/contracts";
-import {
-  hasExplicitCanonicalRuntimeConfig,
   migrateLegacyRuntimeConfig,
 } from "@tokagentos/shared/contracts/onboarding";
 import type { TokagentConfig } from "../config/config.js";
@@ -59,12 +54,6 @@ export function resolvePluginPackageAlias(packageName: string): string {
     return "@tokagentos/app-lifeops";
   }
   return packageName;
-}
-
-function isTruthyCloudEnvValue(raw: string | undefined): boolean {
-  if (!raw) return false;
-  const value = raw.trim().toLowerCase();
-  return value === "1" || value === "true" || value === "yes";
 }
 
 /** Maps Tokagent channel names to plugin package names. */
@@ -109,9 +98,6 @@ export const PROVIDER_PLUGIN_MAP: Readonly<Record<string, string>> = {
   AIGATEWAY_API_KEY: "@elizaos/plugin-vercel-ai-gateway",
   OLLAMA_BASE_URL: "@elizaos/plugin-ollama",
   ZAI_API_KEY: "@homunculuslabs/plugin-zai",
-  // TokagentCloud — loaded when API key is present OR cloud is explicitly enabled
-  TOKAGENTOS_CLOUD_API_KEY: "@elizaos/plugin-elizacloud",
-  TOKAGENTOS_CLOUD_ENABLED: "@elizaos/plugin-elizacloud",
 };
 
 /**
@@ -143,7 +129,6 @@ export const OPTIONAL_PLUGIN_MAP: Readonly<Record<string, string>> = {
   "lifeops-browser": "@elizaos/plugin-lifeops-browser",
   lifeopsBrowser: "@elizaos/plugin-lifeops-browser",
   vision: "@elizaos/plugin-vision",
-  tokagentcloud: "@elizaos/plugin-elizacloud",
   selfcontrol: "@tokagentos/app-lifeops",
   cron: "@elizaos/plugin-cron",
   cua: "@elizaos/plugin-cua",
@@ -202,30 +187,6 @@ export function collectPluginNames(
     const normalized = raw.trim().toLowerCase();
     return normalized === "1" || normalized === "true" || normalized === "yes";
   })();
-  const cloudTopology = resolveTokagentCloudTopology(
-    config as Record<string, unknown>,
-  );
-  const hasCanonicalRuntimeConfig = hasExplicitCanonicalRuntimeConfig(
-    config as Record<string, unknown>,
-  );
-  const isCloudContainer = process.env.TOKAGENT_CLOUD_PROVISIONED === "1";
-  const cloudExplicitlyDisabled = config.cloud?.enabled === false;
-  const cloudPluginRequestedByEnv =
-    !hasCanonicalRuntimeConfig &&
-    !cloudExplicitlyDisabled &&
-    (Boolean(process.env.TOKAGENTOS_CLOUD_API_KEY?.trim()) ||
-      isTruthyCloudEnvValue(process.env.TOKAGENTOS_CLOUD_ENABLED));
-  const cloudEffectivelyEnabled =
-    resolveCloudPluginRequirement(cloudTopology, cloudPluginRequestedByEnv) ||
-    isCloudContainer;
-  // cloudHandlesInference gates whether the cloud plugin *replaces* direct
-  // provider plugins for model calls.  Cloud containers that go through the
-  // steward proxy (OPENAI_BASE_URL → host.docker.internal) need plugin-openai
-  // to stay loaded, so only claim inference when the topology explicitly says
-  // so OR the container has a direct cloud API key for tokagentcloud inference.
-  const cloudHandlesInference =
-    cloudTopology.services.inference ||
-    (isCloudContainer && Boolean(process.env.TOKAGENTOS_CLOUD_API_KEY?.trim()));
   const _configEnv = config.env as
     | (Record<string, unknown> & { vars?: Record<string, unknown> })
     | undefined;
@@ -320,12 +281,6 @@ export function collectPluginNames(
 
   // Model-provider plugins — load when env key is present
   for (const [envKey, pluginName] of Object.entries(PROVIDER_PLUGIN_MAP)) {
-    if (
-      envKey === "TOKAGENTOS_CLOUD_API_KEY" ||
-      envKey === "TOKAGENTOS_CLOUD_ENABLED"
-    ) {
-      continue;
-    }
     if (isPluginExplicitlyDisabled(pluginName)) {
       continue;
     }
@@ -346,39 +301,8 @@ export function collectPluginNames(
     }
   }
 
-  const applyProviderPrecedence = (): void => {
-    // Provider precedence:
-    // 1) TokagentCloud for inference (when enabled AND inferenceMode is "cloud")
-    // 2) direct provider plugins (api-key/env based)
-    //
-    // When inferenceMode is "byok" or "local", cloud stays loaded for
-    // RPC/services but direct AI provider plugins are preserved so the
-    // user's own API keys (e.g. Anthropic) handle model inference.
-    if (cloudEffectivelyEnabled) {
-      pluginsToLoad.add("@elizaos/plugin-elizacloud");
-
-      if (cloudHandlesInference) {
-        // Cloud handles ALL model calls — remove direct AI provider plugins.
-        const directProviders = new Set(Object.values(PROVIDER_PLUGIN_MAP));
-        directProviders.delete("@elizaos/plugin-elizacloud");
-        for (const p of directProviders) {
-          pluginsToLoad.delete(p);
-        }
-        return;
-      }
-      // inferenceMode is "byok" or "local" — keep direct provider plugins.
-      // Cloud plugin stays loaded for non-inference cloud services (RPC, media, etc.)
-      return;
-    }
-
-    // Cloud is not part of the resolved topology — remove it even though
-    // it is listed in CORE_PLUGINS so stale env/config does not hijack
-    // provider selection after the user switches away.
-    pluginsToLoad.delete("@elizaos/plugin-elizacloud");
-  };
-
-  // Apply once before additive plugin-entry/feature paths.
-  applyProviderPrecedence();
+  // Remove elizacloud — cloud provider plugin is not part of this product.
+  pluginsToLoad.delete("@elizaos/plugin-elizacloud");
 
   // Optional feature plugins from config.plugins.entries
   const pluginsConfig = config.plugins as
@@ -453,9 +377,8 @@ export function collectPluginNames(
     }
   }
 
-  // Re-apply provider precedence so later additive paths (entries, features,
-  // installs) cannot accidentally re-introduce suppressed providers.
-  applyProviderPrecedence();
+  // Remove elizacloud from any additive paths that may have re-introduced it.
+  pluginsToLoad.delete("@elizaos/plugin-elizacloud");
 
   // Enforce feature gating last so allow-list entries cannot bypass it.
   if (shellPluginDisabled) {
@@ -472,9 +395,3 @@ export function collectPluginNames(
   return pluginsToLoad;
 }
 
-function resolveCloudPluginRequirement(
-  topology: ResolvedTokagentCloudTopology,
-  requestedByEnv: boolean,
-): boolean {
-  return topology.shouldLoadPlugin || requestedByEnv;
-}

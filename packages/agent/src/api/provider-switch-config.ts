@@ -303,7 +303,6 @@ function persistLinkedCloudApiKey(
 
   const cloud = ensureCloud(config);
   cloud.apiKey = normalizedApiKey;
-  process.env.TOKAGENTOS_CLOUD_API_KEY = normalizedApiKey;
 
   applyCanonicalOnboardingConfig(config, {
     linkedAccounts: {
@@ -663,17 +662,6 @@ export function clearPersistedOnboardingConfig(
     }
   }
 
-  delete process.env.TOKAGENTOS_CLOUD_API_KEY;
-  delete process.env.TOKAGENTOS_CLOUD_ENABLED;
-  delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
   deleteCredentials("anthropic-subscription");
   deleteCredentials("openai-codex");
 }
@@ -715,82 +703,9 @@ export async function applyOnboardingConnectionConfig(
   );
 
   if (normalizedConnection.kind === "cloud-managed") {
-    clearRemoteProviderConfig(config);
-    clearCloudModelSelections(config);
-
-    const cloud = ensureCloud(config);
-    const models = ensureModels(config);
-    const apiKey = trimToUndefined(normalizedConnection.apiKey);
-    if (apiKey) {
-      cloud.apiKey = apiKey;
-      process.env.TOKAGENTOS_CLOUD_API_KEY = apiKey;
-    }
-    if (normalizedConnection.nanoModel) {
-      models.nano = normalizedConnection.nanoModel;
-    }
-    if (normalizedConnection.smallModel) {
-      models.small = normalizedConnection.smallModel;
-    }
-    if (normalizedConnection.mediumModel) {
-      models.medium = normalizedConnection.mediumModel;
-    }
-    if (normalizedConnection.largeModel) {
-      models.large = normalizedConnection.largeModel;
-    }
-    if (normalizedConnection.megaModel) {
-      models.mega = normalizedConnection.megaModel;
-    }
-
-    const serviceRouting = buildDefaultTokagentCloudServiceRouting({
-      base: {
-        ...(config.serviceRouting ?? {}),
-        llmText: buildTokagentCloudServiceRoute({
-          nanoModel: normalizedConnection.nanoModel,
-          smallModel: normalizedConnection.smallModel,
-          mediumModel: normalizedConnection.mediumModel,
-          largeModel: normalizedConnection.largeModel,
-          megaModel: normalizedConnection.megaModel,
-          responseHandlerModel: normalizedConnection.responseHandlerModel,
-          shouldRespondModel: normalizedConnection.shouldRespondModel,
-          actionPlannerModel: normalizedConnection.actionPlannerModel,
-          plannerModel: normalizedConnection.plannerModel,
-          responseModel: normalizedConnection.responseModel,
-          mediaDescriptionModel: normalizedConnection.mediaDescriptionModel,
-        }),
-      },
-    });
-
-    applyCanonicalOnboardingConfig(config, {
-      deploymentTarget: existingDeploymentTarget,
-      linkedAccounts: apiKey
-        ? {
-            tokagentcloud: {
-              status: "linked",
-              source: "api-key",
-            },
-          }
-        : undefined,
-      serviceRouting,
-    });
-
-    process.env.TOKAGENTOS_CLOUD_ENABLED = "true";
-    clearSubscriptionProviderConfig(config);
-    migrateLegacyRuntimeConfig(config as Record<string, unknown>);
+    // Cloud-managed connections are not supported in this product.
     return;
   }
-
-  delete process.env.TOKAGENTOS_CLOUD_ENABLED;
-  delete process.env.TOKAGENTOS_CLOUD_API_KEY;
-  delete process.env.TOKAGENTOS_CLOUD_BASE_URL;
-  delete process.env.TOKAGENTOS_CLOUD_NANO_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_MEDIUM_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_SMALL_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_LARGE_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_MEGA_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_RESPONSE_HANDLER_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_SHOULD_RESPOND_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_ACTION_PLANNER_MODEL;
-  delete process.env.TOKAGENTOS_CLOUD_PLANNER_MODEL;
 
   if (normalizedConnection.kind === "remote-provider") {
     clearSubscriptionProviderConfig(config);
