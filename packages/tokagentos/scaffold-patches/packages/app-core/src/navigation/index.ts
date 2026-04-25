@@ -330,6 +330,39 @@ export function shouldUseHashNavigation(): boolean {
   return false;
 }
 
+/**
+ * Current route path. Reads from `window.location`, honoring
+ * `shouldUseHashNavigation()`. Returns `"/"` in non-browser contexts (SSR /
+ * test runs).
+ *
+ * Used by AppContext/AppsView/AppsPageView to determine the active app slug
+ * from the URL. Required export for upstream consumers.
+ */
+export function getWindowNavigationPath(): string {
+  if (typeof window === "undefined") return "/";
+  if (shouldUseHashNavigation()) {
+    const hash = window.location.hash || "";
+    return hash.startsWith("#") ? hash.slice(1) || "/" : "/";
+  }
+  return window.location.pathname || "/";
+}
+
+/**
+ * Whether a path represents a per-app route (e.g., `/apps/{slug}` or deeper).
+ * Used by AppsView to decide whether the apps-sidebar is in "browse" mode or
+ * "app open" mode.
+ *
+ * `/apps`     → false (apps catalog, no specific app)
+ * `/apps/`    → false (same, with trailing slash)
+ * `/apps/foo` → true
+ * `/apps/foo/bar` → true
+ */
+export function isAppWindowRoute(path: string): boolean {
+  if (!path.startsWith("/apps/")) return false;
+  const remainder = path.slice("/apps/".length);
+  return remainder.length > 0 && !remainder.startsWith("/");
+}
+
 export function canonicalPathForPath(
   pathname: string,
   basePath = "",

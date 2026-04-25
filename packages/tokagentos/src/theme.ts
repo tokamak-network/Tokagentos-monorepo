@@ -1,16 +1,20 @@
 import chalk from "chalk";
 
-// TAL palette (from Tokamak-AI-Layer/frontend/tailwind.config.ts).
+// Tokagent palette — mirrors the design tokens used by the marketing site
+// (www.tokagent.network). Lime accent (#c4f547) on dark, with a tight
+// dark-lime → lime → light-lime gradient used by the CLI banner. See
+// apps/app/src/brand-purple.css in the scaffold-patches for the full UI
+// token map this is derived from.
 export const palette = {
-	brand: "#A855F7",
-	gradientStart: "#7C3AED",
-	gradientMid: "#A855F7",
-	gradientEnd: "#D946EF",
-	secondary: "#06B6D4",
-	highlight: "#C084FC",
-	warning: "#D946EF",
-	error: "#EF4444",
-	muted: "#6B7280",
+	brand: "#c4f547",
+	gradientStart: "#8ab81d",
+	gradientMid: "#c4f547",
+	gradientEnd: "#d5f972",
+	secondary: "#d5f972",
+	highlight: "#d5f972",
+	warning: "#ffd641",
+	error: "#ff494a",
+	muted: "#9ca3af",
 } as const;
 
 // Convenience colorizers. Fall back silently when the terminal does not

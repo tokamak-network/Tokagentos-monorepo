@@ -25,6 +25,40 @@ if (!VALID_MODES.has(EXECUTION_MODE)) {
   );
 }
 
+// Tokagent → upstream env mirror.
+// The Tokagent plugins read TOKAGENT_PRIVATE_KEY (vault custody model). The
+// upstream wallet UI (/wallet page, balance API, getWalletAddresses) reads
+// EVM_PRIVATE_KEY. Mirror so a single env entry feeds both surfaces.
+//
+// For RPC: TOKAGENT_RPC_URL is the user-facing knob. Two mirrors are needed:
+//   - EVM_PROVIDER_URL / ETHEREUM_PROVIDER_URL satisfy our agent's
+//     `rpcReady` capability gate (server-helpers.ts, wallet-capability.ts).
+//   - ETHEREUM_PROVIDER_MAINNET satisfies plugin-evm's per-chain RPC
+//     resolver (plugins/plugin-evm/typescript/rpc-providers.ts). Without
+//     this, plugin-evm's createPublicClient falls back to viem's default
+//     mainnet RPC (eth.merkle.io), which is currently slow/unreliable —
+//     wallet balance reads time out even though our gate passes.
+//
+// For other chains (base, polygon, arbitrum…), set ETHEREUM_PROVIDER_<CHAIN>
+// directly in .env. Tokagent's single TOKAGENT_RPC_URL is mainnet-only.
+//
+// This runs at module load — before any agent code derives addresses.
+function mirrorTokagentEnvAlias(from: string, to: string): void {
+  const src = process.env[from]?.trim();
+  if (src && !process.env[to]?.trim()) {
+    process.env[to] = src;
+  }
+}
+mirrorTokagentEnvAlias("TOKAGENT_PRIVATE_KEY", "EVM_PRIVATE_KEY");
+mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "EVM_PROVIDER_URL");
+mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "ETHEREUM_PROVIDER_URL");
+mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "ETHEREUM_PROVIDER_MAINNET");
+mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "EVM_PROVIDER_MAINNET");
+// ETHEREUM_RPC_URL is what the upstream wallet UI's balance fetcher
+// (wallet-rpc.ts → wallet-evm-balance.ts) reads for direct-RPC mainnet
+// fallback when no Alchemy key is set.
+mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "ETHEREUM_RPC_URL");
+
 export const DESKTOP_ONLY_PLUGINS: readonly string[] = [];
 
 const BASE_PLUGINS: readonly string[] = [

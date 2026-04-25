@@ -1,7 +1,20 @@
 import "@elizaos/app-core/styles/styles.css";
 import "@elizaos/app-core/styles/brand-gold.css";
-// Tokamak brand override — must follow brand-gold.css so --accent wins.
+// Tokagent brand override — must follow brand-gold.css so the lime --accent
+// wins (file kept named brand-purple.css for import stability — content is
+// the locked Tokagent palette from www.tokagent.network).
 import "./brand-purple.css";
+
+// Lock dark mode at the document root before React mounts. The Tokagent
+// palette (brand-purple.css above) is dark-only, so a stale stored theme
+// of "light" would swap color-scheme to light while CSS vars stay dark.
+if (typeof document !== "undefined") {
+  const root = document.documentElement;
+  root.setAttribute("data-theme", "dark");
+  root.classList.add("dark");
+  root.classList.remove("light");
+  root.style.colorScheme = "dark";
+}
 
 // Native Capacitor bridge registration is only needed for iOS/Android builds.
 // The Tokagent product targets desktop + web only; including

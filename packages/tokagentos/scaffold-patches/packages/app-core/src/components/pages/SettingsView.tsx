@@ -18,7 +18,7 @@
  *                      TOKAGENT_PRIVATE_KEY / POLYGON_RPC_URL / HYPERLIQUID_API_URL
  *                      straight from .env, no user-facing UI needed)
  *
- * Kept sections: identity, ai-model, appearance, capabilities, updates,
+ * Kept sections: identity, ai-model, capabilities, updates,
  * advanced.
  *
  * Everything else in this file should track upstream verbatim — only edit the
@@ -59,14 +59,18 @@ import { CodingAgentSettingsSection } from "../../app-shell/task-coordinator-slo
 import { useApp } from "../../state";
 import { WidgetHost } from "../../widgets";
 import { LocalInferencePanel } from "../local-inference/LocalInferencePanel";
-import { AppearanceSettingsSection } from "../settings/AppearanceSettingsSection";
+// Tokagent overlay: AppearanceSettingsSection removed — theme is locked to
+// the Tokagent palette (apps/app/src/brand-purple.css), not user-configurable.
+// import { AppearanceSettingsSection } from "../settings/AppearanceSettingsSection";
 import { CapabilitiesSection } from "../settings/CapabilitiesSection";
 import { FeatureTogglesSection } from "../settings/FeatureTogglesSection";
-import { LearnedSkillsPanel } from "../settings/LearnedSkills";
-import { MediaSettingsSection } from "../settings/MediaSettingsSection";
 import { PermissionsSection } from "../settings/PermissionsSection";
 import { ProviderSwitcher } from "../settings/ProviderSwitcher";
-import { TrainingSettingsPanel } from "../settings/TrainingSettings";
+// LearnedSkills, MediaSettingsSection, TrainingSettings imports removed —
+// the corresponding sections are excluded from SETTINGS_SECTIONS in this
+// Tokagent overlay, and the underlying upstream files don't exist in the
+// scaffolded project (would Vite-error on module load even though the
+// JSX never renders).
 import { AppPageSidebar } from "../shared/AppPageSidebar";
 import { ConfigPageView } from "./ConfigPageView";
 import { CloudDashboard } from "./ElizaCloudDashboard";
@@ -205,28 +209,8 @@ const SETTINGS_SECTIONS: SettingsSectionDef[] = [
     ],
     level: "simple",
   },
-  {
-    id: "appearance",
-    label: "settings.sections.appearance.label",
-    description: "settings.sections.appearance.desc",
-    keywords: [
-      "appearance",
-      "theme",
-      "content pack",
-      "vrm",
-      "avatar",
-      "background",
-      "color scheme",
-      "skin",
-      "character",
-    ],
-    keywordKeys: [
-      "settings.keyword.theme",
-      "settings.keyword.avatar",
-      "settings.keyword.appearance",
-    ],
-    level: "simple",
-  },
+  // Tokagent overlay: "appearance" section removed — palette is locked to
+  // the Tokagent brand (no theme picker, no VRM swap, no background config).
   {
     id: "capabilities",
     label: "settings.sections.capabilities.label",
@@ -948,8 +932,7 @@ export function SettingsView({
             defaultValue: "Identity",
           })}
           description={t("settings.sections.identity.desc", {
-            defaultValue:
-              "Agent name, speaking voice, and system prompt. Avatar and VRM stay in Appearance.",
+            defaultValue: "Agent name, speaking voice, and system prompt.",
           })}
           ref={registerContentItem("identity")}
         >
@@ -968,49 +951,20 @@ export function SettingsView({
         </SettingsSection>
       )}
 
-      {(visibleSectionIds.has("ai-model") ||
-        visibleSectionIds.has("media") ||
-        visibleSectionIds.has("appearance")) && (
+      {visibleSectionIds.has("ai-model") && (
         <div className="grid gap-5 xl:grid-cols-2 items-start">
           <div className="flex flex-col gap-5 min-w-0">
-            {visibleSectionIds.has("ai-model") && (
-              <SettingsSection
-                id="ai-model"
-                title={t("settings.sections.aimodel.label")}
-                description={t("settings.sections.aimodel.desc")}
-                ref={registerContentItem("ai-model")}
-              >
-                <ProviderSwitcher showAdvanced={complexity === "advanced"} />
-              </SettingsSection>
-            )}
-
-            {visibleSectionIds.has("appearance") && (
-              <SettingsSection
-                id="appearance"
-                title={t("settings.sections.appearance.label", {
-                  defaultValue: "Appearance",
-                })}
-                description={t("settings.sections.appearance.desc", {
-                  defaultValue:
-                    "Content packs, VRM avatars, backgrounds, and themes",
-                })}
-                ref={registerContentItem("appearance")}
-              >
-                <AppearanceSettingsSection />
-              </SettingsSection>
-            )}
-          </div>
-
-          {visibleSectionIds.has("media") && (
             <SettingsSection
-              id="media"
-              title={t("settings.sections.media.label")}
-              description={t("settings.sections.media.desc")}
-              ref={registerContentItem("media")}
+              id="ai-model"
+              title={t("settings.sections.aimodel.label")}
+              description={t("settings.sections.aimodel.desc")}
+              ref={registerContentItem("ai-model")}
             >
-              <MediaSettingsSection showAdvanced={complexity === "advanced"} />
+              <ProviderSwitcher showAdvanced={complexity === "advanced"} />
             </SettingsSection>
-          )}
+          </div>
+          {/* Tokagent overlay: appearance + media columns removed — only
+              ai-model lives in this row now. */}
         </div>
       )}
 
@@ -1105,32 +1059,10 @@ export function SettingsView({
         </SettingsSection>
       )}
 
-      {visibleSectionIds.has("learned-skills") && (
-        <SettingsSection
-          id="learned-skills"
-          title={t("settings.sections.learnedSkills.label")}
-          description={t("settings.sections.learnedSkills.desc")}
-          ref={registerContentItem("learned-skills")}
-        >
-          <LearnedSkillsPanel />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("auto-training") && (
-        <SettingsSection
-          id="auto-training"
-          title={t("settings.sections.autoTraining.label", {
-            defaultValue: "Auto-training",
-          })}
-          description={t("settings.sections.autoTraining.desc", {
-            defaultValue:
-              "Counts completed trajectories per task and fires a training run when the threshold is hit.",
-          })}
-          ref={registerContentItem("auto-training")}
-        >
-          <TrainingSettingsPanel />
-        </SettingsSection>
-      )}
+      {/* learned-skills + auto-training sections removed in Tokagent overlay —
+          LearnedSkillsPanel and TrainingSettingsPanel files don't exist in
+          upstream's components/settings/. Sections also absent from
+          SETTINGS_SECTIONS, so doubly dead. */}
 
       {visibleSectionIds.has("updates") && (
         <SettingsSection

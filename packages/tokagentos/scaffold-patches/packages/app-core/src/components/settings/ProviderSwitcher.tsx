@@ -451,11 +451,8 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
   const isSubscriptionSelected =
     isSubscriptionProviderSelectionId(resolvedSelectedId);
   const providerChoices = [
-    {
-      id: "__cloud__",
-      label: t("providerswitcher.elizaCloud"),
-      disabled: false,
-    },
+    // Tokagent overlay: Eliza Cloud removed from picker — Tokagent is
+    // self-hosted-only. Users bring their own provider keys.
     ...SUBSCRIPTION_PROVIDER_SELECTIONS.map((provider) => ({
       id: provider.id,
       label: getSubscriptionProviderLabel(provider, t),

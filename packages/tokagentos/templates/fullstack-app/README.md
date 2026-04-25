@@ -24,7 +24,7 @@ git submodule update --init --remote tokagent
 ## Common Commands
 
 ```bash
-# Web / control UI
+# Web / control UI (this is the start command — there is no `bun run start`)
 bun run dev
 
 # Desktop shell
@@ -36,6 +36,15 @@ bun run test
 # App package only
 bun run --cwd apps/app build
 ```
+
+> **Why no `bun run start`?** This template uses `bun run dev` as the
+> single canonical entry point. It runs `scripts/ensure-plugin-builds.mjs`
+> (compiling all plugins your scaffold imports) and then boots the agent
+> + UI together. There is no separate "production" mode at the project
+> root — for headless agent-only mode, run `cd tokagent && bun run start`,
+> which boots the agent without the UI shell (useful for server
+> deployments). For a built static UI, use `bun run build` and serve
+> `apps/app/dist/`.
 
 ## Notes
 
