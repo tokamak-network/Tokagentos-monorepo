@@ -315,6 +315,21 @@ export function pathForTab(tab: Tab, basePath = ""): string {
   return base ? `${base}${p}` : p;
 }
 
+/**
+ * Whether the operator UI should use hash-based routing (#/chat) instead of
+ * path-based routing (/chat). Upstream uses this to opt into hash routing in
+ * environments where the host doesn't serve SPA fallback (Electron file://,
+ * static-host previews). Tokagent ships a normal HTTP-served browser UI from
+ * the agent's API server, which handles SPA fallback — path routing is fine.
+ *
+ * Consumers (e.g., useNavigationState in app-core) import this; the export
+ * MUST exist or Vite errors at module-load with "does not provide an export
+ * named 'shouldUseHashNavigation'". Returning `false` is the safe default.
+ */
+export function shouldUseHashNavigation(): boolean {
+  return false;
+}
+
 export function canonicalPathForPath(
   pathname: string,
   basePath = "",
