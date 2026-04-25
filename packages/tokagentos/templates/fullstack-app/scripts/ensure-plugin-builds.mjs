@@ -278,6 +278,12 @@ for (const rel of CORE_PACKAGES) {
 
 // Now upstream plugins that the runtime statically imports.
 for (const rel of PLUGIN_PATHS) {
+  // Same tsconfig patch as CORE_PACKAGES — upstream plugins also ship
+  // `"ignoreDeprecations": "6.0"` in their tsconfigs which TS 5.9 rejects.
+  // Without this call the DTS step crashes with TS5103 for every upstream
+  // plugin (agent-skills, anthropic, signal, telegram, etc.), spamming the
+  // scaffolded project's `bun run dev` output.
+  patchTsconfigIgnoreDeprecations(join(UPSTREAM_ROOT, rel));
   try {
     counts[buildPackage(rel)] += 1;
   } catch (err) {
