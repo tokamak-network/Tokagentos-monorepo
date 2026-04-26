@@ -194,19 +194,20 @@ export function PageScopedChatPane({
   }, [app.activeConversationId, app.conversations, conversation]);
 
   // Resolve the page-scoped conversation on mount / scope change.
+  //
+  // Tokagent overlay: keep the previous conversation alive while a
+  // re-resolve is in flight. Upstream nulls `conversation` immediately,
+  // which disables the composer until the new conversation resolves —
+  // and if anything in the resolve chain hangs (slow API, adapter
+  // stall), the composer stays disabled until the user reloads. By
+  // only swapping atomically when the new conversation is ready, the
+  // composer remains usable through the transition. We still abort the
+  // in-flight stream so a half-streamed response doesn't bleed into
+  // the new conversation.
   useEffect(() => {
     void conversationAdapterIdentityKey;
     let cancelled = false;
     abortRef.current?.abort();
-    setConversation(null);
-    setMessages([]);
-    setInput("");
-    setPendingImages([]);
-    setAttachmentError(null);
-    setImageDragOver(false);
-    setVoicePreview("");
-    setSending(false);
-    setFirstTokenReceived(false);
     setLoadError(null);
 
     void (async () => {
@@ -221,6 +222,17 @@ export function PageScopedChatPane({
             });
         if (cancelled) return;
         setConversation(next);
+        // Only reset transient composer state when the conversation
+        // actually changes — otherwise typing during a re-resolve gets
+        // wiped on every render that bumps the identity key.
+        setMessages([]);
+        setInput("");
+        setPendingImages([]);
+        setAttachmentError(null);
+        setImageDragOver(false);
+        setVoicePreview("");
+        setSending(false);
+        setFirstTokenReceived(false);
         adapter?.onConversationResolved?.(next);
         const history = await getPageScopedConversationMessages(next.id);
         if (cancelled) return;
@@ -240,6 +252,22 @@ export function PageScopedChatPane({
       abortRef.current?.abort();
     };
   }, [conversationAdapterIdentityKey, pageId, scope, title]);
+
+  // Tokagent overlay: stuck-sending watchdog. If `sending` stays true
+  // for more than 90s without any token arriving, force-clear it. The
+  // SSE client has its own 60s idle timeout, so a healthy hang already
+  // returns; this catches the rare case where the timeout fires but
+  // the finally block didn't (e.g. the abort controller was reused
+  // across renders and the original promise never resolved).
+  useEffect(() => {
+    if (!sending) return;
+    const id = window.setTimeout(() => {
+      setSending(false);
+      abortRef.current?.abort();
+      abortRef.current = null;
+    }, 90_000);
+    return () => window.clearTimeout(id);
+  }, [sending]);
 
   // When the linked source conversation changes, restamp room metadata so the
   // page-scoped-context provider sees the current main-chat target.
