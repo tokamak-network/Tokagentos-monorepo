@@ -211,9 +211,33 @@ function scheduleText(
   return `on cron ${summary.cronExpression ?? "* * * * *"}`;
 }
 
+/**
+ * Tokagent overlay: read-only intent guard.
+ *
+ * Phrases that look like questions ABOUT triggers ("is there any active
+ * cron job?", "show me my schedules", "list automations") match the
+ * upstream keyword bank ("cron", "schedule", "automation") and falsely
+ * trigger CREATE_TRIGGER_TASK. The action then runs LLM extraction on
+ * a non-create message; the LLM response (apologetic prose) leaks into
+ * the chat output. This guard rejects question-shaped phrasings before
+ * the action ever runs, leaving the REPLY action to answer the user
+ * from context.
+ */
+const READ_ONLY_TRIGGER_INTENT_RE =
+  /\b(is\s+there|are\s+there|do\s+(?:i|you|we)\s+have|how\s+many|how\s+much|show\s+(?:me\s+)?(?:my\s+)?|list\s+(?:my\s+)?|what\s+(?:are|is)\s+(?:my\s+)?|any\s+active|currently\s+active|all\s+(?:my\s+)?active)\b/i;
+
+export function isReadOnlyTriggerQuestion(text: string): boolean {
+  return READ_ONLY_TRIGGER_INTENT_RE.test(text);
+}
+
 export function looksLikeTriggerIntent(text: string): boolean {
   const trimmed = text.trim();
   if (!trimmed) {
+    return false;
+  }
+  // Tokagent overlay: bail out on read-only question phrasings so the
+  // CREATE action doesn't fire when the user is just asking what exists.
+  if (isReadOnlyTriggerQuestion(trimmed)) {
     return false;
   }
 
