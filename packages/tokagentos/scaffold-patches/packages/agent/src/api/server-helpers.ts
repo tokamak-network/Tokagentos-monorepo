@@ -854,15 +854,16 @@ export function resolveWalletModeGuidanceReply(
     ].join("\n");
   }
 
-  if (WALLET_IDENTITY_INTENT_RE.test(prompt)) {
-    return [
-      `Wallet network: ${walletNetwork}.`,
-      walletSummary,
-      `plugin-evm: ${pluginEvmLoaded ? "loaded" : "not loaded"}.`,
-      `Execution readiness: ${executionReady ? "ready for wallet actions" : (executionBlockedReason ?? "blocked")}.`,
-      `Automation mode: ${automationMode}.`,
-    ].join("\n");
-  }
+  // Tokagent override: upstream returned a canned wallet-status dump for
+  // any message matching WALLET_IDENTITY_INTENT_RE (`/\b(wallet\s*address|address)\b/i`).
+  // That regex is too broad for a DeFi-operator persona — almost every
+  // chat about strategies, deployments, or vaults mentions "address"
+  // somewhere — so the LLM was being short-circuited on most turns. The
+  // wallet provider already exposes address/network/loaded-plugins state
+  // to the model via plugin-evm, so the LLM can describe wallet status
+  // accurately when actually asked. Keep the connectors-only and no-wallet
+  // execution gates below — those are legitimate guardrails, not a
+  // conversational override.
 
   if (WALLET_EXECUTION_INTENT_RE.test(prompt) && !executionReady) {
     return [
