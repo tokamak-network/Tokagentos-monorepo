@@ -10,6 +10,7 @@ import {
   ensureUpstreamCompatibilityFiles,
   getFullstackReplacementEntries,
   getPluginReplacementEntries,
+  applyUpstreamSurgicalPatches,
   pruneUpstreamPackageDependencies,
   pruneUpstreamUnusedPaths,
   removePackageJsonDependencies,
@@ -333,6 +334,62 @@ describe("managed file upgrades", () => {
       ),
     ) as { devDependencies: Record<string, string> };
     expect(tsCore.devDependencies).toEqual({ typescript: "^5" });
+  });
+
+  test("applyUpstreamSurgicalPatches replaces a unique find-string and throws on drift", () => {
+    const submoduleRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "tokagentos-surgical-"),
+    );
+    tempDirs.push(submoduleRoot);
+
+    const target = path.join(submoduleRoot, "packages/agent/src/api/foo.ts");
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(
+      target,
+      "function foo() {\n  // BEFORE\n  return 1;\n}\n",
+    );
+
+    const patches = [
+      {
+        path: "packages/agent/src/api/foo.ts",
+        description: "swap BEFORE for AFTER",
+        find: "  // BEFORE\n  return 1;\n",
+        replaceWith: "  // AFTER\n  return 2;\n",
+      },
+    ];
+
+    expect(applyUpstreamSurgicalPatches(submoduleRoot, patches)).toEqual([
+      "packages/agent/src/api/foo.ts",
+    ]);
+    expect(fs.readFileSync(target, "utf8")).toContain("// AFTER\n  return 2;");
+    expect(fs.readFileSync(target, "utf8")).not.toContain("BEFORE");
+
+    // Re-applying the same patch must throw — find-string is no longer present.
+    expect(() => applyUpstreamSurgicalPatches(submoduleRoot, patches)).toThrow(
+      /find-string not present/,
+    );
+  });
+
+  test("applyUpstreamSurgicalPatches throws when find matches multiple times", () => {
+    const submoduleRoot = fs.mkdtempSync(
+      path.join(os.tmpdir(), "tokagentos-surgical-multi-"),
+    );
+    tempDirs.push(submoduleRoot);
+
+    const target = path.join(submoduleRoot, "packages/x.ts");
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, "DUP\nDUP\n");
+
+    expect(() =>
+      applyUpstreamSurgicalPatches(submoduleRoot, [
+        {
+          path: "packages/x.ts",
+          description: "dup test",
+          find: "DUP\n",
+          replaceWith: "OK\n",
+        },
+      ]),
+    ).toThrow(/matched 2 times/);
   });
 
   test("materializes required upstream compatibility shims", () => {

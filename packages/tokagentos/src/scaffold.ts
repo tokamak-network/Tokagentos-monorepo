@@ -94,6 +94,55 @@ const UPSTREAM_DEPENDENCY_REMOVALS: ReadonlyArray<{
   },
 ];
 
+/**
+ * Narrow surgical edits applied to upstream eliza files after hydration.
+ *
+ * Use these instead of full-file scaffold-patch overlays when the change is
+ * a single semantic edit and the surrounding code can be tracked verbatim
+ * with upstream. Each `find` string is replaced with `replaceWith` exactly
+ * once; if the find string isn't present in the upstream file, the error is
+ * loud (an exception) so we know to revisit when upstream changes.
+ *
+ * Trade-off vs. a full-file overlay:
+ *   + Almost zero divergence from upstream — easy to keep current
+ *   + Forces a code review on upstream-side changes via the loud-error
+ *   - Brittle if upstream reformats whitespace inside the matched span
+ *
+ * Use full overlays for major rewrites; use surgical patches for one-line
+ * UX fixes like removing a hardcoded canned response.
+ */
+const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
+  readonly path: string;
+  readonly description: string;
+  readonly find: string;
+  readonly replaceWith: string;
+}> = [
+  {
+    path: "packages/agent/src/api/server-helpers.ts",
+    description:
+      "Remove the IDENTITY-intent canned wallet-status dump. Upstream's " +
+      "`/\\b(wallet\\s*address|address)\\b/i` regex matches almost any " +
+      "DeFi-operator chat message ('vault address', 'contract address', " +
+      "'where do I deploy', etc.) and short-circuits the LLM with a static " +
+      "wallet-status block. Tokagent's persona is built around exactly " +
+      "those topics so the override is hostile UX. Connectors-only and " +
+      "no-wallet-execution gates above remain in place.",
+    find: `  if (WALLET_IDENTITY_INTENT_RE.test(prompt)) {
+    return [
+      \`Wallet network: \${walletNetwork}.\`,
+      walletSummary,
+      \`plugin-evm: \${pluginEvmLoaded ? "loaded" : "not loaded"}.\`,
+      \`Execution readiness: \${executionReady ? "ready for wallet actions" : (executionBlockedReason ?? "blocked")}.\`,
+      \`Automation mode: \${automationMode}.\`,
+    ].join("\\n");
+  }
+`,
+    replaceWith:
+      "  // [tokagent surgical-patch] removed IDENTITY-intent wallet-status\n" +
+      "  // dump — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n",
+  },
+];
+
 const UPSTREAM_COMPATIBILITY_FILES = [
   {
     path: "packages/shared/src/env-utils.impl.d.ts",
@@ -566,6 +615,53 @@ export function pruneUpstreamUnusedPaths(
   return removed;
 }
 
+/**
+ * Apply each `UPSTREAM_SURGICAL_PATCHES` entry as a literal find/replace on
+ * the named upstream file. Throws if a patch's `find` string isn't present
+ * (so we can't silently ship an unapplied surgical patch when upstream
+ * shifts the surrounding code). Returns the list of paths actually edited.
+ */
+export function applyUpstreamSurgicalPatches(
+  submoduleRoot: string,
+  patches: ReadonlyArray<{
+    readonly path: string;
+    readonly description: string;
+    readonly find: string;
+    readonly replaceWith: string;
+  }> = UPSTREAM_SURGICAL_PATCHES,
+): string[] {
+  const applied: string[] = [];
+  for (const patch of patches) {
+    const target = path.join(submoduleRoot, patch.path);
+    if (!fs.existsSync(target)) {
+      throw new Error(
+        `[surgical-patch] target file missing: ${patch.path}\n` +
+          `Patch description: ${patch.description}`,
+      );
+    }
+    const before = fs.readFileSync(target, "utf8");
+    if (!before.includes(patch.find)) {
+      throw new Error(
+        `[surgical-patch] find-string not present in ${patch.path}.\n` +
+          `Upstream may have changed the matched span. Patch description:\n` +
+          `  ${patch.description}\n` +
+          `First 80 chars of find:\n  ${patch.find.slice(0, 80).replace(/\n/g, "\\n")}…`,
+      );
+    }
+    // Single replacement — split-then-join asserts uniqueness of the match.
+    const segments = before.split(patch.find);
+    if (segments.length !== 2) {
+      throw new Error(
+        `[surgical-patch] find-string matched ${segments.length - 1} times in ${patch.path}; expected exactly 1.`,
+      );
+    }
+    const after = segments.join(patch.replaceWith);
+    fs.writeFileSync(target, after, "utf8");
+    applied.push(patch.path);
+  }
+  return applied;
+}
+
 export function ensureUpstreamCompatibilityFiles(
   submoduleRoot: string,
 ): string[] {
@@ -810,6 +906,13 @@ export function hydrateGitSubmoduleWorkspace(options: {
       `scaffold-patches target paths missing — upstream reorganization? ` +
         `Missing: ${patchResult.missing.join(", ")}`,
     );
+  }
+
+  // Narrow surgical edits over the upstream files (post-overlay so they
+  // can patch files we don't otherwise overlay). Throws loudly if the find
+  // string drifted.
+  if (!options.dryRun) {
+    applyUpstreamSurgicalPatches(submoduleRoot);
   }
 }
 

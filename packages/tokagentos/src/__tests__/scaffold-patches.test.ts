@@ -24,12 +24,6 @@ function makeTempSubmoduleTree(): string {
     path.join(root, "packages/app-core/src/platform/native-plugin-entrypoints.ts"),
     "// upstream capacitor bridge registrations\n",
   );
-  // Tokagent ships extra service files (steward-evm-bridge, privy-wallets, …)
-  // into packages/agent/src/services/. Eliza upstream populates this directory,
-  // so the parent dir must exist for the new-file patches to apply.
-  fs.mkdirSync(path.join(root, "packages/agent/src/services"), {
-    recursive: true,
-  });
   return root;
 }
 
