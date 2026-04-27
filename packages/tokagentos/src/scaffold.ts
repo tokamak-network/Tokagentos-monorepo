@@ -42,6 +42,58 @@ const BINARY_EXTENSIONS = new Set([
   ".dll",
   ".so",
 ]);
+/**
+ * Paths inside the freshly-hydrated upstream submodule (eliza) that we always
+ * remove before bun install. These pull in workspace dependencies (chiefly
+ * `@elizaos/cloud-sdk`) that Tokagent does not ship and that would otherwise
+ * cause `bun install` to fail with "Workspace dependency ... not found".
+ *
+ * - `plugins/plugin-elizacloud` declares `@elizaos/cloud-sdk: workspace:*`
+ *   and is matched by the scaffolded project's `tokagent/plugins/plugin-*\/typescript`
+ *   workspace glob. Removing the directory takes it out of the workspace set.
+ * - `cloud` is the eliza Cloud monorepo provided as a git submodule; we don't
+ *   use it. Removing it keeps `tokagent/package.json` workspace entries
+ *   `cloud/packages/sdk` and `cloud/packages/services/billing` from resolving
+ *   if a developer ever runs `bun install` inside `tokagent/` directly.
+ */
+const UPSTREAM_PRUNE_PATHS = [
+  "plugins/plugin-elizacloud",
+  "cloud",
+] as const;
+
+/**
+ * Workspace entries inside the upstream `tokagent/package.json` that point at
+ * paths we prune via UPSTREAM_PRUNE_PATHS. We strip them so the upstream
+ * package.json stays internally consistent for any tooling that reads it.
+ */
+const UPSTREAM_WORKSPACE_REMOVALS = [
+  "cloud/packages/sdk",
+  "cloud/packages/services/billing",
+] as const;
+
+/**
+ * Other upstream package.json files that still reference the pruned packages.
+ * Removing these dep entries keeps `bun install` from re-introducing the
+ * "Workspace dependency ... not found" error on the scaffolded project root.
+ *
+ * Each `path` is relative to the upstream submodule root. Each entry in
+ * `names` is removed from `dependencies`, `devDependencies`, and
+ * `peerDependencies` if present.
+ */
+const UPSTREAM_DEPENDENCY_REMOVALS: ReadonlyArray<{
+  readonly path: string;
+  readonly names: readonly string[];
+}> = [
+  {
+    path: "packages/typescript/package.json",
+    names: ["@elizaos/plugin-elizacloud"],
+  },
+  {
+    path: "packages/app-core/deploy/cloud-agent-template/package.json",
+    names: ["@elizaos/plugin-elizacloud"],
+  },
+];
+
 const UPSTREAM_COMPATIBILITY_FILES = [
   {
     path: "packages/shared/src/env-utils.impl.d.ts",
@@ -389,6 +441,131 @@ export function ensurePackageJsonWorkspaces(
   return true;
 }
 
+export function removePackageJsonWorkspaces(
+  packageJsonPath: string,
+  workspaceEntries: readonly string[],
+): boolean {
+  if (workspaceEntries.length === 0 || !fs.existsSync(packageJsonPath)) {
+    return false;
+  }
+
+  const raw = fs.readFileSync(packageJsonPath, "utf8");
+  const pkg = JSON.parse(raw) as { workspaces?: string[] };
+  if (!Array.isArray(pkg.workspaces)) {
+    return false;
+  }
+
+  const removalSet = new Set(workspaceEntries);
+  const filtered = pkg.workspaces.filter((entry) => !removalSet.has(entry));
+  if (filtered.length === pkg.workspaces.length) {
+    return false;
+  }
+
+  pkg.workspaces = filtered;
+  const indent = raw.match(/^(\s+)"/m)?.[1] || "  ";
+  fs.writeFileSync(
+    packageJsonPath,
+    `${JSON.stringify(pkg, null, indent)}\n`,
+    "utf8",
+  );
+  return true;
+}
+
+/**
+ * Remove upstream paths that pull in workspace dependencies Tokagent does not
+ * ship. Called after `git submodule update --init --recursive` hydrates the
+ * upstream tree but before bun install runs. Returns the list of paths that
+ * were actually removed so the caller can log them.
+ *
+ * The upstream submodule is freshly cloned and is not part of the user's
+ * commit history, so a plain rmSync is safe — there is no working-tree state
+ * to preserve.
+ */
+/**
+ * Strip the named entries from `dependencies`, `devDependencies`, and
+ * `peerDependencies` in a package.json. Returns true if any removal occurred.
+ * Used to scrub references to packages that we prune from the upstream tree
+ * (e.g., `@elizaos/plugin-elizacloud`) so bun install doesn't fail trying
+ * to resolve them as workspace deps.
+ */
+export function removePackageJsonDependencies(
+  packageJsonPath: string,
+  depNames: readonly string[],
+): boolean {
+  if (depNames.length === 0 || !fs.existsSync(packageJsonPath)) {
+    return false;
+  }
+
+  const raw = fs.readFileSync(packageJsonPath, "utf8");
+  const pkg = JSON.parse(raw) as Record<string, unknown>;
+
+  let changed = false;
+  for (const field of ["dependencies", "devDependencies", "peerDependencies"]) {
+    const block = pkg[field];
+    if (block && typeof block === "object" && !Array.isArray(block)) {
+      const map = block as Record<string, string>;
+      for (const name of depNames) {
+        if (Object.hasOwn(map, name)) {
+          delete map[name];
+          changed = true;
+        }
+      }
+    }
+  }
+
+  if (!changed) {
+    return false;
+  }
+
+  const indent = raw.match(/^(\s+)"/m)?.[1] || "  ";
+  fs.writeFileSync(
+    packageJsonPath,
+    `${JSON.stringify(pkg, null, indent)}\n`,
+    "utf8",
+  );
+  return true;
+}
+
+/**
+ * Apply all configured `UPSTREAM_DEPENDENCY_REMOVALS` against the freshly
+ * hydrated upstream tree. Returns the list of package.json files that were
+ * actually modified.
+ */
+export function pruneUpstreamPackageDependencies(
+  submoduleRoot: string,
+  removals: ReadonlyArray<{
+    readonly path: string;
+    readonly names: readonly string[];
+  }> = UPSTREAM_DEPENDENCY_REMOVALS,
+): string[] {
+  const modified: string[] = [];
+  for (const { path: relPath, names } of removals) {
+    const target = path.join(submoduleRoot, relPath);
+    if (removePackageJsonDependencies(target, names)) {
+      modified.push(relPath);
+    }
+  }
+  return modified;
+}
+
+export function pruneUpstreamUnusedPaths(
+  submoduleRoot: string,
+  paths: readonly string[] = UPSTREAM_PRUNE_PATHS,
+): string[] {
+  const removed: string[] = [];
+
+  for (const relativePath of paths) {
+    const targetPath = path.join(submoduleRoot, relativePath);
+    if (!fs.existsSync(targetPath)) {
+      continue;
+    }
+    fs.rmSync(targetPath, { force: true, recursive: true });
+    removed.push(relativePath);
+  }
+
+  return removed;
+}
+
 export function ensureUpstreamCompatibilityFiles(
   submoduleRoot: string,
 ): string[] {
@@ -603,6 +780,19 @@ export function hydrateGitSubmoduleWorkspace(options: {
       { cwd: submoduleRoot, stdio: "inherit" },
     );
   }
+
+  // Drop upstream paths whose workspace dependencies aren't satisfiable in a
+  // Tokagent scaffold (chiefly plugin-elizacloud, which references the
+  // private `@elizaos/cloud-sdk` workspace). Then scrub leftover references
+  // to those packages from sibling package.json files. Run before the
+  // workspace package.json edits so the upstream package.json stays
+  // consistent with the pruned tree.
+  pruneUpstreamUnusedPaths(submoduleRoot);
+  removePackageJsonWorkspaces(
+    path.join(submoduleRoot, "package.json"),
+    UPSTREAM_WORKSPACE_REMOVALS,
+  );
+  pruneUpstreamPackageDependencies(submoduleRoot);
 
   ensurePackageJsonWorkspaces(
     path.join(submoduleRoot, "package.json"),
