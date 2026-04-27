@@ -141,6 +141,59 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "  // [tokagent surgical-patch] removed IDENTITY-intent wallet-status\n" +
       "  // dump — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n",
   },
+  {
+    path: "packages/agent/src/runtime/eliza.ts",
+    description:
+      "Add a Tokagent capability hint to the system-prompt suffix. Upstream " +
+      "appends an n8n hint when the local n8n sidecar is enabled, but " +
+      "doesn't mention the Tokagent plugins (perps, polymarket, yield, " +
+      "strategy). Without an explicit hint, the LLM falls back to training " +
+      "data and hallucinates capabilities. Seed `capabilityHints` with a " +
+      "single Tokagent line so the system prompt always advertises the " +
+      "Tokagent action surface.",
+    find: "  const capabilityHints: string[] = [];\n",
+    replaceWith:
+      "  const capabilityHints: string[] = [\n" +
+      '    "You operate a Tokagent vault on Tokamak. Available actions: ' +
+      "BUILD_STRATEGY (compose a strategy from chat), DEPLOY_TOKAGENT_VAULT " +
+      "(deploy a new on-chain vault on Tokamak), LIST/START/STOP_STRATEGY, " +
+      "BACKTEST_STRATEGY, plus tokagent-perps (perpetual trading on " +
+      "Hyperliquid), tokagent-polymarket (Polymarket buy/sell/redeem), and " +
+      "tokagent-yield (Aave deposit/withdraw). All trades execute through " +
+      "the vault's allowlisted batch executor — never freelance hot-wallet " +
+      'signing.",\n' +
+      "  ];\n",
+  },
+  {
+    path: "packages/agent/src/runtime/default-knowledge.ts",
+    description:
+      "Replace upstream's seeded Eliza knowledge with Tokagent knowledge. " +
+      "Upstream seeds 3 docs into the agent's memory at boot (eliza-overview, " +
+      "eliza-history, eliza-cloud-basics) describing the elizaOS chatbot. " +
+      "RAG retrieval against those docs makes the agent introduce itself as " +
+      "'created by Joseph Weizenbaum at MIT in the mid-1960s' — completely " +
+      "off-character for a Tokagent vault operator. Replace each text " +
+      "constant in-place; the doc keys/filenames stay the same so seed-by-key " +
+      "deduplication continues to work across boots.",
+    find:
+      'export const ELIZA_OVERVIEW_TEXT =\n' +
+      '  "Eliza is an autonomous agent powered by elizaOS, the agent framework. Users can ask Eliza to write code, add new skills, and trigger recurring workflows with heartbeats that run at regular intervals. Eliza Cloud is an open source cloud backend that simplifies deploying and delivering Eliza.";\n' +
+      '\n' +
+      'export const ELIZA_HISTORY_TEXT =\n' +
+      '  "ELIZA was created by Joseph Weizenbaum at MIT in the mid-1960s and is widely regarded as one of the earliest chatbots. Its best-known script, DOCTOR, used pattern matching to imitate a Rogerian psychotherapist and showed how simple language rules could feel surprisingly conversational. ELIZA helped define the history of chatbots and influenced later work on conversational agents.";\n' +
+      '\n' +
+      'export const ELIZA_CLOUD_BASICS_TEXT =\n' +
+      '  "Eliza Cloud is the managed backend and app platform for Eliza when cloud mode is enabled. Builders can create an app, keep its appId, use Cloud login and redirect flows so app users can authenticate against Cloud, route chat and media APIs through Cloud, monetize app usage with inference markup and purchase-share settings, and deploy Docker containers when an app needs server-side execution.";\n',
+    replaceWith:
+      'export const ELIZA_OVERVIEW_TEXT =\n' +
+      '  "Tokagent is a DeFi vault operator built on Tokamak. It runs automated strategies — perpetual trading on Hyperliquid, prediction markets on Polymarket, and yield rebalancing through Aave — out of an on-chain vault that the operator controls. The agent reads market state from tools, sizes positions against available collateral, and routes every write through the vault\'s allowlisted batch executor.";\n' +
+      '\n' +
+      'export const ELIZA_HISTORY_TEXT =\n' +
+      '  "Tokagent is built on top of elizaOS, an open-source agent framework. The Tokagent product layer adds four plugins: tokagent-strategy (BUILD_STRATEGY, DEPLOY_TOKAGENT_VAULT, list/start/stop, backtest), tokagent-perps (Hyperliquid perpetual trading via vault allowlist), tokagent-polymarket (Polymarket buy/sell/redeem via vault allowlist), and tokagent-yield (Aave deposit/withdraw via vault allowlist). The agent uses these plugins to compose, deploy, and run strategies from chat.";\n' +
+      '\n' +
+      'export const ELIZA_CLOUD_BASICS_TEXT =\n' +
+      '  "A Tokagent vault is an on-chain smart contract on Tokamak that holds operator capital and routes writes through an allowlisted batch executor. The agent never signs freelance transactions from the hot wallet by default; instead it submits batches to the vault, which validates them against the allowlist before execution. Operators can deploy a new vault from chat using the DEPLOY_TOKAGENT_VAULT action, then attach strategies (perps, polymarket, yield) to that vault.";\n',
+  },
 ];
 
 const UPSTREAM_COMPATIBILITY_FILES = [
