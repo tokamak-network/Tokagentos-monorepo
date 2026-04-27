@@ -11,7 +11,7 @@ import {
   STOP_EMOTE_EVENT,
   type TranslateFn,
   useRenderGuard,
-} from "@tokagentos/app-core";
+} from "@elizaos/app-core";
 import {
   memo,
   type ReactElement,

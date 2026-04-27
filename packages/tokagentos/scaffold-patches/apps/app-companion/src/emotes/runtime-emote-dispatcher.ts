@@ -34,7 +34,7 @@
  *
  * Spec: docs/superpowers/specs/2026-04-24-companion-vrm-redesign-design.md §6.4
  */
-import { client } from "@tokagentos/app-core";
+import { client } from "@elizaos/app-core";
 import { useEffect, type RefObject } from "react";
 import type { VrmEngine } from "../components/avatar/VrmEngine";
 import { EMOTE_BY_ID } from "./catalog";
