@@ -17,7 +17,9 @@ async function hlPost(apiUrl: string, body: unknown, signal: AbortSignal): Promi
 
 export const getPerpsMarketInfoAction: Action = {
   name: 'GET_PERPS_MARKET_INFO',
-  description: 'Get current mark price, funding rate, and 24h volume for a Hyperliquid perpetual market.',
+  description:
+    'Use for a read-only quote on a Hyperliquid perp market — no vault or wallet required. ' +
+    'Returns current mark price, hourly funding rate, and 24h notional volume for a single symbol (BTC, ETH, SOL, etc.).',
   similes: [
     'hyperliquid market info',
     'perp market',
@@ -53,9 +55,7 @@ export const getPerpsMarketInfoAction: Action = {
 
     if (!rawSymbol) {
       return {
-        success: false,
-        text: 'Please specify a symbol (e.g. "BTC", "ETH").',
-        error: 'symbol parameter is required',
+        success: false,        error: 'symbol parameter is required',
       };
     }
 
@@ -74,9 +74,7 @@ export const getPerpsMarketInfoAction: Action = {
       const assetIndex = metaResp.universe.findIndex((a) => a.name === symbol);
       if (assetIndex === -1) {
         return {
-          success: false,
-          text: `No Hyperliquid perpetual market found for "${symbol}". Check the symbol (e.g. "BTC", "ETH", "SOL").`,
-          error: `symbol not found: ${symbol}`,
+          success: false,          error: `symbol not found: ${symbol}`,
         };
       }
 
@@ -91,9 +89,7 @@ export const getPerpsMarketInfoAction: Action = {
 
       if (!ctx) {
         return {
-          success: false,
-          text: `Market context unavailable for "${symbol}".`,
-          error: 'no asset ctx at index',
+          success: false,          error: 'no asset ctx at index',
         };
       }
 
@@ -118,18 +114,57 @@ export const getPerpsMarketInfoAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes('aborted') || msg.includes('abort')) {
         return {
-          success: false,
-          text: 'Hyperliquid API unreachable (request timed out).',
-          error: msg,
+          success: false,          error: msg,
         };
       }
       return {
-        success: false,
-        text: `Hyperliquid API unreachable: ${msg}`,
-        error: msg,
+        success: false,        error: msg,
       };
     } finally {
       clearTimeout(timeoutId);
     }
   },
+
+  examples: [
+    [
+      { name: 'user', content: { text: "what's the BTC perp price?" } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Fetching BTC mark, funding, and 24h volume from Hyperliquid.',
+          actions: ['GET_PERPS_MARKET_INFO'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'ETH funding rate?' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Pulling the current ETH perp funding rate.',
+          actions: ['GET_PERPS_MARKET_INFO'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'how much SOL volume on hyperliquid' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Fetching SOL perp 24h volume.',
+          actions: ['GET_PERPS_MARKET_INFO'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'is hyperliquid expensive to short ARB right now?' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Pulling ARB funding and mark — positive funding means longs pay, so shorts collect.',
+          actions: ['GET_PERPS_MARKET_INFO'],
+        },
+      },
+    ],
+  ],
 };

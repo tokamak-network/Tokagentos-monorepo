@@ -54,8 +54,9 @@ function resolveVaultAddress(runtime: IAgentRuntime): string | undefined {
 export const closePerpPositionAction: Action = {
   name: 'CLOSE_PERP_POSITION',
   description:
-    'Close an open Hyperliquid perpetual position through the TokagentVault on HyperEVM. ' +
-    'Sends a reduceOnly CoreWriter limit order. If no position exists, returns success.',
+    'Use to close (or partially reduce) an EXISTING Hyperliquid perpetual position held by the HyperEVM TokagentVault. ' +
+    'Sends a reduceOnly CoreWriter limit order opposite to the current position direction. If no position exists for the symbol, returns success silently. ' +
+    'Returns the tx hash; settlement is async.',
   similes: [
     'close perp',
     'close position',
@@ -110,7 +111,7 @@ export const closePerpPositionAction: Action = {
     const rawSizeSz = params?.sizeSz;
 
     if (!rawSymbol) {
-      return { success: false, text: 'Missing required parameter: symbol.', error: 'missing symbol' };
+      return { success: false,error: 'missing symbol' };
     }
 
     const symbol = String(rawSymbol).toUpperCase().trim();
@@ -119,15 +120,13 @@ export const closePerpPositionAction: Action = {
     const vaultAddress = resolveVaultAddress(runtime);
     if (!vaultAddress) {
       return {
-        success: false,
-        text: 'TOKAGENT_VAULT_ADDRESS_999 is not set.',
-        error: 'vault address not configured',
+        success: false,        error: 'vault address not configured',
       };
     }
 
     const helperResult = resolveHelperAddress(runtime);
     if ('error' in helperResult) {
-      return { success: false, text: helperResult.error, error: 'helper not deployed' };
+      return { success: false,error: 'helper not deployed' };
     }
     const helperAddress = helperResult.address;
 
@@ -136,9 +135,7 @@ export const closePerpPositionAction: Action = {
       privateKey = resolveAgentPrivateKey(runtime as unknown as Parameters<typeof resolveAgentPrivateKey>[0]);
     } catch (e) {
       return {
-        success: false,
-        text: e instanceof Error ? e.message : String(e),
-        error: 'private key missing',
+        success: false,        error: 'private key missing',
       };
     }
 
@@ -163,9 +160,7 @@ export const closePerpPositionAction: Action = {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         return {
-          success: false,
-          text: `Failed to fetch position data: ${msg}`,
-          error: msg,
+          success: false,          error: msg,
         };
       }
 
@@ -192,9 +187,7 @@ export const closePerpPositionAction: Action = {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         return {
-          success: false,
-          text: `Failed to fetch market data for "${symbol}": ${msg}`,
-          error: msg,
+          success: false,          error: msg,
         };
       }
 
@@ -216,9 +209,7 @@ export const closePerpPositionAction: Action = {
 
       if (szBigInt === 0n) {
         return {
-          success: false,
-          text: 'Computed close size is 0. Check position size and szDecimals.',
-          error: 'zero close size',
+          success: false,          error: 'zero close size',
         };
       }
 
@@ -260,9 +251,7 @@ export const closePerpPositionAction: Action = {
       } catch (err) {
         const msg = err instanceof Error ? err.message : String(err);
         return {
-          success: false,
-          text: `Transaction failed: ${msg}`,
-          error: msg,
+          success: false,          error: msg,
         };
       }
 
@@ -283,4 +272,56 @@ export const closePerpPositionAction: Action = {
       clearTimeout(timeoutId);
     }
   },
+
+  examples: [
+    [
+      { name: 'user', content: { text: 'close my BTC position' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Closing your full BTC position with a reduceOnly order.',
+          actions: ['CLOSE_PERP_POSITION'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'exit my eth long' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Closing your ETH position.',
+          actions: ['CLOSE_PERP_POSITION'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'close half my SOL position' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Submitting a partial SOL close at half the current size (reduceOnly).',
+          actions: ['CLOSE_PERP_POSITION'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'close all my perps' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'I close perps one symbol at a time. Which symbols are open right now? I can list them via GET_PERPS_MARKET_INFO or close them sequentially if you tell me which.',
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'flat me out of BTC' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Flattening your BTC position with a reduceOnly close.',
+          actions: ['CLOSE_PERP_POSITION'],
+        },
+      },
+    ],
+  ],
 };

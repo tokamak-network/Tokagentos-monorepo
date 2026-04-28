@@ -25,8 +25,10 @@ function str(runtime: IAgentRuntime, key: string): string | undefined {
 
 export const withdrawFromAaveAction: Action = {
   name: 'WITHDRAW_FROM_AAVE',
-  description: 'Withdraw USDC from Aave v3 on Polygon back to the user\'s TokagentVault.',
-  similes: ['withdraw aave', 'pull from aave', 'take out of aave'],
+  description:
+    'Use AFTER USDC has been supplied to Aave v3 on Polygon via the TokagentVault. ' +
+    'Withdraws a specified USDC amount (or "all" / "max") back into the vault. Returns the tx hash. Polygon-only currently.',
+  similes: ['withdraw aave', 'pull from aave', 'take out of aave', 'redeem aave', 'unstake aave'],
   contexts: ['wallet'],
   suppressPostActionContinuation: false,
 
@@ -54,9 +56,7 @@ export const withdrawFromAaveAction: Action = {
     const vaultAddress = str(runtime, 'TOKAGENT_VAULT_ADDRESS_137');
     if (!vaultAddress) {
       return {
-        success: false,
-        text: 'No Polygon vault configured. Deploy one via `tokagentos deploy --kind tokagent --pack aave-v3-polygon`.',
-        error: 'TOKAGENT_VAULT_ADDRESS_137 not set',
+        success: false,        error: 'TOKAGENT_VAULT_ADDRESS_137 not set',
       };
     }
 
@@ -68,7 +68,7 @@ export const withdrawFromAaveAction: Action = {
       privateKey = resolveAgentPrivateKey(runtimeLike);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return { success: false, text: msg, error: msg };
+      return { success: false,error: msg };
     }
 
     // Extract parameters
@@ -77,9 +77,7 @@ export const withdrawFromAaveAction: Action = {
 
     if (rawAmount === undefined || rawAmount === null) {
       return {
-        success: false,
-        text: 'Please specify the USDC amount to withdraw (e.g. "withdraw 100 USDC from Aave" or "withdraw all from Aave").',
-        error: 'amount parameter is required',
+        success: false,        error: 'amount parameter is required',
       };
     }
 
@@ -95,9 +93,7 @@ export const withdrawFromAaveAction: Action = {
       const amountNum = Number(amountStr);
       if (!Number.isFinite(amountNum) || amountNum <= 0) {
         return {
-          success: false,
-          text: `Invalid amount: ${rawAmount}. Provide a positive number or "all".`,
-          error: 'amount must be positive or "all"',
+          success: false,          error: 'amount must be positive or "all"',
         };
       }
       amountUnits = BigInt(Math.floor(amountNum * 1e6));
@@ -130,15 +126,11 @@ export const withdrawFromAaveAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes('CallNotAllowlisted') || msg.includes('not allowlisted') || msg.includes('Allowlist')) {
         return {
-          success: false,
-          text: 'Vault has no Aave v3 allowlist. Re-deploy the vault with `--pack aave-v3-polygon` or add the entries via `ownerSetAllowlistBatch`.',
-          error: msg,
+          success: false,          error: msg,
         };
       }
       return {
-        success: false,
-        text: `Withdrawal failed: ${msg}`,
-        error: msg,
+        success: false,        error: msg,
       };
     }
 
@@ -148,4 +140,47 @@ export const withdrawFromAaveAction: Action = {
       data: { txHash, amount: amountDisplay, chain: 'polygon' },
     };
   },
+
+  examples: [
+    [
+      { name: 'user', content: { text: 'withdraw 50 USDC from Aave' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Withdrawing 50 USDC from Aave v3 back to your Polygon vault.',
+          actions: ['WITHDRAW_FROM_AAVE'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'pull all my USDC out of aave' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Withdrawing your full Aave USDC balance back to the vault.',
+          actions: ['WITHDRAW_FROM_AAVE'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'redeem 200 usdc' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Withdrawing 200 USDC from Aave v3.',
+          actions: ['WITHDRAW_FROM_AAVE'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'take everything off aave' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Withdrawing the full Aave balance.',
+          actions: ['WITHDRAW_FROM_AAVE'],
+        },
+      },
+    ],
+  ],
 };

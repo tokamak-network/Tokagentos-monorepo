@@ -33,7 +33,9 @@ function parseOutcomes(market: PolymarketMarket): MarketOutcome[] {
 
 export const describePolymarketMarketAction: Action = {
   name: 'DESCRIBE_POLYMARKET_MARKET',
-  description: 'Look up current odds, liquidity, and metadata for a Polymarket prediction market.',
+  description:
+    'Use for a read-only Polymarket lookup — no vault required. ' +
+    'Resolves a search phrase, slug, or 0x condition id to one market and returns its question, current outcome odds, liquidity, volume, and resolution date.',
   similes: [
     'polymarket odds',
     'prediction market',
@@ -68,9 +70,7 @@ export const describePolymarketMarketAction: Action = {
 
     if (!rawQuery) {
       return {
-        success: false,
-        text: 'Please specify a market to look up (e.g. "Will BTC hit $100k by end of 2025?" or a Polymarket slug).',
-        error: 'query parameter is required',
+        success: false,        error: 'query parameter is required',
       };
     }
 
@@ -112,9 +112,7 @@ export const describePolymarketMarketAction: Action = {
 
       if (!markets || markets.length === 0) {
         return {
-          success: false,
-          text: `No Polymarket market matches '${query}'. Try a different search phrase or slug.`,
-          error: 'no markets found',
+          success: false,          error: 'no markets found',
         };
       }
 
@@ -165,18 +163,57 @@ export const describePolymarketMarketAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes('aborted') || msg.includes('abort')) {
         return {
-          success: false,
-          text: 'Polymarket API unreachable (request timed out).',
-          error: msg,
+          success: false,          error: msg,
         };
       }
       return {
-        success: false,
-        text: `Polymarket API unreachable: ${msg}`,
-        error: msg,
+        success: false,        error: msg,
       };
     } finally {
       clearTimeout(timeoutId);
     }
   },
+
+  examples: [
+    [
+      { name: 'user', content: { text: 'what are the odds on the next presidential election?' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Searching Polymarket for the presidential election market.',
+          actions: ['DESCRIBE_POLYMARKET_MARKET'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'pull up the trump-vs-biden polymarket' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Looking up that Polymarket market by slug.',
+          actions: ['DESCRIBE_POLYMARKET_MARKET'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'describe market 0xabc123...' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Resolving that condition id on Polymarket.',
+          actions: ['DESCRIBE_POLYMARKET_MARKET'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'is bitcoin over 100k by year end priced fairly?' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Looking up the BTC-100k Polymarket so we can see current implied probability.',
+          actions: ['DESCRIBE_POLYMARKET_MARKET'],
+        },
+      },
+    ],
+  ],
 };

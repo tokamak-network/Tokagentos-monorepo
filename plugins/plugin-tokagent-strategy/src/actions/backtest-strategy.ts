@@ -18,7 +18,8 @@ function toRuntimeLike(runtime: IAgentRuntime) {
 export const backtestStrategyAction: Action = {
   name: "BACKTEST_STRATEGY",
   description:
-    "Run a strategy's evaluator against historical data to simulate P&L. Useful to validate params before going active. Only some kinds support backtesting.",
+    "Use AFTER a strategy is built, to validate its params against historical data BEFORE going active. " +
+    "Replays the strategy's evaluator over the last N days and reports hypothetical P&L, Sharpe, drawdown. Only some kinds support backtesting.",
   similes: [
     "backtest strategy",
     "simulate strategy",
@@ -54,46 +55,36 @@ export const backtestStrategyAction: Action = {
     const days = Number(params.days ?? 30);
 
     if (!id) {
-      return { success: false, text: "Missing strategy id." } as ActionResult;
+      return { success: false,} as ActionResult;
     }
     if (!Number.isFinite(days) || days <= 0 || days > 365) {
       return {
-        success: false,
-        text: `Invalid days: ${days}. Must be a number in (0, 365].`,
-      } as ActionResult;
+        success: false,      } as ActionResult;
     }
 
     const rl = toRuntimeLike(runtime);
     const strategy = await getStrategy(rl, id);
     if (!strategy) {
       return {
-        success: false,
-        text: `No strategy with id ${id}. Use LIST_STRATEGIES to see yours.`,
-      } as ActionResult;
+        success: false,      } as ActionResult;
     }
 
     const impl = getKind(strategy.kind);
     if (!impl) {
       return {
-        success: false,
-        text: `Unknown kind: ${strategy.kind}`,
-      } as ActionResult;
+        success: false,      } as ActionResult;
     }
 
     const backtestFn = (impl as unknown as { backtest?: unknown }).backtest;
     if (typeof backtestFn !== "function") {
       return {
-        success: false,
-        text: `Kind '${strategy.kind}' does not support backtesting.`,
-      } as ActionResult;
+        success: false,      } as ActionResult;
     }
 
     const paramsParse = impl.paramSchema.safeParse(strategy.params);
     if (!paramsParse.success) {
       return {
-        success: false,
-        text: `Strategy params invalid: ${paramsParse.error.message}`,
-      } as ActionResult;
+        success: false,      } as ActionResult;
     }
 
     const now = Date.now();
@@ -123,9 +114,7 @@ export const backtestStrategyAction: Action = {
 
       if (!result.run) {
         return {
-          success: false,
-          text: "Backtest returned supported=true but no run payload.",
-        } as ActionResult;
+          success: false,        } as ActionResult;
       }
 
       // Append to strategy.backtestResults, capped at 5 most recent
@@ -155,9 +144,7 @@ export const backtestStrategyAction: Action = {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        success: false,
-        text: `Backtest failed: ${msg}`,
-      } as ActionResult;
+        success: false,      } as ActionResult;
     }
   },
   examples: [
@@ -168,7 +155,10 @@ export const backtestStrategyAction: Action = {
       },
       {
         name: "agent",
-        content: { text: "Running 60-day backtest for your funding-arb strategy." },
+        content: {
+          text: "Running 60-day backtest for your funding-arb strategy.",
+          actions: ["BACKTEST_STRATEGY"],
+        },
       },
     ],
     [
@@ -178,7 +168,36 @@ export const backtestStrategyAction: Action = {
       },
       {
         name: "agent",
-        content: { text: "Backtesting 90 days of Aave rate history for your yield strategy." },
+        content: {
+          text: "Backtesting 90 days of Aave rate history for your yield strategy.",
+          actions: ["BACKTEST_STRATEGY"],
+        },
+      },
+    ],
+    [
+      {
+        name: "user",
+        content: { text: "would my strategy have made money historically?" },
+      },
+      {
+        name: "agent",
+        content: {
+          text: "Let me list your strategies so I can pick the right one to backtest.",
+          actions: ["LIST_STRATEGIES"],
+        },
+      },
+    ],
+    [
+      {
+        name: "user",
+        content: { text: "backtest strategy abc-123" } ,
+      },
+      {
+        name: "agent",
+        content: {
+          text: "Running a 30-day backtest on strategy abc-123 (default window).",
+          actions: ["BACKTEST_STRATEGY"],
+        },
       },
     ],
   ],

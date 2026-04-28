@@ -4,7 +4,9 @@ import { buildStrategyAction } from "./actions/build-strategy.js";
 import { listStrategiesAction } from "./actions/list-strategies.js";
 import { startStrategyAction, stopStrategyAction } from "./actions/start-stop.js";
 import { backtestStrategyAction } from "./actions/backtest-strategy.js";
+import { getTokagentStatusAction } from "./actions/get-tokagent-status.js";
 import { activeStrategiesProvider } from "./providers/strategies.js";
+import { vaultContextProvider } from "./providers/vault-context.js";
 import { StrategyRunnerService } from "./services/strategy-runner.js";
 import { registerBuiltinKinds } from "./kinds/index.js";
 
@@ -29,6 +31,9 @@ export const tokagentStrategyPlugin: Plugin = {
     registerBuiltinKinds();
   },
   actions: [
+    // Discovery action listed first so the LLM finds it when scanning
+    // for "what can I do" / "where are we" intents.
+    getTokagentStatusAction,
     deployTokagentVaultAction,
     buildStrategyAction,
     listStrategiesAction,
@@ -36,7 +41,7 @@ export const tokagentStrategyPlugin: Plugin = {
     stopStrategyAction,
     backtestStrategyAction,
   ],
-  providers: [activeStrategiesProvider],
+  providers: [vaultContextProvider, activeStrategiesProvider],
   services: [StrategyRunnerService],
 };
 
