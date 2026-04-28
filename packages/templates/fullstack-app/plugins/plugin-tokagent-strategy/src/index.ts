@@ -5,6 +5,7 @@ import { listStrategiesAction } from "./actions/list-strategies.js";
 import { startStrategyAction, stopStrategyAction } from "./actions/start-stop.js";
 import { backtestStrategyAction } from "./actions/backtest-strategy.js";
 import { activeStrategiesProvider } from "./providers/strategies.js";
+import { vaultContextProvider } from "./providers/vault-context.js";
 import { StrategyRunnerService } from "./services/strategy-runner.js";
 import { registerBuiltinKinds } from "./kinds/index.js";
 
@@ -36,7 +37,7 @@ export const tokagentStrategyPlugin: Plugin = {
     stopStrategyAction,
     backtestStrategyAction,
   ],
-  providers: [activeStrategiesProvider],
+  providers: [vaultContextProvider, activeStrategiesProvider],
   services: [StrategyRunnerService],
 };
 
