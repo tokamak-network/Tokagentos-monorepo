@@ -29,9 +29,20 @@ describe("tokagentStrategyPlugin", () => {
     expect(tokagentStrategyPlugin.description.length).toBeGreaterThan(10);
   });
 
-  it("exports exactly 6 actions", () => {
+  it("exports exactly 8 actions", () => {
     expect(Array.isArray(tokagentStrategyPlugin.actions)).toBe(true);
-    expect(tokagentStrategyPlugin.actions?.length).toBe(6);
+    expect(tokagentStrategyPlugin.actions?.length).toBe(8);
+  });
+
+  it("has REGISTER_EXISTING_VAULT action", () => {
+    const action = tokagentStrategyPlugin.actions?.find(
+      (a) => a.name === "REGISTER_EXISTING_VAULT",
+    );
+    expect(action).toBeDefined();
+    expect(typeof action?.handler).toBe("function");
+    expect(typeof action?.validate).toBe("function");
+    expect(Array.isArray(action?.similes)).toBe(true);
+    expect((action?.similes?.length ?? 0) > 0).toBe(true);
   });
 
   it("exports exactly 1 provider", () => {

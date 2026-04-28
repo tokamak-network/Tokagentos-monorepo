@@ -39,6 +39,9 @@ export {
   type AgentRuntimeLike,
 } from './wallet.js';
 
+// Env persistence (vault address durability across restarts)
+export { persistVaultAddress, upsertEnvLine } from './env-persistence.js';
+
 // Risk
 export {
   MAX_APPROVAL,

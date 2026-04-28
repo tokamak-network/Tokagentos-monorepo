@@ -1,5 +1,6 @@
 import type { Plugin } from "@tokagentos/core";
 import { deployTokagentVaultAction } from "./actions/deploy-vault.js";
+import { registerExistingVaultAction } from "./actions/register-existing-vault.js";
 import { buildStrategyAction } from "./actions/build-strategy.js";
 import { listStrategiesAction } from "./actions/list-strategies.js";
 import { startStrategyAction, stopStrategyAction } from "./actions/start-stop.js";
@@ -35,6 +36,7 @@ export const tokagentStrategyPlugin: Plugin = {
     // for "what can I do" / "where are we" intents.
     getTokagentStatusAction,
     deployTokagentVaultAction,
+    registerExistingVaultAction,
     buildStrategyAction,
     listStrategiesAction,
     startStrategyAction,

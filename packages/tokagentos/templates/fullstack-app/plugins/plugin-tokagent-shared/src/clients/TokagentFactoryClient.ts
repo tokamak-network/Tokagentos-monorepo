@@ -92,12 +92,15 @@ const TokagentFactoryABI = [
     stateMutability: 'view',
   },
   {
+    // [tokagent fix] ABI was wrong — this matches IVaultFactory.sol
     type: 'event',
     name: 'TokagentVaultDeployed',
     inputs: [
+      { name: 'vault', type: 'address', indexed: true, internalType: 'address' },
       { name: 'owner', type: 'address', indexed: true, internalType: 'address' },
       { name: 'operator', type: 'address', indexed: true, internalType: 'address' },
-      { name: 'vault', type: 'address', indexed: false, internalType: 'address' },
+      { name: 'salt', type: 'uint256', indexed: false, internalType: 'uint256' },
+      { name: 'kind', type: 'bytes32', indexed: false, internalType: 'bytes32' },
     ],
     anonymous: false,
   },
@@ -150,6 +153,18 @@ export class TokagentFactoryClient {
       amount: BigInt('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'),
     }));
 
+    const owner = this.walletClient.account!.address as Address;
+
+    // Predict the deterministic vault address before sending the tx so we can
+    // fall back to on-chain verification if event parsing drifts.
+    const predicted = await this.computeTokagentVaultAddress({
+      owner,
+      operator: params.operator,
+      initialAllowlist: params.initialAllowlist,
+      initialApprovals: params.initialApprovals,
+      userSalt: params.userSalt,
+    });
+
     const txHash = await this.walletClient.writeContract({
       chain: this.walletClient.chain ?? null,
       account: this.walletClient.account!,
@@ -169,12 +184,23 @@ export class TokagentFactoryClient {
       logs: receipt.logs,
     });
 
-    if (logs.length === 0) {
-      throw new Error('TokagentVaultDeployed event not found in transaction receipt');
+    if (logs.length > 0) {
+      const vault = logs[0].args.vault as Address;
+      return { vault, txHash };
     }
 
-    const vault = logs[0].args.vault as Address;
-    return { vault, txHash };
+    // Fallback: event parsing drifted (or RPC stripped logs). The deploy is
+    // CREATE2-deterministic, so verify the predicted address on-chain.
+    const isDeployed = await this.isDeployedVault(predicted);
+    if (isDeployed) {
+      return { vault: predicted, txHash };
+    }
+
+    throw new Error(
+      `TokagentVaultDeployed event not found in transaction receipt and ` +
+        `predicted vault ${predicted} is not registered in factory. ` +
+        `Receipt logs: ${JSON.stringify(receipt.logs)}`,
+    );
   }
 
   /**

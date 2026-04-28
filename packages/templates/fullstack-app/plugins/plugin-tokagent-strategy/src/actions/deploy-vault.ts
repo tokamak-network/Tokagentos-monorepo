@@ -4,6 +4,7 @@ import {
   getChainConfig,
   getPublicClient,
   getWalletClient,
+  persistVaultAddress,
   resolveAgentPrivateKey,
   findPack,
   SUPPORTED_CHAIN_IDS,
@@ -184,10 +185,7 @@ export const deployTokagentVaultAction: Action = {
       // turn's [vault-context] still says "none deployed" → BUILD_STRATEGY
       // returns no_vault_for_chain → LLM hallucinates "build failed".
       try {
-        await runtime.setSetting(
-          `TOKAGENT_VAULT_ADDRESS_${chainId}`,
-          vault,
-        );
+        await persistVaultAddress(runtime, chainId, vault);
       } catch (persistErr) {
         // Persistence failure shouldn't undo the deploy — log and continue.
         console.warn(

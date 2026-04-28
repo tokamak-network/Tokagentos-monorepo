@@ -115,10 +115,20 @@ describe('TokagentFactoryClient', () => {
 
     it('parses TokagentVaultDeployed event from receipt and returns vault + txHash', async () => {
       parseEventLogsMock.mockReturnValueOnce([
-        { args: { vault: VAULT_ADDR, owner: OWNER_ADDR, operator: OPERATOR_ADDR } },
+        {
+          args: {
+            vault: VAULT_ADDR,
+            owner: OWNER_ADDR,
+            operator: OPERATOR_ADDR,
+            salt: 0n,
+            kind: ('0x' + '00'.repeat(32)) as `0x${string}`,
+          },
+        },
       ]);
 
       const publicClient = {
+        // computeTokagentVaultAddress (pre-deploy prediction) returns VAULT_ADDR
+        readContract: () => Promise.resolve(VAULT_ADDR),
         waitForTransactionReceipt: () => Promise.resolve({ logs: [] }),
       } as unknown as PublicClient;
 
@@ -141,10 +151,59 @@ describe('TokagentFactoryClient', () => {
       expect(parseEventLogsMock).toHaveBeenCalledOnce();
     });
 
-    it('throws when TokagentVaultDeployed event is not in receipt', async () => {
+    it('falls back to predicted address when event parsing fails but isDeployedVault returns true', async () => {
+      parseEventLogsMock.mockReturnValueOnce([]);
+
+      const readCalls: Array<{ functionName: string; args?: unknown }> = [];
+      const publicClient = {
+        readContract: (args: { functionName: string; args?: unknown }) => {
+          readCalls.push(args);
+          if (args.functionName === 'computeTokagentVaultAddress') {
+            return Promise.resolve(VAULT_ADDR);
+          }
+          if (args.functionName === 'isDeployedVault') {
+            return Promise.resolve(true);
+          }
+          throw new Error(`unexpected functionName: ${args.functionName}`);
+        },
+        waitForTransactionReceipt: () => Promise.resolve({ logs: [] }),
+      } as unknown as PublicClient;
+
+      const walletClient = {
+        chain: null,
+        account: { address: OWNER_ADDR },
+        writeContract: () => Promise.resolve(TX_HASH),
+      } as unknown as WalletClient;
+
+      const client = new TokagentFactoryClient(FACTORY_ADDR, publicClient, walletClient);
+      const result = await client.deployTokagentVault({
+        operator: OPERATOR_ADDR,
+        initialAllowlist: AAVE_V3_POLYGON.entries,
+        initialApprovals: AAVE_V3_POLYGON.approvals,
+        userSalt: USER_SALT,
+      });
+
+      expect(result.vault).toBe(VAULT_ADDR);
+      expect(result.txHash).toBe(TX_HASH);
+      expect(readCalls.map((c) => c.functionName)).toEqual([
+        'computeTokagentVaultAddress',
+        'isDeployedVault',
+      ]);
+    });
+
+    it('throws when event parsing fails AND isDeployedVault returns false', async () => {
       parseEventLogsMock.mockReturnValueOnce([]);
 
       const publicClient = {
+        readContract: (args: { functionName: string }) => {
+          if (args.functionName === 'computeTokagentVaultAddress') {
+            return Promise.resolve(VAULT_ADDR);
+          }
+          if (args.functionName === 'isDeployedVault') {
+            return Promise.resolve(false);
+          }
+          throw new Error(`unexpected functionName: ${args.functionName}`);
+        },
         waitForTransactionReceipt: () => Promise.resolve({ logs: [] }),
       } as unknown as PublicClient;
 
