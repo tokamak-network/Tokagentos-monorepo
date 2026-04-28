@@ -8,6 +8,7 @@ import {
   findPack,
   SUPPORTED_CHAIN_IDS,
   tokagentActionError,
+  tokagentActionFailure,
   type ProtocolPack,
   type AllowlistEntry,
   type ApprovalSpec,
@@ -110,8 +111,11 @@ export const deployTokagentVaultAction: Action = {
     for (const pid of packIds) {
       const pack = findPack(pid, chainId);
       if (!pack) {
-        return {
-          success: false,        } as ActionResult;
+        return tokagentActionFailure(
+          "unknown_pack",
+          `Vault deploy aborted — protocol pack "${pid}" is not available on ${chainName}.`,
+          { pack: pid, chain: chainName, chainId },
+        );
       }
       packs.push(pack);
     }
@@ -140,7 +144,11 @@ export const deployTokagentVaultAction: Action = {
       privateKey = resolveAgentPrivateKey(runtimeLike);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return { success: false,} as ActionResult;
+      return tokagentActionFailure(
+        "private_key_missing",
+        "Vault deploy aborted — operator private key is not configured. Set TOKAGENT_PRIVATE_KEY in .env.",
+        { error: msg },
+      );
     }
 
     const publicClient = getPublicClient(chainId);
@@ -153,7 +161,10 @@ export const deployTokagentVaultAction: Action = {
     const operator: Address =
       (params.operator as Address | undefined) ?? (walletClient.account?.address as Address);
     if (!operator) {
-      return { success: false,} as ActionResult;
+      return tokagentActionFailure(
+        "operator_unresolved",
+        "Vault deploy aborted — could not resolve an operator address. Pass `operator` explicitly or configure TOKAGENT_PRIVATE_KEY.",
+      );
     }
 
     const userSalt: Hex = `0x${Array.from({ length: 64 }, () =>
@@ -167,19 +178,45 @@ export const deployTokagentVaultAction: Action = {
         initialApprovals: approvals,
         userSalt,
       });
+      // CRITICAL: persist the deployed vault address so subsequent turns
+      // (vaultContextProvider, BUILD_STRATEGY default-resolution) can
+      // see it. Without this, the cascade is: deploy succeeds → next
+      // turn's [vault-context] still says "none deployed" → BUILD_STRATEGY
+      // returns no_vault_for_chain → LLM hallucinates "build failed".
+      try {
+        await runtime.setSetting(
+          `TOKAGENT_VAULT_ADDRESS_${chainId}`,
+          vault,
+        );
+      } catch (persistErr) {
+        // Persistence failure shouldn't undo the deploy — log and continue.
+        console.warn(
+          `[deploy-vault] vault deployed at ${vault} but failed to persist setting: ${
+            persistErr instanceof Error ? persistErr.message : String(persistErr)
+          }`,
+        );
+      }
       return {
         success: true,
-        text: `Deployed TokagentVault on ${chainName} at ${vault}. Operator: ${operator}. Packs: ${packIds.join(", ")}. Tx: ${txHash}`,
+        text: `Vault deploy CONFIRMED on-chain on ${chainName} at ${vault}. Operator: ${operator}. Packs: ${packIds.join(", ")}. Tx: ${txHash}`,
         data: { vault, txHash, chainId, operator, packs: packIds },
       } as ActionResult;
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return {
-        success: false,        data: { error: msg },
-      } as ActionResult;
+      return tokagentActionFailure(
+        "vault_deploy_failed",
+        `Vault deploy failed on-chain: ${msg.slice(0, 240)}`,
+        { error: msg, chain: chainName, chainId },
+      );
     }
   },
 
+  // ── Two-turn pattern ────────────────────────────────────────────────────
+  // Turn 1: PROPOSE in future tense, end with a question, do NOT emit the
+  //   action (`actions: []`). The agent commits to nothing yet.
+  // Turn 2: only after user confirms, EXECUTE with `actions: ["DEPLOY_..."]`.
+  // Never use "i'm deploying" / "deploying now" on the proposal turn —
+  // that's a lie until the receipt confirms on-chain.
   examples: [
     [
       {
@@ -189,7 +226,15 @@ export const deployTokagentVaultAction: Action = {
       {
         name: "agent",
         content: {
-          text: "Deploying a TokagentVault on Polygon with the aave-v3-polygon pack allowlisted.",
+          text: "I can deploy a TokagentVault on Polygon with the aave-v3-polygon pack allowlisted. Confirm and I'll submit the on-chain tx.",
+          actions: [],
+        },
+      },
+      { name: "user", content: { text: "yes" } },
+      {
+        name: "agent",
+        content: {
+          text: "Submitting now.",
           actions: ["DEPLOY_TOKAGENT_VAULT"],
         },
       },
@@ -202,7 +247,15 @@ export const deployTokagentVaultAction: Action = {
       {
         name: "agent",
         content: {
-          text: "Deploying a TokagentVault on HyperEVM with the hyperliquid-perps pack (defaults).",
+          text: "I'll default to hyperevm with the hyperliquid-perps pack — that fits a perp-trading workflow. Confirm or tell me a different chain (polygon for Aave, ethereum for plain custody).",
+          actions: [],
+        },
+      },
+      { name: "user", content: { text: "go" } },
+      {
+        name: "agent",
+        content: {
+          text: "Submitting deploy.",
           actions: ["DEPLOY_TOKAGENT_VAULT"],
         },
       },
@@ -215,7 +268,15 @@ export const deployTokagentVaultAction: Action = {
       {
         name: "agent",
         content: {
-          text: "You'll need a vault first. Deploying a TokagentVault on HyperEVM with the hyperliquid-perps pack — once it's live I'll build the strategy.",
+          text: "You'll need a vault first. The fit is hyperevm + hyperliquid-perps pack. I can deploy that now and then build the strategy on it — confirm?",
+          actions: [],
+        },
+      },
+      { name: "user", content: { text: "yes please" } },
+      {
+        name: "agent",
+        content: {
+          text: "Deploying the vault first; I'll build the strategy once the deploy confirms.",
           actions: ["DEPLOY_TOKAGENT_VAULT"],
         },
       },
@@ -228,7 +289,15 @@ export const deployTokagentVaultAction: Action = {
       {
         name: "agent",
         content: {
-          text: "I need a vault on Polygon to run an Aave yield strategy. Deploying one now with the aave-v3-polygon pack.",
+          text: "Yield runs on Polygon Aave. I'd deploy a TokagentVault on Polygon with the aave-v3-polygon pack first, then build the strategy. Confirm?",
+          actions: [],
+        },
+      },
+      { name: "user", content: { text: "yes" } },
+      {
+        name: "agent",
+        content: {
+          text: "Deploying the vault.",
           actions: ["DEPLOY_TOKAGENT_VAULT"],
         },
       },
@@ -241,7 +310,15 @@ export const deployTokagentVaultAction: Action = {
       {
         name: "agent",
         content: {
-          text: "Deploying a TokagentVault on HyperEVM with the hyperliquid-perps pack.",
+          text: "I'll deploy a TokagentVault on HyperEVM with the hyperliquid-perps pack. Confirm and I'll submit.",
+          actions: [],
+        },
+      },
+      { name: "user", content: { text: "do it" } },
+      {
+        name: "agent",
+        content: {
+          text: "Submitting.",
           actions: ["DEPLOY_TOKAGENT_VAULT"],
         },
       },

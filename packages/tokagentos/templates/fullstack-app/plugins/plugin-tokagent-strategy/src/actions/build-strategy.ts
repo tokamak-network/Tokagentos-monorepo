@@ -7,7 +7,10 @@
 import { randomUUID } from "node:crypto";
 import type { Action, ActionResult, IAgentRuntime } from "@elizaos/core";
 import { ModelType } from "@elizaos/core";
-import { tokagentActionError } from "@tokagent/plugin-tokagent-shared";
+import {
+  tokagentActionError,
+  tokagentActionFailure,
+} from "@tokagent/plugin-tokagent-shared";
 import { getKind } from "../kind-registry.js";
 import { saveStrategy } from "../persistence.js";
 import type { Strategy, StrategyKind } from "../types.js";
@@ -220,15 +223,19 @@ export const buildStrategyAction: Action = {
     }
 
     if (!vaultAddress) {
-      return tokagentActionError("no_vault_for_chain", {
-        chain: chainName,
-        chainId,
-        hint: "Call DEPLOY_TOKAGENT_VAULT first.",
-      });
+      return tokagentActionFailure(
+        "no_vault_for_chain",
+        `No TokagentVault deployed on ${chainName} yet. Call DEPLOY_TOKAGENT_VAULT first, then re-run BUILD_STRATEGY.`,
+        { chain: chainName, chainId },
+      );
     }
 
     if (!/^0x[0-9a-fA-F]{40}$/.test(vaultAddress)) {
-      return tokagentActionError("invalid_vault_address", { provided: vaultAddress });
+      return tokagentActionFailure(
+        "invalid_vault_address",
+        `vaultAddress "${vaultAddress.slice(0, 12)}…" is not a valid EVM address. Pass a deployed vault from GET_TOKAGENT_STATUS or DEPLOY_TOKAGENT_VAULT.`,
+        { provided: vaultAddress },
+      );
     }
 
     // ── Step 1: call LLM ──────────────────────────────────────────────────────
@@ -242,9 +249,11 @@ export const buildStrategyAction: Action = {
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return {
-        success: false,        data: { error: msg },
-      } as ActionResult;
+      return tokagentActionFailure(
+        "llm_call_failed",
+        `Strategy composition aborted — the model call to compose the strategy JSON failed: ${msg.slice(0, 240)}. Try again in a moment.`,
+        { error: msg },
+      );
     }
 
     // ── Step 2: extract + structurally validate JSON ──────────────────────────
@@ -254,9 +263,11 @@ export const buildStrategyAction: Action = {
       parsed = extractJson(rawResponse);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return {
-        success: false,        data: { rawResponse, error: msg },
-      } as ActionResult;
+      return tokagentActionFailure(
+        "llm_json_parse_failed",
+        `Strategy composer model returned non-JSON output. Try rephrasing the request.`,
+        { rawResponse: rawResponse.slice(0, 500), error: msg },
+      );
     }
 
     let shape: LLMStrategyShape;
@@ -264,18 +275,22 @@ export const buildStrategyAction: Action = {
       shape = validateLLMOutput(parsed);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return {
-        success: false,        data: { parsed, error: msg },
-      } as ActionResult;
+      return tokagentActionFailure(
+        "llm_shape_invalid",
+        `Strategy composer model returned a malformed object: ${msg.slice(0, 200)}. Try a more specific request.`,
+        { parsed, error: msg },
+      );
     }
 
     // ── Step 3: validate kind-specific params via the kind's zod schema ────────
 
     const kindImpl = getKind(shape.kind);
     if (!kindImpl) {
-      return {
-        success: false,        data: { kind: shape.kind },
-      } as ActionResult;
+      return tokagentActionFailure(
+        "unknown_strategy_kind",
+        `Strategy kind "${shape.kind}" is not registered. This is an internal configuration issue — report it.`,
+        { kind: shape.kind },
+      );
     }
 
     const paramValidation = kindImpl.paramSchema.safeParse(shape.params);
@@ -283,9 +298,16 @@ export const buildStrategyAction: Action = {
       const zodErr = paramValidation.error.issues
         .map((i) => `  ${i.path.join(".")}: ${i.message}`)
         .join("\n");
-      return {
-        success: false,        data: { kind: shape.kind, params: shape.params, zodErrors: paramValidation.error.issues },
-      } as ActionResult;
+      return tokagentActionFailure(
+        "strategy_params_invalid",
+        `Composed strategy params didn't pass validation for kind "${shape.kind}". Try a more specific request (e.g. include exact USDC threshold or symbol list).`,
+        {
+          kind: shape.kind,
+          params: shape.params,
+          zodErrors: paramValidation.error.issues,
+          zodErrText: zodErr,
+        },
+      );
     }
 
     // ── Step 4: build + persist strategy ──────────────────────────────────────

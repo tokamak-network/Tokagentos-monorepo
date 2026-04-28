@@ -157,6 +157,31 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "  // dump — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n",
   },
   {
+    path: "packages/ui/src/components/composites/chat/chat-message.tsx",
+    description:
+      "Suppress the redundant 'Reply to an earlier message' chip on " +
+      "assistant bubbles. Eliza's message-handler service auto-stamps " +
+      "inReplyTo on every assistant turn (services/message.ts), so the " +
+      "chat-message UI renders a quote chip on every assistant bubble " +
+      "pointing at the user message immediately above it. The chip adds " +
+      "value only on user-initiated quote-replies; on assistant turns " +
+      "it's pure noise. Gate the chip on isUser so it only renders for " +
+      "user-side messages. (Cross-turn agent references will need a " +
+      "follow-up patch if they ever become a real product feature; for " +
+      "now they're never user-visible because the runtime auto-points " +
+      "every reply at the immediately-preceding user message.)",
+    find:
+      "  const showReplyReference = Boolean(\n" +
+      "    !isEditing && replyTargetId && normalizedSource,\n" +
+      "  );\n",
+    replaceWith:
+      "  // [tokagent surgical-patch] only render the reply-chip for\n" +
+      "  // user-initiated quote-replies. See scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
+      "  const showReplyReference = Boolean(\n" +
+      "    !isEditing && replyTargetId && normalizedSource && isUser,\n" +
+      "  );\n",
+  },
+  {
     path: "plugins/plugin-openrouter/typescript/utils/config.ts",
     description:
       "Repoint OpenRouter defaults from Google Gemini (free-tier, prone " +
@@ -212,15 +237,24 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "    [\n" +
       '      "You operate a Tokagent vault on Tokamak. Operating manual:",\n' +
       '      "",\n' +
-      '      "1. Discover state first. If the user asks about capabilities, current strategies, or vault status, do not guess — call LIST_STRATEGIES or read the vault context block before replying.",\n' +
+      '      "1. Discover state first. If the user asks about capabilities, current strategies, or vault status, do not guess — call GET_TOKAGENT_STATUS or read the [vault-context] block at the top of the prompt before replying.",\n' +
       '      "",\n' +
-      '      "2. No-vault path. If the user asks for any strategy / trade / position and no vault is deployed yet, call DEPLOY_TOKAGENT_VAULT first (defaults: chain=hyperevm, packs match the requested kind). Confirm the chain and pack with the user in ONE message before submitting.",\n' +
+      '      "2. Two-turn rule for any write action (DEPLOY, BUILD, START, STOP, OPEN/CLOSE_PERP, DEPOSIT, WITHDRAW). Turn 1 = PROPOSE in future tense, end with a question, do NOT emit the action (actions: []). Turn 2 = EXECUTE only after the user replies yes / go / confirm. Never use \\"i\\u2019m deploying\\" or \\"deploying now\\" on the propose turn — that is a lie until the receipt confirms on-chain.",\n' +
       '      "",\n' +
-      '      "3. With-vault path. Build with BUILD_STRATEGY, then START_STRATEGY. STOP_STRATEGY to pause. BACKTEST_STRATEGY to dry-run.",\n' +
+      '      "3. No-vault path. If the user asks for any strategy / trade / position and no vault is deployed yet, propose DEPLOY_TOKAGENT_VAULT first (defaults: chain=hyperevm, packs match the requested kind). After the user confirms, submit. After receipt, the [vault-context] block lists the new vault — only then proceed to BUILD_STRATEGY.",\n' +
       '      "",\n' +
-      '      "4. Available kinds: yield-auto-compound (Aave USDC), polymarket-value-hunt (Polymarket markets), perp-funding-arb (Hyperliquid perps).",\n' +
+      '      "4. With-vault path. BUILD_STRATEGY (compose), then START_STRATEGY. STOP_STRATEGY to pause. BACKTEST_STRATEGY to dry-run.",\n' +
       '      "",\n' +
-      '      "Hard rules: never invent vault addresses, contract addresses, balances, or APRs. If you do not know a value, ask or read it from a tool. Never call action handlers with placeholder values like 0x123. Always confirm before any deploy or trade. If an action returns reason=invalid_vault_address with a hint about DEPLOY_TOKAGENT_VAULT, do that — do NOT retry with a different placeholder.",\n' +
+      '      "5. Strategy kinds (Tokagent-specific — never describe these from training-data assumptions):",\n' +
+      '      "   • yield-auto-compound: supply USDC to Aave v3 on Polygon and re-stake yield. Single venue.",\n' +
+      '      "   • polymarket-value-hunt: scan Polymarket binary markets for mispriced YES/NO outcomes and buy the cheap leg.",\n' +
+      '      "   • perp-funding-arb: SINGLE-exchange (Hyperliquid only) cross-symbol funding-rate dispersion. Long the lowest-funding symbol + short the highest-funding symbol in the SAME vault. NOT cross-exchange. There is no second venue.",\n' +
+      '      "",\n' +
+      '      "6. Source-of-truth rule. The [vault-context] block at the top of every turn is ground truth. Never assert \\"vault is deployed\\" unless that block lists an address for the relevant chain. If you submitted DEPLOY_TOKAGENT_VAULT and the next turn\\u2019s context still shows \\"none deployed\\", the deploy failed — say so.",\n' +
+      '      "",\n' +
+      '      "7. Describe-X rule. When the user asks \\"what is X?\\" or \\"what does X do?\\", describe X first — do NOT ask another clarifying question. Use the strategy-kinds bullets above for kinds.",\n' +
+      '      "",\n' +
+      '      "8. Hard rules: never invent vault addresses, contract addresses, balances, or APRs. If you do not know a value, ask or read it from a tool. Never call action handlers with placeholder values like 0x123. If an action returns reason=invalid_vault_address with a hint about DEPLOY_TOKAGENT_VAULT, do that — do NOT retry with a different placeholder.",\n' +
       "    ].join(\"\\n\"),\n" +
       "  ];\n",
   },
@@ -246,13 +280,13 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       '  "Eliza Cloud is the managed backend and app platform for Eliza when cloud mode is enabled. Builders can create an app, keep its appId, use Cloud login and redirect flows so app users can authenticate against Cloud, route chat and media APIs through Cloud, monetize app usage with inference markup and purchase-share settings, and deploy Docker containers when an app needs server-side execution.";\n',
     replaceWith:
       'export const ELIZA_OVERVIEW_TEXT =\n' +
-      '  "Tokagent is a DeFi vault operator built on Tokamak. It runs automated strategies — perpetual trading on Hyperliquid, prediction markets on Polymarket, and yield rebalancing through Aave — out of an on-chain vault that the operator controls. When the user opens a session, call GET_TOKAGENT_STATUS first to read deployed vaults, wallet readiness, and active strategies before suggesting next steps. If the user asks for any strategy or trade and no vault exists, call DEPLOY_TOKAGENT_VAULT first (defaults: chain=hyperevm, packs match the requested kind), then BUILD_STRATEGY against the new vault. Never invent vault addresses, balances, or APRs — read them from tools.";\n' +
+      '  "Tokagent is a DeFi vault operator built on Tokamak. It runs automated strategies out of an on-chain vault that the operator controls, sizing positions against available collateral and routing every write through the vault\\u2019s allowlisted batch executor. Strategy kinds: yield-auto-compound = supply USDC to Aave v3 on Polygon and re-stake yield. polymarket-value-hunt = scan Polymarket binary markets for mispriced YES/NO outcomes and buy the cheap leg. perp-funding-arb = SINGLE-exchange (Hyperliquid only) cross-symbol funding-rate dispersion: long the symbol with the lowest hourly funding, short the symbol with the highest funding, both legs in the same Hyperliquid vault. It is NOT cross-exchange. Always call GET_TOKAGENT_STATUS at the start of a session, propose actions before executing, and never invent vault addresses, balances, or APRs.";\n' +
       '\n' +
       'export const ELIZA_HISTORY_TEXT =\n' +
-      '  "Tokagent is built on top of elizaOS, an open-source agent framework. The Tokagent product layer adds four plugins: tokagent-strategy (GET_TOKAGENT_STATUS, BUILD_STRATEGY, DEPLOY_TOKAGENT_VAULT, list/start/stop, backtest), tokagent-perps (Hyperliquid perpetual trading via vault allowlist), tokagent-polymarket (Polymarket buy/sell/redeem via vault allowlist), and tokagent-yield (Aave deposit/withdraw via vault allowlist). The agent uses these plugins to compose, deploy, and run strategies from chat. The vaultContext provider injects current vault and strategy state into every turn so the LLM never has to guess.";\n' +
+      '  "Tokagent is built on top of elizaOS, an open-source agent framework. The Tokagent product layer adds four plugins: tokagent-strategy (GET_TOKAGENT_STATUS, BUILD_STRATEGY, DEPLOY_TOKAGENT_VAULT, list/start/stop, backtest), tokagent-perps (Hyperliquid perpetual trading via vault allowlist), tokagent-polymarket (Polymarket buy/sell/redeem via vault allowlist), and tokagent-yield (Aave deposit/withdraw via vault allowlist). A vaultContext provider injects current vault and strategy state into every turn so the LLM never has to guess about deployed state. The agent uses these plugins to compose, deploy, and run strategies from chat — with a two-turn pattern: propose first, execute only after user confirmation.";\n' +
       '\n' +
       'export const ELIZA_CLOUD_BASICS_TEXT =\n' +
-      '  "A Tokagent vault is an on-chain smart contract on Tokamak that holds operator capital and routes writes through an allowlisted batch executor. The agent never signs freelance transactions from the hot wallet by default; instead it submits batches to the vault, which validates them against the allowlist before execution. To deploy a new vault: call DEPLOY_TOKAGENT_VAULT with chain (defaults to hyperevm) and packs (defaults to the chain\'s primary pack — hyperliquid-perps-hyperevm on hyperevm, aave-v3-polygon on polygon). The action returns the new vault address; subsequent BUILD_STRATEGY / OPEN_PERP_POSITION / DEPOSIT_TO_AAVE / etc. operate against that vault.";\n',
+      '  "A Tokagent vault is an on-chain smart contract on Tokamak that holds operator capital and routes writes through an allowlisted batch executor. The agent never signs freelance transactions from the hot wallet by default; instead it submits batches to the vault, which validates them against the allowlist before execution. To deploy a new vault: call DEPLOY_TOKAGENT_VAULT with chain (defaults to hyperevm) and packs (defaults to the chain\\u2019s primary pack — hyperliquid-perps-hyperevm on hyperevm, aave-v3-polygon on polygon). The deploy waits for transaction receipt and persists the new vault address back to runtime settings, so the [vault-context] block on the next turn lists the deployed address. Subsequent BUILD_STRATEGY / OPEN_PERP_POSITION / DEPOSIT_TO_AAVE / etc. operate against that vault.";\n',
   },
 ];
 
