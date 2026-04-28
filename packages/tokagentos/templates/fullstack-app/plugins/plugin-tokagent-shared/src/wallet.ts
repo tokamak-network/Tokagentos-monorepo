@@ -51,14 +51,28 @@ export function getWalletClient(
 
 /**
  * Reads TOKAGENT_PRIVATE_KEY from elizaOS agent runtime settings.
- * Validates that it is a 0x-prefixed 32-byte hex string (64 hex chars after 0x).
- * Throws a clear error if missing or malformed.
+ *
+ * Resolution order:
+ *   1. runtime.getSetting('TOKAGENT_PRIVATE_KEY') — character / runtime config
+ *   2. process.env.TOKAGENT_PRIVATE_KEY — .env-loaded knob
+ *   3. process.env.EVM_PRIVATE_KEY — alias used by @elizaos/plugin-evm and
+ *      mirrored by core-plugins.ts. The wallet UI reads this directly, so
+ *      a user who set only EVM_PRIVATE_KEY would see balances but our
+ *      plugins would otherwise fail with "TOKAGENT_PRIVATE_KEY is not set".
+ *
+ * Validates the resolved value is a 0x-prefixed 32-byte hex string
+ * (64 hex chars after 0x). Throws a clear error if missing or malformed.
  */
 export function resolveAgentPrivateKey(runtime: AgentRuntimeLike): Hex {
-  const raw = runtime.getSetting('TOKAGENT_PRIVATE_KEY');
+  const fromRuntime = runtime.getSetting('TOKAGENT_PRIVATE_KEY');
+  const fromEnv =
+    typeof process !== 'undefined' && process.env
+      ? (process.env.TOKAGENT_PRIVATE_KEY ?? process.env.EVM_PRIVATE_KEY)
+      : undefined;
+  const raw = fromRuntime?.trim() || fromEnv?.trim();
   if (!raw) {
     throw new Error(
-      'TOKAGENT_PRIVATE_KEY is not set. Add it to your agent configuration or .env file.',
+      'TOKAGENT_PRIVATE_KEY is not set. Add it (or EVM_PRIVATE_KEY) to your .env or agent configuration.',
     );
   }
   if (!isHex(raw)) {

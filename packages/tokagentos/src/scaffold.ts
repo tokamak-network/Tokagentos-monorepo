@@ -288,6 +288,189 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       'export const ELIZA_CLOUD_BASICS_TEXT =\n' +
       '  "A Tokagent vault is an on-chain smart contract on Tokamak that holds operator capital and routes writes through an allowlisted batch executor. The agent never signs freelance transactions from the hot wallet by default; instead it submits batches to the vault, which validates them against the allowlist before execution. To deploy a new vault: call DEPLOY_TOKAGENT_VAULT with chain (defaults to hyperevm) and packs (defaults to the chain\\u2019s primary pack — hyperliquid-perps-hyperevm on hyperevm, aave-v3-polygon on polygon). The deploy waits for transaction receipt and persists the new vault address back to runtime settings, so the [vault-context] block on the next turn lists the deployed address. Subsequent BUILD_STRATEGY / OPEN_PERP_POSITION / DEPOSIT_TO_AAVE / etc. operate against that vault.";\n',
   },
+  {
+    path: "packages/app-core/src/state/useChatSend.ts",
+    description:
+      "Extend QueuedChatSend with optimisticUserMsgId so sendChatText can " +
+      "thread the locally-rendered user-bubble id through to the queued task. " +
+      "Without this, the queue task generates a new id and re-inserts the " +
+      "user message, producing a duplicate bubble alongside the optimistic " +
+      "one. Pairs with the sendChatText optimistic-insert patch and the " +
+      "runQueuedChatSend dedup patch.",
+    find:
+      "export interface QueuedChatSend {\n" +
+      "  rawInput: string;\n" +
+      "  channelType: ConversationChannelType;\n" +
+      "  conversationId?: string | null;\n" +
+      "  images?: ImageAttachment[];\n" +
+      "  metadata?: Record<string, unknown>;\n" +
+      "  resolve: () => void;\n" +
+      "  reject: (error: unknown) => void;\n" +
+      "}\n",
+    replaceWith:
+      "export interface QueuedChatSend {\n" +
+      "  rawInput: string;\n" +
+      "  channelType: ConversationChannelType;\n" +
+      "  conversationId?: string | null;\n" +
+      "  images?: ImageAttachment[];\n" +
+      "  metadata?: Record<string, unknown>;\n" +
+      "  // [tokagent surgical-patch] id of the user-bubble that sendChatText\n" +
+      "  // already inserted into chat state synchronously. The queue task uses\n" +
+      "  // this to skip a duplicate insert.\n" +
+      "  optimisticUserMsgId?: string;\n" +
+      "  resolve: () => void;\n" +
+      "  reject: (error: unknown) => void;\n" +
+      "}\n",
+  },
+  {
+    path: "packages/app-core/src/state/useChatSend.ts",
+    description:
+      "Optimistically render the user's message bubble synchronously inside " +
+      "sendChatText, BEFORE pushing to the serialized send queue. Sends are " +
+      "serialized through chatSendQueueRef, so when an LLM stream from the " +
+      "previous turn is still in flight (~30-60s on slow models), the next " +
+      "queued send waits — and its user-bubble insert (in runQueuedChatSend) " +
+      "is gated on the queue resuming. Users perceive a multi-minute delay " +
+      "between pressing Enter and seeing their own message. Skip the " +
+      "optimistic insert for slash/hash/dollar prefixed inputs since those " +
+      "may be rewritten by tryHandlePrefixedChatCommand.",
+    find:
+      "  const sendChatText = useCallback(\n" +
+      "    async (\n" +
+      "      rawInput: string,\n" +
+      "      options?: {\n" +
+      "        channelType?: ConversationChannelType;\n" +
+      "        conversationId?: string | null;\n" +
+      "        images?: ImageAttachment[];\n" +
+      "        metadata?: Record<string, unknown>;\n" +
+      "      },\n" +
+      "    ) => {\n" +
+      "      const hasAttachedImages = Boolean(options?.images?.length);\n" +
+      "      if (!rawInput.trim() && !hasAttachedImages) {\n" +
+      "        return;\n" +
+      "      }\n" +
+      "\n" +
+      "      await new Promise<void>((resolve, reject) => {\n" +
+      "        chatSendQueueRef.current.push({\n" +
+      "          rawInput,\n" +
+      "          channelType: options?.channelType ?? \"DM\",\n" +
+      "          conversationId: options?.conversationId,\n" +
+      "          images: options?.images,\n" +
+      "          metadata: buildChatViewMetadata(tab, options?.metadata),\n" +
+      "          resolve,\n" +
+      "          reject,\n" +
+      "        });\n" +
+      "        setChatSending(true);\n" +
+      "        void flushQueuedChatSends();\n" +
+      "      });\n" +
+      "    },\n" +
+      "    [flushQueuedChatSends, setChatSending, tab],\n" +
+      "  );\n",
+    replaceWith:
+      "  const sendChatText = useCallback(\n" +
+      "    async (\n" +
+      "      rawInput: string,\n" +
+      "      options?: {\n" +
+      "        channelType?: ConversationChannelType;\n" +
+      "        conversationId?: string | null;\n" +
+      "        images?: ImageAttachment[];\n" +
+      "        metadata?: Record<string, unknown>;\n" +
+      "      },\n" +
+      "    ) => {\n" +
+      "      const hasAttachedImages = Boolean(options?.images?.length);\n" +
+      "      if (!rawInput.trim() && !hasAttachedImages) {\n" +
+      "        return;\n" +
+      "      }\n" +
+      "\n" +
+      "      // [tokagent surgical-patch] optimistically render the user's\n" +
+      "      // message bubble synchronously, BEFORE pushing to the serialized\n" +
+      "      // send queue. Without this, the bubble waits for the previous\n" +
+      "      // LLM stream to finish (queue is serial), so users see a\n" +
+      "      // multi-minute delay before their message appears.\n" +
+      "      let optimisticUserMsgId: string | undefined;\n" +
+      "      const trimmedRawInput = rawInput.trim();\n" +
+      "      const isPrefixedCommand = /^[\\/#$]/.test(trimmedRawInput);\n" +
+      "      if (trimmedRawInput && !isPrefixedCommand) {\n" +
+      "        const optimisticNow = Date.now();\n" +
+      "        const optimisticNonce = Math.random().toString(36).slice(2, 8);\n" +
+      "        optimisticUserMsgId = `temp-user-${optimisticNow}-${optimisticNonce}`;\n" +
+      "        setCompanionMessageCutoffTs(optimisticNow);\n" +
+      "        setConversationMessages((prev: ConversationMessage[]) => [\n" +
+      "          ...prev,\n" +
+      "          {\n" +
+      "            id: optimisticUserMsgId as string,\n" +
+      "            role: \"user\",\n" +
+      "            text: trimmedRawInput,\n" +
+      "            timestamp: optimisticNow,\n" +
+      "          },\n" +
+      "        ]);\n" +
+      "      }\n" +
+      "\n" +
+      "      await new Promise<void>((resolve, reject) => {\n" +
+      "        chatSendQueueRef.current.push({\n" +
+      "          rawInput,\n" +
+      "          channelType: options?.channelType ?? \"DM\",\n" +
+      "          conversationId: options?.conversationId,\n" +
+      "          images: options?.images,\n" +
+      "          metadata: buildChatViewMetadata(tab, options?.metadata),\n" +
+      "          optimisticUserMsgId,\n" +
+      "          resolve,\n" +
+      "          reject,\n" +
+      "        });\n" +
+      "        setChatSending(true);\n" +
+      "        void flushQueuedChatSends();\n" +
+      "      });\n" +
+      "    },\n" +
+      "    [\n" +
+      "      flushQueuedChatSends,\n" +
+      "      setChatSending,\n" +
+      "      tab,\n" +
+      "      setConversationMessages,\n" +
+      "      setCompanionMessageCutoffTs,\n" +
+      "    ],\n" +
+      "  );\n",
+  },
+  {
+    path: "packages/app-core/src/state/useChatSend.ts",
+    description:
+      "Dedup the user-message insert in runQueuedChatSend when sendChatText " +
+      "already rendered the bubble optimistically. Reuses the optimistic id " +
+      "(threaded through QueuedChatSend.optimisticUserMsgId) so subsequent " +
+      "stream/reload logic continues to operate on a stable id.",
+    find:
+      "      const now = Date.now();\n" +
+      "      const userMsgId = `temp-${now}`;\n" +
+      "      const assistantMsgId = `temp-resp-${now}`;\n" +
+      "\n" +
+      "      setCompanionMessageCutoffTs(now);\n" +
+      "      setConversationMessages((prev: ConversationMessage[]) => [\n" +
+      "        ...prev,\n" +
+      "        { id: userMsgId, role: \"user\", text, timestamp: now },\n" +
+      "        { id: assistantMsgId, role: \"assistant\", text: \"\", timestamp: now },\n" +
+      "      ]);\n",
+    replaceWith:
+      "      const now = Date.now();\n" +
+      "      // [tokagent surgical-patch] reuse the optimistic user-msg id when\n" +
+      "      // sendChatText already rendered the bubble; avoids a duplicate.\n" +
+      "      const userMsgId = turn.optimisticUserMsgId ?? `temp-${now}`;\n" +
+      "      const assistantMsgId = `temp-resp-${now}`;\n" +
+      "\n" +
+      "      setCompanionMessageCutoffTs(now);\n" +
+      "      setConversationMessages((prev: ConversationMessage[]) => {\n" +
+      "        const userAlreadyPresent = prev.some((m) => m.id === userMsgId);\n" +
+      "        const next: ConversationMessage[] = [...prev];\n" +
+      "        if (!userAlreadyPresent) {\n" +
+      "          next.push({ id: userMsgId, role: \"user\", text, timestamp: now });\n" +
+      "        }\n" +
+      "        next.push({\n" +
+      "          id: assistantMsgId,\n" +
+      "          role: \"assistant\",\n" +
+      "          text: \"\",\n" +
+      "          timestamp: now,\n" +
+      "        });\n" +
+      "        return next;\n" +
+      "      });\n",
+  },
 ];
 
 const UPSTREAM_COMPATIBILITY_FILES = [
