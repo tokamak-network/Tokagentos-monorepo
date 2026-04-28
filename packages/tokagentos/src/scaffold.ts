@@ -157,6 +157,24 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "  // dump — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n",
   },
   {
+    path: "plugins/plugin-openrouter/typescript/utils/config.ts",
+    description:
+      "Repoint OpenRouter defaults from Google Gemini (free-tier, prone " +
+      "to 429s and 504s — drives ~20s/turn retry backoff in chat) to " +
+      "Anthropic Claude Haiku/Sonnet, which OpenRouter routes reliably " +
+      "without a separate provider key. Users can still override via " +
+      "OPENROUTER_SMALL_MODEL / OPENROUTER_LARGE_MODEL env or per-call.",
+    find:
+      'export const DEFAULT_SMALL_MODEL = "google/gemini-2.0-flash-001";\n' +
+      'export const DEFAULT_LARGE_MODEL = "google/gemini-2.5-flash";\n',
+    replaceWith:
+      '// [tokagent surgical-patch] Anthropic models route reliably on\n' +
+      '// OpenRouter even without a paid Google key. Override via\n' +
+      '// OPENROUTER_SMALL_MODEL / OPENROUTER_LARGE_MODEL env.\n' +
+      'export const DEFAULT_SMALL_MODEL = "anthropic/claude-haiku-4-5";\n' +
+      'export const DEFAULT_LARGE_MODEL = "anthropic/claude-sonnet-4.6";\n',
+  },
+  {
     path: "packages/agent/src/config/plugin-auto-enable.ts",
     description:
       "Disable the n8n-workflow auto-enable. Upstream auto-enables it " +
