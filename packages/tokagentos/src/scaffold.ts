@@ -92,6 +92,21 @@ const UPSTREAM_DEPENDENCY_REMOVALS: ReadonlyArray<{
     path: "packages/app-core/deploy/cloud-agent-template/package.json",
     names: ["@elizaos/plugin-elizacloud"],
   },
+  {
+    // app-lifeops has workspace:* deps on messaging plugins that live in
+    // submodules we deliberately don't clone (avoids `git submodule
+    // update --init --recursive` failures from any single bad submodule
+    // pin like the cloud/ ref-rewrite issue). Strip the deps so bun
+    // install resolves; LifeOps loses messaging connectors but the
+    // core (tasks, goals, calendar, inbox) keeps working.
+    path: "apps/app-lifeops/package.json",
+    names: [
+      "@elizaos/plugin-imessage",
+      "@elizaos/plugin-signal",
+      "@elizaos/plugin-telegram",
+      "@elizaos/plugin-whatsapp",
+    ],
+  },
 ];
 
 /**
@@ -154,14 +169,19 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
     find: "  const capabilityHints: string[] = [];\n",
     replaceWith:
       "  const capabilityHints: string[] = [\n" +
-      '    "You operate a Tokagent vault on Tokamak. Available actions: ' +
-      "BUILD_STRATEGY (compose a strategy from chat), DEPLOY_TOKAGENT_VAULT " +
-      "(deploy a new on-chain vault on Tokamak), LIST/START/STOP_STRATEGY, " +
-      "BACKTEST_STRATEGY, plus tokagent-perps (perpetual trading on " +
-      "Hyperliquid), tokagent-polymarket (Polymarket buy/sell/redeem), and " +
-      "tokagent-yield (Aave deposit/withdraw). All trades execute through " +
-      "the vault's allowlisted batch executor — never freelance hot-wallet " +
-      'signing.",\n' +
+      "    [\n" +
+      '      "You operate a Tokagent vault on Tokamak. Operating manual:",\n' +
+      '      "",\n' +
+      '      "1. Discover state first. If the user asks about capabilities, current strategies, or vault status, do not guess — call LIST_STRATEGIES or read the vault context block before replying.",\n' +
+      '      "",\n' +
+      '      "2. No-vault path. If the user asks for any strategy / trade / position and no vault is deployed yet, call DEPLOY_TOKAGENT_VAULT first (defaults: chain=hyperevm, packs match the requested kind). Confirm the chain and pack with the user in ONE message before submitting.",\n' +
+      '      "",\n' +
+      '      "3. With-vault path. Build with BUILD_STRATEGY, then START_STRATEGY. STOP_STRATEGY to pause. BACKTEST_STRATEGY to dry-run.",\n' +
+      '      "",\n' +
+      '      "4. Available kinds: yield-auto-compound (Aave USDC), polymarket-value-hunt (Polymarket markets), perp-funding-arb (Hyperliquid perps).",\n' +
+      '      "",\n' +
+      '      "Hard rules: never invent vault addresses, contract addresses, balances, or APRs. If you do not know a value, ask or read it from a tool. Never call action handlers with placeholder values like 0x123. Always confirm before any deploy or trade. If an action returns reason=invalid_vault_address with a hint about DEPLOY_TOKAGENT_VAULT, do that — do NOT retry with a different placeholder.",\n' +
+      "    ].join(\"\\n\"),\n" +
       "  ];\n",
   },
   {
@@ -650,6 +670,102 @@ export function pruneUpstreamPackageDependencies(
   return modified;
 }
 
+/**
+ * Strip `[submodule "<path>"] ... path = <path>` blocks out of the
+ * upstream `.gitmodules` for the given submodule paths, so subsequent
+ * `git submodule update --init --recursive` calls don't try to clone
+ * them. Used to avoid fetching the cloud/ submodule whose pinned ref
+ * is force-rewritten periodically and breaks scaffolds.
+ *
+ * If `.gitmodules` is missing or the entries aren't present, no-op.
+ */
+export function removeSubmodulesFromGitmodules(
+  submoduleRoot: string,
+  paths: readonly string[],
+): void {
+  const gitmodulesPath = path.join(submoduleRoot, ".gitmodules");
+  if (!fs.existsSync(gitmodulesPath)) return;
+
+  // Order matters: git operations read .gitmodules to look up submodule
+  // info, so we must run them BEFORE we rewrite the file. Sequence:
+  //   1. `git rm --cached <path>` — remove from git's index (still works
+  //      because .gitmodules still has the entry).
+  //   2. `git config --remove-section submodule.<path>` — drop cached
+  //      .git/config entries.
+  //   3. Rewrite .gitmodules to drop the [submodule "<path>"] block.
+  //
+  // After all three, git no longer knows about the submodule from any
+  // angle, and `submodule update --init --recursive` won't try to fetch
+  // its URL.
+  for (const submodulePath of paths) {
+    try {
+      execFileSync(
+        "git",
+        ["rm", "--cached", "-rf", "--quiet", submodulePath],
+        { cwd: submoduleRoot, stdio: "ignore" },
+      );
+    } catch {
+      // Path not in index (e.g., already removed) — fine.
+    }
+    try {
+      execFileSync(
+        "git",
+        ["config", "--remove-section", `submodule.${submodulePath}`],
+        { cwd: submoduleRoot, stdio: "ignore" },
+      );
+    } catch {
+      // No section configured yet — fine.
+    }
+  }
+
+  // Now rewrite .gitmodules. Parse line-by-line as INI-ish: each
+  // `[submodule "..."]` header starts a new block that runs until the
+  // next header (or EOF). Drop blocks whose `path = ...` matches a
+  // prune path; emit the rest.
+  const lines = fs.readFileSync(gitmodulesPath, "utf8").split("\n");
+  const removalSet = new Set(paths);
+
+  type Block = { headerLine: string | null; bodyLines: string[]; path: string | null };
+  const blocks: Block[] = [];
+  let current: Block = { headerLine: null, bodyLines: [], path: null };
+
+  const isSubmoduleHeader = (line: string) =>
+    /^\[submodule\s+"/.test(line.trim());
+
+  for (const line of lines) {
+    if (isSubmoduleHeader(line)) {
+      blocks.push(current);
+      current = { headerLine: line, bodyLines: [], path: null };
+      continue;
+    }
+    if (current.headerLine !== null) {
+      const m = /^\s*path\s*=\s*(.+?)\s*$/.exec(line);
+      if (m) current.path = m[1];
+    }
+    current.bodyLines.push(line);
+  }
+  blocks.push(current);
+
+  let changed = false;
+  const kept: Block[] = [];
+  for (const block of blocks) {
+    if (block.headerLine !== null && block.path && removalSet.has(block.path)) {
+      changed = true;
+      continue;
+    }
+    kept.push(block);
+  }
+
+  if (!changed) return;
+
+  const out: string[] = [];
+  for (const block of kept) {
+    if (block.headerLine !== null) out.push(block.headerLine);
+    out.push(...block.bodyLines);
+  }
+  fs.writeFileSync(gitmodulesPath, out.join("\n"), "utf8");
+}
+
 export function pruneUpstreamUnusedPaths(
   submoduleRoot: string,
   paths: readonly string[] = UPSTREAM_PRUNE_PATHS,
@@ -891,15 +1007,35 @@ export function hydrateGitSubmoduleWorkspace(options: {
   const requiredSubmodules = options.upstream.requiredSubmodules ?? [];
   const localRepoRoot = resolveLocalRepoRoot(options.upstream.repo);
 
-  // Init ALL submodules recursively first so the upstream package's
-  // transitive workspace:* deps (plugins listed in upstream/package.json
-  // but not explicitly in requiredSubmodules) resolve. The per-path loop
-  // below then re-runs with optional --reference against a local fork.
-  execFileSync(
-    "git",
-    ["submodule", "update", "--init", "--recursive"],
-    { cwd: submoduleRoot, stdio: "inherit" },
-  );
+  // Strip the always-prune submodules out of .gitmodules BEFORE recursive
+  // init. Particularly important for `cloud/` — upstream eliza pins a
+  // commit on elizaOS/cloud that gets force-rewritten periodically, so
+  // `git submodule update --init --recursive` fails with `not our ref`.
+  // Since we delete those paths anyway via pruneUpstreamUnusedPaths,
+  // skip cloning them.
+  removeSubmodulesFromGitmodules(submoduleRoot, UPSTREAM_PRUNE_PATHS);
+
+  // Init ALL remaining submodules recursively. The agent runtime
+  // statically imports from many plugin submodules (plugin-agent-skills,
+  // plugin-commands, plugin-cron, plugin-app-control, plugin-shell,
+  // app-lifeops, plugin-browser-bridge, plugin-app-companion, …) so
+  // skipping them breaks runtime imports. Tolerate failures here:
+  // a transient submodule fetch error shouldn't block scaffold creation.
+  // The required-submodule loop below re-attempts each explicitly.
+  try {
+    execFileSync(
+      "git",
+      ["submodule", "update", "--init", "--recursive"],
+      { cwd: submoduleRoot, stdio: "inherit" },
+    );
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.warn(
+      `[scaffold] recursive submodule init reported errors — continuing. ` +
+        `Required submodules will be re-fetched individually below. ` +
+        `Underlying error: ${msg.split("\n")[0]}`,
+    );
+  }
 
   for (const submodulePath of requiredSubmodules) {
     const command = ["submodule", "update", "--init", "--recursive"];
@@ -921,13 +1057,24 @@ export function hydrateGitSubmoduleWorkspace(options: {
       command.push("--reference", localSubmoduleRoot);
     }
     command.push(submodulePath);
-    execFileSync(
-      "git",
-      localSubmoduleRoot
-        ? withOptionalFileProtocol(localSubmoduleRoot, command)
-        : command,
-      { cwd: submoduleRoot, stdio: "inherit" },
-    );
+    try {
+      execFileSync(
+        "git",
+        localSubmoduleRoot
+          ? withOptionalFileProtocol(localSubmoduleRoot, command)
+          : command,
+        { cwd: submoduleRoot, stdio: "inherit" },
+      );
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.warn(
+        `[scaffold] failed to init required submodule "${submodulePath}" — ` +
+          `continuing. Some plugin functionality may be unavailable until ` +
+          `the user runs "git submodule update --init ${submodulePath}" ` +
+          `manually inside ${options.upstream.path}/. ` +
+          `Underlying error: ${msg.split("\n")[0]}`,
+      );
+    }
   }
 
   // Drop upstream paths whose workspace dependencies aren't satisfiable in a
@@ -955,9 +1102,15 @@ export function hydrateGitSubmoduleWorkspace(options: {
   });
 
   if (patchResult.missing.length > 0) {
-    throw new Error(
-      `scaffold-patches target paths missing — upstream reorganization? ` +
-        `Missing: ${patchResult.missing.join(", ")}`,
+    // Missing target dirs are expected when an upstream submodule failed
+    // to clone (e.g., transient network error or a force-rewritten ref).
+    // Warn but don't crash — the user can re-run if a critical patch was
+    // skipped, and overlays for unrelated submodules don't need to block
+    // scaffold creation.
+    console.warn(
+      `[scaffold-patches] Target paths missing — likely an upstream ` +
+        `submodule didn't clone successfully. Skipping these overlays:\n  - ` +
+        patchResult.missing.join("\n  - "),
     );
   }
 

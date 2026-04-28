@@ -52,7 +52,6 @@ export const startStrategyAction: Action = {
     if (!id) {
       return {
         success: false,
-        text: "Missing required parameter: id",
       } as ActionResult;
     }
 
@@ -60,7 +59,6 @@ export const startStrategyAction: Action = {
     if (modeRaw !== "testing" && modeRaw !== "active") {
       return {
         success: false,
-        text: `Invalid mode '${modeRaw}'. Must be 'testing' or 'active'.`,
       } as ActionResult;
     }
     const targetStatus: StrategyStatus = modeRaw;
@@ -70,14 +68,12 @@ export const startStrategyAction: Action = {
     if (!strategy) {
       return {
         success: false,
-        text: `Strategy not found: ${id}. Use LIST_STRATEGIES to see your strategies.`,
       } as ActionResult;
     }
 
     if (strategy.status === "stopped") {
       return {
         success: false,
-        text: `Strategy '${strategy.name}' is stopped and cannot be restarted. Create a new strategy instead.`,
       } as ActionResult;
     }
 
@@ -86,7 +82,6 @@ export const startStrategyAction: Action = {
     if (!impl) {
       return {
         success: false,
-        text: `Cannot start strategy: kind '${strategy.kind}' is not registered. Make sure the corresponding plugin is loaded.`,
       } as ActionResult;
     }
 
@@ -95,7 +90,6 @@ export const startStrategyAction: Action = {
     if (!parseResult.success) {
       return {
         success: false,
-        text: `Cannot start strategy: params validation failed — ${parseResult.error.message}. Edit the strategy params before starting.`,
       } as ActionResult;
     }
 
@@ -157,7 +151,6 @@ export const stopStrategyAction: Action = {
     if (!id) {
       return {
         success: false,
-        text: "Missing required parameter: id",
       } as ActionResult;
     }
 
@@ -166,7 +159,6 @@ export const stopStrategyAction: Action = {
     if (!strategy) {
       return {
         success: false,
-        text: `Strategy not found: ${id}. Use LIST_STRATEGIES to see your strategies.`,
       } as ActionResult;
     }
 

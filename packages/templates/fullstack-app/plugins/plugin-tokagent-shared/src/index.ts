@@ -51,3 +51,6 @@ export {
 
 // Types
 export type { TokagentEntry, TokagentCall } from './clients/TokagentVaultClient.js';
+
+// Action result helpers
+export { tokagentActionError, tokagentActionFailure } from './action-result.js';

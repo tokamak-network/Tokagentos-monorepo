@@ -54,7 +54,6 @@ export const getPerpsMarketInfoAction: Action = {
     if (!rawSymbol) {
       return {
         success: false,
-        text: 'Please specify a symbol (e.g. "BTC", "ETH").',
         error: 'symbol parameter is required',
       };
     }
@@ -75,7 +74,6 @@ export const getPerpsMarketInfoAction: Action = {
       if (assetIndex === -1) {
         return {
           success: false,
-          text: `No Hyperliquid perpetual market found for "${symbol}". Check the symbol (e.g. "BTC", "ETH", "SOL").`,
           error: `symbol not found: ${symbol}`,
         };
       }
@@ -92,7 +90,6 @@ export const getPerpsMarketInfoAction: Action = {
       if (!ctx) {
         return {
           success: false,
-          text: `Market context unavailable for "${symbol}".`,
           error: 'no asset ctx at index',
         };
       }
@@ -119,13 +116,11 @@ export const getPerpsMarketInfoAction: Action = {
       if (msg.includes('aborted') || msg.includes('abort')) {
         return {
           success: false,
-          text: 'Hyperliquid API unreachable (request timed out).',
           error: msg,
         };
       }
       return {
         success: false,
-        text: `Hyperliquid API unreachable: ${msg}`,
         error: msg,
       };
     } finally {

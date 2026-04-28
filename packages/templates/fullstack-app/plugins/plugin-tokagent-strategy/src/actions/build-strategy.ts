@@ -198,14 +198,12 @@ export const buildStrategyAction: Action = {
     if (!userPrompt) {
       return {
         success: false,
-        text: 'BUILD_STRATEGY requires a "description" parameter — describe what you want the strategy to do.',
       } as ActionResult;
     }
 
     if (!vaultAddress || !/^0x[0-9a-fA-F]{40}$/.test(vaultAddress)) {
       return {
         success: false,
-        text: `Invalid vaultAddress: "${vaultAddress}". Must be a valid EVM address (0x + 40 hex chars).`,
       } as ActionResult;
     }
 
@@ -213,7 +211,6 @@ export const buildStrategyAction: Action = {
     if (!chainId) {
       return {
         success: false,
-        text: `Unsupported chain "${chainName}". Supported: ethereum, polygon, hyperevm.`,
       } as ActionResult;
     }
 
@@ -230,7 +227,6 @@ export const buildStrategyAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       return {
         success: false,
-        text: `LLM call failed: ${msg}`,
         data: { error: msg },
       } as ActionResult;
     }
@@ -244,9 +240,6 @@ export const buildStrategyAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       return {
         success: false,
-        text:
-          `Could not parse LLM response as JSON: ${msg}\n\n` +
-          `Raw LLM response (first 500 chars):\n${rawResponse.slice(0, 500)}`,
         data: { rawResponse, error: msg },
       } as ActionResult;
     }
@@ -258,7 +251,6 @@ export const buildStrategyAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       return {
         success: false,
-        text: `LLM response has invalid shape: ${msg}`,
         data: { parsed, error: msg },
       } as ActionResult;
     }
@@ -269,9 +261,6 @@ export const buildStrategyAction: Action = {
     if (!kindImpl) {
       return {
         success: false,
-        text:
-          `Kind "${shape.kind}" is not registered. Make sure registerBuiltinKinds() has been called. ` +
-          `This is an internal configuration issue.`,
         data: { kind: shape.kind },
       } as ActionResult;
     }
@@ -283,10 +272,6 @@ export const buildStrategyAction: Action = {
         .join("\n");
       return {
         success: false,
-        text:
-          `The LLM-generated params for kind "${shape.kind}" failed validation:\n${zodErr}\n\n` +
-          `Generated params were: ${JSON.stringify(shape.params, null, 2)}\n\n` +
-          `Please rephrase your request with more specific details (e.g., "minimum USDC balance of $50").`,
         data: { kind: shape.kind, params: shape.params, zodErrors: paramValidation.error.issues },
       } as ActionResult;
     }

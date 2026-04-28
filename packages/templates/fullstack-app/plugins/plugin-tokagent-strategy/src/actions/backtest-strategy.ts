@@ -59,7 +59,6 @@ export const backtestStrategyAction: Action = {
     if (!Number.isFinite(days) || days <= 0 || days > 365) {
       return {
         success: false,
-        text: `Invalid days: ${days}. Must be a number in (0, 365].`,
       } as ActionResult;
     }
 
@@ -68,7 +67,6 @@ export const backtestStrategyAction: Action = {
     if (!strategy) {
       return {
         success: false,
-        text: `No strategy with id ${id}. Use LIST_STRATEGIES to see yours.`,
       } as ActionResult;
     }
 
@@ -76,7 +74,6 @@ export const backtestStrategyAction: Action = {
     if (!impl) {
       return {
         success: false,
-        text: `Unknown kind: ${strategy.kind}`,
       } as ActionResult;
     }
 
@@ -84,7 +81,6 @@ export const backtestStrategyAction: Action = {
     if (typeof backtestFn !== "function") {
       return {
         success: false,
-        text: `Kind '${strategy.kind}' does not support backtesting.`,
       } as ActionResult;
     }
 
@@ -92,7 +88,6 @@ export const backtestStrategyAction: Action = {
     if (!paramsParse.success) {
       return {
         success: false,
-        text: `Strategy params invalid: ${paramsParse.error.message}`,
       } as ActionResult;
     }
 
@@ -124,7 +119,6 @@ export const backtestStrategyAction: Action = {
       if (!result.run) {
         return {
           success: false,
-          text: "Backtest returned supported=true but no run payload.",
         } as ActionResult;
       }
 
@@ -156,7 +150,6 @@ export const backtestStrategyAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       return {
         success: false,
-        text: `Backtest failed: ${msg}`,
       } as ActionResult;
     }
   },

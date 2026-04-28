@@ -69,7 +69,6 @@ export const describePolymarketMarketAction: Action = {
     if (!rawQuery) {
       return {
         success: false,
-        text: 'Please specify a market to look up (e.g. "Will BTC hit $100k by end of 2025?" or a Polymarket slug).',
         error: 'query parameter is required',
       };
     }
@@ -113,7 +112,6 @@ export const describePolymarketMarketAction: Action = {
       if (!markets || markets.length === 0) {
         return {
           success: false,
-          text: `No Polymarket market matches '${query}'. Try a different search phrase or slug.`,
           error: 'no markets found',
         };
       }
@@ -166,13 +164,11 @@ export const describePolymarketMarketAction: Action = {
       if (msg.includes('aborted') || msg.includes('abort')) {
         return {
           success: false,
-          text: 'Polymarket API unreachable (request timed out).',
           error: msg,
         };
       }
       return {
         success: false,
-        text: `Polymarket API unreachable: ${msg}`,
         error: msg,
       };
     } finally {

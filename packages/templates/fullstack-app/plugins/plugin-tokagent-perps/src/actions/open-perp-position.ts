@@ -141,7 +141,6 @@ export const openPerpPositionAction: Action = {
     if (!rawSymbol || !rawSide || !rawSize) {
       return {
         success: false,
-        text: 'Missing required parameters: symbol, side, sizeUsd.',
         error: 'missing parameters',
       };
     }
@@ -153,14 +152,12 @@ export const openPerpPositionAction: Action = {
     if (side !== 'long' && side !== 'short') {
       return {
         success: false,
-        text: 'Parameter "side" must be "long" or "short".',
         error: 'invalid side',
       };
     }
     if (!Number.isFinite(sizeUsd) || sizeUsd <= 0) {
       return {
         success: false,
-        text: 'Parameter "sizeUsd" must be a positive number.',
         error: 'invalid sizeUsd',
       };
     }
@@ -174,9 +171,6 @@ export const openPerpPositionAction: Action = {
     if (!vaultAddress) {
       return {
         success: false,
-        text:
-          'TOKAGENT_VAULT_ADDRESS_999 (or TOKAGENT_VAULT_ADDRESS) is not set. ' +
-          'Configure your HyperEVM vault address.',
         error: 'vault address not configured',
       };
     }
@@ -195,7 +189,6 @@ export const openPerpPositionAction: Action = {
     } catch (e) {
       return {
         success: false,
-        text: e instanceof Error ? e.message : String(e),
         error: 'private key missing',
       };
     }
@@ -218,7 +211,6 @@ export const openPerpPositionAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       return {
         success: false,
-        text: `Failed to fetch market data for "${symbol}": ${msg}`,
         error: msg,
       };
     } finally {
@@ -263,7 +255,6 @@ export const openPerpPositionAction: Action = {
         : '';
       return {
         success: false,
-        text: `Transaction failed: ${msg}${explanation}`,
         error: msg,
       };
     }

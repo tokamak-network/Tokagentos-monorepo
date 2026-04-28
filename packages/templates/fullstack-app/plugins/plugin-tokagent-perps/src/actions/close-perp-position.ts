@@ -120,7 +120,6 @@ export const closePerpPositionAction: Action = {
     if (!vaultAddress) {
       return {
         success: false,
-        text: 'TOKAGENT_VAULT_ADDRESS_999 is not set.',
         error: 'vault address not configured',
       };
     }
@@ -137,7 +136,6 @@ export const closePerpPositionAction: Action = {
     } catch (e) {
       return {
         success: false,
-        text: e instanceof Error ? e.message : String(e),
         error: 'private key missing',
       };
     }
@@ -164,7 +162,6 @@ export const closePerpPositionAction: Action = {
         const msg = err instanceof Error ? err.message : String(err);
         return {
           success: false,
-          text: `Failed to fetch position data: ${msg}`,
           error: msg,
         };
       }
@@ -193,7 +190,6 @@ export const closePerpPositionAction: Action = {
         const msg = err instanceof Error ? err.message : String(err);
         return {
           success: false,
-          text: `Failed to fetch market data for "${symbol}": ${msg}`,
           error: msg,
         };
       }
@@ -217,7 +213,6 @@ export const closePerpPositionAction: Action = {
       if (szBigInt === 0n) {
         return {
           success: false,
-          text: 'Computed close size is 0. Check position size and szDecimals.',
           error: 'zero close size',
         };
       }
@@ -261,7 +256,6 @@ export const closePerpPositionAction: Action = {
         const msg = err instanceof Error ? err.message : String(err);
         return {
           success: false,
-          text: `Transaction failed: ${msg}`,
           error: msg,
         };
       }

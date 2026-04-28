@@ -89,13 +89,11 @@ export const deployTokagentVaultAction: Action = {
     if (!chainId || !SUPPORTED_CHAIN_IDS.has(chainId)) {
       return {
         success: false,
-        text: `Unsupported chain '${chainName}'. Supported: ethereum, polygon, hyperevm.`,
       } as ActionResult;
     }
     if (packIds.length === 0) {
       return {
         success: false,
-        text: "No protocol packs specified. Example: packs=['aave-v3-polygon'] for Aave v3 yield on Polygon.",
       } as ActionResult;
     }
 
@@ -106,7 +104,6 @@ export const deployTokagentVaultAction: Action = {
       if (!pack) {
         return {
           success: false,
-          text: `Unknown pack '${pid}' for chain '${chainName}'. Available for chain ${chainId}: run LIST_PROTOCOL_PACKS to see options.`,
         } as ActionResult;
       }
       packs.push(pack);
@@ -172,7 +169,6 @@ export const deployTokagentVaultAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       return {
         success: false,
-        text: `Vault deploy failed: ${msg}. Check: (1) TOKAGENT_PRIVATE_KEY is set; (2) the deployer has gas on ${chainName}; (3) the factory at ${chainConfig.factoryProxy} has the Tokagent code store configured.`,
         data: { error: msg },
       } as ActionResult;
     }

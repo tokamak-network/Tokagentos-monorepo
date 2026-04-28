@@ -60,7 +60,6 @@ export const depositToAaveAction: Action = {
     if (!vaultAddress) {
       return {
         success: false,
-        text: 'No Polygon vault configured. Deploy one via `tokagentos deploy --kind tokagent --pack aave-v3-polygon`.',
         error: 'TOKAGENT_VAULT_ADDRESS_137 not set',
       };
     }
@@ -83,7 +82,6 @@ export const depositToAaveAction: Action = {
     if (rawAmount === undefined || rawAmount === null) {
       return {
         success: false,
-        text: 'Please specify the USDC amount to deposit (e.g. "deposit 100 USDC to Aave").',
         error: 'amount parameter is required',
       };
     }
@@ -92,7 +90,6 @@ export const depositToAaveAction: Action = {
     if (!Number.isFinite(amountNum) || amountNum <= 0) {
       return {
         success: false,
-        text: `Invalid amount: ${rawAmount}. Amount must be a positive number.`,
         error: 'amount must be positive',
       };
     }
@@ -127,13 +124,11 @@ export const depositToAaveAction: Action = {
       if (msg.includes('CallNotAllowlisted') || msg.includes('not allowlisted') || msg.includes('Allowlist')) {
         return {
           success: false,
-          text: 'Vault has no Aave v3 allowlist. Re-deploy the vault with `--pack aave-v3-polygon` or add the entries via `ownerSetAllowlistBatch`.',
           error: msg,
         };
       }
       return {
         success: false,
-        text: `Deposit failed: ${msg}`,
         error: msg,
       };
     }

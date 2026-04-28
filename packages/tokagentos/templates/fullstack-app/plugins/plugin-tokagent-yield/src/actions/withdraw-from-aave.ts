@@ -55,7 +55,6 @@ export const withdrawFromAaveAction: Action = {
     if (!vaultAddress) {
       return {
         success: false,
-        text: 'No Polygon vault configured. Deploy one via `tokagentos deploy --kind tokagent --pack aave-v3-polygon`.',
         error: 'TOKAGENT_VAULT_ADDRESS_137 not set',
       };
     }
@@ -78,7 +77,6 @@ export const withdrawFromAaveAction: Action = {
     if (rawAmount === undefined || rawAmount === null) {
       return {
         success: false,
-        text: 'Please specify the USDC amount to withdraw (e.g. "withdraw 100 USDC from Aave" or "withdraw all from Aave").',
         error: 'amount parameter is required',
       };
     }
@@ -96,7 +94,6 @@ export const withdrawFromAaveAction: Action = {
       if (!Number.isFinite(amountNum) || amountNum <= 0) {
         return {
           success: false,
-          text: `Invalid amount: ${rawAmount}. Provide a positive number or "all".`,
           error: 'amount must be positive or "all"',
         };
       }
@@ -131,13 +128,11 @@ export const withdrawFromAaveAction: Action = {
       if (msg.includes('CallNotAllowlisted') || msg.includes('not allowlisted') || msg.includes('Allowlist')) {
         return {
           success: false,
-          text: 'Vault has no Aave v3 allowlist. Re-deploy the vault with `--pack aave-v3-polygon` or add the entries via `ownerSetAllowlistBatch`.',
           error: msg,
         };
       }
       return {
         success: false,
-        text: `Withdrawal failed: ${msg}`,
         error: msg,
       };
     }
