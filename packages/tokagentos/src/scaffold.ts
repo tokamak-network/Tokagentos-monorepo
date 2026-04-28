@@ -157,6 +157,28 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "  // dump — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n",
   },
   {
+    path: "packages/agent/src/config/plugin-auto-enable.ts",
+    description:
+      "Disable the n8n-workflow auto-enable. Upstream auto-enables it " +
+      "whenever the local n8n sidecar is permitted (default true), but " +
+      "Tokagent doesn't ship @elizaos/plugin-n8n-workflow so the loader " +
+      "warns 'Could not load plugin @elizaos/plugin-n8n-workflow' on every " +
+      "boot. Force-disable to silence the warning. Re-enable in upstream " +
+      "deployments by removing this surgical-patch.",
+    find:
+      "    // Default is \"local sidecar allowed\" — only disable if explicitly set to\n" +
+      "    // false. Mobile forces this to false regardless of user setting.\n" +
+      "    const localN8nEnabled =\n" +
+      "      params.isNativePlatform === true\n" +
+      "        ? false\n" +
+      "        : n8nConfig?.localEnabled !== false;\n",
+    replaceWith:
+      "    // [tokagent surgical-patch] @elizaos/plugin-n8n-workflow isn't\n" +
+      "    // shipped in the Tokagent scaffold, so force-skip the auto-enable\n" +
+      "    // path here. See scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
+      "    const localN8nEnabled = false;\n",
+  },
+  {
     path: "packages/agent/src/runtime/eliza.ts",
     description:
       "Add a Tokagent capability hint to the system-prompt suffix. Upstream " +

@@ -53,17 +53,25 @@ const TOKAGENT_PLUGINS: readonly string[] = [
 
 /** Core plugins always loaded. Upstream list, then Tokagent overlays. */
 export const CORE_PLUGINS: readonly string[] = [
-  // ── upstream verbatim ──────────────────────────────────────────────────
-  "@elizaos/plugin-sql",
-  "@elizaos/plugin-local-embedding",
-  "@elizaos/app-companion",
-  "@elizaos/plugin-cron",
-  "@elizaos/plugin-app-control",
-  "@elizaos/plugin-shell",
-  "@elizaos/plugin-agent-skills",
-  "@elizaos/plugin-commands",
-  "@elizaos/app-lifeops",
-  "@elizaos/plugin-browser-bridge",
+  // ── upstream essentials kept for the chat surface ─────────────────────
+  "@elizaos/plugin-sql", // database adapter (required)
+  "@elizaos/plugin-local-embedding", // memory embeddings (required)
+  "@elizaos/app-companion", // VRM companion + emote dispatch
+  "@elizaos/plugin-app-control", // launch/close apps from chat
+  "@elizaos/plugin-shell", // shell command execution
+  "@elizaos/plugin-agent-skills", // skill execution + marketplace
+  "@elizaos/plugin-commands", // slash command handling
+  "@elizaos/plugin-browser-bridge", // companion browser bridge
+  // ── upstream extras NOT loaded by default ─────────────────────────────
+  // Removed because the upstream plugin-installer cache resolves them
+  // via runtime-imports paths that break inter-plugin requires
+  // (`Cannot find module '../../../plugins/plugin-browser-bridge/src/...`).
+  // Tokagent's strategy runner schedules its own ticks, so plugin-cron
+  // isn't required; LifeOps is a personal-ops product surface that's not
+  // core to the vault-operator persona. Re-enable individually via
+  // OPTIONAL_CORE_PLUGINS or character config if a deployment needs them.
+  //   "@elizaos/plugin-cron",
+  //   "@elizaos/app-lifeops",
   // ── tokagent additions ─────────────────────────────────────────────────
   "@elizaos/plugin-evm", // EVM wallet for direct hot-wallet flows
   ...TOKAGENT_PLUGINS,
