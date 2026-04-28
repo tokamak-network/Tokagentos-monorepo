@@ -7,6 +7,7 @@ import {
   resolveAgentPrivateKey,
   findPack,
   SUPPORTED_CHAIN_IDS,
+  tokagentActionError,
   type ProtocolPack,
   type AllowlistEntry,
   type ApprovalSpec,
@@ -26,7 +27,9 @@ const CHAIN_IDS_BY_NAME: Record<string, number> = {
 export const deployTokagentVaultAction: Action = {
   name: "DEPLOY_TOKAGENT_VAULT",
   description:
-    "Deploy a new TokagentVault smart contract on a chain, pre-configured for one or more DeFi protocols. The vault becomes the user's custody wrapper — they deposit funds into it, and the agent operator can invoke allowlisted protocol functions on their behalf.",
+    "Use to provision a new TokagentVault on-chain BEFORE building or running any strategy. " +
+    "Deploys a custody-wrapper smart contract pre-allowlisted for one or more DeFi protocol packs (Aave, Hyperliquid perps, etc.). " +
+    "Returns the deployed vault address and tx hash. Defaults: chain='hyperevm', packs=['hyperliquid-perps-hyperevm'] (polygon→['aave-v3-polygon'], ethereum→[]).",
   similes: [
     "deploy vault",
     "create tokagent vault",
@@ -37,15 +40,16 @@ export const deployTokagentVaultAction: Action = {
   parameters: [
     {
       name: "chain",
-      description: "Chain to deploy on: 'ethereum', 'polygon', or 'hyperevm'.",
-      required: true,
+      description: "Optional. Chain to deploy on: 'ethereum', 'polygon', or 'hyperevm'. Defaults to 'hyperevm'.",
+      required: false,
       schema: { type: "string", enum: ["ethereum", "polygon", "hyperevm"] },
     },
     {
       name: "packs",
       description:
-        "Protocol packs to allowlist at deploy time. Available: 'aave-v3-polygon'. Repeatable.",
-      required: true,
+        "Optional. Protocol packs to allowlist at deploy time. Available: 'aave-v3-polygon', 'hyperliquid-perps-hyperevm'. " +
+        "Defaults: hyperevm→['hyperliquid-perps-hyperevm'], polygon→['aave-v3-polygon'], ethereum→[].",
+      required: false,
       schema: { type: "array", items: { type: "string" } },
     },
     {
@@ -80,22 +84,26 @@ export const deployTokagentVaultAction: Action = {
       (options as { parameters?: Record<string, unknown> } | undefined)?.parameters ?? options ?? {}
     ) as Record<string, unknown>;
 
-    const chainName = String(params.chain ?? "")
+    // Default chain to "hyperevm" if not provided
+    const chainNameRaw = String(params.chain ?? "")
       .toLowerCase()
       .trim();
-    const packIds = Array.isArray(params.packs) ? (params.packs as string[]) : [];
+    const chainName = chainNameRaw || "hyperevm";
 
     const chainId = CHAIN_IDS_BY_NAME[chainName];
     if (!chainId || !SUPPORTED_CHAIN_IDS.has(chainId)) {
-      return {
-        success: false,
-      } as ActionResult;
+      return tokagentActionError("invalid_chain", { provided: chainName });
     }
-    if (packIds.length === 0) {
-      return {
-        success: false,
-      } as ActionResult;
-    }
+
+    // Default packs per chain when not provided
+    const DEFAULT_PACKS_BY_CHAIN_ID: Record<number, string[]> = {
+      999: ["hyperliquid-perps-hyperevm"],
+      137: ["aave-v3-polygon"],
+      1: [],
+    };
+    const packIds = Array.isArray(params.packs) && params.packs.length > 0
+      ? (params.packs as string[])
+      : (DEFAULT_PACKS_BY_CHAIN_ID[chainId] ?? []);
 
     // Resolve packs
     const packs: ProtocolPack[] = [];
@@ -103,8 +111,7 @@ export const deployTokagentVaultAction: Action = {
       const pack = findPack(pid, chainId);
       if (!pack) {
         return {
-          success: false,
-        } as ActionResult;
+          success: false,        } as ActionResult;
       }
       packs.push(pack);
     }
@@ -133,7 +140,7 @@ export const deployTokagentVaultAction: Action = {
       privateKey = resolveAgentPrivateKey(runtimeLike);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return { success: false, text: msg } as ActionResult;
+      return { success: false,} as ActionResult;
     }
 
     const publicClient = getPublicClient(chainId);
@@ -146,7 +153,7 @@ export const deployTokagentVaultAction: Action = {
     const operator: Address =
       (params.operator as Address | undefined) ?? (walletClient.account?.address as Address);
     if (!operator) {
-      return { success: false, text: "Could not resolve operator address." } as ActionResult;
+      return { success: false,} as ActionResult;
     }
 
     const userSalt: Hex = `0x${Array.from({ length: 64 }, () =>
@@ -168,8 +175,7 @@ export const deployTokagentVaultAction: Action = {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        success: false,
-        data: { error: msg },
+        success: false,        data: { error: msg },
       } as ActionResult;
     }
   },
@@ -183,19 +189,60 @@ export const deployTokagentVaultAction: Action = {
       {
         name: "agent",
         content: {
-          text: "I'll deploy a TokagentVault on Polygon with the Aave v3 pack allowlisted. Using the default operator.",
+          text: "Deploying a TokagentVault on Polygon with the aave-v3-polygon pack allowlisted.",
+          actions: ["DEPLOY_TOKAGENT_VAULT"],
         },
       },
     ],
     [
       {
         name: "user",
-        content: { text: "Create a tokagent vault for yield farming" },
+        content: { text: "deploy a vault" },
       },
       {
         name: "agent",
         content: {
-          text: "Setting up a Polygon vault with aave-v3-polygon pack.",
+          text: "Deploying a TokagentVault on HyperEVM with the hyperliquid-perps pack (defaults).",
+          actions: ["DEPLOY_TOKAGENT_VAULT"],
+        },
+      },
+    ],
+    [
+      {
+        name: "user",
+        content: { text: "I want to start a perp funding arb strategy" },
+      },
+      {
+        name: "agent",
+        content: {
+          text: "You'll need a vault first. Deploying a TokagentVault on HyperEVM with the hyperliquid-perps pack — once it's live I'll build the strategy.",
+          actions: ["DEPLOY_TOKAGENT_VAULT"],
+        },
+      },
+    ],
+    [
+      {
+        name: "user",
+        content: { text: "make a strategy that earns yield" },
+      },
+      {
+        name: "agent",
+        content: {
+          text: "I need a vault on Polygon to run an Aave yield strategy. Deploying one now with the aave-v3-polygon pack.",
+          actions: ["DEPLOY_TOKAGENT_VAULT"],
+        },
+      },
+    ],
+    [
+      {
+        name: "user",
+        content: { text: "set up a custody wrapper on hyperevm" },
+      },
+      {
+        name: "agent",
+        content: {
+          text: "Deploying a TokagentVault on HyperEVM with the hyperliquid-perps pack.",
+          actions: ["DEPLOY_TOKAGENT_VAULT"],
         },
       },
     ],

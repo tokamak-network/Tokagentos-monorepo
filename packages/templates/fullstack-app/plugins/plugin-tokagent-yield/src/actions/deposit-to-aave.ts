@@ -24,8 +24,10 @@ function str(runtime: IAgentRuntime, key: string): string | undefined {
 
 export const depositToAaveAction: Action = {
   name: 'DEPOSIT_TO_AAVE',
-  description: 'Deposit USDC from the user\'s TokagentVault into Aave v3 on Polygon to earn yield.',
-  similes: ['supply aave', 'lend on aave', 'earn yield on aave', 'put into aave'],
+  description:
+    'Use AFTER a Polygon TokagentVault is deployed and funded with USDC, to start earning yield on Aave v3. ' +
+    'Supplies the specified USDC amount from the vault into Aave. Returns the tx hash. Polygon-only currently.',
+  similes: ['supply aave', 'lend on aave', 'earn yield on aave', 'put into aave', 'deposit usdc to aave'],
   contexts: ['wallet'],
   suppressPostActionContinuation: false,
 
@@ -59,8 +61,7 @@ export const depositToAaveAction: Action = {
     const vaultAddress = str(runtime, 'TOKAGENT_VAULT_ADDRESS_137');
     if (!vaultAddress) {
       return {
-        success: false,
-        error: 'TOKAGENT_VAULT_ADDRESS_137 not set',
+        success: false,        error: 'TOKAGENT_VAULT_ADDRESS_137 not set',
       };
     }
 
@@ -72,7 +73,7 @@ export const depositToAaveAction: Action = {
       privateKey = resolveAgentPrivateKey(runtimeLike);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return { success: false, text: msg, error: msg };
+      return { success: false,error: msg };
     }
 
     // Extract parameters
@@ -81,16 +82,14 @@ export const depositToAaveAction: Action = {
 
     if (rawAmount === undefined || rawAmount === null) {
       return {
-        success: false,
-        error: 'amount parameter is required',
+        success: false,        error: 'amount parameter is required',
       };
     }
 
     const amountNum = Number(rawAmount);
     if (!Number.isFinite(amountNum) || amountNum <= 0) {
       return {
-        success: false,
-        error: 'amount must be positive',
+        success: false,        error: 'amount must be positive',
       };
     }
 
@@ -123,13 +122,11 @@ export const depositToAaveAction: Action = {
       const msg = err instanceof Error ? err.message : String(err);
       if (msg.includes('CallNotAllowlisted') || msg.includes('not allowlisted') || msg.includes('Allowlist')) {
         return {
-          success: false,
-          error: msg,
+          success: false,          error: msg,
         };
       }
       return {
-        success: false,
-        error: msg,
+        success: false,        error: msg,
       };
     }
 
@@ -139,4 +136,46 @@ export const depositToAaveAction: Action = {
       data: { txHash, amount: amountNum, chain: 'polygon' },
     };
   },
+
+  examples: [
+    [
+      { name: 'user', content: { text: 'deposit 100 USDC into Aave' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Supplying 100 USDC from your Polygon vault into Aave v3.',
+          actions: ['DEPOSIT_TO_AAVE'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'put $50 to work on aave' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Depositing 50 USDC into Aave v3 from your Polygon vault.',
+          actions: ['DEPOSIT_TO_AAVE'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'lend my stables on aave' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'How much USDC would you like to lend on Aave v3?',
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'deposit 1000 usdc' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Depositing 1,000 USDC into Aave v3 on Polygon.',
+          actions: ['DEPOSIT_TO_AAVE'],
+        },
+      },
+    ],
+  ],
 };

@@ -7,6 +7,7 @@
 import { randomUUID } from "node:crypto";
 import type { Action, ActionResult, IAgentRuntime } from "@elizaos/core";
 import { ModelType } from "@elizaos/core";
+import { tokagentActionError } from "@tokagent/plugin-tokagent-shared";
 import { getKind } from "../kind-registry.js";
 import { saveStrategy } from "../persistence.js";
 import type { Strategy, StrategyKind } from "../types.js";
@@ -148,9 +149,9 @@ function toRuntimeLike(runtime: IAgentRuntime) {
 export const buildStrategyAction: Action = {
   name: "BUILD_STRATEGY",
   description:
-    "Compose a new DeFi strategy from a free-form natural language description. " +
-    "Uses an LLM to map the request onto a structured StrategyKind, validates params, " +
-    "and persists the strategy as a draft ready to start.",
+    "Use to compose a DeFi strategy from a free-form goal description (yield, perp funding arb, polymarket value hunt). " +
+    "Maps the goal to a structured StrategyKind via an LLM, validates kind-specific params, and persists it as a draft. " +
+    "Returns the new strategy id; vault defaults to TOKAGENT_VAULT_ADDRESS_<chainId> and chain defaults to 'hyperevm'.",
   similes: [
     "build strategy",
     "create strategy",
@@ -170,14 +171,16 @@ export const buildStrategyAction: Action = {
     },
     {
       name: "vaultAddress",
-      description: "The TokagentVault address this strategy operates through.",
-      required: true,
+      description:
+        "Optional. TokagentVault address this strategy operates through. " +
+        "Defaults to TOKAGENT_VAULT_ADDRESS_<chainId> setting (per-chain) — call DEPLOY_TOKAGENT_VAULT first if no vault exists.",
+      required: false,
       schema: { type: "string" },
     },
     {
       name: "chain",
-      description: "Chain the vault is on: ethereum, polygon, or hyperevm.",
-      required: true,
+      description: "Optional. Chain the vault is on: 'ethereum', 'polygon', or 'hyperevm'. Defaults to 'hyperevm'.",
+      required: false,
       schema: { type: "string", enum: ["ethereum", "polygon", "hyperevm"] },
     },
   ],
@@ -190,28 +193,42 @@ export const buildStrategyAction: Action = {
     ) as Record<string, unknown>;
 
     const userPrompt = String(params["description"] ?? "").trim();
-    const vaultAddress = String(params["vaultAddress"] ?? "").trim() as `0x${string}`;
-    const chainName = String(params["chain"] ?? "")
+
+    // Default chain to "hyperevm" when not provided
+    const chainNameRaw = String(params["chain"] ?? "")
       .toLowerCase()
       .trim();
+    const chainName = chainNameRaw || "hyperevm";
 
     if (!userPrompt) {
-      return {
-        success: false,
-      } as ActionResult;
-    }
-
-    if (!vaultAddress || !/^0x[0-9a-fA-F]{40}$/.test(vaultAddress)) {
-      return {
-        success: false,
-      } as ActionResult;
+      return tokagentActionError("missing_description");
     }
 
     const chainId = CHAIN_IDS_BY_NAME[chainName];
     if (!chainId) {
-      return {
-        success: false,
-      } as ActionResult;
+      return tokagentActionError("invalid_chain", { provided: chainName });
+    }
+
+    // Resolve vault address: explicit param wins, otherwise per-chain runtime setting
+    let vaultAddress = String(params["vaultAddress"] ?? "").trim() as `0x${string}`;
+    if (!vaultAddress) {
+      const settingKey = `TOKAGENT_VAULT_ADDRESS_${chainId}`;
+      const fromSetting = String(runtime.getSetting(settingKey) ?? "").trim();
+      if (fromSetting) {
+        vaultAddress = fromSetting as `0x${string}`;
+      }
+    }
+
+    if (!vaultAddress) {
+      return tokagentActionError("no_vault_for_chain", {
+        chain: chainName,
+        chainId,
+        hint: "Call DEPLOY_TOKAGENT_VAULT first.",
+      });
+    }
+
+    if (!/^0x[0-9a-fA-F]{40}$/.test(vaultAddress)) {
+      return tokagentActionError("invalid_vault_address", { provided: vaultAddress });
     }
 
     // ── Step 1: call LLM ──────────────────────────────────────────────────────
@@ -226,8 +243,7 @@ export const buildStrategyAction: Action = {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        success: false,
-        data: { error: msg },
+        success: false,        data: { error: msg },
       } as ActionResult;
     }
 
@@ -239,8 +255,7 @@ export const buildStrategyAction: Action = {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        success: false,
-        data: { rawResponse, error: msg },
+        success: false,        data: { rawResponse, error: msg },
       } as ActionResult;
     }
 
@@ -250,8 +265,7 @@ export const buildStrategyAction: Action = {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        success: false,
-        data: { parsed, error: msg },
+        success: false,        data: { parsed, error: msg },
       } as ActionResult;
     }
 
@@ -260,8 +274,7 @@ export const buildStrategyAction: Action = {
     const kindImpl = getKind(shape.kind);
     if (!kindImpl) {
       return {
-        success: false,
-        data: { kind: shape.kind },
+        success: false,        data: { kind: shape.kind },
       } as ActionResult;
     }
 
@@ -271,8 +284,7 @@ export const buildStrategyAction: Action = {
         .map((i) => `  ${i.path.join(".")}: ${i.message}`)
         .join("\n");
       return {
-        success: false,
-        data: { kind: shape.kind, params: shape.params, zodErrors: paramValidation.error.issues },
+        success: false,        data: { kind: shape.kind, params: shape.params, zodErrors: paramValidation.error.issues },
       } as ActionResult;
     }
 
@@ -316,7 +328,7 @@ export const buildStrategyAction: Action = {
       {
         name: "agent",
         content: {
-          text: "Building a perp-funding-arb strategy across BTC/ETH/SOL.",
+          text: "Building a perp-funding-arb strategy across BTC/ETH/SOL on the default HyperEVM vault.",
           actions: ["BUILD_STRATEGY"],
         },
       },
@@ -329,7 +341,7 @@ export const buildStrategyAction: Action = {
       {
         name: "agent",
         content: {
-          text: "Setting up a yield-auto-compound strategy for USDC on Polygon Aave.",
+          text: "Setting up a yield-auto-compound strategy for USDC on the Polygon vault.",
           actions: ["BUILD_STRATEGY"],
         },
       },
@@ -344,6 +356,31 @@ export const buildStrategyAction: Action = {
         content: {
           text: "Creating a polymarket-value-hunt strategy.",
           actions: ["BUILD_STRATEGY"],
+        },
+      },
+    ],
+    [
+      {
+        name: "user",
+        content: { text: "build a yield strategy" },
+      },
+      {
+        name: "agent",
+        content: {
+          text: "Composing a yield-auto-compound USDC strategy on your default vault.",
+          actions: ["BUILD_STRATEGY"],
+        },
+      },
+    ],
+    [
+      {
+        name: "user",
+        content: { text: "make a strategy that does something with funding" },
+      },
+      {
+        name: "agent",
+        content: {
+          text: "I'll build a perp-funding-arb strategy. Which symbols should I include — BTC, ETH, SOL, or others?",
         },
       },
     ],

@@ -58,8 +58,9 @@ function resolveVaultAddress(runtime: IAgentRuntime): string | undefined {
 export const openPerpPositionAction: Action = {
   name: 'OPEN_PERP_POSITION',
   description:
-    'Open a Hyperliquid perpetual position (long or short) through the TokagentVault on HyperEVM. ' +
-    'Sends a CoreWriter limit order via the TokagentHyperEvmHelper.',
+    'Use to open a NEW Hyperliquid perpetual position (long or short) through a deployed HyperEVM TokagentVault that has the hyperliquid-perps pack allowlisted. ' +
+    'Sends a CoreWriter limit order via TokagentHyperEvmHelper. ' +
+    'Returns the tx hash; the order settles asynchronously on HyperCore.',
   similes: [
     'open perp',
     'long btc',
@@ -140,8 +141,7 @@ export const openPerpPositionAction: Action = {
 
     if (!rawSymbol || !rawSide || !rawSize) {
       return {
-        success: false,
-        error: 'missing parameters',
+        success: false,        error: 'missing parameters',
       };
     }
 
@@ -151,14 +151,12 @@ export const openPerpPositionAction: Action = {
 
     if (side !== 'long' && side !== 'short') {
       return {
-        success: false,
-        error: 'invalid side',
+        success: false,        error: 'invalid side',
       };
     }
     if (!Number.isFinite(sizeUsd) || sizeUsd <= 0) {
       return {
-        success: false,
-        error: 'invalid sizeUsd',
+        success: false,        error: 'invalid sizeUsd',
       };
     }
 
@@ -170,14 +168,13 @@ export const openPerpPositionAction: Action = {
     const vaultAddress = resolveVaultAddress(runtime);
     if (!vaultAddress) {
       return {
-        success: false,
-        error: 'vault address not configured',
+        success: false,        error: 'vault address not configured',
       };
     }
 
     const helperResult = resolveHelperAddress(runtime);
     if ('error' in helperResult) {
-      return { success: false, text: helperResult.error, error: 'helper not deployed' };
+      return { success: false,error: 'helper not deployed' };
     }
     const helperAddress = helperResult.address;
 
@@ -188,8 +185,7 @@ export const openPerpPositionAction: Action = {
       privateKey = resolveAgentPrivateKey(runtime as unknown as Parameters<typeof resolveAgentPrivateKey>[0]);
     } catch (e) {
       return {
-        success: false,
-        error: 'private key missing',
+        success: false,        error: 'private key missing',
       };
     }
 
@@ -210,8 +206,7 @@ export const openPerpPositionAction: Action = {
       clearTimeout(timeoutId);
       const msg = err instanceof Error ? err.message : String(err);
       return {
-        success: false,
-        error: msg,
+        success: false,        error: msg,
       };
     } finally {
       clearTimeout(timeoutId);
@@ -233,7 +228,7 @@ export const openPerpPositionAction: Action = {
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      return { success: false, text: `Order build failed: ${msg}`, error: msg };
+      return { success: false,error: msg };
     }
 
     // ── Submit via vault ────────────────────────────────────────────────────
@@ -254,8 +249,7 @@ export const openPerpPositionAction: Action = {
           'Apply the pack via vault.setAllowlist() or redeploy with the pack.'
         : '';
       return {
-        success: false,
-        error: msg,
+        success: false,        error: msg,
       };
     }
 
@@ -276,4 +270,55 @@ export const openPerpPositionAction: Action = {
       data: { symbol, side, sizeUsd, markPx, tif: tifNames[tif], txHash },
     };
   },
+
+  examples: [
+    [
+      { name: 'user', content: { text: 'long $1000 of BTC' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Opening a $1,000 BTC long via your HyperEVM vault.',
+          actions: ['OPEN_PERP_POSITION'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'short ETH 500 dollars' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Opening a $500 ETH short.',
+          actions: ['OPEN_PERP_POSITION'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'go long SOL with 10% of my free collateral' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'I size perp positions in dollar notional, not as a percentage of collateral. How many USD of SOL would you like to long?',
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'buy 0.5 BTC at limit $63,000' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Opening a BTC long with a $63,000 limit. Note: I size by USD notional, so I will compute $sizeUsd from current mark.',
+          actions: ['OPEN_PERP_POSITION'],
+        },
+      },
+    ],
+    [
+      { name: 'user', content: { text: 'open a perp' } },
+      {
+        name: 'agent',
+        content: {
+          text: 'Which symbol, which direction (long/short), and how many USD?',
+        },
+      },
+    ],
+  ],
 };
