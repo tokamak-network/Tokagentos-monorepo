@@ -1,6 +1,6 @@
 {
   "name": "@tokagent/tokagentos",
-  "version": "2.0.0-alpha.257",
+  "version": "2.0.0-alpha.258",
   "description": "tokagentOS CLI - Create and upgrade tokagentOS project templates",
   "type": "module",
   "bin": {
@@ -34,6 +34,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:packaged": "node ./scripts/packaged-smoke.mjs",
+    "bench:agent-chat": "node ./scripts/agent-chat-smoke.mjs",
+    "bench:agent-chat:llm": "node ./scripts/agent-chat-smoke.mjs --require-llm",
     "sync:plugins": "node scripts/sync-tokagent-plugins.mjs",
     "sync:plugins:check": "node scripts/sync-tokagent-plugins.mjs --check",
     "prepublishOnly": "bun run sync:plugins && bun run build"
