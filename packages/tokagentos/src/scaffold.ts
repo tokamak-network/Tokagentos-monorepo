@@ -786,11 +786,14 @@ export function resolveTemplateUpstream(
   upstream: TemplateUpstream,
 ): TemplateUpstream {
   const hasEnvBranch = Object.hasOwn(process.env, "TOKAGENTOS_UPSTREAM_BRANCH");
+  const hasEnvCommit = Object.hasOwn(process.env, "TOKAGENTOS_UPSTREAM_COMMIT");
   const envRepo = process.env.TOKAGENTOS_UPSTREAM_REPO?.trim();
   const envBranch = process.env.TOKAGENTOS_UPSTREAM_BRANCH?.trim();
+  const envCommit = process.env.TOKAGENTOS_UPSTREAM_COMMIT?.trim();
   return {
     ...upstream,
     branch: hasEnvBranch ? envBranch || undefined : upstream.branch,
+    commit: hasEnvCommit ? envCommit || undefined : upstream.commit,
     repo: envRepo || upstream.repo,
   };
 }
@@ -1461,6 +1464,7 @@ export function applyTokagentScaffoldPatches(options: {
 
 export function initializeGitSubmodule(options: {
   branch?: string;
+  commit?: string;
   projectRoot: string;
   repo: string;
   submodulePath: string;
@@ -1485,10 +1489,30 @@ export function initializeGitSubmodule(options: {
     cwd: options.projectRoot,
     stdio: "inherit",
   });
+
+  // If a commit pin is set, fetch and check it out so the submodule's
+  // working tree is locked to a vetted upstream SHA, immune to future
+  // upstream pushes on the tracked branch. We have to fetch explicitly
+  // because `submodule add --depth 1 -b <branch>` only retrieves the
+  // branch tip — older pinned commits aren't in the local objects.
+  const commit = options.commit?.trim();
+  if (commit) {
+    execFileSync(
+      "git",
+      ["fetch", "--depth", "1", "origin", commit],
+      { cwd: submoduleRoot, stdio: "inherit" },
+    );
+    execFileSync(
+      "git",
+      ["checkout", "--detach", commit],
+      { cwd: submoduleRoot, stdio: "inherit" },
+    );
+  }
 }
 
 export function updateGitSubmodule(options: {
   branch?: string;
+  commit?: string;
   dryRun?: boolean;
   projectRoot: string;
   repo: string;
@@ -1503,6 +1527,7 @@ export function updateGitSubmodule(options: {
   if (!fs.existsSync(submoduleRoot)) {
     initializeGitSubmodule({
       branch: options.branch,
+      commit: options.commit,
       projectRoot: options.projectRoot,
       repo: options.repo,
       submodulePath: options.submodulePath,
@@ -1511,6 +1536,24 @@ export function updateGitSubmodule(options: {
   }
 
   const localRepoRoot = resolveLocalRepoRoot(options.repo);
+  const commit = options.commit?.trim();
+  if (commit) {
+    // Pinned mode: ignore --remote (which follows branch HEAD) and
+    // force-checkout the pinned SHA so existing scaffolds stay locked
+    // to the same upstream state as fresh ones.
+    execFileSync(
+      "git",
+      ["fetch", "--depth", "1", "origin", commit],
+      { cwd: submoduleRoot, stdio: "inherit" },
+    );
+    execFileSync(
+      "git",
+      ["checkout", "--detach", commit],
+      { cwd: submoduleRoot, stdio: "inherit" },
+    );
+    return;
+  }
+
   execFileSync(
     "git",
     withOptionalFileProtocol(options.repo, [

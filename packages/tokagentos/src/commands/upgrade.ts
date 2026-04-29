@@ -69,6 +69,7 @@ export async function upgrade(options: UpgradeOptions): Promise<void> {
     spinner.message("Updating upstream tokagent checkout...");
     updateGitSubmodule({
       branch: upstream.branch,
+      commit: upstream.commit,
       dryRun: options.check || options.dryRun,
       projectRoot,
       repo: upstream.repo,

@@ -4,6 +4,15 @@ export interface TemplateUpstream {
   path: string;
   repo: string;
   branch?: string;
+  /**
+   * Optional commit SHA to pin the upstream submodule to. When set, the
+   * scaffold checks out exactly this commit after `git submodule add`,
+   * so subsequent upstream changes (file renames, removed exports, ABI
+   * drifts) cannot break new scaffolds. Bump this field deliberately
+   * after vetting a newer commit; users override via the
+   * TOKAGENTOS_UPSTREAM_COMMIT env var.
+   */
+  commit?: string;
   mode: "git-submodule";
   requiredSubmodules?: string[];
   requiredWorkspaces?: string[];

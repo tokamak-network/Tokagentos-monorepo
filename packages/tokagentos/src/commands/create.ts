@@ -527,6 +527,7 @@ export async function create(
     spinner.message("Initializing upstream tokagent checkout...");
     initializeGitSubmodule({
       branch: upstream.branch,
+      commit: upstream.commit,
       projectRoot: destinationDir,
       repo: upstream.repo,
       submodulePath: upstream.path,
