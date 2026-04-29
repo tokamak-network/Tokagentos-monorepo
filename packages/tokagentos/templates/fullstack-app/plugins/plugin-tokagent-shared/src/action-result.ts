@@ -21,7 +21,24 @@
  * but the `message` should be a polite one-liner — not a stack trace.
  */
 
-import type { ActionResult } from "@elizaos/core";
+/**
+ * Minimal ActionResult shape — local mirror of @elizaos/core's interface.
+ *
+ * Inlining avoids a hard dependency on @elizaos/core (mirrors the same
+ * choice made in wallet.ts and env-persistence.ts). The plugin can then
+ * be published standalone without forcing a peer-install of the eliza
+ * runtime, and the build's `tsc --emitDeclarationOnly` step doesn't have
+ * to resolve a workspace-only package.
+ *
+ * Keep aligned with `tokagent/packages/typescript/src/types/components.ts`
+ * (eliza upstream): { success, text?, values?, data? }. We don't need
+ * `values` for the helpers below, so it's omitted.
+ */
+export interface ActionResult {
+  success: boolean;
+  text?: string;
+  data?: Record<string, unknown>;
+}
 
 /**
  * User-visible-message-suppressing error. The LLM's natural-language
@@ -36,7 +53,7 @@ export function tokagentActionError(
     // No `text`: eliza's normalizeActionCallbackText skips empty strings,
     // so the LLM's natural-language response remains the assistant message.
     data: { reason, ...detail },
-  } as ActionResult;
+  };
 }
 
 /**
@@ -55,5 +72,5 @@ export function tokagentActionFailure(
     success: false,
     text: userFacingMessage,
     data: { reason, ...detail },
-  } as ActionResult;
+  };
 }
