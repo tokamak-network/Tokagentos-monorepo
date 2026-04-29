@@ -269,32 +269,6 @@ const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "  ];\n",
   },
   {
-    path: "tsconfig.json",
-    description:
-      "Prefix the two @elizaos/plugin-browser-bridge `paths` entries with " +
-      "`./`. Upstream wrote them as bare `plugins/plugin-browser-bridge/src/...` " +
-      "without the leading dot-slash, while every other path in the same map " +
-      "(@elizaos/ui, @elizaos/core, @elizaos/shared) is prefixed correctly. " +
-      "TypeScript >=6 emits `Non-relative path \"plugins/plugin-browser-bridge/...\" " +
-      "is not allowed when \"baseUrl\" is not set` for every plugin build, " +
-      "spamming the `bun run dev` boot output. This patch makes the two " +
-      "entries match the rest of the map.",
-    find:
-      "      \"@elizaos/plugin-browser-bridge\": [\n" +
-      "        \"plugins/plugin-browser-bridge/src/index.ts\"\n" +
-      "      ],\n" +
-      "      \"@elizaos/plugin-browser-bridge/*\": [\n" +
-      "        \"plugins/plugin-browser-bridge/src/*\"\n" +
-      "      ]\n",
-    replaceWith:
-      "      \"@elizaos/plugin-browser-bridge\": [\n" +
-      "        \"./plugins/plugin-browser-bridge/src/index.ts\"\n" +
-      "      ],\n" +
-      "      \"@elizaos/plugin-browser-bridge/*\": [\n" +
-      "        \"./plugins/plugin-browser-bridge/src/*\"\n" +
-      "      ]\n",
-  },
-  {
     path: "packages/agent/src/runtime/default-knowledge.ts",
     description:
       "Replace upstream's seeded Eliza knowledge with Tokagent knowledge. " +
