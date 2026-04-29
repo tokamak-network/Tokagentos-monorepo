@@ -39,6 +39,21 @@ mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "ETHEREUM_RPC_URL");
 export const DESKTOP_ONLY_PLUGINS: readonly string[] = ["agent-orchestrator"];
 
 /**
+ * Mobile-safe core plugins. Used when `MILADY_PLATFORM=android` (or `ios`).
+ *
+ * Phones cannot host the desktop-only chat surface (PTY, ffmpeg, osascript,
+ * /usr/bin/open, etc.), so the upstream mobile boot ships only the SQL
+ * adapter. Tokagent's vault-execution flows need a wallet, signed RPC, and
+ * a desktop UI; running them on mobile is out of scope for now. Mirror
+ * upstream verbatim so `plugin-collector.ts`'s import resolves; if a future
+ * mobile build needs the Tokagent plugins, add them here explicitly after
+ * verifying they have no native deps.
+ */
+export const MOBILE_CORE_PLUGINS: readonly string[] = [
+  "@elizaos/plugin-sql",
+];
+
+/**
  * Tokagent vault-execution plugins — build the strategy orchestrator + the
  * 3 vault-write integrations on top of upstream eliza. Always loaded so the
  * agent can describe + execute Tokamak vault flows from chat regardless of
