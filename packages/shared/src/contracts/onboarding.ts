@@ -311,6 +311,19 @@ export const ONBOARDING_PROVIDER_CATALOG = [
     order: 100,
   },
   {
+    id: "litellm",
+    name: "LiteLLM Proxy",
+    envKey: "LITELLM_API_KEY",
+    pluginName: "@elizaos/plugin-openai",
+    keyPrefix: null,
+    description:
+      "OpenAI-compatible self-hosted or hosted LiteLLM proxy. Set LITELLM_BASE_URL in .env first.",
+    family: "litellm",
+    authMode: "api-key",
+    group: "local",
+    order: 75,
+  },
+  {
     id: "deepseek",
     name: "DeepSeek",
     envKey: "DEEPSEEK_API_KEY",

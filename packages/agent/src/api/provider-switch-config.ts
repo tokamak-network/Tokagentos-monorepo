@@ -327,6 +327,34 @@ function applyLocalProviderCapabilities(
     return Promise.resolve();
   }
 
+  // ── LiteLLM branch ──────────────────────────────────────────────────
+  // Reuses @elizaos/plugin-openai pointed at a custom base URL. Writes
+  // BOTH LITELLM_* and OPENAI_* so the live runtime picks up immediately
+  // AND a restart re-enters the same configured state via the boot-time
+  // mirror in core-plugins.ts. If LITELLM_BASE_URL is missing, the route
+  // handler should have rejected the request — but we early-return here
+  // as a defense in depth so we never write half-configured state.
+  if (normalizedProvider === "litellm") {
+    const baseUrl = process.env.LITELLM_BASE_URL?.trim();
+    if (!baseUrl) {
+      return Promise.resolve();
+    }
+    const apiKey = trimToUndefined(selection.apiKey);
+    if (apiKey) {
+      setEnvValue(config, "LITELLM_API_KEY", apiKey);
+      setEnvValue(config, "OPENAI_API_KEY", apiKey);
+    }
+    setEnvValue(config, "OPENAI_BASE_URL", baseUrl);
+    const explicitPrimary = trimToUndefined(selection.primaryModel);
+    setPrimaryModel(config, explicitPrimary ?? "@elizaos/plugin-openai");
+    applyDefaultModelNames(config, "litellm");
+    clearTokagentCloudCliProxyEnv();
+    clearRemoteProviderConfig(config);
+    clearCloudModelSelections(config);
+    clearSubscriptionProviderConfig(config);
+    return Promise.resolve();
+  }
+
   clearTokagentCloudCliProxyEnv();
   clearRemoteProviderConfig(config);
   clearCloudModelSelections(config);
@@ -423,6 +451,12 @@ const PROVIDER_DEFAULT_MODELS: Record<
     smallVal: "llama-3.1-8b-instant",
     largeKey: "GROQ_LARGE_MODEL",
     largeVal: "llama-3.1-8b-instant",
+  },
+  litellm: {
+    smallKey: "OPENAI_SMALL_MODEL",
+    smallVal: "gpt-4o-mini",
+    largeKey: "OPENAI_LARGE_MODEL",
+    largeVal: "gpt-4o",
   },
 };
 
@@ -844,3 +878,6 @@ export async function applyOnboardingCredentialPersistence(
 
   return getOnboardingProviderOption(provider)?.envKey ?? null;
 }
+
+/** @internal Exported for testing. Mirrors the `normalizeOpenAiCompatibleProviderConfig` precedent in tokagent.ts. */
+export const applyLocalProviderCapabilitiesForTest = applyLocalProviderCapabilities;

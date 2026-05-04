@@ -116,6 +116,16 @@ export async function handleProviderSwitchRoutes(
         return true;
       }
 
+      if (normalizedProvider === "litellm" && !process.env.LITELLM_BASE_URL?.trim()) {
+        ctx.setProviderSwitchInProgress(false);
+        json(res, {
+          success: false,
+          reason: "missing_litellm_base_url",
+          message: "Set LITELLM_BASE_URL in .env first",
+        }, 400);
+        return true;
+      }
+
       await applyOnboardingConnectionConfig(config, connection);
       ctx.saveTokagentConfig(config);
 
