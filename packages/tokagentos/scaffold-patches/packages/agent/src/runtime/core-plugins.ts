@@ -31,6 +31,52 @@ mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "ETHEREUM_PROVIDER_MAINNET");
 mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "EVM_PROVIDER_MAINNET");
 mirrorTokagentEnvAlias("TOKAGENT_RPC_URL", "ETHEREUM_RPC_URL");
 
+function mirrorTokagentEnvAliasOverride(from: string, to: string): void {
+  const src = process.env[from]?.trim();
+  if (src) {
+    process.env[to] = src;
+  }
+}
+
+/**
+ * LiteLLM Proxy support. When LITELLM_API_KEY and LITELLM_BASE_URL are both
+ * set, mirror them (and the optional model-name knobs) onto the OPENAI_*
+ * names that @elizaos/plugin-openai consumes natively. Override semantics:
+ * if a user has both LITELLM_* and OPENAI_*, LiteLLM wins.
+ *
+ * Coupled validation: if only one of {LITELLM_API_KEY, LITELLM_BASE_URL} is
+ * set, suppress the mirror entirely. Mirroring just the key would route the
+ * virtual key against api.openai.com and produce a confusing 401; mirroring
+ * just the URL would change the OpenAI plugin's endpoint while keeping the
+ * real OpenAI key, which is also wrong.
+ */
+function configureLitellmEnvMirror(): void {
+  const hasKey = !!process.env.LITELLM_API_KEY?.trim();
+  const hasUrl = !!process.env.LITELLM_BASE_URL?.trim();
+  if (hasKey !== hasUrl) {
+    console.warn(
+      "[tokagent] LITELLM_API_KEY and LITELLM_BASE_URL must be set together; one is missing — skipping LiteLLM mirror. Either set both or neither.",
+    );
+    return;
+  }
+  if (!hasKey) {
+    return;
+  }
+  const willOverride =
+    !!process.env.OPENAI_API_KEY?.trim() ||
+    !!process.env.OPENAI_BASE_URL?.trim();
+  if (willOverride) {
+    console.warn(
+      "[tokagent] LITELLM_* env vars detected; overriding OPENAI_*",
+    );
+  }
+  mirrorTokagentEnvAliasOverride("LITELLM_API_KEY", "OPENAI_API_KEY");
+  mirrorTokagentEnvAliasOverride("LITELLM_BASE_URL", "OPENAI_BASE_URL");
+  mirrorTokagentEnvAliasOverride("LITELLM_SMALL_MODEL", "OPENAI_SMALL_MODEL");
+  mirrorTokagentEnvAliasOverride("LITELLM_LARGE_MODEL", "OPENAI_LARGE_MODEL");
+}
+configureLitellmEnvMirror();
+
 /**
  * Plugins that depend on PTY/native workspace tooling.
  * Keep them out of cloud images where those binaries are intentionally absent.

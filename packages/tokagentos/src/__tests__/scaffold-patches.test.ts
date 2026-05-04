@@ -129,4 +129,29 @@ describe("applyTokagentScaffoldPatches", () => {
     // cleanup
     fs.rmSync(root, { force: true, recursive: true });
   });
+
+  it("overlay mirrors LITELLM_* env vars to OPENAI_* with override semantics", () => {
+    const root = makeTempSubmoduleTree();
+    applyTokagentScaffoldPatches({ submoduleRoot: root });
+
+    const overlaid = fs.readFileSync(
+      path.join(root, "packages/agent/src/runtime/core-plugins.ts"),
+      "utf-8",
+    );
+
+    // The override-mirror helper must be defined.
+    expect(overlaid).toMatch(/function mirrorTokagentEnvAliasOverride\b/);
+
+    // All four LITELLM → OPENAI mirror calls are present.
+    expect(overlaid).toContain('mirrorTokagentEnvAliasOverride("LITELLM_API_KEY", "OPENAI_API_KEY")');
+    expect(overlaid).toContain('mirrorTokagentEnvAliasOverride("LITELLM_BASE_URL", "OPENAI_BASE_URL")');
+    expect(overlaid).toContain('mirrorTokagentEnvAliasOverride("LITELLM_SMALL_MODEL", "OPENAI_SMALL_MODEL")');
+    expect(overlaid).toContain('mirrorTokagentEnvAliasOverride("LITELLM_LARGE_MODEL", "OPENAI_LARGE_MODEL")');
+
+    // Coupled-validation guard is present (suppress mirror if either of the
+    // two required keys is missing while the other is set).
+    expect(overlaid).toMatch(/LITELLM_API_KEY.*LITELLM_BASE_URL.*missing/s);
+
+    fs.rmSync(root, { force: true, recursive: true });
+  });
 });
