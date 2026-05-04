@@ -73,6 +73,19 @@ export const DEFAULT_ONBOARDING_PROVIDER_OPTIONS = [
     supportsPrimaryModelOverride: true,
   },
   {
+    id: "litellm",
+    name: "LiteLLM Proxy",
+    envKey: "LITELLM_API_KEY",
+    pluginName: "@elizaos/plugin-openai",
+    keyPrefix: null,
+    description:
+      "OpenAI-compatible self-hosted or hosted LiteLLM proxy. Set LITELLM_BASE_URL in .env first.",
+    family: "litellm",
+    authMode: "api-key",
+    group: "local",
+    order: 75,
+  },
+  {
     id: "gemini",
     name: "Gemini",
     envKey: "GOOGLE_GENERATIVE_AI_API_KEY",
