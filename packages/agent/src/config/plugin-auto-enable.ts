@@ -68,6 +68,7 @@ const PROVIDER_PLUGINS: Record<string, string> = {
   qwen: "@elizaos/plugin-qwen",
   minimax: "@elizaos/plugin-minimax",
   groq: "@elizaos/plugin-groq",
+  litellm: "@elizaos/plugin-openai",
   xai: "@elizaos/plugin-xai",
   openrouter: "@elizaos/plugin-openrouter",
   ollama: "@elizaos/plugin-ollama",
@@ -92,6 +93,7 @@ export const AUTH_PROVIDER_PLUGINS: Record<string, string> = {
   XAI_API_KEY: "@elizaos/plugin-xai",
   GROK_API_KEY: "@elizaos/plugin-xai",
   OPENROUTER_API_KEY: "@elizaos/plugin-openrouter",
+  LITELLM_API_KEY: "@elizaos/plugin-openai",
   OLLAMA_BASE_URL: "@elizaos/plugin-ollama",
   ZAI_API_KEY: "@homunculuslabs/plugin-zai",
   DEEPSEEK_API_KEY: "@elizaos/plugin-deepseek",
@@ -421,9 +423,14 @@ export function applyPluginAutoEnable(
     const envValue = env[envKey];
     if (!envValue || typeof envValue !== "string" || envValue.trim() === "")
       continue;
-    const pluginId = pluginName.includes("/plugin-")
+    // For most providers the short id is derived from the package name
+    // (`@elizaos/plugin-openai` → `openai`). For LiteLLM the package is
+    // plugin-openai but we want the allowlist to record `litellm` so the
+    // in-app switcher's "current provider" lookup matches the stored id.
+    const derivedId = pluginName.includes("/plugin-")
       ? pluginName.slice(pluginName.lastIndexOf("/plugin-") + "/plugin-".length)
       : pluginName;
+    const pluginId = envKey === "LITELLM_API_KEY" ? "litellm" : derivedId;
     if (pluginsConfig.entries[pluginId]?.enabled === false) continue;
     addToAllowlist(
       pluginsConfig.allow,
