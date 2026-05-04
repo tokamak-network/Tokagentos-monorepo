@@ -78,6 +78,12 @@ const LLM_PROVIDERS: readonly LlmProvider[] = [
     hint: "sk-or-v1-…",
   },
   {
+    id: "litellm",
+    label: "LiteLLM Proxy (OpenAI-compatible)",
+    envVar: "LITELLM_API_KEY",
+    hint: "lt-...",
+  },
+  {
     id: "ollama",
     label: "Ollama (local, no API key)",
     envVar: "",
@@ -287,6 +293,59 @@ async function promptApiKey(
   }
 }
 
+async function promptLitellmExtras(
+  options: CreateOptions,
+  yes: boolean,
+): Promise<{ baseUrl: string; smallModel: string; largeModel: string }> {
+  if (yes) {
+    const missing: string[] = [];
+    if (!options.llmBaseUrl?.trim()) missing.push("--llm-base-url");
+    if (!options.llmSmallModel?.trim()) missing.push("--llm-small-model");
+    if (!options.llmLargeModel?.trim()) missing.push("--llm-large-model");
+    if (missing.length > 0) {
+      clack.cancel(
+        `--llm litellm with --yes requires ${missing.join(", ")}. Get these values from your LiteLLM proxy admin.`,
+      );
+      process.exit(1);
+    }
+    return {
+      baseUrl: options.llmBaseUrl!.trim(),
+      smallModel: options.llmSmallModel!.trim(),
+      largeModel: options.llmLargeModel!.trim(),
+    };
+  }
+  const baseUrl = options.llmBaseUrl?.trim()
+    ? options.llmBaseUrl.trim()
+    : (unwrapPromptResult(
+        await clack.text({
+          message: "LiteLLM proxy base URL (e.g. https://litellm.company.com):",
+          placeholder: "https://litellm.company.com",
+          validate: (v) =>
+            !v?.trim() ? "Base URL is required for LiteLLM" : undefined,
+        }),
+      ) as string).trim();
+  const smallModel = options.llmSmallModel?.trim()
+    ? options.llmSmallModel.trim()
+    : (unwrapPromptResult(
+        await clack.text({
+          defaultValue: "gpt-4o-mini",
+          message:
+            "Small model alias (used for TEXT_SMALL). Default: gpt-4o-mini",
+          placeholder: "gpt-4o-mini",
+        }),
+      ) as string).trim();
+  const largeModel = options.llmLargeModel?.trim()
+    ? options.llmLargeModel.trim()
+    : (unwrapPromptResult(
+        await clack.text({
+          defaultValue: "gpt-4o",
+          message: "Large model alias (used for TEXT_LARGE). Default: gpt-4o",
+          placeholder: "gpt-4o",
+        }),
+      ) as string).trim();
+  return { baseUrl, smallModel, largeModel };
+}
+
 /**
  * Pre-complete the app's onboarding state so the UI skips the provider/
  * API-key prompt (the user already supplied both at `tokagentos create`
@@ -393,6 +452,41 @@ function writeLlmEnvFile(
   fs.writeFileSync(envPath, filled);
 }
 
+/**
+ * Write a set of additional `.env` lines to a fresh-or-existing project .env.
+ * Mirrors the behavior of writeLlmEnvFile but supports multi-key providers
+ * (e.g., LiteLLM needs base URL + small model + large model in addition to
+ * the API key).
+ *
+ * Each entry is written using the same active/commented-line resolution
+ * logic as writeLlmEnvFile to play nicely with the .env.example template.
+ */
+function writeLlmExtraEnv(
+  projectRoot: string,
+  entries: Array<{ key: string; value: string }>,
+): void {
+  if (entries.length === 0) return;
+  const envPath = path.join(projectRoot, ".env");
+  if (!fs.existsSync(envPath)) {
+    // writeLlmEnvFile created it; should not happen, but be defensive.
+    fs.writeFileSync(envPath, "");
+  }
+  let content = fs.readFileSync(envPath, "utf8");
+  for (const { key, value } of entries) {
+    const line = `${key}=${value}`;
+    const activeRe = new RegExp(`^${key}=.*$`, "m");
+    const commentedRe = new RegExp(`^#\\s*${key}=.*$`, "m");
+    if (activeRe.test(content)) {
+      content = content.replace(activeRe, line);
+    } else if (commentedRe.test(content)) {
+      content = content.replace(commentedRe, line);
+    } else {
+      content = `${content.endsWith("\n") ? content : `${content}\n`}${line}\n`;
+    }
+  }
+  fs.writeFileSync(envPath, content);
+}
+
 async function promptPluginValues(
   projectName: string,
   options: CreateOptions,
@@ -492,6 +586,13 @@ export async function create(
         )
       : undefined;
 
+  let litellmExtras:
+    | { baseUrl: string; smallModel: string; largeModel: string }
+    | undefined;
+  if (llmProvider.id === "litellm") {
+    litellmExtras = await promptLitellmExtras(options, Boolean(options.yes));
+  }
+
   if (!options.yes) {
     const confirmed = await clack.confirm({
       message: `Create ${pc.cyan(template.name)} in ${pc.cyan(finalProjectName)}?`,
@@ -554,6 +655,13 @@ export async function create(
     spinner.message(
       `Wrote ${llmProvider.envVar} to .env (${llmProvider.label})`,
     );
+    if (litellmExtras) {
+      writeLlmExtraEnv(destinationDir, [
+        { key: "LITELLM_BASE_URL", value: litellmExtras.baseUrl },
+        { key: "LITELLM_SMALL_MODEL", value: litellmExtras.smallModel },
+        { key: "LITELLM_LARGE_MODEL", value: litellmExtras.largeModel },
+      ]);
+    }
     // Pre-complete onboarding so the UI doesn't prompt for the key again.
     preCompleteOnboarding(finalProjectName, llmProvider);
   }

@@ -45,6 +45,9 @@ export interface CreateOptions {
   skipUpstream?: boolean;
   llm?: string;
   apiKey?: string;
+  llmBaseUrl?: string;
+  llmSmallModel?: string;
+  llmLargeModel?: string;
 }
 
 export interface InfoOptions {

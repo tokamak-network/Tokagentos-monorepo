@@ -71,11 +71,23 @@ applyHelpTheme(
 		.option("--skip-upstream", "Skip initializing the upstream tokagent checkout")
 		.option(
 			"--llm <provider>",
-			"LLM provider to pre-configure: openai | anthropic | google | groq | openrouter | xai | deepseek | ollama | skip",
+			"LLM provider to pre-configure: openai | anthropic | google | groq | openrouter | litellm | xai | deepseek | ollama | skip",
 		)
 		.option(
 			"--api-key <key>",
 			"API key for the selected LLM provider (written to .env). Requires --llm.",
+		)
+		.option(
+			"--llm-base-url <url>",
+			"Base URL for the LLM provider (LiteLLM only). Required with --llm litellm.",
+		)
+		.option(
+			"--llm-small-model <model>",
+			"Model alias for TEXT_SMALL (LiteLLM only). Required with --llm litellm.",
+		)
+		.option(
+			"--llm-large-model <model>",
+			"Model alias for TEXT_LARGE (LiteLLM only). Required with --llm litellm.",
 		)
 		.action(create),
 );
