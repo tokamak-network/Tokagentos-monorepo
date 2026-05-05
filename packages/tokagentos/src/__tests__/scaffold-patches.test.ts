@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { applyTokagentScaffoldPatches, UPSTREAM_PRUNE_PATHS, UPSTREAM_SURGICAL_PATCHES } from "../scaffold.js";
+import { applyTokagentScaffoldPatches, rewriteUpstreamWorkspaceDeps, UPSTREAM_PRUNE_PATHS, UPSTREAM_SURGICAL_PATCHES } from "../scaffold.js";
 
 function makeTempSubmoduleTree(): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-patch-test-"));
@@ -202,5 +202,73 @@ describe("UPSTREAM_SURGICAL_PATCHES", () => {
     for (const t of targets) {
       expect(t).not.toMatch(/^plugins\/plugin-openrouter\//);
     }
+  });
+});
+
+describe("rewriteUpstreamWorkspaceDeps", () => {
+  it("rewrites workspace:* to npm pins for known-dead packages", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-rewrite-"));
+    // Create a mini-tree mimicking upstream eliza
+    fs.writeFileSync(
+      path.join(root, "package.json"),
+      JSON.stringify(
+        {
+          name: "fake-upstream",
+          dependencies: {
+            "@elizaos/plugin-openai": "workspace:*",
+            "@elizaos/plugin-sql": "workspace:*",
+            "@elizaos/core": "workspace:*",
+            "react": "^18.0.0",
+          },
+        },
+        null,
+        2,
+      ),
+    );
+    fs.mkdirSync(path.join(root, "packages/agent"), { recursive: true });
+    fs.writeFileSync(
+      path.join(root, "packages/agent/package.json"),
+      JSON.stringify(
+        {
+          name: "@example/agent",
+          devDependencies: {
+            "@elizaos/plugin-anthropic": "workspace:*",
+          },
+        },
+        null,
+        2,
+      ),
+    );
+    // Skip a node_modules dir to confirm it's ignored
+    fs.mkdirSync(path.join(root, "node_modules/fake"), { recursive: true });
+    fs.writeFileSync(
+      path.join(root, "node_modules/fake/package.json"),
+      JSON.stringify({ name: "fake", dependencies: { "@elizaos/plugin-sql": "workspace:*" } }, null, 2),
+    );
+
+    const modified = rewriteUpstreamWorkspaceDeps(root);
+
+    // Top-level + agent files should be modified, node_modules should NOT.
+    expect(modified.sort()).toEqual([
+      "package.json",
+      "packages/agent/package.json",
+    ]);
+
+    const root_pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf-8"));
+    expect(root_pkg.dependencies["@elizaos/plugin-openai"]).toBe("1.6.0");
+    expect(root_pkg.dependencies["@elizaos/plugin-sql"]).toBe("1.7.2");
+    // Unknown packages should be left alone (workspace:* preserved for @elizaos/core)
+    expect(root_pkg.dependencies["@elizaos/core"]).toBe("workspace:*");
+    // Non-workspace deps preserved
+    expect(root_pkg.dependencies["react"]).toBe("^18.0.0");
+
+    const agent_pkg = JSON.parse(fs.readFileSync(path.join(root, "packages/agent/package.json"), "utf-8"));
+    expect(agent_pkg.devDependencies["@elizaos/plugin-anthropic"]).toBe("1.5.12");
+
+    // node_modules unchanged
+    const nm_pkg = JSON.parse(fs.readFileSync(path.join(root, "node_modules/fake/package.json"), "utf-8"));
+    expect(nm_pkg.dependencies["@elizaos/plugin-sql"]).toBe("workspace:*");
+
+    fs.rmSync(root, { force: true, recursive: true });
   });
 });

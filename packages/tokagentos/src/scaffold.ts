@@ -151,6 +151,34 @@ const UPSTREAM_DEPENDENCY_REMOVALS: ReadonlyArray<{
 ];
 
 /**
+ * npm version pins for `@elizaos/plugin-*` packages whose source repos
+ * were depopulated from `elizaos-plugins/*` (404 on GitHub). When upstream
+ * eliza's package.json files declare `"workspace:*"` for these, the
+ * workspace can't resolve because the plugin source isn't on disk.
+ * Rewrite each `"workspace:*"` to the matching npm version so `bun install`
+ * resolves from the registry instead.
+ *
+ * Versions verified during scaffold-recovery follow-up on 2026-05-05.
+ * Refresh procedure: when bumping the upstream eliza commit, run
+ * `bun install` against a fresh scaffold and add npm pins for any
+ * newly-failing `@elizaos/plugin-*` workspace deps.
+ */
+export const UPSTREAM_PLUGIN_NPM_PINS: Readonly<Record<string, string>> = {
+  "@elizaos/plugin-agent-orchestrator": "0.3.9",
+  "@elizaos/plugin-anthropic": "1.5.12",
+  "@elizaos/plugin-browser-bridge": "0.1.1",
+  "@elizaos/plugin-groq": "1.0.4",
+  "@elizaos/plugin-local-ai": "1.2.1",
+  "@elizaos/plugin-local-embedding": "2.0.0-alpha.3",
+  "@elizaos/plugin-ollama": "1.2.4",
+  "@elizaos/plugin-openai": "1.6.0",
+  "@elizaos/plugin-pdf": "1.0.2",
+  "@elizaos/plugin-solana": "1.2.6",
+  "@elizaos/plugin-sql": "1.7.2",
+  "@elizaos/plugin-wechat": "2.0.0-alpha.537",
+};
+
+/**
  * Narrow surgical edits applied to upstream eliza files after hydration.
  *
  * Use these instead of full-file scaffold-patch overlays when the change is
@@ -964,6 +992,91 @@ export function pruneUpstreamPackageDependencies(
 }
 
 /**
+ * Rewrite `"workspace:*"` declarations to npm version pins for known-dead
+ * `@elizaos/plugin-*` workspace deps. Run AFTER submodule init + pruning
+ * so the package.json files we touch reflect the post-pruned tree.
+ *
+ * Returns the list of package.json paths (relative to submoduleRoot) that
+ * were modified.
+ */
+export function rewriteUpstreamWorkspaceDeps(
+  submoduleRoot: string,
+  pins: Readonly<Record<string, string>> = UPSTREAM_PLUGIN_NPM_PINS,
+): string[] {
+  const modified: string[] = [];
+  const skipDirs = new Set([
+    "node_modules",
+    "dist",
+    ".git",
+    "build",
+    "coverage",
+    ".turbo",
+  ]);
+
+  function rewriteOnePackageJson(
+    filePath: string,
+    pinMap: Readonly<Record<string, string>>,
+  ): boolean {
+    let content: string;
+    try {
+      content = fs.readFileSync(filePath, "utf-8");
+    } catch {
+      return false;
+    }
+    let pkg: Record<string, unknown>;
+    try {
+      pkg = JSON.parse(content) as Record<string, unknown>;
+    } catch {
+      return false;
+    }
+    let changed = false;
+    for (const depKey of [
+      "dependencies",
+      "devDependencies",
+      "peerDependencies",
+    ] as const) {
+      const block = pkg[depKey] as Record<string, string> | undefined;
+      if (!block || typeof block !== "object") continue;
+      for (const [name, version] of Object.entries(block)) {
+        if (version !== "workspace:*") continue;
+        const pin = pinMap[name];
+        if (!pin) continue;
+        block[name] = pin;
+        changed = true;
+      }
+    }
+    if (changed) {
+      const updated = `${JSON.stringify(pkg, null, 2)}\n`;
+      fs.writeFileSync(filePath, updated);
+    }
+    return changed;
+  }
+
+  function walk(dir: string): void {
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        if (skipDirs.has(entry.name)) continue;
+        walk(path.join(dir, entry.name));
+      } else if (entry.name === "package.json") {
+        const filePath = path.join(dir, entry.name);
+        if (rewriteOnePackageJson(filePath, pins)) {
+          modified.push(path.relative(submoduleRoot, filePath));
+        }
+      }
+    }
+  }
+
+  walk(submoduleRoot);
+  return modified;
+}
+
+/**
  * Strip `[submodule "<path>"] ... path = <path>` blocks out of the
  * upstream `.gitmodules` for the given submodule paths, so subsequent
  * `git submodule update --init --recursive` calls don't try to clone
@@ -1382,6 +1495,16 @@ export function hydrateGitSubmoduleWorkspace(options: {
     UPSTREAM_WORKSPACE_REMOVALS,
   );
   pruneUpstreamPackageDependencies(submoduleRoot);
+
+  // Rewrite "workspace:*" → npm pins for known-dead @elizaos/plugin-*
+  // packages so bun install resolves them from the registry rather than
+  // looking for a workspace dir that doesn't exist.
+  const rewritten = rewriteUpstreamWorkspaceDeps(submoduleRoot);
+  if (rewritten.length > 0) {
+    console.log(
+      `[scaffold] Rewrote workspace:* → npm pin in ${rewritten.length} package.json file(s)`,
+    );
+  }
 
   ensurePackageJsonWorkspaces(
     path.join(submoduleRoot, "package.json"),
