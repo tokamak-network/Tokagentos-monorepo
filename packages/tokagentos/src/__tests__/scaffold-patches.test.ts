@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { applyTokagentScaffoldPatches } from "../scaffold.js";
+import { applyTokagentScaffoldPatches, UPSTREAM_PRUNE_PATHS } from "../scaffold.js";
 
 function makeTempSubmoduleTree(): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-patch-test-"));
@@ -153,5 +153,34 @@ describe("applyTokagentScaffoldPatches", () => {
     expect(overlaid).toMatch(/LITELLM_API_KEY.*LITELLM_BASE_URL.*missing/s);
 
     fs.rmSync(root, { force: true, recursive: true });
+  });
+});
+
+describe("UPSTREAM_PRUNE_PATHS", () => {
+  it("includes all 19 dead elizaos-plugins paths", () => {
+    const required = [
+      "plugins/plugin-agent-skills",
+      "plugins/plugin-anthropic",
+      "plugins/plugin-discord",
+      "plugins/plugin-evm",
+      "plugins/plugin-google-genai",
+      "plugins/plugin-groq",
+      "plugins/plugin-imessage",
+      "plugins/plugin-local-ai",
+      "plugins/plugin-local-embedding",
+      "plugins/plugin-ollama",
+      "plugins/plugin-openai",
+      "plugins/plugin-openrouter",
+      "plugins/plugin-pdf",
+      "plugins/plugin-shopify",
+      "plugins/plugin-sql",
+      "plugins/plugin-telegram",
+      "plugins/plugin-twitter",
+      "plugins/plugin-wechat",
+      "plugins/plugin-whatsapp",
+    ];
+    for (const p of required) {
+      expect(UPSTREAM_PRUNE_PATHS).toContain(p);
+    }
   });
 });

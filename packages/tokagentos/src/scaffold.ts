@@ -56,9 +56,36 @@ const BINARY_EXTENSIONS = new Set([
  *   `cloud/packages/sdk` and `cloud/packages/services/billing` from resolving
  *   if a developer ever runs `bun install` inside `tokagent/` directly.
  */
-const UPSTREAM_PRUNE_PATHS = [
+export const UPSTREAM_PRUNE_PATHS = [
   "plugins/plugin-elizacloud",
   "cloud",
+  // Dead `elizaos-plugins/*` submodules. The github.com/elizaos-plugins
+  // org was depopulated as of 2026-05-05 — every plugin repo returns 404.
+  // Stripping these entries from upstream eliza's .gitmodules BEFORE
+  // recursive submodule init prevents the scaffold from 404-storming.
+  // Plugin code is now resolved via npm (see root package.json pins).
+  // Refresh procedure: when bumping the upstream eliza commit, grep
+  // upstream's .gitmodules for `elizaos-plugins/` and add any newly-
+  // appearing paths to this list.
+  "plugins/plugin-agent-skills",
+  "plugins/plugin-anthropic",
+  "plugins/plugin-discord",
+  "plugins/plugin-evm",
+  "plugins/plugin-google-genai",
+  "plugins/plugin-groq",
+  "plugins/plugin-imessage",
+  "plugins/plugin-local-ai",
+  "plugins/plugin-local-embedding",
+  "plugins/plugin-ollama",
+  "plugins/plugin-openai",
+  "plugins/plugin-openrouter",
+  "plugins/plugin-pdf",
+  "plugins/plugin-shopify",
+  "plugins/plugin-sql",
+  "plugins/plugin-telegram",
+  "plugins/plugin-twitter",
+  "plugins/plugin-wechat",
+  "plugins/plugin-whatsapp",
 ] as const;
 
 /**
