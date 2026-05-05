@@ -157,7 +157,7 @@ describe("applyTokagentScaffoldPatches", () => {
 });
 
 describe("UPSTREAM_PRUNE_PATHS", () => {
-  it("includes all 19 dead elizaos-plugins paths", () => {
+  it("includes all 29 dead elizaos-plugins paths (19 original + 10 added by Fix A)", () => {
     const required = [
       "plugins/plugin-agent-skills",
       "plugins/plugin-anthropic",
@@ -178,6 +178,17 @@ describe("UPSTREAM_PRUNE_PATHS", () => {
       "plugins/plugin-twitter",
       "plugins/plugin-wechat",
       "plugins/plugin-whatsapp",
+      // 10 added by Fix A:
+      "plugins/plugin-agent-orchestrator",
+      "plugins/plugin-cli",
+      "plugins/plugin-commands",
+      "plugins/plugin-cron",
+      "plugins/plugin-edge-tts",
+      "plugins/plugin-music-library",
+      "plugins/plugin-music-player",
+      "plugins/plugin-plugin-manager",
+      "plugins/plugin-shell",
+      "plugins/plugin-solana",
     ];
     for (const p of required) {
       expect(UPSTREAM_PRUNE_PATHS).toContain(p);

@@ -86,6 +86,20 @@ export const UPSTREAM_PRUNE_PATHS = [
   "plugins/plugin-twitter",
   "plugins/plugin-wechat",
   "plugins/plugin-whatsapp",
+  // Additional dead `elizaos-plugins/*` submodules discovered via smoke
+  // test on 2026-05-05. These exist only in upstream eliza's
+  // .gitmodules (not the user's repo) so they were missed in the
+  // initial Task 3 prune list. All 10 return 404 on github.com/elizaos-plugins.
+  "plugins/plugin-agent-orchestrator",
+  "plugins/plugin-cli",
+  "plugins/plugin-commands",
+  "plugins/plugin-cron",
+  "plugins/plugin-edge-tts",
+  "plugins/plugin-music-library",
+  "plugins/plugin-music-player",
+  "plugins/plugin-plugin-manager",
+  "plugins/plugin-shell",
+  "plugins/plugin-solana",
 ] as const;
 
 /**
