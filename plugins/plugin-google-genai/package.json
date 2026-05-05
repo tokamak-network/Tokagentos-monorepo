@@ -1,6 +1,0 @@
-{
-  "name": "@elizaos/plugin-google-genai",
-  "version": "0.0.0-stub",
-  "private": true,
-  "description": "Stub package.json for upstream submodule plugins/plugin-google-genai. Run 'git submodule update --init plugins/plugin-google-genai' to populate."
-}

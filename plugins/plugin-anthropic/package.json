@@ -1,6 +1,0 @@
-{
-  "name": "@elizaos/plugin-anthropic",
-  "version": "0.0.0-stub",
-  "private": true,
-  "description": "Stub package.json for upstream submodule plugins/plugin-anthropic. Run 'git submodule update --init plugins/plugin-anthropic' to populate."
-}

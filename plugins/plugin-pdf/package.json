@@ -1,6 +1,0 @@
-{
-  "name": "@elizaos/plugin-pdf",
-  "version": "0.0.0-stub",
-  "private": true,
-  "description": "Stub package.json for upstream submodule plugins/plugin-pdf. Run 'git submodule update --init plugins/plugin-pdf' to populate."
-}

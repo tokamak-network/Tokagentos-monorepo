@@ -1,6 +1,0 @@
-{
-  "name": "@elizaos/plugin-shopify",
-  "version": "0.0.0-stub",
-  "private": true,
-  "description": "Stub package.json for upstream submodule plugins/plugin-shopify. Run 'git submodule update --init plugins/plugin-shopify' to populate."
-}

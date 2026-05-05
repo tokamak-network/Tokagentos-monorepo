@@ -1,6 +1,0 @@
-{
-  "name": "@elizaos/plugin-discord",
-  "version": "0.0.0-stub",
-  "private": true,
-  "description": "Stub package.json for upstream submodule plugins/plugin-discord. Run 'git submodule update --init plugins/plugin-discord' to populate."
-}

@@ -1,6 +1,0 @@
-{
-  "name": "@elizaos/plugin-twitter",
-  "version": "0.0.0-stub",
-  "private": true,
-  "description": "Stub package.json for upstream submodule plugins/plugin-twitter. Run 'git submodule update --init plugins/plugin-twitter' to populate."
-}
