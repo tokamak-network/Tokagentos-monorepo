@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-04-29T07:27:23.787Z",
+  "generatedAt": "2026-05-04T13:37:56.701Z",
   "repoUrl": "https://github.com/elizaos/eliza",
   "templates": [
     {
@@ -18,16 +18,8 @@
         "branch": "develop",
         "commit": "db00cf61d42543ea5d0d5d3f4c5025b6e396e22c",
         "mode": "git-submodule",
-        "requiredSubmodules": [
-          "plugins/plugin-local-ai",
-          "plugins/plugin-ollama",
-          "plugins/plugin-sql"
-        ],
-        "requiredWorkspaces": [
-          "plugins/plugin-local-ai/typescript",
-          "plugins/plugin-ollama/typescript",
-          "plugins/plugin-sql/typescript"
-        ]
+        "requiredSubmodules": [],
+        "requiredWorkspaces": []
       }
     },
     {

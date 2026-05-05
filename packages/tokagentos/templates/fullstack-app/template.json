@@ -9,16 +9,9 @@
     "path": "tokagent",
     "repo": "https://github.com/elizaos/eliza.git",
     "branch": "develop",
+    "commit": "db00cf61d42543ea5d0d5d3f4c5025b6e396e22c",
     "mode": "git-submodule",
-    "requiredSubmodules": [
-      "plugins/plugin-local-ai",
-      "plugins/plugin-ollama",
-      "plugins/plugin-sql"
-    ],
-    "requiredWorkspaces": [
-      "plugins/plugin-local-ai/typescript",
-      "plugins/plugin-ollama/typescript",
-      "plugins/plugin-sql/typescript"
-    ]
+    "requiredSubmodules": [],
+    "requiredWorkspaces": []
   }
 }
