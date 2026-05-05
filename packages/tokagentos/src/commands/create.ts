@@ -662,6 +662,16 @@ export async function create(
         { key: "LITELLM_LARGE_MODEL", value: litellmExtras.largeModel },
       ]);
     }
+    // OpenRouter model defaults — written unconditionally so the in-app
+    // provider switcher can flip to OpenRouter later without the user
+    // having to manually edit .env. Replaces the (deleted) surgical patch
+    // on plugins/plugin-openrouter/typescript/utils/config.ts that
+    // previously hardcoded these as the plugin's source-level defaults.
+    // Override these by editing .env or via env var.
+    writeLlmExtraEnv(destinationDir, [
+      { key: "OPENROUTER_SMALL_MODEL", value: "anthropic/claude-haiku-4-5" },
+      { key: "OPENROUTER_LARGE_MODEL", value: "anthropic/claude-sonnet-4.6" },
+    ]);
     // Pre-complete onboarding so the UI doesn't prompt for the key again.
     preCompleteOnboarding(finalProjectName, llmProvider);
   }

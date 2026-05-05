@@ -70,6 +70,24 @@ function withTempCwd(fn: (dir: string) => Promise<void>): Promise<void> {
   });
 }
 
+describe("create command — openrouter defaults", () => {
+  it("writes OpenRouter model defaults to .env regardless of provider", async () => {
+    await withTempCwd(async (dir) => {
+      await create("test-app-or", {
+        template: "fullstack-app",
+        language: "typescript",
+        yes: true,
+        llm: "anthropic",
+        apiKey: "sk-ant-test",
+      });
+      const envPath = path.join(dir, "test-app-or", ".env");
+      const content = fs.readFileSync(envPath, "utf-8");
+      expect(content).toMatch(/^OPENROUTER_SMALL_MODEL=anthropic\/claude-haiku-4-5$/m);
+      expect(content).toMatch(/^OPENROUTER_LARGE_MODEL=anthropic\/claude-sonnet-4\.6$/m);
+    });
+  });
+});
+
 describe("create command — litellm", () => {
   it("--yes with all four flags writes LITELLM_* to .env", async () => {
     await withTempCwd(async (dir) => {
