@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { applyTokagentScaffoldPatches, UPSTREAM_PRUNE_PATHS } from "../scaffold.js";
+import { applyTokagentScaffoldPatches, UPSTREAM_PRUNE_PATHS, UPSTREAM_SURGICAL_PATCHES } from "../scaffold.js";
 
 function makeTempSubmoduleTree(): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tokagent-patch-test-"));
@@ -181,6 +181,15 @@ describe("UPSTREAM_PRUNE_PATHS", () => {
     ];
     for (const p of required) {
       expect(UPSTREAM_PRUNE_PATHS).toContain(p);
+    }
+  });
+});
+
+describe("UPSTREAM_SURGICAL_PATCHES", () => {
+  it("does not target plugins/plugin-openrouter (npm-resolved, not source-mutated)", () => {
+    const targets = UPSTREAM_SURGICAL_PATCHES.map((p) => p.path);
+    for (const t of targets) {
+      expect(t).not.toMatch(/^plugins\/plugin-openrouter\//);
     }
   });
 });
