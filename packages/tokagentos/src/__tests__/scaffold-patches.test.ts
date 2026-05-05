@@ -157,7 +157,7 @@ describe("applyTokagentScaffoldPatches", () => {
 });
 
 describe("UPSTREAM_PRUNE_PATHS", () => {
-  it("includes all 29 dead elizaos-plugins paths (19 original + 10 added by Fix A)", () => {
+  it("includes all dead elizaos-plugins paths and the upstream examples directory", () => {
     const required = [
       "plugins/plugin-agent-skills",
       "plugins/plugin-anthropic",
@@ -189,6 +189,9 @@ describe("UPSTREAM_PRUNE_PATHS", () => {
       "plugins/plugin-plugin-manager",
       "plugins/plugin-shell",
       "plugins/plugin-solana",
+      // Added by Fix D — upstream demos with broken plugin refs that
+      // poison bun's workspace reconciler.
+      "packages/examples",
     ];
     for (const p of required) {
       expect(UPSTREAM_PRUNE_PATHS).toContain(p);

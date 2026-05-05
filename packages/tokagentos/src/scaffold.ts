@@ -100,6 +100,16 @@ export const UPSTREAM_PRUNE_PATHS = [
   "plugins/plugin-plugin-manager",
   "plugins/plugin-shell",
   "plugins/plugin-solana",
+  // Upstream eliza's example/demo workspaces. They reference `@elizaos/
+  // plugin-anthropic` (and others) via stale specifiers — `"alpha"` tag
+  // and `file:../../plugins/plugin-anthropic` paths — which conflict
+  // with the npm pins in tokagent/package.json once the file: paths
+  // can't resolve (the workspace dirs were pruned above). Bun's
+  // workspace reconciler then silently drops `@elizaos/plugin-anthropic`
+  // (and siblings) from the install entirely. Solution: prune the
+  // examples directory so it's not part of the scaffolded workspace.
+  // The examples are upstream demos, not part of the tokagentos product.
+  "packages/examples",
 ] as const;
 
 /**
