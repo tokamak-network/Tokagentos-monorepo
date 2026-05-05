@@ -174,17 +174,21 @@ const UPSTREAM_DEPENDENCY_REMOVALS: ReadonlyArray<{
  * newly-failing `@elizaos/plugin-*` workspace deps.
  */
 export const UPSTREAM_PLUGIN_NPM_PINS: Readonly<Record<string, string>> = {
-  "@elizaos/plugin-agent-orchestrator": "0.3.9",
-  "@elizaos/plugin-anthropic": "1.5.12",
+  // Alpha-track pins matching the upstream eliza commit (db00cf61) that
+  // uses @elizaos/core@2.0.0-alpha.537. Stable 1.x pins were initially
+  // chosen but caused subpath-export mismatches (e.g., plugin-sql@1.7.2
+  // doesn't export "/schema" while 2.0.0-alpha.20 does).
+  "@elizaos/plugin-agent-orchestrator": "2.0.0-alpha.537",
+  "@elizaos/plugin-anthropic": "2.0.0-alpha.537",
   "@elizaos/plugin-browser-bridge": "0.1.1",
-  "@elizaos/plugin-groq": "1.0.4",
-  "@elizaos/plugin-local-ai": "1.2.1",
-  "@elizaos/plugin-local-embedding": "2.0.0-alpha.3",
-  "@elizaos/plugin-ollama": "1.2.4",
-  "@elizaos/plugin-openai": "1.6.0",
-  "@elizaos/plugin-pdf": "1.0.2",
-  "@elizaos/plugin-solana": "1.2.6",
-  "@elizaos/plugin-sql": "1.7.2",
+  "@elizaos/plugin-groq": "2.0.0-alpha.10",
+  "@elizaos/plugin-local-ai": "2.0.0-alpha.5",
+  "@elizaos/plugin-local-embedding": "2.0.0-alpha.537",
+  "@elizaos/plugin-ollama": "2.0.0-alpha.537",
+  "@elizaos/plugin-openai": "2.0.0-alpha.537",
+  "@elizaos/plugin-pdf": "2.0.0-alpha.537",
+  "@elizaos/plugin-solana": "2.0.0-alpha.5",
+  "@elizaos/plugin-sql": "2.0.0-alpha.20",
   "@elizaos/plugin-wechat": "2.0.0-alpha.537",
 };
 

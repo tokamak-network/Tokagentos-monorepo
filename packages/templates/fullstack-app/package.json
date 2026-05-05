@@ -34,15 +34,15 @@
     "verify": "bun run typecheck && bun run lint"
   },
   "dependencies": {
-    "@elizaos/plugin-anthropic": "1.5.12",
-    "@elizaos/plugin-google-genai": "1.1.0",
-    "@elizaos/plugin-groq": "1.0.4",
-    "@elizaos/plugin-local-ai": "1.2.1",
-    "@elizaos/plugin-local-embedding": "2.0.0-alpha.3",
-    "@elizaos/plugin-ollama": "1.2.4",
-    "@elizaos/plugin-openai": "1.6.0",
-    "@elizaos/plugin-openrouter": "1.5.17",
-    "@elizaos/plugin-sql": "1.7.2"
+    "@elizaos/plugin-anthropic": "2.0.0-alpha.537",
+    "@elizaos/plugin-google-genai": "2.0.0-alpha.537",
+    "@elizaos/plugin-groq": "2.0.0-alpha.10",
+    "@elizaos/plugin-local-ai": "2.0.0-alpha.5",
+    "@elizaos/plugin-local-embedding": "2.0.0-alpha.537",
+    "@elizaos/plugin-ollama": "2.0.0-alpha.537",
+    "@elizaos/plugin-openai": "2.0.0-alpha.537",
+    "@elizaos/plugin-openrouter": "2.0.0-alpha.13",
+    "@elizaos/plugin-sql": "2.0.0-alpha.20"
   },
   "devDependencies": {
     "typescript": "~5.9.3"
