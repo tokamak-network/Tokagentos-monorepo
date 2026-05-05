@@ -143,21 +143,13 @@ const UPSTREAM_DEPENDENCY_REMOVALS: ReadonlyArray<{
     path: "packages/app-core/deploy/cloud-agent-template/package.json",
     names: ["@elizaos/plugin-elizacloud"],
   },
-  {
-    // app-lifeops has workspace:* deps on messaging plugins that live in
-    // submodules we deliberately don't clone (avoids `git submodule
-    // update --init --recursive` failures from any single bad submodule
-    // pin like the cloud/ ref-rewrite issue). Strip the deps so bun
-    // install resolves; LifeOps loses messaging connectors but the
-    // core (tasks, goals, calendar, inbox) keeps working.
-    path: "apps/app-lifeops/package.json",
-    names: [
-      "@elizaos/plugin-imessage",
-      "@elizaos/plugin-signal",
-      "@elizaos/plugin-telegram",
-      "@elizaos/plugin-whatsapp",
-    ],
-  },
+  // app-lifeops messaging deps are now pinned to npm via the workspace:*
+  // rewrite in UPSTREAM_PLUGIN_NPM_PINS (plugin-imessage, plugin-signal,
+  // plugin-telegram, plugin-whatsapp). The previous strip-from-deps
+  // approach left app-lifeops's source code (e.g. telegram-local-client.ts
+  // importing @elizaos/plugin-telegram/account-auth-service) unable to
+  // resolve at compile time. Removed in scaffold-recovery follow-up
+  // 2026-05-05.
 ];
 
 /**
@@ -182,14 +174,18 @@ export const UPSTREAM_PLUGIN_NPM_PINS: Readonly<Record<string, string>> = {
   "@elizaos/plugin-anthropic": "2.0.0-alpha.537",
   "@elizaos/plugin-browser-bridge": "0.1.1",
   "@elizaos/plugin-groq": "2.0.0-alpha.10",
+  "@elizaos/plugin-imessage": "2.0.0-alpha.6",
   "@elizaos/plugin-local-ai": "2.0.0-alpha.5",
   "@elizaos/plugin-local-embedding": "2.0.0-alpha.537",
   "@elizaos/plugin-ollama": "2.0.0-alpha.537",
   "@elizaos/plugin-openai": "2.0.0-alpha.537",
   "@elizaos/plugin-pdf": "2.0.0-alpha.537",
+  "@elizaos/plugin-signal": "2.0.0-alpha.537",
   "@elizaos/plugin-solana": "2.0.0-alpha.5",
   "@elizaos/plugin-sql": "2.0.0-alpha.20",
+  "@elizaos/plugin-telegram": "2.0.0-alpha.537",
   "@elizaos/plugin-wechat": "2.0.0-alpha.537",
+  "@elizaos/plugin-whatsapp": "2.0.0-alpha.537",
 };
 
 /**
