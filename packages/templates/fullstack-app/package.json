@@ -34,7 +34,13 @@
     "verify": "bun run typecheck && bun run lint"
   },
   "dependencies": {
+    "@elizaos/plugin-agent-skills": "2.0.0-alpha.537",
     "@elizaos/plugin-anthropic": "2.0.0-alpha.537",
+    "@elizaos/plugin-app-control": "2.0.0-alpha.537",
+    "@elizaos/plugin-browser-bridge": "0.1.1",
+    "@elizaos/plugin-commands": "2.0.0-alpha.537",
+    "@elizaos/plugin-edge-tts": "2.0.0-alpha.537",
+    "@elizaos/plugin-evm": "2.0.0-alpha.8",
     "@elizaos/plugin-google-genai": "2.0.0-alpha.537",
     "@elizaos/plugin-groq": "2.0.0-alpha.10",
     "@elizaos/plugin-local-ai": "2.0.0-alpha.5",
@@ -42,6 +48,7 @@
     "@elizaos/plugin-ollama": "2.0.0-alpha.537",
     "@elizaos/plugin-openai": "2.0.0-alpha.537",
     "@elizaos/plugin-openrouter": "2.0.0-alpha.13",
+    "@elizaos/plugin-shell": "2.0.0-alpha.537",
     "@elizaos/plugin-sql": "2.0.0-alpha.20"
   },
   "devDependencies": {
