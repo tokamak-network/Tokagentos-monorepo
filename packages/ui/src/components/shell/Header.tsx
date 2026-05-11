@@ -77,6 +77,7 @@ export function Header({
     plugins,
     browserEnabled,
     walletEnabled,
+    billingEnabled,
     loadDropStatus,
     uiLanguage,
     setUiLanguage,
@@ -116,8 +117,8 @@ export function Header({
     [plugins],
   );
   const tabGroups = useMemo(
-    () => getTabGroups(streamingEnabled, walletEnabled, browserEnabled),
-    [streamingEnabled, walletEnabled, browserEnabled],
+    () => getTabGroups(streamingEnabled, walletEnabled, browserEnabled, undefined, billingEnabled),
+    [streamingEnabled, walletEnabled, browserEnabled, billingEnabled],
   );
   const activeTabGroup = useMemo(
     () =>

@@ -22,7 +22,7 @@ on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pri
 | 6a | Plugin.init/dispose + shared pool + JWT + rate limiter + billing gate + auth/keys routes + server.ts seam | ✅ landed |
 | 6b | Credits/topup/usage/estimate routes + billing gate closures wired into chat-routes | ✅ landed |
 | 6 | Routes + auth + middleware + scaffold mirroring | ✅ landed |
-| 7 | app-core billing UI | — |
+| 7 | app-core billing UI | ✅ landed |
 | 8 | Cutover + decommission | — |
 
 ---

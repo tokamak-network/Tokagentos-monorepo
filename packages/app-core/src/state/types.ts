@@ -415,6 +415,9 @@ export interface AppState {
   browserEnabled: boolean;
   computerUseEnabled: boolean;
 
+  // Billing (runtime flag — fetched from GET /v1/billing/status at boot)
+  billingEnabled: boolean;
+
   // Wallet / Inventory
   walletEnabled: boolean;
   walletAddresses: WalletAddresses | null;

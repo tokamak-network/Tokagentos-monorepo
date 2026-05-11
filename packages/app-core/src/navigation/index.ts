@@ -5,6 +5,7 @@
 import type { LucideIcon } from "lucide-react";
 import {
   Clock3,
+  CreditCard,
   Gamepad2,
   MessageSquare,
   Monitor,
@@ -54,7 +55,8 @@ export type BuiltinTab =
   | "database"
   | "desktop"
   | "settings"
-  | "logs";
+  | "logs"
+  | "billing";
 
 /**
  * Tab identifier — includes all built-in tabs plus arbitrary strings
@@ -140,6 +142,12 @@ export const ALL_TAB_GROUPS: TabGroup[] = [
     icon: Settings,
     description: "Configuration and preferences",
   },
+  {
+    label: "Billing",
+    tabs: ["billing"],
+    icon: CreditCard,
+    description: "Credits, top-up, API keys, and usage",
+  },
 ];
 
 /** A plugin-provided nav-page widget that should appear in the navigation. */
@@ -162,13 +170,15 @@ export function getTabGroups(
   walletEnabled = true,
   browserEnabled = true,
   dynamicTabs?: DynamicNavTab[],
+  billingEnabled = false,
 ): TabGroup[] {
   const groups = ALL_TAB_GROUPS.filter(
     (g) =>
       (APPS_ENABLED || g.label !== "Apps") &&
       (streamEnabled || g.label !== "Stream") &&
       (walletEnabled || g.label !== "Wallet") &&
-      (browserEnabled || g.label !== "Browser"),
+      (browserEnabled || g.label !== "Browser") &&
+      (billingEnabled || g.label !== "Billing"),
   );
 
   // Merge dynamic plugin-provided nav-page tabs into groups.
@@ -225,6 +235,7 @@ const TAB_PATHS: Record<BuiltinTab, string> = {
   desktop: "/desktop",
   settings: "/settings",
   logs: "/apps/logs",
+  billing: "/billing",
 };
 
 /** Legacy path redirects — old paths that now map to new tabs. */
@@ -459,6 +470,8 @@ export function titleForTab(tab: Tab): string {
       return "Logs";
     case "stream":
       return "Stream";
+    case "billing":
+      return "Billing";
     default:
       // Dynamic plugin tabs — capitalize the tab ID as a fallback title.
       return tab.charAt(0).toUpperCase() + tab.slice(1).replace(/-/g, " ");

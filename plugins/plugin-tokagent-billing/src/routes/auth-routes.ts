@@ -206,6 +206,35 @@ async function handleLogin(
 }
 
 // ---------------------------------------------------------------------------
+// GET /v1/billing/status (Decision Z40)
+// ---------------------------------------------------------------------------
+
+/**
+ * Unauthenticated endpoint — reports whether billing is enabled.
+ *
+ * Used by the UI at boot to decide whether to render the Billing sidebar entry.
+ * Returns `{ enabled: false }` when the billing plugin is not loaded or
+ * BILLING_ENABLED=false, so it is always safe to call without auth.
+ *
+ * Response 200:
+ * ```json
+ * { "enabled": true }
+ * ```
+ */
+async function handleBillingStatus(
+  _req: RouteRequest,
+  res: RouteResponse,
+  _runtime: IAgentRuntime,
+): Promise<void> {
+  if (!isBillingStateInitialized()) {
+    res.status(200).json({ enabled: false });
+    return;
+  }
+  const { config } = getBillingState();
+  res.status(200).json({ enabled: config.enabled });
+}
+
+// ---------------------------------------------------------------------------
 // Route definitions
 // ---------------------------------------------------------------------------
 
@@ -225,5 +254,13 @@ export const authRoutes: Route[] = [
     public: true,
     name: "billing-auth-login",
     handler: handleLogin,
+  },
+  {
+    type: "GET",
+    path: "/v1/billing/status",
+    rawPath: true,
+    public: true,
+    name: "billing-status",
+    handler: handleBillingStatus,
   },
 ];

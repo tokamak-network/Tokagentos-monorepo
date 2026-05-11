@@ -14,11 +14,19 @@ import {
 } from "@tokagentos/ui";
 import {
   type ReactNode,
+  Suspense,
+  lazy,
   useCallback,
   useEffect,
   useMemo,
   useState,
 } from "react";
+
+const BillingPageView = lazy(() =>
+  import("./components/pages/BillingPageView.js").then((m) => ({
+    default: m.BillingPageView,
+  })),
+);
 import { subscribeDesktopBridgeEvent } from "./bridge/electrobun-rpc";
 import { GameViewOverlay } from "./components/apps/GameViewOverlay";
 import { getOverlayApp } from "./components/apps/overlay-app-registry";
@@ -251,6 +259,14 @@ function ViewRouter({
             <DesktopWorkspaceSection />
           </TabContentView>
         );
+      case "billing":
+        return (
+          <TabContentView>
+            <Suspense fallback={null}>
+              <BillingPageView />
+            </Suspense>
+          </TabContentView>
+        );
       default:
         return <ChatView />;
     }
@@ -353,6 +369,7 @@ export function App() {
   const isHeartbeats = tab === "triggers" || tab === "automations";
   const isSettingsPage = tab === "settings" || tab === "voice";
   const isAppsToolPage = isAppsToolTab(tab);
+  const isBillingPage = tab === "billing";
   const isDesktopWorkspacePage = tab === "desktop";
   const unreadCount = unreadConversations?.size ?? 0;
   const mobileChatControls = useMemo(
@@ -717,6 +734,18 @@ export function App() {
             <DesktopWorkspaceSection />
           </div>
         </div>
+      ) : isBillingPage ? (
+        <div
+          key="billing-shell"
+          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
+        >
+          <Header />
+          <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
+            <Suspense fallback={null}>
+              <BillingPageView />
+            </Suspense>
+          </div>
+        </div>
       ) : (
         <div
           key={`tab-shell-${tab}`}
@@ -750,6 +779,7 @@ export function App() {
       isWallets,
       isAppsToolPage,
       isDesktopWorkspacePage,
+      isBillingPage,
       isChatMobileLayout,
       mobileConversationsOpen,
       mobileChatControls,

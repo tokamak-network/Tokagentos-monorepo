@@ -927,6 +927,7 @@ function AppProviderInner({
     state: {
       browserEnabled,
       computerUseEnabled,
+      billingEnabled,
       walletEnabled,
       walletAddresses,
       walletConfig,
@@ -988,6 +989,19 @@ function AppProviderInner({
   } = walletHook;
 
   // setActionNotice is now provided by useLifecycleState
+
+  // ── Billing enabled (fetched once from /v1/billing/status at boot) ──
+  const [billingEnabled, setBillingEnabled] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/v1/billing/status")
+      .then((res) => (res.ok ? (res.json() as Promise<{ enabled: boolean }>) : Promise.reject()))
+      .then((json) => {
+        if (!cancelled) setBillingEnabled(json.enabled === true);
+      })
+      .catch(() => {/* billing plugin not installed or unavailable — keep false */});
+    return () => { cancelled = true; };
+  }, []);
 
   // ── Cloud state (extracted to useCloudState) ───────────────────────
   // Placed after walletHook so loadWalletConfig is available.
@@ -2037,6 +2051,7 @@ function AppProviderInner({
       logLoadError,
       browserEnabled,
       computerUseEnabled,
+      billingEnabled,
       walletEnabled,
       walletAddresses,
       walletConfig,
@@ -2449,6 +2464,7 @@ function AppProviderInner({
       logLoadError,
       browserEnabled,
       computerUseEnabled,
+      billingEnabled,
       walletEnabled,
       walletAddresses,
       walletConfig,

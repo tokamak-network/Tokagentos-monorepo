@@ -735,3 +735,73 @@ Cross-validation rule: `BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true → B
 **Reversibility**: Drop the `params` parameter from the commit signature — backward-compatible removal. The `billing_call_log` table would no longer be populated, but no schema changes are needed.
 
 **Owner-type**: Backend eng
+
+---
+
+## Z39 — View location and signing library for Phase 7 UI (Phase 7)
+
+**Question (Phase 7)**: Should the four billing React views live under `views/billing/` (matching a hypothetical future convention) or `components/pages/billing/` (matching the existing app-core pattern)? And should EIP-3009 signing use wagmi/viem or ethers v6?
+
+**Decision**: **`components/pages/billing/`** — matches every other page-level view in app-core (SettingsView, InventoryView, etc.). Creating a `views/` directory for billing only would introduce an inconsistency. **ethers v6** (`signer.signTypedData`) — already listed in `packages/app-core/package.json` as both a runtime and dev dependency; no new deps needed. wagmi/viem are not available in app-core.
+
+**Alternatives considered and rejected**:
+1. `views/billing/` — no existing precedent in app-core; would require updating all import paths.
+2. wagmi — not installed in app-core; would add a heavy runtime dependency.
+3. Manual `eth_signTypedData_v4` — verbose, error-prone, unmaintainable compared to the ethers typed-data API.
+
+**Reversibility**: Move files to `views/billing/` — update index.ts barrel and App.tsx imports.
+
+**Owner-type**: Frontend eng
+
+---
+
+## Z40 — Unauthenticated `GET /v1/billing/status` endpoint (Phase 7)
+
+**Question (Phase 7)**: The frontend needs to know whether the billing plugin is active before rendering the Billing nav tab. How should the app-core discover this at boot without a logged-in user?
+
+**Decision**: **Add `GET /v1/billing/status` as a public (unauthenticated) endpoint** in `auth-routes.ts`. The handler returns `{ enabled: false }` if `isBillingStateInitialized()` is falsy, or `{ enabled: config.enabled }` otherwise. The route is registered with `rawPath: true` and `public: true` so it bypasses JWT middleware. App.tsx fetches this once after mount and sets local `billingEnabled` state; the billing nav tab only appears when `billingEnabled === true`.
+
+**Alternatives considered and rejected**:
+1. **Include in the existing `/api/health` or `/api/status` endpoint** — that endpoint is in a different package and doesn't have access to billing plugin state.
+2. **Gate via a VITE build-time flag** — the billing plugin can be installed/uninstalled at runtime; a build-time flag would require rebuilding the frontend on each change.
+3. **Always show the billing tab** — would show an empty/broken tab when billing is not installed.
+
+**Reversibility**: Remove the route and the `billingEnabled` state in AppContext.tsx; hide the Billing tab group from ALL_TAB_GROUPS.
+
+**Owner-type**: Backend + Frontend eng
+
+---
+
+## Z41 — ethers v6 typed-data signing method for EIP-3009 (Phase 7)
+
+**Question (Phase 7)**: ethers v6 has two typed-data signing paths: `signer._signTypedData` (deprecated) and `signer.signTypedData`. Which should be used, and how should the 65-byte output signature be decomposed into `{v, r, s}` for the backend?
+
+**Decision**: **`signer.signTypedData(domain, types, message)`** — the public stable API in ethers v6. The returned hex string is 0x-prefixed, 132 chars (65 bytes): `r` (bytes 0–31), `s` (bytes 32–63), `v` (byte 64). The `decomposeSignature()` helper in `eip712-utils.ts` performs this split. The domain is taken directly from the `POST /v1/topup/quote` response (which already includes `chainId` and `verifyingContract`), so the frontend does not need a separate info endpoint.
+
+**Wire-format compatibility**: Verified against the backend's `verifyEip3009Signature()` (viem). ethers v6 and viem both produce DER-normalized ECDSA signatures; the `{v, r, s}` decomposition is identical.
+
+**Alternatives considered and rejected**:
+1. `signer._signTypedData` — deprecated since ethers v5 interop shim; will be removed.
+2. Manual `eth_signTypedData_v4` JSON-RPC call — bypasses ethers validation, requires manual domain serialisation.
+
+**Reversibility**: Replace with viem `signTypedData` if viem is added as a dependency in the future.
+
+**Owner-type**: Frontend eng
+
+---
+
+## Z42 — Test framework for Phase 7 billing views (Phase 7)
+
+**Question (Phase 7)**: The billing views use `fetch()` for all data. Should tests use MSW (mock service worker), a custom fetch stub, or `vi.mock` on the fetch global?
+
+**Decision**: **`vi.stubGlobal("fetch", vi.fn(...))` per test** — the simplest approach that works with vitest (the test runner already used in app-core). MSW adds a dependency and Service Worker setup that is unnecessary for unit-level view tests. The views have no internal fetch abstraction, so module-level `vi.mock` is not applicable. The `@testing-library/react` + vitest combination (already in package.json) is sufficient.
+
+**Test scope**: Each view has one test file covering: loading skeleton, data display, error states (401/network), and key user interactions. `eip712-utils.test.ts` covers pure utility functions independently.
+
+**Alternatives considered and rejected**:
+1. **MSW** — adds `msw` as a dev dependency; requires a browser environment setup; overkill for 4 view files.
+2. **Wrapping fetch in a module** — would require refactoring all four view files; no other views use this pattern.
+
+**Reversibility**: Replace `vi.stubGlobal` calls with MSW handlers if integration-level testing is desired.
+
+**Owner-type**: Frontend eng
