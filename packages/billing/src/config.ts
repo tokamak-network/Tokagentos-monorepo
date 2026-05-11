@@ -129,6 +129,15 @@ const BillingConfigSchema = z.object({
    */
   BILLING_OPERATOR_PRIVATE_KEY: hexPrivateKey,
 
+  /**
+   * Postgres connection URL for the billing ledger.
+   * Required when billing is enabled. The plugin service layer constructs a
+   * `pg.Pool` from this at start time (Decision Z23). Validated as a URL at
+   * boot via Zod, so typos like `BILLING_DATABSE_URL` surface as a
+   * `BillingConfigError`, not a service-start throw.
+   */
+  BILLING_DATABASE_URL: z.string().url(),
+
   // ---- Phase 5: worker / service envs (Decision Z22) ----------------------
 
   /**
@@ -300,6 +309,7 @@ export function loadBillingConfig(
     vaultAddress: raw.BILLING_VAULT_ADDRESS as Address,
     ptonAddress: raw.BILLING_PTON_ADDRESS as Address,
     operatorPrivateKey: raw.BILLING_OPERATOR_PRIVATE_KEY as Hex,
+    databaseUrl: raw.BILLING_DATABASE_URL,
 
     // ---- Phase 5: worker / service config (Decision Z22) ----
     consumeBatchMinPton: raw.BILLING_CONSUME_BATCH_MIN_PTON,

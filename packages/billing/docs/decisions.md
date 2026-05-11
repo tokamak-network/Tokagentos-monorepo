@@ -482,3 +482,49 @@ All have safe defaults so the billing package boots without any Phase 5 env vars
 **Reversibility**: Phase 6 refactor — replace per-service pool construction with a shared pool passed through plugin.init. No schema changes; only connection lifecycle changes.
 
 **Owner-type**: Backend eng
+
+---
+
+## Z24 — Anvil harness: `pkill -9 -f anvil` at startup (Phase 5.1)
+
+**Question (Phase 5.1)**: How should the Anvil integration harness handle stale Anvil processes left over from previously-aborted test runs?
+
+**Decision**: Anvil harness runs `pkill -9 -f anvil` (best-effort, ignoring ENOENT) before spawning a fresh process. A 1-second sleep follows to let the OS release the port.
+
+**Reasoning**: Without cleanup, a stale Anvil from a Ctrl-C'd previous test holds port 8545. The next `forge script Deploy.s.sol --broadcast` then targets the existing chain (different block height than expected), producing "nonce too low" deploy errors that look like test bugs. Random-port selection would require propagating the port into every hardcoded `8545` reference (deploy script env vars, downstream test fixtures, README docs) — heavier than this fix and reverted in Phase 8 prep.
+
+**Caveats**: `pkill -9 -f anvil` matches any process with "anvil" in argv on the machine. In a CI matrix with parallel workers, this can kill sibling jobs. Mitigated by container/VM isolation in production CI. Local-dev users running an unrelated Anvil should pause it before running the integration test.
+
+**Reversibility**: Trivial — remove the `pkill` and replace with port-bind detection, or implement random-port selection in Phase 8.
+
+**Owner-type**: Backend eng / DevOps
+
+---
+
+## Z25 — `BILLING_DATABASE_URL` is Zod-validated config, not a separate runtime probe (Phase 5.2)
+
+**Question (Phase 5.2)**: `BILLING_DATABASE_URL` was read via `runtime.getSetting()` with a manual null check, bypassing `BillingConfig`. Should it be folded into the validated Zod schema?
+
+**Decision**: **Yes.** `BILLING_DATABASE_URL` is now declared in `BillingConfigSchema` as `z.string().url()` and surfaced as `config.databaseUrl`. The runtime resolver reads from `config.databaseUrl`, not a separate `runtime.getSetting` call. The plugin services additionally trigger an eager `SELECT 1` probe at start time to surface DB connectivity errors in milliseconds rather than waiting up to `consumeScanIntervalMs` for the first scheduled tick.
+
+**Reasoning**: Typos like `BILLING_DATABSE_URL` previously produced a runtime throw at the first service start — far away from the boot path where a `BillingConfigError` would have caught it. Zod validation is the existing pattern for every other `BILLING_*` env (Decision Z10). The probe makes "Postgres is down" / "wrong credentials" / "wrong port" failures immediate and explicit rather than a 30-second silent wait.
+
+**Reversibility**: Trivial — `databaseUrl` is just another field on `BillingConfig`.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z26 — Consume worker stuck-`submitted` recovery + `BatchAlreadyUsed` sync (Phase 5.2)
+
+**Question (Phase 5.2)**: The original consume worker had two crash-safety gaps. (a) If the process crashed between the chain call and the DB update, the row was stuck in `state='submitted'` forever (same batchId regenerates from unchanged inputs, Step 1 skips, wallet frozen). (b) If the chain reverted with `BatchAlreadyUsed()` (meaning another worker / a restart already consumed this batchId), the worker treated it as a generic failure and incremented attempts toward dead-letter.
+
+**Decision**: **Add two recovery paths in `flushOne`.**
+1. **Stale-submitted recovery**: when `row.state === 'submitted'` and `lastAttemptAt` is older than `SUBMITTED_TIMEOUT_MS` (5 min), the worker queries the chain via `wasConsumedOnChain(clients, vaultAddress, batchId)`. If an on-chain `Consumed` event exists, the row is transitioned to `confirmed` and `flushAccrued` is called. Otherwise the row is reset to `pending` and re-attempted on the same tick.
+2. **`BatchAlreadyUsed` sync**: when `consumeCredits` rejects with an error message containing `BatchAlreadyUsed` or `AlreadyConsumed`, the worker syncs the DB to `confirmed` immediately (no retry, no dead-letter) and calls `flushAccrued`. Match is on the decoded custom-error name from `ClaudeVault.sol:84`.
+
+**Reasoning**: The first gap is a silent stuck state — no error, no metric, just a wallet that stops flushing. The second was masquerading the correct outcome (chain says "already done, sync up") as a retryable failure. Both are now self-healing.
+
+**Reversibility**: Trivial — both code paths are additive. Reverting them restores the original behavior (with both gaps).
+
+**Owner-type**: Backend eng

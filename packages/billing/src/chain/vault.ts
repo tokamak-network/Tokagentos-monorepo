@@ -160,6 +160,37 @@ export async function readCredits(
 }
 
 /**
+ * Check whether a `Consumed` event with the given `batchId` has been emitted
+ * by the vault. Used by the consume worker's crash-recovery path (Phase 5.2
+ * Fix 2): when a DB row is stuck in `state='submitted'` past the timeout, the
+ * worker queries the chain to determine whether the consume actually landed.
+ *
+ * Implementation: `getContractEvents` with the indexed `batchId` filter.
+ * Scans from genesis (`fromBlock: 0n`) — acceptable because (a) `batchId` is
+ * unique per `(wallet, firstAccrualAt, amount)` triple so the filter is highly
+ * selective, and (b) recovery is a rare path. Phase 9+ may switch to a
+ * bounded `fromBlock` if production scan time becomes problematic.
+ *
+ * @returns `true` if the chain has a `Consumed(_, _, batchId)` event,
+ *          `false` otherwise (treat as "tx never landed").
+ */
+export async function wasConsumedOnChain(
+  clients: BillingClients,
+  vaultAddress: Address,
+  batchId: Hex,
+): Promise<boolean> {
+  const events = await clients.publicClient.getContractEvents({
+    address: vaultAddress,
+    abi: CLAUDE_VAULT_ABI,
+    eventName: "Consumed",
+    args: { batchId },
+    fromBlock: 0n,
+    toBlock: "latest",
+  });
+  return events.length > 0;
+}
+
+/**
  * Read a user's PTON token balance.
  *
  * Pure read — used by Phase 6 `/v1/credits/me` to show the user their

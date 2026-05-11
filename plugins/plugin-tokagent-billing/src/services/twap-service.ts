@@ -65,6 +65,17 @@ export class TwapRefreshService extends Service {
       );
     }
 
+    // Phase 5.2 Fix 6: when BILLING_FIXED_TON_USD is set, the cached value is
+    // a constant — every subsequent refresh is a no-op that still pays the
+    // RPC round-trip cost. Skip the interval entirely in dev/test mode.
+    if (config.fixedTonUsd !== undefined) {
+      log.info(
+        { fixedTonUsd: config.fixedTonUsd },
+        "TwapRefreshService: fixed price override active — refresh timer not started",
+      );
+      return;
+    }
+
     this.timer = setInterval(() => {
       void refreshTwap(deps).catch((err: unknown) =>
         log.error({ err }, "twap service tick failed"),

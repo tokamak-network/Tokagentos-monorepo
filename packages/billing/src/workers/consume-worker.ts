@@ -29,12 +29,36 @@ import type { BillingDatabase } from "../ledger/schema.js";
 import { creditState, consumeBatches } from "../ledger/schema.js";
 import { withSerializableRetry } from "../ledger/retry.js";
 import { flushAccrued } from "../ledger/ledger.js";
-import { consumeCredits } from "../chain/vault.js";
+import { consumeCredits, wasConsumedOnChain } from "../chain/vault.js";
 import type { BillingClients } from "../chain/clients.js";
 
 const log = logger.child({ src: "billing:worker:consume" });
 
 const MAX_ATTEMPTS = 3;
+
+/**
+ * How long a row may stay in `state='submitted'` before the worker treats it
+ * as crash-stale and runs recovery (Phase 5.2 Fix 2).
+ *
+ * Rationale: a normal `consumeCredits` round-trip is <30s on any L2. 5 min is
+ * ~10× headroom — anything older almost certainly means the process crashed
+ * between Step 3 (chain call) and Step 4 (DB update to confirmed).
+ */
+const SUBMITTED_TIMEOUT_MS = 5 * 60 * 1000;
+
+/**
+ * Revert-string substrings indicating the batchId was already consumed
+ * on-chain (Phase 5.2 Fix 3). The actual revert is the custom error
+ * `BatchAlreadyUsed()` from `ClaudeVault.sol:84`. viem decodes custom errors
+ * into the thrown error's `.message`. Match conservatively — future contract
+ * renames or wrapped errors would still mention "AlreadyUsed".
+ */
+const BATCH_ALREADY_USED_PATTERNS = ["BatchAlreadyUsed", "AlreadyConsumed"];
+
+function isBatchAlreadyUsedRevert(err: unknown): boolean {
+  const msg = (err as Error)?.message ?? "";
+  return BATCH_ALREADY_USED_PATTERNS.some((p) => msg.includes(p));
+}
 
 // ---------------------------------------------------------------------------
 // Types
@@ -227,16 +251,62 @@ async function flushOne(
 
   if (existing.length > 0) {
     const row = existing[0]!;
-    if (
-      row.state === "confirmed" ||
-      row.state === "submitted" ||
-      row.state === "dead_letter"
-    ) {
-      log.debug(
-        { batchId, state: row.state, wallet },
-        "consume batch already in terminal/in-flight state; skipping",
+
+    // Terminal states — skip.
+    if (row.state === "confirmed") {
+      log.debug({ batchId, wallet }, "consume batch already confirmed; skipping");
+      return true;
+    }
+    if (row.state === "dead_letter") {
+      log.debug({ batchId, wallet }, "consume batch in dead_letter; skipping");
+      return false;
+    }
+
+    // `submitted` — could be in-flight (recent) or crash-stale (older than
+    // SUBMITTED_TIMEOUT_MS). Phase 5.2 Fix 2 recovers stale-submitted rows.
+    if (row.state === "submitted") {
+      // `lastAttemptAt` is nullable in the schema but always populated when
+      // a row reaches `submitted` (Step 2 sets it). If null, treat as
+      // ancient — we're in an inconsistent state and recovery is correct.
+      const lastAttempt = row.lastAttemptAt ?? new Date(0);
+      const ageMs = Date.now() - lastAttempt.getTime();
+      if (ageMs < SUBMITTED_TIMEOUT_MS) {
+        log.debug(
+          { batchId, wallet, ageMs },
+          "consume batch in-flight (submitted, fresh); skipping",
+        );
+        return false;
+      }
+
+      // Stale-submitted recovery. The process likely crashed between the chain
+      // call and the DB update. Query the chain to determine which.
+      const onChain = await wasConsumedOnChain(clients, vaultAddress, batchId);
+      if (onChain) {
+        log.warn(
+          { batchId, wallet, ageMs },
+          "recovering stuck submitted batch — chain confirms consumption",
+        );
+        await withSerializableRetry(db, async (tx) => {
+          await tx
+            .update(consumeBatches)
+            .set({ state: "confirmed", lastAttemptAt: new Date() })
+            .where(eq(consumeBatches.batchId, batchId));
+        });
+        await flushAccrued(db, wallet);
+        return true;
+      }
+
+      log.warn(
+        { batchId, wallet, ageMs },
+        "recovering stuck submitted batch — chain has no record, resetting to pending",
       );
-      return row.state === "confirmed";
+      await withSerializableRetry(db, async (tx) => {
+        await tx
+          .update(consumeBatches)
+          .set({ state: "pending", lastAttemptAt: new Date() })
+          .where(eq(consumeBatches.batchId, batchId));
+      });
+      // Fall through to attempt — the row is now `pending`.
     }
     // state === "pending": fall through to attempt
   }
@@ -286,6 +356,25 @@ async function flushOne(
       batchId,
     });
   } catch (chainErr) {
+    // ---- Phase 5.2 Fix 3: BatchAlreadyUsed — sync DB to confirmed ----
+    // The chain says this batchId was already consumed (custom error
+    // `BatchAlreadyUsed()` from ClaudeVault.sol). Retrying would just revert
+    // again. The correct action is to sync local state to match the chain.
+    if (isBatchAlreadyUsedRevert(chainErr)) {
+      log.warn(
+        { batchId, wallet, err: (chainErr as Error).message },
+        "BatchAlreadyUsed revert — syncing DB to confirmed",
+      );
+      await withSerializableRetry(db, async (tx) => {
+        await tx
+          .update(consumeBatches)
+          .set({ state: "confirmed", lastAttemptAt: new Date() })
+          .where(eq(consumeBatches.batchId, batchId));
+      });
+      await flushAccrued(db, wallet);
+      return true;
+    }
+
     // ---- Step 5: On failure ----
     log.error(
       {

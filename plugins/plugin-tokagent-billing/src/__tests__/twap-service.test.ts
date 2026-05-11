@@ -104,10 +104,32 @@ describe("TwapRefreshService", () => {
     expect(instance.cache).toBeDefined();
   });
 
-  it("stop() calls clearInterval and pool stop", async () => {
-    const clearIntervalSpy = vi.spyOn(globalThis, "clearInterval");
+  // Phase 5.2 Fix 6: when fixedTonUsd is set (dev/test override), the timer
+  // is skipped. The default MOCK_RUNTIME_DEPS has fixedTonUsd: 1.5 so the
+  // base lifecycle does NOT call setInterval.
+  it("skips refresh timer when fixedTonUsd is set (Phase 5.2 Fix 6)", async () => {
+    const setIntervalSpy = vi.spyOn(globalThis, "setInterval");
     const runtime = makeMockRuntime();
     const instance = await TwapRefreshService.start(runtime);
+    expect(setIntervalSpy).not.toHaveBeenCalled();
+    await instance.stop();
+    // pool stop still runs; clearInterval is a no-op because timer is null
+    expect(stopPoolFn).toHaveBeenCalled();
+  });
+
+  it("starts refresh timer when fixedTonUsd is undefined", async () => {
+    // Override the default mock — pretend BILLING_FIXED_TON_USD is unset.
+    vi.mocked(resolveBillingRuntime).mockResolvedValue({
+      ...MOCK_RUNTIME_DEPS,
+      config: { ...MOCK_RUNTIME_DEPS.config, fixedTonUsd: undefined },
+    } as never);
+
+    const setIntervalSpy = vi.spyOn(globalThis, "setInterval");
+    const runtime = makeMockRuntime();
+    const instance = await TwapRefreshService.start(runtime);
+    expect(setIntervalSpy).toHaveBeenCalled();
+
+    const clearIntervalSpy = vi.spyOn(globalThis, "clearInterval");
     await instance.stop();
     expect(clearIntervalSpy).toHaveBeenCalled();
     expect(stopPoolFn).toHaveBeenCalled();

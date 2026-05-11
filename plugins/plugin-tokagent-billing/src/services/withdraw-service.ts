@@ -61,6 +61,10 @@ export class WithdrawWatcherService extends Service {
         }
       },
       onError: (err) => {
+        // TODO(phase-6): resubscribe with exponential backoff. Current
+        // behavior: logs and stops receiving events until the service
+        // restarts. The consume worker's regular cadence is the correctness
+        // backstop per source semantics (withdraw watcher is best-effort).
         log.error({ err: err.message }, "withdraw watcher subscription error");
       },
     });

@@ -13,11 +13,20 @@
  *
  *   Therefore we pick **Option 2**: construct a `node-postgres` (`pg`) +
  *   Drizzle connection from `BILLING_DATABASE_URL` at service start time.
- *   `pg` is already a transitive dependency in the workspace.
+ *   `pg` is declared in the plugin's `dependencies` (Phase 5.1 fix).
  *
  *   Phase 6 plugin init is responsible for running migrations and providing
  *   the `BILLING_DATABASE_URL` setting. This module reads it and creates the
  *   connection pool; it does NOT run migrations (that is a plugin.init concern).
+ *
+ * Phase 5.2 changes:
+ *   - `BILLING_DATABASE_URL` is now validated by Zod inside `loadBillingConfig`
+ *     (Fix 1) — read from `config.databaseUrl`, not via a separate
+ *     `runtime.getSetting('BILLING_DATABASE_URL')`. Typos surface as a
+ *     `BillingConfigError` at config-load time, not a service-start throw.
+ *   - An eager `SELECT 1` probe runs after pool construction (Fix 4).
+ *     Unreachable databases fail in milliseconds, not after the first
+ *     scheduled tick.
  *
  * TODO(phase-6): replace with a proper BillingDatabase setter once plugin.init
  * wires the DB via drizzle migrations + pooled connection management. The
@@ -57,14 +66,18 @@ export interface BillingRuntimeDeps {
  * Construct all billing deps from the agent runtime settings.
  *
  * Reads `BILLING_*` env values via `runtime.getSetting(key)` and builds:
- *   - `config`  — from `loadBillingConfig(env)`
+ *   - `config`  — from `loadBillingConfig(env)` (Zod-validated; throws
+ *                  `BillingConfigError` on missing/malformed envs)
  *   - `clients` — from `createBillingClients(config)`
- *   - `db`      — from `pg.Pool` + `drizzle` on `BILLING_DATABASE_URL`
+ *   - `db`      — from `pg.Pool` + `drizzle` on `config.databaseUrl`
+ *
+ * Probes the pool with `SELECT 1` before returning so unreachable databases
+ * fail fast (Phase 5.2 Fix 4).
  *
  * Returns a `stop()` function that closes the pg Pool on service teardown.
  *
- * @throws BillingConfigError if required env vars are missing.
- * @throws Error if BILLING_DATABASE_URL is missing.
+ * @throws BillingConfigError if required env vars are missing or malformed.
+ * @throws Error if the database is not reachable.
  */
 export async function resolveBillingRuntime(
   runtime: IAgentRuntime,
@@ -93,6 +106,7 @@ export async function resolveBillingRuntime(
     "BILLING_VAULT_ADDRESS",
     "BILLING_PTON_ADDRESS",
     "BILLING_OPERATOR_PRIVATE_KEY",
+    "BILLING_DATABASE_URL",
     "BILLING_CONSUME_BATCH_MIN_PTON",
     "BILLING_CONSUME_MAX_AGE_MS",
     "BILLING_CONSUME_SCAN_INTERVAL_MS",
@@ -110,7 +124,7 @@ export async function resolveBillingRuntime(
     }
   }
 
-  // ---- 2. Load and validate billing config ----
+  // ---- 2. Load and validate billing config (throws BillingConfigError on bad input) ----
   const config = loadBillingConfig(env as NodeJS.ProcessEnv);
 
   // ---- 3. Create viem clients ----
@@ -121,16 +135,22 @@ export async function resolveBillingRuntime(
   });
 
   // ---- 4. Construct pg Pool + Drizzle (Decision Z23 Option 2) ----
-  const dbUrl = runtime.getSetting("BILLING_DATABASE_URL");
-  if (!dbUrl) {
+  // `config.databaseUrl` is Zod-validated as a URL — non-null, well-formed.
+  const pool = new Pool({ connectionString: config.databaseUrl });
+  const db = drizzle(pool, { schema }) as BillingDatabase;
+
+  // ---- 5. Eager connection probe (Phase 5.2 Fix 4) ----
+  // Fail fast on unreachable databases instead of waiting up to
+  // `consumeScanIntervalMs` (30s) for the first query to surface the error.
+  try {
+    await pool.query("SELECT 1");
+  } catch (err) {
+    await pool.end();
     throw new Error(
-      "resolveBillingRuntime: BILLING_DATABASE_URL is required but not set in runtime settings. " +
-        "TODO(phase-6): plugin.init should provide this before services start.",
+      `Failed to connect to BILLING_DATABASE_URL: ${(err as Error).message}. ` +
+        `Check the URL, credentials, and that the database is reachable.`,
     );
   }
-
-  const pool = new Pool({ connectionString: String(dbUrl) });
-  const db = drizzle(pool, { schema }) as BillingDatabase;
 
   return {
     db,
