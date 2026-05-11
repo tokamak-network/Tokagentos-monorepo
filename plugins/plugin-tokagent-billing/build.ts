@@ -1,11 +1,10 @@
 #!/usr/bin/env bun
 /**
  * Build script for @tokagent/plugin-tokagent-billing.
- * Produces ESM + .d.ts in dist/.
+ * Produces ESM in dist/.
  *
- * Type declarations are generated with skipLibCheck and treat @tokagentos/core
- * and @tokagentos/billing as externals (their types are already provided by
- * the workspace packages at runtime — the plugin does not need to re-emit them).
+ * No tsc pass — plugin bundles ESM only. .d.ts emission is deferred to a
+ * future tsc step if the plugin is published independently.
  */
 import { $ } from "bun";
 import { existsSync, rmSync } from "node:fs";

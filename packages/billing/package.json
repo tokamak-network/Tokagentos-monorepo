@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Web3 credit-billing rail for tokagentos. Migrated from llm-api-gateway.",
   "type": "module",
-  "publishConfig": { "access": "public" },
+  "publishConfig": { "access": "public", "directory": "dist" },
   "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",

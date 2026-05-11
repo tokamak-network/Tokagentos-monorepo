@@ -63,8 +63,8 @@ Source repo (deprecating after Phase 8 cutover):
 ## Anvil Quickstart
 
 ```
-TODO(phase-1): Add Anvil quickstart instructions here once the package.json and
-build wiring are in place (Phase 1). The source repo's mprocs.yaml + scripts/
+TODO(phase-4): Add Anvil quickstart instructions here once the chain layer and
+Anvil harness land (Phase 4). The source repo's mprocs.yaml + scripts/
 will be replaced by a documented Anvil fork command and turbo dev integration.
 ```
 

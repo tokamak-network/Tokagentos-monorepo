@@ -6,9 +6,6 @@
  * Type declarations are generated with skipLibCheck and treat @tokagentos/core
  * as an external (its types are already provided by the workspace package at
  * runtime — the billing library does not need to re-emit them).
- *
- * drizzle-orm is listed as an external for Phase 4 readiness even though
- * Phase 1 does not import it. This matches the plan's stated intent.
  */
 import { $ } from "bun";
 import { existsSync, rmSync } from "node:fs";
@@ -24,7 +21,7 @@ async function build() {
     outdir: "./dist",
     target: "node",
     format: "esm",
-    external: ["viem", "@tokagentos/core", "drizzle-orm"],
+    external: ["viem", "@tokagentos/core"],
     sourcemap: "external",
   });
 
