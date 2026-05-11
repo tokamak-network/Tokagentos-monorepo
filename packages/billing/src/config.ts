@@ -128,6 +128,58 @@ const BillingConfigSchema = z.object({
    * See plan §Config, Risk R7, and Decision OQ3.
    */
   BILLING_OPERATOR_PRIVATE_KEY: hexPrivateKey,
+
+  // ---- Phase 5: worker / service envs (Decision Z22) ----------------------
+
+  /**
+   * Minimum accrued atto-PTON before the consume worker flushes a wallet.
+   * Default: 0.5 PTON = 500_000_000_000_000_000n atto-PTON.
+   * The worker also fires when the idle clock hits BILLING_CONSUME_MAX_AGE_MS.
+   */
+  BILLING_CONSUME_BATCH_MIN_PTON: z
+    .string()
+    .optional()
+    .transform((v) =>
+      v === undefined || v === "" ? 500_000_000_000_000_000n : BigInt(v),
+    )
+    .pipe(z.bigint().nonnegative()),
+
+  /**
+   * Maximum age (ms) of an accrual before the idle trigger fires, regardless
+   * of whether BILLING_CONSUME_BATCH_MIN_PTON was reached.
+   * Default: 300_000 ms (5 minutes).
+   */
+  BILLING_CONSUME_MAX_AGE_MS: numFromEnv(300_000),
+
+  /**
+   * How often the consume worker scans for flush-eligible wallets.
+   * Default: 30_000 ms (30 seconds).
+   */
+  BILLING_CONSUME_SCAN_INTERVAL_MS: numFromEnv(30_000),
+
+  /**
+   * Maximum number of wallets flushed in a single consume worker scan.
+   * Default: 10.
+   */
+  BILLING_CONSUME_MAX_PER_CYCLE: numFromEnv(10),
+
+  /**
+   * How long (days) to retain rows in billing_call_log.
+   * Default: 90 days.
+   */
+  BILLING_USAGE_RETENTION_DAYS: numFromEnv(90),
+
+  /**
+   * How often (ms) the usage cleanup worker sweeps old call log rows.
+   * Default: 86_400_000 ms (24 hours).
+   */
+  BILLING_USAGE_CLEANUP_INTERVAL_MS: numFromEnv(86_400_000),
+
+  /**
+   * How often (ms) the TWAP service refreshes the TON/USD price.
+   * Default: 60_000 ms (60 seconds).
+   */
+  BILLING_PRICE_REFRESH_INTERVAL_MS: numFromEnv(60_000),
 });
 
 // ---------------------------------------------------------------------------
@@ -248,6 +300,15 @@ export function loadBillingConfig(
     vaultAddress: raw.BILLING_VAULT_ADDRESS as Address,
     ptonAddress: raw.BILLING_PTON_ADDRESS as Address,
     operatorPrivateKey: raw.BILLING_OPERATOR_PRIVATE_KEY as Hex,
+
+    // ---- Phase 5: worker / service config (Decision Z22) ----
+    consumeBatchMinPton: raw.BILLING_CONSUME_BATCH_MIN_PTON,
+    consumeMaxAgeMs: raw.BILLING_CONSUME_MAX_AGE_MS,
+    consumeScanIntervalMs: raw.BILLING_CONSUME_SCAN_INTERVAL_MS,
+    consumeMaxPerCycle: raw.BILLING_CONSUME_MAX_PER_CYCLE,
+    usageRetentionDays: raw.BILLING_USAGE_RETENTION_DAYS,
+    usageCleanupIntervalMs: raw.BILLING_USAGE_CLEANUP_INTERVAL_MS,
+    priceRefreshIntervalMs: raw.BILLING_PRICE_REFRESH_INTERVAL_MS,
   } as const;
 }
 

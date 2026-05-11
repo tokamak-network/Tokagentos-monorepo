@@ -18,7 +18,7 @@ on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pri
 | 2 | Pricing, billing math, TWAP (pure) | ✅ landed |
 | 3 | Chain layer: clients, vault, EIP-3009 verify, Anvil harness | ✅ landed |
 | 4 | Drizzle ledger, persistence | ✅ landed |
-| 5 | Workers (consume, withdraw, TWAP refresh, usage cleanup) | — |
+| 5 | Workers (consume, withdraw, TWAP refresh, usage cleanup) | ✅ landed |
 | 6 | Routes + auth + middleware + scaffold mirroring | — |
 | 7 | app-core billing UI | — |
 | 8 | Cutover + decommission | — |
@@ -115,6 +115,53 @@ For the full 10k-iteration concurrency stress test (validation gate):
 ```bash
 BILLING_STRESS_FULL=1 bun run test --filter=@tokagentos/billing
 ```
+
+---
+
+## Workers & Services
+
+Phase 5 ships four background workers, each implemented as a pure function in
+`packages/billing/src/workers/` and wrapped in an elizaOS `Service` in
+`plugins/plugin-tokagent-billing/src/services/`.
+
+### Service summary
+
+| Service | Cadence / trigger | Description |
+|---|---|---|
+| `ConsumeService` | Every 30s (scan); OR if wallet accrued ≥ 0.5 PTON or accrual is ≥ 5 min old | Flushes accrued credits to `vault.consumeCredits` on-chain |
+| `WithdrawWatcherService` | Event-driven — `vault.WithdrawRequested` | Pre-empts a user's pending withdrawal by flushing their accrued balance first |
+| `TwapRefreshService` | Every 60s + initial prime on start | Refreshes composite TON/USD Uniswap V3 TWAP price into `TwapCache` |
+| `UsageCleanupService` | Every 24h | Sweeps expired rows from `billing_call_log`, `billing_auth_nonces`, `billing_topup_quotes`, `billing_topup_preauth_slots` |
+
+### Lifecycle
+
+Services are registered in `tokagentBillingPlugin.services`. The elizaOS runtime calls
+`Service.start(runtime)` for each during plugin init and `Service.stop()` on shutdown.
+Each service resolves its deps (DB pool, viem clients, config) from `runtime.getSetting()`
+via `resolveBillingRuntime()` — no constructor injection needed.
+
+### Tunable envs (Phase 5 additions)
+
+| Env | Default | Purpose |
+|---|---|---|
+| `BILLING_CONSUME_BATCH_MIN_PTON` | `500000000000000000` | Size threshold for flush (atto-PTON) |
+| `BILLING_CONSUME_MAX_AGE_MS` | `300000` | Idle age threshold for flush (ms) |
+| `BILLING_CONSUME_SCAN_INTERVAL_MS` | `30000` | Consume scan interval (ms) |
+| `BILLING_CONSUME_MAX_PER_CYCLE` | `10` | Max wallets per scan |
+| `BILLING_USAGE_RETENTION_DAYS` | `90` | call_log retention (days) |
+| `BILLING_USAGE_CLEANUP_INTERVAL_MS` | `86400000` | Cleanup tick cadence (ms) |
+| `BILLING_PRICE_REFRESH_INTERVAL_MS` | `60000` | TWAP refresh cadence (ms) |
+
+All have safe defaults; none are required if the defaults are acceptable.
+
+### Anvil end-to-end (consume worker integration)
+
+```bash
+BILLING_TEST_ANVIL=1 bun run test --filter=@tokagentos/billing
+```
+
+This runs the full consume-worker integration test against a fresh Anvil chain
+(see Anvil Quickstart section below for prerequisites).
 
 ---
 

@@ -388,3 +388,97 @@ Source: `docs/superpowers/specs/2026-05-11-llm-api-gateway-integration-plan.md` 
 **Reversibility**: Requires a migration `ALTER TABLE ... ALTER COLUMN ... TYPE bytea USING decode(col, 'hex')` per column. Mechanically simple but not zero-downtime; we'd want a maintenance window. Phase 4.x or later if the trade-off no longer holds.
 
 **Owner-type**: Backend eng
+
+---
+
+## Z18 — Two-layer worker/service split (Phase 5)
+
+**Question (Phase 5)**: Should lifecycle management (timers, viem subscriptions) live in the same module as the flush/sweep logic, or be separated?
+
+**Decision**: **Two layers.** Pure worker functions live in `packages/billing/src/workers/` — stateless, no `setInterval`, no global state, testable with PGLite alone. elizaOS Service wrappers live in `plugins/plugin-tokagent-billing/src/services/` — they own timers and subscriptions, inject deps from runtime settings, and delegate all business logic to the worker layer.
+
+**Reasoning**: Mixing lifecycle ownership into business logic makes worker tests require a full elizaOS runtime mock. The separation allows PGLite-only worker tests (fast, always-on) and lightweight lifecycle tests (just spy on the interval/subscription). This directly mirrors how elizaOS itself separates `Service` from underlying handler functions. The split also means the worker layer can be composed into arbitrary orchestrators (e.g. a standalone CLI) without pulling in the elizaOS runtime.
+
+**Reversibility**: Trivial — the layers are independent modules. Collapsing them would be a code-movement refactor with no schema or API changes.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z19 — Service deps injection via `runtime.getSetting(...)`, not constructor params (Phase 5)
+
+**Question (Phase 5)**: How should billing services receive their configuration (`BILLING_*` envs, DB URL, chain clients)?
+
+**Decision**: **Via `runtime.getSetting(key)` inside `resolveBillingRuntime(runtime)`.** All four services call `resolveBillingRuntime(this.runtime)` at start time. The resolver reads every `BILLING_*` key from the runtime settings bag, validates via `loadBillingConfig`, and constructs the `pg.Pool` + Drizzle DB + viem clients in one shot.
+
+**Reasoning**: elizaOS's `Service.start(runtime)` contract passes only the runtime — there is no constructor injection point for arbitrary config. Injecting through `getSetting` is the elizaOS-idiomatic pattern used by all other plugins. It also makes test doubles trivial: mock `getSetting` to return test values, and the full start/stop lifecycle can be exercised without real infrastructure.
+
+**Reversibility**: Trivial — the resolver is a thin adapter; swapping to constructor injection would be a signature change with no behavioral impact.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z20 — Two-tier test coverage: PGLite workers + mock-runtime services (Phase 5)
+
+**Question (Phase 5)**: How should Phase 5 tests be structured given the two-layer split?
+
+**Decision**: **Two tiers, each tested separately.** (1) Worker-layer tests (`packages/billing/src/workers/__tests__/`) use PGLite and always run — no external dependencies. (2) Service-layer tests (`plugins/plugin-tokagent-billing/src/__tests__/services-*.test.ts`) mock `resolveBillingRuntime` and worker functions via `vi.mock`, proving lifecycle wiring only. The Anvil integration test (`consume-worker.integration.test.ts`) is gated by `BILLING_TEST_ANVIL=1`.
+
+**Reasoning**: Worker correctness (SQL, state machine, batch ID) is best tested with a real DB. Lifecycle correctness (interval scheduling, unwatch calls, clearInterval on stop) is best tested with fake timers and mocked worker functions. Conflating the two would require Anvil + real DB in all service tests, making the plugin test suite 15–20× slower with no coverage benefit.
+
+**Reversibility**: Trivial — test architecture changes impose no runtime constraints.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z21 — consumeWorker semantics preserved verbatim from source (Phase 5)
+
+**Question (Phase 5)**: Should the consume worker's flush semantics (OR triggers, deterministic batchId, retry logic) be changed during migration?
+
+**Decision**: **Semantics preserved verbatim.** The two OR triggers (size threshold `consumeBatchMinPton` OR idle age `consumeMaxAgeMs`), the deterministic `batchId = keccak256("consume:{wallet}:{firstAccrualAt.getTime()}:{amount}")`, the `MAX_ATTEMPTS = 3` dead-letter policy, and the priority-wallet override are all copied exactly from source `proxy/src/consumeWorker.ts`. One implementation difference: dead-letter entries persist in `billing_consume_batches.state = 'dead_letter'` instead of an in-process array, providing durability and observability.
+
+**Reasoning**: Semantic parity with the source is required during the migration phase (Risk R9: source is authoritative). Behavioral changes would require product sign-off and are deferred to Phase 9.
+
+**Reversibility**: Behavioral changes to flush semantics require product sign-off and migration of any in-flight `dead_letter` rows. Non-trivial.
+
+**Owner-type**: Backend eng / Product
+
+---
+
+## Z22 — Config envs: 7 new BILLING_* vars for Phase 5 workers (Phase 5)
+
+**Question (Phase 5)**: How should the worker tuning parameters be exposed?
+
+**Decision**: **7 new `BILLING_*` environment variables**, all with defaults, added to `packages/billing/src/config.ts`:
+
+| Env | Default | Purpose |
+|---|---|---|
+| `BILLING_CONSUME_BATCH_MIN_PTON` | 500000000000000000 (0.5 PTON) | Size threshold for consume flush |
+| `BILLING_CONSUME_MAX_AGE_MS` | 300000 (5 min) | Idle age threshold for consume flush |
+| `BILLING_CONSUME_SCAN_INTERVAL_MS` | 30000 (30 s) | Consume worker tick cadence |
+| `BILLING_CONSUME_MAX_PER_CYCLE` | 10 | Max wallets flushed per scan |
+| `BILLING_USAGE_RETENTION_DAYS` | 90 | call_log retention window |
+| `BILLING_USAGE_CLEANUP_INTERVAL_MS` | 86400000 (24 h) | Cleanup worker tick cadence |
+| `BILLING_PRICE_REFRESH_INTERVAL_MS` | 60000 (60 s) | TWAP refresh tick cadence |
+
+All have safe defaults so the billing package boots without any Phase 5 env vars set. Production deployments should override `BILLING_CONSUME_BATCH_MIN_PTON` and `BILLING_CONSUME_SCAN_INTERVAL_MS` based on expected throughput.
+
+**Reversibility**: Additive — removing any of these would break existing deployments that override them. Non-trivial if operators have configured custom values.
+
+**Owner-type**: DevOps / Backend eng
+
+---
+
+## Z23 — DB connection acquisition: Option 2 — `pg.Pool` from `BILLING_DATABASE_URL` (Phase 5)
+
+**Question (Phase 5)**: How should billing services acquire a `BillingDatabase` (Drizzle) connection? Option 1: read from `@elizaos/plugin-sql`'s internal `getDb()`. Option 2: construct a `node-postgres` (`pg`) Pool from `BILLING_DATABASE_URL` at service start time.
+
+**Decision**: **Option 2.** `resolveBillingRuntime` constructs `new Pool({ connectionString: dbUrl })` and wraps it with `drizzle(pool, { schema })`. Each service start creates its own pool; each service stop calls `pool.end()`.
+
+**Reasoning**: `@elizaos/plugin-sql` does not expose a public typed surface that billing can consume — its internal `getDb()` is bound to the plugin-sql schema (`AgentStore`/`MemoryStore`), not the billing schema. Inspecting the plugin-sql JS bundle confirms only internal classes call `ctx.getDb()`. A direct `pg.Pool` avoids an undocumented dependency on plugin-sql internals and works with any Postgres-compatible backend (Postgres 15+, Neon, Supabase). The per-service pool is an acknowledged temporary design (see TODO in `_runtime-deps.ts`): Phase 6 plugin.init should provide a single shared pool via migrations, and all services should receive it rather than constructing independent pools.
+
+**Reversibility**: Phase 6 refactor — replace per-service pool construction with a shared pool passed through plugin.init. No schema changes; only connection lifecycle changes.
+
+**Owner-type**: Backend eng

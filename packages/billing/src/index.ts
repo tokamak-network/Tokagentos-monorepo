@@ -28,3 +28,8 @@ export * from './ledger/retry.js';
 export * from './auth/api-keys.js';
 export * from './auth/nonces.js';
 export * from './pricing/quotes.js';
+// Phase 5: workers (pure logic — no setInterval, no global state)
+export * from './workers/consume-worker.js';
+export * from './workers/withdraw-watcher.js';
+export * from './workers/twap-refresh.js';
+export * from './workers/usage-cleanup.js';
