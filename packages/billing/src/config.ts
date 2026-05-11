@@ -97,25 +97,28 @@ const BillingConfigSchema = z.object({
     .transform((v) => (v === undefined || v === "" ? undefined : Number(v))),
 
   // ---- Phase 3: chain-write layer ----------------------------------------
-  // These five envs are required when the chain layer is used (Phase 6 wires
-  // `BILLING_ENABLED` as the top-level gate). Until Phase 6 they are always
-  // present in the schema but the caller decides whether to assert their
-  // presence. Decision Z10: single BillingConfig shape grows incrementally.
+  // These five envs are REQUIRED-at-boot. Misconfiguration is caught early at
+  // `loadBillingConfig()` time; the chain layer can assume non-null values
+  // without per-call null guards. When Phase 6 adds the `BILLING_ENABLED`
+  // toggle, the gate will be applied at `loadBillingConfig`'s outer wrapper
+  // (skip chain validation when disabled), NOT by re-introducing per-field
+  // `.optional()`. Decision Z10: single BillingConfig shape grows
+  // incrementally with required-at-boot semantics.
 
   /** RPC URL for the L2 chain hosting ClaudeVault (e.g. Polygon, Base, Titan). */
-  BILLING_CHAIN_RPC_URL: z.string().url().optional(),
+  BILLING_CHAIN_RPC_URL: z.string().url(),
 
   /**
    * Chain ID of the L2 chain hosting ClaudeVault. Used for EIP-712 domain
    * construction in `ptonDomain()` and for `BillingClients` transport.
    */
-  BILLING_CHAIN_ID: z.coerce.number().int().positive().optional(),
+  BILLING_CHAIN_ID: z.coerce.number().int().positive(),
 
   /** Deployed ClaudeVault contract address on the L2 chain. */
-  BILLING_VAULT_ADDRESS: hexAddress.optional(),
+  BILLING_VAULT_ADDRESS: hexAddress,
 
   /** Deployed PTON token contract address on the L2 chain. */
-  BILLING_PTON_ADDRESS: hexAddress.optional(),
+  BILLING_PTON_ADDRESS: hexAddress,
 
   /**
    * Operator EOA private key (hex, 0x-prefixed).
@@ -124,7 +127,7 @@ const BillingConfigSchema = z.object({
    * `packages/agent/src/auth/credentials.ts` (OS keychain), not bare env.
    * See plan §Config, Risk R7, and Decision OQ3.
    */
-  BILLING_OPERATOR_PRIVATE_KEY: hexPrivateKey.optional(),
+  BILLING_OPERATOR_PRIVATE_KEY: hexPrivateKey,
 });
 
 // ---------------------------------------------------------------------------
@@ -239,12 +242,12 @@ export function loadBillingConfig(
 
     fixedTonUsd: raw.BILLING_FIXED_TON_USD,
 
-    // ---- Phase 3: chain-write layer ----
+    // ---- Phase 3: chain-write layer (required-at-boot per Z10) ----
     chainRpcUrl: raw.BILLING_CHAIN_RPC_URL,
     chainId: raw.BILLING_CHAIN_ID,
-    vaultAddress: raw.BILLING_VAULT_ADDRESS as Address | undefined,
-    ptonAddress: raw.BILLING_PTON_ADDRESS as Address | undefined,
-    operatorPrivateKey: raw.BILLING_OPERATOR_PRIVATE_KEY as Hex | undefined,
+    vaultAddress: raw.BILLING_VAULT_ADDRESS as Address,
+    ptonAddress: raw.BILLING_PTON_ADDRESS as Address,
+    operatorPrivateKey: raw.BILLING_OPERATOR_PRIVATE_KEY as Hex,
   } as const;
 }
 
