@@ -42,7 +42,7 @@ export const ETHEREUM_MAINNET: BillingChainAddresses = {
     'Anvil mainnet-fork deploy (deployer=0xf39Fd6e51...92266, the default Anvil account). ' +
     'MAINNET_RPC_URL in source .env.example points to http://127.0.0.1:8545. ' +
     'Verify against live Ethereum node before setting BILLING_ENABLED=true on mainnet.',
-};
+} as const;
 
 /**
  * Chain 11155111 — Sepolia Testnet
@@ -55,7 +55,7 @@ export const SEPOLIA: BillingChainAddresses = {
   pton: null,
   claudeVault: null,
   notes: 'Not deployed — populate pton and claudeVault before enabling on Sepolia.',
-};
+} as const;
 
 /**
  * Chain 137 — Polygon Mainnet
@@ -68,7 +68,7 @@ export const POLYGON: BillingChainAddresses = {
   pton: null,
   claudeVault: null,
   notes: 'Not deployed — populate pton and claudeVault before enabling on Polygon.',
-};
+} as const;
 
 export const BILLING_CHAIN_MAP: ReadonlyMap<number, BillingChainAddresses> = new Map([
   [ETHEREUM_MAINNET.chainId, ETHEREUM_MAINNET],
