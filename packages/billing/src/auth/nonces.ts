@@ -7,7 +7,7 @@
  */
 
 import { randomBytes } from "node:crypto";
-import { eq, lt } from "drizzle-orm";
+import { and, eq, gt, lt } from "drizzle-orm";
 import { authNonces, type BillingDatabase } from "../ledger/schema.js";
 
 // ---------------------------------------------------------------------------
@@ -41,34 +41,30 @@ export async function issueNonce(
 }
 
 /**
- * Consume a nonce: delete the row and return the stored envelope if the nonce
- * is valid and not expired. Returns `null` if the nonce does not exist or has
- * already expired.
+ * Consume a nonce: atomically delete the row and return the stored envelope
+ * if the nonce is valid and not expired. Returns `null` if the nonce does not
+ * exist or has already expired.
  *
- * Deletion is unconditional (even on expiry) so stale rows are cleaned up
- * eagerly. `sweepExpiredNonces` handles bulk cleanup.
+ * Implemented as a single conditional DELETE...RETURNING so concurrent callers
+ * for the same nonce serialize correctly — only the winning DELETE returns a
+ * row, and losers receive `null`. This avoids the TOCTOU race that would exist
+ * if SELECT and DELETE were two separate statements.
+ *
+ * Expired rows are NOT deleted here (the predicate filters them out instead);
+ * `sweepExpiredNonces` handles bulk cleanup of expired entries.
  */
 export async function consumeNonce(
   db: BillingDatabase,
   nonce: string,
   now: Date,
 ): Promise<object | null> {
-  // Fetch first so we can check expiry before deleting.
-  const rows = await db
-    .select()
-    .from(authNonces)
-    .where(eq(authNonces.nonce, nonce));
+  const deleted = await db
+    .delete(authNonces)
+    .where(and(eq(authNonces.nonce, nonce), gt(authNonces.expiresAt, now)))
+    .returning();
 
-  if (rows.length === 0) return null;
-
-  const row = rows[0]!;
-
-  // Always delete the row (one-shot semantics).
-  await db.delete(authNonces).where(eq(authNonces.nonce, nonce));
-
-  if (row.expiresAt <= now) return null;
-
-  return row.envelope as object;
+  if (deleted.length === 0) return null;
+  return deleted[0]!.envelope as object;
 }
 
 /**

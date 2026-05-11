@@ -9,6 +9,11 @@
  * Parameters:
  *   maxAttempts — default 5
  *   baseMs      — default 10ms; jitter ±50% of baseMs per attempt
+ *
+ * Per-attempt delay is capped at 1000ms before jitter so callers cannot
+ * accidentally produce multi-second waits by passing a large `maxAttempts`
+ * (`baseMs * 2 ** (n - 1)` grows fast). After the cap, jitter still varies
+ * the delay by ±50%.
  */
 
 import type { BillingDatabase } from "./schema.js";
@@ -58,7 +63,10 @@ export async function withSerializableRetry<T>(
     } catch (err) {
       if (isSerializationFailure(err) && attempt < maxAttempts) {
         lastErr = err;
-        const delay = jitter(baseMs * 2 ** (attempt - 1));
+        // Cap per-attempt delay at 1s before jitter so a high maxAttempts
+        // cannot produce multi-second waits via exponential growth.
+        const capped = Math.min(baseMs * 2 ** (attempt - 1), 1000);
+        const delay = jitter(capped);
         await sleep(delay);
         continue;
       }

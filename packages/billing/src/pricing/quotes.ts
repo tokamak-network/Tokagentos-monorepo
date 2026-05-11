@@ -83,14 +83,23 @@ export async function fetchQuote(
 }
 
 /**
- * Mark a quote as consumed. Subsequent `fetchQuote` calls for the same ID
- * will return `null`.
+ * Atomically mark a quote as consumed. Returns `true` if this call performed
+ * the consumption, `false` if the quote was already consumed (or does not
+ * exist).
+ *
+ * Implemented as a single UPDATE ... WHERE consumed_at IS NULL ... RETURNING
+ * so concurrent callers for the same quote ID serialize correctly — only the
+ * winning UPDATE flips `consumed_at` and returns a row. Callers should treat
+ * `false` as a 409 conflict ("quote already consumed").
  */
-export async function consumeQuote(db: BillingDatabase, id: string): Promise<void> {
-  await db
+export async function consumeQuote(db: BillingDatabase, id: string): Promise<boolean> {
+  const result = await db
     .update(topupQuotes)
     .set({ consumedAt: new Date() })
-    .where(eq(topupQuotes.id, id));
+    .where(and(eq(topupQuotes.id, id), isNull(topupQuotes.consumedAt)))
+    .returning();
+
+  return result.length > 0;
 }
 
 /**

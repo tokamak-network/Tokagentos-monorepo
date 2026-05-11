@@ -202,9 +202,12 @@ export async function release(
  * Commit a reservation: record the actual charge and move the cost to the
  * `accrued` accumulator for later batching via `consumeCredits`.
  *
- * `totalPton` is the actual cost (may differ from `amountPton`; excess is
- * forfeited back to balance). The accrued field is incremented by `totalPton`,
- * NOT by the reservation amount.
+ * `totalPton` is the actual cost. The accrued field is incremented by
+ * `min(totalPton, reservedAmount)` — never more than the reservation amount.
+ * If `totalPton > reservedAmount`, the excess is silently capped; this
+ * protects against estimation bugs in `estimateMaxCostUsd` without crashing
+ * the request. The cap firing is a signal that something upstream
+ * underestimated cost — we log a warning to surface it.
  */
 export async function commit(
   db: BillingDatabase,
@@ -235,6 +238,20 @@ export async function commit(
     const state = await getOrCreateState(tx, wallet);
 
     // Any excess reservation beyond the actual cost is refunded to balance.
+    // Capping is silent (does not throw) so a single bad cost estimate
+    // doesn't blow up the request — but we log a warning so upstream
+    // estimation bugs are surfaced.
+    if (totalPton > reservedAmount) {
+      log.warn(
+        {
+          wallet,
+          reservationId,
+          reservedAmount: reservedAmount.toString(),
+          totalPton: totalPton.toString(),
+        },
+        "commit: actual cost exceeded reservation — capping at reservation (estimation bug?)",
+      );
+    }
     const actualCharge = totalPton > reservedAmount ? reservedAmount : totalPton;
     const refund = reservedAmount - actualCharge;
 

@@ -322,6 +322,30 @@ describe("billing_api_keys", () => {
     expect(rows[0]!.name).toBe("test-key");
     expect(rows[0]!.revokedAt).toBeNull();
     expect(rows[0]!.lastUsedAt).toBeNull();
+    // quota_pton placeholder is nullable; default is null. Reading null must
+    // NOT crash with `SyntaxError` from BigInt(null) — Z15/Phase 4.1 fix.
+    expect(rows[0]!.quotaPton).toBeNull();
+  });
+
+  it("round-trips a non-null quota_pton bigint", async () => {
+    const otherId = "sk-ai-quota-set";
+    await handle.db.insert(apiKeys).values({
+      id: otherId,
+      wallet: "0xffff",
+      name: "quota-key",
+      hash: "fedcba0987654321",
+      createdAt: new Date(),
+      quotaPton: 1_000_000_000_000_000_000n, // 1e18
+    });
+
+    const rows = await handle.db
+      .select({ quotaPton: apiKeys.quotaPton })
+      .from(apiKeys)
+      .where(eq(apiKeys.id, otherId));
+
+    expect(rows[0]!.quotaPton).toBe(1_000_000_000_000_000_000n);
+
+    await handle.db.delete(apiKeys).where(eq(apiKeys.id, otherId));
   });
 
   it("rejects duplicate PK", async () => {

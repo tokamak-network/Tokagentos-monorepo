@@ -129,6 +129,28 @@ describe("markConsumed()", () => {
     const slot = await nextAvailableSlot(handle.db, WALLET, new Date());
     expect(slot).toBeNull();
   });
+
+  it("throws when called on a slot that is already poisoned", async () => {
+    await depositPreauthSlot(handle.db, makeSlot("0xcons-poi"));
+    await markPoisoned(handle.db, WALLET, "0xcons-poi" as Hex);
+
+    await expect(
+      markConsumed(handle.db, WALLET, "0xcons-poi" as Hex),
+    ).rejects.toThrow(/not available for transition/);
+
+    // State remains poisoned (no silent overwrite)
+    const rows = await handle.db
+      .select({ state: topupPreauthSlots.state })
+      .from(topupPreauthSlots)
+      .where(eq(topupPreauthSlots.wallet, WALLET.toLowerCase()));
+    expect(rows[0]!.state).toBe("poisoned");
+  });
+
+  it("throws when called on an unknown (wallet, nonce) pair", async () => {
+    await expect(
+      markConsumed(handle.db, WALLET, "0xnoexist" as Hex),
+    ).rejects.toThrow(/not available for transition/);
+  });
 });
 
 describe("markPoisoned()", () => {
@@ -150,6 +172,22 @@ describe("markPoisoned()", () => {
 
     const slot = await nextAvailableSlot(handle.db, WALLET, new Date());
     expect(slot).toBeNull();
+  });
+
+  it("throws when called on a slot that is already consumed", async () => {
+    await depositPreauthSlot(handle.db, makeSlot("0xpoi-cons"));
+    await markConsumed(handle.db, WALLET, "0xpoi-cons" as Hex);
+
+    await expect(
+      markPoisoned(handle.db, WALLET, "0xpoi-cons" as Hex),
+    ).rejects.toThrow(/not available for transition/);
+
+    // State remains consumed (no silent overwrite)
+    const rows = await handle.db
+      .select({ state: topupPreauthSlots.state })
+      .from(topupPreauthSlots)
+      .where(eq(topupPreauthSlots.wallet, WALLET.toLowerCase()));
+    expect(rows[0]!.state).toBe("consumed");
   });
 });
 

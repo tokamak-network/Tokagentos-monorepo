@@ -60,6 +60,27 @@ describe("consumeNonce()", () => {
     const result = await consumeNonce(handle.db, nonce, new Date());
     expect(result).toBeNull();
   });
+
+  it("concurrent consumption of the same nonce: exactly one returns the envelope", async () => {
+    const nonce = await issueNonce(handle.db, ENVELOPE, 300_000);
+    const now = new Date();
+
+    const results = await Promise.all([
+      consumeNonce(handle.db, nonce, now),
+      consumeNonce(handle.db, nonce, now),
+      consumeNonce(handle.db, nonce, now),
+      consumeNonce(handle.db, nonce, now),
+      consumeNonce(handle.db, nonce, now),
+    ]);
+
+    const successes = results.filter((r) => r !== null).length;
+    const nulls = results.filter((r) => r === null).length;
+    expect(successes).toBe(1);
+    expect(nulls).toBe(4);
+    // Winner returned the actual envelope
+    const winner = results.find((r) => r !== null);
+    expect(winner).toEqual(ENVELOPE);
+  });
 });
 
 describe("sweepExpiredNonces()", () => {

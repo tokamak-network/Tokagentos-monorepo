@@ -374,3 +374,17 @@ Source: `docs/superpowers/specs/2026-05-11-llm-api-gateway-integration-plan.md` 
 **Reversibility**: Trivial — replacing `.returning()` with `.returning({ id: table.id })` at any call site is a two-character addition once the union type constraint is resolved. No data or behavior change.
 
 **Owner-type**: Backend eng
+
+---
+
+## Z17 — `text` instead of `bytea` for hex binary columns (Phase 4)
+
+**Question (Phase 4)**: The plan's Data Model specifies `bytea` for binary columns (`batch_id`, `tx_hash`, preauth `nonce`/`r`/`s`, api key `hash`). Should the implementation match the plan literally, or adapt the storage type to the actual access pattern?
+
+**Decision**: **Five binary columns specified as `bytea` in the plan's Data Model are implemented as `text` storing hex strings.** Affected columns: `billing_consume_batches.batch_id`, `billing_consume_batches.tx_hash`, `billing_topup_preauth_slots.nonce`, `billing_topup_preauth_slots.r`, `billing_topup_preauth_slots.s`, `billing_api_keys.hash`.
+
+**Reasoning**: Every consumer compares these by string equality (hex-vs-hex). `bytea` would require `\x` prefix syntax or `decode(col, 'hex')` wrappers on every value comparison. The byte-vs-text storage choice is opaque to the application as long as the encoding is consistent on both write and read. Hex text is slightly larger on disk (~2x) but is human-readable in `psql` and never requires encoding gymnastics. The plan's `bytea` specification was prescriptive, not motivated — a portability+ergonomics swap. Drizzle's `drizzle-orm/pg-core` does not export a `bytea` column helper out of the box, so taking the `text`-with-hex path also avoids a custom-type wrapper for what is effectively the same on-the-wire representation viem already produces.
+
+**Reversibility**: Requires a migration `ALTER TABLE ... ALTER COLUMN ... TYPE bytea USING decode(col, 'hex')` per column. Mechanically simple but not zero-downtime; we'd want a maintenance window. Phase 4.x or later if the trade-off no longer holds.
+
+**Owner-type**: Backend eng

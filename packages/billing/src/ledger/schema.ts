@@ -30,6 +30,15 @@ import type { PgliteDatabase } from "drizzle-orm/pglite";
 // D16 — numeric(78,0) ↔ bigint custom column type
 // ---------------------------------------------------------------------------
 
+/**
+ * `numeric(78, 0) ↔ bigint` custom column type for NOT NULL columns.
+ * Used for atto-PTON amounts (up to ~1e27) which exceed JavaScript's
+ * `Number.MAX_SAFE_INTEGER`. Use `.notNull()` on every column that uses
+ * this type — the `data: bigint` generic does not model null safely
+ * (`BigInt(null)` throws `SyntaxError`).
+ *
+ * For nullable numeric(78,0) columns, use `nullableNumericBigint` below.
+ */
 export const numericBigint = customType<{
   data: bigint;
   driverData: string;
@@ -37,6 +46,23 @@ export const numericBigint = customType<{
   dataType: () => "numeric(78, 0)",
   fromDriver: (value: string) => BigInt(value),
   toDriver: (value: bigint) => value.toString(),
+});
+
+/**
+ * Nullable variant of `numericBigint`. Defends against `BigInt(null)` crashes
+ * for columns that legitimately allow NULL. `fromDriver` returns `null` for
+ * null input; otherwise the round-trip is identical to `numericBigint`.
+ *
+ * Use this for placeholder columns reserved for future features (e.g.,
+ * `billing_api_keys.quota_pton` per OQ2) where NULL means "unset".
+ */
+export const nullableNumericBigint = customType<{
+  data: bigint | null;
+  driverData: string | null;
+}>({
+  dataType: () => "numeric(78, 0)",
+  fromDriver: (value: string | null) => (value === null ? null : BigInt(value)),
+  toDriver: (value: bigint | null) => (value === null ? null : value.toString()),
 });
 
 // The numeric(20,8) type for USD amounts (no bigint, keep as string for
@@ -238,6 +264,11 @@ export const apiKeys = pgTable("billing_api_keys", {
     withTimezone: true,
     mode: "date",
   }),
+  // Phase 9+ rate-limit placeholder per OQ2 decision (docs/decisions.md).
+  // Nullable: unused until quotas land. Adding it now avoids a future
+  // schema migration on a hot table. Uses `nullableNumericBigint` so the
+  // driver doesn't `BigInt(null)`-crash on default NULL reads.
+  quotaPton: nullableNumericBigint("quota_pton"),
 });
 
 export type ApiKeyRow = InferSelectModel<typeof apiKeys>;

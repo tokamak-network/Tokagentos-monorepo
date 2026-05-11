@@ -62,7 +62,7 @@ describe("storeQuote() / fetchQuote()", () => {
 });
 
 describe("consumeQuote()", () => {
-  it("consumed quote is no longer fetchable", async () => {
+  it("returns true on first consumption and the quote is no longer fetchable", async () => {
     await storeQuote(handle.db, {
       id: "quote-consume",
       wallet: WALLET,
@@ -72,13 +72,14 @@ describe("consumeQuote()", () => {
       ttlMs: 60_000,
     });
 
-    await consumeQuote(handle.db, "quote-consume");
+    const consumed = await consumeQuote(handle.db, "quote-consume");
+    expect(consumed).toBe(true);
 
     const q = await fetchQuote(handle.db, "quote-consume", new Date());
     expect(q).toBeNull();
   });
 
-  it("consuming twice does not throw (idempotent update)", async () => {
+  it("returns false on second consumption (one-shot semantics)", async () => {
     await storeQuote(handle.db, {
       id: "quote-double-consume",
       wallet: WALLET,
@@ -88,10 +89,40 @@ describe("consumeQuote()", () => {
       ttlMs: 60_000,
     });
 
-    await consumeQuote(handle.db, "quote-double-consume");
-    await expect(
-      consumeQuote(handle.db, "quote-double-consume"),
-    ).resolves.toBeUndefined();
+    const first = await consumeQuote(handle.db, "quote-double-consume");
+    expect(first).toBe(true);
+
+    const second = await consumeQuote(handle.db, "quote-double-consume");
+    expect(second).toBe(false);
+  });
+
+  it("returns false for unknown id", async () => {
+    const result = await consumeQuote(handle.db, "quote-does-not-exist");
+    expect(result).toBe(false);
+  });
+
+  it("concurrent consumption of the same id: exactly one returns true", async () => {
+    await storeQuote(handle.db, {
+      id: "quote-race",
+      wallet: WALLET,
+      amountPton: 999n,
+      amountUsd: 1.0,
+      tonUsd: 2.0,
+      ttlMs: 60_000,
+    });
+
+    const results = await Promise.all([
+      consumeQuote(handle.db, "quote-race"),
+      consumeQuote(handle.db, "quote-race"),
+      consumeQuote(handle.db, "quote-race"),
+      consumeQuote(handle.db, "quote-race"),
+      consumeQuote(handle.db, "quote-race"),
+    ]);
+
+    const successes = results.filter((r) => r === true).length;
+    const failures = results.filter((r) => r === false).length;
+    expect(successes).toBe(1);
+    expect(failures).toBe(4);
   });
 });
 

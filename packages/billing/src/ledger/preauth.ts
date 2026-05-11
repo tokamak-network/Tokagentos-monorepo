@@ -11,7 +11,7 @@
  *                available → expired   (after valid_before passes, via sweep)
  */
 
-import { and, eq, lt, lte, isNull, asc, sql } from "drizzle-orm";
+import { and, eq, lt, lte, asc, sql } from "drizzle-orm";
 import type { Address, Hex } from "viem";
 import { topupPreauthSlots, type BillingDatabase } from "./schema.js";
 
@@ -107,42 +107,64 @@ export async function nextAvailableSlot(
 }
 
 /**
- * Mark a slot as consumed (successful on-chain deposit). Idempotent.
+ * Mark a slot as consumed (successful on-chain deposit). Only transitions a
+ * slot in the `available` state — throws if the slot does not exist, has been
+ * poisoned, or has already been consumed/expired. Concurrent callers cannot
+ * race because the WHERE clause filters on `state = 'available'` and at most
+ * one UPDATE will return a row.
  */
 export async function markConsumed(
   db: BillingDatabase,
   wallet: Address,
   nonce: Hex,
 ): Promise<void> {
-  await db
+  const result = await db
     .update(topupPreauthSlots)
     .set({ state: "consumed" })
     .where(
       and(
         eq(topupPreauthSlots.wallet, wallet.toLowerCase()),
         eq(topupPreauthSlots.nonce, nonce.toLowerCase()),
+        eq(topupPreauthSlots.state, "available"),
       ),
+    )
+    .returning();
+
+  if (result.length === 0) {
+    throw new Error(
+      `preauth slot not available for transition: ${wallet}/${nonce}`,
     );
+  }
 }
 
 /**
  * Mark a slot as poisoned (on-chain deposit reverted for an unexpected reason).
- * The proxy will not retry poisoned slots.
+ * Only transitions a slot in the `available` state — throws if the slot does
+ * not exist, has been consumed, or has already been poisoned/expired. The
+ * proxy will not retry poisoned slots.
  */
 export async function markPoisoned(
   db: BillingDatabase,
   wallet: Address,
   nonce: Hex,
 ): Promise<void> {
-  await db
+  const result = await db
     .update(topupPreauthSlots)
     .set({ state: "poisoned" })
     .where(
       and(
         eq(topupPreauthSlots.wallet, wallet.toLowerCase()),
         eq(topupPreauthSlots.nonce, nonce.toLowerCase()),
+        eq(topupPreauthSlots.state, "available"),
       ),
+    )
+    .returning();
+
+  if (result.length === 0) {
+    throw new Error(
+      `preauth slot not available for transition: ${wallet}/${nonce}`,
     );
+  }
 }
 
 /**
