@@ -528,3 +528,103 @@ All have safe defaults so the billing package boots without any Phase 5 env vars
 **Reversibility**: Trivial — both code paths are additive. Reverting them restores the original behavior (with both gaps).
 
 **Owner-type**: Backend eng
+
+---
+
+## Z27 — Single shared `pg.Pool` via `Plugin.init` (Phase 6a)
+
+**Question (Phase 6a)**: Each of the four Phase 5 services constructs its own `pg.Pool` (4 separate TCP pools to the same Postgres). Routes and middleware also need DB access. Should all of them share one pool?
+
+**Decision**: **Yes. One shared `pg.Pool` constructed at `Plugin.init` time.** `initBillingPlugin(runtime)` reads all `BILLING_*` settings, creates the pool, probes connectivity, runs migrations, and stores the pool + db + clients + config in a module-level singleton (`state.ts`). Services, routes, and middleware all consume state via `getBillingState()` at call time — never at import time. If `Plugin.init` has not run (Phase 5 standalone mode), services fall back to constructing their own per-service pool (Phase 5 backwards-compat path in `_runtime-deps.ts`).
+
+**Reasoning**: 4 pools × 5 services × `max=10` each = up to 50 simultaneous connections for one agent instance. A single shared pool with `max=10` is sufficient for all billing traffic and avoids Postgres connection exhaustion.
+
+**Reversibility**: The fallback path (`isBillingStateInitialized() → false`) keeps Phase 5 tests working without `Plugin.init`.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z28 — Module-level singleton for billing plugin state (Phase 6a)
+
+**Question (Phase 6a)**: elizaOS `Service.start(runtime)` receives only a runtime reference — no constructor injection. How do services, routes, and middleware share `db`, `clients`, and `config` without reconstructing them on every request?
+
+**Decision**: **Module-level singleton in `state.ts`.** A single `_state: BillingPluginState | null` variable is set once by `Plugin.init` (via `setBillingState`) and cleared by `Plugin.dispose` (via `clearBillingState`). All consumers call `getBillingState()` at request/tick time — never at import time. Circular-dep risk is eliminated because `state.ts` imports only from `@tokagentos/billing` (external) and from `node:*` — no plugin-internal cross-imports.
+
+**Reasoning**: The alternative (passing state through `IAgentRuntime.settings` as serialized strings) loses type safety. The singleton is scoped to the plugin module; two concurrently loaded agents each get their own module scope (Node ESM module isolation).
+
+**Reversibility**: Swap `getBillingState()` calls for explicit argument passing in a future refactor.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z29 — HS256 JWT via `jose` (Phase 6a)
+
+**Question (Phase 6a)**: The source (`llm-api-gateway/proxy/src/auth.ts`) used a hand-rolled HMAC-SHA256 token (base64url payload + hex(HMAC-SHA256)). Should we keep that or use a standard JWT library?
+
+**Decision**: **Replace with `jose` HS256 JWT.** `issueSession` signs with `SignJWT`, `verifySession` uses `jwtVerify`. Both are in `packages/billing/src/auth/siwe.ts`. `jose` is added as an explicit dependency of `@tokagentos/billing` because it is not a transitive dep of anything else in the monorepo.
+
+**Reasoning**: Standard JWT has built-in expiry (`exp` claim), algorithm header (`alg`), and broad ecosystem support. The hand-rolled token requires manual expiry and parsing logic. `jose` is the de-facto JWT library in the Node.js ecosystem (used by Auth.js, Cloudflare Workers, etc.) and is audited.
+
+**Reversibility**: `issueSession` and `verifySession` are the only call sites. Swapping the implementation does not affect callers.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z30 — Phase 6 config envs (Phase 6a)
+
+**Question (Phase 6a)**: Which new environment variables does Phase 6 add, and what are their defaults/validation rules?
+
+**Decision**: **Eleven new envs added to `BillingConfigSchema`:**
+
+| Env | Type | Default | Notes |
+|-----|------|---------|-------|
+| `BILLING_ENABLED` | bool | `false` | Master gate; disables all billing when false |
+| `BILLING_AUTH_REQUIRED` | bool | `true` | When false: dev x-dev-wallet escape active |
+| `BILLING_AUTH_SECRET` | string | — | Required when ENABLED && AUTH_REQUIRED |
+| `BILLING_AUTH_SESSION_TTL_MS` | ms | 86400000 (24h) | JWT lifetime |
+| `BILLING_AUTH_LOGIN_NONCE_TTL_MS` | ms | 300000 (5min) | SIWE nonce TTL |
+| `BILLING_RATE_LIMIT_ENABLED` | bool | `true` | Token-bucket gate |
+| `BILLING_RATE_LIMIT_QUOTE_PER_MIN` | int | 60 | Nonce/quote bucket capacity |
+| `BILLING_RATE_LIMIT_SETTLE_PER_MIN` | int | 30 | Settle/commit bucket capacity |
+| `BILLING_TOPUP_AMOUNT_PTON` | bigint | 5e18 | Default top-up in atto-PTON |
+| `BILLING_LITELLM_BASE_URL` | url | — | Optional LiteLLM proxy URL |
+| `BILLING_LITELLM_API_KEY` | string | — | LiteLLM auth key |
+
+Cross-validation rule: `BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true → BILLING_AUTH_SECRET required`. Enforced in `loadBillingConfig` after Zod parse. Chain-write fields (`BILLING_CHAIN_RPC_URL`, etc.) are also cross-validated as required when `BILLING_ENABLED=true`.
+
+**Reasoning**: Moving `BILLING_ENABLED` into Zod eliminates the cast workaround in `initBillingPlugin`. All 11 new fields follow the existing `numFromEnv` / bool-transform patterns.
+
+**Reversibility**: Additive — removing BILLING_ENABLED just restores the always-enabled behaviour.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z31 — BILLING_ENABLED=false is a silent no-op (Phase 6a)
+
+**Question (Phase 6a)**: When `BILLING_ENABLED=false` (the default), what happens?
+
+**Decision**: **All billing infrastructure is skipped.** `Plugin.init` returns early without constructing a pool, running migrations, or calling `setBillingState`. Services still register (they check `isBillingStateInitialized()` via the `_runtime-deps.ts` fallback and construct a per-service pool only if called directly), but routes return 503. The BILLING_HOOK seam in server.ts passes through when `state.billingMiddleware` is null (the default).
+
+**Reasoning**: An agent that doesn't set `BILLING_ENABLED=true` should not need a Postgres database at all. The zero-config path must work. The 503 on auth routes communicates to the operator that billing is not configured rather than returning unexpected errors.
+
+**Reversibility**: Trivial.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z32 — Routes use `rawPath: true` (Phase 6a)
+
+**Question (Phase 6a)**: elizaOS plugin routes default to mounting at `/<plugin-name>/<path>`. The billing routes need to be at `/v1/auth/*` and `/v1/keys`. How?
+
+**Decision**: **All billing routes set `rawPath: true`.** This tells `tryHandleRuntimePluginRoute` to mount at the exact `path` string without prepending the plugin name. Auth routes and key routes both use this flag.
+
+**Reasoning**: The `/v1/` path prefix is the established API contract for the LLM gateway. Changing it would break clients. `rawPath: true` is documented in the `BaseRoute` interface and is already used by other plugins (e.g., Telegram setup).
+
+**Reversibility**: Remove the flag to revert to prefixed paths.
+
+**Owner-type**: Backend eng

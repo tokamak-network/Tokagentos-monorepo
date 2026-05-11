@@ -16,6 +16,7 @@
 import { Service, logger, type IAgentRuntime } from "@tokagentos/core";
 import { refreshTwap, TwapCache, type TwapRefreshDeps } from "@tokagentos/billing";
 import { resolveBillingRuntime, type BillingRuntimeDeps } from "./_runtime-deps.js";
+import { registerTwapCache } from "../state.js";
 
 const log = logger.child({ src: "billing:service:twap" });
 
@@ -54,6 +55,10 @@ export class TwapRefreshService extends Service {
       cache: this.cache,
       fixedTonUsd: config.fixedTonUsd,
     };
+
+    // Register the cache with the shared plugin state so the billing gate can
+    // read the current price without holding a service reference (Decision Z28).
+    registerTwapCache(this.cache);
 
     // Prime the cache immediately on start.
     const initial = await refreshTwap(deps);

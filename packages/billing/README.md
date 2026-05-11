@@ -19,7 +19,9 @@ on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pri
 | 3 | Chain layer: clients, vault, EIP-3009 verify, Anvil harness | ✅ landed |
 | 4 | Drizzle ledger, persistence | ✅ landed |
 | 5 | Workers (consume, withdraw, TWAP refresh, usage cleanup) | ✅ landed |
-| 6 | Routes + auth + middleware + scaffold mirroring | — |
+| 6a | Plugin.init/dispose + shared pool + JWT + rate limiter + billing gate + auth/keys routes + server.ts seam | ✅ landed |
+| 6b | Credits/topup/usage/estimate routes + billing gate closures wired into chat-routes | — |
+| 6 | Routes + auth + middleware + scaffold mirroring | 🔄 in progress (6a done) |
 | 7 | app-core billing UI | — |
 | 8 | Cutover + decommission | — |
 
@@ -162,6 +164,70 @@ BILLING_TEST_ANVIL=1 bun run test --filter=@tokagentos/billing
 
 This runs the full consume-worker integration test against a fresh Anvil chain
 (see Anvil Quickstart section below for prerequisites).
+
+---
+
+## Billing Gate (Phase 6a)
+
+`applyBillingMiddleware` in
+`plugins/plugin-tokagent-billing/src/middleware/index.ts` is the integration
+point for the server. It is wired into `packages/agent/src/api/server.ts` via
+the `BILLING_HOOK` seam (Decision Z27), which calls
+`state.billingMiddleware(req, body, pathname)` before the `/v1/` dispatch block.
+
+### Gate flow (per gated request)
+
+```
+BILLING_HOOK seam fires before /v1/ dispatch
+  → applyBillingMiddleware(req, body, pathname)
+       │
+       ├── isBillingStateInitialized? → no  → allow (passthrough)
+       ├── config.enabled? → false           → allow (passthrough)
+       ├── isBillingGatedPath(pathname)?→ no → allow (passthrough)
+       │
+       ├── rate limiter (token bucket per wallet)
+       │   └── rejected → 429 Too Many Requests
+       │
+       └── applyBillingGate(req, body)
+               ├── resolveBillingIdentity(req)   ← x-api-key or Bearer JWT
+               ├── normalizeModelId + assertSupportedModel
+               ├── estimateInputTokens + estimateMaxCostUsd
+               ├── usdToPton (via TWAP or fixed price)
+               └── reserve(db, { wallet, amount, requestId })
+                     ├── insufficient balance → 402
+                     └── ok → { allow: true, commit, release }
+```
+
+### Auth routes
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/v1/auth/nonce` | Issue one-time SIWE nonce (EIP-712 envelope) |
+| POST | `/v1/auth/login` | Verify EIP-712 signature → issue HS256 JWT |
+
+### Key management routes
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/v1/keys` | Mint a new `sk-ai-*` API key |
+| GET | `/v1/keys` | List API keys for authenticated wallet |
+| DELETE | `/v1/keys/:id` | Revoke an API key by ID |
+
+### Phase 6 envs
+
+| Env | Default | Required when |
+|-----|---------|--------------|
+| `BILLING_ENABLED` | `false` | — (opt-in gate) |
+| `BILLING_AUTH_REQUIRED` | `true` | `BILLING_ENABLED=true` |
+| `BILLING_AUTH_SECRET` | — | `BILLING_ENABLED=true` + `AUTH_REQUIRED=true` |
+| `BILLING_AUTH_SESSION_TTL_MS` | `86400000` | optional |
+| `BILLING_AUTH_LOGIN_NONCE_TTL_MS` | `300000` | optional |
+| `BILLING_RATE_LIMIT_ENABLED` | `true` | optional |
+| `BILLING_RATE_LIMIT_QUOTE_PER_MIN` | `60` | optional |
+| `BILLING_RATE_LIMIT_SETTLE_PER_MIN` | `30` | optional |
+| `BILLING_TOPUP_AMOUNT_PTON` | `5000000000000000000` | optional |
+| `BILLING_LITELLM_BASE_URL` | — | optional |
+| `BILLING_LITELLM_API_KEY` | — | optional |
 
 ---
 

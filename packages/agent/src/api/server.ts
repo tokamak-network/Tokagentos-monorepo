@@ -3716,6 +3716,20 @@ async function handleRequest(
   }
 
   // ═══════════════════════════════════════════════════════════════════════
+  // BILLING_HOOK — gate /v1/messages and /v1/chat/completions (Decision Z27)
+  // ═══════════════════════════════════════════════════════════════════════
+  if (state.billingMiddleware) {
+    const billingBody = (pathname === "/v1/messages" || pathname === "/v1/chat/completions")
+      ? await readJsonBody(req, res)
+      : null;
+    const gate = await state.billingMiddleware(req, billingBody, pathname);
+    if (!gate.allow) {
+      json(res, gate.body ?? { error: "Billing error" }, gate.status);
+      return;
+    }
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
   // OpenAI-compatible routes (/v1/*) — delegated to chat-routes.ts
   // ═══════════════════════════════════════════════════════════════════════
 

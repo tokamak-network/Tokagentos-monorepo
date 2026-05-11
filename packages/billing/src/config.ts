@@ -41,11 +41,102 @@ const hexPrivateKey = z
 // Phase 3 adds chain-write envs (BILLING_CHAIN_RPC_URL, BILLING_CHAIN_ID,
 // BILLING_VAULT_ADDRESS, BILLING_PTON_ADDRESS, BILLING_OPERATOR_PRIVATE_KEY).
 // Phase 4 adds BILLING_TOPUP_AMOUNT_PTON / BILLING_CONSUME_*.
-// Phase 6 adds BILLING_AUTH_* / BILLING_RATE_LIMIT_* / BILLING_LITELLM_*.
+// Phase 6 adds BILLING_ENABLED / BILLING_AUTH_* / BILLING_RATE_LIMIT_* /
+//          BILLING_LITELLM_*.
 // The TYPE remains `BillingConfig` across all phases (Decision Z10).
 // ---------------------------------------------------------------------------
 
 const BillingConfigSchema = z.object({
+  // ---- Phase 6: feature gate + auth + rate-limit + LiteLLM proxy ----
+
+  /**
+   * Master feature flag. When false (default), the billing gate is disabled:
+   * all LLM requests pass through without deductions, and auth routes return
+   * 503. Flipping this to true requires BILLING_DATABASE_URL and the
+   * chain-write layer to also be configured (Decision Z31).
+   */
+  BILLING_ENABLED: z
+    .string()
+    .optional()
+    .transform((v) => v === "true"),
+
+  /**
+   * Whether auth (x-api-key / Bearer JWT) is required on gated paths.
+   * Default true. Can be set to false for dev/test to allow the x-dev-wallet
+   * escape hatch (Decision G6). Must not be false in production.
+   */
+  BILLING_AUTH_REQUIRED: z
+    .string()
+    .optional()
+    .transform((v) => (v === undefined || v === "" ? true : v !== "false")),
+
+  /**
+   * HMAC secret used for JWT signing (HS256) and API-key hashing.
+   * Required when BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true.
+   * The cross-validation is enforced by `loadBillingConfig` after Zod parse.
+   */
+  BILLING_AUTH_SECRET: z.string().optional(),
+
+  /**
+   * JWT session token lifetime in milliseconds. Default: 86_400_000 (24h).
+   */
+  BILLING_AUTH_SESSION_TTL_MS: numFromEnv(86_400_000),
+
+  /**
+   * SIWE nonce lifetime in milliseconds. Default: 300_000 (5 minutes).
+   * Nonces older than this are rejected and swept by UsageCleanupService.
+   */
+  BILLING_AUTH_LOGIN_NONCE_TTL_MS: numFromEnv(300_000),
+
+  /**
+   * Whether the token-bucket rate limiter is active. Default: true.
+   */
+  BILLING_RATE_LIMIT_ENABLED: z
+    .string()
+    .optional()
+    .transform((v) => (v === undefined || v === "" ? true : v !== "false")),
+
+  /**
+   * Capacity of the token bucket on the quote/nonce path (requests per minute).
+   * Default: 60.
+   */
+  BILLING_RATE_LIMIT_QUOTE_PER_MIN: numFromEnv(60),
+
+  /**
+   * Capacity of the token bucket on the settle/commit path (requests per minute).
+   * Default: 30.
+   */
+  BILLING_RATE_LIMIT_SETTLE_PER_MIN: numFromEnv(30),
+
+  /**
+   * Default top-up amount in atto-PTON credited after a successful
+   * EIP-3009 deposit. Default: 5_000_000_000_000_000_000n (5 PTON).
+   */
+  BILLING_TOPUP_AMOUNT_PTON: z
+    .string()
+    .optional()
+    .transform((v) =>
+      v === undefined || v === "" ? 5_000_000_000_000_000_000n : BigInt(v),
+    )
+    .pipe(z.bigint().nonnegative()),
+
+  /**
+   * Base URL of the LiteLLM proxy. When set, the billing plugin forwards
+   * gated LLM requests here instead of to the upstream API directly.
+   * Optional — if absent the plugin acts as a pure billing gate.
+   */
+  BILLING_LITELLM_BASE_URL: z
+    .string()
+    .optional()
+    .transform((v) => (v === undefined || v === "" ? undefined : v))
+    .pipe(z.string().url().optional()),
+
+  /**
+   * API key for the LiteLLM proxy. Forwarded as `Authorization: Bearer <key>`
+   * when BILLING_LITELLM_BASE_URL is set.
+   */
+  BILLING_LITELLM_API_KEY: z.string().optional(),
+
   // ---- TWAP / price oracle ----
   BILLING_MAINNET_RPC_URL: z.string().url().optional(),
 
@@ -97,28 +188,34 @@ const BillingConfigSchema = z.object({
     .transform((v) => (v === undefined || v === "" ? undefined : Number(v))),
 
   // ---- Phase 3: chain-write layer ----------------------------------------
-  // These five envs are REQUIRED-at-boot. Misconfiguration is caught early at
-  // `loadBillingConfig()` time; the chain layer can assume non-null values
-  // without per-call null guards. When Phase 6 adds the `BILLING_ENABLED`
-  // toggle, the gate will be applied at `loadBillingConfig`'s outer wrapper
-  // (skip chain validation when disabled), NOT by re-introducing per-field
-  // `.optional()`. Decision Z10: single BillingConfig shape grows
-  // incrementally with required-at-boot semantics.
+  // Required when BILLING_ENABLED=true. Cross-validation in `loadBillingConfig`
+  // enforces this at boot; individual Zod fields are optional to allow
+  // disabled-mode startup without a full chain config (Decision Z10/Z31).
 
-  /** RPC URL for the L2 chain hosting ClaudeVault (e.g. Polygon, Base, Titan). */
-  BILLING_CHAIN_RPC_URL: z.string().url(),
+  /**
+   * RPC URL for the L2 chain hosting ClaudeVault (e.g. Polygon, Base, Titan).
+   * Required when BILLING_ENABLED=true.
+   */
+  BILLING_CHAIN_RPC_URL: z.string().url().optional(),
 
   /**
    * Chain ID of the L2 chain hosting ClaudeVault. Used for EIP-712 domain
    * construction in `ptonDomain()` and for `BillingClients` transport.
+   * Required when BILLING_ENABLED=true.
    */
-  BILLING_CHAIN_ID: z.coerce.number().int().positive(),
+  BILLING_CHAIN_ID: z.coerce.number().int().positive().optional(),
 
-  /** Deployed ClaudeVault contract address on the L2 chain. */
-  BILLING_VAULT_ADDRESS: hexAddress,
+  /**
+   * Deployed ClaudeVault contract address on the L2 chain.
+   * Required when BILLING_ENABLED=true.
+   */
+  BILLING_VAULT_ADDRESS: optionalHexAddress,
 
-  /** Deployed PTON token contract address on the L2 chain. */
-  BILLING_PTON_ADDRESS: hexAddress,
+  /**
+   * Deployed PTON token contract address on the L2 chain.
+   * Required when BILLING_ENABLED=true.
+   */
+  BILLING_PTON_ADDRESS: optionalHexAddress,
 
   /**
    * Operator EOA private key (hex, 0x-prefixed).
@@ -126,17 +223,22 @@ const BillingConfigSchema = z.object({
    * In production (cloud profile) this should be sourced from
    * `packages/agent/src/auth/credentials.ts` (OS keychain), not bare env.
    * See plan §Config, Risk R7, and Decision OQ3.
+   * Required when BILLING_ENABLED=true.
    */
-  BILLING_OPERATOR_PRIVATE_KEY: hexPrivateKey,
+  BILLING_OPERATOR_PRIVATE_KEY: z
+    .string()
+    .regex(/^0x[0-9a-fA-F]{64}$/, "expected 0x-prefixed 32-byte private key")
+    .optional(),
 
   /**
    * Postgres connection URL for the billing ledger.
-   * Required when billing is enabled. The plugin service layer constructs a
+   * Required when BILLING_ENABLED=true. The plugin service layer constructs a
    * `pg.Pool` from this at start time (Decision Z23). Validated as a URL at
    * boot via Zod, so typos like `BILLING_DATABSE_URL` surface as a
    * `BillingConfigError`, not a service-start throw.
+   * When BILLING_ENABLED=false this is optional (no pool is constructed).
    */
-  BILLING_DATABASE_URL: z.string().url(),
+  BILLING_DATABASE_URL: z.string().url().optional(),
 
   // ---- Phase 5: worker / service envs (Decision Z22) ----------------------
 
@@ -234,6 +336,50 @@ export function loadBillingConfig(
 ) {
   const raw = BillingConfigSchema.parse(env);
 
+  // ---- Phase 6: BILLING_ENABLED cross-validation ----
+  const enabled = raw.BILLING_ENABLED ?? false;
+  const authRequired = raw.BILLING_AUTH_REQUIRED;
+
+  if (enabled) {
+    // Chain-write and DB fields are required when billing is enabled.
+    if (!raw.BILLING_DATABASE_URL) {
+      throw new BillingConfigError(
+        "BILLING_ENABLED=true requires BILLING_DATABASE_URL",
+      );
+    }
+    if (!raw.BILLING_CHAIN_RPC_URL) {
+      throw new BillingConfigError(
+        "BILLING_ENABLED=true requires BILLING_CHAIN_RPC_URL",
+      );
+    }
+    if (!raw.BILLING_CHAIN_ID) {
+      throw new BillingConfigError(
+        "BILLING_ENABLED=true requires BILLING_CHAIN_ID",
+      );
+    }
+    if (!raw.BILLING_VAULT_ADDRESS) {
+      throw new BillingConfigError(
+        "BILLING_ENABLED=true requires BILLING_VAULT_ADDRESS",
+      );
+    }
+    if (!raw.BILLING_PTON_ADDRESS) {
+      throw new BillingConfigError(
+        "BILLING_ENABLED=true requires BILLING_PTON_ADDRESS",
+      );
+    }
+    if (!raw.BILLING_OPERATOR_PRIVATE_KEY) {
+      throw new BillingConfigError(
+        "BILLING_ENABLED=true requires BILLING_OPERATOR_PRIVATE_KEY",
+      );
+    }
+    // Auth secret required when auth is enforced.
+    if (authRequired && !raw.BILLING_AUTH_SECRET) {
+      throw new BillingConfigError(
+        "BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true requires BILLING_AUTH_SECRET",
+      );
+    }
+  }
+
   // ---- Margin policy ----
   const marginBps = raw.BILLING_MARGIN_BPS ?? defaultMarginBps(nodeEnv);
   const marginFloorBps = raw.BILLING_MARGIN_FLOOR_BPS;
@@ -285,6 +431,20 @@ export function loadBillingConfig(
       : undefined;
 
   return {
+    // ---- Phase 6: feature gate + auth + rate-limit + LiteLLM ----
+    enabled,
+    authRequired,
+    authSecret: raw.BILLING_AUTH_SECRET,
+    authSessionTtlMs: raw.BILLING_AUTH_SESSION_TTL_MS,
+    authLoginNonceTtlMs: raw.BILLING_AUTH_LOGIN_NONCE_TTL_MS,
+    rateLimitEnabled: raw.BILLING_RATE_LIMIT_ENABLED,
+    rateLimitQuotePerMin: raw.BILLING_RATE_LIMIT_QUOTE_PER_MIN,
+    rateLimitSettlePerMin: raw.BILLING_RATE_LIMIT_SETTLE_PER_MIN,
+    topupAmountPton: raw.BILLING_TOPUP_AMOUNT_PTON,
+    litellmBaseUrl: raw.BILLING_LITELLM_BASE_URL,
+    litellmApiKey: raw.BILLING_LITELLM_API_KEY,
+
+    // ---- TWAP / price oracle ----
     mainnetRpcUrl: raw.BILLING_MAINNET_RPC_URL,
     wtonWethPool,
     wethUsdcPool,
@@ -303,13 +463,15 @@ export function loadBillingConfig(
 
     fixedTonUsd: raw.BILLING_FIXED_TON_USD,
 
-    // ---- Phase 3: chain-write layer (required-at-boot per Z10) ----
-    chainRpcUrl: raw.BILLING_CHAIN_RPC_URL,
-    chainId: raw.BILLING_CHAIN_ID,
+    // ---- Phase 3: chain-write layer (required when BILLING_ENABLED=true) ----
+    // Cast to non-optional — cross-validation above ensures these are set
+    // when enabled=true; when disabled callers should not use these fields.
+    chainRpcUrl: raw.BILLING_CHAIN_RPC_URL as string,
+    chainId: raw.BILLING_CHAIN_ID as number,
     vaultAddress: raw.BILLING_VAULT_ADDRESS as Address,
     ptonAddress: raw.BILLING_PTON_ADDRESS as Address,
     operatorPrivateKey: raw.BILLING_OPERATOR_PRIVATE_KEY as Hex,
-    databaseUrl: raw.BILLING_DATABASE_URL,
+    databaseUrl: raw.BILLING_DATABASE_URL as string,
 
     // ---- Phase 5: worker / service config (Decision Z22) ----
     consumeBatchMinPton: raw.BILLING_CONSUME_BATCH_MIN_PTON,

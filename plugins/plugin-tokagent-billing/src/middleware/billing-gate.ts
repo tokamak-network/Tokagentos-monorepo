@@ -1,0 +1,252 @@
+/**
+ * Billing gate middleware (Phase 6).
+ *
+ * Applied to `/v1/messages*` and `/v1/chat/completions`. Performs the
+ * reserve-before-useModel cycle and returns closures for commit + release.
+ *
+ * Flow:
+ *   1. Resolve caller identity (x-api-key or JWT).
+ *   2. Detect model from parsed request body; validate against allowlist.
+ *   3. Estimate input tokens and compute max cost.
+ *   4. Get current TON/USD price from TwapRefreshService cache.
+ *   5. Reserve `maxPton` from the wallet's credit balance.
+ *   6. Return `{ allow: true, commit, release }` — or an error result.
+ *
+ * The route handler calls `commit(actualUsd)` after streaming finishes, or
+ * `release(outcome)` on abort/error.
+ *
+ * Ported from llm-api-gateway/proxy/src/handleMessages.ts (reserve portion).
+ */
+
+import type { IncomingMessage } from "node:http";
+import { randomUUID } from "node:crypto";
+import type { Address } from "viem";
+import {
+  assertSupportedModel,
+  normalizeModelId,
+  estimateInputTokens,
+  estimateMaxCostUsd,
+  detectCacheControl,
+  usdToPton,
+  computeCharge,
+  reserve,
+  release,
+  commit,
+  TwapCache,
+  type BillingDatabase,
+} from "@tokagentos/billing";
+import { getBillingState } from "../state.js";
+import { resolveBillingIdentity } from "./api-key-resolve.js";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export type ReleaseOutcome =
+  | "released_abort"
+  | "released_error"
+  | "released_complete";
+
+export interface BillingGateResult {
+  allow: boolean;
+  /** HTTP status to return when `allow=false`. */
+  status: number;
+  reason?:
+    | "insufficient_balance"
+    | "invalid_auth"
+    | "rate_limited"
+    | "unsupported_model";
+  body?: object;
+  /**
+   * Called by the route handler after the upstream response completes.
+   * Commits the actual cost deducted against the reservation.
+   */
+  commit?: (actualUsd: number) => Promise<void>;
+  /**
+   * Called by the route handler when the upstream call errors or is aborted.
+   * Returns the reserved amount to the wallet's spendable balance.
+   */
+  release?: (outcome: ReleaseOutcome) => Promise<void>;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Parse the model identifier from the (pre-parsed) request body. */
+function extractModel(body: unknown): string | null {
+  if (typeof body !== "object" || body === null) return null;
+  const m = (body as Record<string, unknown>).model;
+  return typeof m === "string" ? m : null;
+}
+
+/** Extract message array from body (supports both OpenAI and Anthropic shapes). */
+function extractMessages(body: unknown): Array<{ role: string; content: unknown }> {
+  if (typeof body !== "object" || body === null) return [];
+  const msgs = (body as Record<string, unknown>).messages;
+  return Array.isArray(msgs) ? (msgs as Array<{ role: string; content: unknown }>) : [];
+}
+
+function extractTools(body: unknown): unknown[] | undefined {
+  if (typeof body !== "object" || body === null) return undefined;
+  const t = (body as Record<string, unknown>).tools;
+  return Array.isArray(t) ? t : undefined;
+}
+
+function extractSystem(body: unknown): unknown | undefined {
+  if (typeof body !== "object" || body === null) return undefined;
+  return (body as Record<string, unknown>).system;
+}
+
+/**
+ * Get the `max_tokens` from the request body (conservative estimation cap).
+ * Defaults to 4096 when absent (safe upper bound for most models).
+ */
+function extractMaxOutputTokens(body: unknown): number {
+  if (typeof body !== "object" || body === null) return 4096;
+  const v = (body as Record<string, unknown>).max_tokens;
+  return typeof v === "number" && v > 0 ? v : 4096;
+}
+
+/** Read the TwapCache from the running TwapRefreshService, if available. */
+function getTwapCache(): TwapCache | null {
+  try {
+    return getBillingState().twapCache ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Public API
+// ---------------------------------------------------------------------------
+
+/**
+ * Apply the billing gate to a request.
+ *
+ * @param req  - Raw Node IncomingMessage (for header extraction).
+ * @param body - Pre-parsed JSON body (already read by the server).
+ */
+export async function applyBillingGate(
+  req: IncomingMessage,
+  body: unknown,
+): Promise<BillingGateResult> {
+  const { db, config } = getBillingState();
+
+  // ---- 1. Resolve caller identity ----
+  const identity = await resolveBillingIdentity(req);
+  if (!identity) {
+    return {
+      allow: false,
+      status: 401,
+      reason: "invalid_auth",
+      body: { error: "Billing authentication required. Provide x-api-key or Authorization: Bearer." },
+    };
+  }
+  const wallet = identity.wallet;
+
+  // ---- 2. Detect and validate model ----
+  const rawModel = extractModel(body);
+  if (!rawModel) {
+    return {
+      allow: false,
+      status: 400,
+      reason: "unsupported_model",
+      body: { error: "Missing 'model' field in request body." },
+    };
+  }
+  let model: string;
+  try {
+    model = normalizeModelId(rawModel);
+    assertSupportedModel(model);
+  } catch {
+    return {
+      allow: false,
+      status: 400,
+      reason: "unsupported_model",
+      body: { error: `Model '${rawModel}' is not supported for billing.` },
+    };
+  }
+
+  // ---- 3. Estimate input tokens and max cost ----
+  const messages = extractMessages(body);
+  const tools = extractTools(body);
+  const system = extractSystem(body);
+  const maxOutputTokens = extractMaxOutputTokens(body);
+  const cacheInfo = detectCacheControl(body);
+
+  const inputTokens = estimateInputTokens(messages, tools, system);
+  const maxCostUsd = estimateMaxCostUsd({
+    model,
+    inputTokens,
+    maxOutputTokens,
+    hasCacheControl: cacheInfo.hasCacheControl,
+    cacheTtl: cacheInfo.hasCacheControl ? cacheInfo.cacheTtl : undefined,
+  });
+
+  // ---- 4. Get TON/USD price ----
+  // Prefer the TwapCache from the running TwapRefreshService (already-warmed).
+  // Fall back to config.fixedTonUsd (test/dev mode).
+  const cachedPrice = getTwapCache()?.get()?.tonUsd;
+  const tonUsd = config.fixedTonUsd ?? cachedPrice;
+  if (!tonUsd) {
+    return {
+      allow: false,
+      status: 503,
+      body: { error: "Price oracle unavailable. Retry in a moment." },
+    };
+  }
+
+  // ---- 5. Compute max reservation amount ----
+  const maxPton = usdToPton(maxCostUsd, tonUsd);
+  const requestId = randomUUID();
+
+  // ---- 6. Attempt to reserve ----
+  const result = await reserve(db, { wallet, amount: maxPton, requestId });
+  if (!result.ok) {
+    return {
+      allow: false,
+      status: 402,
+      reason: "insufficient_balance",
+      body: {
+        error: "Insufficient billing balance.",
+        requiredPton: maxPton.toString(),
+        availablePton: result.available.toString(),
+      },
+    };
+  }
+
+  const { reservationId } = result;
+  const effectiveMarginBps = config.effectiveMarginBps;
+
+  // ---- 7. Build commit closure ----
+  const commitFn = async (actualUsd: number): Promise<void> => {
+    const charge = computeCharge({ actualUsd, tonUsd, marginBps: effectiveMarginBps });
+    await commit(db, reservationId, charge.totalPton);
+  };
+
+  // ---- 8. Build release closure ----
+  const releaseFn = async (outcome: ReleaseOutcome): Promise<void> => {
+    await release(db, reservationId, outcome);
+  };
+
+  return {
+    allow: true,
+    status: 200,
+    commit: commitFn,
+    release: releaseFn,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Export helper: paths that require the billing gate
+// ---------------------------------------------------------------------------
+
+/** Returns true if the given pathname should be gated through billing. */
+export function isBillingGatedPath(pathname: string): boolean {
+  return (
+    pathname === "/v1/messages" ||
+    pathname.startsWith("/v1/messages/") ||
+    pathname === "/v1/chat/completions"
+  );
+}

@@ -1,8 +1,11 @@
 /**
- * Runtime → billing deps resolver (Decision Z19, Z23).
+ * Runtime → billing deps resolver (Decision Z19, Z23, Z27).
  *
- * Centralizes the mapping from elizaOS IAgentRuntime settings to the
- * `{ db, clients, config }` bundle that all billing services need.
+ * Phase 6 update (Decision Z27): services now prefer the shared pool from
+ * `getBillingState()` when it is available (i.e. when `Plugin.init` has run).
+ * The per-service pool construction path is retained as a fallback for tests
+ * that start services directly (without going through Plugin.init), preserving
+ * Phase 5 test coverage.
  *
  * Decision Z23 — DB wiring (Option 2):
  *   `@elizaos/plugin-sql` does not expose a public typed `BillingDatabase`
@@ -27,11 +30,6 @@
  *   - An eager `SELECT 1` probe runs after pool construction (Fix 4).
  *     Unreachable databases fail in milliseconds, not after the first
  *     scheduled tick.
- *
- * TODO(phase-6): replace with a proper BillingDatabase setter once plugin.init
- * wires the DB via drizzle migrations + pooled connection management. The
- * current approach creates a new Pool per service start; at scale, a single
- * shared pool should be passed via plugin.init.
  */
 
 import { Pool } from "pg";
@@ -45,6 +43,7 @@ import {
   type BillingDatabase,
   schema,
 } from "@tokagentos/billing";
+import { isBillingStateInitialized, getBillingState } from "../state.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -54,7 +53,14 @@ export interface BillingRuntimeDeps {
   db: BillingDatabase;
   clients: BillingClients;
   config: BillingConfig;
-  /** Call stop() to close the underlying pg Pool. */
+  /**
+   * Call stop() to close any pg Pool owned by THIS deps instance.
+   *
+   * When deps were resolved from the shared singleton (Phase 6 path), `stop()`
+   * is a no-op because pool lifecycle is managed by Plugin.dispose. When deps
+   * were resolved via per-service fallback (Phase 5 test path), `stop()` closes
+   * the per-service pool.
+   */
   stop: () => Promise<void>;
 }
 
@@ -65,16 +71,15 @@ export interface BillingRuntimeDeps {
 /**
  * Construct all billing deps from the agent runtime settings.
  *
- * Reads `BILLING_*` env values via `runtime.getSetting(key)` and builds:
- *   - `config`  — from `loadBillingConfig(env)` (Zod-validated; throws
- *                  `BillingConfigError` on missing/malformed envs)
- *   - `clients` — from `createBillingClients(config)`
- *   - `db`      — from `pg.Pool` + `drizzle` on `config.databaseUrl`
+ * Phase 6 behaviour (Decision Z27):
+ *   If `Plugin.init` has already run (i.e. `getBillingState()` is populated),
+ *   returns deps from the shared singleton — no new Pool is created and
+ *   `stop()` is a no-op (pool is closed by Plugin.dispose).
  *
- * Probes the pool with `SELECT 1` before returning so unreachable databases
- * fail fast (Phase 5.2 Fix 4).
- *
- * Returns a `stop()` function that closes the pg Pool on service teardown.
+ * Phase 5 fallback (backwards-compat for tests / BILLING_ENABLED=false):
+ *   If shared state is not available, falls back to constructing a per-service
+ *   pool from BILLING_DATABASE_URL settings (original Phase 5 behaviour).
+ *   Services that use this path own their pool and must call `stop()`.
  *
  * @throws BillingConfigError if required env vars are missing or malformed.
  * @throws Error if the database is not reachable.
@@ -82,6 +87,17 @@ export interface BillingRuntimeDeps {
 export async function resolveBillingRuntime(
   runtime: IAgentRuntime,
 ): Promise<BillingRuntimeDeps> {
+  // ---- Phase 6: use shared singleton if Plugin.init has run ----
+  if (isBillingStateInitialized()) {
+    const { db, clients, config } = getBillingState();
+    return {
+      db,
+      clients,
+      config,
+      // Pool is owned by Plugin.dispose — services do NOT close it.
+      stop: async () => { /* no-op: shared pool lifecycle owned by Plugin.dispose */ },
+    };
+  }
   // ---- 1. Build env-shaped object from runtime settings ----
   const KEYS = [
     "BILLING_MAINNET_RPC_URL",

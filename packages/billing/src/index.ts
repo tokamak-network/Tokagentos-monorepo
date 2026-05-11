@@ -33,3 +33,5 @@ export * from './workers/consume-worker.js';
 export * from './workers/withdraw-watcher.js';
 export * from './workers/twap-refresh.js';
 export * from './workers/usage-cleanup.js';
+// Phase 6: JWT session helpers + SIWE verifier
+export * from './auth/siwe.js';

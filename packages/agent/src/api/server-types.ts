@@ -299,6 +299,23 @@ export interface ServerState {
   telegramAccountAuthSession?:
     | import("../services/telegram-account-auth.js").TelegramAccountAuthSessionLike
     | null;
+  /**
+   * Billing middleware function, set when the tokagent-billing plugin is loaded
+   * and BILLING_ENABLED=true. Called before /v1/ dispatch to gate LLM requests
+   * behind credit reservations (BILLING_HOOK seam — Decision Z27).
+   * Null when billing is disabled or the plugin is not loaded.
+   */
+  billingMiddleware?: ((
+    req: import("node:http").IncomingMessage,
+    body: unknown,
+    pathname: string,
+  ) => Promise<{
+    allow: boolean;
+    status: number;
+    body?: object;
+    commit?: ((actualUsd: number) => Promise<void>) | undefined;
+    release?: ((outcome: string) => Promise<void>) | undefined;
+  }>) | null;
 }
 
 /**
