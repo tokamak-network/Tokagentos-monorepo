@@ -16,8 +16,8 @@
     "allowImportingTsExtensions": false,
     "types": ["node"],
     "paths": {
-      "@tokagentos/core": ["../typescript/src/index.node.ts"],
-      "@tokagentos/core/*": ["../typescript/src/*"]
+      "@tokagentos/core": ["../typescript/dist/index.node.d.ts"],
+      "@tokagentos/core/*": ["../typescript/dist/*"]
     }
   },
   "include": ["src/**/*"],

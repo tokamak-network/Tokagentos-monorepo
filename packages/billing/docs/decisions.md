@@ -144,3 +144,59 @@ Source: `docs/superpowers/specs/2026-05-11-llm-api-gateway-integration-plan.md` 
 **Reversibility**: Trivial — the allowlist is config-driven (`rates.ts`). Adding models is a non-breaking config change.
 
 **Owner-type**: Backend eng / Product
+
+---
+
+## Z1 — Zod v4 Schema Validation
+
+**Question (Phase 2)**: Use Zod v3 (current most-widespread) or Zod v4 (already used in `@tokagentos/shared`) for `BillingConfigPhase2` schema and any future billing schemas?
+
+**Decision**: **Zod v4** (`^4.3.6`). Matches the version already declared in `@tokagentos/shared`. Uses `z.string().min(1)` (not the deprecated `z.string().nonempty()`). Uses `.optional().default(...)` (Zod v4 chaining). Uses `z.output<typeof Schema>` for inferred types where needed.
+
+**Reasoning**: Aligning on one Zod major version across the monorepo eliminates runtime version conflicts when packages share Zod-annotated types. `@tokagentos/shared` already locked v4, so the decision was already made. Using v3 here would create a peer-dep split that would surface confusingly as "two Zod objects aren't equal" type errors down the line.
+
+**Reversibility**: Low effort — Zod v3→v4 migration is well-documented. No data migration needed; only schema call syntax changes.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z2 — Logger Injection Pattern
+
+**Question (Phase 2)**: Use the source's module-level `console.*` calls, a module-level singleton logger, or an injected logger for all new billing modules?
+
+**Decision**: **Module-level `logger.child({ src: 'billing' })`** imported from `@tokagentos/core`. No per-call injection; one child logger is created at module load time and reused. The `src` tag allows log filtering across billing submodules without per-module child proliferation.
+
+**Reasoning**: The source used bare `console.*` throughout — acceptable in a standalone proxy but inconsistent with the tokagentos structured-logging convention. A per-call injected logger (e.g., `readCompositeTwap(client, oracle, logger)`) adds parameter noise to every public function signature in Phase 2. Since the billing package is not a library consumed by external callers with arbitrary loggers, a module-level child is the right balance. Per-function injection is deferred to Phase 3 (chain-write layer) where callers need explicit control over log context.
+
+**Reversibility**: Medium effort — switching to per-function injection later requires updating all function signatures and call sites. Not trivial if many callers exist, but contained within `packages/billing/`.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z3 — PublicClient Explicit Injection
+
+**Question (Phase 2)**: The source used ES Proxy lazy-initialization inside `TonPriceOracle` to create the `PublicClient` from env config. Should the billing package follow the same pattern or require explicit client injection?
+
+**Decision**: **Explicit `PublicClient` injection**. All functions that require chain reads (`readCompositeTwap`, `getCachedTonUsd`) take a `client: PublicClient` parameter. No module-level singleton client. No lazy initialization. The caller (Phase 3/5 workers, Phase 6 route handlers) constructs and owns the `PublicClient` instance.
+
+**Reasoning**: The ES Proxy lazy-init pattern is untestable without mocking environment variables and importing the module in a specific order. Explicit injection allows `vi.fn()`-based mock clients in tests without any module-level side effects. It also makes the dependency on a viem transport explicit and composable — different callers can inject clients with different transports (e.g., HTTP vs WebSocket, different RPC URLs, different cache settings). Phase 2's test suite depends on this: all 14 oracle tests use a mock `PublicClient` without touching `process.env`.
+
+**Reversibility**: Trivial in the additive direction (wrapper functions can create a singleton around the injected pattern). Reversing back to implicit initialization would require removing all test infrastructure that depends on injection.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z4 — Environment Variable Namespace Prefix
+
+**Question (Phase 2)**: Use the source's unprefixed env var names (`TWAP_POOL_WTON_WETH`, `MARGIN_BPS`, `NODE_ENV`) or prefix them to avoid collisions with the tokagentos host environment?
+
+**Decision**: **`BILLING_` prefix** for all billing-owned env vars. Examples: `BILLING_TWAP_POOL_WTON_WETH`, `BILLING_MARGIN_BPS`, `BILLING_OPERATOR_PRIVATE_KEY`. `NODE_ENV` is read as-is (it is a standard Node.js convention owned by the runtime, not the billing package). The Phase 2 config loads only TWAP + margin vars; chain-write, auth, rate-limit, and usage tracking vars are deferred to later phases.
+
+**Reasoning**: The source ran as an isolated proxy process where env var collisions were not a concern. Inside the tokagentos monorepo, billing runs alongside several other packages that also read from the process environment. Unprefixed names like `MARGIN_BPS` or `TWAP_WINDOW_SECONDS` are high collision risk with any future plugin or runtime config. The `BILLING_` prefix is the same convention used by `DATABASE_URL` (runtime), `OPENAI_API_KEY` (provider plugins), and `ANTHROPIC_API_KEY` — namespace-per-concern is the established monorepo pattern.
+
+**Reversibility**: Trivial for new deployments (rename env vars in deployment config). Breaking for existing `llm-api-gateway` deployments until they rename their env vars — documented in the Phase 8 cutover runbook as a mandatory env var rename checklist item.
+
+**Owner-type**: Backend eng / DevOps
