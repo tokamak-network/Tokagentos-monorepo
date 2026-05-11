@@ -29,6 +29,7 @@ import {
   ptonDomain,
   storeQuote,
   fetchQuote,
+  consumeQuote,
   depositPreauthSlot,
   nextAvailableSlot,
   markPoisoned,
@@ -353,6 +354,33 @@ async function handleTopupSettle(
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "vault deposit failed";
     res.status(500).json({ error: `On-chain deposit failed: ${message}` });
+    return;
+  }
+
+  // ---- Atomically mark the quote consumed (Phase 6c Fix 2) ---------------
+  //
+  // Trade-off: chain-deposit-first, then consumeQuote.
+  //   Pro: a legitimate settle that succeeded on chain is never denied.
+  //   Con: leaves a tiny race window where two concurrent callers can both
+  //        succeed on chain before either marks the quote consumed. Whichever
+  //        callsite loses the consumeQuote() race gets a 409 with the txHash
+  //        of the successful deposit — operator can reconcile manually.
+  //
+  // The reverse ordering (consume first, then deposit) trades double-credit
+  // risk for a different failure mode: the quote is marked consumed but the
+  // chain deposit fails, leaving the user with an unsettled-but-poisoned
+  // quote. We chose chain-first because chain-side success is the source of
+  // truth; the quote table is a UX hint, not a financial primitive.
+  const consumed = await consumeQuote(db, topupId);
+  if (!consumed) {
+    res.status(409).json({
+      type: "billing_error",
+      code: "quote_already_consumed",
+      message:
+        "Quote was already settled. The on-chain deposit succeeded but this " +
+        "is a duplicate settle call. Contact support if unexpected.",
+      txHash,
+    });
     return;
   }
 

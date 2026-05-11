@@ -25,6 +25,7 @@ import {
   type UUID,
 } from "@tokagentos/core";
 
+import { computeActualCostUsd } from "@tokagentos/billing";
 import { normalizeCharacterLanguage } from "@tokagentos/shared/onboarding-presets";
 import { asRecord } from "@tokagentos/shared/type-guards";
 import type { TokagentConfig } from "../config/config.js";
@@ -1435,6 +1436,20 @@ export interface ChatRouteState {
   tradePermissionMode?: string;
 }
 
+/**
+ * Optional usage parameters forwarded to the billing commit closure.
+ * Mirrors `BillingCommitParams` in plugin-tokagent-billing's gate so that
+ * the agent server can pass usage info without importing from the plugin.
+ */
+export interface BillingCommitUsageParams {
+  inputTokens?: number;
+  outputTokens?: number;
+  cacheInputTokens?: number;
+  cacheCreationTokens?: number;
+  model?: string;
+  status?: "ok" | "error" | "aborted";
+}
+
 export interface ChatRouteContext extends RouteRequestContext {
   state: ChatRouteState;
   /**
@@ -1442,8 +1457,14 @@ export interface ChatRouteContext extends RouteRequestContext {
    * signal that the reserved credits should be committed to the ledger.
    * Provided by the BILLING_HOOK seam in server.ts (Decision Z34).
    * No-op when billing is disabled or the request is not a billed path.
+   *
+   * The optional `params` carry provider-reported usage so the gate can
+   * also write a `billing_call_log` row (Decision Z38). When omitted, the
+   * commit succeeds but no audit row is created.
    */
-  billingCommit?: ((actualUsd: number) => Promise<void>) | undefined;
+  billingCommit?:
+    | ((actualUsd: number, params?: BillingCommitUsageParams) => Promise<void>)
+    | undefined;
   /**
    * Billing release closure — call when the LLM request fails or is aborted
    * so the reserved credits are returned to the wallet balance.
@@ -1451,6 +1472,14 @@ export interface ChatRouteContext extends RouteRequestContext {
    * No-op when billing is disabled or the request is not a billed path.
    */
   billingRelease?: ((outcome: string) => Promise<void>) | undefined;
+  /**
+   * Pre-parsed JSON body forwarded from the BILLING_HOOK seam to avoid
+   * re-reading the request stream (Decision Z37). When the seam parsed the
+   * body for the gate, it MUST forward it here so the chat handlers don't
+   * call `readJsonBody` twice on the same `IncomingMessage` (which would
+   * hang forever — the stream's `end` event already fired).
+   */
+  prefetchedBody?: unknown;
 }
 
 export function resolveChatAdminEntityId(state: ChatRouteState): UUID {
@@ -1532,6 +1561,108 @@ function syncRuntimeCharacterToChatStateConfig(state: ChatRouteState): void {
 }
 
 // ---------------------------------------------------------------------------
+// Billing commit/release helpers (Phase 6c Fix 3)
+// ---------------------------------------------------------------------------
+
+/**
+ * Derive the billing commit parameters from a `ChatGenerationResult.usage`
+ * envelope and request context. Maps the agent runtime's promptTokens /
+ * completionTokens (OpenAI-style aliases) into `BillingCommitUsageParams`.
+ *
+ * `computeActualCostUsd` handles both Anthropic-native and OpenAI-style
+ * usage shapes via its internal normalizeUsage(), so passing the
+ * promptTokens/completionTokens through as the OpenAI aliases is correct.
+ *
+ * Returns null if the model is not in the pricing allowlist — caller should
+ * fall back to `billingCommit(0)` (refund) in that case, since we cannot
+ * compute a defensible charge.
+ */
+function computeBillingCommitArgs(
+  result: ChatGenerationResult,
+  fallbackModel: string,
+): { actualUsd: number; params: BillingCommitUsageParams } | null {
+  const usage = result.usage;
+  if (!usage) {
+    return null;
+  }
+  const model = result.usage?.model ?? fallbackModel;
+  try {
+    const actualUsd = computeActualCostUsd({
+      model,
+      usage: {
+        prompt_tokens: usage.promptTokens,
+        completion_tokens: usage.completionTokens,
+      },
+      hasCacheControl: false,
+    });
+    return {
+      actualUsd,
+      params: {
+        inputTokens: usage.promptTokens,
+        outputTokens: usage.completionTokens,
+        model,
+        status: "ok",
+      },
+    };
+  } catch {
+    // Model not in the pricing allowlist — caller should refund.
+    return null;
+  }
+}
+
+/**
+ * Safely invoke the billing commit closure. Logs (does not swallow silently)
+ * on failure so stuck reservations are visible.
+ */
+async function safeBillingCommit(
+  billingCommit:
+    | ((actualUsd: number, params?: BillingCommitUsageParams) => Promise<void>)
+    | undefined,
+  result: ChatGenerationResult | null,
+  fallbackModel: string,
+  runtime: AgentRuntime | null,
+): Promise<void> {
+  if (!billingCommit) return;
+  try {
+    const args = result ? computeBillingCommitArgs(result, fallbackModel) : null;
+    if (args) {
+      await billingCommit(args.actualUsd, args.params);
+    } else {
+      // No usage info (e.g., upstream didn't report it) — commit with 0 to
+      // refund the reservation. This is the safer default than charging the
+      // max-cost estimate.
+      await billingCommit(0);
+    }
+  } catch (err) {
+    const log = runtime?.logger ?? logger;
+    log.error(
+      { err: err instanceof Error ? err.message : err },
+      "[billing] commit failed — reservation may be stuck",
+    );
+  }
+}
+
+/**
+ * Safely invoke the billing release closure. Logs on failure.
+ */
+async function safeBillingRelease(
+  billingRelease: ((outcome: string) => Promise<void>) | undefined,
+  outcome: string,
+  runtime: AgentRuntime | null,
+): Promise<void> {
+  if (!billingRelease) return;
+  try {
+    await billingRelease(outcome);
+  } catch (err) {
+    const log = runtime?.logger ?? logger;
+    log.error(
+      { err: err instanceof Error ? err.message : err, outcome },
+      "[billing] release failed — reservation may be stuck",
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Main route handler
 // ---------------------------------------------------------------------------
 
@@ -1548,6 +1679,7 @@ export async function handleChatRoutes(
     state,
     billingCommit,
     billingRelease,
+    prefetchedBody,
   } = ctx;
 
   // ── GET /v1/models (OpenAI compatible) ─────────────────────────────────
@@ -1597,7 +1729,11 @@ export async function handleChatRoutes(
 
   // ── POST /v1/chat/completions (OpenAI compatible) ──────────────────────
   if (method === "POST" && pathname === "/v1/chat/completions") {
-    const body = await readJsonBody<Record<string, unknown>>(req, res);
+    // Use prefetched body if the BILLING_HOOK seam already parsed it
+    // (Decision Z37) — re-reading the IncomingMessage stream would hang.
+    const body =
+      (prefetchedBody as Record<string, unknown> | undefined) ??
+      (await readJsonBody<Record<string, unknown>>(req, res));
     if (!body) return true;
     if (hasBlockedObjectKeyDeep(body)) {
       json(
@@ -1676,6 +1812,8 @@ export async function handleChatRoutes(
         );
       };
 
+      // Captures the LLM result so we can compute actual cost after streaming.
+      let chatResult: ChatGenerationResult | null = null;
       try {
         if (!state.runtime) {
           writeSseData(
@@ -1688,6 +1826,8 @@ export async function handleChatRoutes(
             }),
           );
           writeSseData(res, "[DONE]");
+          // Billing: release reservation — no LLM call made.
+          await safeBillingRelease(billingRelease, "released_error", state.runtime);
           return true;
         }
 
@@ -1719,7 +1859,7 @@ export async function handleChatRoutes(
             },
           });
 
-          await generateChatResponse(runtime, message, state.agentName, {
+          chatResult = await generateChatResponse(runtime, message, state.agentName, {
             isAborted: () => aborted,
             onChunk: (chunk) => {
               fullText += chunk;
@@ -1745,11 +1885,16 @@ export async function handleChatRoutes(
 
         sendChunk({}, "stop");
         writeSseData(res, "[DONE]");
-        // Billing: commit reservation — request completed successfully.
-        if (billingCommit) await billingCommit(0).catch(() => undefined);
+        // Billing (Fix 3): if the request was aborted mid-stream, release the
+        // reservation instead of committing — otherwise commit with real usage.
+        if (aborted) {
+          await safeBillingRelease(billingRelease, "released_abort", state.runtime);
+        } else {
+          await safeBillingCommit(billingCommit, chatResult, model, state.runtime);
+        }
       } catch (err) {
         // Billing: release reservation — request failed.
-        if (billingRelease) await billingRelease("error").catch(() => undefined);
+        await safeBillingRelease(billingRelease, "released_error", state.runtime);
         if (!aborted) {
           writeSseData(
             res,
@@ -1769,6 +1914,7 @@ export async function handleChatRoutes(
     }
 
     // Non-streaming
+    let chatResultNonStream: ChatGenerationResult | null = null;
     try {
       let responseText: string;
 
@@ -1785,7 +1931,7 @@ export async function handleChatRoutes(
             503,
           );
           // Billing: release reservation — no LLM call made.
-          if (billingRelease) await billingRelease("no_runtime").catch(() => undefined);
+          await safeBillingRelease(billingRelease, "released_error", state.runtime);
           return true;
         }
         const runtime = state.runtime;
@@ -1807,7 +1953,7 @@ export async function handleChatRoutes(
             channelType: ChannelType.API,
           },
         });
-        const result = await generateChatResponse(
+        chatResultNonStream = await generateChatResponse(
           runtime,
           message,
           state.agentName,
@@ -1817,7 +1963,7 @@ export async function handleChatRoutes(
           },
         );
         syncRuntimeCharacterToChatStateConfig(state);
-        responseText = result.text;
+        responseText = chatResultNonStream.text;
       }
 
       const resolvedText = normalizeChatResponseText(
@@ -1838,11 +1984,11 @@ export async function handleChatRoutes(
           },
         ],
       });
-      // Billing: commit reservation — response sent successfully.
-      if (billingCommit) await billingCommit(0).catch(() => undefined);
+      // Billing: commit reservation with real usage from the LLM result.
+      await safeBillingCommit(billingCommit, chatResultNonStream, model, state.runtime);
     } catch (err) {
       // Billing: release reservation — request threw.
-      if (billingRelease) await billingRelease("error").catch(() => undefined);
+      await safeBillingRelease(billingRelease, "released_error", state.runtime);
       json(
         res,
         { error: { message: getErrorMessage(err), type: "server_error" } },
@@ -1854,7 +2000,11 @@ export async function handleChatRoutes(
 
   // ── POST /v1/messages (Anthropic compatible) ───────────────────────────
   if (method === "POST" && pathname === "/v1/messages") {
-    const body = await readJsonBody<Record<string, unknown>>(req, res);
+    // Use prefetched body if the BILLING_HOOK seam already parsed it
+    // (Decision Z37) — re-reading the IncomingMessage stream would hang.
+    const body =
+      (prefetchedBody as Record<string, unknown> | undefined) ??
+      (await readJsonBody<Record<string, unknown>>(req, res));
     if (!body) return true;
     if (hasBlockedObjectKeyDeep(body)) {
       json(
@@ -1913,8 +2063,12 @@ export async function handleChatRoutes(
         aborted = true;
       });
 
+      // Captures the LLM result so we can compute actual cost after streaming.
+      let chatResult: ChatGenerationResult | null = null;
       try {
         if (!state.runtime) {
+          // Billing: release reservation — no LLM call made.
+          await safeBillingRelease(billingRelease, "released_error", state.runtime);
           writeSseJson(
             res,
             {
@@ -1995,7 +2149,7 @@ export async function handleChatRoutes(
             },
           });
 
-          await generateChatResponse(runtime, message, state.agentName, {
+          chatResult = await generateChatResponse(runtime, message, state.agentName, {
             isAborted: () => aborted,
             onChunk: onDelta,
             resolveNoResponseText: () =>
@@ -2031,11 +2185,15 @@ export async function handleChatRoutes(
           "message_delta",
         );
         writeSseJson(res, { type: "message_stop" }, "message_stop");
-        // Billing: commit reservation — streaming response completed.
-        if (billingCommit) await billingCommit(0).catch(() => undefined);
+        // Billing (Fix 3): if aborted mid-stream, release instead of commit.
+        if (aborted) {
+          await safeBillingRelease(billingRelease, "released_abort", state.runtime);
+        } else {
+          await safeBillingCommit(billingCommit, chatResult, model, state.runtime);
+        }
       } catch (err) {
         // Billing: release reservation — streaming request failed.
-        if (billingRelease) await billingRelease("error").catch(() => undefined);
+        await safeBillingRelease(billingRelease, "released_error", state.runtime);
         if (!aborted) {
           writeSseJson(
             res,
@@ -2053,6 +2211,7 @@ export async function handleChatRoutes(
     }
 
     // Non-streaming
+    let chatResultNonStream: ChatGenerationResult | null = null;
     try {
       let responseText: string;
 
@@ -2069,7 +2228,7 @@ export async function handleChatRoutes(
             503,
           );
           // Billing: release reservation — no LLM call made.
-          if (billingRelease) await billingRelease("no_runtime").catch(() => undefined);
+          await safeBillingRelease(billingRelease, "released_error", state.runtime);
           return true;
         }
         const runtime = state.runtime;
@@ -2091,7 +2250,7 @@ export async function handleChatRoutes(
             channelType: ChannelType.API,
           },
         });
-        const result = await generateChatResponse(
+        chatResultNonStream = await generateChatResponse(
           runtime,
           message,
           state.agentName,
@@ -2101,7 +2260,7 @@ export async function handleChatRoutes(
           },
         );
         syncRuntimeCharacterToChatStateConfig(state);
-        responseText = result.text;
+        responseText = chatResultNonStream.text;
       }
 
       const resolvedText = normalizeChatResponseText(
@@ -2119,11 +2278,11 @@ export async function handleChatRoutes(
         stop_sequence: null,
         usage: { input_tokens: 0, output_tokens: 0 },
       });
-      // Billing: commit reservation — response sent successfully.
-      if (billingCommit) await billingCommit(0).catch(() => undefined);
+      // Billing: commit reservation with real usage from the LLM result.
+      await safeBillingCommit(billingCommit, chatResultNonStream, model, state.runtime);
     } catch (err) {
       // Billing: release reservation — request threw.
-      if (billingRelease) await billingRelease("error").catch(() => undefined);
+      await safeBillingRelease(billingRelease, "released_error", state.runtime);
       json(
         res,
         { error: { type: "server_error", message: getErrorMessage(err) } },

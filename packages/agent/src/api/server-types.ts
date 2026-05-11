@@ -313,7 +313,19 @@ export interface ServerState {
     allow: boolean;
     status: number;
     body?: object;
-    commit?: ((actualUsd: number) => Promise<void>) | undefined;
+    commit?:
+      | ((
+          actualUsd: number,
+          params?: {
+            inputTokens?: number;
+            outputTokens?: number;
+            cacheInputTokens?: number;
+            cacheCreationTokens?: number;
+            model?: string;
+            status?: "ok" | "error" | "aborted";
+          },
+        ) => Promise<void>)
+      | undefined;
     release?: ((outcome: string) => Promise<void>) | undefined;
   }>) | null;
 }

@@ -443,6 +443,22 @@ function requireCoreManager(runtime: AgentRuntime | null): CoreManagerLike {
 }
 
 /**
+ * Type guard for the BillingMiddlewareService shape. Returns true iff the
+ * given service exposes a `.middleware` function matching the billing
+ * middleware signature on `ServerState.billingMiddleware`.
+ */
+function isBillingMiddlewareService(
+  svc: unknown,
+): svc is { middleware: NonNullable<ServerState["billingMiddleware"]> } {
+  return (
+    typeof svc === "object" &&
+    svc !== null &&
+    "middleware" in svc &&
+    typeof (svc as { middleware: unknown }).middleware === "function"
+  );
+}
+
+/**
  * Late-bind `state.billingMiddleware` from the BillingMiddlewareService in the
  * runtime service registry (Decision Z33).
  *
@@ -456,8 +472,8 @@ function bindBillingMiddleware(
   state: ServerState,
 ): void {
   const svc = runtime.getService("tokagent-billing-middleware");
-  if (svc && typeof (svc as unknown as Record<string, unknown>)["middleware"] === "function") {
-    state.billingMiddleware = (svc as unknown as { middleware: NonNullable<ServerState["billingMiddleware"]> }).middleware;
+  if (isBillingMiddlewareService(svc)) {
+    state.billingMiddleware = svc.middleware;
   }
 }
 
@@ -3739,14 +3755,20 @@ async function handleRequest(
   // ═══════════════════════════════════════════════════════════════════════
   // BILLING_HOOK — gate /v1/messages and /v1/chat/completions (Decision Z27)
   // commit/release closures forwarded to chat-routes (Decision Z34).
+  // Body forwarded via prefetchedBody to avoid double-read (Decision Z37):
+  // re-reading the IncomingMessage stream would hang forever because the
+  // 'end' event has already fired by the time chat-routes runs.
   // ═══════════════════════════════════════════════════════════════════════
-  let _billingCommit: ((actualUsd: number) => Promise<void>) | undefined;
+  let _billingCommit: ChatRouteArg["billingCommit"] = undefined;
   let _billingRelease: ((outcome: string) => Promise<void>) | undefined;
+  let _billingBody: unknown = undefined;
   if (state.billingMiddleware) {
-    const billingBody = (pathname === "/v1/messages" || pathname === "/v1/chat/completions")
-      ? await readJsonBody(req, res)
-      : null;
-    const gate = await state.billingMiddleware(req, billingBody, pathname);
+    const isGatedPath =
+      pathname === "/v1/messages" || pathname === "/v1/chat/completions";
+    if (isGatedPath) {
+      _billingBody = await readJsonBody(req, res);
+    }
+    const gate = await state.billingMiddleware(req, _billingBody, pathname);
     if (!gate.allow) {
       json(res, gate.body ?? { error: "Billing error" }, gate.status);
       return;
@@ -3773,6 +3795,7 @@ async function handleRequest(
       state: coerce<ChatRouteArg["state"]>(state),
       billingCommit: _billingCommit,
       billingRelease: _billingRelease,
+      prefetchedBody: _billingBody,
     });
     if (handled) return;
   }

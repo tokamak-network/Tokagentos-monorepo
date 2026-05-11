@@ -692,4 +692,46 @@ Cross-validation rule: `BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true → B
 
 **Owner-type**: Backend eng
 
+---
+
+## Z37 — Forward pre-parsed body via `ChatRouteContext.prefetchedBody` (Phase 6c)
+
+**Question (Phase 6c)**: The BILLING_HOOK in `server.ts` consumes the request body via `await readJsonBody(req, res)` to feed it to the gate. The downstream chat-routes handlers call `readJsonBody(req, res)` again for the same `IncomingMessage`. Reading a Node `IncomingMessage` stream twice attaches `data`/`end` listeners to a stream that has already finished emitting — the second `readJsonBody` Promise never resolves, hanging every billed request. How is this fixed?
+
+**Decision**: **Forward the pre-parsed body through `ChatRouteContext.prefetchedBody`.** The seam in `server.ts` captures the body once (`_billingBody = await readJsonBody(req, res)`) and forwards it as an additional field on the `handleChatRoutes` argument object. Inside both `/v1/chat/completions` and `/v1/messages` handlers, the body is read via `(prefetchedBody as Record<string, unknown> | undefined) ?? await readJsonBody(...)` — using the pre-parsed value when present, falling back to a fresh read when the seam did not run (e.g., billing disabled).
+
+**Alternatives considered and rejected**:
+1. **Cache on the `IncomingMessage`** via a symbol property — monkey-patches an internal Node object; conflicts with framework helpers; hard to test.
+2. **`http-helpers.ts` body cache by request id** — adds a global side-effect map that needs eviction on close/error; trickier to reason about than a single per-request handoff.
+3. **Re-stream the body** by buffering it server-side and creating a new readable for chat-routes — adds memory pressure and code complexity for zero functional benefit.
+
+**Reasoning**: The explicit forwarding model keeps the body lifetime tied to the per-request `ChatRouteContext` object, which is naturally garbage-collected when the request ends. No global state, no monkey-patching, no extra reads. The change is local to two files (`server.ts` and `chat-routes.ts`) and is type-safe via the new `prefetchedBody?: unknown` field on `ChatRouteContext`.
+
+**Reversibility**: Remove the `prefetchedBody` field from `ChatRouteContext`, restore double-read at chat-routes call sites — but doing so reintroduces the production hang bug; reversal would require eliminating the BILLING_HOOK seam entirely.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z38 — `commit(actualUsd, params)` extended signature for call_log writing (Phase 6c)
+
+**Question (Phase 6c)**: `billing_call_log` exists in the schema since Phase 4 but has zero writers. Where should the writer live: in `chat-routes.ts` directly (requires importing schema/db into the agent package), in the plugin's commit closure (cleanly encapsulated but changes the public commit signature), or as a separate service the route handler calls?
+
+**Decision**: **Extend the `commit` closure signature to accept optional usage params.** The new signature is `commit(actualUsd: number, params?: BillingCommitParams) => Promise<void>`. When `params` is provided, the gate (in `plugin-tokagent-billing`) writes a `billing_call_log` row alongside the ledger commit. When omitted (backward-compatible default), the commit still applies but no audit row is created.
+
+**Params shape**: `{ inputTokens?, outputTokens?, cacheInputTokens?, cacheCreationTokens?, model?, status? }`. Chat-routes maps from `ChatGenerationResult.usage` (which has `promptTokens`/`completionTokens` OpenAI-style aliases) into this shape and runs the result through `computeActualCostUsd()` before passing it to the closure.
+
+**Failure mode**: If the `callLog.insert` fails after the ledger commit succeeded, the gate logs a warning but does NOT roll back the commit. The reservation is already committed; refunding it because an audit row failed to write would be worse than missing a single audit row. Operators who care about completeness can grep logs for the warning and reconcile manually.
+
+**Alternatives considered and rejected**:
+1. **Direct insert in `chat-routes.ts`** — requires importing `callLog` schema and `db` into the agent package; mixes data-access concerns into the HTTP layer; and complicates the test surface (chat-routes tests would need a real billing DB).
+2. **Separate `recordCallLog()` service** — adds a third closure to thread through, doubles the number of round-trips chat-routes must make.
+3. **Auto-derive usage from runtime telemetry** — runtime doesn't have per-request usage hooks, so this would require new infrastructure outside scope.
+
+**Module boundary**: This decision also formalizes `@tokagentos/billing` as a runtime dependency of `@tokagentos/agent` (added to `packages/agent/package.json`). The agent imports `computeActualCostUsd` to convert the runtime's character-count usage estimates into USD before calling `commit(actualUsd, params)`. The plan's §"Module-boundary rationale" anticipated this: billing is a pure library, the agent consumes its public API.
+
+**Reasoning**: The commit closure is the only code path that already has the full request context (wallet, requestId, model, reservationId). Extending it with optional usage params is the smallest change that gives the gate everything it needs to write a complete call_log row. The optionality preserves the existing test suite (147 tests on the gate continue to pass without changes).
+
+**Reversibility**: Drop the `params` parameter from the commit signature — backward-compatible removal. The `billing_call_log` table would no longer be populated, but no schema changes are needed.
+
 **Owner-type**: Backend eng

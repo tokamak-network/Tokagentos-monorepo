@@ -131,6 +131,7 @@
   "dependencies": {
     "@clack/prompts": "^1.0.0",
     "@tokagentos/app-companion": "workspace:*",
+    "@tokagentos/billing": "workspace:*",
     "@tokagentos/core": "workspace:*",
     "@elizaos/plugin-ollama": "1.2.4",
     "@elizaos/plugin-pdf": "1.0.2",

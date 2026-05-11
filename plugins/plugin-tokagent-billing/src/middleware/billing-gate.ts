@@ -32,6 +32,7 @@ import {
   reserve,
   release,
   commit,
+  callLog,
   TwapCache,
   type BillingDatabase,
 } from "@tokagentos/billing";
@@ -47,6 +48,28 @@ export type ReleaseOutcome =
   | "released_error"
   | "released_complete";
 
+/**
+ * Optional usage parameters forwarded by the route handler when calling
+ * `commit`. When provided, the gate writes a `billing_call_log` row alongside
+ * the ledger commit (Decision Z38). When omitted, the commit still succeeds
+ * but no call-log row is created — useful for tests and edge cases where the
+ * route handler cannot observe upstream usage (Decision Z38).
+ */
+export interface BillingCommitParams {
+  /** Provider-reported input tokens. */
+  inputTokens?: number;
+  /** Provider-reported output tokens. */
+  outputTokens?: number;
+  /** Provider-reported cache-read tokens, if any. */
+  cacheInputTokens?: number;
+  /** Provider-reported cache-write (creation) tokens, if any. */
+  cacheCreationTokens?: number;
+  /** The model identifier that actually served the request. */
+  model?: string;
+  /** Call status. Defaults to "ok" when commit() is called. */
+  status?: "ok" | "error" | "aborted";
+}
+
 export interface BillingGateResult {
   allow: boolean;
   /** HTTP status to return when `allow=false`. */
@@ -59,9 +82,10 @@ export interface BillingGateResult {
   body?: object;
   /**
    * Called by the route handler after the upstream response completes.
-   * Commits the actual cost deducted against the reservation.
+   * Commits the actual cost deducted against the reservation. When `params`
+   * is provided, also writes a `billing_call_log` row (Decision Z38).
    */
-  commit?: (actualUsd: number) => Promise<void>;
+  commit?: (actualUsd: number, params?: BillingCommitParams) => Promise<void>;
   /**
    * Called by the route handler when the upstream call errors or is aborted.
    * Returns the reserved amount to the wallet's spendable balance.
@@ -239,9 +263,44 @@ export async function applyBillingGate(
   const effectiveMarginBps = config.effectiveMarginBps;
 
   // ---- 7. Build commit closure ----
-  const commitFn = async (actualUsd: number): Promise<void> => {
+  // When `params` is provided (route handler observed upstream usage), the
+  // commit also writes a `billing_call_log` row. The call log and ledger
+  // commit run as separate statements; if the call-log insert fails the
+  // ledger commit still applies — we never want to refund a reserved amount
+  // because an audit row failed to write. (Decision Z38)
+  const commitFn = async (
+    actualUsd: number,
+    params?: BillingCommitParams,
+  ): Promise<void> => {
     const charge = computeCharge({ actualUsd, tonUsd, marginBps: effectiveMarginBps });
     await commit(db, reservationId, charge.totalPton);
+
+    if (params) {
+      try {
+        await db.insert(callLog).values({
+          wallet: wallet.toLowerCase(),
+          apiKeyId: identity.apiKeyId ?? null,
+          model: params.model ?? model,
+          inputTokens: params.inputTokens ?? 0,
+          outputTokens: params.outputTokens ?? 0,
+          cacheInputTokens: params.cacheInputTokens ?? 0,
+          cacheCreationTokens: params.cacheCreationTokens ?? 0,
+          costUsd: actualUsd.toFixed(8),
+          costPton: charge.totalPton,
+          requestId,
+          status: params.status ?? "ok",
+        });
+      } catch (err) {
+        // Never block the commit on call-log failure — the reservation is
+        // already committed at this point. Caller's logger (when present)
+        // will surface the error if needed.
+        const message = err instanceof Error ? err.message : String(err);
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[billing-gate] call_log insert failed (reservationId=${reservationId}, wallet=${wallet}): ${message}`,
+        );
+      }
+    }
   };
 
   // ---- 8. Build release closure ----

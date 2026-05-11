@@ -38,6 +38,7 @@ import {
   TwapCache,
   creditState,
   reservations,
+  callLog,
   computeCharge,
   usdToPton,
   type BillingDatabase,
@@ -234,8 +235,14 @@ describe("e2e: applyBillingMiddleware — reserve → commit", () => {
     // that we know is below the reservation amount.
     const actualUsd = 0.0005; // ~50/100ths of a cent
 
-    // ── Step 3: Commit the reservation with the actual cost ────────────────
-    await gate.commit!(actualUsd);
+    // ── Step 3: Commit the reservation with the actual cost + usage params ──
+    // Phase 6c (Fix 4 / Z38): passing params writes a billing_call_log row.
+    await gate.commit!(actualUsd, {
+      inputTokens: upstreamResponse.usage.input_tokens,
+      outputTokens: upstreamResponse.usage.output_tokens,
+      model: upstreamResponse.model,
+      status: "ok",
+    });
 
     // ── Assert: reservation outcome=committed, reserved cleared, accrued > 0 ─
     const rsvAfter = await handle.db
@@ -264,6 +271,59 @@ describe("e2e: applyBillingMiddleware — reserve → commit", () => {
       stateAfterCommit.reserved +
       stateAfterCommit.accrued;
     expect(total).toBe(INITIAL);
+
+    // ── Assert: billing_call_log row was written (Fix 4 / Z38) ─────────────
+    const logRows = await handle.db
+      .select()
+      .from(callLog)
+      .where(eq(callLog.wallet, wallet.toLowerCase()));
+    expect(logRows.length).toBe(1);
+    const logRow = logRows[0]!;
+    expect(logRow.model).toBe("claude-haiku-4-5");
+    expect(logRow.inputTokens).toBe(100);
+    expect(logRow.outputTokens).toBe(50);
+    expect(logRow.status).toBe("ok");
+    expect(logRow.costPton).toBe(expectedCharge.totalPton);
+  });
+
+  it("commit() WITHOUT params still works (backward compat) — no call_log row", async () => {
+    const wallet = nextWallet();
+    const { plaintext } = await mintApiKey(handle.db, {
+      wallet,
+      name: "e2e-commit-no-params",
+      authSecret: AUTH_SECRET,
+    });
+    const INITIAL = 10n ** 21n;
+    await seedBalance(handle.db, wallet, INITIAL);
+
+    setBillingState({
+      pool: { end: async () => {} } as unknown as BillingPluginState["pool"],
+      db: handle.db,
+      clients: {} as BillingPluginState["clients"],
+      config: makeConfig(),
+      twapCache: makeTwapCache(TON_USD),
+    });
+
+    const gate = await applyBillingMiddleware(
+      makeReq({ "x-api-key": plaintext }),
+      makeBody(),
+      "/v1/chat/completions",
+    );
+    expect(gate.allow).toBe(true);
+
+    // Commit without params — should NOT write a call_log row.
+    await gate.commit!(0.001);
+
+    const logRows = await handle.db
+      .select()
+      .from(callLog)
+      .where(eq(callLog.wallet, wallet.toLowerCase()));
+    expect(logRows.length).toBe(0);
+
+    // But the ledger commit still applied (accrued > 0).
+    const state = await readState(handle.db, wallet);
+    expect(state.accrued).toBeGreaterThan(0n);
+    expect(state.reserved).toBe(0n);
   });
 });
 
