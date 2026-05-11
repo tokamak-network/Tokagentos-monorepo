@@ -20,8 +20,8 @@ on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pri
 | 4 | Drizzle ledger, persistence | ✅ landed |
 | 5 | Workers (consume, withdraw, TWAP refresh, usage cleanup) | ✅ landed |
 | 6a | Plugin.init/dispose + shared pool + JWT + rate limiter + billing gate + auth/keys routes + server.ts seam | ✅ landed |
-| 6b | Credits/topup/usage/estimate routes + billing gate closures wired into chat-routes | — |
-| 6 | Routes + auth + middleware + scaffold mirroring | 🔄 in progress (6a done) |
+| 6b | Credits/topup/usage/estimate routes + billing gate closures wired into chat-routes | ✅ landed |
+| 6 | Routes + auth + middleware + scaffold mirroring | ✅ landed |
 | 7 | app-core billing UI | — |
 | 8 | Cutover + decommission | — |
 

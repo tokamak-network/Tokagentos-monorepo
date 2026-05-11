@@ -1437,6 +1437,20 @@ export interface ChatRouteState {
 
 export interface ChatRouteContext extends RouteRequestContext {
   state: ChatRouteState;
+  /**
+   * Billing commit closure — call after the LLM response is fully sent to
+   * signal that the reserved credits should be committed to the ledger.
+   * Provided by the BILLING_HOOK seam in server.ts (Decision Z34).
+   * No-op when billing is disabled or the request is not a billed path.
+   */
+  billingCommit?: ((actualUsd: number) => Promise<void>) | undefined;
+  /**
+   * Billing release closure — call when the LLM request fails or is aborted
+   * so the reserved credits are returned to the wallet balance.
+   * Provided by the BILLING_HOOK seam in server.ts (Decision Z34).
+   * No-op when billing is disabled or the request is not a billed path.
+   */
+  billingRelease?: ((outcome: string) => Promise<void>) | undefined;
 }
 
 export function resolveChatAdminEntityId(state: ChatRouteState): UUID {
@@ -1524,7 +1538,17 @@ function syncRuntimeCharacterToChatStateConfig(state: ChatRouteState): void {
 export async function handleChatRoutes(
   ctx: ChatRouteContext,
 ): Promise<boolean> {
-  const { req, res, method, pathname, readJsonBody, json, state } = ctx;
+  const {
+    req,
+    res,
+    method,
+    pathname,
+    readJsonBody,
+    json,
+    state,
+    billingCommit,
+    billingRelease,
+  } = ctx;
 
   // ── GET /v1/models (OpenAI compatible) ─────────────────────────────────
   if (method === "GET" && pathname === "/v1/models") {
@@ -1721,7 +1745,11 @@ export async function handleChatRoutes(
 
         sendChunk({}, "stop");
         writeSseData(res, "[DONE]");
+        // Billing: commit reservation — request completed successfully.
+        if (billingCommit) await billingCommit(0).catch(() => undefined);
       } catch (err) {
+        // Billing: release reservation — request failed.
+        if (billingRelease) await billingRelease("error").catch(() => undefined);
         if (!aborted) {
           writeSseData(
             res,
@@ -1756,6 +1784,8 @@ export async function handleChatRoutes(
             },
             503,
           );
+          // Billing: release reservation — no LLM call made.
+          if (billingRelease) await billingRelease("no_runtime").catch(() => undefined);
           return true;
         }
         const runtime = state.runtime;
@@ -1808,7 +1838,11 @@ export async function handleChatRoutes(
           },
         ],
       });
+      // Billing: commit reservation — response sent successfully.
+      if (billingCommit) await billingCommit(0).catch(() => undefined);
     } catch (err) {
+      // Billing: release reservation — request threw.
+      if (billingRelease) await billingRelease("error").catch(() => undefined);
       json(
         res,
         { error: { message: getErrorMessage(err), type: "server_error" } },
@@ -1997,7 +2031,11 @@ export async function handleChatRoutes(
           "message_delta",
         );
         writeSseJson(res, { type: "message_stop" }, "message_stop");
+        // Billing: commit reservation — streaming response completed.
+        if (billingCommit) await billingCommit(0).catch(() => undefined);
       } catch (err) {
+        // Billing: release reservation — streaming request failed.
+        if (billingRelease) await billingRelease("error").catch(() => undefined);
         if (!aborted) {
           writeSseJson(
             res,
@@ -2030,6 +2068,8 @@ export async function handleChatRoutes(
             },
             503,
           );
+          // Billing: release reservation — no LLM call made.
+          if (billingRelease) await billingRelease("no_runtime").catch(() => undefined);
           return true;
         }
         const runtime = state.runtime;
@@ -2079,7 +2119,11 @@ export async function handleChatRoutes(
         stop_sequence: null,
         usage: { input_tokens: 0, output_tokens: 0 },
       });
+      // Billing: commit reservation — response sent successfully.
+      if (billingCommit) await billingCommit(0).catch(() => undefined);
     } catch (err) {
+      // Billing: release reservation — request threw.
+      if (billingRelease) await billingRelease("error").catch(() => undefined);
       json(
         res,
         { error: { type: "server_error", message: getErrorMessage(err) } },

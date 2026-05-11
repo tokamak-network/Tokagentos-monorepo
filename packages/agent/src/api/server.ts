@@ -442,6 +442,25 @@ function requireCoreManager(runtime: AgentRuntime | null): CoreManagerLike {
   return service;
 }
 
+/**
+ * Late-bind `state.billingMiddleware` from the BillingMiddlewareService in the
+ * runtime service registry (Decision Z33).
+ *
+ * No hard import from `plugin-tokagent-billing` — the service registry is the
+ * decoupling mechanism. If the service is absent (billing disabled, plugin not
+ * loaded) `state.billingMiddleware` is left null/undefined and the BILLING_HOOK
+ * seam in the request handler becomes a no-op.
+ */
+function bindBillingMiddleware(
+  runtime: AgentRuntime,
+  state: ServerState,
+): void {
+  const svc = runtime.getService("tokagent-billing-middleware");
+  if (svc && typeof (svc as unknown as Record<string, unknown>)["middleware"] === "function") {
+    state.billingMiddleware = (svc as unknown as { middleware: NonNullable<ServerState["billingMiddleware"]> }).middleware;
+  }
+}
+
 const OG_FILENAME = ".og";
 const DELETED_CONVERSATIONS_FILENAME = "deleted-conversations.v1.json";
 const MAX_DELETED_CONVERSATION_IDS = 5000;
@@ -2646,6 +2665,8 @@ async function handleRequest(
       state.model = detectRuntimeModel(newRuntime, state.config);
       state.startedAt = Date.now();
       state.pendingRestartReasons = [];
+      // Re-bind billing middleware from the reloaded runtime (Decision Z33).
+      bindBillingMiddleware(newRuntime, state);
       ctx.onRuntimeSwapped?.();
       state.broadcastStatus?.();
       return true;
@@ -3717,7 +3738,10 @@ async function handleRequest(
 
   // ═══════════════════════════════════════════════════════════════════════
   // BILLING_HOOK — gate /v1/messages and /v1/chat/completions (Decision Z27)
+  // commit/release closures forwarded to chat-routes (Decision Z34).
   // ═══════════════════════════════════════════════════════════════════════
+  let _billingCommit: ((actualUsd: number) => Promise<void>) | undefined;
+  let _billingRelease: ((outcome: string) => Promise<void>) | undefined;
   if (state.billingMiddleware) {
     const billingBody = (pathname === "/v1/messages" || pathname === "/v1/chat/completions")
       ? await readJsonBody(req, res)
@@ -3727,6 +3751,9 @@ async function handleRequest(
       json(res, gate.body ?? { error: "Billing error" }, gate.status);
       return;
     }
+    // Capture commit/release for forwarding to the LLM dispatch below.
+    _billingCommit = gate.commit;
+    _billingRelease = gate.release;
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -3744,6 +3771,8 @@ async function handleRequest(
       json,
       error,
       state: coerce<ChatRouteArg["state"]>(state),
+      billingCommit: _billingCommit,
+      billingRelease: _billingRelease,
     });
     if (handled) return;
   }
@@ -4961,6 +4990,14 @@ export async function startApiServer(opts?: {
     });
   }
 
+  // ── Billing middleware late-bind (Decision Z33) ────────────────────────
+  // Read the BillingMiddlewareService from the runtime service registry.
+  // No hard import from plugin-tokagent-billing — the service registry is the
+  // decoupling mechanism. Absent when billing is disabled or plugin not loaded.
+  if (opts?.runtime) {
+    bindBillingMiddleware(opts.runtime, state);
+  }
+
   // Handle upgrade requests for WebSocket
   server.on("upgrade", (request, socket, head) => {
     try {
@@ -5464,6 +5501,9 @@ export async function startApiServer(opts?: {
       context: "restart",
       logger,
     });
+
+    // Re-bind billing middleware from the new runtime (Decision Z33).
+    bindBillingMiddleware(rt, state);
   };
 
   const updateStartup = (

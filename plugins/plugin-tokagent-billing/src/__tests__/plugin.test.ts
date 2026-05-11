@@ -21,9 +21,9 @@ describe('tokagentBillingPlugin', () => {
     expect(tokagentBillingPlugin.providers?.length).toBe(0);
   });
 
-  it('has 4 registered services (Phase 5)', () => {
+  it('has 5 registered services (Phase 6b: +BillingMiddlewareService)', () => {
     expect(Array.isArray(tokagentBillingPlugin.services)).toBe(true);
-    expect(tokagentBillingPlugin.services?.length).toBe(4);
+    expect(tokagentBillingPlugin.services?.length).toBe(5);
   });
 
   it('has init and dispose lifecycle hooks (Phase 6a)', () => {
@@ -31,9 +31,9 @@ describe('tokagentBillingPlugin', () => {
     expect(typeof tokagentBillingPlugin.dispose).toBe('function');
   });
 
-  it('has 5 routes (2 auth + 3 keys) with rawPath=true (Phase 6a)', () => {
+  it('has 20 routes (2 auth + 3 keys + 1 credits + 7 topup + 4 usage + 3 estimate) with rawPath=true (Phase 6b)', () => {
     expect(Array.isArray(tokagentBillingPlugin.routes)).toBe(true);
-    expect(tokagentBillingPlugin.routes?.length).toBe(5);
+    expect(tokagentBillingPlugin.routes?.length).toBe(20);
     for (const route of tokagentBillingPlugin.routes ?? []) {
       expect(route.rawPath).toBe(true);
     }

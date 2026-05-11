@@ -628,3 +628,68 @@ Cross-validation rule: `BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true → B
 **Reversibility**: Remove the flag to revert to prefixed paths.
 
 **Owner-type**: Backend eng
+
+---
+
+## Z33 — BillingMiddlewareService: late-bind via runtime service registry (Phase 6b)
+
+**Question (Phase 6b)**: How does `packages/agent/src/api/server.ts` get the `applyBillingMiddleware` function to populate `state.billingMiddleware` for the BILLING_HOOK seam, without creating a hard circular import from `plugin-tokagent-billing` into `@tokagentos/agent`?
+
+**Decision**: **Service registry late-bind.** `BillingMiddlewareService` (serviceType = `"tokagent-billing-middleware"`) is registered as an elizaOS Service in `tokagentBillingPlugin.services`. After the runtime loads, `server.ts` calls `runtime.getService("tokagent-billing-middleware")` and reads `.middleware` to populate `state.billingMiddleware`. No hard import from `plugin-tokagent-billing` into `@tokagentos/agent`.
+
+**Where the bind happens**: `bindBillingMiddleware(runtime, state)` is called in three places in server.ts:
+1. At initial boot, after the `wireCoordinatorBridgesWhenReady` block (when `opts.runtime` is present).
+2. Inside `updateRuntime()` (hot-swap / restart via external runtime manager).
+3. Inside `restartRuntime()` (inline restart triggered by plugin manager).
+
+**Reasoning**: The service registry is the standard elizaOS decoupling mechanism between plugins and the agent server. A hard import would create a circular dependency (`@tokagentos/agent` → `plugin-tokagent-billing` → `@tokagentos/core` → `@tokagentos/agent`). The late-bind approach is consistent with how other server-side services (plugin_manager, core_manager, coding-agent bridges) are resolved.
+
+**Reversibility**: Remove `BillingMiddlewareService` and replace with a direct `state.billingMiddleware` assignment in `initBillingPlugin`. Requires a hard import but eliminates one service registration.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z34 — commit/release forwarding to chat-routes (Phase 6b)
+
+**Question (Phase 6b)**: The BILLING_HOOK gate (server.ts, Decision Z27) returns `gate.commit` and `gate.release` closures. These must be called after the LLM response is sent (commit) or after a failure (release). How are they forwarded to the `/v1/messages` and `/v1/chat/completions` handlers in `chat-routes.ts`?
+
+**Decision**: **Extend `ChatRouteContext`** (the per-request arg struct, not the shared `ChatRouteState`) with optional `billingCommit?` and `billingRelease?` fields. In server.ts, after the BILLING_HOOK check, the closures are stored in `_billingCommit` / `_billingRelease` locals and passed into the `handleChatRoutes({...})` call. Inside `chat-routes.ts`, all four LLM dispatch code paths (streaming success, streaming error, non-streaming success, non-streaming error) call `billingCommit(0)` or `billingRelease(outcome)`.
+
+**Why `ChatRouteContext` not `ChatRouteState`**: `ChatRouteState` is shared across concurrent requests — mutating it per-request would create race conditions. `ChatRouteContext` is constructed fresh per-request and is the natural per-request scope.
+
+**Reasoning**: This is the minimal change that avoids concurrency issues, requires no WeakMap or socket annotation, and keeps the billing calls colocated with the LLM dispatch logic where they semantically belong.
+
+**Reversibility**: Remove the `billingCommit`/`billingRelease` fields from `ChatRouteContext` and the call sites in `chat-routes.ts`. The server.ts captures become no-ops.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z35 — Route tests: gate-level, no full agent boot (Phase 6b)
+
+**Question (Phase 6b)**: How should the billing route handlers be tested, given that the agent runtime is not available in the billing plugin test suite?
+
+**Decision**: **Direct handler invocation via PGLite test harness.** Route handler functions are called directly (bypassing the elizaOS plugin route dispatch) with a `makeRes()` stub. The billing state is seeded via `setBillingState()` with a PGLite database (from `createTestDb()`). Auth is mocked via `x-dev-wallet` with `authRequired: false` (dev mode). Chain calls (settle, preauth settle) are tested at the 400/404 boundary only — no actual EVM transactions.
+
+**Reasoning**: A full agent boot requires the runtime, Postgres, and chain clients. The handler functions are pure enough to test in isolation once billing state is seeded. The PGLite harness already exists from Phase 5 tests and provides the full schema. Gate-level tests (auth, validation, not-found) give high confidence without infrastructure complexity.
+
+**Reversibility**: Replace with integration tests that spin up a real server if higher fidelity is required.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z36 — No new envs in Phase 6b (Phase 6b)
+
+**Question (Phase 6b)**: Does Phase 6b introduce any new environment variables?
+
+**Decision**: **No new envs.** All environment variables required by Phase 6b routes were already introduced in Phase 6a (Z30): `BILLING_RATE_LIMIT_SETTLE_PER_MIN` covers the settle rate limiter; chain envs cover the topup settle path; `BILLING_TOPUP_AMOUNT_PTON` and `BILLING_FIXED_TON_USD` cover the quote/estimate paths. The `BillingMiddlewareService` and `commit`/`release` wiring add no new configuration surface.
+
+**Reasoning**: All Phase 6b functionality was anticipated when designing Phase 6a's config schema. Adding new envs mid-phase would require revisiting the Zod schema, documentation, and all deployment checklists. The existing envs are sufficient.
+
+**Reversibility**: N/A — no env additions to revert.
+
+**Owner-type**: Backend eng
+
+**Owner-type**: Backend eng
