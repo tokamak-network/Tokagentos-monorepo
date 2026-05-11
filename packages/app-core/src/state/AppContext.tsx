@@ -927,7 +927,6 @@ function AppProviderInner({
     state: {
       browserEnabled,
       computerUseEnabled,
-      billingEnabled,
       walletEnabled,
       walletAddresses,
       walletConfig,

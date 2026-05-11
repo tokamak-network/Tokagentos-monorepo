@@ -31,9 +31,9 @@ describe('tokagentBillingPlugin', () => {
     expect(typeof tokagentBillingPlugin.dispose).toBe('function');
   });
 
-  it('has 20 routes (2 auth + 3 keys + 1 credits + 7 topup + 4 usage + 3 estimate) with rawPath=true (Phase 6b)', () => {
+  it('has 21 routes (3 auth (nonce + login + status) + 3 keys + 1 credits + 7 topup + 4 usage + 3 estimate) with rawPath=true (Phase 6b)', () => {
     expect(Array.isArray(tokagentBillingPlugin.routes)).toBe(true);
-    expect(tokagentBillingPlugin.routes?.length).toBe(20);
+    expect(tokagentBillingPlugin.routes?.length).toBe(21);
     for (const route of tokagentBillingPlugin.routes ?? []) {
       expect(route.rawPath).toBe(true);
     }
