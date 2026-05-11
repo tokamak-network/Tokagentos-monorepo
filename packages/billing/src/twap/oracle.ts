@@ -1,7 +1,4 @@
 import type { Address, PublicClient } from "viem";
-import { logger } from "@tokagentos/core";
-
-const log = logger.child({ src: "billing" });
 
 export const UNISWAP_V3_POOL_ABI = [
   {
@@ -62,7 +59,7 @@ export interface OracleConfig {
   wethUsdcPool?: PoolConfig; // base=WETH, quote=USDC
   twapWindowSeconds: number;
   cacheMs: number;
-  maxStaleMs: number;
+  maxStalenessMs: number;
   sanity: { minUsd: number; maxUsd: number };
   fixedPrice?: number;
 }
@@ -157,6 +154,3 @@ async function readPoolPrice(
   // If base is token0, that's already quote-per-base; otherwise invert.
   return pool.baseIsToken0 ? humanToken1PerToken0 : 1 / humanToken1PerToken0;
 }
-
-// Re-export log for use in cache.ts (avoids duplicate logger creation)
-export { log as _oracleLog };

@@ -1,4 +1,4 @@
-import { getRates, normalizeModelId } from './rates.js';
+import { getRates } from './rates.js';
 
 export interface ClaudeUsage {
   input_tokens?: number;
@@ -93,6 +93,3 @@ export function fallbackUsageFromEstimate(estimateInputTokens: number): ClaudeUs
   }
   return { input_tokens: Math.ceil(estimateInputTokens), output_tokens: 0 };
 }
-
-// Re-export for convenience — usage.ts consumers frequently need normalizeModelId
-export { normalizeModelId };

@@ -24,16 +24,15 @@ const optionalHexAddress = z
   );
 
 // ---------------------------------------------------------------------------
-// Phase 2 schema — pricing / billing / TWAP envs only.
-//
-// Deferred env namespaces:
-//   Phase 3+: BILLING_CHAIN_RPC_URL, BILLING_CHAIN_ID, BILLING_VAULT_ADDRESS,
-//             BILLING_PTON_ADDRESS, BILLING_OPERATOR_PRIVATE_KEY
-//   Phase 4:  BILLING_TOPUP_AMOUNT_PTON, BILLING_CONSUME_*
-//   Phase 6:  BILLING_AUTH_*, BILLING_RATE_LIMIT_*, BILLING_LITELLM_*
+// Billing config schema — pricing / billing / TWAP envs land in Phase 2.
+// Phase 3+ extends this same shape via Zod schema composition (.extend()) for
+// chain-write envs (BILLING_CHAIN_RPC_URL, BILLING_VAULT_ADDRESS,
+// BILLING_OPERATOR_PRIVATE_KEY), Phase 4 adds BILLING_TOPUP_AMOUNT_PTON /
+// BILLING_CONSUME_*, Phase 6 adds BILLING_AUTH_* / BILLING_RATE_LIMIT_* /
+// BILLING_LITELLM_*. The TYPE remains `BillingConfig` across all phases.
 // ---------------------------------------------------------------------------
 
-const Phase2ConfigSchema = z.object({
+const BillingConfigSchema = z.object({
   // ---- TWAP / price oracle ----
   BILLING_MAINNET_RPC_URL: z.string().url().optional(),
 
@@ -126,7 +125,7 @@ export function loadBillingConfig(
   env: NodeJS.ProcessEnv,
   nodeEnv?: string,
 ) {
-  const raw = Phase2ConfigSchema.parse(env);
+  const raw = BillingConfigSchema.parse(env);
 
   // ---- Margin policy ----
   const marginBps = raw.BILLING_MARGIN_BPS ?? defaultMarginBps(nodeEnv);
@@ -199,4 +198,4 @@ export function loadBillingConfig(
   } as const;
 }
 
-export type BillingConfigPhase2 = ReturnType<typeof loadBillingConfig>;
+export type BillingConfig = ReturnType<typeof loadBillingConfig>;

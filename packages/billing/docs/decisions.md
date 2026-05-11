@@ -149,9 +149,9 @@ Source: `docs/superpowers/specs/2026-05-11-llm-api-gateway-integration-plan.md` 
 
 ## Z1 — Zod v4 Schema Validation
 
-**Question (Phase 2)**: Use Zod v3 (current most-widespread) or Zod v4 (already used in `@tokagentos/shared`) for `BillingConfigPhase2` schema and any future billing schemas?
+**Question (Phase 2)**: Use Zod v3 (current most-widespread) or Zod v4 (already used in `@tokagentos/shared`) for the `BillingConfig` schema and any future billing schemas?
 
-**Decision**: **Zod v4** (`^4.3.6`). Matches the version already declared in `@tokagentos/shared`. Uses `z.string().min(1)` (not the deprecated `z.string().nonempty()`). Uses `.optional().default(...)` (Zod v4 chaining). Uses `z.output<typeof Schema>` for inferred types where needed.
+**Decision**: **Zod v4** (`^4.3.6`). Matches the version already declared in `@tokagentos/shared`. Uses `z.string().min(1)` (not the deprecated `z.string().nonempty()`). Uses `.optional().default(...)` (Zod v4 chaining). The inferred type is exposed as `BillingConfig = ReturnType<typeof loadBillingConfig>` (preferred over `z.output<typeof Schema>` because the loader applies post-parse defaults and cross-validations that the raw Zod output type does not capture; for a parsed-only consumer the two forms are equivalent). The TYPE name is intentionally phase-neutral — Phase 3+ will extend the same `BillingConfig` shape via Zod schema composition (`.extend()`) rather than introducing `BillingConfigPhase3` etc.
 
 **Reasoning**: Aligning on one Zod major version across the monorepo eliminates runtime version conflicts when packages share Zod-annotated types. `@tokagentos/shared` already locked v4, so the decision was already made. Using v3 here would create a peer-dep split that would surface confusingly as "two Zod objects aren't equal" type errors down the line.
 

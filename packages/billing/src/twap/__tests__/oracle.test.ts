@@ -23,7 +23,7 @@ function makeOracleConfig(override?: Partial<OracleConfig>): OracleConfig {
     } satisfies PoolConfig,
     twapWindowSeconds: 1800,
     cacheMs: 60_000,
-    maxStaleMs: 600_000,
+    maxStalenessMs: 600_000,
     sanity: { minUsd: 0.05, maxUsd: 10 },
     ...override,
   };
@@ -134,7 +134,7 @@ describe('readCompositeTwap — composite math', () => {
     const oracle: OracleConfig = {
       twapWindowSeconds: 1800,
       cacheMs: 60_000,
-      maxStaleMs: 600_000,
+      maxStalenessMs: 600_000,
       sanity: { minUsd: 0.05, maxUsd: 10 },
     };
     const client = makeClient(0n, 0n);

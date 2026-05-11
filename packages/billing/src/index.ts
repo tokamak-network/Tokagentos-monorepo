@@ -12,6 +12,5 @@ export * from './pricing/rates.js';
 export * from './pricing/tokenize.js';
 export * from './pricing/usage.js';
 export * from './billing/charge.js';
-export * from './twap/oracle.js';
-export * from './twap/cache.js';
-export { loadBillingConfig, BillingConfigError, type BillingConfigPhase2 } from './config.js';
+export * from './twap/index.js';
+export { loadBillingConfig, BillingConfigError, type BillingConfig } from './config.js';

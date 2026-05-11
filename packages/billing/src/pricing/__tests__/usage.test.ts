@@ -146,6 +146,18 @@ describe('computeActualCostUsd — Anthropic native cache', () => {
     const got5m = computeActualCostUsd({ model, usage, cacheTtl: '5m', hasCacheControl: true });
     expect(got).toBeGreaterThan(got5m);
   });
+
+  it('bills entire input at cacheWrite rate when hasCacheControl=true but no cache fields reported (LiteLLM strips usage guard)', () => {
+    const model = 'claude-haiku-4-5';
+    const rates = getRates(model);
+    const usage = { input_tokens: 10_000, output_tokens: 1_000 };  // no cache fields
+    const got = computeActualCostUsd({ model, usage, hasCacheControl: true });
+    const expected = (10_000 * rates.cacheWrite5m + 1_000 * rates.output) / 1_000_000;
+    expect(Math.abs(got - expected)).toBeLessThan(1e-12);
+    // Must cost more than base input rate (the whole point of the guard)
+    const atInput = (10_000 * rates.input + 1_000 * rates.output) / 1_000_000;
+    expect(got).toBeGreaterThan(atInput);
+  });
 });
 
 // ---- fallbackUsageFromEstimate ----
