@@ -17,7 +17,7 @@ on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pri
 | 1 | Workspace scaffolding | ✅ landed |
 | 2 | Pricing, billing math, TWAP (pure) | ✅ landed |
 | 3 | Chain layer: clients, vault, EIP-3009 verify, Anvil harness | ✅ landed |
-| 4 | Drizzle ledger, persistence | ⏳ next |
+| 4 | Drizzle ledger, persistence | ✅ landed |
 | 5 | Workers (consume, withdraw, TWAP refresh, usage cleanup) | — |
 | 6 | Routes + auth + middleware + scaffold mirroring | — |
 | 7 | app-core billing UI | — |
@@ -55,6 +55,65 @@ Source repo (deprecating after Phase 8 cutover):
 
 ```
 ../../../../llm-api-gateway/proxy/src/
+```
+
+---
+
+## Database
+
+Phase 4 replaces all in-memory Map state from the source `llm-api-gateway` proxy with a
+DB-backed ledger using [Drizzle ORM](https://orm.drizzle.team/) and Postgres.
+
+### Runtime requirements
+
+- **Postgres 15+** — required for production. Pass the connection string via
+  `BILLING_DATABASE_URL=postgres://user:pass@host:5432/db`.
+- **PGLite** — used automatically in tests (no external process required).
+
+### Schema overview
+
+Eight tables, all prefixed `billing_*` to avoid collision with `@elizaos/plugin-sql` tables:
+
+| Table | Purpose |
+|---|---|
+| `billing_credit_state` | Per-wallet balance / reserved / accrued accumulators |
+| `billing_reservations` | In-flight request reservations (reserve → commit/release) |
+| `billing_consume_batches` | On-chain `consumeCredits` batch records |
+| `billing_topup_preauth_slots` | Pre-signed EIP-3009 authorization slots |
+| `billing_topup_quotes` | Single-use topup deposit quotes |
+| `billing_api_keys` | HMAC-SHA256 hashed API key store |
+| `billing_auth_nonces` | One-shot SIWE nonce store |
+| `billing_call_log` | Per-request usage log (model, tokens, cost) |
+
+atto-PTON amounts are stored as `numeric(78,0)` and mapped to TypeScript `bigint` (Decision Z15).
+All mutating ledger operations run under SERIALIZABLE isolation with automatic retry on Postgres
+error code `40001` (Decision Z14).
+
+### Migrations
+
+Migrations live in `packages/billing/drizzle/migrations/` and are committed to the repository.
+To regenerate after a schema change:
+
+```bash
+cd packages/billing
+bunx drizzle-kit generate --config drizzle.config.ts
+```
+
+Migrations are **forward-only** — no down migrations. Apply in production via the standard
+`drizzle-orm/node-postgres` `migrate()` call before starting the billing service.
+
+### Running tests
+
+Unit and concurrency tests run against PGLite — no external database needed:
+
+```bash
+bun run test --filter=@tokagentos/billing
+```
+
+For the full 10k-iteration concurrency stress test (validation gate):
+
+```bash
+BILLING_STRESS_FULL=1 bun run test --filter=@tokagentos/billing
 ```
 
 ---
