@@ -73,7 +73,7 @@ export function createBillingClients(cfg: BillingClientsConfig): BillingClients 
 
   const publicClient = createPublicClient({
     transport: http(cfg.chainRpcUrl),
-  }) as PublicClient;
+  });
 
   const walletClient = createWalletClient({
     account: operatorAccount,
@@ -82,7 +82,7 @@ export function createBillingClients(cfg: BillingClientsConfig): BillingClients 
 
   const mainnetClient = createPublicClient({
     transport: http(cfg.mainnetRpcUrl),
-  }) as PublicClient;
+  });
 
   return { publicClient, walletClient, mainnetClient, operatorAccount };
 }

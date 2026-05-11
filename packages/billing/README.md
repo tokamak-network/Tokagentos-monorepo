@@ -9,20 +9,19 @@ on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pri
 
 ---
 
-## Status
+## Status (as of 2026-05-11)
 
-**Phase 0 (staging) — package not yet built into the workspace graph.**
-
-Phase 1 will create `package.json`, `tsconfig.json`, and wire into `turbo.json`. Until then, the
-files in this directory are pre-staged reference artifacts only:
-
-| Artifact | Purpose | Phase it becomes active |
+| Phase | Scope | State |
 |---|---|---|
-| `docs/_archive/architecture.en.md` | English translation of source architecture doc | Reference only (never "active") |
-| `docs/_archive/proxy.en.md` | English translation of source proxy server doc | Reference only |
-| `docs/reserve-flow.md` | Reserve→commit sequence diagram from `handleMessages.ts` | Reference only |
-| `docs/decisions.md` | Committed answers to integration plan Open Questions | Governance (all phases) |
-| `src/chain/addresses.ts` | PTON + ClaudeVault deployed addresses | Phase 3 (chain layer) |
+| 0 | Docs, decisions, addresses staging | ✅ landed |
+| 1 | Workspace scaffolding | ✅ landed |
+| 2 | Pricing, billing math, TWAP (pure) | ✅ landed |
+| 3 | Chain layer: clients, vault, EIP-3009 verify, Anvil harness | ✅ landed |
+| 4 | Drizzle ledger, persistence | ⏳ next |
+| 5 | Workers (consume, withdraw, TWAP refresh, usage cleanup) | — |
+| 6 | Routes + auth + middleware + scaffold mirroring | — |
+| 7 | app-core billing UI | — |
+| 8 | Cutover + decommission | — |
 
 ---
 
@@ -102,7 +101,7 @@ BILLING_CHAIN_RPC_URL=http://127.0.0.1:8545
 BILLING_CHAIN_ID=31337
 BILLING_VAULT_ADDRESS=<output from forge script>
 BILLING_PTON_ADDRESS=<output from forge script>
-BILLING_OPERATOR_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+BILLING_OPERATOR_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80  # Anvil default key — never use in production
 ```
 
 For TWAP reads (Ethereum mainnet only):

@@ -1,8 +1,6 @@
 import { verifyTypedData, type Address, type Hex } from "viem";
 import { TRANSFER_WITH_AUTH_TYPES, ptonDomain } from "./typed-data.js";
 
-export type { Address, Hex };
-
 /**
  * EIP-3009 payment authorization parameters.
  * These fields map directly to the `TransferWithAuthorization` EIP-712 message.

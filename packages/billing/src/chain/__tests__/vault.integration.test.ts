@@ -226,13 +226,15 @@ describe.skipIf(!ANVIL_ENABLED)("vault integration (Anvil)", () => {
     expect(creditsAfter).toBe(0n);
 
     // Second consume with the same batchId — should revert (deterministic
-    // batchId enforcement on-chain prevents double-consume).
+    // batchId enforcement on-chain prevents double-consume). We match /revert/i
+    // specifically so the test does not pass falsely on unrelated thrown
+    // errors (network timeout, gas estimation failure, etc.).
     await expect(
       consumeCredits(clients, harness.vaultAddress as `0x${string}`, {
         user: ANVIL_ACCOUNT_1.address,
         amount: 1n, // amount doesn't matter — the credits are 0 and batchId is used
         batchId,
       }),
-    ).rejects.toThrow();
+    ).rejects.toThrow(/revert/i);
   });
 });

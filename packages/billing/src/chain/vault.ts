@@ -148,12 +148,15 @@ export async function readCredits(
   vaultAddress: Address,
   user: Address,
 ): Promise<bigint> {
-  return (await clients.publicClient.readContract({
+  // CLAUDE_VAULT_ABI is declared `as const`; viem infers `bigint` from the
+  // uint256 output. Explicit cast was redundant and would mask future ABI
+  // edits (e.g. uint128 narrowing).
+  return await clients.publicClient.readContract({
     address: vaultAddress,
     abi: CLAUDE_VAULT_ABI,
     functionName: "credits",
     args: [user],
-  })) as bigint;
+  });
 }
 
 /**
@@ -174,10 +177,12 @@ export async function ptonBalance(
   ptonAddress: Address,
   user: Address,
 ): Promise<bigint> {
-  return (await clients.publicClient.readContract({
+  // PTON_ABI is declared `as const`; viem infers `bigint` from the uint256
+  // output. See note on readCredits above.
+  return await clients.publicClient.readContract({
     address: ptonAddress,
     abi: PTON_ABI,
     functionName: "balanceOf",
     args: [user],
-  })) as bigint;
+  });
 }
