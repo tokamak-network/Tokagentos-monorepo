@@ -1,13 +1,19 @@
 /**
  * @tokagentos/billing — Web3 credit-billing rail.
  *
- * Public API surface for Phase 2: pricing, billing math, TWAP oracle, ABIs,
- * and zod config. Chain-write layer (Phase 3), ledger (Phase 4), workers
- * (Phase 5), and routes (Phase 6) land in subsequent phases.
+ * Public API surface through Phase 3: pricing, billing math, TWAP oracle,
+ * ABIs, zod config, and chain layer (viem clients, vault read/write,
+ * EIP-3009 verify). Ledger (Phase 4), workers (Phase 5), and routes (Phase 6)
+ * land in subsequent phases.
  */
 export * from './chain/addresses.js';
 export * from './chain/abi/pton.js';
 export * from './chain/abi/vault.js';
+// Phase 3: typed-data, clients, pton verify, vault read/write
+export * from './chain/typed-data.js';
+export * from './chain/clients.js';
+export * from './chain/pton.js';
+export * from './chain/vault.js';
 export * from './pricing/rates.js';
 export * from './pricing/tokenize.js';
 export * from './pricing/usage.js';

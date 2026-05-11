@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Address } from "viem";
+import type { Address, Hex } from "viem";
 
 // ---------------------------------------------------------------------------
 // Zod helpers
@@ -23,13 +23,26 @@ const optionalHexAddress = z
       .optional(),
   );
 
+/** Required 0x-prefixed EVM address validator (40 hex chars after 0x). */
+const hexAddress = z
+  .string()
+  .regex(/^0x[0-9a-fA-F]{40}$/, "expected 0x-prefixed 20-byte address");
+
+/**
+ * Required 0x-prefixed 32-byte private key validator.
+ * Accepts 64 hex chars after 0x (standard secp256k1 private key size).
+ */
+const hexPrivateKey = z
+  .string()
+  .regex(/^0x[0-9a-fA-F]{64}$/, "expected 0x-prefixed 32-byte private key");
+
 // ---------------------------------------------------------------------------
 // Billing config schema — pricing / billing / TWAP envs land in Phase 2.
-// Phase 3+ extends this same shape via Zod schema composition (.extend()) for
-// chain-write envs (BILLING_CHAIN_RPC_URL, BILLING_VAULT_ADDRESS,
-// BILLING_OPERATOR_PRIVATE_KEY), Phase 4 adds BILLING_TOPUP_AMOUNT_PTON /
-// BILLING_CONSUME_*, Phase 6 adds BILLING_AUTH_* / BILLING_RATE_LIMIT_* /
-// BILLING_LITELLM_*. The TYPE remains `BillingConfig` across all phases.
+// Phase 3 adds chain-write envs (BILLING_CHAIN_RPC_URL, BILLING_CHAIN_ID,
+// BILLING_VAULT_ADDRESS, BILLING_PTON_ADDRESS, BILLING_OPERATOR_PRIVATE_KEY).
+// Phase 4 adds BILLING_TOPUP_AMOUNT_PTON / BILLING_CONSUME_*.
+// Phase 6 adds BILLING_AUTH_* / BILLING_RATE_LIMIT_* / BILLING_LITELLM_*.
+// The TYPE remains `BillingConfig` across all phases (Decision Z10).
 // ---------------------------------------------------------------------------
 
 const BillingConfigSchema = z.object({
@@ -82,6 +95,36 @@ const BillingConfigSchema = z.object({
     .string()
     .optional()
     .transform((v) => (v === undefined || v === "" ? undefined : Number(v))),
+
+  // ---- Phase 3: chain-write layer ----------------------------------------
+  // These five envs are required when the chain layer is used (Phase 6 wires
+  // `BILLING_ENABLED` as the top-level gate). Until Phase 6 they are always
+  // present in the schema but the caller decides whether to assert their
+  // presence. Decision Z10: single BillingConfig shape grows incrementally.
+
+  /** RPC URL for the L2 chain hosting ClaudeVault (e.g. Polygon, Base, Titan). */
+  BILLING_CHAIN_RPC_URL: z.string().url().optional(),
+
+  /**
+   * Chain ID of the L2 chain hosting ClaudeVault. Used for EIP-712 domain
+   * construction in `ptonDomain()` and for `BillingClients` transport.
+   */
+  BILLING_CHAIN_ID: z.coerce.number().int().positive().optional(),
+
+  /** Deployed ClaudeVault contract address on the L2 chain. */
+  BILLING_VAULT_ADDRESS: hexAddress.optional(),
+
+  /** Deployed PTON token contract address on the L2 chain. */
+  BILLING_PTON_ADDRESS: hexAddress.optional(),
+
+  /**
+   * Operator EOA private key (hex, 0x-prefixed).
+   * Used by the billing layer to sign `depositX402` and `consumeCredits` txs.
+   * In production (cloud profile) this should be sourced from
+   * `packages/agent/src/auth/credentials.ts` (OS keychain), not bare env.
+   * See plan §Config, Risk R7, and Decision OQ3.
+   */
+  BILLING_OPERATOR_PRIVATE_KEY: hexPrivateKey.optional(),
 });
 
 // ---------------------------------------------------------------------------
@@ -195,6 +238,13 @@ export function loadBillingConfig(
     effectiveMarginBps,
 
     fixedTonUsd: raw.BILLING_FIXED_TON_USD,
+
+    // ---- Phase 3: chain-write layer ----
+    chainRpcUrl: raw.BILLING_CHAIN_RPC_URL,
+    chainId: raw.BILLING_CHAIN_ID,
+    vaultAddress: raw.BILLING_VAULT_ADDRESS as Address | undefined,
+    ptonAddress: raw.BILLING_PTON_ADDRESS as Address | undefined,
+    operatorPrivateKey: raw.BILLING_OPERATOR_PRIVATE_KEY as Hex | undefined,
   } as const;
 }
 

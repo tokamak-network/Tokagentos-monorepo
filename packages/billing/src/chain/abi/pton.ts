@@ -3,6 +3,10 @@
  *
  * Source: llm-api-gateway/proxy/src/abi.ts
  * Kept as `as const` for full viem type narrowing.
+ *
+ * Note: EIP-712 typed-data constants (TRANSFER_WITH_AUTH_TYPES, LOGIN_AUTH_TYPES,
+ * ptonDomain, loginAuthDomain) were extracted to `chain/typed-data.ts` in Phase 3
+ * (Decision Z8) — typed-data is domain shape data, not ABI fragments.
  */
 export const PTON_ABI = [
   {
@@ -43,28 +47,21 @@ export const PTON_ABI = [
     inputs: [{ name: "amount", type: "uint256" }],
     outputs: [],
   },
+  {
+    type: "function",
+    name: "transferWithAuthorization",
+    stateMutability: "nonpayable",
+    inputs: [
+      { name: "from", type: "address" },
+      { name: "to", type: "address" },
+      { name: "value", type: "uint256" },
+      { name: "validAfter", type: "uint256" },
+      { name: "validBefore", type: "uint256" },
+      { name: "nonce", type: "bytes32" },
+      { name: "v", type: "uint8" },
+      { name: "r", type: "bytes32" },
+      { name: "s", type: "bytes32" },
+    ],
+    outputs: [],
+  },
 ] as const;
-
-// EIP-712 types for EIP-3009 TransferWithAuthorization (PTON)
-export const TRANSFER_WITH_AUTH_TYPES = {
-  TransferWithAuthorization: [
-    { name: "from", type: "address" },
-    { name: "to", type: "address" },
-    { name: "value", type: "uint256" },
-    { name: "validAfter", type: "uint256" },
-    { name: "validBefore", type: "uint256" },
-    { name: "nonce", type: "bytes32" },
-  ],
-} as const;
-
-// EIP-712 types for the proxy's wallet-auth login (SIWE-style).
-// Domain: { name: "ai-proxy", version: "1", chainId } — verifying contract
-// is omitted because this signature has no on-chain meaning.
-export const LOGIN_AUTH_TYPES = {
-  LoginAuth: [
-    { name: "wallet", type: "address" },
-    { name: "nonce", type: "bytes32" },
-    { name: "issuedAt", type: "uint256" },
-    { name: "expiresAt", type: "uint256" },
-  ],
-} as const;

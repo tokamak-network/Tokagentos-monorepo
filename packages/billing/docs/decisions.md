@@ -200,3 +200,91 @@ Source: `docs/superpowers/specs/2026-05-11-llm-api-gateway-integration-plan.md` 
 **Reversibility**: Trivial for new deployments (rename env vars in deployment config). Breaking for existing `llm-api-gateway` deployments until they rename their env vars — documented in the Phase 8 cutover runbook as a mandatory env var rename checklist item.
 
 **Owner-type**: Backend eng / DevOps
+
+---
+
+## Implementation decisions (added during phases 2+)
+
+---
+
+## Z5 — Do NOT reuse `plugin-tokagent-shared` wallet helpers
+
+**Question (Phase 3)**: Should `packages/billing/src/chain/clients.ts` reuse `plugin-tokagent-shared/src/wallet.ts:getPublicClient/getWalletClient` for creating viem clients, or implement its own factory?
+
+**Decision**: **Duplicate intentionally.** `chain/clients.ts` defines its own `createBillingClients(cfg)` factory. The shared helpers are not used.
+
+**Reasoning**: `plugin-tokagent-shared/src/wallet.ts:getPublicClient(chainId, rpcOverride?)` resolves the RPC URL via `getChainConfig(chainId)` — the tokagent general-purpose chain registry. The billing module has a narrower chain set: (1) Ethereum mainnet for TWAP reads, via `BILLING_MAINNET_RPC_URL`, and (2) one configurable L2 for vault reads/writes, via `BILLING_CHAIN_RPC_URL` + `BILLING_CHAIN_ID`. Mapping these two distinct config slots through the shared chain registry would require wiring the full tokagent chain registry into `@tokagentos/billing`, creating a coupling that doesn't belong at the billing library layer. The integration plan explicitly notes "otherwise duplicate intentionally — the billing layer's chain set is narrower than tokagent's general purpose" (plan §Phase 3). The explicit `createBillingClients(cfg)` factory also satisfies Decision Z3 (explicit injection) and Decision Z6 (no Proxy lazy-init).
+
+**Reversibility**: Trivial in the additive direction — a future unification could delegate to the shared helper once the chain registry is queryable by config key rather than chainId. No data migration needed; only the factory implementation changes.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z6 — Drop ES Proxy backward-compat exports from chain layer
+
+**Question (Phase 3)**: Should the ported `chain/clients.ts` preserve the source's ES `Proxy`-based lazy-init pattern (`mainnetClient`, `publicClient`, `walletClient` as module-level Proxy exports) for backward compatibility?
+
+**Decision**: **Discard entirely.** No ES Proxy exports, no module-level client state, no lazy init. All chain functions take explicit `BillingClients` parameters.
+
+**Reasoning**: The source's ES Proxy pattern was a convenience for `server.ts` + `withdrawWatcher.ts` which import `mainnetClient` at module scope and expect it to work without explicit construction. In the billing package there is no such legacy consumer — Phase 3 is the first write. The Proxy pattern is untestable without careful import ordering or `setClientsForTest` side-channel injection. It also creates hidden coupling between `config.ts` (reads env at init time) and `clients.ts` (constructs transport using that config). Dropping it in favor of explicit injection completes the pattern established in Decision Z3 for Phase 2 TWAP functions: every chain-reading function in the billing layer takes an explicit client parameter. Phase 2 already dropped the TWAP-side mainnet Proxy; Phase 3 finishes the job.
+
+**Reversibility**: Trivial in the additive direction — a convenience singleton wrapper can be added on top of `createBillingClients` without changing the underlying factory.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z7 — Anvil harness: env-gated, not always-on
+
+**Question (Phase 3)**: Should chain-layer integration tests (`vault.integration.test.ts`) run in CI by default, or be gated behind an environment variable?
+
+**Decision**: **Env-gated.** Integration tests run only when `BILLING_TEST_ANVIL=1`. Unit tests (EIP-3009 offline verify, typed-data shape) always run. The integration suite uses `describe.skipIf(!process.env.BILLING_TEST_ANVIL)`.
+
+**Reasoning**: Anvil cold start is 5–15s; a CI job without foundry installed would fail every run. The unit tests for `verifyEip3009Signature` and typed-data helpers cover the cryptographic correctness path without requiring a node. The integration tests provide mechanical proof of the contract round-trip (plan validation gate: "vault.depositX402 + vault.consumeCredits round-trip on Anvil"). Running them once manually with `BILLING_TEST_ANVIL=1` satisfies the gate. Future Phase 8 cutover task will add a CI matrix entry installing foundry and setting the flag; that is not Phase 3 scope. Foundry binaries are confirmed present at `~/.foundry/bin/` on the development machine.
+
+**Reversibility**: Trivial — remove the `skipIf` guard to make tests always-on. Requires foundry in the CI base image first.
+
+**Owner-type**: Backend eng / DevOps
+
+---
+
+## Z8 — `chain/typed-data.ts` extracted from `chain/abi/pton.ts`
+
+**Question (Phase 3)**: Should `TRANSFER_WITH_AUTH_TYPES`, `LOGIN_AUTH_TYPES`, and EIP-712 domain helpers live in `chain/abi/pton.ts` alongside the PTON ABI, or in a dedicated `chain/typed-data.ts`?
+
+**Decision**: **Dedicated `chain/typed-data.ts`.** The two typed-data constants and two domain helper functions (`ptonDomain`, `loginAuthDomain`) are extracted from `chain/abi/pton.ts` into the new file. `chain/abi/pton.ts` retains only `PTON_ABI` (ABI fragments for viem `readContract`/`writeContract` calls).
+
+**Reasoning**: EIP-712 typed-data constants are domain shape data — they describe the structure of a message to be signed. ABI fragments describe the on-chain function/event interface. The two serve different consumers: typed-data is used by `chain/pton.ts:verifyEip3009Signature` and Phase 6 auth routes; ABI fragments are used by `chain/vault.ts` and `chain/pton.ts:ptonBalance`. Co-locating them in the ABI file conflated two distinct concerns and made `abi/pton.ts` the sole import target for consumers that only needed one. The separation was noted by the Phase 2.1 reviewer ("EIP-712 typed-data constants are domain shape data, not ABIs"). Moving them to `typed-data.ts` gives Phase 6 auth routes a clean import target without pulling in the ABI.
+
+**Reversibility**: Trivial — merge the two files if the separation turns out to be unnecessary overhead. Internal-to-`packages/billing` only; no external consumers yet.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z9 — One commit, one logical unit (Phase 3)
+
+**Question (Phase 3)**: Should Phase 3 land as a single commit or in atomic sub-commits per file group?
+
+**Decision**: **Single commit** — `feat(billing): phase 3 — chain layer (clients, vault, pton, EIP-3009 verify)`. If post-review fixups are needed, those become a `fix(billing): phase 3.1 — ...` commit.
+
+**Reasoning**: Phase 3 is a cohesive port of five tightly coupled files (`typed-data.ts`, `clients.ts`, `pton.ts`, `vault.ts`, `config.ts` extension). Sub-commits would require each intermediate state to typecheck cleanly, adding friction without meaningful reviewability gain — the entire diff is presented in one PR review regardless. This matches the Phase 2 convention ("one big port").
+
+**Reversibility**: N/A — git history decision; rebasing to split later is always possible if the team changes convention.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z10 — `loadBillingConfig` extends, doesn't fork (Phase 3)
+
+**Question (Phase 3)**: Should the five new chain envs (`BILLING_CHAIN_RPC_URL`, `BILLING_CHAIN_ID`, `BILLING_VAULT_ADDRESS`, `BILLING_PTON_ADDRESS`, `BILLING_OPERATOR_PRIVATE_KEY`) be added to the existing `BillingConfigSchema` in `config.ts`, or defined in a separate `BillingChainConfig` type?
+
+**Decision**: **Extend the existing schema inline.** The five envs are added directly to `BillingConfigSchema` in `config.ts`. No separate type is introduced. The `BillingConfig` type (derived via `ReturnType<typeof loadBillingConfig>`) grows automatically.
+
+**Reasoning**: Introducing a separate `BillingChainConfig` type would require consumers to call two loaders (`loadBillingConfig` + `loadBillingChainConfig`) and combine them, or introduce a composition wrapper that adds complexity without value. The single `BillingConfig` shape with incremental field additions per phase is simpler: callers do `loadBillingConfig(process.env)` once and get everything. Phase 6 will introduce `BILLING_ENABLED` as the top-level gate — until then the chain envs are optional (Zod `.optional()`) and callers assert their presence when constructing `BillingClients`. This matches Decision Z1 ("the TYPE name is intentionally phase-neutral — Phase 3+ will extend the same BillingConfig shape via Zod schema composition rather than introducing `BillingConfigPhase3` etc.").
+
+**Reversibility**: Trivial — splitting into sub-schemas is always possible; it only affects callers that import `BillingConfig` directly.
+
+**Owner-type**: Backend eng

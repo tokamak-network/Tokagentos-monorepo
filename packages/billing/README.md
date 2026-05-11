@@ -62,10 +62,52 @@ Source repo (deprecating after Phase 8 cutover):
 
 ## Anvil Quickstart
 
+Phase 3 introduces the Anvil harness and integration tests. The chain-write round-trip
+(`depositX402` + `consumeCredits`) can be exercised locally against a fresh Anvil node
+with the source repo's contracts deployed.
+
+### Prerequisites
+
+- [Foundry](https://getfoundry.sh/) installed (`~/.foundry/bin/anvil` + `forge`).
+- Source repo cloned at `../../../../llm-api-gateway/` relative to this package.
+- No network access required — the tests use a fresh non-forked Anvil chain (chainId=31337).
+
+### Steps
+
+```bash
+# 1. Build the source contracts (one-time, or after contract changes)
+cd ../../../../llm-api-gateway/contracts
+forge build
+
+# 2. Run the full billing test suite including Anvil integration tests
+cd ../../Tokamak-AI-Layer/tokagentos
+BILLING_TEST_ANVIL=1 bun run test --filter=@tokagentos/billing
 ```
-TODO(phase-4): Add Anvil quickstart instructions here once the chain layer and
-Anvil harness land (Phase 4). The source repo's mprocs.yaml + scripts/
-will be replaced by a documented Anvil fork command and turbo dev integration.
+
+The integration suite takes ~15–20s when BILLING_TEST_ANVIL is set:
+- Anvil process start: ~5s
+- `forge script Deploy.s.sol --broadcast`: ~5s
+- Vault read/write round-trips: ~6s
+
+Without `BILLING_TEST_ANVIL=1`, integration tests are silently skipped.
+The unit tests (EIP-3009 offline verify, typed-data shape) always run.
+
+### Required env vars (chain layer)
+
+The five chain-layer envs are required when `BILLING_ENABLED=true` (Phase 6).
+For Phase 3 manual testing, pass them directly to `createBillingClients()`:
+
+```
+BILLING_CHAIN_RPC_URL=http://127.0.0.1:8545
+BILLING_CHAIN_ID=31337
+BILLING_VAULT_ADDRESS=<output from forge script>
+BILLING_PTON_ADDRESS=<output from forge script>
+BILLING_OPERATOR_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+```
+
+For TWAP reads (Ethereum mainnet only):
+```
+BILLING_MAINNET_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/<your-key>
 ```
 
 ---

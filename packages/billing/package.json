@@ -16,7 +16,8 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
     "lint": "bunx @biomejs/biome check src",
-    "lint:fix": "bunx @biomejs/biome check --write src"
+    "lint:fix": "bunx @biomejs/biome check --write src",
+    "sync-abis": "./scripts/sync-abis.sh"
   },
   "dependencies": {
     "viem": "^2.21.0",
