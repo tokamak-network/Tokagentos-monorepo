@@ -132,14 +132,21 @@ describe("POST /v1/keys — mint", () => {
     expect(res.statusCode).toBe(400);
   });
 
-  it("mints a key and returns 201 with id + plaintext", async () => {
+  it("mints a key and returns 201 with id + plaintext + disclosure rule", async () => {
     const req = makeReqWithWallet({ body: { name: "integration-key" } });
     const res = makeRes();
     await handler(req, res, fakeRuntime);
     expect(res.statusCode).toBe(201);
-    const body = res.body as { id: string; key: string; name: string; createdAt: string };
+    const body = res.body as {
+      id: string;
+      key: string;
+      keyDisclosure: string;
+      name: string;
+      createdAt: string;
+    };
     expect(body.id).toMatch(/^sk-ai-/);
     expect(body.key).toMatch(/^sk-ai-[0-9a-f]{64}$/);
+    expect(body.keyDisclosure).toBe("shown_once_store_immediately");
     expect(body.name).toBe("integration-key");
   });
 

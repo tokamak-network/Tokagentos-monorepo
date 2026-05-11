@@ -170,6 +170,11 @@ describe("applyBillingGate — rejection paths", () => {
     expect(result.allow).toBe(false);
     expect(result.status).toBe(401);
     expect(result.reason).toBe("invalid_auth");
+    expect(result.body).toMatchObject({
+      type: "billing_error",
+      code: "invalid_auth",
+      message: expect.any(String),
+    });
   });
 
   it("returns 400 unsupported_model when model field is missing", async () => {
@@ -192,6 +197,11 @@ describe("applyBillingGate — rejection paths", () => {
     expect(result.allow).toBe(false);
     expect(result.status).toBe(400);
     expect(result.reason).toBe("unsupported_model");
+    expect(result.body).toMatchObject({
+      type: "billing_error",
+      code: "missing_model",
+      message: expect.any(String),
+    });
   });
 
   it("returns 400 unsupported_model when model is not in allowlist", async () => {
@@ -215,6 +225,11 @@ describe("applyBillingGate — rejection paths", () => {
     expect(result.allow).toBe(false);
     expect(result.status).toBe(400);
     expect(result.reason).toBe("unsupported_model");
+    expect(result.body).toMatchObject({
+      type: "billing_error",
+      code: "unsupported_model",
+      message: expect.stringContaining("made-up-model"),
+    });
   });
 
   it("returns 503 when no TWAP price and no fixedTonUsd", async () => {
@@ -235,6 +250,11 @@ describe("applyBillingGate — rejection paths", () => {
     const result = await applyBillingGate(makeReq({ "x-api-key": plaintext }), makeBody());
     expect(result.allow).toBe(false);
     expect(result.status).toBe(503);
+    expect(result.body).toMatchObject({
+      type: "billing_error",
+      code: "price_oracle_unavailable",
+      message: expect.any(String),
+    });
   });
 
   it("returns 402 insufficient_balance when balance is 0", async () => {
@@ -257,6 +277,9 @@ describe("applyBillingGate — rejection paths", () => {
     expect(result.status).toBe(402);
     expect(result.reason).toBe("insufficient_balance");
     expect(result.body).toMatchObject({
+      type: "billing_error",
+      code: "insufficient_balance",
+      message: expect.any(String),
       requiredPton: expect.any(String),
       availablePton: expect.any(String),
     });

@@ -140,7 +140,11 @@ export async function applyBillingGate(
       allow: false,
       status: 401,
       reason: "invalid_auth",
-      body: { error: "Billing authentication required. Provide x-api-key or Authorization: Bearer." },
+      body: {
+        type: "billing_error",
+        code: "invalid_auth",
+        message: "authentication required",
+      },
     };
   }
   const wallet = identity.wallet;
@@ -152,7 +156,11 @@ export async function applyBillingGate(
       allow: false,
       status: 400,
       reason: "unsupported_model",
-      body: { error: "Missing 'model' field in request body." },
+      body: {
+        type: "billing_error",
+        code: "missing_model",
+        message: 'request body missing required "model" field',
+      },
     };
   }
   let model: string;
@@ -164,7 +172,11 @@ export async function applyBillingGate(
       allow: false,
       status: 400,
       reason: "unsupported_model",
-      body: { error: `Model '${rawModel}' is not supported for billing.` },
+      body: {
+        type: "billing_error",
+        code: "unsupported_model",
+        message: `model "${rawModel}" not in billing allowlist`,
+      },
     };
   }
 
@@ -193,7 +205,12 @@ export async function applyBillingGate(
     return {
       allow: false,
       status: 503,
-      body: { error: "Price oracle unavailable. Retry in a moment." },
+      body: {
+        type: "billing_error",
+        code: "price_oracle_unavailable",
+        message:
+          "TON/USD price oracle returned no fresh value and no fixedTonUsd override",
+      },
     };
   }
 
@@ -209,7 +226,9 @@ export async function applyBillingGate(
       status: 402,
       reason: "insufficient_balance",
       body: {
-        error: "Insufficient billing balance.",
+        type: "billing_error",
+        code: "insufficient_balance",
+        message: "insufficient billing balance for this request",
         requiredPton: maxPton.toString(),
         availablePton: result.available.toString(),
       },

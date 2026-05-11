@@ -83,6 +83,10 @@ async function handleMintKey(
   res.status(201).json({
     id: minted.id,
     key: minted.plaintext,
+    // Disclosure rule for callers — the plaintext `key` is shown ONCE and
+    // is not retrievable afterward. Clients must dispatch on this field
+    // (e.g. surface a "copy now" prompt) rather than assume future fetch.
+    keyDisclosure: "shown_once_store_immediately",
     name,
     createdAt: new Date().toISOString(),
   });

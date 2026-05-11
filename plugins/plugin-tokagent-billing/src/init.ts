@@ -29,7 +29,11 @@ import {
   loadBillingConfig,
 } from "@tokagentos/billing";
 import { logger, type IAgentRuntime } from "@tokagentos/core";
-import { setBillingState, clearBillingState } from "./state.js";
+import {
+  setBillingState,
+  clearBillingState,
+  isBillingStateInitialized,
+} from "./state.js";
 
 const log = logger.child({ src: "billing:init" });
 
@@ -182,9 +186,15 @@ export async function initBillingPlugin(runtime: IAgentRuntime): Promise<void> {
 /**
  * Tear down the billing plugin: close the pg Pool and clear state.
  *
- * Called from `Plugin.dispose` in `src/index.ts`.
+ * Called from `Plugin.dispose` in `src/index.ts`. Safe to call when the
+ * plugin was never initialized (BILLING_ENABLED=false path, or test
+ * cleanup) — short-circuits silently with no log noise.
  */
 export async function disposeBillingPlugin(): Promise<void> {
+  if (!isBillingStateInitialized()) {
+    // Never initialized — nothing to dispose, no log needed.
+    return;
+  }
   log.info("billing plugin disposing");
   await clearBillingState();
   log.info("billing plugin disposed");

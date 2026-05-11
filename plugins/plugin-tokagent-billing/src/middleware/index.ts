@@ -29,9 +29,13 @@ export type { BillingGateResult, ReleaseOutcome } from "./billing-gate.js";
 // ---------------------------------------------------------------------------
 // Created lazily on first use so tests that never call applyBillingMiddleware
 // don't pay the allocation cost.
+//
+// The settle-path limiter (BILLING_RATE_LIMIT_SETTLE_PER_MIN) will be
+// reintroduced in Phase 6b alongside `/v1/topup/settle` — keeping a dead
+// singleton here now would mask whether Phase 6b activates the limiter on
+// the correct route.
 
 let _quoteLimiter: TokenBucketLimiter | null = null;
-let _settleLimiter: TokenBucketLimiter | null = null;
 
 function getQuoteLimiter(): TokenBucketLimiter {
   if (!_quoteLimiter) {
@@ -44,17 +48,6 @@ function getQuoteLimiter(): TokenBucketLimiter {
   return _quoteLimiter;
 }
 
-function getSettleLimiter(): TokenBucketLimiter {
-  if (!_settleLimiter) {
-    const { config } = getBillingState();
-    _settleLimiter = createRateLimiter({
-      capacity: config.rateLimitSettlePerMin,
-      windowMs: 60_000,
-    });
-  }
-  return _settleLimiter;
-}
-
 /**
  * Reset module-level limiter singletons.
  * Called by Plugin.dispose so rate-limit state doesn't bleed across restarts.
@@ -62,7 +55,6 @@ function getSettleLimiter(): TokenBucketLimiter {
  */
 export function resetBillingLimiters(): void {
   _quoteLimiter = null;
-  _settleLimiter = null;
 }
 
 // ---------------------------------------------------------------------------
@@ -136,7 +128,9 @@ export async function applyBillingMiddleware(
         allow: false,
         status: 429,
         body: {
-          error: "Rate limit exceeded.",
+          type: "billing_error",
+          code: "rate_limited",
+          message: "rate limit exceeded for billing-gated path",
           retryAfterSec: result.retryAfterSec,
         },
       };
