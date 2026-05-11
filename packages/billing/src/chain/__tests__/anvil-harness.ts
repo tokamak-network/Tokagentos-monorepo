@@ -170,6 +170,18 @@ export async function spawnAnvil(): Promise<AnvilHarness> {
   const rpcUrl = `http://127.0.0.1:${port}`;
   const chainId = 31337;
 
+  // ---- 0. Defensive cleanup — kill any stale anvil from a previous failed run.
+  // Stale processes hold port 8545 and produce "nonce too low" errors when the
+  // forge deploy script targets a chain at a different block height than
+  // expected. Best-effort: ignore failures (no stale process is fine).
+  try {
+    execSync("pkill -9 -f anvil", { stdio: "ignore" });
+    // Give the OS a moment to release the port before we bind it again.
+    await new Promise((r) => setTimeout(r, 1000));
+  } catch {
+    // No stale process found — proceed normally.
+  }
+
   // ---- 1. Start Anvil ----
   let anvilProcess: ChildProcess;
   try {
