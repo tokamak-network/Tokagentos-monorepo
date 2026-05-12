@@ -209,9 +209,68 @@ export async function initBillingPlugin(runtime: IAgentRuntime): Promise<void> {
     operatorPrivateKey: config.operatorPrivateKey,
   });
 
-  // ---- 4. Store shared state (Decision Z28) ----
+  // ---- 4. Bridge into the host app's wallet pipeline ----
+  // The scaffold's wallet/inventory tab discovers chains via provider API
+  // keys in process.env (ALCHEMY_API_KEY, INFURA_API_KEY, ...). If the
+  // operator configured BILLING_CHAIN_RPC_URL with a recognizable provider
+  // URL, derive the API key and seed those env vars — so the wallet
+  // page works against mainnet using the SAME key the operator pasted
+  // into the billing wizard, instead of failing for lack of an env var.
+  // Idempotent: only writes if the target env var is unset.
+  bridgeRpcKeysToWalletEnv(config.chainRpcUrl);
+
+  // ---- 5. Store shared state (Decision Z28) ----
   setBillingState({ pool, db, clients, config });
   log.info("billing plugin initialized — BILLING_ENABLED=true");
+}
+
+/**
+ * Extract a provider API key from `billingRpcUrl` and seed the wallet's env
+ * vars when the host hasn't set them. Supported providers:
+ *   - Alchemy:  `https://<network>.g.alchemy.com/v2/<KEY>` → ALCHEMY_API_KEY
+ *   - Infura:   `https://<network>.infura.io/v3/<KEY>`    → INFURA_API_KEY
+ *
+ * Other providers are ignored — the wallet page falls back to its own env
+ * config in that case. This is best-effort; failures are silent.
+ */
+function bridgeRpcKeysToWalletEnv(billingRpcUrl: string): void {
+  try {
+    const u = new URL(billingRpcUrl);
+    // Alchemy: host = `eth-sepolia.g.alchemy.com`, path = `/v2/<KEY>`
+    if (u.host.endsWith(".g.alchemy.com")) {
+      const key = u.pathname.split("/").pop();
+      if (key && key.length > 4 && !process.env.ALCHEMY_API_KEY) {
+        process.env.ALCHEMY_API_KEY = key;
+        log.info(
+          { provider: "alchemy" },
+          "bridged billing RPC API key into ALCHEMY_API_KEY so wallet tab works on mainnet",
+        );
+      }
+      return;
+    }
+    // Infura: host = `sepolia.infura.io`, path = `/v3/<KEY>`
+    if (u.host.endsWith(".infura.io")) {
+      const key = u.pathname.split("/").pop();
+      if (key && key.length > 4 && !process.env.INFURA_API_KEY) {
+        process.env.INFURA_API_KEY = key;
+        log.info(
+          { provider: "infura" },
+          "bridged billing RPC API key into INFURA_API_KEY so wallet tab works on mainnet",
+        );
+      }
+      return;
+    }
+    // Unrecognized provider — leave wallet env alone.
+    log.debug(
+      { host: u.host },
+      "billing RPC provider not recognized — wallet env not bridged",
+    );
+  } catch (err) {
+    log.debug(
+      { err: (err as Error).message },
+      "could not parse billing RPC URL for wallet key bridge",
+    );
+  }
 }
 
 /**
