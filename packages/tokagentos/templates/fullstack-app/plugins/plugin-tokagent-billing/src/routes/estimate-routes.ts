@@ -25,6 +25,7 @@ import {
   detectCacheControl,
   usdToPton,
   assertNoDisallowedModifiers,
+  fetchTokamakApiPrice,
 } from "@tokagentos/billing";
 import { getBillingState, isBillingStateInitialized } from "../state.js";
 import { resolveBillingIdentity } from "../middleware/api-key-resolve.js";
@@ -44,11 +45,20 @@ function toIncomingMessage(req: RouteRequest): IncomingMessage {
   } as unknown as IncomingMessage;
 }
 
-/** Get the current TON/USD price from TwapCache or fixedTonUsd. Returns null if unavailable. */
+/**
+ * Get the current TON/USD price.
+ *
+ * Resolution order matches getCachedTonUsd in @tokagentos/billing — the
+ * TwapCache holds the most recent live read (Tokamak API → composite TWAP),
+ * and config.fixedTonUsd is the admin escape-hatch ONLY when the cache is
+ * empty (e.g. plugin just initialized, refresh worker hasn't ticked yet).
+ *
+ * Returns null if neither source has a value.
+ */
 function getTonUsd(): number | null {
   try {
     const { config, twapCache } = getBillingState();
-    return config.fixedTonUsd ?? twapCache?.get()?.tonUsd ?? null;
+    return twapCache?.get()?.tonUsd ?? config.fixedTonUsd ?? null;
   } catch {
     return null;
   }
@@ -266,7 +276,35 @@ async function handlePrice(
     return;
   }
 
-  // Prefer fixed override; otherwise read the TwapCache snapshot.
+  // Prefer the live cache (Tokamak API / on-chain TWAP). Only fall back to
+  // the admin fixed override when the cache is empty — the wizard no longer
+  // exposes fixedTonUsd, so a stale env value should never shadow the live
+  // feed once at least one tick has populated the cache.
+  //
+  // Cold-cache path: TwapRefreshService ticks every 60s, so the first
+  // dashboard load after restart could land before the worker has run. Hit
+  // the Tokamak API inline as a one-shot warm-up so the user sees a real
+  // price on first paint instead of "—".
+  let snapshot = twapCache?.get() ?? null;
+  if (!snapshot) {
+    try {
+      const live = await fetchTokamakApiPrice();
+      twapCache?.set(live);
+      snapshot = live;
+    } catch {
+      // Live fetch failed — fall through to fixed/unavailable handling.
+    }
+  }
+  if (snapshot) {
+    res.status(200).json({
+      tonUsd: snapshot.tonUsd,
+      source: snapshot.source,
+      fetchedAt: snapshot.fetchedAt,
+      ageMs: snapshot.ageMs,
+    });
+    return;
+  }
+
   if (config.fixedTonUsd !== undefined) {
     res.status(200).json({
       tonUsd: config.fixedTonUsd,
@@ -277,19 +315,7 @@ async function handlePrice(
     return;
   }
 
-  const snapshot = twapCache?.get() ?? null;
-  if (!snapshot) {
-    res.status(200).json({ available: false });
-    return;
-  }
-
-  res.status(200).json({
-    tonUsd: snapshot.tonUsd,
-    source: snapshot.source,
-    fetchedAt: snapshot.fetchedAt,
-    ageMs: snapshot.ageMs,
-    available: true,
-  });
+  res.status(200).json({ available: false });
 }
 
 // ---------------------------------------------------------------------------
