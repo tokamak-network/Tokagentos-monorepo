@@ -573,6 +573,85 @@ export function isTruthyEnvValue(value) {
 }
 `,
   },
+  {
+    path: "packages/app-core/src/navigation/index.ts",
+    description:
+      "Add a fixed Billing tab to the scaffold's sidebar. The tab is " +
+      "ALWAYS visible (no enabled-flag gate) so the operator can reach " +
+      "the setup wizard before they've configured billing, and the " +
+      "dashboard once they have. The tab content is rendered by " +
+      "BillingPageView (added via scaffold-patches) which iframes the " +
+      "plugin-served SPA at /v1/billing/dashboard.",
+    find:
+      "  {\n" +
+      "    label: \"Settings\",\n" +
+      "    tabs: [\"settings\"],\n" +
+      "    icon: Settings,\n" +
+      "    description: \"Configuration and preferences\",\n" +
+      "  },\n" +
+      "];\n",
+    replaceWith:
+      "  {\n" +
+      "    label: \"Settings\",\n" +
+      "    tabs: [\"settings\"],\n" +
+      "    icon: Settings,\n" +
+      "    description: \"Configuration and preferences\",\n" +
+      "  },\n" +
+      "  // [tokagent surgical-patch] Billing tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
+      "  {\n" +
+      "    label: \"Billing\",\n" +
+      "    tabs: [\"billing\"],\n" +
+      "    icon: Wallet,\n" +
+      "    description: \"PTON credits, API keys, top-up, usage history\",\n" +
+      "  },\n" +
+      "];\n",
+  },
+  {
+    path: "packages/app-core/src/App.tsx",
+    description:
+      "Lazy-import the BillingPageView component so the Billing tab " +
+      "has a renderer. Component itself is overlaid via scaffold-patches " +
+      "at packages/app-core/src/components/pages/BillingPageView.tsx.",
+    find:
+      "const SettingsView = lazyNamedView(\n" +
+      "  () => import(\"./components/pages/SettingsView\"),\n" +
+      "  \"SettingsView\",\n" +
+      ");\n",
+    replaceWith:
+      "const SettingsView = lazyNamedView(\n" +
+      "  () => import(\"./components/pages/SettingsView\"),\n" +
+      "  \"SettingsView\",\n" +
+      ");\n" +
+      "// [tokagent surgical-patch] BillingPageView — overlaid via scaffold-patches.\n" +
+      "const BillingPageView = lazyNamedView(\n" +
+      "  () => import(\"./components/pages/BillingPageView\"),\n" +
+      "  \"BillingPageView\",\n" +
+      ");\n",
+  },
+  {
+    path: "packages/app-core/src/App.tsx",
+    description:
+      "Route the 'billing' tab to BillingPageView. Inserted before the " +
+      "settings case so the case-statement ordering stays stable across " +
+      "upstream changes.",
+    find:
+      "      case \"settings\":\n" +
+      "        return (\n" +
+      "          <TabContentView chatDisabled>\n" +
+      "            <SettingsView key=\"settings-root\" />\n" +
+      "          </TabContentView>\n" +
+      "        );\n",
+    replaceWith:
+      "      // [tokagent surgical-patch] Billing tab — fixed entry, no enabled gate.\n" +
+      "      case \"billing\":\n" +
+      "        return <BillingPageView />;\n" +
+      "      case \"settings\":\n" +
+      "        return (\n" +
+      "          <TabContentView chatDisabled>\n" +
+      "            <SettingsView key=\"settings-root\" />\n" +
+      "          </TabContentView>\n" +
+      "        );\n",
+  },
 ] as const;
 
 function sha256(value: string | Buffer): string {
