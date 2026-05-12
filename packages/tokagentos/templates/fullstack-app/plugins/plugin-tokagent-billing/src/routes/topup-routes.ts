@@ -289,9 +289,50 @@ async function handleTopupSettle(
     }
   }
 
-  const body = req.body as Record<string, unknown> | undefined;
-  const topupId = body?.["topupId"];
-  const sigRaw = body?.["signature"];
+  // Two accepted request shapes:
+  //   1. Direct JSON body { topupId, signature: { v, r, s } } — our plugin's
+  //      native shape.
+  //   2. x402 X-PAYMENT header — gateway-compatible. The migrated dashboard
+  //      SPA sends this: base64-encoded JSON of
+  //      { x402Version, scheme, network, payload: {
+  //          signature: { v, r, s },
+  //          authorization: { from, to, value, validAfter, validBefore, nonce },
+  //          quoteId,
+  //      } }
+  // Decode (2) into the same shape as (1) so the rest of the handler is
+  // unified.
+  const headers = (req.headers ?? {}) as Record<string, unknown>;
+  const xPaymentRaw =
+    (headers["x-payment"] as string | undefined) ??
+    (headers["X-PAYMENT"] as string | undefined);
+
+  let topupId: unknown;
+  let sigRaw: unknown;
+  if (typeof xPaymentRaw === "string" && xPaymentRaw.length > 0) {
+    try {
+      const decoded = JSON.parse(
+        Buffer.from(xPaymentRaw, "base64").toString("utf8"),
+      ) as {
+        payload?: {
+          signature?: { v?: unknown; r?: unknown; s?: unknown };
+          quoteId?: unknown;
+        };
+      };
+      topupId = decoded.payload?.quoteId;
+      sigRaw = decoded.payload?.signature;
+    } catch (err) {
+      res.status(400).json({
+        error: `Invalid X-PAYMENT header: ${
+          err instanceof Error ? err.message : "decode failed"
+        }`,
+      });
+      return;
+    }
+  } else {
+    const body = req.body as Record<string, unknown> | undefined;
+    topupId = body?.["topupId"];
+    sigRaw = body?.["signature"];
+  }
 
   if (typeof topupId !== "string" || !topupId) {
     res.status(400).json({ error: "Missing required field: topupId" });

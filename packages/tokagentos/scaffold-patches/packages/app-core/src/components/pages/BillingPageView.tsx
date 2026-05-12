@@ -99,11 +99,15 @@ function BillingPageView(): React.ReactElement {
     }
   };
 
+  // Use flex-fill (NOT position:absolute/inset:0) so the parent's
+  // AppWorkspaceChrome — which already reserves space for the sidebar
+  // and the top header — can place us inside its main slot without our
+  // iframe escaping above the header.
   return (
     <div
       style={{
-        position: "absolute",
-        inset: 0,
+        flex: 1,
+        minHeight: 0,
         display: "flex",
         flexDirection: "column",
         background: "#0a0a0f",

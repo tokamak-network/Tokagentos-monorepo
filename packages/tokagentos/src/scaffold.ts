@@ -613,7 +613,11 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
     replaceWith:
       "      // [tokagent surgical-patch] Billing tab — fixed entry, no enabled gate.\n" +
       "      case \"billing\":\n" +
-      "        return <BillingPageView />;\n" +
+      "        return (\n" +
+      "          <TabContentView chatDisabled>\n" +
+      "            <BillingPageView />\n" +
+      "          </TabContentView>\n" +
+      "        );\n" +
       "      case \"settings\":\n" +
       "        return (\n" +
       "          <TabContentView chatDisabled>\n" +
