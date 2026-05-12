@@ -48,6 +48,15 @@ interface LlmProvider {
 
 const LLM_PROVIDERS: readonly LlmProvider[] = [
   {
+    id: "x402",
+    label: "x402 only (can be configured from the gateway)",
+    // Sources dispatch from OpenRouter under the hood so the chat tab
+    // works immediately; the canonical billing path runs through the
+    // x402 sidebar tab once the project boots.
+    envVar: "OPENROUTER_API_KEY",
+    hint: "sk-or-v1-…  (used for LLM dispatch; billing config lives in the x402 tab)",
+  },
+  {
     id: "openai",
     label: "OpenAI",
     envVar: "OPENAI_API_KEY",
