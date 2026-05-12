@@ -1,6 +1,6 @@
 {
   "name": "@tokagentos/ui",
-  "version": "2.0.0-alpha.276",
+  "version": "2.0.0-alpha.277",
   "description": "Shared UI primitives, composites, and layout utilities for tokagentOS apps.",
   "type": "module",
   "license": "MIT",
