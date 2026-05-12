@@ -83,21 +83,29 @@ export const setupBillingAction: Action = {
       return undefined;
     }
 
-    // Billing is not yet configured — open the setup panel.
-    const port = runtime.getSetting?.("SERVER_PORT") ?? "2138";
+    // Billing is not yet configured — point the user at the setup panel.
+    // The panel is served by the agent's API server. In dev mode `dev-ui.mjs`
+    // boots the API on port 31337 (DEFAULT_API_PORT in scaffolds), with
+    // ELIZA_API_PORT exported into the process env. Older field name was
+    // SERVER_PORT — checked last for backwards compat.
+    const port =
+      runtime.getSetting?.("ELIZA_API_PORT") ??
+      runtime.getSetting?.("API_PORT") ??
+      runtime.getSetting?.("SERVER_PORT") ??
+      "31337";
     const setupPanelUrl = `http://localhost:${port}/v1/billing/setup-panel`;
 
     await callback?.({
       text:
-        "Opening billing setup...\n\n" +
-        `To configure billing, open the setup panel at:\n**${setupPanelUrl}**\n\n` +
-        "You will need:\n" +
-        "1. A Postgres connection string (or I can offer a local Docker/PGlite option)\n" +
+        `[Click here to open the billing setup panel](${setupPanelUrl})\n\n` +
+        `If the link doesn't open, copy it into your browser: ${setupPanelUrl}\n\n` +
+        "You'll need:\n" +
+        "1. A Postgres connection string (or use the local Docker option)\n" +
         "2. Your chain RPC URL (e.g. Polygon, Base, or Titan)\n" +
         "3. Your deployed ClaudeVault contract address\n" +
         "4. Your deployed PTON token address\n" +
         "5. An operator Ethereum private key (or generate a fresh one)\n\n" +
-        "Once you submit the form, the billing plugin will initialize automatically — " +
+        "Once you submit the form, the billing plugin initializes automatically — " +
         "no manual restart needed.",
       action: "SETUP_BILLING",
     } as Content);
