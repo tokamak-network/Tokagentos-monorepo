@@ -26,5 +26,5 @@
   "devDependencies": {
     "@bufbuild/buf": "^1.47.2"
   },
-  "gitHead": "6d0f0fd21c00078427894badfce28567eecd6b81"
+  "gitHead": "9a94c55e49b023a9b3420818871aab1d1aefdccd"
 }

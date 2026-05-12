@@ -6,8 +6,12 @@ import * as path from "node:path";
 
 const PACKAGE_DIR = import.meta.dir;
 const DIST_DIR = path.join(PACKAGE_DIR, "dist");
-const TEMPLATE_SOURCE_DIR = path.resolve(PACKAGE_DIR, "..", "templates");
-const TEMPLATE_OUTPUT_DIR = path.join(PACKAGE_DIR, "templates");
+// Templates are now authored in-place under packages/tokagentos/templates/
+// (the same path that gets shipped in the npm tarball). The previous setup
+// kept a separate source mirror at packages/templates/ and copied from there,
+// but the mirror went stale; the CLI consumed packages/tokagentos/templates/
+// directly anyway. Build just regenerates the manifest now.
+const TEMPLATE_DIR = path.join(PACKAGE_DIR, "templates");
 const MANIFEST_PATH = path.join(PACKAGE_DIR, "templates-manifest.json");
 const SKIP_ENTRIES = new Set([
   ".DS_Store",
@@ -38,12 +42,12 @@ function copyDir(src: string, dest: string): void {
 
 function loadTemplateDefinitions() {
   const templates = [];
-  for (const entry of fs.readdirSync(TEMPLATE_SOURCE_DIR, {
+  for (const entry of fs.readdirSync(TEMPLATE_DIR, {
     withFileTypes: true,
   })) {
     if (!entry.isDirectory()) continue;
     const metadataPath = path.join(
-      TEMPLATE_SOURCE_DIR,
+      TEMPLATE_DIR,
       entry.name,
       "template.json",
     );
@@ -55,8 +59,8 @@ function loadTemplateDefinitions() {
 }
 
 function prepareTemplates(): void {
-  fs.rmSync(TEMPLATE_OUTPUT_DIR, { force: true, recursive: true });
-  copyDir(TEMPLATE_SOURCE_DIR, TEMPLATE_OUTPUT_DIR);
+  // Templates are authored in-place; no copy step needed. Regenerate
+  // the manifest only.
   const manifest = {
     version: "1.0.0",
     generatedAt: new Date().toISOString(),
