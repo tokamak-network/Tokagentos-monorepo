@@ -56,20 +56,38 @@ export interface BillingSetupValues {
 type PersistFn = (key: string, value: string) => Promise<void>;
 
 async function getPersistFn(): Promise<PersistFn> {
+  let basePersist: PersistFn;
   try {
     // Loaded lazily to avoid pulling the full agent dependency graph.
     const mod = await import("@tokagentos/agent/api/config-env");
-    return mod.persistConfigEnv as PersistFn;
+    basePersist = mod.persistConfigEnv as PersistFn;
   } catch {
     // Fallback: write directly to ~/.tokagent/config.env using the same
-    // file format (key=value, one per line, 0600 mode).
+    // file format (key=value, one per line, 0600 mode). NOTE: this path
+    // already mirrors to .env + process.env internally — see
+    // writeConfigEnvFallback below.
     return async (key: string, value: string): Promise<void> => {
       await writeConfigEnvFallback(key, value);
     };
   }
+
+  // Wrap the agent's persistConfigEnv so we ALSO mirror to .env + process.env.
+  // persistConfigEnv writes only to ~/.tokagent/config.env, but the agent
+  // runtime reads .env at boot (via dotenv) and populates runtime.getSetting
+  // from it. Writing only to config.env means the wizard succeeds but the
+  // next runtime boot still reads BILLING_ENABLED=false from .env.
+  return async (key: string, value: string): Promise<void> => {
+    await basePersist(key, value);
+    const dotenvPath = resolveProjectDotenvPath();
+    if (dotenvPath) {
+      await persistKeyToFile(dotenvPath, key, value, 0o600);
+    }
+    process.env[key] = value;
+  };
 }
 
 import fs from "node:fs/promises";
+import fsSync from "node:fs";
 import path from "node:path";
 import os from "node:os";
 
@@ -79,8 +97,12 @@ function resolveConfigEnvPath(): string {
   return path.join(stateDir, "config.env");
 }
 
-async function writeConfigEnvFallback(key: string, value: string): Promise<void> {
-  const filePath = resolveConfigEnvPath();
+async function persistKeyToFile(
+  filePath: string,
+  key: string,
+  value: string,
+  mode: number,
+): Promise<void> {
   await fs.mkdir(path.dirname(filePath), { recursive: true });
 
   let existing = "";
@@ -91,10 +113,10 @@ async function writeConfigEnvFallback(key: string, value: string): Promise<void>
   }
 
   const lines = existing.length > 0 ? existing.split(/\r?\n/) : [];
-  // Strip trailing empty line
   if (lines.length > 0 && lines[lines.length - 1] === "") lines.pop();
 
-  // Remove existing entry for this key
+  // Remove existing entry for this key (uncommented only — leave comment
+  // forms like `# BILLING_FOO=` alone so we don't strip documentation).
   const filtered = lines.filter((line) => {
     const eq = line.indexOf("=");
     if (eq <= 0) return true;
@@ -107,9 +129,44 @@ async function writeConfigEnvFallback(key: string, value: string): Promise<void>
 
   const content = `${filtered.join("\n")}\n`;
   const tmpPath = `${filePath}.setup.tmp`;
-  await fs.writeFile(tmpPath, content, { encoding: "utf8", mode: 0o600 });
+  await fs.writeFile(tmpPath, content, { encoding: "utf8", mode });
   await fs.rename(tmpPath, filePath);
-  try { await fs.chmod(filePath, 0o600); } catch { /* non-fatal */ }
+  try { await fs.chmod(filePath, mode); } catch { /* non-fatal */ }
+}
+
+/**
+ * Resolve the project's `.env` file path. In dev mode the agent process is
+ * spawned with cwd set to the scaffolded project root, so `process.cwd()/.env`
+ * is the right target. Returns null if no `.env` exists (e.g. production
+ * deploys that rely solely on config.env).
+ */
+function resolveProjectDotenvPath(): string | null {
+  try {
+    const candidate = path.join(process.cwd(), ".env");
+    fsSync.accessSync(candidate);
+    return candidate;
+  } catch {
+    return null;
+  }
+}
+
+async function writeConfigEnvFallback(key: string, value: string): Promise<void> {
+  // Primary store: ~/.tokagent/config.env (0600 — for secrets).
+  await persistKeyToFile(resolveConfigEnvPath(), key, value, 0o600);
+
+  // Mirror into the project's .env so the agent's runtime settings (which
+  // are populated from the project .env at boot via dotenv loading) see the
+  // updated values on the next restart. Without this, the wizard would
+  // succeed at writing config.env but the agent would still read the stale
+  // BILLING_ENABLED=false from .env on the next boot.
+  // Non-secret values can land in .env safely. Secrets (operator key, auth
+  // secret) ALSO go here in dev — the assumption is that .env is already
+  // gitignored in the scaffold; production deploys should rely on config.env
+  // + filesystem permissions instead of .env.
+  const dotenvPath = resolveProjectDotenvPath();
+  if (dotenvPath) {
+    await persistKeyToFile(dotenvPath, key, value, 0o600);
+  }
 
   process.env[key] = value;
 }
