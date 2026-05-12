@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "declaration": false,
+    "types": ["node"],
+    "paths": {
+      "@elizaos/core": ["../../packages/typescript/src/index.node.ts"],
+      "@elizaos/core/*": ["../../packages/typescript/src/*"],
+      "@tokagentos/billing": ["../../packages/billing/src/index.ts"],
+      "@tokagentos/billing/*": ["../../packages/billing/src/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}

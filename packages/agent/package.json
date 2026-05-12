@@ -136,9 +136,9 @@
     "@hapi/boom": "^10.0.1",
     "@noble/curves": "^2.0.1",
     "@tokagentos/app-companion": "workspace:*",
-    "@tokagentos/billing": "workspace:*",
-    "@tokagentos/core": "workspace:*",
-    "@tokagentos/shared": "workspace:*",
+    "@tokagentos/billing": "2.0.0-alpha.270",
+    "@tokagentos/core": "2.0.0-alpha.270",
+    "@tokagentos/shared": "2.0.0-alpha.270",
     "@whiskeysockets/baileys": "7.0.0-rc.9",
     "abitype": "^1.0.0",
     "coding-agent-adapters": "0.16.3",
@@ -183,5 +183,6 @@
     "typescript": "^6.0.0",
     "vite": "^8.0.8",
     "vitest": "^4.0.18"
-  }
+  },
+  "gitHead": "6d0f0fd21c00078427894badfce28567eecd6b81"
 }

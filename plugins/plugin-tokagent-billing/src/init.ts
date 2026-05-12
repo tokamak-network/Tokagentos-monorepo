@@ -22,6 +22,7 @@ import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import path from "node:path";
 import {
   schema,
@@ -115,9 +116,29 @@ function buildEnv(runtime: IAgentRuntime): NodeJS.ProcessEnv {
  */
 function resolveMigrationsFolder(): string {
   const thisFile = fileURLToPath(import.meta.url);
-  // src/init.ts → plugin root → plugins/ → workspace root
-  const workspaceRoot = path.resolve(path.dirname(thisFile), "..", "..", "..");
-  return path.join(workspaceRoot, "packages", "billing", "drizzle", "migrations");
+
+  // Preferred: resolve `@tokagentos/billing/package.json` from the plugin's
+  // module context — works for publisher monorepo, scaffolded apps, and any
+  // future packaging where the billing lib path moves.
+  try {
+    const req = createRequire(thisFile);
+    const pkgPath = req.resolve("@tokagentos/billing/package.json");
+    return path.join(path.dirname(pkgPath), "drizzle", "migrations");
+  } catch {
+    // Fall through to known-layout fallback.
+  }
+
+  // Fallback: scaffolded-app layout
+  // src/init.ts → plugin root → plugins/ → project root → tokagent/packages/billing/
+  const projectRoot = path.resolve(path.dirname(thisFile), "..", "..", "..");
+  return path.join(
+    projectRoot,
+    "tokagent",
+    "packages",
+    "billing",
+    "drizzle",
+    "migrations",
+  );
 }
 
 // ---------------------------------------------------------------------------

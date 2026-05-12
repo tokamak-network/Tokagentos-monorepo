@@ -1,0 +1,4 @@
+# The root .gitignore has `*_archive` to exclude build/cache archive dirs.
+# This package intentionally commits `_archive/` as reference documentation.
+!_archive
+!_archive/**

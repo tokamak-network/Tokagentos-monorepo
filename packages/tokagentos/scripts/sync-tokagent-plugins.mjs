@@ -13,11 +13,12 @@ import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const repoRoot = join(__dirname, "..", "..", "..", "..");
-// Points at /.../tokagentos/ — adjust if this script moves.
+// __dirname is .../tokagentos/packages/tokagentos/scripts
+// repoRoot is the publisher monorepo root: .../tokagentos
+const repoRoot = join(__dirname, "..", "..", "..");
 
-const SOURCE = join(repoRoot, "tokagentos", "plugins");
-const DEST = join(repoRoot, "tokagentos", "packages", "templates", "fullstack-app", "plugins");
+const SOURCE = join(repoRoot, "plugins");
+const DEST = join(repoRoot, "packages", "tokagentos", "templates", "fullstack-app", "plugins");
 
 const PLUGINS = [
   "plugin-tokagent-shared",
@@ -25,6 +26,7 @@ const PLUGINS = [
   "plugin-tokagent-perps",
   "plugin-tokagent-polymarket",
   "plugin-tokagent-strategy",
+  "plugin-tokagent-billing",
 ];
 
 const EXCLUDES = ["node_modules", "dist", ".turbo", "tsconfig.tsbuildinfo"];
@@ -99,6 +101,72 @@ for (const plugin of PLUGINS) {
         mkdirSync(dirname(dstFile), { recursive: true });
         writeFileSync(dstFile, srcBuf);
         console.log(`sync: copied ${plugin}/${rel}`);
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Billing library — lives at tokagent/packages/billing/ in scaffolds.
+// Synced into scaffold-patches/packages/billing/ so the CLI's
+// applyTokagentScaffoldPatches step overlays it onto the upstream submodule
+// after hydration. Excludes test fixtures and the __tests__ tree (they pull
+// in vitest + pglite which we don't ship to scaffolds).
+// ---------------------------------------------------------------------------
+const BILLING_LIB_SRC = join(repoRoot, "packages", "billing");
+const BILLING_LIB_DST = join(
+  repoRoot,
+  "packages",
+  "tokagentos",
+  "scaffold-patches",
+  "packages",
+  "billing",
+);
+const BILLING_EXCLUDES = [
+  "node_modules",
+  "dist",
+  ".turbo",
+  "tsconfig.tsbuildinfo",
+  "__tests__",
+  "vitest.config.ts",
+];
+
+function walkBilling(dir) {
+  const out = [];
+  for (const entry of readdirSync(dir)) {
+    if (BILLING_EXCLUDES.includes(entry)) continue;
+    const full = join(dir, entry);
+    const stat = statSync(full);
+    if (stat.isDirectory()) {
+      out.push(...walkBilling(full));
+    } else if (stat.isFile()) {
+      out.push(full);
+    }
+  }
+  return out;
+}
+
+if (existsSync(BILLING_LIB_SRC)) {
+  const files = walkBilling(BILLING_LIB_SRC);
+  for (const srcFile of files) {
+    const rel = relative(BILLING_LIB_SRC, srcFile);
+    const dstFile = join(BILLING_LIB_DST, rel);
+    const srcBuf = applyScopeRename(readFileSync(srcFile), rel);
+    let drift = false;
+    if (!existsSync(dstFile)) {
+      drift = true;
+    } else {
+      const dstBuf = readFileSync(dstFile);
+      if (Buffer.compare(srcBuf, dstBuf) !== 0) drift = true;
+    }
+    if (drift) {
+      mismatches += 1;
+      if (check) {
+        console.error(`drift: packages/billing/${rel}`);
+      } else {
+        mkdirSync(dirname(dstFile), { recursive: true });
+        writeFileSync(dstFile, srcBuf);
+        console.log(`sync: copied packages/billing/${rel}`);
       }
     }
   }

@@ -10,7 +10,8 @@
   "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./chain/addresses": "./src/chain/addresses.ts"
+    "./chain/addresses": "./src/chain/addresses.ts",
+    "./package.json": "./package.json"
   },
   "files": [
     "src",
@@ -45,5 +46,6 @@
     "drizzle-kit": "^0.31.10",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
-  }
+  },
+  "gitHead": "6d0f0fd21c00078427894badfce28567eecd6b81"
 }

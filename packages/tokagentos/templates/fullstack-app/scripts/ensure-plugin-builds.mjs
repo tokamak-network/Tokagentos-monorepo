@@ -173,6 +173,7 @@ const TOKAGENT_PLUGIN_PATHS = [
   "plugins/plugin-tokagent-perps",
   "plugins/plugin-tokagent-polymarket",
   "plugins/plugin-tokagent-strategy",
+  "plugins/plugin-tokagent-billing",
 ];
 
 /**

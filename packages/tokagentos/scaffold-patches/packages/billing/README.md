@@ -1,0 +1,429 @@
+# @tokagentos/billing
+
+Web3 credit-billing rail for the tokagentos LLM gateway. Migrated from `llm-api-gateway` in 2026.
+
+The billing package implements a four-component system: PTON token (EIP-3009 wrapper over TON) +
+`ClaudeVault` Solidity contract (on-chain credit hub) + a TypeScript billing engine that mediates
+`reserve → forward → commit` against a DB-backed ledger (Drizzle + Postgres/PGLite) with periodic
+on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pricing.
+
+---
+
+## Status (as of 2026-05-11)
+
+| Phase | Scope | State |
+|---|---|---|
+| 0 | Docs, decisions, addresses staging | ✅ landed |
+| 1 | Workspace scaffolding | ✅ landed |
+| 2 | Pricing, billing math, TWAP (pure) | ✅ landed |
+| 3 | Chain layer: clients, vault, EIP-3009 verify, Anvil harness | ✅ landed |
+| 4 | Drizzle ledger, persistence | ✅ landed |
+| 5 | Workers (consume, withdraw, TWAP refresh, usage cleanup) | ✅ landed |
+| 6a | Plugin.init/dispose + shared pool + JWT + rate limiter + billing gate + auth/keys routes + server.ts seam | ✅ landed |
+| 6b | Credits/topup/usage/estimate routes + billing gate closures wired into chat-routes | ✅ landed |
+| 6 | Routes + auth + middleware + scaffold mirroring | ✅ landed |
+| 7 | app-core billing UI | ✅ landed |
+| 8 | Cutover + decommission | ✅ landed |
+| 9 | Conversational setup | ✅ landed |
+
+---
+
+## Docs Index
+
+```
+packages/billing/docs/
+├── decisions.md          # Committed answers to OQ1–OQ10 from the integration plan
+├── reserve-flow.md       # ASCII sequence diagram of the credit reserve/commit lifecycle
+└── _archive/
+    ├── architecture.en.md  # English translation of llm-api-gateway/docs/architecture.md
+    └── proxy.en.md         # English translation of llm-api-gateway/docs/proxy.md
+```
+
+**Source-of-truth note**: When `_archive/*.en.md` disagrees with
+`llm-api-gateway/proxy/src/*.ts`, **code wins** (per plan Risk R9).
+The translated docs are archived reference material; the proxy TypeScript source is
+authoritative for all behavioral claims.
+
+---
+
+## Integration Plan
+
+Full phased integration plan:
+
+```
+../../docs/superpowers/specs/2026-05-11-llm-api-gateway-integration-plan.md
+```
+
+Source repo (deprecating after Phase 8 cutover):
+
+```
+../../../../llm-api-gateway/proxy/src/
+```
+
+---
+
+## Database
+
+Phase 4 replaces all in-memory Map state from the source `llm-api-gateway` proxy with a
+DB-backed ledger using [Drizzle ORM](https://orm.drizzle.team/) and Postgres.
+
+### Runtime requirements
+
+- **Postgres 15+** — required for production. Pass the connection string via
+  `BILLING_DATABASE_URL=postgres://user:pass@host:5432/db`.
+- **PGLite** — used automatically in tests (no external process required).
+
+### Schema overview
+
+Eight tables, all prefixed `billing_*` to avoid collision with `@elizaos/plugin-sql` tables:
+
+| Table | Purpose |
+|---|---|
+| `billing_credit_state` | Per-wallet balance / reserved / accrued accumulators |
+| `billing_reservations` | In-flight request reservations (reserve → commit/release) |
+| `billing_consume_batches` | On-chain `consumeCredits` batch records |
+| `billing_topup_preauth_slots` | Pre-signed EIP-3009 authorization slots |
+| `billing_topup_quotes` | Single-use topup deposit quotes |
+| `billing_api_keys` | HMAC-SHA256 hashed API key store |
+| `billing_auth_nonces` | One-shot SIWE nonce store |
+| `billing_call_log` | Per-request usage log (model, tokens, cost) |
+
+atto-PTON amounts are stored as `numeric(78,0)` and mapped to TypeScript `bigint` (Decision Z15).
+All mutating ledger operations run under SERIALIZABLE isolation with automatic retry on Postgres
+error code `40001` (Decision Z14).
+
+### Migrations
+
+Migrations live in `packages/billing/drizzle/migrations/` and are committed to the repository.
+To regenerate after a schema change:
+
+```bash
+cd packages/billing
+bunx drizzle-kit generate --config drizzle.config.ts
+```
+
+Migrations are **forward-only** — no down migrations. Apply in production via the standard
+`drizzle-orm/node-postgres` `migrate()` call before starting the billing service.
+
+### Running tests
+
+Unit and concurrency tests run against PGLite — no external database needed:
+
+```bash
+bun run test --filter=@tokagentos/billing
+```
+
+For the full 10k-iteration concurrency stress test (validation gate):
+
+```bash
+BILLING_STRESS_FULL=1 bun run test --filter=@tokagentos/billing
+```
+
+---
+
+## Workers & Services
+
+Phase 5 ships four background workers, each implemented as a pure function in
+`packages/billing/src/workers/` and wrapped in an elizaOS `Service` in
+`plugins/plugin-tokagent-billing/src/services/`.
+
+### Service summary
+
+| Service | Cadence / trigger | Description |
+|---|---|---|
+| `ConsumeService` | Every 30s (scan); OR if wallet accrued ≥ 0.5 PTON or accrual is ≥ 5 min old | Flushes accrued credits to `vault.consumeCredits` on-chain |
+| `WithdrawWatcherService` | Event-driven — `vault.WithdrawRequested` | Pre-empts a user's pending withdrawal by flushing their accrued balance first |
+| `TwapRefreshService` | Every 60s + initial prime on start | Refreshes composite TON/USD Uniswap V3 TWAP price into `TwapCache` |
+| `UsageCleanupService` | Every 24h | Sweeps expired rows from `billing_call_log`, `billing_auth_nonces`, `billing_topup_quotes`, `billing_topup_preauth_slots` |
+
+### Lifecycle
+
+Services are registered in `tokagentBillingPlugin.services`. The elizaOS runtime calls
+`Service.start(runtime)` for each during plugin init and `Service.stop()` on shutdown.
+Each service resolves its deps (DB pool, viem clients, config) from `runtime.getSetting()`
+via `resolveBillingRuntime()` — no constructor injection needed.
+
+### Tunable envs (Phase 5 additions)
+
+| Env | Default | Purpose |
+|---|---|---|
+| `BILLING_CONSUME_BATCH_MIN_PTON` | `500000000000000000` | Size threshold for flush (atto-PTON) |
+| `BILLING_CONSUME_MAX_AGE_MS` | `300000` | Idle age threshold for flush (ms) |
+| `BILLING_CONSUME_SCAN_INTERVAL_MS` | `30000` | Consume scan interval (ms) |
+| `BILLING_CONSUME_MAX_PER_CYCLE` | `10` | Max wallets per scan |
+| `BILLING_USAGE_RETENTION_DAYS` | `90` | call_log retention (days) |
+| `BILLING_USAGE_CLEANUP_INTERVAL_MS` | `86400000` | Cleanup tick cadence (ms) |
+| `BILLING_PRICE_REFRESH_INTERVAL_MS` | `60000` | TWAP refresh cadence (ms) |
+
+All have safe defaults; none are required if the defaults are acceptable.
+
+### Anvil end-to-end (consume worker integration)
+
+```bash
+BILLING_TEST_ANVIL=1 bun run test --filter=@tokagentos/billing
+```
+
+This runs the full consume-worker integration test against a fresh Anvil chain
+(see Anvil Quickstart section below for prerequisites).
+
+---
+
+## Billing Gate (Phase 6a)
+
+`applyBillingMiddleware` in
+`plugins/plugin-tokagent-billing/src/middleware/index.ts` is the integration
+point for the server. It is wired into `packages/agent/src/api/server.ts` via
+the `BILLING_HOOK` seam (Decision Z27), which calls
+`state.billingMiddleware(req, body, pathname)` before the `/v1/` dispatch block.
+
+### Gate flow (per gated request)
+
+```
+BILLING_HOOK seam fires before /v1/ dispatch
+  → applyBillingMiddleware(req, body, pathname)
+       │
+       ├── isBillingStateInitialized? → no  → allow (passthrough)
+       ├── config.enabled? → false           → allow (passthrough)
+       ├── isBillingGatedPath(pathname)?→ no → allow (passthrough)
+       │
+       ├── rate limiter (token bucket per wallet)
+       │   └── rejected → 429 Too Many Requests
+       │
+       └── applyBillingGate(req, body)
+               ├── resolveBillingIdentity(req)   ← x-api-key or Bearer JWT
+               ├── normalizeModelId + assertSupportedModel
+               ├── estimateInputTokens + estimateMaxCostUsd
+               ├── usdToPton (via TWAP or fixed price)
+               └── reserve(db, { wallet, amount, requestId })
+                     ├── insufficient balance → 402
+                     └── ok → { allow: true, commit, release }
+```
+
+### Auth routes
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| GET | `/v1/auth/nonce` | Issue one-time SIWE nonce (EIP-712 envelope) |
+| POST | `/v1/auth/login` | Verify EIP-712 signature → issue HS256 JWT |
+
+### Key management routes
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/v1/keys` | Mint a new `sk-ai-*` API key |
+| GET | `/v1/keys` | List API keys for authenticated wallet |
+| DELETE | `/v1/keys/:id` | Revoke an API key by ID |
+
+### Phase 6 envs
+
+| Env | Default | Required when |
+|-----|---------|--------------|
+| `BILLING_ENABLED` | `false` | — (opt-in gate) |
+| `BILLING_AUTH_REQUIRED` | `true` | `BILLING_ENABLED=true` |
+| `BILLING_AUTH_SECRET` | — | `BILLING_ENABLED=true` + `AUTH_REQUIRED=true` |
+| `BILLING_AUTH_SESSION_TTL_MS` | `86400000` | optional |
+| `BILLING_AUTH_LOGIN_NONCE_TTL_MS` | `300000` | optional |
+| `BILLING_RATE_LIMIT_ENABLED` | `true` | optional |
+| `BILLING_RATE_LIMIT_QUOTE_PER_MIN` | `60` | optional |
+| `BILLING_RATE_LIMIT_SETTLE_PER_MIN` | `30` | optional |
+| `BILLING_TOPUP_AMOUNT_PTON` | `5000000000000000000` | optional |
+| `BILLING_LITELLM_BASE_URL` | — | optional |
+| `BILLING_LITELLM_API_KEY` | — | optional |
+
+---
+
+## Anvil Quickstart
+
+Phase 3 introduces the Anvil harness and integration tests. The chain-write round-trip
+(`depositX402` + `consumeCredits`) can be exercised locally against a fresh Anvil node
+with the source repo's contracts deployed.
+
+### Prerequisites
+
+- [Foundry](https://getfoundry.sh/) installed (`~/.foundry/bin/anvil` + `forge`).
+- Source repo cloned at `../../../../llm-api-gateway/` relative to this package.
+- No network access required — the tests use a fresh non-forked Anvil chain (chainId=31337).
+
+### Steps
+
+```bash
+# 1. Build the source contracts (one-time, or after contract changes)
+cd ../../../../llm-api-gateway/contracts
+forge build
+
+# 2. Run the full billing test suite including Anvil integration tests
+cd ../../Tokamak-AI-Layer/tokagentos
+BILLING_TEST_ANVIL=1 bun run test --filter=@tokagentos/billing
+```
+
+The integration suite takes ~15–20s when BILLING_TEST_ANVIL is set:
+- Anvil process start: ~5s
+- `forge script Deploy.s.sol --broadcast`: ~5s
+- Vault read/write round-trips: ~6s
+
+Without `BILLING_TEST_ANVIL=1`, integration tests are silently skipped.
+The unit tests (EIP-3009 offline verify, typed-data shape) always run.
+
+### Required env vars (chain layer)
+
+The five chain-layer envs are required when `BILLING_ENABLED=true` (Phase 6).
+For Phase 3 manual testing, pass them directly to `createBillingClients()`:
+
+```
+BILLING_CHAIN_RPC_URL=http://127.0.0.1:8545
+BILLING_CHAIN_ID=31337
+BILLING_VAULT_ADDRESS=<output from forge script>
+BILLING_PTON_ADDRESS=<output from forge script>
+BILLING_OPERATOR_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80  # Anvil default key — never use in production
+```
+
+For TWAP reads (Ethereum mainnet only):
+```
+BILLING_MAINNET_RPC_URL=https://eth-mainnet.g.alchemy.com/v2/<your-key>
+```
+
+---
+
+## Architecture Summary
+
+```
+Client
+  │  POST /v1/chat/completions  (Authorization: Bearer <siwe> OR x-api-key: sk-ai-*)
+  ▼
+packages/agent/src/api/server.ts
+  ├─ billing.gate(req)       ← plugin-tokagent-billing middleware (Phase 6)
+  │     ├─ resolveCallerIdentity → wallet
+  │     ├─ rate-limit (token-bucket, keyed by wallet)
+  │     ├─ estimateMaxCostUsd → usdToPton → reserveAmt
+  │     └─ ledger.reserve(wallet, reserveAmt)  [DB-backed, Phase 4]
+  ▼
+runtime.useModel(TEXT_LARGE, params)   ← existing plugin layer, unchanged
+  ▼
+upstream provider (Anthropic / OpenAI / LiteLLM)
+  ▼
+streamCommit / unaryCommit             ← billing post-processing middleware (Phase 6)
+  ├─ computeActualCostUsd → actualPton + feePton + totalPton
+  ├─ ledger.commit(wallet, reservation, totalPton)
+  └─ usageStore.record(...)
+
+(background, every 30s)
+consume-worker → vault.consumeCredits(wallet, accrued, batchId)
+```
+
+Billing is **opt-in**: set `BILLING_ENABLED=true` in your deployment's environment to activate.
+Local-first and self-hosted deployments run with `BILLING_ENABLED=false` (the default) and are
+entirely unaffected.
+
+---
+
+## Production Operations
+
+Phase 8 adds two operational artifacts for cutover and ongoing ledger health.
+
+### Cutover runbook
+
+`packages/billing/docs/cutover-runbook.md` — complete step-by-step procedure
+for migrating production traffic from `llm-api-gateway` to tokagentos billing
+and decommissioning the source. Organized as:
+
+- **T-30**: inventory, customer comms, staging validation
+- **T-7**: secrets migration (operator key, auth secret, TWAP pools)
+- **T-1**: deploy target with `BILLING_ENABLED=true`, health checks, shadow deploy
+- **T+0**: active cutover — DNS flip, deprecation headers, post-cutover consistency check
+- **T+0 to T+30**: drain window, daily monitoring
+- **T+30**: decommission (archive repo, cold-store SQLite, contract address update)
+- **Rollback**: window closes at T+30
+
+### Ledger consistency check
+
+`packages/billing/scripts/check-ledger-consistency.ts` — CLI script that compares
+`billing_credit_state.{balance + reserved + accrued}` against on-chain
+`vault.credits(wallet)` for every wallet in the DB.
+
+```bash
+# Run via package.json script (from repo root)
+BILLING_DATABASE_URL=postgres://... \
+BILLING_VAULT_ADDRESS=0x... \
+BILLING_CHAIN_RPC_URL=https://... \
+bun run --cwd packages/billing check-ledger
+
+# Options
+--json                   # machine-readable JSON output
+--tolerance-atto=1000000 # drift tolerance in atto-PTON (default: 1_000_000)
+--max-rows=10000         # max wallets to scan (default: 10_000)
+```
+
+**Required run schedule** (see runbook Section 6):
+
+| When | Required |
+|---|---|
+| Pre-cutover staging validation | Yes — must exit 0 |
+| Post-cutover (within 1 hour of flip) | Yes — must exit 0 |
+| Daily for first 7 days post-cutover | Yes |
+| Weekly thereafter | Recommended |
+
+### Safe default
+
+`BILLING_ENABLED=false` remains the safe default for all deployments, including
+scaffolded projects. Only operator-controlled deployments with an explicit
+`BILLING_ENABLED=true` in their environment activate the billing gate.
+
+The manual smoke test from Phase 7 (SIWE login → mint key → top-up → billed
+request → usage row appears) is still the required validation gate before any
+production deployment with `BILLING_ENABLED=true`.
+
+---
+
+## Setting up billing
+
+Phase 9 adds a conversational setup flow. The billing plugin now auto-loads in every scaffolded
+agent (it is included in `CORE_PLUGINS`). When `BILLING_ENABLED` is not set (or is `false`), the
+plugin starts in passthrough mode — no workers run, no middleware is active.
+
+### Guided flow (recommended)
+
+1. Start your agent and open a chat window.
+2. Type any of the following:
+   - `"set up billing"`
+   - `"enable billing"`
+   - `"configure web3 payments"`
+   - `"how do credits work?"`
+3. The `SETUP_BILLING` action fires and replies with a link to the setup panel:
+   ```
+   http://localhost:<PORT>/v1/billing/setup-panel
+   ```
+4. Open the panel in a browser. The 5-step wizard collects:
+   - **Database URL** — Postgres (`postgres://`) or PGLite (`pglite://./data/billing.pglite`)
+   - **Chain RPC URL + Chain ID** — Polygon mainnet is the default (`https://polygon-rpc.com`, 137)
+   - **Vault address + PTON address** — the deployed `ClaudeVault` contract
+   - **Operator private key** — the key that signs on-chain `consumeCredits` transactions
+   - **Auth secret** — ≥ 32-char random string used to sign session JWTs
+5. Use the built-in **"Test Connection"** / **"Verify Contracts"** buttons to dry-run each field
+   before submitting.
+6. Click **Save & Activate**. The panel calls `POST /v1/billing/setup`, which:
+   - Writes all `BILLING_*` envs to `~/.tokagent/config.env` (0600, atomic)
+   - Sets `BILLING_ENABLED=true` as the final step (crash-safe ordering)
+   - Disposes and re-initialises the billing plugin in-process
+   - Responds `{ ok: true, persisted: true, restarted: true }`
+
+Billing is active immediately — no process restart required.
+
+### API endpoints (Phase 9)
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| GET | `/v1/billing/setup-panel` | none | Serve the setup wizard HTML |
+| POST | `/v1/billing/validate` | none | Dry-run all fields, return `{ ok, errors }` |
+| POST | `/v1/billing/setup` | none | Persist config + reinitialise plugin |
+
+Both POST routes are gated by `BILLING_SETUP_ENABLED` (default `true`). Set it to `false` to
+lock down the setup surface in production.
+
+### Reconfiguring
+
+If billing is already active, the `SETUP_BILLING` action still fires and tells you:
+
+> "Billing is already active. To reconfigure, visit /v1/billing/setup-panel — existing settings
+> will be overwritten."
+
+The setup panel and routes behave identically for reconfiguration.

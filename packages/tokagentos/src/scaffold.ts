@@ -1599,11 +1599,22 @@ export function applyTokagentScaffoldPatches(options: {
     if (relativePath === "README.md") continue;
 
     const targetPath = path.join(options.submoduleRoot, relativePath);
+    const targetDir = path.dirname(targetPath);
 
-    if (!fs.existsSync(path.dirname(targetPath))) {
-      // Target parent dir missing — upstream layout may have changed.
-      missing.push(relativePath);
-      continue;
+    if (!fs.existsSync(targetDir)) {
+      // If the TOP-LEVEL dir is missing, the upstream layout has changed —
+      // skip and warn. But intermediate directories within an established
+      // top-level (e.g. `packages/billing/src/` when `packages/` exists)
+      // are allowed: scaffold-patches can introduce whole new packages.
+      const parts = relativePath.split(path.sep);
+      const topLevelDir = path.join(options.submoduleRoot, parts[0]);
+      if (!fs.existsSync(topLevelDir)) {
+        missing.push(relativePath);
+        continue;
+      }
+      if (!options.dryRun) {
+        fs.mkdirSync(targetDir, { recursive: true });
+      }
     }
 
     if (options.dryRun) {
