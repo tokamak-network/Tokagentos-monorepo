@@ -30,9 +30,16 @@ export async function issueNonce(
   const issuedAt = new Date();
   const expiresAt = new Date(issuedAt.getTime() + ttlMs);
 
+  // CRITICAL: overwrite envelope.nonce with the actual generated nonce.
+  // Callers pass an envelope with a placeholder nonce and expect this
+  // function to fill it in — without the overwrite, the stored envelope
+  // would have the placeholder while the client signs over the real
+  // nonce, producing a signature that fails verification.
+  const enrichedEnvelope = { ...(envelope as Record<string, unknown>), nonce };
+
   await db.insert(authNonces).values({
     nonce,
-    envelope,
+    envelope: enrichedEnvelope,
     issuedAt,
     expiresAt,
   });
