@@ -542,37 +542,6 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "        return next;\n" +
       "      });\n",
   },
-];
-
-const UPSTREAM_COMPATIBILITY_FILES = [
-  {
-    path: "packages/shared/src/env-utils.impl.d.ts",
-    sourceSibling: "packages/shared/src/env-utils.impl.ts",
-    contents:
-      "export declare function isTruthyEnvValue(value: string | undefined | null): boolean;\n",
-  },
-  {
-    path: "packages/shared/src/env-utils.impl.js",
-    sourceSibling: "packages/shared/src/env-utils.impl.ts",
-    contents: `/**
- * Shared environment variable utilities (JavaScript module so Node ESM can resolve
- * \`./env-utils.impl.js\` when workspace packages load TypeScript sources directly).
- */
-
-const TRUTHY = new Set(["1", "true", "yes", "on"]);
-
-/**
- * Returns true when value is a commonly-accepted truthy env string
- * (\`1\`, \`true\`, \`yes\`, \`on\` — case-insensitive, trimmed).
- * @param {string | undefined | null} value
- * @returns {boolean}
- */
-export function isTruthyEnvValue(value) {
-  if (value == null) return false;
-  return TRUTHY.has(String(value).trim().toLowerCase());
-}
-`,
-  },
   {
     path: "packages/app-core/src/navigation/index.ts",
     description:
@@ -651,6 +620,37 @@ export function isTruthyEnvValue(value) {
       "            <SettingsView key=\"settings-root\" />\n" +
       "          </TabContentView>\n" +
       "        );\n",
+  },
+];
+
+const UPSTREAM_COMPATIBILITY_FILES = [
+  {
+    path: "packages/shared/src/env-utils.impl.d.ts",
+    sourceSibling: "packages/shared/src/env-utils.impl.ts",
+    contents:
+      "export declare function isTruthyEnvValue(value: string | undefined | null): boolean;\n",
+  },
+  {
+    path: "packages/shared/src/env-utils.impl.js",
+    sourceSibling: "packages/shared/src/env-utils.impl.ts",
+    contents: `/**
+ * Shared environment variable utilities (JavaScript module so Node ESM can resolve
+ * \`./env-utils.impl.js\` when workspace packages load TypeScript sources directly).
+ */
+
+const TRUTHY = new Set(["1", "true", "yes", "on"]);
+
+/**
+ * Returns true when value is a commonly-accepted truthy env string
+ * (\`1\`, \`true\`, \`yes\`, \`on\` — case-insensitive, trimmed).
+ * @param {string | undefined | null} value
+ * @returns {boolean}
+ */
+export function isTruthyEnvValue(value) {
+  if (value == null) return false;
+  return TRUTHY.has(String(value).trim().toLowerCase());
+}
+`,
   },
 ] as const;
 
