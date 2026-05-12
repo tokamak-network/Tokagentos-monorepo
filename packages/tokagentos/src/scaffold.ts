@@ -566,12 +566,12 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "    icon: Settings,\n" +
       "    description: \"Configuration and preferences\",\n" +
       "  },\n" +
-      "  // [tokagent surgical-patch] Billing tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
+      "  // [tokagent surgical-patch] x402 tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
       "  {\n" +
-      "    label: \"Billing\",\n" +
+      "    label: \"x402\",\n" +
       "    tabs: [\"billing\"],\n" +
       "    icon: Wallet,\n" +
-      "    description: \"PTON credits, API keys, top-up, usage history\",\n" +
+      "    description: \"x402 payment rail: PTON credits, API keys, top-up, usage\",\n" +
       "  },\n" +
       "];\n",
   },

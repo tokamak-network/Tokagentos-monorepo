@@ -42,12 +42,69 @@ export interface PoolConfig {
 
 export interface PriceSnapshot {
   tonUsd: number;
-  source: "composite-twap" | "fixed" | "stale-cache";
+  source: "tokamak-api" | "composite-twap" | "fixed" | "stale-cache";
   fetchedAt: number;
   ageMs: number;
   legs?: {
     wtonPerWeth?: number;
     wethUsd?: number;
+  };
+}
+
+/**
+ * Fetch the live TON/USD price from Tokamak Network's public price API.
+ *
+ *   GET https://www.tokamak.network/api/price
+ *   → { tonPrice: { current: { usd: <number>, krw: <number> }, ... }, ... }
+ *
+ * This is the canonical source for TON/USD inside the tokagent billing rail.
+ * Operators can override with `fixedPrice` for testing, or fall through to
+ * the composite on-chain TWAP if the HTTP endpoint is unreachable.
+ *
+ * Throws on network failure, non-OK status, malformed response, or implausible
+ * price (NaN, <= 0, > 1e6). Callers should fall back to other sources on
+ * throw, not crash the worker.
+ */
+const TOKAMAK_PRICE_URL = "https://www.tokamak.network/api/price";
+const TOKAMAK_PRICE_TIMEOUT_MS = 5_000;
+
+export async function fetchTokamakApiPrice(): Promise<PriceSnapshot> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TOKAMAK_PRICE_TIMEOUT_MS);
+  let body: unknown;
+  try {
+    const res = await fetch(TOKAMAK_PRICE_URL, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      throw new Error(`tokamak api returned HTTP ${res.status}`);
+    }
+    body = await res.json();
+  } finally {
+    clearTimeout(timer);
+  }
+
+  // Accept several plausible shapes — the canonical is
+  // { tonPrice: { current: { usd: number } } }, but tolerate
+  // { tonPrice: { current: { usd: string } } } and a flat
+  // { usd: number } variant in case the API stabilizes differently.
+  const raw =
+    (body as { tonPrice?: { current?: { usd?: number | string } } })
+      .tonPrice?.current?.usd ??
+    (body as { usd?: number | string }).usd;
+
+  const tonUsd = typeof raw === "string" ? Number(raw) : raw;
+  if (typeof tonUsd !== "number" || !Number.isFinite(tonUsd) || tonUsd <= 0 || tonUsd > 1_000_000) {
+    throw new Error(`tokamak api returned implausible price: ${JSON.stringify(raw)}`);
+  }
+
+  return {
+    tonUsd,
+    source: "tokamak-api",
+    fetchedAt: Date.now(),
+    ageMs: 0,
   };
 }
 

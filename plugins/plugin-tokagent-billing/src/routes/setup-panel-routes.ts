@@ -136,15 +136,10 @@ const SETUP_PANEL_HTML = `<!DOCTYPE html>
     <!-- Step 5: Optional / Review -->
     <div class="step">
       <div class="step-title">5. Optional Config</div>
-      <label for="mainnet-rpc">Mainnet RPC URL (for TWAP price oracle)</label>
+      <label for="mainnet-rpc">Mainnet RPC URL (for fallback on-chain TWAP)</label>
       <input type="url" id="mainnet-rpc" name="mainnetRpcUrl"
              placeholder="https://mainnet.infura.io/v3/..." />
-      <div class="hint">Leave blank to use chain RPC for price. Required for WTON/USDC TWAP on L2 deployments.</div>
-
-      <label for="fixed-ton-usd">Fixed TON/USD price (dev/test override)</label>
-      <input type="number" id="fixed-ton-usd" name="fixedTonUsd"
-             placeholder="e.g. 1.50" step="0.01" min="0" />
-      <div class="hint">Set to a fixed value to skip the on-chain price oracle (useful for local testing).</div>
+      <div class="hint">TON/USD is fetched live from tokamak.network/api/price. This RPC is only used as fallback if that endpoint is unreachable. Leave blank to skip the fallback.</div>
     </div>
 
     <div id="status"></div>
@@ -185,9 +180,9 @@ function getValues() {
   for (const [k, val] of data.entries()) { if (val) v[k] = val; }
   const chainId = parseInt(v.chainId, 10);
   if (!isNaN(chainId)) v.chainId = chainId;
-  const ftv = parseFloat(v.fixedTonUsd);
-  if (!isNaN(ftv) && ftv > 0) v.fixedTonUsd = ftv;
-  else delete v.fixedTonUsd;
+  // fixedTonUsd removed from the wizard (Tokamak API is canonical). Kept
+  // as a hidden admin escape hatch via BILLING_FIXED_TON_USD env var.
+  delete v.fixedTonUsd;
   return v;
 }
 
