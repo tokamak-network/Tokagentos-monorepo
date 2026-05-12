@@ -7,7 +7,7 @@
  * future tsc step if the plugin is published independently.
  */
 import { $ } from "bun";
-import { existsSync, rmSync } from "node:fs";
+import { cpSync, existsSync, rmSync } from "node:fs";
 
 const watch = process.argv.includes("--watch");
 
@@ -23,6 +23,12 @@ async function build() {
     external: ["viem", "@tokagentos/core", "@tokagentos/billing"],
     sourcemap: "external",
   });
+
+  // Copy non-bundled static assets (operator dashboard SPA — HTML/CSS/JS)
+  // so dashboard-routes.ts can readFileSync them at runtime.
+  if (existsSync("src/dashboard")) {
+    cpSync("src/dashboard", "dist/dashboard", { recursive: true });
+  }
 
   console.log("✓ build complete");
 }

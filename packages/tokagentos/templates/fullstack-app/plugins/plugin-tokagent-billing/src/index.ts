@@ -15,6 +15,8 @@ import { estimateRoutes } from "./routes/estimate-routes.js";
 import { setupBillingAction } from "./actions/setup-billing.js";
 import { setupRoutes } from "./routes/setup-routes.js";
 import { setupPanelRoutes } from "./routes/setup-panel-routes.js";
+// Operator dashboard SPA (migrated from llm-api-gateway)
+import { dashboardRoutes } from "./routes/dashboard-routes.js";
 
 /**
  * Phase 6b: full billing plugin with lifecycle management + routes.
@@ -83,6 +85,8 @@ export const tokagentBillingPlugin: Plugin = {
     ...setupRoutes,
     // Phase 9: setup panel HTML UI (GET /v1/billing/setup-panel)
     ...setupPanelRoutes,
+    // Operator dashboard SPA — GET /v1/billing/dashboard
+    ...dashboardRoutes,
   ],
 
   async init(
