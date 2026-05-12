@@ -24,6 +24,7 @@ on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pri
 | 6 | Routes + auth + middleware + scaffold mirroring | ✅ landed |
 | 7 | app-core billing UI | ✅ landed |
 | 8 | Cutover + decommission | ✅ landed |
+| 9 | Conversational setup | ✅ landed |
 
 ---
 
@@ -370,3 +371,59 @@ scaffolded projects. Only operator-controlled deployments with an explicit
 The manual smoke test from Phase 7 (SIWE login → mint key → top-up → billed
 request → usage row appears) is still the required validation gate before any
 production deployment with `BILLING_ENABLED=true`.
+
+---
+
+## Setting up billing
+
+Phase 9 adds a conversational setup flow. The billing plugin now auto-loads in every scaffolded
+agent (it is included in `CORE_PLUGINS`). When `BILLING_ENABLED` is not set (or is `false`), the
+plugin starts in passthrough mode — no workers run, no middleware is active.
+
+### Guided flow (recommended)
+
+1. Start your agent and open a chat window.
+2. Type any of the following:
+   - `"set up billing"`
+   - `"enable billing"`
+   - `"configure web3 payments"`
+   - `"how do credits work?"`
+3. The `SETUP_BILLING` action fires and replies with a link to the setup panel:
+   ```
+   http://localhost:<PORT>/v1/billing/setup-panel
+   ```
+4. Open the panel in a browser. The 5-step wizard collects:
+   - **Database URL** — Postgres (`postgres://`) or PGLite (`pglite://./data/billing.pglite`)
+   - **Chain RPC URL + Chain ID** — Polygon mainnet is the default (`https://polygon-rpc.com`, 137)
+   - **Vault address + PTON address** — the deployed `ClaudeVault` contract
+   - **Operator private key** — the key that signs on-chain `consumeCredits` transactions
+   - **Auth secret** — ≥ 32-char random string used to sign session JWTs
+5. Use the built-in **"Test Connection"** / **"Verify Contracts"** buttons to dry-run each field
+   before submitting.
+6. Click **Save & Activate**. The panel calls `POST /v1/billing/setup`, which:
+   - Writes all `BILLING_*` envs to `~/.tokagent/config.env` (0600, atomic)
+   - Sets `BILLING_ENABLED=true` as the final step (crash-safe ordering)
+   - Disposes and re-initialises the billing plugin in-process
+   - Responds `{ ok: true, persisted: true, restarted: true }`
+
+Billing is active immediately — no process restart required.
+
+### API endpoints (Phase 9)
+
+| Method | Path | Auth | Purpose |
+|--------|------|------|---------|
+| GET | `/v1/billing/setup-panel` | none | Serve the setup wizard HTML |
+| POST | `/v1/billing/validate` | none | Dry-run all fields, return `{ ok, errors }` |
+| POST | `/v1/billing/setup` | none | Persist config + reinitialise plugin |
+
+Both POST routes are gated by `BILLING_SETUP_ENABLED` (default `true`). Set it to `false` to
+lock down the setup surface in production.
+
+### Reconfiguring
+
+If billing is already active, the `SETUP_BILLING` action still fires and tells you:
+
+> "Billing is already active. To reconfigure, visit /v1/billing/setup-panel — existing settings
+> will be overwritten."
+
+The setup panel and routes behave identically for reconfiguration.

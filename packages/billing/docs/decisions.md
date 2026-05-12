@@ -615,6 +615,8 @@ Cross-validation rule: `BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true → B
 
 **Owner-type**: Backend eng
 
+> **Z31 amendment (Phase 9, Z46)**: The `tokagent-billing` plugin is now auto-loaded via `CORE_PLUGINS` in `core-plugins.ts`. The `BILLING_ENABLED=false` default is preserved — `Plugin.init()` still short-circuits silently when the flag is absent. Auto-load only makes the `SETUP_BILLING` conversational action reachable before the operator has configured billing. The kill switch remains `BILLING_ENABLED`. See Z46.
+
 ---
 
 ## Z32 — Routes use `rawPath: true` (Phase 6a)
@@ -856,3 +858,73 @@ Cross-validation rule: `BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true → B
 **Reversibility**: Reintroduce `fileParallelism: false` and a fixed port if the random-port approach causes flakiness (e.g., due to TOCTOU race on port assignment). The signal handler pattern is safe to keep regardless.
 
 **Owner-type**: Backend eng / DX eng
+
+---
+
+## Z46 — Auto-load plugin in setup-only mode (Phase 9, reverses OQ5)
+
+**Question (Phase 9)**: OQ5 decided not to auto-load `@tokagent/plugin-tokagent-billing` in order to avoid requiring a Postgres database for out-of-the-box scaffolds. The Phase 9 conversational setup flow (`SETUP_BILLING` action) needs the plugin loaded before billing is configured. How do we make the action reachable without forcing the operator to manually add the plugin?
+
+**Decision**: **Auto-load in setup-only mode.** `@tokagent/plugin-tokagent-billing` is added to `TOKAGENT_PLUGINS` in `core-plugins.ts`. The plugin's `Plugin.init()` already short-circuits silently when `BILLING_ENABLED=false` (logs one info line and returns), so auto-loading is safe — no pool, no migrations, no state set. Only the `SETUP_BILLING` action and the setup routes become available.
+
+**Why this reverses OQ5 safely**: OQ5 was about avoiding the Postgres requirement at startup. The init short-circuit (Decision Z31) already solved that: `BILLING_ENABLED=false` → no pool construction. Auto-loading the plugin does not change the no-database guarantee. The only additional cost is registering the action and routes in the runtime, which is negligible.
+
+**Reversibility**: Remove `@tokagent/plugin-tokagent-billing` from `TOKAGENT_PLUGINS` and add it back to `OPTIONAL_CORE_PLUGINS`. Operators would then need to add it explicitly.
+
+**Owner-type**: Backend eng
+
+---
+
+## Z47 — Secrets to config.env (0600), non-secrets also to config.env (Phase 9)
+
+**Question (Phase 9)**: Where do `BILLING_OPERATOR_PRIVATE_KEY` and `BILLING_AUTH_SECRET` (secrets) and the other `BILLING_*` envs (non-secrets) go when the setup action persists them?
+
+**Decision**: **All values go to `config.env`** (the crash-safe 0600 atomic writer in `packages/agent/src/api/config-env.ts`). `config.env` is the existing designated escape hatch for sensitive process-env-only material; it is already mode 0600, has atomic rename write semantics, and `.bak` crash recovery. The agent runtime reads it into `process.env` at startup (via `readConfigEnvSync` in `loadTokagentConfig`), and `initBillingPlugin` reads from the runtime settings.
+
+**Why not the OS keychain**: The OS keychain's `SecureStoreSecretKind` is a closed union that does not include billing secrets. Extending it would couple `plugin-tokagent-billing` to `@tokagentos/app-core`'s security module. `config.env` achieves the same protection (0600, process-only) without the coupling. Future Phase 10 can add a dedicated keychain kind if desired.
+
+**Fallback**: If `@tokagentos/agent/api/config-env` is unavailable (e.g., a non-standard build), `billing-config-writer.ts` falls back to a self-contained `writeConfigEnvFallback()` that writes the same `key=value` format to `~/.tokagent/config.env` with the same 0600 mode.
+
+**Security constraint**: `billing-config-writer.ts` MUST NOT log secret values. All log statements use key names only.
+
+**Reversibility**: Migrate to OS keychain by extending `SecureStoreSecretKind` and calling `store.set(vaultId, newKind, value)`.
+
+**Owner-type**: Backend eng / Security eng
+
+---
+
+## Z48 — Hybrid chat + server-side HTML panel UX (Phase 9)
+
+**Question (Phase 9)**: The setup flow has 8+ fields. A pure chat interaction (agent asks each question, user types each answer) is fragile — typos, malformed addresses, and validation failures are frustrating in a turn-by-turn conversation. What is the right UX?
+
+**Decision**: **Hybrid model: chat triggers setup, HTML panel handles form input.**
+- The `SETUP_BILLING` action handler responds with a short message and a URL to `GET /v1/billing/setup-panel`.
+- `setup-panel-routes.ts` serves a self-contained HTML+JS form with inline validation, "Test Connection" and "Verify Contracts" buttons, and a submit action that POSTs to `POST /v1/billing/setup`.
+- The panel has five steps: Database, Chain & Contracts, Operator Key, Auth Secret, Optional Config.
+- The companion UI's `BillingSetupPanel.tsx` React component (in `packages/app-core`) can replace the HTML panel for environments where the UI is running, by intercepting the action and opening a side-panel natively. The HTML panel is the fallback for headless/CLI environments.
+
+**Why not the ConnectorSetupPanel precedent**: `ConnectorSetupPanel.tsx` is tightly coupled to the connector registry and `OnboardingRuntime` machinery, which assumes the connector is already known to the runtime. Billing setup must work before the runtime is fully configured, so a standalone panel is cleaner.
+
+**Reversibility**: Remove `setup-panel-routes.ts` if the companion UI ships a native `BillingSetupPanel.tsx` component and the HTML panel is no longer needed.
+
+**Owner-type**: Frontend eng / Backend eng
+
+---
+
+## Z49 — Restart mechanism: in-process dispose + re-init (Phase 9)
+
+**Question (Phase 9)**: After `POST /v1/billing/setup` persists the config, how does billing become active without a full process restart?
+
+**Decision**: **In-process dispose + re-init.** The setup route handler calls:
+1. `disposeBillingPlugin()` — if billing state was previously initialized (idempotent guard).
+2. `initBillingPlugin(runtime)` — re-runs the full init sequence with the newly-written env (which `writeBillingConfig` applied to `process.env` in addition to writing to `config.env`).
+
+This makes `BILLING_ENABLED=true` take effect immediately. The `BillingMiddlewareService` re-registers in the runtime service registry; `server.ts`'s `bindBillingMiddleware` is NOT called here (it runs on the next `updateRuntime` / `restartRuntime` call), but the billing routes and state become available immediately for the `/v1/billing/status` poll.
+
+**Deviation from spec**: The spec said "use `runtime.restart()` or equivalent". The `restartRuntime()` function in `server.ts` requires `ctx.onRestart` (the full runtime rebuild callback) and is not directly callable from a plugin route handler. An in-process plugin re-init achieves the same result for billing without triggering the heavyweight runtime rebuild. The UI will see billing become active via the `/v1/billing/status` poll within one poll interval.
+
+**Failure mode**: If `initBillingPlugin` throws after a successful `writeBillingConfig`, the route returns HTTP 207 with `{ persisted: true, restarted: false }`. The operator can trigger billing activation by restarting the agent process, which will read the newly-written config.env.
+
+**Reversibility**: Replace with `restartRuntime(reason)` if a full restart is acceptable (adds ~2-3s delay and reconnects all WebSocket clients).
+
+**Owner-type**: Backend eng

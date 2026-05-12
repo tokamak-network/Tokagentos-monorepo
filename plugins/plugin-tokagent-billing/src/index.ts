@@ -11,6 +11,10 @@ import { creditsRoutes } from "./routes/credits-routes.js";
 import { topupRoutes } from "./routes/topup-routes.js";
 import { usageRoutes } from "./routes/usage-routes.js";
 import { estimateRoutes } from "./routes/estimate-routes.js";
+// Phase 9: conversational setup action + routes
+import { setupBillingAction } from "./actions/setup-billing.js";
+import { setupRoutes } from "./routes/setup-routes.js";
+import { setupPanelRoutes } from "./routes/setup-panel-routes.js";
 
 /**
  * Phase 6b: full billing plugin with lifecycle management + routes.
@@ -58,7 +62,8 @@ export const tokagentBillingPlugin: Plugin = {
   name: "tokagent-billing",
   description:
     "Web3 credit-billing routes and middleware for the tokagentos LLM gateway.",
-  actions: [],
+  // Phase 9: SETUP_BILLING action enables the conversational setup flow (Z46).
+  actions: [setupBillingAction],
   providers: [],
   services: [
     ConsumeService,
@@ -74,6 +79,10 @@ export const tokagentBillingPlugin: Plugin = {
     ...topupRoutes,
     ...usageRoutes,
     ...estimateRoutes,
+    // Phase 9: setup routes (POST /v1/billing/setup, POST /v1/billing/validate)
+    ...setupRoutes,
+    // Phase 9: setup panel HTML UI (GET /v1/billing/setup-panel)
+    ...setupPanelRoutes,
   ],
 
   async init(

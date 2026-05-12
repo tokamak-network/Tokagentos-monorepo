@@ -110,6 +110,11 @@ const TOKAGENT_PLUGINS: readonly string[] = [
   "@tokagent/plugin-tokagent-yield", // Aave deposit/withdraw via vault allowlist
   "@tokagent/plugin-tokagent-perps", // Hyperliquid perps via vault allowlist
   "@tokagent/plugin-tokagent-polymarket", // Polymarket buy/sell/redeem via vault allowlist
+  // Phase 9 (Z46): billing plugin auto-loads in setup-only mode.
+  // Plugin.init() short-circuits when BILLING_ENABLED=false (no-op log and return),
+  // so auto-loading is safe — it only makes the SETUP_BILLING action reachable
+  // before the operator has configured billing. The kill switch is BILLING_ENABLED.
+  "@tokagent/plugin-tokagent-billing",
 ];
 
 /** Core plugins always loaded. Upstream list, then Tokagent overlays. */
