@@ -1,6 +1,6 @@
 {
   "name": "@tokagentos/agent",
-  "version": "2.0.0-alpha.278",
+  "version": "2.0.0-alpha.279",
   "description": "Standalone tokagentOS-based agent and backend server package.",
   "type": "module",
   "license": "MIT",
@@ -136,9 +136,9 @@
     "@hapi/boom": "^10.0.1",
     "@noble/curves": "^2.0.1",
     "@tokagentos/app-companion": "workspace:*",
-    "@tokagentos/billing": "2.0.0-alpha.278",
-    "@tokagentos/core": "2.0.0-alpha.278",
-    "@tokagentos/shared": "2.0.0-alpha.278",
+    "@tokagentos/billing": "2.0.0-alpha.279",
+    "@tokagentos/core": "2.0.0-alpha.279",
+    "@tokagentos/shared": "2.0.0-alpha.279",
     "@whiskeysockets/baileys": "7.0.0-rc.9",
     "abitype": "^1.0.0",
     "coding-agent-adapters": "0.16.3",
@@ -184,5 +184,5 @@
     "vite": "^8.0.8",
     "vitest": "^4.0.18"
   },
-  "gitHead": "8d93a27da8ef161d48496c569b42e5bb5abd1324"
+  "gitHead": "12617defe2ae4fc276e6ee4b5c0665e21f413d56"
 }
