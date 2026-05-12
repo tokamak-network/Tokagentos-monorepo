@@ -219,7 +219,12 @@ async function handleSetup(
     ok: true,
     persisted: true,
     restarted: true,
-    message: "Billing is now active. The Billing tab should appear in the sidebar after the next status refresh.",
+    // The AppContext fetches /v1/billing/status once at app boot to decide
+    // whether to show the Billing nav tab — it does NOT poll. The user must
+    // reload the Tokagent UI tab in their browser before the tab appears.
+    message:
+      "Billing is now active. Reload your Tokagent app tab in the browser " +
+      "(Cmd/Ctrl+Shift+R) to make the Billing tab appear in the sidebar.",
   });
 }
 

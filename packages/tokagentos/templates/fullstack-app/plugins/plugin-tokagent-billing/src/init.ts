@@ -94,7 +94,17 @@ const BILLING_KEYS = [
 function buildEnv(runtime: IAgentRuntime): NodeJS.ProcessEnv {
   const env: Record<string, string | undefined> = {};
   for (const k of BILLING_KEYS) {
-    const val = runtime.getSetting(k);
+    // Prefer the live process.env value over the runtime settings snapshot.
+    // The setup wizard (POST /v1/billing/setup → writeBillingConfig)
+    // updates process.env in-place after persisting config.env, so a
+    // dispose → init cycle MUST see those updates here. runtime.getSetting()
+    // typically returns a boot-time snapshot that doesn't reflect post-boot
+    // env writes, which would silently leave BILLING_ENABLED stuck at its
+    // boot-time value (false) even after the wizard succeeds.
+    const procVal = process.env[k];
+    const val = procVal !== undefined && procVal !== ""
+      ? procVal
+      : runtime.getSetting(k);
     if (val !== null && val !== undefined) {
       env[k] = String(val);
     }
