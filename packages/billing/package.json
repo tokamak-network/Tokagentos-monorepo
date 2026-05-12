@@ -1,15 +1,22 @@
 {
   "name": "@tokagentos/billing",
-  "version": "0.1.0",
+  "version": "2.0.0-alpha.270",
   "description": "Web3 credit-billing rail for tokagentos. Migrated from llm-api-gateway.",
   "type": "module",
-  "publishConfig": { "access": "public", "directory": "dist" },
+  "publishConfig": {
+    "access": "public",
+    "directory": "dist"
+  },
   "main": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
     "./chain/addresses": "./src/chain/addresses.ts"
   },
-  "files": ["src", "README.md", "LICENSE"],
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "bun run build.ts",
     "clean": "rm -rf dist",
