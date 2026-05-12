@@ -34,6 +34,7 @@ import {
   setBillingState,
   clearBillingState,
   isBillingStateInitialized,
+  getBillingState,
 } from "./state.js";
 
 const log = logger.child({ src: "billing:init" });
@@ -221,6 +222,34 @@ export async function initBillingPlugin(runtime: IAgentRuntime): Promise<void> {
 
   // ---- 5. Store shared state (Decision Z28) ----
   setBillingState({ pool, db, clients, config });
+
+  // ---- 6. Wrap runtime.useModel so internal LLM calls bill the operator ----
+  // The scaffold's chat tab and most plugin actions call runtime.useModel
+  // directly; they don't go through the /v1/messages HTTP gate where the
+  // external-API-key middleware lives. Wrap useModel here so every text
+  // generation funnels through reserve/commit + call_log, populating the
+  // Usage tab with chat activity.
+  try {
+    const { wrapRuntimeUseModel } = await import("./middleware/model-billing-wrapper.js");
+    wrapRuntimeUseModel(runtime, {
+      db,
+      marginBps: config.marginBps,
+      tonUsdGetter: () => {
+        try {
+          const state = getBillingState();
+          return state.twapCache?.get()?.tonUsd ?? state.config.fixedTonUsd ?? null;
+        } catch {
+          return null;
+        }
+      },
+    });
+  } catch (err) {
+    log.warn(
+      { err: (err as Error).message },
+      "could not wrap runtime.useModel — chat-tab calls will not bill",
+    );
+  }
+
   log.info("billing plugin initialized — BILLING_ENABLED=true");
 }
 
