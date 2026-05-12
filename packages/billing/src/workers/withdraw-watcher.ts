@@ -74,7 +74,11 @@ export async function handleWithdrawRequested(
   const accrued = rows[0]?.accrued ?? 0n;
 
   if (accrued <= 0n) {
-    log.info(
+    // No-op: user has nothing accrued, so pre-emption is unnecessary. This is
+    // the common case (most WithdrawRequested events arrive for users whose
+    // accrued has already been swept by the size trigger). Log at debug to
+    // avoid info-level spam per withdraw event.
+    log.debug(
       { user, requestedAmount: amount?.toString() },
       "withdraw requested but no accrued balance; nothing to pre-flush",
     );

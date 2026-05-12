@@ -4,7 +4,7 @@
  * Tests for KeysView
  */
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import React from "react";
 import { describe, expect, it, vi, afterEach } from "vitest";
 
@@ -39,6 +39,7 @@ function mockFetch(response: object, status = 200) {
 
 describe("KeysView", () => {
   afterEach(() => {
+    cleanup();
     vi.restoreAllMocks();
   });
 

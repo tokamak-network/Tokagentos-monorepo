@@ -54,6 +54,11 @@ export async function sweepOldCallLog(
   const cutoff = new Date(cutoffMs);
 
   try {
+    // NOTE: Drizzle's union type (NodePg + PGLite per Z16) requires `.returning()`
+    // with no arguments, which materializes the full row. For very large
+    // retention sweeps this is suboptimal — a `db.execute(sql\`DELETE ... \`)`
+    // could avoid the materialization. Acceptable for current scale (sweep
+    // runs once per 24h and the call_log volume is bounded by retention).
     const result = await deps.db
       .delete(callLog)
       .where(lt(callLog.ts, cutoff))

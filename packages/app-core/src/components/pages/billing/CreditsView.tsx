@@ -152,8 +152,8 @@ export function CreditsView(): React.ReactElement {
         </div>
       ) : null}
 
-      {/* Data */}
-      {data ? (
+      {/* Data — guard against malformed responses missing required fields */}
+      {data && data.balance != null && data.reserved != null && data.accrued != null ? (
         <>
           <div className="grid gap-4 sm:grid-cols-3">
             <CreditCard

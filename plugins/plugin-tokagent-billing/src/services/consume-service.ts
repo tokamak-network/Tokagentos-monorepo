@@ -22,6 +22,14 @@ export class ConsumeService extends Service {
   private timer: ReturnType<typeof setInterval> | null = null;
   private workerDeps!: ConsumeWorkerDeps;
   private runtimeDeps!: BillingRuntimeDeps;
+  /**
+   * Tick-overlap guard. `flushNow` can take longer than `consumeScanIntervalMs`
+   * if chain calls are slow (up to consumeMaxPerCycle × ~30s on congested L2s).
+   * Without this guard, setInterval stacks concurrent ticks that all SELECT the
+   * same candidates and rely on the `submitted` state machine for correctness,
+   * wasting DB round-trips and adding "skip in-flight" log noise.
+   */
+  private running = false;
 
   static async start(runtime: IAgentRuntime): Promise<ConsumeService> {
     const instance = new ConsumeService(runtime);
@@ -45,9 +53,20 @@ export class ConsumeService extends Service {
     };
 
     this.timer = setInterval(() => {
-      void flushNow(this.workerDeps).catch((err: unknown) =>
-        log.error({ err }, "consume service tick failed"),
-      );
+      if (this.running) {
+        // Previous tick still running — skip this one rather than stack a
+        // concurrent flushNow on top of it.
+        log.debug("consume service tick skipped — previous still running");
+        return;
+      }
+      this.running = true;
+      void flushNow(this.workerDeps)
+        .catch((err: unknown) =>
+          log.error({ err }, "consume service tick failed"),
+        )
+        .finally(() => {
+          this.running = false;
+        });
     }, config.consumeScanIntervalMs);
 
     log.info(

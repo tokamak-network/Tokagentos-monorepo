@@ -12,6 +12,19 @@ const numFromEnv = (fallback: number) =>
     .transform((v) => (v === undefined || v === "" ? fallback : Number(v)))
     .pipe(z.number().finite());
 
+/**
+ * Same as `numFromEnv` but rejects zero and negative values. Use for
+ * intervals, capacities, and other fields where 0 would crash a downstream
+ * consumer (e.g. setInterval, TokenBucketLimiter) at runtime rather than at
+ * boot.
+ */
+const positiveNumFromEnv = (fallback: number) =>
+  z
+    .string()
+    .optional()
+    .transform((v) => (v === undefined || v === "" ? fallback : Number(v)))
+    .pipe(z.number().finite().positive());
+
 const optionalHexAddress = z
   .string()
   .optional()
@@ -100,13 +113,13 @@ const BillingConfigSchema = z.object({
    * Capacity of the token bucket on the quote/nonce path (requests per minute).
    * Default: 60.
    */
-  BILLING_RATE_LIMIT_QUOTE_PER_MIN: numFromEnv(60),
+  BILLING_RATE_LIMIT_QUOTE_PER_MIN: positiveNumFromEnv(60),
 
   /**
    * Capacity of the token bucket on the settle/commit path (requests per minute).
    * Default: 30.
    */
-  BILLING_RATE_LIMIT_SETTLE_PER_MIN: numFromEnv(30),
+  BILLING_RATE_LIMIT_SETTLE_PER_MIN: positiveNumFromEnv(30),
 
   /**
    * Default top-up amount in atto-PTON credited after a successful
@@ -155,7 +168,7 @@ const BillingConfigSchema = z.object({
   BILLING_WETH_DECIMALS: numFromEnv(18),
   BILLING_USDC_DECIMALS: numFromEnv(6),
 
-  BILLING_TWAP_WINDOW_SECONDS: numFromEnv(1800),
+  BILLING_TWAP_WINDOW_SECONDS: positiveNumFromEnv(1800),
   BILLING_PRICE_CACHE_MS: numFromEnv(60_000),
   BILLING_MAX_PRICE_STALENESS_MS: numFromEnv(600_000),
   BILLING_PRICE_SANITY_MIN_USD: numFromEnv(0.05),
@@ -266,13 +279,13 @@ const BillingConfigSchema = z.object({
    * How often the consume worker scans for flush-eligible wallets.
    * Default: 30_000 ms (30 seconds).
    */
-  BILLING_CONSUME_SCAN_INTERVAL_MS: numFromEnv(30_000),
+  BILLING_CONSUME_SCAN_INTERVAL_MS: positiveNumFromEnv(30_000),
 
   /**
    * Maximum number of wallets flushed in a single consume worker scan.
    * Default: 10.
    */
-  BILLING_CONSUME_MAX_PER_CYCLE: numFromEnv(10),
+  BILLING_CONSUME_MAX_PER_CYCLE: positiveNumFromEnv(10),
 
   /**
    * How long (days) to retain rows in billing_call_log.
@@ -284,13 +297,13 @@ const BillingConfigSchema = z.object({
    * How often (ms) the usage cleanup worker sweeps old call log rows.
    * Default: 86_400_000 ms (24 hours).
    */
-  BILLING_USAGE_CLEANUP_INTERVAL_MS: numFromEnv(86_400_000),
+  BILLING_USAGE_CLEANUP_INTERVAL_MS: positiveNumFromEnv(86_400_000),
 
   /**
    * How often (ms) the TWAP service refreshes the TON/USD price.
    * Default: 60_000 ms (60 seconds).
    */
-  BILLING_PRICE_REFRESH_INTERVAL_MS: numFromEnv(60_000),
+  BILLING_PRICE_REFRESH_INTERVAL_MS: positiveNumFromEnv(60_000),
 });
 
 // ---------------------------------------------------------------------------
@@ -378,6 +391,15 @@ export function loadBillingConfig(
         "BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true requires BILLING_AUTH_SECRET",
       );
     }
+  }
+
+  // Price sanity band must be ordered. An inverted band rejects every legitimate
+  // price and makes the gate return 503 on every request.
+  if (raw.BILLING_PRICE_SANITY_MIN_USD >= raw.BILLING_PRICE_SANITY_MAX_USD) {
+    throw new BillingConfigError(
+      `BILLING_PRICE_SANITY_MIN_USD (${raw.BILLING_PRICE_SANITY_MIN_USD}) ` +
+        `must be < BILLING_PRICE_SANITY_MAX_USD (${raw.BILLING_PRICE_SANITY_MAX_USD})`,
+    );
   }
 
   // ---- Margin policy ----

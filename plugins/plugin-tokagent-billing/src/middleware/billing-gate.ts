@@ -21,6 +21,9 @@
 import type { IncomingMessage } from "node:http";
 import { randomUUID } from "node:crypto";
 import type { Address } from "viem";
+import { logger } from "@tokagentos/core";
+
+const log = logger.child({ src: "billing:gate" });
 import {
   assertSupportedModel,
   normalizeModelId,
@@ -292,12 +295,12 @@ export async function applyBillingGate(
         });
       } catch (err) {
         // Never block the commit on call-log failure — the reservation is
-        // already committed at this point. Caller's logger (when present)
-        // will surface the error if needed.
+        // already committed at this point. Surface via structured logger so
+        // the failure flows through log aggregation rather than stdout/stderr.
         const message = err instanceof Error ? err.message : String(err);
-        // eslint-disable-next-line no-console
-        console.warn(
-          `[billing-gate] call_log insert failed (reservationId=${reservationId}, wallet=${wallet}): ${message}`,
+        log.warn(
+          { reservationId, wallet, err: message },
+          "call_log insert failed (commit already applied)",
         );
       }
     }

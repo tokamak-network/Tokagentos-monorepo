@@ -193,21 +193,28 @@ export type ConsumeBatchInsert = InferInsertModel<typeof consumeBatches>;
 // Table 4: billing_topup_quotes
 // ---------------------------------------------------------------------------
 
-export const topupQuotes = pgTable("billing_topup_quotes", {
-  id: text("id").primaryKey(), // topupId
-  wallet: text("wallet").notNull(),
-  amountPton: numericBigint("amount_pton").notNull(),
-  amountUsd: numericUsd("amount_usd").notNull(),
-  tonUsd: numericUsd("ton_usd").notNull(),
-  expiresAt: timestamp("expires_at", {
-    withTimezone: true,
-    mode: "date",
-  }).notNull(),
-  consumedAt: timestamp("consumed_at", {
-    withTimezone: true,
-    mode: "date",
-  }),
-});
+export const topupQuotes = pgTable(
+  "billing_topup_quotes",
+  {
+    id: text("id").primaryKey(), // topupId
+    wallet: text("wallet").notNull(),
+    amountPton: numericBigint("amount_pton").notNull(),
+    amountUsd: numericUsd("amount_usd").notNull(),
+    tonUsd: numericUsd("ton_usd").notNull(),
+    expiresAt: timestamp("expires_at", {
+      withTimezone: true,
+      mode: "date",
+    }).notNull(),
+    consumedAt: timestamp("consumed_at", {
+      withTimezone: true,
+      mode: "date",
+    }),
+  },
+  (table) => [
+    // sweepExpiredQuotes scans by expires_at; index keeps the daily DELETE fast.
+    index("billing_topup_quotes_expires_at_idx").on(table.expiresAt),
+  ],
+);
 
 export type TopupQuoteRow = InferSelectModel<typeof topupQuotes>;
 export type TopupQuoteInsert = InferInsertModel<typeof topupQuotes>;
@@ -235,7 +242,15 @@ export const topupPreauthSlots = pgTable(
     s: text("s").notNull(), // hex-encoded
     state: preauthSlotStateEnum("state").notNull().default("available"),
   },
-  (table) => [primaryKey({ columns: [table.wallet, table.nonce] })],
+  (table) => [
+    primaryKey({ columns: [table.wallet, table.nonce] }),
+    // nextAvailableSlot filters by (wallet, state) and orders by validBefore.
+    index("billing_preauth_wallet_state_valid_before_idx").on(
+      table.wallet,
+      table.state,
+      table.validBefore,
+    ),
+  ],
 );
 
 export type TopupPreauthSlotRow = InferSelectModel<typeof topupPreauthSlots>;
@@ -245,31 +260,39 @@ export type TopupPreauthSlotInsert = InferInsertModel<typeof topupPreauthSlots>;
 // Table 6: billing_api_keys
 // ---------------------------------------------------------------------------
 
-export const apiKeys = pgTable("billing_api_keys", {
-  id: text("id").primaryKey(), // sk-ai-{32 random hex chars}
-  wallet: text("wallet").notNull(),
-  name: text("name").notNull(),
-  hash: text("hash").notNull(), // hex-encoded HMAC-SHA256
-  createdAt: timestamp("created_at", {
-    withTimezone: true,
-    mode: "date",
-  })
-    .notNull()
-    .$defaultFn(() => new Date()),
-  lastUsedAt: timestamp("last_used_at", {
-    withTimezone: true,
-    mode: "date",
-  }),
-  revokedAt: timestamp("revoked_at", {
-    withTimezone: true,
-    mode: "date",
-  }),
-  // Phase 9+ rate-limit placeholder per OQ2 decision (docs/decisions.md).
-  // Nullable: unused until quotas land. Adding it now avoids a future
-  // schema migration on a hot table. Uses `nullableNumericBigint` so the
-  // driver doesn't `BigInt(null)`-crash on default NULL reads.
-  quotaPton: nullableNumericBigint("quota_pton"),
-});
+export const apiKeys = pgTable(
+  "billing_api_keys",
+  {
+    id: text("id").primaryKey(), // sk-ai-{32 random hex chars}
+    wallet: text("wallet").notNull(),
+    name: text("name").notNull(),
+    hash: text("hash").notNull(), // hex-encoded HMAC-SHA256
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+      mode: "date",
+    })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    lastUsedAt: timestamp("last_used_at", {
+      withTimezone: true,
+      mode: "date",
+    }),
+    revokedAt: timestamp("revoked_at", {
+      withTimezone: true,
+      mode: "date",
+    }),
+    // Phase 9+ rate-limit placeholder per OQ2 decision (docs/decisions.md).
+    // Nullable: unused until quotas land. Adding it now avoids a future
+    // schema migration on a hot table. Uses `nullableNumericBigint` so the
+    // driver doesn't `BigInt(null)`-crash on default NULL reads.
+    quotaPton: nullableNumericBigint("quota_pton"),
+  },
+  (table) => [
+    // resolveApiKey filters by hash on every authenticated request. Without
+    // an index this is a sequential scan — the highest-volume billing hot path.
+    index("billing_api_keys_hash_idx").on(table.hash),
+  ],
+);
 
 export type ApiKeyRow = InferSelectModel<typeof apiKeys>;
 export type ApiKeyInsert = InferInsertModel<typeof apiKeys>;
@@ -278,18 +301,25 @@ export type ApiKeyInsert = InferInsertModel<typeof apiKeys>;
 // Table 7: billing_auth_nonces
 // ---------------------------------------------------------------------------
 
-export const authNonces = pgTable("billing_auth_nonces", {
-  nonce: text("nonce").primaryKey(),
-  envelope: jsonb("envelope").notNull(), // EIP-712 typed-data
-  issuedAt: timestamp("issued_at", {
-    withTimezone: true,
-    mode: "date",
-  }).notNull(),
-  expiresAt: timestamp("expires_at", {
-    withTimezone: true,
-    mode: "date",
-  }).notNull(),
-});
+export const authNonces = pgTable(
+  "billing_auth_nonces",
+  {
+    nonce: text("nonce").primaryKey(),
+    envelope: jsonb("envelope").notNull(), // EIP-712 typed-data
+    issuedAt: timestamp("issued_at", {
+      withTimezone: true,
+      mode: "date",
+    }).notNull(),
+    expiresAt: timestamp("expires_at", {
+      withTimezone: true,
+      mode: "date",
+    }).notNull(),
+  },
+  (table) => [
+    // sweepExpiredNonces scans by expires_at.
+    index("billing_auth_nonces_expires_at_idx").on(table.expiresAt),
+  ],
+);
 
 export type AuthNonceRow = InferSelectModel<typeof authNonces>;
 export type AuthNonceInsert = InferInsertModel<typeof authNonces>;

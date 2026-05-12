@@ -41,9 +41,16 @@ export class UsageCleanupService extends Service {
 
     this.timer = setInterval(() => {
       void sweepAllExpired(this.cleanupDeps, new Date())
-        .then((counts) =>
-          log.info({ ...counts }, "usage cleanup sweep complete"),
-        )
+        .then((counts) => {
+          // No-op ticks (all counts zero) are the common case — log at debug
+          // to avoid daily info-level noise with `{callLog:0, nonces:0, ...}`.
+          const anySwept = Object.values(counts).some((c) => c > 0);
+          if (anySwept) {
+            log.info({ ...counts }, "usage cleanup sweep complete");
+          } else {
+            log.debug({ ...counts }, "usage cleanup sweep complete (no-op)");
+          }
+        })
         .catch((err: unknown) =>
           log.error({ err }, "usage cleanup tick failed"),
         );
