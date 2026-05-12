@@ -130,6 +130,13 @@ async function handleTopupInfo(
     chainId: config.chainId,
     vaultAddress: config.vaultAddress,
     ptonAddress: config.ptonAddress,
+    // Gateway-compatible aliases — the migrated dashboard SPA reads
+    // `info.vault` and `info.asset`. Without these, resolveDepositTargets()
+    // leaves both addresses undefined and the faucet/top-up flows send
+    // transactions to `to: undefined`, which MetaMask surfaces as
+    // "gas limit too high" (its UX for "tx simulation failed").
+    vault: config.vaultAddress,
+    asset: config.ptonAddress,
     domain,
   });
 }

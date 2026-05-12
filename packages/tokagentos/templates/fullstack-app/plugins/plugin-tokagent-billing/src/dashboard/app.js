@@ -908,10 +908,13 @@ function drawBarChart(canvasId, data) {
     const innerW = barW - 4;
     const barH = ((h - padT - padB) * d.value) / max;
     const y = h - padB - barH;
-    const grd = ctx.createLinearGradient(0, y, 0, y + barH);
-    grd.addColorStop(0, "#22d3ee");
-    grd.addColorStop(1, "#a78bfa");
-    ctx.fillStyle = grd;
+    // Match the parent app's lime accent. Read the computed --accent so
+    // any postMessage theme push from the host re-skins charts on next
+    // redraw without code changes here.
+    const accent = (typeof getComputedStyle === "function"
+      ? getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()
+      : "") || "#c4f547";
+    ctx.fillStyle = accent;
     ctx.fillRect(x, y, innerW, barH);
   }
 
@@ -1171,9 +1174,63 @@ function wireLogin() {
   });
 }
 
+// ----------------------------- Embed mode -----------------------------
+//
+// When the dashboard is mounted inside the parent app shell, the iframe is
+// loaded with `?embed=1` (see BillingPageView.tsx). The pre-paint script in
+// index.html already sets <html data-embed="1"> so the stylesheet hides
+// the dashboard's own topbar — but the wallet/chain/logout chips inside
+// `.topbar-right` are still load-bearing (every #wallet-pill / #chain-pill /
+// #logout-btn handler in this file targets them by id). We MOVE the node
+// (not clone) into a slim `.session-strip` inside #view-app so the IDs stay
+// reachable. A `message` listener accepts theme-token pushes from the host.
+
+function setupEmbedMode() {
+  const embedded = document.documentElement.dataset.embed === "1";
+  if (!embedded) return;
+
+  // Relocate the topbar-right chips into #view-app as a session strip.
+  const right = document.querySelector(".topbar-right");
+  const viewApp = document.querySelector("#view-app");
+  if (right && viewApp && !document.querySelector(".session-strip")) {
+    const strip = document.createElement("div");
+    strip.className = "session-strip";
+    strip.appendChild(right); // move, don't clone — IDs stay intact
+    viewApp.prepend(strip);
+  }
+
+  // Accept theme-token pushes from the parent. Same-origin only.
+  // Tokens write directly onto :root custom properties — every visual in
+  // this stylesheet keys off those, so a single push re-skins the UI.
+  window.addEventListener("message", (ev) => {
+    if (ev.origin !== location.origin) return;
+    const data = ev.data;
+    if (!data || data.source !== "tal-host" || data.type !== "theme") return;
+    const tokens = data.tokens || {};
+    const root = document.documentElement;
+    const map = {
+      bg0: "--bg-0",
+      bg1: "--bg-1",
+      bg2: "--bg-2",
+      line: "--line",
+      text: "--text",
+      muted: "--muted",
+      accent: "--accent",
+      accent2: "--accent-2",
+    };
+    for (const k in map) {
+      if (typeof tokens[k] === "string" && tokens[k].length > 0) {
+        root.style.setProperty(map[k], tokens[k]);
+      }
+    }
+    if (typeof data.mode === "string") root.dataset.theme = data.mode;
+  });
+}
+
 // ----------------------------- Boot -----------------------------
 
 async function boot() {
+  setupEmbedMode();
   wireTabs();
   wireTopupPresets();
   wireKeyCreate();

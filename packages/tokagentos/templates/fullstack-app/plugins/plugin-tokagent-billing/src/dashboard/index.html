@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
-  <meta name="theme-color" content="#05070d" />
+  <meta name="theme-color" content="#0a0a0f" />
   <meta name="robots" content="noindex,nofollow" />
   <title>Tokamak.AI — Dashboard</title>
   <meta name="description" content="API key issuance, PTON top-up, credit balance, and 90-day usage history for the Tokamak.AI x402 gateway." />
@@ -14,18 +14,28 @@
        resolves to /v1/billing/dashboard/style.css. -->
   <base href="/v1/billing/dashboard/" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Pre-paint embed-mode detection: when loaded inside the parent app
+       (BillingPageView posts `?embed=1` in the iframe src), flip the embed
+       flag on <html> before the stylesheet's [data-embed="1"] rules apply
+       so we never flash the standalone topbar. -->
+  <script>
+    (function () {
+      try {
+        var usp = new URLSearchParams(location.search);
+        if (usp.get("embed") === "1") {
+          document.documentElement.dataset.embed = "1";
+        }
+      } catch (_) { /* noop */ }
+    })();
+  </script>
 
   <!-- Runtime-injected config: PROXY_BASE (same-origin), CHAIN_ID, etc.
        Served by the plugin from runtime billing config. -->
   <script src="config.js"></script>
 </head>
 <body>
-  <div class="bg-aurora" aria-hidden="true"></div>
-
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true">◎</span>
@@ -129,7 +139,7 @@
             </p>
           </div>
           <div class="topup-action">
-            <button id="faucet-btn" class="btn" type="button">Mint test PTON</button>
+            <button id="faucet-btn" class="btn btn-ghost" type="button">Mint test PTON</button>
             <p id="faucet-status" class="status-line" role="status" aria-live="polite"></p>
           </div>
         </div>
