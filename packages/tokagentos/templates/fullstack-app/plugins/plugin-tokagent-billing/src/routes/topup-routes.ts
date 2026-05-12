@@ -308,6 +308,20 @@ async function handleTopupSettle(
 
   let topupId: unknown;
   let sigRaw: unknown;
+  // When the X-PAYMENT header is present the client also includes the full
+  // EIP-3009 authorization object it signed over (from, to, value, validAfter,
+  // validBefore, nonce). We MUST use those exact bytes for verification —
+  // reconstructing the auth server-side would produce a different EIP-712
+  // hash and signature recovery would yield the wrong address (HTTP 402).
+  let authFromHeader: {
+    from?: string;
+    to?: string;
+    value?: string;
+    validAfter?: string;
+    validBefore?: string;
+    nonce?: string;
+  } | undefined;
+
   if (typeof xPaymentRaw === "string" && xPaymentRaw.length > 0) {
     try {
       const decoded = JSON.parse(
@@ -315,11 +329,20 @@ async function handleTopupSettle(
       ) as {
         payload?: {
           signature?: { v?: unknown; r?: unknown; s?: unknown };
+          authorization?: {
+            from?: string;
+            to?: string;
+            value?: string;
+            validAfter?: string;
+            validBefore?: string;
+            nonce?: string;
+          };
           quoteId?: unknown;
         };
       };
       topupId = decoded.payload?.quoteId;
       sigRaw = decoded.payload?.signature;
+      authFromHeader = decoded.payload?.authorization;
     } catch (err) {
       res.status(400).json({
         error: `Invalid X-PAYMENT header: ${
@@ -365,15 +388,80 @@ async function handleTopupSettle(
   }
 
   // Verify EIP-3009 signature.
-  const auth = {
-    from: identity.wallet,
-    to: config.vaultAddress,
-    value: quote.amountPton,
-    validAfter: 0n,
-    // Valid for 1 hour from quote creation (generous; chain validates validBefore).
-    validBefore: BigInt(Math.floor(Date.now() / 1000) + 3600),
-    nonce: `0x${topupId.replace(/-/g, "").padStart(64, "0")}` as Hex,
+  // If the client sent x402 X-PAYMENT, use the exact authorization fields
+  // it signed over — server-side reconstruction produces a different
+  // EIP-712 hash and the signature recovers the wrong address. We still
+  // cross-check the safety-critical fields (`to`, `value`, `from`) against
+  // the stored quote + the JWT-authenticated wallet so the dashboard
+  // can't pivot the payment to a different vault or amount.
+  let auth: {
+    from: Address;
+    to: Address;
+    value: bigint;
+    validAfter: bigint;
+    validBefore: bigint;
+    nonce: Hex;
   };
+
+  if (authFromHeader) {
+    const expectedTo = config.vaultAddress.toLowerCase();
+    const expectedFrom = identity.wallet.toLowerCase();
+    if (
+      typeof authFromHeader.to !== "string" ||
+      authFromHeader.to.toLowerCase() !== expectedTo
+    ) {
+      res.status(400).json({
+        error: `authorization.to must equal vault ${config.vaultAddress}`,
+      });
+      return;
+    }
+    if (
+      typeof authFromHeader.from !== "string" ||
+      authFromHeader.from.toLowerCase() !== expectedFrom
+    ) {
+      res.status(403).json({
+        error: "authorization.from must equal the authenticated wallet",
+      });
+      return;
+    }
+    if (
+      typeof authFromHeader.value !== "string" ||
+      BigInt(authFromHeader.value) !== BigInt(quote.amountPton)
+    ) {
+      res.status(400).json({
+        error: `authorization.value must equal quoted amountPton (${quote.amountPton})`,
+      });
+      return;
+    }
+    if (
+      typeof authFromHeader.validAfter !== "string" ||
+      typeof authFromHeader.validBefore !== "string" ||
+      typeof authFromHeader.nonce !== "string"
+    ) {
+      res.status(400).json({
+        error: "authorization must include validAfter, validBefore, nonce as strings",
+      });
+      return;
+    }
+    auth = {
+      from: identity.wallet,
+      to: config.vaultAddress,
+      value: BigInt(authFromHeader.value),
+      validAfter: BigInt(authFromHeader.validAfter),
+      validBefore: BigInt(authFromHeader.validBefore),
+      nonce: authFromHeader.nonce as Hex,
+    };
+  } else {
+    auth = {
+      from: identity.wallet,
+      to: config.vaultAddress,
+      value: BigInt(quote.amountPton),
+      validAfter: 0n,
+      // Valid for 1 hour from quote creation (generous; chain validates validBefore).
+      validBefore: BigInt(Math.floor(Date.now() / 1000) + 3600),
+      nonce: `0x${topupId.replace(/-/g, "").padStart(64, "0")}` as Hex,
+    };
+  }
 
   const valid = await verifyEip3009Signature({
     auth,
