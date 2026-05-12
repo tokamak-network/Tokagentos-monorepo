@@ -176,3 +176,30 @@ describe("POST /v1/auth/login", () => {
     expect(res.statusCode).toBe(401);
   });
 });
+
+// ---------------------------------------------------------------------------
+// GET /v1/billing/status (Decision Z40)
+// ---------------------------------------------------------------------------
+
+describe("GET /v1/billing/status", () => {
+  const handler = findHandler("GET", "/v1/billing/status");
+
+  it("returns { enabled: true } when billing state is initialized with enabled config", async () => {
+    // beforeEach() already set billing state with config.enabled = true (see makeConfig()).
+    const req: RouteRequest = {};
+    const res = makeRes();
+    await handler(req, res, fakeRuntime);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ enabled: true });
+  });
+
+  it("returns { enabled: false } when billing state is not initialized", async () => {
+    // Clear billing state so isBillingStateInitialized() returns false.
+    await clearBillingState();
+    const req: RouteRequest = {};
+    const res = makeRes();
+    await handler(req, res, fakeRuntime);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ enabled: false });
+  });
+});

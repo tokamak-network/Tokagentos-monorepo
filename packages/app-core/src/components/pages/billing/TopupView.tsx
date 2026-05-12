@@ -2,10 +2,14 @@
  * TopupView — EIP-3009 sign + settle top-up flow.
  *
  * Flow (Decision Z41):
- *   1. User enters USD amount → GET /v1/topup/info + POST /v1/topup/quote
- *   2. UI builds EIP-3009 TransferWithAuthorization typed data
+ *   1. User enters USD amount → POST /v1/topup/quote (returns amounts + EIP-712 domain inline)
+ *   2. UI builds EIP-3009 TransferWithAuthorization typed data using quote.domain
  *   3. User's ethers v6 signer signs via signer.signTypedData(domain, types, message)
  *   4. UI decomposes signature → POST /v1/topup/settle { topupId, signature: {v,r,s} }
+ *
+ * Note: The backend's POST /v1/topup/quote handler (topup-routes.ts:223-231) embeds
+ * the EIP-712 domain in its response, so a separate GET /v1/topup/info call is unnecessary.
+ * This saves one round-trip per top-up.
  *
  * Uses ethers v6 (existing dep — Decision Z39). No wagmi / viem added.
  */

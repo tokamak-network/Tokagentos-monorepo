@@ -1,9 +1,24 @@
+// @vitest-environment jsdom
+
 /**
  * Tests for TopupView
  */
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import React from "react";
 import { describe, expect, it, vi, afterEach } from "vitest";
+
+// Mock @tokagentos/ui to bypass a pre-existing import-time error in
+// @tokagentos/ui/composites (missing ./trajectories module). The breakage
+// is unrelated to billing — see Phase 7.2 review (Fix 4).
+vi.mock("@tokagentos/ui", () => ({
+  Button: ({ children, onClick, ...rest }: Record<string, unknown> & { children?: React.ReactNode; onClick?: () => void }) =>
+    React.createElement("button", { onClick, ...rest }, children as React.ReactNode),
+  Input: (props: Record<string, unknown>) => React.createElement("input", props),
+  PagePanel: ({ children, ...rest }: Record<string, unknown> & { children?: React.ReactNode }) =>
+    React.createElement("div", rest, children as React.ReactNode),
+}));
+
 import { TopupView } from "./TopupView.js";
 
 // ---------------------------------------------------------------------------

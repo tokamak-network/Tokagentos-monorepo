@@ -70,7 +70,10 @@ export function buildTransferWithAuthMessage(
 // Type definitions (matches backend chain/typed-data.ts)
 // ---------------------------------------------------------------------------
 
-export const TRANSFER_WITH_AUTHORIZATION_TYPES = {
+export const TRANSFER_WITH_AUTHORIZATION_TYPES: Record<
+  string,
+  { name: string; type: string }[]
+> = {
   TransferWithAuthorization: [
     { name: "from", type: "address" },
     { name: "to", type: "address" },
@@ -79,7 +82,7 @@ export const TRANSFER_WITH_AUTHORIZATION_TYPES = {
     { name: "validBefore", type: "uint256" },
     { name: "nonce", type: "bytes32" },
   ],
-} as const;
+};
 
 // ---------------------------------------------------------------------------
 // UUID → bytes32 conversion (topupId nonce encoding)

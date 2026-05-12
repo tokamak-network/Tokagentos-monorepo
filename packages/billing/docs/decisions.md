@@ -778,6 +778,8 @@ Cross-validation rule: `BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true → B
 
 **Decision**: **`signer.signTypedData(domain, types, message)`** — the public stable API in ethers v6. The returned hex string is 0x-prefixed, 132 chars (65 bytes): `r` (bytes 0–31), `s` (bytes 32–63), `v` (byte 64). The `decomposeSignature()` helper in `eip712-utils.ts` performs this split. The domain is taken directly from the `POST /v1/topup/quote` response (which already includes `chainId` and `verifyingContract`), so the frontend does not need a separate info endpoint.
 
+**Note (Phase 7.2)**: TopupView elides `GET /v1/topup/info` because `POST /v1/topup/quote` returns the EIP-712 domain inline (see `topup-routes.ts:223-231`); saves one round-trip per topup.
+
 **Wire-format compatibility**: Verified against the backend's `verifyEip3009Signature()` (viem). ethers v6 and viem both produce DER-normalized ECDSA signatures; the `{v, r, s}` decomposition is identical.
 
 **Alternatives considered and rejected**:
