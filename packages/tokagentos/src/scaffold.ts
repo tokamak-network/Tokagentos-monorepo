@@ -611,7 +611,7 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "          </TabContentView>\n" +
       "        );\n",
     replaceWith:
-      "      // [tokagent surgical-patch] Billing tab — fixed entry, no enabled gate.\n" +
+      "      // [tokagent surgical-patch] x402 tab — fixed entry, no enabled gate.\n" +
       "      case \"billing\":\n" +
       "        return (\n" +
       "          <TabContentView chatDisabled>\n" +
@@ -624,6 +624,59 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "            <SettingsView key=\"settings-root\" />\n" +
       "          </TabContentView>\n" +
       "        );\n",
+  },
+  {
+    path: "packages/shared/src/contracts/onboarding.ts",
+    description:
+      "Inject an 'x402 only (can be configured from the gateway)' option " +
+      "into the LLM provider catalog. Sources dispatch from the local " +
+      "OpenRouter plugin under the hood (so the chat tab still works), " +
+      "while signalling to users that billing routes through the x402 " +
+      "rail configured from the x402 sidebar tab.",
+    find:
+      "  {\n" +
+      "    id: \"zai\",\n" +
+      "    name: \"z.ai\",\n" +
+      "    envKey: \"ZAI_API_KEY\",\n" +
+      "    pluginName: \"@homunculuslabs/plugin-zai\",\n" +
+      "    keyPrefix: null,\n" +
+      "    description: \"GLM models via z.ai Coding Plan.\",\n" +
+      "    family: \"zai\",\n" +
+      "    authMode: \"api-key\",\n" +
+      "    group: \"local\",\n" +
+      "    order: 150,\n" +
+      "  },\n" +
+      "] as const satisfies ReadonlyArray<ProviderOption>;\n",
+    replaceWith:
+      "  {\n" +
+      "    id: \"zai\",\n" +
+      "    name: \"z.ai\",\n" +
+      "    envKey: \"ZAI_API_KEY\",\n" +
+      "    pluginName: \"@homunculuslabs/plugin-zai\",\n" +
+      "    keyPrefix: null,\n" +
+      "    description: \"GLM models via z.ai Coding Plan.\",\n" +
+      "    family: \"zai\",\n" +
+      "    authMode: \"api-key\",\n" +
+      "    group: \"local\",\n" +
+      "    order: 150,\n" +
+      "  },\n" +
+      "  // [tokagent surgical-patch] x402 provider — dispatches LLM calls\n" +
+      "  // through the OpenRouter plugin under the hood but advertises\n" +
+      "  // billing via the x402 rail. Configure top-up, keys, and usage\n" +
+      "  // from the x402 sidebar tab.\n" +
+      "  {\n" +
+      "    id: \"x402\",\n" +
+      "    name: \"x402 only (can be configured from the gateway)\",\n" +
+      "    envKey: \"OPENROUTER_API_KEY\",\n" +
+      "    pluginName: \"@elizaos/plugin-openrouter\",\n" +
+      "    keyPrefix: \"sk-or-\",\n" +
+      "    description: \"Pay-per-request via the x402 payment rail. Configure top-up, keys, and usage from the x402 sidebar tab.\",\n" +
+      "    family: \"openrouter\",\n" +
+      "    authMode: \"api-key\",\n" +
+      "    group: \"local\",\n" +
+      "    order: 5,\n" +
+      "  },\n" +
+      "] as const satisfies ReadonlyArray<ProviderOption>;\n",
   },
 ];
 
