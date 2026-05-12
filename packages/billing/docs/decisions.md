@@ -807,3 +807,52 @@ Cross-validation rule: `BILLING_ENABLED=true && BILLING_AUTH_REQUIRED=true → B
 **Reversibility**: Replace `vi.stubGlobal` calls with MSW handlers if integration-level testing is desired.
 
 **Owner-type**: Frontend eng
+
+---
+
+## Z43 — Operator key reuse at cutover (Phase 8, cross-ref OQ9)
+
+**Question (Phase 8 / OQ9)**: At cutover, should the operator Ethereum address be reused from the source deployment, or should the team rotate to a fresh key?
+
+**Decision**: **Reuse the source's operator address** — the `OPERATOR_PRIVATE_KEY` from `llm-api-gateway` becomes `BILLING_OPERATOR_PRIVATE_KEY` in the target, same key material, no `setOperator` migration transaction required at cutover.
+
+**Reasoning**: OQ9 resolved this in Phase 0: the vault's registered operator is the same address; the migration is simply a rename of the environment variable. A `setOperator` tx is only needed if the team explicitly decides to rotate the hot key. The cutover runbook (Section 2.1) documents the verification step (`wallet.address` check on both deployments) and notes the rotation path for teams that choose to rotate. Reuse is safe because the vault contract's access control is independent of the source gateway process — changing the env var does not change who the vault recognizes as operator.
+
+**Reversibility**: Trivial — if rotation is required later, call `vault.setOperator(newAddress)` and update `BILLING_OPERATOR_PRIVATE_KEY`.
+
+**Owner-type**: Security eng / Smart-contract eng
+
+---
+
+## Z44 — SQLite call_log historical migration: archive only (Phase 8, cross-ref OQ6)
+
+**Question (Phase 8 / OQ6)**: Should `proxy/data/usage.db` (source's SQLite call log) be migrated into the target's `billing_call_log` table, or archived as-is?
+
+**Decision**: **Path A — archive only.** The SQLite file is backed up to cold storage (S3 or equivalent) alongside the archived `llm-api-gateway` repo. No import script is written unless customers explicitly request historical usage data.
+
+**Reasoning**: OQ6 resolved this in Phase 0. The source's in-memory API key store was already documented as intentionally ephemeral (`apiKeys.ts:13-16` comment). The SQLite call log is the only durable state, and the migration effort (~0.5 day per plan) is not justified without a confirmed customer request. Historical data is accessible via a one-shot SQLite dump if needed. The cutover runbook (Section 7.3) documents the backup procedure. The `billing_call_log` table in the target contains only post-cutover data; customers querying `/v1/usage/*` endpoints see only new-gateway history.
+
+**Reversibility**: Trivial — the migration script can be written at any time as long as the SQLite file is preserved in cold storage. No structural lock-in.
+
+**Owner-type**: Backend eng / Product
+
+---
+
+## Z45 — Anvil harness Phase 8 prep: random port + signal handling (Phase 8)
+
+**Question (Phase 8)**: The Phase 5.1 `fileParallelism: false` override and the `pkill -9 -f anvil` defensive cleanup (Decision Z24) were identified as needing improvement. The underlying issue is that both Anvil integration test files (vault and consume-worker) targeted the same hardcoded port 8545, causing races when vitest ran files in parallel.
+
+**Decision**:
+1. **Random port selection**: `spawnAnvil()` now calls `pickFreePort()` — an OS-assigned ephemeral port via a brief `net.createServer().listen(0)` → close → use-assigned-port sequence. The port is returned as part of the `AnvilHarness` interface alongside `rpcUrl`. Each test file's Anvil instance binds to a distinct port.
+2. **SIGINT/SIGTERM cleanup**: `spawnAnvil()` registers `process.once('SIGINT', ...)` and `process.once('SIGTERM', ...)` signal handlers that call `stop()` before exiting with the appropriate exit code (130 for SIGINT, 143 for SIGTERM). The handlers deregister themselves inside `stop()` to prevent interference between multiple harnesses in the same process.
+3. **pkill removed**: The `pkill -9 -f anvil` stale-process cleanup (Decision Z24) is removed. With random ports, stale processes from prior runs cannot cause port collisions. Killing all `anvil` processes was incompatible with parallel test runs.
+4. **`fileParallelism: false` override removed**: `packages/billing/vitest.config.ts` no longer overrides `fileParallelism`. Vitest runs test files in parallel by default, and the random-port harness supports this correctly.
+
+**Alternatives considered and rejected**:
+1. **Keep hardcoded port + file serialization** — works but prevents parallel-CI Anvil runs; masks the real problem.
+2. **Use `BILLING_TEST_ANVIL_PORT` env var** — allows configuration but requires per-file coordination (still a manual concern).
+3. **Docker-isolated Anvil per file** — clean isolation but adds Docker dependency to CI.
+
+**Reversibility**: Reintroduce `fileParallelism: false` and a fixed port if the random-port approach causes flakiness (e.g., due to TOCTOU race on port assignment). The signal handler pattern is safe to keep regardless.
+
+**Owner-type**: Backend eng / DX eng

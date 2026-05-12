@@ -4,6 +4,18 @@
  * Decision Z7: integration tests are env-gated (BILLING_TEST_ANVIL=1).
  * This file is a private helper — not re-exported from the package index.
  *
+ * Decision Z45 (Phase 8): random port selection + SIGINT/SIGTERM cleanup.
+ *   - `pickFreePort()` selects an OS-assigned free port in the ephemeral range
+ *     instead of hardcoding 8545. This eliminates port collisions when multiple
+ *     Anvil harnesses run in parallel (e.g. vitest file-level parallelism).
+ *   - Signal handlers (`SIGINT`, `SIGTERM`) ensure the Anvil child process is
+ *     terminated cleanly when the test runner exits abruptly, preventing leaked
+ *     processes.
+ *   - The `pkill -9 -f anvil` defensive cleanup (Decision Z24) is removed.
+ *     With random ports, stale processes from prior runs do not occupy the same
+ *     port and cannot cause "nonce too low" forge errors. Killing ALL anvil
+ *     processes was fragile and broke parallel test runs.
+ *
  * Requirements:
  *   - Foundry installed: foundry bin at ~/.foundry/bin/anvil and forge.
  *   - llm-api-gateway contracts buildable at the source root.
@@ -18,6 +30,7 @@
 
 import { spawn, execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { createServer } from "node:net";
 import path from "node:path";
 import type { ChildProcess } from "node:child_process";
 
@@ -61,19 +74,47 @@ export const ANVIL_ACCOUNT_1 = {
 // ---------------------------------------------------------------------------
 
 export interface AnvilHarness {
-  /** HTTP RPC URL for the Anvil node. */
+  /** HTTP RPC URL for the Anvil node (includes the random port). */
   rpcUrl: string;
+  /** TCP port the Anvil node is listening on. */
+  port: number;
   /** Deployed PTON contract address. */
   ptonAddress: `0x${string}`;
   /** Deployed ClaudeVault contract address. */
   vaultAddress: `0x${string}`;
-  /** Stops the Anvil process. */
+  /** Stops the Anvil process and deregisters signal handlers. */
   stop: () => void;
 }
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+/**
+ * Ask the OS to assign a free ephemeral port by briefly binding to port 0,
+ * recording the assigned port, and releasing it before Anvil binds to it.
+ *
+ * Decision Z45: replaces the hardcoded port 8545. The brief listen-then-close
+ * sequence has a theoretical TOCTOU race with another process, but in practice
+ * the OS recycles ephemeral ports infrequently and the window is microseconds.
+ * This is acceptable for a test harness.
+ */
+async function pickFreePort(): Promise<number> {
+  return new Promise<number>((resolve, reject) => {
+    const srv = createServer();
+    srv.unref(); // do not keep the event loop alive
+    srv.on("error", reject);
+    srv.listen(0, () => {
+      const addr = srv.address();
+      if (addr === null || typeof addr === "string") {
+        srv.close(() => reject(new Error("Could not determine assigned port")));
+        return;
+      }
+      const port = addr.port;
+      srv.close(() => resolve(port));
+    });
+  });
+}
 
 /**
  * Poll an Anvil RPC endpoint until it responds to `eth_blockNumber`,
@@ -154,36 +195,31 @@ function parseDeployedAddresses(chainId: number): {
 // ---------------------------------------------------------------------------
 
 /**
- * Spawns a local Anvil node on port 8545 and deploys PTON + ClaudeVault using
- * the source repo's Deploy.s.sol script.
+ * Spawns a local Anvil node on a random free port and deploys PTON +
+ * ClaudeVault using the source repo's Deploy.s.sol script.
+ *
+ * Decision Z45 (Phase 8):
+ *   - Port is selected dynamically via `pickFreePort()` — no hardcoded 8545.
+ *   - SIGINT and SIGTERM handlers stop the Anvil process cleanly.
+ *   - The `pkill -9 -f anvil` stale-cleanup step has been removed; random
+ *     ports make it unnecessary and it was incompatible with parallel runs.
  *
  * The harness uses a fresh non-forked chain (chainId=31337, the default Anvil
  * chain). A fake TON token address is passed to PTON (the deployment only
  * uses the address as a reference; the faucet mode bypasses TON wrapping in
  * tests). `ENABLE_FAUCET=true` is set so tests can mint PTON directly.
  *
- * @returns The harness object with rpcUrl, ptonAddress, vaultAddress, and stop().
+ * @returns The harness object with rpcUrl, port, ptonAddress, vaultAddress, and stop().
  * @throws If Anvil or Forge are not installed, or if deployment fails.
  */
 export async function spawnAnvil(): Promise<AnvilHarness> {
-  const port = 8545;
+  // ---- 0. Pick a free port ----
+  const port = await pickFreePort();
   const rpcUrl = `http://127.0.0.1:${port}`;
   const chainId = 31337;
 
-  // ---- 0. Defensive cleanup — kill any stale anvil from a previous failed run.
-  // Stale processes hold port 8545 and produce "nonce too low" errors when the
-  // forge deploy script targets a chain at a different block height than
-  // expected. Best-effort: ignore failures (no stale process is fine).
-  try {
-    execSync("pkill -9 -f anvil", { stdio: "ignore" });
-    // Give the OS a moment to release the port before we bind it again.
-    await new Promise((r) => setTimeout(r, 1000));
-  } catch {
-    // No stale process found — proceed normally.
-  }
-
   // ---- 1. Start Anvil ----
-  let anvilProcess: ChildProcess;
+  let anvilProcess: ChildProcess | null;
   try {
     anvilProcess = spawn(ANVIL_BIN, ["--port", String(port), "--silent"], {
       detached: false,
@@ -196,12 +232,34 @@ export async function spawnAnvil(): Promise<AnvilHarness> {
     );
   }
 
+  // ---- 1a. Register signal handlers (Decision Z45) ----
+  // Clean up the child process when the test runner exits via SIGINT (Ctrl+C)
+  // or SIGTERM (e.g. CI kill signal). Deregistered inside stop() so multiple
+  // harnesses in the same process do not interfere.
+  const sigintHandler = () => {
+    stop();
+    process.exit(130); // standard exit code for SIGINT
+  };
+  const sigtermHandler = () => {
+    stop();
+    process.exit(143); // standard exit code for SIGTERM
+  };
+  process.once("SIGINT", sigintHandler);
+  process.once("SIGTERM", sigtermHandler);
+
   const stop = () => {
-    try {
-      anvilProcess.kill("SIGTERM");
-    } catch {
-      // already dead
+    if (anvilProcess !== null) {
+      try {
+        anvilProcess.kill("SIGTERM");
+      } catch {
+        // already dead
+      }
+      anvilProcess = null;
     }
+    // Deregister signal handlers so they do not fire after stop() is called
+    // (e.g. if the test runner sends SIGTERM after the harness is cleaned up).
+    process.off("SIGINT", sigintHandler);
+    process.off("SIGTERM", sigtermHandler);
   };
 
   try {
@@ -244,5 +302,5 @@ export async function spawnAnvil(): Promise<AnvilHarness> {
   // ---- 3. Parse deployed addresses ----
   const { ptonAddress, vaultAddress } = parseDeployedAddresses(chainId);
 
-  return { rpcUrl, ptonAddress, vaultAddress, stop };
+  return { rpcUrl, port, ptonAddress, vaultAddress, stop };
 }

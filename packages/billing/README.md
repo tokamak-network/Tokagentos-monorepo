@@ -23,7 +23,7 @@ on-chain `consumeCredits` flushes + composite Uniswap V3 TWAP for USD→PTON pri
 | 6b | Credits/topup/usage/estimate routes + billing gate closures wired into chat-routes | ✅ landed |
 | 6 | Routes + auth + middleware + scaffold mirroring | ✅ landed |
 | 7 | app-core billing UI | ✅ landed |
-| 8 | Cutover + decommission | — |
+| 8 | Cutover + decommission | ✅ landed |
 
 ---
 
@@ -312,3 +312,61 @@ consume-worker → vault.consumeCredits(wallet, accrued, batchId)
 Billing is **opt-in**: set `BILLING_ENABLED=true` in your deployment's environment to activate.
 Local-first and self-hosted deployments run with `BILLING_ENABLED=false` (the default) and are
 entirely unaffected.
+
+---
+
+## Production Operations
+
+Phase 8 adds two operational artifacts for cutover and ongoing ledger health.
+
+### Cutover runbook
+
+`packages/billing/docs/cutover-runbook.md` — complete step-by-step procedure
+for migrating production traffic from `llm-api-gateway` to tokagentos billing
+and decommissioning the source. Organized as:
+
+- **T-30**: inventory, customer comms, staging validation
+- **T-7**: secrets migration (operator key, auth secret, TWAP pools)
+- **T-1**: deploy target with `BILLING_ENABLED=true`, health checks, shadow deploy
+- **T+0**: active cutover — DNS flip, deprecation headers, post-cutover consistency check
+- **T+0 to T+30**: drain window, daily monitoring
+- **T+30**: decommission (archive repo, cold-store SQLite, contract address update)
+- **Rollback**: window closes at T+30
+
+### Ledger consistency check
+
+`packages/billing/scripts/check-ledger-consistency.ts` — CLI script that compares
+`billing_credit_state.{balance + reserved + accrued}` against on-chain
+`vault.credits(wallet)` for every wallet in the DB.
+
+```bash
+# Run via package.json script (from repo root)
+BILLING_DATABASE_URL=postgres://... \
+BILLING_VAULT_ADDRESS=0x... \
+BILLING_CHAIN_RPC_URL=https://... \
+bun run --cwd packages/billing check-ledger
+
+# Options
+--json                   # machine-readable JSON output
+--tolerance-atto=1000000 # drift tolerance in atto-PTON (default: 1_000_000)
+--max-rows=10000         # max wallets to scan (default: 10_000)
+```
+
+**Required run schedule** (see runbook Section 6):
+
+| When | Required |
+|---|---|
+| Pre-cutover staging validation | Yes — must exit 0 |
+| Post-cutover (within 1 hour of flip) | Yes — must exit 0 |
+| Daily for first 7 days post-cutover | Yes |
+| Weekly thereafter | Recommended |
+
+### Safe default
+
+`BILLING_ENABLED=false` remains the safe default for all deployments, including
+scaffolded projects. Only operator-controlled deployments with an explicit
+`BILLING_ENABLED=true` in their environment activate the billing gate.
+
+The manual smoke test from Phase 7 (SIWE login → mint key → top-up → billed
+request → usage row appears) is still the required validation gate before any
+production deployment with `BILLING_ENABLED=true`.

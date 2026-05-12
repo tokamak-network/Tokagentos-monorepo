@@ -3,20 +3,25 @@ import { defineConfig } from "vitest/config";
 /**
  * Vitest config — minimal.
  *
- * `fileParallelism: false` (Phase 5.2): vitest defaults to running test files
- * in parallel. The two Anvil integration tests
- * (`chain/__tests__/vault.integration.test.ts` and
- *  `workers/__tests__/consume-worker.integration.test.ts`) both spawn anvil
- * on hardcoded port 8545, AND the harness's defensive `pkill -9 -f anvil`
- * (Decision Z24) kills the other file's anvil mid-deploy. The race produces
- * "nonce too low" forge errors that look like test bugs.
+ * Decision Z45 (Phase 8): `fileParallelism` override removed.
  *
- * Serializing files eliminates both the port and the pkill race. The cost is
- * ~half-second longer on a fully-parallel-friendly run, which is irrelevant
- * for a 9-test integration suite. Phase 8 random-port selection will revisit.
+ * Phase 5.1 set `fileParallelism: false` to prevent port-collision between
+ * the two Anvil integration tests, both of which were targeting hardcoded
+ * port 8545. The `pkill -9 -f anvil` in the harness (Decision Z24) then
+ * killed the other file's Anvil mid-deploy, producing "nonce too low" errors.
+ *
+ * Phase 8 (Decision Z45) replaces the hardcoded port with `pickFreePort()`
+ * (OS-assigned ephemeral port). Each test file's Anvil instance now binds to
+ * a distinct port, eliminating the race. The `pkill -9 -f anvil` step is also
+ * removed. Vitest can therefore run files in parallel again.
+ *
+ * Leaving `fileParallelism` unset restores the vitest default (true for
+ * multi-process mode). The integration test suite is still env-gated by
+ * `BILLING_TEST_ANVIL=1` so parallel execution only matters for CI runs that
+ * explicitly opt in.
  */
 export default defineConfig({
   test: {
-    fileParallelism: false,
+    // fileParallelism: false  — removed per Decision Z45
   },
 });

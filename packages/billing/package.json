@@ -18,7 +18,8 @@
     "lint": "bunx @biomejs/biome check src",
     "lint:fix": "bunx @biomejs/biome check --write src",
     "sync-abis": "./scripts/sync-abis.sh",
-    "db:generate": "bunx drizzle-kit generate --config drizzle.config.ts"
+    "db:generate": "bunx drizzle-kit generate --config drizzle.config.ts",
+    "check-ledger": "bun run scripts/check-ledger-consistency.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.1",
