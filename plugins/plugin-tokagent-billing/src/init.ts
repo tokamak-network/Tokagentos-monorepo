@@ -211,13 +211,13 @@ export async function initBillingPlugin(runtime: IAgentRuntime): Promise<void> {
 
   // ---- 4. Bridge into the host app's wallet pipeline ----
   // The scaffold's wallet/inventory tab discovers chains via provider API
-  // keys in process.env (ALCHEMY_API_KEY, INFURA_API_KEY, ...). If the
-  // operator configured BILLING_CHAIN_RPC_URL with a recognizable provider
-  // URL, derive the API key and seed those env vars — so the wallet
-  // page works against mainnet using the SAME key the operator pasted
-  // into the billing wizard, instead of failing for lack of an env var.
+  // keys in process.env (ALCHEMY_API_KEY, INFURA_API_KEY, ...) and signs
+  // through EVM_PRIVATE_KEY. If the operator configured those values via
+  // the billing wizard, mirror them into the wallet's expected env vars
+  // so the Wallet tab works with no extra configuration.
   // Idempotent: only writes if the target env var is unset.
   bridgeRpcKeysToWalletEnv(config.chainRpcUrl);
+  bridgePrivateKeyToWalletEnv(config.operatorPrivateKey);
 
   // ---- 5. Store shared state (Decision Z28) ----
   setBillingState({ pool, db, clients, config });
@@ -271,6 +271,23 @@ function bridgeRpcKeysToWalletEnv(billingRpcUrl: string): void {
       "could not parse billing RPC URL for wallet key bridge",
     );
   }
+}
+
+/**
+ * Seed `EVM_PRIVATE_KEY` from the billing operator key when the host hasn't
+ * set it. This lets the scaffold's Wallet/Inventory tab sign transactions
+ * with the same key the operator pasted into the billing wizard, instead
+ * of asking the user to populate yet another env var.
+ *
+ * Idempotent: an explicit `EVM_PRIVATE_KEY=...` in `.env` always wins.
+ */
+function bridgePrivateKeyToWalletEnv(operatorPrivateKey: string): void {
+  if (!operatorPrivateKey) return;
+  if (process.env.EVM_PRIVATE_KEY) return;
+  process.env.EVM_PRIVATE_KEY = operatorPrivateKey;
+  log.info(
+    "bridged BILLING_OPERATOR_PRIVATE_KEY → EVM_PRIVATE_KEY so the wallet tab can sign with the same key",
+  );
 }
 
 /**

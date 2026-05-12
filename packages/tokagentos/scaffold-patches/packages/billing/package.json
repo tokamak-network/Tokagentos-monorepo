@@ -1,6 +1,6 @@
 {
   "name": "@tokagentos/billing",
-  "version": "2.0.0-alpha.286",
+  "version": "2.0.0-alpha.287",
   "description": "Web3 credit-billing rail for tokagentos. Migrated from llm-api-gateway.",
   "type": "module",
   "publishConfig": {
@@ -46,5 +46,5 @@
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
   },
-  "gitHead": "ab0c642460d8ff9dcf88338659e2866b7e97b1c6"
+  "gitHead": "4269461b483bb95f7e04facc348b6171eaa3ccd3"
 }
