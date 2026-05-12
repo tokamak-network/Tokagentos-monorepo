@@ -1298,6 +1298,22 @@ export default defineConfig({
           proxy.on("error", () => {});
         },
       },
+      // tokagent-billing routes live at /v1/* (billing/status, credits/me, auth/nonce,
+      // topup/quote, etc.) and are served directly by the agent API, not under /api.
+      // Without this proxy the SPA fetch for /v1/billing/status returns the Vite
+      // index.html instead of {enabled:true}, leaving the Billing nav hidden.
+      "/v1": {
+        target: `http://127.0.0.1:${apiPort}`,
+        changeOrigin: true,
+        configure: (proxy) => {
+          proxy.on("error", (_err, _req, res) => {
+            if (!res.headersSent) {
+              res.writeHead(502, { "Content-Type": "application/json" });
+              res.end(JSON.stringify({ error: "API server unavailable" }));
+            }
+          });
+        },
+      },
       // elizaOS plugin-music-player HTTP routes live outside /api (e.g. /music-player/stream).
       "/music-player": {
         target: `http://127.0.0.1:${apiPort}`,
