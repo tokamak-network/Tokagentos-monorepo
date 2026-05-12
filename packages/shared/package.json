@@ -1,6 +1,6 @@
 {
   "name": "@tokagentos/shared",
-  "version": "2.0.0-alpha.273",
+  "version": "2.0.0-alpha.274",
   "description": "Shared code for Tokagent agent and app-core.",
   "type": "module",
   "main": "src/index.ts",
@@ -61,7 +61,7 @@
     "directory": "dist"
   },
   "dependencies": {
-    "@tokagentos/core": "2.0.0-alpha.273",
+    "@tokagentos/core": "2.0.0-alpha.274",
     "zod": "^4.3.6"
   },
   "optionalDependencies": {
