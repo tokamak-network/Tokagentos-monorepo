@@ -1,6 +1,6 @@
 {
   "name": "@tokagentos/schemas",
-  "version": "2.0.0-alpha.283",
+  "version": "2.0.0-alpha.284",
   "description": "Protocol Buffer schemas for tokagentOS - single source of truth for all types",
   "files": [
     "tokagent",
