@@ -113,6 +113,43 @@ function BillingPageView(): React.ReactElement {
         background: "#0a0a0f",
       }}
     >
+      {/* BETA ticker — rendered in the parent React tree (not the iframe)
+          so dashboard rebuilds don't overwrite it. Slim strip, non-sticky,
+          uses the parent's locked lime accent. */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          padding: "8px 16px",
+          background: "rgba(196, 245, 71, 0.08)",
+          borderBottom: "1px solid rgba(196, 245, 71, 0.25)",
+          color: "#c4f547",
+          fontSize: "0.75rem",
+          fontWeight: 600,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          flexShrink: 0,
+        }}
+      >
+        <span
+          style={{
+            display: "inline-block",
+            padding: "2px 8px",
+            borderRadius: "999px",
+            background: "#c4f547",
+            color: "#0a0a0f",
+            fontSize: "0.65rem",
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+          }}
+        >
+          BETA
+        </span>
+        <span style={{ color: "#9ca3af", fontWeight: 500, textTransform: "none", letterSpacing: 0 }}>
+          The x402 rail is in active development — expect rapid iteration.
+        </span>
+      </div>
       {loading ? (
         <div
           style={{
