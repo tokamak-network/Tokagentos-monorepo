@@ -44,17 +44,25 @@ interface LlmProvider {
   label: string;
   envVar: string;
   hint?: string;
+  /**
+   * When true, the provider is offered for fullstack-app even though it
+   * doesn't write an API key to `.env` during scaffold. Used for x402:
+   * dispatch + billing are both configured in-app via the x402 tab after
+   * `bun run dev`, so the scaffold flow shouldn't ask for a key.
+   */
+  configuredInApp?: boolean;
 }
 
 const LLM_PROVIDERS: readonly LlmProvider[] = [
   {
     id: "x402",
     label: "x402 only (can be configured from the gateway)",
-    // Sources dispatch from OpenRouter under the hood so the chat tab
-    // works immediately; the canonical billing path runs through the
-    // x402 sidebar tab once the project boots.
-    envVar: "OPENROUTER_API_KEY",
-    hint: "sk-or-v1-…  (used for LLM dispatch; billing config lives in the x402 tab)",
+    // The x402 path is configured entirely from the in-app x402 tab
+    // after the project boots (sidebar → x402 → setup wizard). The
+    // scaffold doesn't write any provider key for this option.
+    envVar: "",
+    hint: "Configure from the x402 tab after `bun run dev`",
+    configuredInApp: true,
   },
   {
     id: "openai",
@@ -229,9 +237,9 @@ async function promptLlmProvider(
       );
       process.exit(1);
     }
-    if (required && !match.envVar) {
+    if (required && !match.envVar && !match.configuredInApp) {
       clack.cancel(
-        `--llm '${initial}' is not a real provider for fullstack-app. Pick one that requires an API key (openai, anthropic, google, groq, openrouter).`,
+        `--llm '${initial}' is not a real provider for fullstack-app. Pick one that requires an API key (openai, anthropic, google, groq, openrouter, x402).`,
       );
       process.exit(1);
     }
@@ -246,8 +254,11 @@ async function promptLlmProvider(
     }
     return findLlmProvider("skip") as LlmProvider;
   }
-  // Hide providers without an API key (ollama, skip) when one is required.
-  const options = LLM_PROVIDERS.filter((p) => !required || p.envVar.length > 0);
+  // For fullstack-app: hide local-only providers (ollama, skip), but keep
+  // configuredInApp options (x402 — set up via the in-app x402 tab).
+  const options = LLM_PROVIDERS.filter(
+    (p) => !required || p.envVar.length > 0 || p.configuredInApp === true,
+  );
   const choice = await clack.select({
     message: required
       ? "Which LLM provider will this project use? (required)"
