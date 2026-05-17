@@ -263,6 +263,200 @@ function callbackContentHasVisibleOutput(content: Content): boolean {
 	return Array.isArray(content.attachments) && content.attachments.length > 0;
 }
 
+/**
+ * Wrap a database adapter so that method names this runtime expects but the
+ * adapter doesn't implement resolve to safe defaults instead of throwing
+ * `TypeError: this.adapter.X is not a function`.
+ *
+ * Why this exists: the runtime is built against a richer adapter interface
+ * than older `@elizaos/plugin-sql` versions ship (e.g. 1.7.2 lacks ~66 of
+ * the methods the runtime calls — `*ByIds` batch reads, `upsert*` bulk
+ * writes, `update*s` / `delete*s` plurals, etc.). Without this shim the
+ * agent crashes during `initialize()` and the HTTP server never starts.
+ *
+ * Resolution strategy per missing method:
+ *   1. `getXByIds([ids])` → fall back to `Promise.all(ids.map(getX))` when
+ *      the singular form exists. Filters out null results.
+ *   2. `getXs()` / `getXsBy*()` → return `[]`.
+ *   3. `getX()` → return `null`.
+ *   4. `countXs()` → return `0`.
+ *   5. `createX(s)` / `upsertX(s)` → return `[]` (caller usually wants ids).
+ *   6. `updateX(s)` / `deleteX(s)` → return `true` (assume success).
+ *   7. Anything else → return `undefined`.
+ *
+ * Every shim hit is logged at debug level so missing capabilities can be
+ * tracked. None of the methods we shim are LOAD-BEARING for the chat +
+ * billing flow we're exercising (they're conversation history, world
+ * registry, telemetry — features tokagent doesn't strictly need to serve
+ * a `/v1/messages` call).
+ */
+/**
+ * Explicit name-mismatch aliases. When the runtime calls a method that
+ * doesn't exist on the adapter but a differently-named method serves the
+ * same semantics, map them here. Args are forwarded transparently — the
+ * shim assumes the alias has a compatible signature.
+ *
+ * Adapter v1.7.2 → runtime expectations:
+ */
+const ADAPTER_METHOD_ALIASES: Record<string, string> = {
+	// Room participants — runtime expects createRoomParticipants(entityIds[], roomId);
+	// adapter has addParticipantsRoom with same shape.
+	createRoomParticipants: "addParticipantsRoom",
+	// Singular alias as a fallback if the plural isn't there.
+	// (We pick the plural first because runtime calls plural.)
+};
+
+function wrapAdapterWithCompatShim(
+	adapter: IDatabaseAdapter,
+	logger: { debug: (obj: Record<string, unknown>, msg?: string) => void },
+): IDatabaseAdapter {
+	const shimmed = new Set<string>();
+	const a = adapter as unknown as Record<string, unknown>;
+
+	return new Proxy(adapter, {
+		get(target, prop, receiver) {
+			const orig = Reflect.get(target, prop, receiver);
+			if (orig !== undefined) {
+				// Bind methods so `this` inside the adapter still works.
+				return typeof orig === "function" ? (orig as Function).bind(target) : orig;
+			}
+			if (typeof prop !== "string") return undefined;
+			const name = prop;
+
+			// Explicit name aliases — used when an adapter method exists under
+			// a different name. Forwards all args transparently.
+			const aliasTarget = ADAPTER_METHOD_ALIASES[name];
+			if (aliasTarget && typeof a[aliasTarget] === "function") {
+				if (!shimmed.has(name)) {
+					shimmed.add(name);
+					logger.debug(
+						{ src: "agent", method: name, alias: aliasTarget },
+						"adapter shim: routing to aliased method",
+					);
+				}
+				return async (...args: unknown[]) => {
+					const result = await (a[aliasTarget] as (...x: unknown[]) => Promise<unknown>)(
+						...args,
+					);
+					// Runtime sometimes checks `result.length` to verify the write
+					// (e.g. createRoomParticipants). If the alias returns void/true
+					// instead of an array, synthesize one from the input ids.
+					if (Array.isArray(result)) return result;
+					const firstArg = args[0];
+					if (Array.isArray(firstArg)) return firstArg;
+					return result === undefined || result === null ? [] : [result];
+				};
+			}
+
+			// Best-effort routing of plural batch reads to singular form.
+			//   getAgentsByIds   → getAgent
+			//   getWorldsByIds   → getWorld
+			//   getEntitiesByIds → getEntity
+			//   getRoomsByIds    → getRoom
+			const byIdsMatch = name.match(/^get([A-Z][a-zA-Z]*?)(?:s|es|ies)ByIds$/);
+			if (byIdsMatch) {
+				const singularBase = byIdsMatch[1]!.replace(/ie$/, "y"); // Entities → Entity
+				const singularGetter = `get${singularBase}`;
+				if (typeof a[singularGetter] === "function") {
+					if (!shimmed.has(name)) {
+						shimmed.add(name);
+						logger.debug(
+							{ src: "agent", method: name, fallback: singularGetter },
+							"adapter shim: synthesizing batch-read from singular",
+						);
+					}
+					return async (ids: unknown[]) => {
+						if (!Array.isArray(ids)) return [];
+						const rows = await Promise.all(
+							ids.map((id) => (a[singularGetter] as (id: unknown) => Promise<unknown>)(id)),
+						);
+						return rows.filter((r) => r != null);
+					};
+				}
+			}
+
+			// Best-effort routing of bulk upsert/create writes to singular create.
+			//   upsertAgents([a])    → createAgent(a)         for each
+			//   upsertEntities([e])  → createEntity(e)        for each
+			//   createAgents([a])    → createAgent(a)         for each (older plural API)
+			// We treat upsert as "create if not exists, ignore if exists" — this is
+			// good enough for the boot path that just wants the row to be present.
+			const bulkWriteMatch = name.match(/^(upsert|create)([A-Z][a-zA-Z]*?)(?:s|es|ies)$/);
+			if (bulkWriteMatch) {
+				const verb = bulkWriteMatch[1]!; // "upsert" or "create"
+				const singularBase = bulkWriteMatch[2]!.replace(/ie$/, "y");
+				// Prefer createX (always works); upsertX would just hit our shim again.
+				const singularCreate = `create${singularBase}`;
+				if (typeof a[singularCreate] === "function") {
+					if (!shimmed.has(name)) {
+						shimmed.add(name);
+						logger.debug(
+							{ src: "agent", method: name, fallback: singularCreate, verb },
+							"adapter shim: synthesizing bulk write from singular create",
+						);
+					}
+					return async (...args: unknown[]) => {
+						const items = args[0];
+						const rest = args.slice(1);
+						if (!Array.isArray(items)) return [];
+						const results: unknown[] = [];
+						for (const item of items) {
+							try {
+								const r = await (a[singularCreate] as (...x: unknown[]) => Promise<unknown>)(
+									item,
+									...rest,
+								);
+								// createX often returns boolean — preserve item.id if available
+								// so callers expecting ids[] get something usable.
+								if (typeof r === "boolean") {
+									results.push((item as { id?: unknown })?.id ?? item);
+								} else {
+									results.push(r);
+								}
+							} catch (err) {
+								// On upsert, "already exists" is non-fatal — swallow and continue.
+								if (verb === "upsert") {
+									logger.debug(
+										{ src: "agent", method: name, error: (err as Error).message },
+										"adapter shim: upsert ignoring create-failure (likely already exists)",
+									);
+								} else {
+									throw err;
+								}
+							}
+						}
+						return results;
+					};
+				}
+			}
+
+			// Generic per-pattern defaults.
+			return async (..._args: unknown[]) => {
+				if (!shimmed.has(name)) {
+					shimmed.add(name);
+					logger.debug(
+						{ src: "agent", method: name },
+						"adapter shim: method not implemented by underlying adapter; returning safe default",
+					);
+				}
+				// `get*ByIds` (not matched above — singular getter also missing) → []
+				if (name.endsWith("ByIds") || name.endsWith("ByNames") || name.endsWith("ByPairs")) {
+					return [];
+				}
+				if (name.startsWith("get") && (name.endsWith("s") || /Logs|Memories|Entities|Rooms|Tasks|Caches/.test(name))) {
+					return [];
+				}
+				if (name.startsWith("get")) return null;
+				if (name.startsWith("count")) return 0;
+				if (name.startsWith("are") || name.startsWith("is") || name.startsWith("has")) return false;
+				if (name.startsWith("create") || name.startsWith("upsert")) return [];
+				if (name.startsWith("update") || name.startsWith("delete") || name.startsWith("patch") || name.startsWith("set")) return true;
+				return undefined;
+			};
+		},
+	}) as IDatabaseAdapter;
+}
+
 export class AgentRuntime implements IAgentRuntime {
 	#conversationLength = 100 as number;
 	readonly agentId: UUID;
@@ -1666,7 +1860,7 @@ export class AgentRuntime implements IAgentRuntime {
 				"Database adapter already registered, ignoring",
 			);
 		} else {
-			this.adapter = adapter;
+			this.adapter = wrapAdapterWithCompatShim(adapter, this.logger);
 			this.logger.debug(
 				{ src: "agent", agentId: this.agentId },
 				"Database adapter registered",

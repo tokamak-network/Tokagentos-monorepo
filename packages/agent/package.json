@@ -130,15 +130,17 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.0.0",
+    "@elizaos/plugin-agent-skills": "2.0.0-alpha.537",
     "@elizaos/plugin-ollama": "1.2.4",
     "@elizaos/plugin-pdf": "1.0.2",
     "@elizaos/plugin-sql": "1.7.2",
     "@hapi/boom": "^10.0.1",
     "@noble/curves": "^2.0.1",
+    "@tokagent/plugin-tokagent-billing": "workspace:*",
     "@tokagentos/app-companion": "workspace:*",
-    "@tokagentos/billing": "2.0.2",
-    "@tokagentos/core": "2.0.2",
-    "@tokagentos/shared": "2.0.2",
+    "@tokagentos/billing": "workspace:*",
+    "@tokagentos/core": "workspace:*",
+    "@tokagentos/shared": "workspace:*",
     "@whiskeysockets/baileys": "7.0.0-rc.9",
     "abitype": "^1.0.0",
     "coding-agent-adapters": "0.16.3",
@@ -184,5 +186,5 @@
     "vite": "^8.0.8",
     "vitest": "^4.0.18"
   },
-  "gitHead": "e635e293e89f7e375e543ded00a5b66b58a210ab"
+  "gitHead": "0058d8455d9e56753b5e7527b46a6c406744ee5c"
 }

@@ -18,6 +18,7 @@ export const CORE_PLUGINS: readonly string[] = [
   // @tokagentos/app-form — now built-in as advanced capability (form); enabled when advancedCapabilities: true
   "@tokagentos/app-companion", // VRM companion emotes; actions gated until app session is active
   "@elizaos/plugin-agent-skills", // skill execution and marketplace runtime
+  "@tokagent/plugin-tokagent-billing", // Web3 credit billing — registers routes + middleware; no-op unless BILLING_ENABLED=true
   "@tokagentos/app-lifeops", // LifeOps: personal ops — tasks, goals, calendar, inbox, browser companions, website blocking
   // Built-in runtime capabilities (no longer external plugins):
   // - experience, form, clipboard, personality: advanced capabilities (advancedCapabilities: true)
