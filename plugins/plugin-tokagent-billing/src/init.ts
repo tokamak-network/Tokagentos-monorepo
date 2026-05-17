@@ -116,21 +116,23 @@ function buildEnv(runtime: IAgentRuntime): NodeJS.ProcessEnv {
 /**
  * Resolve the Drizzle migrations folder.
  *
- * The authoritative migrations live in `packages/billing/drizzle/migrations/`.
- * When running from the workspace (Bun's source-import mode), `import.meta.url`
- * points to this file at `plugins/plugin-tokagent-billing/src/init.ts`, so we
- * walk up 3 levels (src → plugin-tokagent-billing → plugins → workspace root)
- * then descend into `packages/billing/drizzle/migrations`.
+ * The authoritative migrations live in `packages/billing/drizzle/migrations/`
+ * and are copied into `dist/drizzle/migrations/` by the billing build script
+ * so they ship inside the published tarball (see packages/billing/build.ts
+ * and the `drizzle` entry in packages/billing/package.json `files`).
  *
- * TODO(phase-8): derive path from `require.resolve('@tokagentos/billing/package.json')`
- * for published-package robustness.
+ * Resolution strategy:
+ *   1. Preferred — `require.resolve('@tokagentos/billing/package.json')` then
+ *      descend into `drizzle/migrations`. Works in the workspace (resolves to
+ *      `packages/billing/`) AND in installed packages (resolves to
+ *      `node_modules/@tokagentos/billing/dist/`, where the build step
+ *      placed `drizzle/migrations`).
+ *   2. Fallback — walk up the source-import layout. Used only in tests or
+ *      environments where the package.json export map is unavailable.
  */
 function resolveMigrationsFolder(): string {
   const thisFile = fileURLToPath(import.meta.url);
 
-  // Preferred: resolve `@tokagentos/billing/package.json` from the plugin's
-  // module context — works for publisher monorepo, scaffolded apps, and any
-  // future packaging where the billing lib path moves.
   try {
     const req = createRequire(thisFile);
     const pkgPath = req.resolve("@tokagentos/billing/package.json");

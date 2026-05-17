@@ -257,8 +257,12 @@ export function wrapRuntimeUseModel(
       result = await original.apply(this, args);
     } catch (err) {
       errored = true;
-      // Release the reservation so the funds aren't stuck.
-      await release(deps.db, reservation.reservationId).catch(() => undefined);
+      // Release the reservation so the funds aren't stuck. Tag the outcome
+      // as `released_error` so the audit log distinguishes upstream failures
+      // from clean cancellations.
+      await release(deps.db, reservation.reservationId, "released_error").catch(
+        () => undefined,
+      );
       throw err;
     }
 

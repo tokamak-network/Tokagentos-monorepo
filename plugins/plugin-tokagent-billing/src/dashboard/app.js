@@ -72,6 +72,16 @@ function setStatus(el, text, kind = "") {
   if (kind) el.classList.add(kind);
 }
 
+// Variant of setStatus that accepts pre-escaped HTML — used when the message
+// needs to embed a fmtLink() anchor (e.g. tx-hash explorer links). Callers
+// must escape() any untrusted text they interpolate.
+function setStatusHtml(el, html, kind = "") {
+  if (!el) return;
+  el.innerHTML = html;
+  el.classList.remove("ok", "err");
+  if (kind) el.classList.add(kind);
+}
+
 function fmtPton(atto) {
   // atto-PTON (1e18 = 1 PTON). Render with up to 4 decimals; hide trailing zeros.
   if (atto === undefined || atto === null) return "—";
@@ -114,6 +124,26 @@ function fmtNumber(n) {
 function fmtAddr(a) {
   if (!a) return "—";
   return `${a.slice(0, 6)}…${a.slice(-4)}`;
+}
+
+// Build an etherscan-style explorer URL for an address (`tx` for hashes).
+// Returns "" when no explorer is configured so the UI can choose to render
+// plain text instead of a dead anchor.
+function explorerUrl(value, kind /* "tx" | "address" */) {
+  if (!value || !CHAIN_EXPLORER_URL) return "";
+  const base = CHAIN_EXPLORER_URL.replace(/\/+$/, "");
+  return `${base}/${kind}/${value}`;
+}
+
+// Format an address or tx hash as a short clickable link when an explorer is
+// configured, plain text otherwise. `kind` defaults to "tx" because the
+// dashboard's most common use is rendering transaction receipts.
+function fmtLink(value, kind = "tx") {
+  if (!value) return "—";
+  const short = fmtAddr(value);
+  const href = explorerUrl(value, kind);
+  if (!href) return escape(short);
+  return `<a href="${escape(href)}" target="_blank" rel="noopener noreferrer">${escape(short)}</a>`;
 }
 
 function fmtTimestamp(ms) {
@@ -1070,7 +1100,7 @@ function wireFaucet() {
     setStatus(status, "Awaiting wallet signature…");
     try {
       const tx = await mintFaucet(v);
-      setStatus(status, `Minted ${v} PTON (tx ${fmtAddr(tx)}).`, "ok");
+      setStatusHtml(status, `Minted ${escape(String(v))} PTON (tx ${fmtLink(tx, "tx")}).`, "ok");
       await refreshAll();
     } catch (e) {
       setStatus(status, `Failed: ${e.message}`, "err");
@@ -1092,7 +1122,7 @@ function wireTopup() {
     setStatus(status, "Awaiting wallet signature…");
     try {
       const r = await topUp(v);
-      setStatus(status, `Deposit confirmed (tx ${fmtAddr(r.txHash)}).`, "ok");
+      setStatusHtml(status, `Deposit confirmed (tx ${fmtLink(r.txHash, "tx")}).`, "ok");
       await refreshAll();
     } catch (e) {
       setStatus(status, `Failed: ${e.message}`, "err");
@@ -1168,6 +1198,7 @@ function wireLogin() {
       setStatus(status, "Signed in.", "ok");
       showAppView();
       await refreshAll();
+      startAutoRefresh();
     } catch (e) {
       setStatus(status, `Sign-in failed: ${e.message}`, "err");
     }
@@ -1227,6 +1258,48 @@ function setupEmbedMode() {
   });
 }
 
+// ----------------------------- Periodic refresh -----------------------------
+//
+// Operators expect KPI cards (balance, price, recent calls) to update without
+// manual page reloads. We poll every REFRESH_INTERVAL_MS, but only when the
+// tab is visible — Page Visibility avoids burning RPC quota and SQLite reads
+// on backgrounded tabs. The refresh is a no-op when no SIWE session is active.
+//
+// A single in-flight guard prevents overlapping refreshes when a slow API
+// call exceeds the interval (e.g. an unhealthy TWAP read can take several
+// seconds before the cache stale-fallback kicks in).
+
+const REFRESH_INTERVAL_MS = 30_000;
+let refreshTimer = null;
+let refreshInFlight = false;
+
+async function tickRefresh() {
+  if (refreshInFlight) return;
+  if (!state.session) return;
+  if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+  refreshInFlight = true;
+  try {
+    await refreshAll();
+  } catch (e) {
+    console.warn("[dashboard] periodic refresh failed", e);
+  } finally {
+    refreshInFlight = false;
+  }
+}
+
+function startAutoRefresh() {
+  if (refreshTimer !== null) return;
+  refreshTimer = setInterval(tickRefresh, REFRESH_INTERVAL_MS);
+  // Immediate tick when the tab regains focus — operators commonly check the
+  // dashboard right after switching away to inspect a tx; waiting up to 30s
+  // for the next interval would feel laggy.
+  if (typeof document !== "undefined") {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") void tickRefresh();
+    });
+  }
+}
+
 // ----------------------------- Boot -----------------------------
 
 async function boot() {
@@ -1252,6 +1325,7 @@ async function boot() {
     } catch (e) {
       console.warn("initial refresh failed", e);
     }
+    startAutoRefresh();
   } else {
     showLoginView();
   }

@@ -44,16 +44,20 @@ export class TwapCache {
 /**
  * Orchestration function: returns a fresh or cached TON/USD price.
  *
- * Resolution order:
+ * Resolution order (priority override, NOT fallback):
  *  1. `fixedTonUsd` — if provided, return immediately with `source: "fixed"`.
- *     No client call is made. Useful for tests and pinned-rate deployments
- *     (`BILLING_FIXED_TON_USD`).
+ *     This is an EMERGENCY PRICE FREEZE: when an operator sets
+ *     `BILLING_FIXED_TON_USD`, every live source is bypassed and the pinned
+ *     value is used. The setting is env-only (not exposed in the setup
+ *     wizard) so the only way it can be set is intentionally. Use cases:
+ *       - Pinning the rate during a suspected oracle manipulation incident.
+ *       - Deterministic test/dev environments with no live pool liquidity.
  *  2. Cache hit — if the cached entry is younger than `cacheMs`, return it.
- *  3. Fresh read — call `readCompositeTwap` and cache the result.
- *  4. Stale fallback — if the fresh read fails but the cache entry is younger
- *     than `maxStalenessMs`, return it with `source: "stale-cache"` and log a
- *     warning.
- *  5. Throw — if no valid price is available (fresh failed AND cache too old).
+ *  3. Live primary — Tokamak's public price API.
+ *  4. Live fallback — composite on-chain TWAP (WTON/WETH × WETH/USDC).
+ *  5. Stale-cache fallback — last successful read within `maxStalenessMs`,
+ *     returned with `source: "stale-cache"`.
+ *  6. Throw — no valid price available anywhere.
  */
 export async function getCachedTonUsd(
   client: PublicClient,
@@ -65,17 +69,26 @@ export async function getCachedTonUsd(
     maxStalenessMs: number;
   },
 ): Promise<PriceSnapshot> {
-  // 1. Cache hit within freshness window — serve immediately.
+  // 1. Priority override — operator-pinned price.
+  //    No live call is made. This is the emergency freeze path; if the
+  //    operator wanted live data, they would not have set this env var.
+  if (opts.fixedTonUsd !== undefined) {
+    return {
+      tonUsd: opts.fixedTonUsd,
+      source: "fixed",
+      fetchedAt: Date.now(),
+      ageMs: 0,
+    };
+  }
+
+  // 2. Cache hit within freshness window — serve immediately.
   const cached = cache.get();
   if (cached && cached.ageMs < opts.cacheMs) {
     return cached;
   }
 
-  // 2. Primary: live TON/USD from Tokamak's public price API.
-  //    This is the canonical user-facing rate
-  //    (https://www.tokamak.network/about/price). Operator-pinned overrides
-  //    via BILLING_FIXED_TON_USD are an admin escape hatch only — handled
-  //    last so a stale env value doesn't shadow the live feed.
+  // 3. Live primary: TON/USD from Tokamak's public price API. This is the
+  //    canonical user-facing rate (https://www.tokamak.network/about/price).
   try {
     const fresh = await fetchTokamakApiPrice();
     cache.set(fresh);
@@ -87,7 +100,7 @@ export async function getCachedTonUsd(
     );
   }
 
-  // 3. Fallback: composite on-chain TWAP (WTON/WETH × WETH/USDC).
+  // 4. Live fallback: composite on-chain TWAP (WTON/WETH × WETH/USDC).
   try {
     const fresh = await readCompositeTwap(client, oracle);
     cache.set(fresh);
@@ -96,30 +109,15 @@ export async function getCachedTonUsd(
     log.warn({ err: (e as Error).message }, "twap refresh failed");
   }
 
-  // 4. Stale fallback — last successful read within maxStalenessMs.
+  // 5. Stale-cache fallback — last successful read within maxStalenessMs.
   const stale = cache.getStaleFallback();
   if (stale && stale.ageMs < opts.maxStalenessMs) {
     log.warn({ ageMs: stale.ageMs }, "using stale cached price");
     return { ...stale, source: "stale-cache" };
   }
 
-  // 5. Admin pinned override — last-resort, only when no live source works.
-  //    Configurable via BILLING_FIXED_TON_USD (env, NOT setup wizard).
-  if (opts.fixedTonUsd !== undefined) {
-    log.warn(
-      { fixedTonUsd: opts.fixedTonUsd },
-      "all live price sources failed — using admin BILLING_FIXED_TON_USD",
-    );
-    return {
-      tonUsd: opts.fixedTonUsd,
-      source: "fixed",
-      fetchedAt: Date.now(),
-      ageMs: 0,
-    };
-  }
-
   // 6. No valid price anywhere.
   throw new Error(
-    "No price available (Tokamak API down, TWAP failed, no valid cache, no admin override)",
+    "No price available (Tokamak API down, TWAP failed, no valid cache, no fixedTonUsd override)",
   );
 }

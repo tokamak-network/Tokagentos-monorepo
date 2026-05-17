@@ -114,6 +114,34 @@ function buildConfigJs(runtime: IAgentRuntime): string {
 // surfaces — handle Express-style and node-http-style with one helper).
 // ---------------------------------------------------------------------------
 
+/**
+ * Security headers for dashboard responses. The dashboard handles wallet
+ * signatures (SIWE login + EIP-3009 top-up), so we lock it down:
+ *   - `default-src 'self'` blocks any third-party loads.
+ *   - `frame-ancestors` allows same-origin embedding (app-companion iframes
+ *     this page via `?embed=1`) but rejects cross-origin frames.
+ *   - `style-src` allows inline because the page injects no <style> blocks
+ *     but Bun-bundling could in future; left at 'self' 'unsafe-inline' for
+ *     defensive forward-compat without weakening script execution.
+ *   - `connect-src 'self'` keeps API calls same-origin (the dashboard talks
+ *     to /v1/* on the same proxy that serves it).
+ *   - `X-Content-Type-Options: nosniff` blocks MIME confusion.
+ *   - `Referrer-Policy: no-referrer` prevents wallet operations from leaking
+ *     the dashboard URL to third parties via outbound links.
+ */
+const DASHBOARD_SECURITY_HEADERS: Record<string, string> = {
+  "Content-Security-Policy":
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline'; " +
+    "style-src 'self' 'unsafe-inline'; " +
+    "connect-src 'self'; " +
+    "img-src 'self' data:; " +
+    "frame-ancestors 'self'; " +
+    "base-uri 'self'",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "no-referrer",
+};
+
 function sendText(res: RouteResponse, status: number, contentType: string, body: string): void {
   const r = res as unknown as {
     writeHead?: (code: number, headers: Record<string, string>) => void;
@@ -122,13 +150,17 @@ function sendText(res: RouteResponse, status: number, contentType: string, body:
     send?: (body: string) => void;
     setHeader?: (k: string, v: string) => void;
   };
+  const headers: Record<string, string> = {
+    "Content-Type": contentType,
+    ...DASHBOARD_SECURITY_HEADERS,
+  };
   if (typeof r.writeHead === "function" && typeof r.end === "function") {
-    r.writeHead(status, { "Content-Type": contentType });
+    r.writeHead(status, headers);
     r.end(body);
     return;
   }
   if (typeof r.setHeader === "function" && typeof r.status === "function") {
-    r.setHeader("Content-Type", contentType);
+    for (const [k, v] of Object.entries(headers)) r.setHeader(k, v);
     r.status(status).send(body);
     return;
   }
@@ -141,16 +173,23 @@ function sendText(res: RouteResponse, status: number, contentType: string, body:
 // Handlers
 // ---------------------------------------------------------------------------
 
-function handleIndex(_req: RouteRequest, res: RouteResponse): void {
+// Handlers are async to match the elizaOS Route handler signature
+// (`(req, res, runtime) => Promise<void>`). The bodies are synchronous —
+// the `async` keyword only changes the return type, no runtime cost.
+async function handleIndex(_req: RouteRequest, res: RouteResponse): Promise<void> {
   sendText(res, 200, "text/html; charset=utf-8", HTML);
 }
-function handleStyle(_req: RouteRequest, res: RouteResponse): void {
+async function handleStyle(_req: RouteRequest, res: RouteResponse): Promise<void> {
   sendText(res, 200, "text/css; charset=utf-8", STYLE);
 }
-function handleAppJs(_req: RouteRequest, res: RouteResponse): void {
+async function handleAppJs(_req: RouteRequest, res: RouteResponse): Promise<void> {
   sendText(res, 200, "application/javascript; charset=utf-8", APP_JS);
 }
-function handleConfigJs(_req: RouteRequest, res: RouteResponse, runtime: IAgentRuntime): void {
+async function handleConfigJs(
+  _req: RouteRequest,
+  res: RouteResponse,
+  runtime: IAgentRuntime,
+): Promise<void> {
   sendText(res, 200, "application/javascript; charset=utf-8", buildConfigJs(runtime));
 }
 

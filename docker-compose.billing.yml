@@ -1,0 +1,43 @@
+# Local Postgres for the tokagentos billing plugin.
+#
+# Usage:
+#   docker compose -f docker-compose.billing.yml up -d
+#   docker compose -f docker-compose.billing.yml down            # stop, keep data
+#   docker compose -f docker-compose.billing.yml down -v         # stop, DELETE data
+#   docker compose -f docker-compose.billing.yml logs -f         # tail logs
+#
+# Data is persisted in a Docker named volume `tokagent_billing_pgdata`.
+# Backup recipe: `docker run --rm -v tokagent_billing_pgdata:/data -v $(pwd):/out alpine tar czf /out/billing-pg-backup-$(date +%F).tgz /data`
+#
+# The connection string for BILLING_DATABASE_URL is:
+#   postgres://billing:billing_local_dev@127.0.0.1:5432/billing
+#
+# For production, replace this with a managed Postgres (Supabase / Neon / RDS).
+# Same schema, same migrations, just change BILLING_DATABASE_URL.
+
+services:
+  billing-postgres:
+    image: postgres:17-alpine
+    container_name: tokagent-billing-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: billing
+      POSTGRES_USER: billing
+      # Local-dev password. Change for any non-localhost deployment.
+      POSTGRES_PASSWORD: billing_local_dev
+      # Speed up; tokagent's billing plugin runs migrations on boot anyway.
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    ports:
+      # Bind to loopback only so the DB isn't accidentally exposed to LAN.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - tokagent_billing_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U billing -d billing"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  tokagent_billing_pgdata:
+    name: tokagent_billing_pgdata

@@ -1,6 +1,6 @@
 {
   "name": "@tokagentos/billing",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Web3 credit-billing rail for tokagentos. Migrated from llm-api-gateway.",
   "type": "module",
   "publishConfig": {
@@ -15,6 +15,7 @@
   },
   "files": [
     "src",
+    "drizzle",
     "README.md",
     "LICENSE"
   ],
@@ -27,7 +28,8 @@
     "lint:fix": "bunx @biomejs/biome check --write src",
     "sync-abis": "./scripts/sync-abis.sh",
     "db:generate": "bunx drizzle-kit generate --config drizzle.config.ts",
-    "check-ledger": "bun run scripts/check-ledger-consistency.ts"
+    "check-ledger": "bun run scripts/check-ledger-consistency.ts",
+    "probe-twap": "bun run scripts/probe-twap.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.1",
@@ -46,5 +48,5 @@
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
   },
-  "gitHead": "e635e293e89f7e375e543ded00a5b66b58a210ab"
+  "gitHead": "0058d8455d9e56753b5e7527b46a6c406744ee5c"
 }

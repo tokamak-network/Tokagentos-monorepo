@@ -1,5 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { PublicClient } from 'viem';
+
+// Mock `fetchTokamakApiPrice` to fail by default. Otherwise the orchestration
+// tests below (which want to exercise the on-chain TWAP path + stale-cache
+// fallback path) would short-circuit on the Tokamak public API call, which
+// happily reaches the real network in tests. Individual tests can override
+// via `mockResolvedValueOnce` if they want to exercise the live-API path.
+vi.mock('../oracle.js', async (importActual) => {
+  const actual = await importActual<typeof import('../oracle.js')>();
+  return {
+    ...actual,
+    fetchTokamakApiPrice: vi.fn(() =>
+      Promise.reject(new Error('Tokamak API mocked off in unit tests')),
+    ),
+  };
+});
+
 import { readCompositeTwap, TwapCache, getCachedTonUsd } from '../index.js';
 import type { OracleConfig, PoolConfig } from '../oracle.js';
 

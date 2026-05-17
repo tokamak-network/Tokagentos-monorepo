@@ -362,7 +362,9 @@ billing_call_log {  // replaces SQLite call_log
 
 ### Config consolidation
 
-Source has two `.env` levels (deploy + proxy runtime). Target has one root `.env.example` with mirrors in `packages/templates/fullstack-app/.env.example` and `packages/tokagentos/templates/fullstack-app/.env.example` (per `PLUGINS.md` §10.1 three-mirror rule). All billing envs land under `BILLING_*` namespace and are mirrored to all three locations:
+Source has two `.env` levels (deploy + proxy runtime). Target has one root `.env.example` plus a `packages/tokagentos/templates/fullstack-app/.env.example` mirror. All billing envs land under `BILLING_*` namespace and are mirrored to both locations.
+
+> **Repo-state note (2026-05-14)**: `PLUGINS.md` §10.1 originally specified a three-mirror rule that also covered `packages/templates/fullstack-app/.env.example`. That directory has since been removed from the repo (no `packages/templates/` exists), so the rule reduces to **two mirrors** in current tokagentos. Risk R5 is downgraded to Low/Informational accordingly. Restore the third mirror only if `packages/templates/` is reintroduced.
 
 ```
 # --- Web3 billing (optional; off by default) ---
@@ -486,7 +488,7 @@ Each phase is independently shippable: the agent runtime continues to function w
 **Scope**: replace in-memory state with DB-backed primitives. The most invasive structural change.
 
 - Add Drizzle schema in `packages/billing/src/ledger/schema.ts` (per "Data model" above).
-- Wire migration via `@elizaos/plugin-sql` (root `package.json:51-52` `migrate` script already filters by plugin; either add a billing migration directory the SQL plugin picks up, or contribute a minor PR to the SQL plugin to register additional schema sources).
+- ~~Wire migration via `@elizaos/plugin-sql`~~ **Implemented differently (2026-05-14)**: the billing plugin maintains its own `pg.Pool` against `BILLING_DATABASE_URL` and runs `drizzle-orm/node-postgres/migrator` directly inside `initBillingPlugin` (`plugins/plugin-tokagent-billing/src/init.ts`). This decouples billing's `numeric(78,0)` ledger schema from the agent runtime's vector/cache tables and lets billing target a separate DB in production. `packages/billing/build.ts` copies `drizzle/migrations/` into `dist/` and `package.json` `files` whitelists it, so the migration SQL ships in the published tarball; `initBillingPlugin` resolves the folder via `require.resolve('@tokagentos/billing/package.json')` for both workspace and installed-package layouts.
 - Implement `ledger/ledger.ts` `reserve()`, `release()`, `commit()`, `accrue()`, `flushAccrued()` in Postgres + PGLite (PGLite path uses advisory-lock alternatives for `SELECT FOR UPDATE`).
 - Implement `auth/api-keys.ts`, `ledger/preauth.ts`, `auth/nonces.ts`, `pricing/quotes.ts` against DB.
 - Tests: per-table CRUD + a concurrency stress test (10 concurrent reserves on the same wallet must serialize correctly).
@@ -522,18 +524,27 @@ Each phase is independently shippable: the agent runtime continues to function w
 **Validation gate**: agent boots with `BILLING_ENABLED=true`; full reserve→useModel→commit cycle works against Anvil + a mocked OpenAI provider.
 **Rollback**: set `BILLING_ENABLED=false`; the seam is a no-op.
 
-### Phase 7 — UI integration in `app-core` (~3 days)
+### Phase 7 — UI integration (~3 days, retargeted path)
 
-**Scope**: minimum-viable billing screens. Replaces the source's bespoke `dashboard/`.
+**Scope**: minimum-viable billing screens.
 
-- New view: `packages/app-core/src/views/billing/credits.tsx` — displays `/v1/credits/me` (balance/reserved/accrued).
-- New view: `packages/app-core/src/views/billing/topup.tsx` — wraps `/v1/topup/quote` + EIP-3009 signing flow + `/v1/topup/settle`. Uses the existing wagmi-style hooks already in `app-core`.
-- New view: `packages/app-core/src/views/billing/keys.tsx` — `sk-ai-*` mint/list/revoke.
-- New view: `packages/app-core/src/views/billing/usage.tsx` — `/v1/usage/calls` paginated.
-- These views are registered behind a sidebar entry that only renders when `runtime-env` reports `BILLING_ENABLED=true`.
+> **Repo-state correction (2026-05-14)**: the plan originally targeted `apps/app-core/src/views/billing/`. The host app actually lives at `packages/app-core/` (a packages-tree workspace, not under `apps/`), and Phase 7 has been completed there.
 
-**Validation gate**: manual smoke test — fresh wallet, sign SIWE, mint key, top-up via EIP-3009, send a `/v1/chat/completions` with the key, see usage row appear.
-**Rollback**: remove sidebar entry; views become orphaned but don't break the app.
+**Current state — Phase 7 is COMPLETE**:
+- React/TS views in `packages/app-core/src/components/pages/billing/`:
+  - `CreditsView.tsx` — displays `GET /v1/credits/me`, auto-refresh every 30s.
+  - `TopupView.tsx` — wraps `/v1/topup/quote` + EIP-3009 signing + `/v1/topup/settle`.
+  - `KeysView.tsx` — `sk-ai-*` mint/list/revoke.
+  - `UsageView.tsx` — `/v1/usage/calls` paginated.
+- Each view has a co-located `*.test.tsx`.
+- Shared `eip712-utils.ts` ports the EIP-3009 / SIWE typed-data construction from the source repo.
+
+**In addition**, the source repo's bespoke vanilla-JS dashboard is preserved as a **secondary, operator-only** UI at `plugins/plugin-tokagent-billing/src/dashboard/`, served at `GET /v1/billing/dashboard`. This is useful for operators who need a SIWE-gated dashboard that doesn't depend on the host React app being deployed (e.g. debugging a production billing pipeline from a fresh browser without first booting the full app-core shell).
+
+**Validation gate**: manual smoke test — fresh wallet, SIWE login, mint key in either UI, top-up via EIP-3009, send a `/v1/chat/completions` with the key, see usage row appear.
+**Rollback**:
+- React views: remove from `packages/app-core` sidebar registration; views become orphaned.
+- In-plugin dashboard: remove `dashboardRoutes` from `plugins/plugin-tokagent-billing/src/index.ts`.
 
 ### Phase 8 — Cutover & decommission (~2 days)
 
@@ -595,7 +606,7 @@ Plus ~10% slack for review cycles and CI fixes → **~6 calendar weeks** for one
 | R2 | EIP-3009 nonce reuse / vault `topupId` reuse during drain (parallel source + target writing) | Medium | Critical (fund-loss-class) | At Phase 7 cutover, **fence** writes: source set to read-only `/v1/messages` rejection mode before tokagentos writes any deposit; OR partition operator addresses (different operator per gateway). | Smart-contract eng |
 | R3 | SSE commit-once latch behaviour differs under `runtime.useModel` abstraction (target streams via plugin layer, not raw upstream `Response.body.getReader()`) | High | Medium (over/under-charge) | Phase 6 includes an explicit SSE harness test covering complete / abort / error paths; verify `streamCommit` triggers exactly once per request | Backend eng |
 | R4 | `better-sqlite3` → Drizzle behavioral drift (e.g., `BigInt` precision in `numeric(78,0)`) | Medium | Medium | Phase 4 includes property tests (`fast-check`) on USD↔PTON round-trips with extreme values | Backend eng |
-| R5 | Three-mirror scaffold rule violation produces silent drift; new projects scaffolded without billing config | Medium | Low | Phase 6 PR template explicitly enumerates all three mirror locations; CI lint scans for `BILLING_*` keys present in all three | DX eng |
+| R5 | ~~Three~~ Two-mirror scaffold rule violation produces silent drift; new projects scaffolded without billing config | Low | Low | `packages/templates/` no longer exists (2026-05-14), so the rule reduces to mirroring root `.env.example` ↔ `packages/tokagentos/templates/fullstack-app/.env.example`. CI lint scans both for `BILLING_*` parity. | DX eng |
 | R6 | Korean docs in source contain undocumented constraints not surfaced in code | Low | Medium | Phase 0 translation; spot-check the translation against `proxy/src/*.ts` comment density | Backend eng |
 | R7 | Operator hot-key in env var is incompatible with cloud-managed deployment (`TOKAGENT_CLOUD_PROVISIONED=1`) | High (in cloud profile) | High | Phase 6 wires `BILLING_OPERATOR_PRIVATE_KEY` through the OS keychain helper at `packages/agent/src/auth/credentials.ts:43-134` for cloud profile; document that bare-env operator key is local-only | Security eng |
 | R8 | TWAP staleness + RPC outage produces revenue loss (proxy continues charging at stale rate) | Medium | Medium | Existing `MAX_PRICE_STALENESS_MS` policy preserved; alert when stale > threshold via OTel meter `tokagent_billing_twap_last_success_age_seconds` | SRE |
@@ -630,6 +641,36 @@ Each blocks at least one phase. Recommended answers in **bold** so the team can 
 - **A new engineer can execute Phase 1 from this document alone**: yes — file paths, naming conventions, build tooling, and templates (`plugin-tokagent-yield`) are explicit.
 - **All source features accounted for**: yes — every directory in §1 of the source recon has a row in §A–§I above, either migrated or rejected with reason.
 - **Every architectural claim references real code**: spot-checked. Source citations land in `proxy/src/*` files documented in `/tmp/recon_source_llm_gateway.md`. Target citations land in `packages/agent/src/api/server.ts`, `packages/typescript/src/runtime.ts`, and the plugin layer documented in `/tmp/recon_target_tokagentos.md`.
+
+---
+
+## Cutover-readiness addendum (2026-05-14)
+
+A structural audit on 2026-05-14 found Phases 1–6 substantially landed, and three deltas vs the plan that needed closing before cutover:
+
+1. **Drizzle migrations not shipped in the published tarball** (fixed)
+   - `packages/billing/package.json` `files` whitelist did not include `drizzle/`, so SQL migration files would not have been in installed packages.
+   - Fix: `build.ts` now copies `drizzle/migrations/` to `dist/drizzle/migrations/`; `files` includes `drizzle`. Mirrored in `packages/tokagentos/scaffold-patches/packages/billing/`.
+   - The plugin's `resolveMigrationsFolder()` resolution strategy (via `require.resolve('@tokagentos/billing/package.json')`) now works for both workspace and installed-package layouts.
+
+2. **Three-mirror env rule reduces to two-mirror** (documented)
+   - `packages/templates/` no longer exists in the repo.
+   - Phase 6 env work landed root `.env.example` + `packages/tokagentos/templates/fullstack-app/.env.example`. Both contain the `BILLING_*` block. R5 risk downgraded.
+
+3. **Phase 7 path correction** (documented)
+   - Plan targeted `apps/app-core/src/views/billing/`. Actual landing point is `packages/app-core/src/components/pages/billing/` (a packages-tree workspace, not under `apps/`).
+   - Phase 7 is **complete**: `CreditsView.tsx`, `TopupView.tsx`, `KeysView.tsx`, `UsageView.tsx` are all implemented with co-located tests.
+   - The source's vanilla-JS `dashboard/` is also preserved at `plugins/plugin-tokagent-billing/src/dashboard/` (served at `GET /v1/billing/dashboard`) as a secondary operator-only UI for SIWE-gated debugging without requiring app-core to be deployed.
+
+**Additional pre-cutover polish landed on 2026-05-14**:
+- Periodic auto-refresh in the operator dashboard (30s tick, Page-Visibility gated).
+- Explorer links (`fmtLink()`) for tx hashes in deposit/faucet status messages.
+- CSP / nosniff / no-referrer headers on the dashboard HTTP route (it handles SIWE signatures).
+- Pre-existing bugfix: `model-billing-wrapper.ts` was calling `release(db, id)` without the required `outcome` arg — would have crashed every errored `runtime.useModel` call.
+
+Remaining Phase 8 work (out of this addendum's scope):
+- Deploy runbook tasks (deploy, drain, secrets migration, operator address parity).
+- Unrelated pre-existing test failure: `/v1/price` fixed-price test returns 0.55 instead of the configured 5 — needs investigation; likely a TWAP cache leaking past the fixedTonUsd shortcut.
 
 ---
 
