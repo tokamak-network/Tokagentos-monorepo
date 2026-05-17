@@ -107,6 +107,8 @@ async function getTableColumnNames(
   return columns;
 }
 
+const skippedMissingTables = new Set<string>();
+
 async function addColumnIfMissing(
   runtime: AgentRuntime,
   tableName: string,
@@ -118,9 +120,71 @@ async function addColumnIfMissing(
     return;
   }
 
-  throw new Error(
-    `[sql-compat] Missing required column ${quoteIdent(tableName)}.${quoteIdent(columnName)} (${definition}). Run the appropriate database migrations before starting the app.`,
-  );
+  // Missing-table detection: getTableColumnNames returns an empty set when
+  // the table doesn't exist (information_schema.columns returns 0 rows for
+  // unknown tables — no error thrown). When that happens, treat the table
+  // as "feature not deployed" rather than a critical schema gap. This
+  // matches the existing runtime behavior — e.g. tokagent logs
+  //   "trajectories service unavailable; trajectory capture disabled"
+  // when the trajectories service isn't registered. Forcing a CREATE TABLE
+  // here would commit to a base schema we don't own; better to let the
+  // owning service create its own table on demand.
+  if (columns.size === 0) {
+    if (!skippedMissingTables.has(tableName)) {
+      skippedMissingTables.add(tableName);
+      // Use console.warn rather than the runtime logger to keep this module
+      // dependency-free (it's imported during boot before the logger may be
+      // wired up).
+      console.warn(
+        `[sql-compat] Table ${quoteIdent(tableName)} does not exist; ` +
+          `skipping schema compatibility checks for it. ` +
+          `If you need this feature, ensure the owning service creates ` +
+          `the table during its init.`,
+      );
+    }
+    return;
+  }
+
+  // Self-heal: do what the function name (and the parent
+  // `ensureRuntimeSqlCompatibility` / `repairRuntimeAfterBoot`) promise.
+  //
+  // The function was imported from upstream elizaOS v2.0.0-alpha.223 as a
+  // pure assert that delegated migration to the operator. Tokagentos doesn't
+  // ship those migration files for `@elizaos/plugin-sql@1.7.2` (the only
+  // installable version), so the assert reliably crashes boot before the
+  // HTTP server can start. We complete the function's intent by running an
+  // additive `ALTER TABLE ... ADD COLUMN` here.
+  //
+  // Safety:
+  //   - sanitizeIdentifier rejects anything outside [A-Za-z0-9_] and caps at
+  //     128 chars, blocking SQL injection via tableName/columnName.
+  //   - We've already confirmed the column is absent via the columns set
+  //     above, so plain `ADD COLUMN` (no IF NOT EXISTS) is portable across
+  //     Postgres, PGlite, and SQLite without dialect branching.
+  //   - The parent function holds a per-runtime mutex (`repairPromises`),
+  //     so concurrent boot paths can't race here.
+  //   - definition is hardcoded at the call sites (lines 144-162) — never
+  //     user-supplied — so embedding it directly in the SQL is safe.
+  //
+  // See: docs/eng-tickets/2026-05-16-tokagentos-boot-vs-plugin-sql-version-skew.md
+  const safeTable = sanitizeIdentifier(tableName);
+  const safeColumn = sanitizeIdentifier(columnName);
+  if (!safeTable || !safeColumn) {
+    throw new Error(
+      `[sql-compat] Cannot add column ${quoteIdent(tableName)}.${quoteIdent(columnName)}: invalid identifier`,
+    );
+  }
+
+  try {
+    await executeRawSql(
+      runtime,
+      `ALTER TABLE ${quoteIdent(safeTable)} ADD COLUMN ${quoteIdent(safeColumn)} ${definition}`,
+    );
+  } catch (err) {
+    throw new Error(
+      `[sql-compat] Failed to add column ${quoteIdent(tableName)}.${quoteIdent(columnName)} (${definition}): ${(err as Error).message}`,
+    );
+  }
 }
 
 export async function ensureRuntimeSqlCompatibility(

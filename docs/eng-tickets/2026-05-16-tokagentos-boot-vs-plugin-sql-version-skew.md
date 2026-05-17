@@ -3,6 +3,7 @@
 **Status**: Open — blocks any HTTP-server-dependent runtime work (chat, dashboard, billing's `/v1/messages` route)
 **Severity**: P1 — agent runtime cannot serve requests
 **Filed**: 2026-05-16
+**Updated**: 2026-05-17 — walls 4 & 5 patched, wall 6 surfaced (different shape: missing optional packages)
 **Discovered during**: mainnet rollout of the billing plugin (see `mainnet-deployment.md`)
 
 ---
@@ -76,7 +77,7 @@ Error: Failed to add agent ... as participant to its own room
 
 **Patch**: explicit `ADAPTER_METHOD_ALIASES` table in the shim. Currently one entry; will grow as more divergent names surface.
 
-### Wall 4 — Database schema columns missing ❌ NOT patched
+### Wall 4 — Database schema columns missing ✅ patched (2026-05-17)
 
 **Symptom**:
 ```
@@ -85,21 +86,76 @@ Error: [sql-compat] Missing required column "trajectories"."step_count"
   before starting the app.
 ```
 
-**Root cause**: `@elizaos/plugin-sql@1.7.2`'s bundled migrations don't create the `trajectories.step_count` column. The runtime's `[sql-compat]` checker validates schema shape against runtime expectations and refuses to continue.
+**Root cause** (revised after investigation): `packages/app-core/src/utils/sql-compat.ts` was imported verbatim from upstream elizaOS v2.0.0-alpha.223 (commit `23476be4`). The function `addColumnIfMissing` was named to suggest self-healing but the implementation only threw an error. Its parent `ensureRuntimeSqlCompatibility` is called from `repairRuntimeAfterBoot` — both names imply repair, not assertion. The throw was the bug.
 
-Plugin-sql logged `"No changes detected, skipping migration (pluginName=@elizaos/plugin-sql, hash=0837c648...)"` on boot — its hash thinks it's up to date, but the runtime disagrees.
+**Full inventory of gaps** (read once from `sql-compat.ts:144-162`, not iterated):
+- `participants.agent_id` (uuid REFERENCES "agents"("id") ON DELETE CASCADE)
+- `participants.room_state` (text)
+- `trajectories.step_count` (integer NOT NULL DEFAULT 0)
+- `trajectories.llm_call_count` (integer NOT NULL DEFAULT 0)
+- `trajectories.total_prompt_tokens` (integer NOT NULL DEFAULT 0)
+- `trajectories.total_completion_tokens` (integer NOT NULL DEFAULT 0)
+- `trajectories.total_reward` (real NOT NULL DEFAULT 0)
+- `trajectories.scenario_id` (text)
+- `trajectories.batch_id` (text)
 
-**Why this isn't shim-able**: the gap is at the SQL schema layer, not the JS method layer. Compat checker reads `information_schema.columns` directly and won't be fooled by a Proxy.
+**Patch** (Option E from the original ranking): rewrote `addColumnIfMissing` to do what its name promises:
+1. If the column already exists → no-op (unchanged behavior)
+2. If the table doesn't exist (column lookup returns empty set) → log warning, skip (treats optional services like `trajectories` as gracefully-absent; matches existing `"trajectories service unavailable"` runtime warning)
+3. Otherwise → `ALTER TABLE <table> ADD COLUMN <col> <definition>` with sanitized identifiers
 
-**Worth noting**: there may be other column gaps below this one. We've only confirmed `trajectories.step_count` because that's the column the runtime checks first.
+Result on boot: `participants` columns added cleanly to PGLite; `trajectories` table didn't exist so skipped with warning; sql-compat check passes; `AutonomyService started after SQL compatibility repair`.
+
+### Wall 5 — Missing handler files in @tokagentos/agent ✅ patched (2026-05-17)
+
+**Symptom**:
+```
+ResolveMessage: Cannot find module '@tokagentos/agent/api/cloud-billing-routes'
+  from '/Users/.../packages/app-core/src/api/server.ts'
+```
+
+**Root cause**: `packages/app-core/src/api/server.ts:6-7` statically imports `handleCloudBillingRoute` from `@tokagentos/agent/api/cloud-billing-routes` and `handleCloudCompatRoute` from `@tokagentos/agent/api/cloud-compat-routes`. Both files **have never existed** in this repo's git history. The imports are stale references — either to features that were removed before being committed, or to features still being designed. They're at module top-level, so they crash before the API server can listen.
+
+**Patch**: created stubs at:
+- `packages/agent/src/api/cloud-billing-routes.ts`
+- `packages/agent/src/api/cloud-compat-routes.ts`
+
+Both stubs respond `501 Not Implemented` to any matching URL (`/api/cloud/billing/*` and `/api/cloud/compat/*` respectively) and return `true` so the caller treats the path as "handled" without falling through to other dispatchers. The in-plugin billing dashboard at `/v1/billing/dashboard` and the on-chain `/v1/*` routes are unaffected.
+
+### Wall 6 — Missing `@tokagentos/app-*` workspace packages ❌ NOT patched
+
+**Symptom** (after wall 5 stubs):
+```
+ResolveMessage: Cannot find module '@tokagentos/app-steward/routes/server-wallet-trade'
+  from '/Users/.../packages/app-core/src/api/server.ts'
+```
+
+Plus boot-time warnings for: `@tokagentos/app-vincent/plugin`, `@tokagentos/app-shopify/plugin`, `@tokagentos/app-steward/plugin`, `@tokagentos/app-lifeops/public`, `@tokagentos/app-training/core/trajectory-export-cron`. The warnings are non-fatal; the static imports are.
+
+**Static imports that crash** (`packages/app-core/src/api/server.ts`):
+- L54: `export { resolveWalletExportRejection } from "@tokagentos/app-steward/routes/server-wallet-trade"`
+- L152: `import { hydrateWalletKeysFromNodePlatformSecureStore } from "@tokagentos/app-steward/security/hydrate-wallet-keys-from-platform-store"`
+- L153: `import { deleteWalletSecretsFromOsStore } from "@tokagentos/app-steward/security/wallet-os-store-actions"`
+
+**Root cause**: `@tokagentos/app-steward` (and `app-vincent`, `app-shopify`, `app-lifeops`, `app-training`) are workspace packages **not present in this repo**. No `.gitmodules`. Not git submodules. Not in `plugins/`. Not in `packages/`. Not in `node_modules`. They appear to be distributed separately (maybe an internal Tokamak monorepo, maybe a different fork) but the parent monorepo here references them.
+
+**Why this isn't shim-able the same way**: the missing files are in **packages we don't own**. Creating stub files at `packages/agent/src/api/X.ts` (Wall 5) was straightforward because the imports map to *our* package via the existing export wildcard `"./api/*": "./src/api/*.ts"`. For `@tokagentos/app-steward/routes/server-wallet-trade`, we'd need to either:
+
+  (a) Add an `@tokagentos/app-steward` workspace stub package (full directory tree with `package.json`, `src/routes/server-wallet-trade.ts`, `src/security/*`)
+  (b) Refactor `server.ts` to use dynamic `await import()` with null guards
+  (c) Locate and install the real `@tokagentos/app-steward` package
+
+The number of missing packages (5+) and missing files per package (3+ for app-steward alone) means option (a) starts to look like recreating large chunks of an internal package we don't have.
+
+**Worth noting**: this is the same pattern as wall 1 (runtime built against richer interface than installed). But where wall 1 was missing methods on an installable package, wall 6 is missing entire packages. The fix surface is much larger.
 
 ---
 
-## Root cause (single sentence)
+## Root cause (single sentence, updated 2026-05-17)
 
-**`@elizaos/plugin-sql@1.7.2` is the most recent installable version that Bun can resolve, but `packages/typescript/src/runtime.ts` and `packages/agent/src/runtime/tokagent.ts` are built against an unreleased / private newer version of the adapter interface — both methods and schema.**
+**This monorepo is configured as the *consumer* of a larger Tokamak / elizaOS distribution it doesn't fully ship — both at the adapter-interface layer (plugin-sql v2 expected, v1.7.2 installable) AND at the workspace-package layer (`@tokagentos/app-{steward,vincent,shopify,lifeops,training}` expected, not present).**
 
-This is a packaging / dependency issue, not a billing or contract issue.
+The first half is fixable in-tree via shims (walls 1–5, all patched). The second half is a packaging/distribution gap that requires either pulling in the missing app packages or refactoring the parts of `app-core` that hard-import them.
 
 ---
 
