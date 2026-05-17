@@ -122,7 +122,7 @@ ResolveMessage: Cannot find module '@tokagentos/agent/api/cloud-billing-routes'
 
 Both stubs respond `501 Not Implemented` to any matching URL (`/api/cloud/billing/*` and `/api/cloud/compat/*` respectively) and return `true` so the caller treats the path as "handled" without falling through to other dispatchers. The in-plugin billing dashboard at `/v1/billing/dashboard` and the on-chain `/v1/*` routes are unaffected.
 
-### Wall 6 — Missing `@tokagentos/app-*` workspace packages ❌ NOT patched
+### Wall 6 — Incomplete elizaos→tokagentos apps/* cleanup ❌ NOT patched (and not patchable in-session)
 
 **Symptom** (after wall 5 stubs):
 ```
@@ -130,24 +130,49 @@ ResolveMessage: Cannot find module '@tokagentos/app-steward/routes/server-wallet
   from '/Users/.../packages/app-core/src/api/server.ts'
 ```
 
-Plus boot-time warnings for: `@tokagentos/app-vincent/plugin`, `@tokagentos/app-shopify/plugin`, `@tokagentos/app-steward/plugin`, `@tokagentos/app-lifeops/public`, `@tokagentos/app-training/core/trajectory-export-cron`. The warnings are non-fatal; the static imports are.
+**Investigation finding** (updated 2026-05-17 after deeper dig):
 
-**Static imports that crash** (`packages/app-core/src/api/server.ts`):
-- L54: `export { resolveWalletExportRejection } from "@tokagentos/app-steward/routes/server-wallet-trade"`
-- L152: `import { hydrateWalletKeysFromNodePlatformSecureStore } from "@tokagentos/app-steward/security/hydrate-wallet-keys-from-platform-store"`
-- L153: `import { deleteWalletSecretsFromOsStore } from "@tokagentos/app-steward/security/wallet-os-store-actions"`
+The `tsconfig.json` path mappings in `packages/agent/` and `packages/app-core/` reveal these packages were expected at `apps/app-steward/`, `apps/app-shopify/`, `apps/app-vincent/`, etc. — i.e. **in this monorepo's `apps/` directory**. They're absent because they were **intentionally deleted** by an earlier cleanup pass documented at:
 
-**Root cause**: `@tokagentos/app-steward` (and `app-vincent`, `app-shopify`, `app-lifeops`, `app-training`) are workspace packages **not present in this repo**. No `.gitmodules`. Not git submodules. Not in `plugins/`. Not in `packages/`. Not in `node_modules`. They appear to be distributed separately (maybe an internal Tokamak monorepo, maybe a different fork) but the parent monorepo here references them.
+  `docs/superpowers/specs/2026-04-24-tokagentos-elizaos-cleanup-design.md`
 
-**Why this isn't shim-able the same way**: the missing files are in **packages we don't own**. Creating stub files at `packages/agent/src/api/X.ts` (Wall 5) was straightforward because the imports map to *our* package via the existing export wildcard `"./api/*": "./src/api/*.ts"`. For `@tokagentos/app-steward/routes/server-wallet-trade`, we'd need to either:
+That spec lists 16 of 17 `apps/*` directories for deletion (keeping only `app-companion`). The cleanup happened. But the cleanup did **not** strip the dependent imports from the rest of the codebase. The aftermath:
 
-  (a) Add an `@tokagentos/app-steward` workspace stub package (full directory tree with `package.json`, `src/routes/server-wallet-trade.ts`, `src/security/*`)
-  (b) Refactor `server.ts` to use dynamic `await import()` with null guards
-  (c) Locate and install the real `@tokagentos/app-steward` package
+| Where | Count |
+|---|---|
+| `@tokagentos/app-*` imports in `packages/app-core/src/` | **57** |
+| `@tokagentos/app-*` imports in `packages/agent/src/` | **94** |
+| **Total stale references** | **151** |
+| Packages available on npm | **0** (`npm view @tokagentos/app-steward dist-tags` → 404) |
+| Git history of deleted apps in this repo | gone — the delete commit removed them |
 
-The number of missing packages (5+) and missing files per package (3+ for app-steward alone) means option (a) starts to look like recreating large chunks of an internal package we don't have.
+**Packages referenced (16)**: `app-steward`, `app-shopify`, `app-vincent`, `app-lifeops`, `app-training`, `app-task-coordinator`, `app-tokagentmaker`, `app-knowledge`, plus the rest from the cleanup spec.
 
-**Worth noting**: this is the same pattern as wall 1 (runtime built against richer interface than installed). But where wall 1 was missing methods on an installable package, wall 6 is missing entire packages. The fix surface is much larger.
+**Affected surface**:
+- `app-core/src/App.tsx` (root React component) imports `FineTuningView` from `app-training`
+- `app-core/src/components/pages/{ChatView,SettingsView,InventoryView,BrowserWorkspaceView,AdvancedPageView,TasksPageView}.tsx` — chat, settings, inventory, browser, advanced, tasks tabs all import from various app-*
+- `app-core/src/api/wallet-{compat,browser-compat}-routes.ts`, `awareness/contributors/wallet.ts`, `config/boot-config-store.ts`, `shell/DetachedShellRoot.tsx` — boot-time + auth-time
+- `agent/src/api/server.ts`, `trajectory-routes.ts`, `training-routes.ts`, `knowledge-service-loader.ts`, `registry-service.ts`, `server-helpers-swarm.ts`, `server-types.ts`, `permissions-routes.ts` — agent's HTTP API surface
+
+**Why this is out of scope for a single boot-blocker session**:
+
+The cleanup was a deliberate product decision (delete 16 apps). To complete it cleanly, somebody has to:
+1. Remove the 151 import references **and** the code that calls them (some are React components rendered in the UI — removing them changes the product surface)
+2. Remove the dead routes (`/api/trajectory/*`, `/api/training/*`, `/api/knowledge/*`, `/api/swarm/*`, etc.)
+3. Strip the corresponding tsconfig path mappings
+4. Strip from package.json, scaffold-patches, templates
+
+This is a multi-day cleanup, not a shim.
+
+**Three real paths forward**:
+
+  **(a) Restore the apps** — requires access to wherever they actually live (private fork? team's local checkout? archived branch?). Not findable from this workspace. Ask the elizaos-cleanup spec owner.
+  **(b) Finish the cleanup** — surgically remove the 151 stale references and accept the product-surface loss (no FineTuningView, no StewardLogo, no ApprovalQueue, no CodingAgentTasksPanel, etc.). Substantial refactor of `app-core` UI.
+  **(c) Build stub workspace packages** — create 16 empty `apps/app-*` directories with minimal `package.json` + `src/index.ts` exporting nulls/no-ops. Re-add `apps/*` to root workspaces. Functional UI for those features disappears but boot proceeds. Mechanical, ~half day if scoped well.
+
+**Recommendation**: Option (a) if the apps can be found and the cleanup is being reversed; Option (c) as a tactical unblock if the cleanup is permanent and the UI loss is acceptable; Option (b) for the full clean-house.
+
+Note: Wall 6 is **structurally different** from walls 1–5. Walls 1–5 are version skew between two existing packages — solvable with shims. Wall 6 is a missing-dependency-set problem from an incomplete refactor — only the team that owns the elizaos cleanup spec can decide its resolution.
 
 ---
 
