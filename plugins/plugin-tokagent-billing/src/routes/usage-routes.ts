@@ -19,8 +19,18 @@ import type { IncomingMessage } from "node:http";
 import type { Address } from "viem";
 import { and, eq, gte, lte, lt, sum, count, sql } from "drizzle-orm";
 import { callLog, creditState, apiKeys } from "@tokagentos/billing";
-import { getBillingState, isBillingStateInitialized } from "../state.js";
+import {
+  getBillingState,
+  getServerBillingState,
+  isBillingStateInitialized,
+} from "../state.js";
 import { resolveBillingIdentity } from "../middleware/api-key-resolve.js";
+import {
+  pickForward,
+  pickQuery,
+  forward,
+  ensureClientReady,
+} from "../lib/forward.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -107,7 +117,7 @@ async function handleUsageSummary(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -183,7 +193,7 @@ async function handleUsageCalls(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -274,7 +284,7 @@ async function handleUsageKeys(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -364,7 +374,7 @@ async function handleStats(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   // Total wallets with any credits.
@@ -430,3 +440,72 @@ export const usageRoutes: Route[] = [
     handler: handleStats,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Client-mode forwarders
+// ---------------------------------------------------------------------------
+
+function clientUsageRoutes(): Route[] {
+  return [
+    {
+      type: "GET",
+      path: "/v1/usage/summary",
+      rawPath: true,
+      name: "billing-usage-summary",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.usage.summary(
+            pickForward(req),
+            pickQuery(req),
+          ),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/usage/calls",
+      rawPath: true,
+      name: "billing-usage-calls",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.usage.calls(
+            pickForward(req),
+            pickQuery(req),
+          ),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/usage/keys",
+      rawPath: true,
+      name: "billing-usage-keys",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.usage.keys(
+            pickForward(req),
+            pickQuery(req),
+          ),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/stats",
+      rawPath: true,
+      public: true,
+      name: "billing-stats",
+      handler: async (_req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () => getBillingState().gateway!.usage.stats());
+      },
+    },
+  ];
+}
+
+export function getUsageRoutes(mode: "server" | "client"): Route[] {
+  return mode === "client" ? clientUsageRoutes() : usageRoutes;
+}

@@ -39,7 +39,7 @@ import {
   TwapCache,
   type BillingDatabase,
 } from "@tokagentos/billing";
-import { getBillingState } from "../state.js";
+import { getBillingState, getServerBillingState } from "../state.js";
 import { resolveBillingIdentity } from "./api-key-resolve.js";
 
 // ---------------------------------------------------------------------------
@@ -158,7 +158,9 @@ export async function applyBillingGate(
   req: IncomingMessage,
   body: unknown,
 ): Promise<BillingGateResult> {
-  const { db, config } = getBillingState();
+  // Billing gate is server-mode only — client-mode lets the upstream gateway
+  // enforce billing, and this function is never invoked in that path.
+  const { db, config } = getServerBillingState();
 
   // ---- 1. Resolve caller identity ----
   const identity = await resolveBillingIdentity(req);

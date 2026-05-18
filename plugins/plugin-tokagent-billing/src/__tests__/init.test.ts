@@ -114,9 +114,12 @@ function makeRuntime(env: Record<string, string | undefined>): IAgentRuntime {
   } as unknown as IAgentRuntime;
 }
 
-/** Minimum env required for a successful BILLING_ENABLED=true boot. */
+/** Minimum env required for a successful server-mode BILLING_ENABLED=true boot. */
 function fullEnabledEnv(overrides: Record<string, string | undefined> = {}): Record<string, string | undefined> {
   return {
+    // v2.1.0 default mode is `client`; these tests exercise the server-mode
+    // pool/migrations/clients lifecycle, so we pin mode=server explicitly.
+    BILLING_MODE: "server",
     BILLING_ENABLED: "true",
     BILLING_AUTH_REQUIRED: "true",
     BILLING_AUTH_SECRET: "test-secret-for-init",
@@ -156,8 +159,14 @@ afterEach(async () => {
 // ---------------------------------------------------------------------------
 
 describe("initBillingPlugin — BILLING_ENABLED=false short-circuit", () => {
-  it("does nothing when billing is disabled (no pool, no state)", async () => {
-    const runtime = makeRuntime({ BILLING_ENABLED: "false" });
+  it("does nothing when billing is disabled in server-mode (no pool, no state)", async () => {
+    // v2.1.0: default mode is now `client`, which always inits the gateway
+    // forwarder. To test the server-mode disabled short-circuit, explicitly
+    // pin BILLING_MODE=server.
+    const runtime = makeRuntime({
+      BILLING_MODE: "server",
+      BILLING_ENABLED: "false",
+    });
     await initBillingPlugin(runtime);
 
     expect(isBillingStateInitialized()).toBe(false);
@@ -166,8 +175,10 @@ describe("initBillingPlugin — BILLING_ENABLED=false short-circuit", () => {
     expect(() => getBillingState()).toThrow(/not initialized/);
   });
 
-  it("does nothing when BILLING_ENABLED is missing (defaults to false)", async () => {
-    const runtime = makeRuntime({}); // no settings at all
+  it("does nothing in server-mode when BILLING_ENABLED is missing (server-mode default = false)", async () => {
+    // v2.1.0: explicit BILLING_MODE=server keeps the server-mode
+    // disabled-default. The client-mode branch is covered separately.
+    const runtime = makeRuntime({ BILLING_MODE: "server" });
     await initBillingPlugin(runtime);
 
     expect(isBillingStateInitialized()).toBe(false);

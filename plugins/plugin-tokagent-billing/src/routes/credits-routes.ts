@@ -12,8 +12,13 @@
 import type { Route, RouteRequest, RouteResponse, IAgentRuntime } from "@tokagentos/core";
 import type { IncomingMessage } from "node:http";
 import type { Address } from "viem";
-import { getBillingState, isBillingStateInitialized } from "../state.js";
+import {
+  getBillingState,
+  getServerBillingState,
+  isBillingStateInitialized,
+} from "../state.js";
 import { resolveBillingIdentity } from "../middleware/api-key-resolve.js";
+import { pickForward, forward, ensureClientReady } from "../lib/forward.js";
 import { creditState } from "@tokagentos/billing";
 import { eq } from "drizzle-orm";
 
@@ -58,7 +63,7 @@ async function handleGetCreditsMe(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -99,3 +104,28 @@ export const creditsRoutes: Route[] = [
     handler: handleGetCreditsMe,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Client-mode forwarders
+// ---------------------------------------------------------------------------
+
+function clientCreditsRoutes(): Route[] {
+  return [
+    {
+      type: "GET",
+      path: "/v1/credits/me",
+      rawPath: true,
+      name: "billing-credits-me",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.credits.me(pickForward(req)),
+        );
+      },
+    },
+  ];
+}
+
+export function getCreditsRoutes(mode: "server" | "client"): Route[] {
+  return mode === "client" ? clientCreditsRoutes() : creditsRoutes;
+}

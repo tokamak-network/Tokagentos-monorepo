@@ -39,9 +39,14 @@ import {
   topupQuotes,
 } from "@tokagentos/billing";
 import { eq } from "drizzle-orm";
-import { getBillingState, isBillingStateInitialized } from "../state.js";
+import {
+  getBillingState,
+  getServerBillingState,
+  isBillingStateInitialized,
+} from "../state.js";
 import { resolveBillingIdentity } from "../middleware/api-key-resolve.js";
 import { createRateLimiter, type TokenBucketLimiter } from "../middleware/rate-limit.js";
+import { pickForward, forward, ensureClientReady } from "../lib/forward.js";
 
 // ---------------------------------------------------------------------------
 // Module-level settle rate limiter (lazy-init)
@@ -172,7 +177,7 @@ async function handleTopupQuote(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -267,7 +272,7 @@ async function handleTopupSettle(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config, clients } = getBillingState();
+  const { db, config, clients } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -556,7 +561,7 @@ async function handleTopupPreauth(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -655,7 +660,7 @@ async function handleTopupStatus(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -704,7 +709,7 @@ async function handleTopupRevoke(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -752,7 +757,7 @@ async function handleGetQuote(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -849,3 +854,102 @@ export const topupRoutes: Route[] = [
     handler: handleGetQuote,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Client-mode forwarders
+// ---------------------------------------------------------------------------
+
+function clientTopupRoutes(): Route[] {
+  return [
+    {
+      type: "GET",
+      path: "/v1/topup/info",
+      rawPath: true,
+      name: "billing-topup-info",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.topup.info(pickForward(req)),
+        );
+      },
+    },
+    {
+      type: "POST",
+      path: "/v1/topup/quote",
+      rawPath: true,
+      name: "billing-topup-quote",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.topup.quote(pickForward(req), req.body),
+        );
+      },
+    },
+    {
+      type: "POST",
+      path: "/v1/topup/settle",
+      rawPath: true,
+      name: "billing-topup-settle",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.topup.settle(pickForward(req), req.body),
+        );
+      },
+    },
+    {
+      type: "POST",
+      path: "/v1/topup/preauth",
+      rawPath: true,
+      name: "billing-topup-preauth",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.topup.preauth(pickForward(req), req.body),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/topup/status",
+      rawPath: true,
+      name: "billing-topup-status",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.topup.status(pickForward(req)),
+        );
+      },
+    },
+    {
+      type: "POST",
+      path: "/v1/topup/revoke",
+      rawPath: true,
+      name: "billing-topup-revoke",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.topup.revoke(pickForward(req), req.body),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/quote/:id",
+      rawPath: true,
+      name: "billing-quote-debug",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        const id =
+          typeof req.params?.["id"] === "string" ? req.params["id"] : "";
+        await forward(res, () =>
+          getBillingState().gateway!.topup.quoteGet(id),
+        );
+      },
+    },
+  ];
+}
+
+export function getTopupRoutes(mode: "server" | "client"): Route[] {
+  return mode === "client" ? clientTopupRoutes() : topupRoutes;
+}

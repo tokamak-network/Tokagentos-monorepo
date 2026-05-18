@@ -197,6 +197,13 @@ async function handleConfigJs(
 // Route definitions
 // ---------------------------------------------------------------------------
 
+/**
+ * The dashboard SPA is mode-agnostic: it talks to /v1/* on the same origin.
+ * In `BILLING_MODE=server` those endpoints are served by this plugin's
+ * server-mode handlers; in `BILLING_MODE=client` the same paths are now
+ * forwarders to the upstream gateway. Either way, the static assets and
+ * runtime config are the same.
+ */
 export const dashboardRoutes: Route[] = [
   {
     type: "GET",
@@ -247,3 +254,12 @@ export const dashboardRoutes: Route[] = [
     handler: handleConfigJs,
   },
 ];
+
+/**
+ * Mode-aware factory — the dashboard array is identical in both modes.
+ * Exists for symmetry with other route files; the orchestrator can call
+ * this uniformly without special-casing dashboard.
+ */
+export function getDashboardRoutes(_mode: "server" | "client"): Route[] {
+  return dashboardRoutes;
+}

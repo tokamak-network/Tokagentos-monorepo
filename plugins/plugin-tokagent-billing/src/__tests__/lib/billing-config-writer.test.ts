@@ -46,6 +46,7 @@ afterEach(async () => {
   delete process.env.TOKAGENT_STATE_DIR;
   // Clean up written env vars
   for (const key of [
+    "BILLING_MODE",
     "BILLING_ENABLED", "BILLING_DATABASE_URL", "BILLING_CHAIN_RPC_URL",
     "BILLING_CHAIN_ID", "BILLING_VAULT_ADDRESS", "BILLING_PTON_ADDRESS",
     "BILLING_OPERATOR_PRIVATE_KEY", "BILLING_AUTH_SECRET",
@@ -118,6 +119,16 @@ describe("writeBillingConfig", () => {
     // BILLING_ENABLED should appear after all other BILLING_* keys
     const enabledIdx = lines.findIndex(l => l.startsWith("BILLING_ENABLED="));
     expect(enabledIdx).toBe(lines.length - 1);
+  });
+
+  it("pins BILLING_MODE=server (v2.1.0 — self-host opt-in)", async () => {
+    // The default install runs in client-mode. Submitting the self-host form
+    // is an explicit opt-in to server-mode, so the writer pins BILLING_MODE
+    // = server so subsequent boots stay in server-mode.
+    await writeBillingConfig(VALID_VALUES);
+    const env = await readConfigEnv();
+    expect(env.BILLING_MODE).toBe("server");
+    expect(process.env.BILLING_MODE).toBe("server");
   });
 });
 

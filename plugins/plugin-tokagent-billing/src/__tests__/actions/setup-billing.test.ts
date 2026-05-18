@@ -80,7 +80,10 @@ describe("setupBillingAction.validate", () => {
 });
 
 describe("setupBillingAction.handler", () => {
-  it("replies with setup instructions when billing is not initialized", async () => {
+  it("replies with default client-mode message when billing is not initialized (v2.1.0)", async () => {
+    // v2.1.0 default: BILLING_MODE=client. The wizard tells the user billing
+    // is already pointed at the hosted gateway and links the dashboard, plus
+    // mentions the self-host setup panel for advanced users.
     billingStateMock.initialized = false;
     const replies: string[] = [];
     await setupBillingAction.handler!(
@@ -91,8 +94,28 @@ describe("setupBillingAction.handler", () => {
       async (response: Content) => { replies.push(String(response.text ?? "")); return []; },
     );
     expect(replies.length).toBe(1);
-    expect(replies[0]).toMatch(/billing setup/i);
+    // Default reply mentions the hosted gateway, the dashboard, and offers
+    // the self-host panel as an opt-in path.
+    expect(replies[0]).toMatch(/Tokagent gateway/i);
+    expect(replies[0]).toMatch(/dashboard/i);
     expect(replies[0]).toMatch(/setup-panel/i);
+  });
+
+  it("uses the server-mode reply when BILLING_MODE=server is set", async () => {
+    // Operators who self-host get the original 5-question wizard prompt.
+    billingStateMock.initialized = false;
+    const replies: string[] = [];
+    await setupBillingAction.handler!(
+      makeRuntime({ SERVER_PORT: "2138", BILLING_MODE: "server" }),
+      makeMessage("set up billing"),
+      undefined,
+      undefined,
+      async (response: Content) => { replies.push(String(response.text ?? "")); return []; },
+    );
+    expect(replies.length).toBe(1);
+    expect(replies[0]).toMatch(/setup-panel/i);
+    expect(replies[0]).toMatch(/ClaudeVault/i);
+    expect(replies[0]).toMatch(/Postgres/i);
   });
 
   it("informs user billing is already active when initialized", async () => {

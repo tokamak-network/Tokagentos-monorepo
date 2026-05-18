@@ -29,6 +29,7 @@ import {
 } from "@tokagentos/billing";
 import { getBillingState, isBillingStateInitialized } from "../state.js";
 import { resolveBillingIdentity } from "../middleware/api-key-resolve.js";
+import { pickForward, forward, ensureClientReady } from "../lib/forward.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -348,3 +349,53 @@ export const estimateRoutes: Route[] = [
     handler: handlePrice,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Client-mode forwarders
+// ---------------------------------------------------------------------------
+
+function clientEstimateRoutes(): Route[] {
+  return [
+    {
+      type: "POST",
+      path: "/v1/estimate",
+      rawPath: true,
+      name: "billing-estimate",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.estimate.estimate(req.body),
+        );
+      },
+    },
+    {
+      type: "POST",
+      path: "/v1/messages/count_tokens",
+      rawPath: true,
+      name: "billing-count-tokens",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.estimate.countTokens(
+            pickForward(req),
+            req.body,
+          ),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/price",
+      rawPath: true,
+      name: "billing-price-debug",
+      handler: async (_req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () => getBillingState().gateway!.estimate.price());
+      },
+    },
+  ];
+}
+
+export function getEstimateRoutes(mode: "server" | "client"): Route[] {
+  return mode === "client" ? clientEstimateRoutes() : estimateRoutes;
+}

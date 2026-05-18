@@ -23,7 +23,12 @@ import {
   verifySIWESignature,
   type SIWEEnvelope,
 } from "@tokagentos/billing";
-import { getBillingState, isBillingStateInitialized } from "../state.js";
+import {
+  getBillingState,
+  getServerBillingState,
+  isBillingStateInitialized,
+} from "../state.js";
+import { forward, ensureClientReady } from "../lib/forward.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -65,7 +70,7 @@ async function handleGetNonce(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const rawWallet = req.query?.["wallet"];
@@ -151,7 +156,7 @@ async function handlePostNonce(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const body = req.body as { wallet?: unknown } | undefined;
@@ -230,7 +235,7 @@ async function handleLogin(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
   if (!config.authSecret) return billingUnavailable(res);
 
@@ -371,3 +376,92 @@ export const authRoutes: Route[] = [
     handler: handleBillingStatus,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Client-mode forwarders
+// ---------------------------------------------------------------------------
+
+function clientAuthRoutes(): Route[] {
+  return [
+    {
+      type: "GET",
+      path: "/v1/auth/nonce",
+      rawPath: true,
+      public: true,
+      name: "billing-auth-nonce",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        const wallet =
+          typeof req.query?.["wallet"] === "string"
+            ? (req.query["wallet"] as string)
+            : "";
+        const chainIdRaw = req.query?.["chainId"];
+        const chainId =
+          typeof chainIdRaw === "string"
+            ? parseInt(chainIdRaw, 10)
+            : undefined;
+        await forward(res, () =>
+          getBillingState().gateway!.auth.nonceGet({
+            wallet,
+            chainId: Number.isFinite(chainId) ? chainId : undefined,
+          }),
+        );
+      },
+    },
+    {
+      type: "POST",
+      path: "/v1/auth/nonce",
+      rawPath: true,
+      public: true,
+      name: "billing-auth-nonce-post",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        const body = (req.body ?? {}) as { wallet?: string };
+        await forward(res, () =>
+          getBillingState().gateway!.auth.nonce({ wallet: body.wallet ?? "" }),
+        );
+      },
+    },
+    {
+      type: "POST",
+      path: "/v1/auth/login",
+      rawPath: true,
+      public: true,
+      name: "billing-auth-login",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.auth.login(req.body),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/billing/status",
+      rawPath: true,
+      public: true,
+      name: "billing-status",
+      handler: async (_req, res) => {
+        if (!isBillingStateInitialized()) {
+          res.status(200).json({ enabled: false });
+          return;
+        }
+        // In client-mode, "enabled" reflects whether the upstream gateway
+        // says yes. Forward and pass through.
+        await forward(res, () => getBillingState().gateway!.auth.status());
+      },
+    },
+  ];
+}
+
+/**
+ * Mode-aware factory used by `src/index.ts`. Returns the server-mode array
+ * (existing behavior, unchanged for tests) or the client-mode forwarder
+ * array depending on the configured BILLING_MODE.
+ *
+ * Pass the value of `process.env.BILLING_MODE` (already resolved by the
+ * orchestrator at plugin construction time).
+ */
+export function getAuthRoutes(mode: "server" | "client"): Route[] {
+  return mode === "client" ? clientAuthRoutes() : authRoutes;
+}

@@ -101,6 +101,16 @@ export async function applyBillingMiddleware(
 
   const { config } = getBillingState();
 
+  // ---- 0a. Short-circuit: client-mode — gateway enforces billing ----
+  // In BILLING_MODE=client the local middleware does NOT gate requests;
+  // the request will be forwarded to the upstream server-mode gateway,
+  // which performs reservation/auth/rate-limit. Returning allow=true here
+  // skips local gating without exposing a passthrough hole — the route
+  // handler still proxies the call upstream rather than handling it locally.
+  if (config.billingMode === "client") {
+    return { allow: true, status: 200 };
+  }
+
   // ---- 0b. Short-circuit: billing disabled ----
   if (!config.enabled) {
     return { allow: true, status: 200 };

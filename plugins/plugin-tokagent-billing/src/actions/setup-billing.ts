@@ -83,17 +83,44 @@ export const setupBillingAction: Action = {
       return undefined;
     }
 
-    // Billing is not yet configured — point the user at the setup panel.
-    // The panel is served by the agent's API server. In dev mode `dev-ui.mjs`
-    // boots the API on port 31337 (DEFAULT_API_PORT in scaffolds), with
-    // ELIZA_API_PORT exported into the process env. Older field name was
-    // SERVER_PORT — checked last for backwards compat.
+    // Billing is not yet configured (or operator opened the setup chat) —
+    // point the user at the setup panel. The panel is served by the agent's
+    // API server. In dev mode `dev-ui.mjs` boots the API on port 31337
+    // (DEFAULT_API_PORT in scaffolds), with ELIZA_API_PORT exported into the
+    // process env. Older field name was SERVER_PORT — checked last for
+    // backwards compat.
     const port =
       runtime.getSetting?.("ELIZA_API_PORT") ??
       runtime.getSetting?.("API_PORT") ??
       runtime.getSetting?.("SERVER_PORT") ??
       "31337";
     const setupPanelUrl = `http://localhost:${port}/v1/billing/setup-panel`;
+    const dashboardUrl = `http://localhost:${port}/v1/billing/dashboard/`;
+
+    // Wizard message diverges between modes (v2.1.0):
+    //   - client-mode (default): the agent is already pointed at the hosted
+    //     gateway. Tell the user, link the dashboard, and offer self-host.
+    //   - server-mode: explicit operator opt-in — full DB/chain/operator-key
+    //     prompt sequence.
+    const mode =
+      (runtime.getSetting?.("BILLING_MODE") as string | undefined) ??
+      process.env.BILLING_MODE ??
+      "client";
+
+    if (mode === "client") {
+      await callback?.({
+        text:
+          "Billing is already configured to use the Tokagent gateway " +
+          "(`https://gateway.tokagent.ai`). You don't need to set anything up — " +
+          `just [open the dashboard](${dashboardUrl}) and connect your wallet.\n\n` +
+          "Want to self-host the billing server instead? Open the setup panel " +
+          `at ${setupPanelUrl} and expand the **Advanced: self-host billing** ` +
+          "section. You'll need a Postgres database, an RPC URL, a deployed " +
+          "ClaudeVault, and an operator EOA you control.",
+        action: "SETUP_BILLING",
+      } as Content);
+      return undefined;
+    }
 
     await callback?.({
       text:

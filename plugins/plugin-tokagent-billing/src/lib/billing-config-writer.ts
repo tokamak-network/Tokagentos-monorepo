@@ -216,6 +216,13 @@ export async function writeBillingConfig(values: BillingSetupValues): Promise<vo
   }
 
   try {
+    // ---- Mode pin (v2.1.0) ----
+    // The default install runs in BILLING_MODE=client (the schema default).
+    // Submitting the self-host form is an explicit opt-in to server-mode,
+    // so we pin BILLING_MODE=server FIRST. Once flipped, subsequent boots
+    // stay in server-mode regardless of the default-flip.
+    await writeOne("BILLING_MODE", "server");
+
     // ---- Non-secret envs ----
     await writeOne("BILLING_DATABASE_URL", values.databaseUrl);
     await writeOne("BILLING_CHAIN_RPC_URL", values.chainRpcUrl);
@@ -257,6 +264,7 @@ export async function writeBillingConfig(values: BillingSetupValues): Promise<vo
 export async function clearBillingConfig(): Promise<void> {
   const persist = await getPersistFn();
   const BILLING_KEYS = [
+    "BILLING_MODE",
     "BILLING_ENABLED",
     "BILLING_DATABASE_URL",
     "BILLING_CHAIN_RPC_URL",

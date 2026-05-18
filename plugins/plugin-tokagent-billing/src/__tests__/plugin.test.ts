@@ -22,9 +22,13 @@ describe('tokagentBillingPlugin', () => {
     expect(tokagentBillingPlugin.providers?.length).toBe(0);
   });
 
-  it('has 5 registered services (Phase 6b: +BillingMiddlewareService)', () => {
+  it('has 0 services in default client-mode (v2.1.0 — upstream gateway owns workers)', () => {
+    // v2.1.0 flipped the default to BILLING_MODE=client. Client-mode forwards
+    // every billing/usage/topup request to the hosted gateway, so the local
+    // plugin registers ZERO services. Server-mode (opt-in via the self-host
+    // wizard) registers 5 — see the dedicated server-mode test below.
     expect(Array.isArray(tokagentBillingPlugin.services)).toBe(true);
-    expect(tokagentBillingPlugin.services?.length).toBe(5);
+    expect(tokagentBillingPlugin.services?.length).toBe(0);
   });
 
   it('has init and dispose lifecycle hooks (Phase 6a)', () => {
