@@ -349,11 +349,3 @@ export function configFileExists(): boolean {
 }
 
 // Backward-compat aliases for downstream forks using the old name
-
-// ---------------------------------------------------------------------------
-// Backward-compat aliases — elizaOS naming preserved for files restored from
-// upstream that still reference the pre-rename symbols. Safe to remove once
-// every consumer is migrated to the canonical Tokagent* names.
-// ---------------------------------------------------------------------------
-export const loadElizaConfig = loadTokagentConfig;
-export const saveElizaConfig = saveTokagentConfig;

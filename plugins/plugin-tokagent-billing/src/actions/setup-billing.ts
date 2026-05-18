@@ -1,172 +1,145 @@
 /**
- * SETUP_BILLING — v2.0.0 conversational onboarding.
+ * SETUP_BILLING conversational action (Phase 9).
  *
- * v1.x walked the user through ClaudeVault address, PTON address, operator
- * private key, BILLING_DATABASE_URL, auth secret, etc. — all of that lived
- * on the user's machine.
+ * Triggered when the user asks the agent to "set up billing", "enable billing",
+ * "configure payments", etc. The handler:
+ *   1. Checks if billing is already initialized and asks to confirm reconfigure.
+ *   2. Posts a status route URL or inline guidance the user can follow.
+ *   3. Returns quickly — the actual setup happens in the BillingSetupPanel
+ *      (GET /v1/billing/setup-panel or the setup route POST).
  *
- * v2.x is a thin client. The only setup decisions the user makes are:
- *   1. Which gateway URL to use (`TOKAGENT_GATEWAY_URL`).
- *      Default: `https://gateway.tokagent.ai`.
- *      Self-hosted operators can paste their own URL.
- *   2. (optional) An OPERATOR_PRIVATE_KEY for users running their own
- *      self-hosted gateway who want the wizard to write a `.env` line for
- *      that deployment. The CLI never uses the value at runtime.
+ * Decision Z48: the hybrid UX model means the action responds with a short
+ * message and a link to the setup panel. The panel itself is served at
+ * GET /v1/billing/setup-panel (a static HTML form) for environments where the
+ * companion UI's panel mechanism is not available. In the companion UI, the
+ * frontend polls /v1/billing/status and can open the BillingSetupPanel
+ * component when it detects billing is not configured.
  *
- * The wizard surfaces a chat reply with the relevant env-var snippet and
- * one-line setup instructions. Persistence (writing to `.env` / config.env)
- * happens out of band via the user's normal editor / `tokagent config` —
- * the v1.x crash-safe writer is gone with the rest of the DB layer.
+ * Decision Z46: the action is always available (validate() always returns true
+ * for matching messages) regardless of BILLING_ENABLED so the setup conversation
+ * is reachable before billing is configured.
  */
 
-import type {
-  Action,
-  Content,
-  HandlerCallback,
-  IAgentRuntime,
-  Memory,
-  State,
-} from '@tokagentos/core';
-import { isBillingStateInitialized, getBillingState } from '../state.js';
+import type { Action, Content, HandlerCallback, IAgentRuntime, Memory, State } from "@tokagentos/core";
+import { isBillingStateInitialized } from "../state.js";
 
-const DEFAULT_GATEWAY_URL = 'https://gateway.tokagent.ai';
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 function matchesBillingIntent(text: string): boolean {
-  return /\b(billing|payments?|credits?|top[- ]?up|enable billing|set up billing|configure billing|web3 payments?|gateway url)\b/i.test(
+  return /\b(billing|payments?|credits?|top[- ]?up|enable billing|set up billing|configure billing|web3 payments?)\b/i.test(
     text,
   );
 }
 
-/** Build the chat reply the action returns. Pure function for testability. */
-export function buildSetupMessage(opts: {
-  alreadyInitialized: boolean;
-  currentGatewayUrl: string | null;
-}): string {
-  if (opts.alreadyInitialized && opts.currentGatewayUrl) {
-    return [
-      `Billing is already active on this agent.`,
-      ``,
-      `**Current gateway:** \`${opts.currentGatewayUrl}\``,
-      ``,
-      `To point at a different gateway, set \`TOKAGENT_GATEWAY_URL\` in your` +
-        ` \`.env\` (or run \`tokagent config set TOKAGENT_GATEWAY_URL=...\`)` +
-        ` and restart the agent.`,
-      ``,
-      `For the hosted Tokagent gateway: \`TOKAGENT_GATEWAY_URL=${DEFAULT_GATEWAY_URL}\``,
-      ``,
-      `For a self-hosted gateway: \`TOKAGENT_GATEWAY_URL=https://your-gateway.example.com\``,
-    ].join('\n');
-  }
-
-  return [
-    `**Tokagent v2 billing setup**`,
-    ``,
-    `Tokagent v2 routes all billing through a hosted gateway — your CLI is now` +
-      ` a thin forwarder. You only need to pick a gateway URL:`,
-    ``,
-    `1. **Hosted (default, recommended)** — uses the Tokagent team's gateway.` +
-      ` Pay-as-you-go, no infra to run.`,
-    `   Add to your \`.env\`:`,
-    `   \`\`\``,
-    `   BILLING_ENABLED=true`,
-    `   TOKAGENT_GATEWAY_URL=${DEFAULT_GATEWAY_URL}`,
-    `   \`\`\``,
-    ``,
-    `2. **Self-hosted** — point at a gateway you operate (see` +
-      ` https://docs.tokagent.ai/self-host).`,
-    `   \`\`\``,
-    `   BILLING_ENABLED=true`,
-    `   TOKAGENT_GATEWAY_URL=https://your-gateway.example.com`,
-    `   # Optional — only if you also operate the gateway and want the wizard`,
-    `   # to remind you which key the gateway runs as. Not used by the CLI.`,
-    `   OPERATOR_PRIVATE_KEY=0x...`,
-    `   \`\`\``,
-    ``,
-    `Restart the agent after updating \`.env\`. You can verify the gateway is` +
-      ` reachable with:`,
-    `   \`\`\`bash`,
-    `   curl -fsS "$TOKAGENT_GATEWAY_URL/healthz"`,
-    `   \`\`\``,
-    ``,
-    `Once billing is on, sign in from the dashboard or via SIWE and run` +
-      ` \`POST /v1/topup/quote\` → \`POST /v1/topup/settle\` to deposit credits.`,
-  ].join('\n');
-}
+// ---------------------------------------------------------------------------
+// Action definition
+// ---------------------------------------------------------------------------
 
 export const setupBillingAction: Action = {
-  name: 'SETUP_BILLING',
+  name: "SETUP_BILLING",
   similes: [
-    'set up billing',
-    'enable billing',
-    'configure web3 payments',
-    'configure billing',
-    'setup billing',
-    'activate billing',
-    'turn on billing',
-    'change gateway',
-    'set gateway url',
+    "set up billing",
+    "enable billing",
+    "configure web3 payments",
+    "configure billing",
+    "setup billing",
+    "activate billing",
+    "turn on billing",
   ],
   description:
-    'Walks the user through pointing the CLI at the hosted Tokagent gateway ' +
-    '(or a self-hosted one). v2.0.0+: no DB setup, no operator key, no ' +
-    'chain wiring lives on the CLI anymore.',
+    "Walks the user through configuring Web3 billing (PTON credits, chain wiring, auth). " +
+    "Opens the billing setup panel or provides inline setup instructions.",
 
   validate: async (
     _runtime: IAgentRuntime,
     message: Memory,
     _state?: State,
   ): Promise<boolean> => {
-    const text = message.content?.text ?? '';
+    // Available for any billing-related message, whether billing is already
+    // configured or not (Z46: always reachable for setup conversation).
+    const text = message.content?.text ?? "";
     return matchesBillingIntent(text);
   },
 
   handler: async (
-    _runtime: IAgentRuntime,
+    runtime: IAgentRuntime,
     _message: Memory,
     _state?: State,
     _options?: Record<string, unknown>,
     callback?: HandlerCallback,
   ): Promise<undefined> => {
-    let currentGatewayUrl: string | null = null;
     const alreadyInitialized = isBillingStateInitialized();
+
     if (alreadyInitialized) {
-      try {
-        currentGatewayUrl = getBillingState().config.gatewayUrl;
-      } catch {
-        currentGatewayUrl = null;
-      }
+      // Billing is already running — offer to reconfigure.
+      await callback?.({
+        text:
+          "Billing is already active on this agent. To reconfigure it, open the billing setup panel at `/v1/billing/setup-panel` in your browser, or POST to `/v1/billing/setup` with updated values.\n\n" +
+          "⚠️  Reconfiguring will restart the billing plugin. Any in-flight consume cycles will be interrupted.",
+        action: "SETUP_BILLING",
+      } as Content);
+      return undefined;
     }
 
+    // Billing is not yet configured — point the user at the setup panel.
+    // The panel is served by the agent's API server. In dev mode `dev-ui.mjs`
+    // boots the API on port 31337 (DEFAULT_API_PORT in scaffolds), with
+    // ELIZA_API_PORT exported into the process env. Older field name was
+    // SERVER_PORT — checked last for backwards compat.
+    const port =
+      runtime.getSetting?.("ELIZA_API_PORT") ??
+      runtime.getSetting?.("API_PORT") ??
+      runtime.getSetting?.("SERVER_PORT") ??
+      "31337";
+    const setupPanelUrl = `http://localhost:${port}/v1/billing/setup-panel`;
+
     await callback?.({
-      text: buildSetupMessage({ alreadyInitialized, currentGatewayUrl }),
-      action: 'SETUP_BILLING',
+      text:
+        `[Click here to open the billing setup panel](${setupPanelUrl})\n\n` +
+        `If the link doesn't open, copy it into your browser: ${setupPanelUrl}\n\n` +
+        "You'll need:\n" +
+        "1. A Postgres connection string (or use the local Docker option)\n" +
+        "2. Your chain RPC URL (e.g. Polygon, Base, or Titan)\n" +
+        "3. Your deployed ClaudeVault contract address\n" +
+        "4. Your deployed PTON token address\n" +
+        "5. An operator Ethereum private key (or generate a fresh one)\n\n" +
+        "Once you submit the form, the billing plugin initializes automatically — " +
+        "no manual restart needed.",
+      action: "SETUP_BILLING",
     } as Content);
     return undefined;
   },
 
   examples: [
     [
-      { name: 'user', content: { text: 'set up billing' } },
+      { name: "user", content: { text: "set up billing" } },
       {
-        name: 'agent',
+        name: "agent",
         content: {
-          text:
-            'Tokagent v2 routes billing through a hosted gateway — your CLI ' +
-            'is now a thin forwarder. Add BILLING_ENABLED=true and ' +
-            `TOKAGENT_GATEWAY_URL=${DEFAULT_GATEWAY_URL} to .env, then restart.`,
-          actions: ['SETUP_BILLING'],
+          text: "Opening billing setup...",
+          actions: ["SETUP_BILLING"],
         },
       },
     ],
     [
-      { name: 'user', content: { text: 'change my gateway url' } },
+      { name: "user", content: { text: "I want to enable web3 payments for my agent" } },
       {
-        name: 'agent',
+        name: "agent",
         content: {
-          text:
-            'Set TOKAGENT_GATEWAY_URL in your .env to the gateway you want, ' +
-            'then restart the agent.',
-          actions: ['SETUP_BILLING'],
+          text: "Opening billing setup... You will need a ClaudeVault address and PTON address.",
+          actions: ["SETUP_BILLING"],
+        },
+      },
+    ],
+    [
+      { name: "user", content: { text: "how do I configure billing?" } },
+      {
+        name: "agent",
+        content: {
+          text: "Opening billing setup...",
+          actions: ["SETUP_BILLING"],
         },
       },
     ],

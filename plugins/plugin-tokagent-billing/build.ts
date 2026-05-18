@@ -1,18 +1,20 @@
 #!/usr/bin/env bun
 /**
- * Build script for @tokagent/plugin-tokagent-billing (v2.0.0).
+ * Build script for @tokagent/plugin-tokagent-billing.
+ * Produces ESM in dist/.
  *
- * Produces ESM in dist/. v2.x no longer ships the operator dashboard SPA
- * (that lives at app.tokagent.ai now — see MIGRATION_PLAN.md §3 footnote).
+ * No tsc pass — plugin bundles ESM only. .d.ts emission is deferred to a
+ * future tsc step if the plugin is published independently.
  */
 import { $ } from "bun";
-import { existsSync, rmSync } from "node:fs";
+import { cpSync, existsSync, rmSync } from "node:fs";
 
 const watch = process.argv.includes("--watch");
 
 async function build() {
   if (existsSync("dist")) rmSync("dist", { recursive: true });
 
+  // Bundle ESM via bun (primary output)
   await Bun.build({
     entrypoints: ["./src/index.ts"],
     outdir: "./dist",
@@ -21,6 +23,12 @@ async function build() {
     external: ["viem", "@tokagentos/core", "@tokagentos/billing"],
     sourcemap: "external",
   });
+
+  // Copy non-bundled static assets (operator dashboard SPA — HTML/CSS/JS)
+  // so dashboard-routes.ts can readFileSync them at runtime.
+  if (existsSync("src/dashboard")) {
+    cpSync("src/dashboard", "dist/dashboard", { recursive: true });
+  }
 
   console.log("✓ build complete");
 }

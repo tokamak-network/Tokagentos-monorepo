@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Tokamak.AI — Dashboard</title>
+  <meta name="description" content="API key issuance, PTON top-up, credit balance, and 90-day usage history for the Tokamak.AI x402 gateway." />
+
+  <!-- Resolve all relative asset URLs (style.css, app.js, config.js) under
+       the plugin's mount point. The trailing slash is required so style.css
+       resolves to /v1/billing/dashboard/style.css. -->
+  <base href="/v1/billing/dashboard/" />
+
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Pre-paint embed-mode detection: when loaded inside the parent app
+       (BillingPageView posts `?embed=1` in the iframe src), flip the embed
+       flag on <html> before the stylesheet's [data-embed="1"] rules apply
+       so we never flash the standalone topbar. -->
+  <script>
+    (function () {
+      try {
+        var usp = new URLSearchParams(location.search);
+        if (usp.get("embed") === "1") {
+          document.documentElement.dataset.embed = "1";
+        }
+      } catch (_) { /* noop */ }
+    })();
+  </script>
+
+  <!-- Runtime-injected config: PROXY_BASE (same-origin), CHAIN_ID, etc.
+       Served by the plugin from runtime billing config. -->
+  <script src="config.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">◎</span>
+      <strong>Tokamak.AI</strong>
+      <em>Dashboard</em>
+    </div>
+    <div class="topbar-right">
+      <span id="chain-pill" class="pill" hidden>
+        <span id="chain-name">—</span>&nbsp;<code id="chain-id">—</code>
+      </span>
+      <button id="switch-chain-btn" class="btn btn-ghost btn-small" type="button" hidden>Switch network</button>
+      <span id="wallet-pill" class="pill" hidden>
+        <span class="dot dot-ok" aria-hidden="true"></span>
+        <code id="wallet-addr">—</code>
+      </span>
+      <button id="logout-btn" class="btn btn-ghost" type="button" hidden>Logout</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ====================== LOGIN ====================== -->
+    <section id="view-login" class="view view-login">
+      <div class="login-card">
+        <h1>Sign in with your wallet</h1>
+        <p class="muted">SIWE (EIP-712) authentication is required. The dashboard never reads your private key — only one signature is requested, exchanged for a 24-hour session token.</p>
+
+        <div class="login-steps">
+          <ol>
+            <li>Connect a browser wallet (MetaMask, Rabby, …).</li>
+            <li>Approve the <code>LoginAuth</code> typed-data signature.</li>
+            <li>Manage keys, top up credits, and inspect usage.</li>
+          </ol>
+        </div>
+
+        <div class="login-actions">
+          <button id="connect-btn" class="btn btn-primary" type="button">Connect wallet</button>
+          <button id="signin-btn" class="btn btn-primary" type="button" hidden>Sign in</button>
+        </div>
+
+        <p id="login-status" class="status-line" role="status" aria-live="polite"></p>
+
+        <details class="login-help">
+          <summary>No browser wallet?</summary>
+          <p class="muted small">
+            The dashboard requires an EIP-1193 provider (most browser wallets inject one as <code>window.ethereum</code>).
+            Without one, you can still call the proxy directly via <code>curl</code> following the
+            steps in the project's landing page <em>Coding agents</em> section.
+          </p>
+        </details>
+      </div>
+    </section>
+
+    <!-- ====================== APP ====================== -->
+    <section id="view-app" class="view view-app" hidden>
+      <!-- ---- Balance + price summary ---- -->
+      <section class="grid grid-3">
+        <article class="card">
+          <header><h2>Spendable balance</h2><span class="card-sub">on-chain credit + ledger</span></header>
+          <p class="big-num"><span id="kpi-balance">—</span><em>PTON</em></p>
+          <p class="muted small">
+            Reserved <code id="kpi-reserved">—</code> · Pending consume <code id="kpi-accrued">—</code>
+          </p>
+          <p class="muted small">≈ <span id="kpi-balance-usd">—</span> USD at the current TWAP</p>
+          <p class="muted small">
+            Wallet <code id="kpi-wallet-pton">—</code> PTON · <code id="kpi-wallet-eth">—</code> ETH
+          </p>
+        </article>
+
+        <article class="card">
+          <header><h2>TON / USD</h2><span class="card-sub">composite TWAP</span></header>
+          <p class="big-num"><span id="kpi-price">—</span><em>USD</em></p>
+          <p class="muted small">
+            Source <code id="kpi-price-source">—</code> · Age <code id="kpi-price-age">—</code>
+          </p>
+        </article>
+
+        <article class="card">
+          <header><h2>Calls (last 30d)</h2><span class="card-sub">SQLite audit log</span></header>
+          <p class="big-num"><span id="kpi-calls">—</span><em>requests</em></p>
+          <p class="muted small">
+            Success <code id="kpi-calls-ok">—</code> · Failed <code id="kpi-calls-fail">—</code>
+          </p>
+        </article>
+      </section>
+
+      <!-- ---- Faucet (test/fork only) ---- -->
+      <section class="card section-card">
+        <header>
+          <h2>Test PTON faucet</h2>
+          <span class="card-sub">Mint PTON to your wallet (works only when the deployed PTON has <code>faucetEnabled=true</code>)</span>
+        </header>
+        <div class="topup-row">
+          <div class="topup-amount">
+            <label for="faucet-amount">Amount</label>
+            <div class="topup-input">
+              <input id="faucet-amount" type="number" step="1" min="1" value="100" inputmode="decimal" />
+              <span class="suffix">PTON</span>
+            </div>
+            <p class="muted small">
+              Calls <code>PTON.faucet(amount)</code> from your wallet. Requires a small amount of native gas.
+            </p>
+          </div>
+          <div class="topup-action">
+            <button id="faucet-btn" class="btn btn-ghost" type="button">Mint test PTON</button>
+            <p id="faucet-status" class="status-line" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- Top up ---- -->
+      <section class="card section-card">
+        <header>
+          <h2>Top up credits</h2>
+          <span class="card-sub">PTON deposited via EIP-3009 — one signature, no on-chain tx for you</span>
+        </header>
+        <div class="topup-row">
+          <div class="topup-amount">
+            <label for="topup-amount">Amount</label>
+            <div class="topup-input">
+              <input id="topup-amount" type="number" step="0.1" min="0.1" value="5" inputmode="decimal" />
+              <span class="suffix">PTON</span>
+            </div>
+            <div class="topup-presets">
+              <button type="button" data-preset="1">1</button>
+              <button type="button" data-preset="5">5</button>
+              <button type="button" data-preset="10">10</button>
+              <button type="button" data-preset="50">50</button>
+            </div>
+            <p class="muted small">
+              ≈ <span id="topup-usd">—</span> USD at current TWAP. The proxy will pull this PTON into <code>ClaudeVault</code> and credit your wallet.
+            </p>
+          </div>
+          <div class="topup-action">
+            <button id="topup-btn" class="btn btn-primary" type="button">Sign &amp; deposit</button>
+            <p id="topup-status" class="status-line" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- Usage tabs ---- -->
+      <section class="card section-card">
+        <header class="card-tabs">
+          <h2>Usage</h2>
+          <div class="tabs" role="tablist">
+            <button class="tab active" type="button" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+            <button class="tab" type="button" data-tab="byday" role="tab" aria-selected="false">Daily</button>
+            <button class="tab" type="button" data-tab="bymodel" role="tab" aria-selected="false">By model</button>
+            <button class="tab" type="button" data-tab="bykey" role="tab" aria-selected="false">By API key</button>
+            <button class="tab" type="button" data-tab="calls" role="tab" aria-selected="false">Recent calls</button>
+          </div>
+          <span class="card-sub">Window: last 30 days · retention <code id="usage-retention">90</code> days</span>
+        </header>
+
+        <!-- Overview -->
+        <div class="tab-pane active" data-pane="overview">
+          <div class="grid grid-3">
+            <div class="metric"><h3>Input tokens</h3><p class="big-num"><span id="usage-input">—</span></p></div>
+            <div class="metric"><h3>Output tokens</h3><p class="big-num"><span id="usage-output">—</span></p></div>
+            <div class="metric"><h3>Total spend</h3><p class="big-num"><span id="usage-spent">—</span><em>PTON</em></p></div>
+          </div>
+          <div class="grid grid-2 grid-soft">
+            <div class="metric metric-mini"><h4>Cache reads</h4><p><span id="usage-cache-read">—</span> tokens</p></div>
+            <div class="metric metric-mini"><h4>Cache writes</h4><p><span id="usage-cache-write">—</span> tokens</p></div>
+          </div>
+        </div>
+
+        <!-- By day -->
+        <div class="tab-pane" data-pane="byday" hidden>
+          <div class="chart-frame">
+            <canvas id="chart-byday" width="900" height="220" aria-label="Calls per day, last 30 days"></canvas>
+          </div>
+          <p class="muted small">Bars are call counts per UTC day. Empty days show no bar.</p>
+        </div>
+
+        <!-- By model -->
+        <div class="tab-pane" data-pane="bymodel" hidden>
+          <div class="chart-frame">
+            <canvas id="chart-bymodel" width="900" height="220" aria-label="Calls per model"></canvas>
+          </div>
+          <table class="data-table" aria-label="By model breakdown">
+            <thead>
+              <tr><th>Model</th><th class="num">Calls</th><th class="num">Input tokens</th><th class="num">Output tokens</th><th class="num">Spend (PTON)</th></tr>
+            </thead>
+            <tbody id="bymodel-rows"></tbody>
+          </table>
+        </div>
+
+        <!-- By key -->
+        <div class="tab-pane" data-pane="bykey" hidden>
+          <table class="data-table" aria-label="Per-API-key usage">
+            <thead>
+              <tr><th>Key</th><th>Name</th><th class="num">Calls</th><th class="num">Input tokens</th><th class="num">Output tokens</th><th class="num">Spend (PTON)</th><th>Last used</th></tr>
+            </thead>
+            <tbody id="bykey-rows"></tbody>
+          </table>
+        </div>
+
+        <!-- Calls -->
+        <div class="tab-pane" data-pane="calls" hidden>
+          <table class="data-table" aria-label="Recent calls">
+            <thead>
+              <tr><th>Time</th><th>Model</th><th>Key</th><th class="num">In</th><th class="num">Out</th><th class="num">Spend</th><th>Outcome</th></tr>
+            </thead>
+            <tbody id="calls-rows"></tbody>
+          </table>
+          <div class="pager">
+            <button id="calls-load-more" class="btn btn-ghost" type="button">Load older</button>
+            <span id="calls-status" class="muted small"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---- API keys ---- -->
+      <section class="card section-card">
+        <header>
+          <h2>API keys</h2>
+          <span class="card-sub">For Claude Code / anthropic-sdk via <code>x-api-key</code></span>
+        </header>
+        <form id="key-create-form" class="key-create">
+          <input id="key-name" type="text" maxlength="64" placeholder="key name (optional, e.g. claude-code-laptop)" />
+          <button class="btn btn-primary" type="submit">Mint key</button>
+        </form>
+        <p id="key-create-status" class="status-line" role="status" aria-live="polite"></p>
+        <table class="data-table" aria-label="API keys for this wallet">
+          <thead>
+            <tr><th>ID</th><th>Name</th><th>Created</th><th>Last used</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody id="key-rows"></tbody>
+        </table>
+      </section>
+    </section>
+  </main>
+
+  <!-- One-shot key reveal modal — appears after a successful POST /v1/keys -->
+  <div id="key-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="key-modal-title">
+    <div class="modal-body">
+      <h2 id="key-modal-title">Save this key — shown once</h2>
+      <p class="muted small">The proxy stores only an HMAC of the key. If you lose the plaintext, mint a new one.</p>
+      <pre id="key-modal-value" class="key-value">sk-ai-…</pre>
+      <div class="modal-actions">
+        <button id="key-modal-copy" class="btn btn-primary" type="button">Copy</button>
+        <button id="key-modal-close" class="btn btn-ghost" type="button">I have saved it</button>
+      </div>
+      <p id="key-modal-copy-status" class="status-line" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <footer>
+    <span class="muted small">SIWE-protected dashboard · 90-day call audit log · Source: <a href="/" target="_blank" rel="noopener">project landing</a></span>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

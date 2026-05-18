@@ -59,7 +59,3 @@ export function syncTokagentEnvAliases(): void {
   const aliases = getBootConfig().envAliases;
   if (aliases) syncTokagentEnvToBrand(aliases);
 }
-
-// Backward-compat alias (elizaOS pre-rename)
-export const syncElizaEnvAliases = syncTokagentEnvAliases;
-export const syncAppEnvToEliza = syncAppEnvToTokagent;

@@ -86,20 +86,3 @@ export function createBillingClients(cfg: BillingClientsConfig): BillingClients 
 
   return { publicClient, walletClient, mainnetClient, operatorAccount };
 }
-
-/**
- * v2.0.0: read-only client bundle for the CLI.
- *
- * The CLI never signs chain writes in v2.x — the gateway holds the operator
- * key — so we expose a separate factory that takes neither a private key nor
- * an L2 RPC URL. The only chain interaction the CLI keeps is reading the
- * TWAP oracle off Ethereum mainnet to keep its local /v1/estimate cache warm.
- *
- * Returns a public client for mainnet only. Use with `refreshTwap()` and the
- * TWAP cache.
- */
-export function createTwapClient(cfg: { mainnetRpcUrl: string }): PublicClient {
-  return createPublicClient({
-    transport: http(cfg.mainnetRpcUrl),
-  });
-}

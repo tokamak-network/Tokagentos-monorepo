@@ -1,0 +1,508 @@
+/* Dashboard — dark theme aligned with the tokagentos parent palette.
+ *
+ * Single-file CSS, hand-authored. Tokens repointed to the parent app's
+ * locked dark lime palette (apps/app/src/brand-purple.css). When the
+ * dashboard is loaded inside the parent shell, the iframe carries
+ * `?embed=1` in its src and the pre-paint script in index.html sets
+ * `<html data-embed="1">` — that flag drives the embed-only layout
+ * (hidden topbar, session-strip relocation, edge-to-edge padding).
+ *
+ * Standalone access (no parent shell) still works at
+ * http://localhost:31337/v1/billing/dashboard — the topbar stays visible
+ * because the data-embed flag is absent. */
+
+* { box-sizing: border-box; }
+:root {
+  /* Names preserved from the previous palette so component selectors
+   * elsewhere in this file keep working with value-only swaps. */
+  --bg-0: #0a0a0f;                       /* parent --bg / --tk-background */
+  --bg-1: rgba(255, 255, 255, 0.05);     /* parent --card (translucent over --bg) */
+  --bg-2: #111118;                       /* parent --bg-elevated / --tk-background-secondary */
+  --line: rgba(255, 255, 255, 0.10);     /* parent --border */
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #ffffff;                       /* parent --text */
+  --muted: #9ca3af;                      /* parent --muted */
+  --muted-strong: #6b7280;
+  --accent: #c4f547;                     /* parent --accent / --tk-accent (lime) */
+  --accent-hover: #d5f972;
+  --accent-foreground: #0a0a0f;          /* dark text on lime fills */
+  --accent-subtle: rgba(196, 245, 71, 0.12);
+  --accent-2: #c4f547;                   /* legacy alias — no secondary accent in parent */
+  --ok: #6be48e;                         /* parent --status-success */
+  --warn: #ffd641;                       /* parent --status-warning */
+  --err: #ff494a;                        /* parent --status-danger */
+  --radius: 1.25rem;                     /* matches rounded-2xl */
+  --radius-sm: 0.5rem;
+  --radius-pill: 999px;
+  --mono: "Courier New", Courier, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", sans-serif;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-0);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+code, pre, kbd, .mono {
+  font-family: var(--mono);
+}
+
+/* ---------- Top bar ---------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  min-height: 2.375rem;
+  border-bottom: 1px solid var(--line);
+  background: rgba(10, 10, 15, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.brand strong { font-weight: 700; }
+.brand em { color: var(--muted); font-style: normal; margin-left: 6px; }
+.brand-mark {
+  display: inline-block;
+  width: 22px; height: 22px;
+  text-align: center;
+  line-height: 22px;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  border-radius: 50%;
+  font-weight: 800;
+}
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+/* When embedded, hide the dashboard's own sticky topbar — the parent app
+ * supplies its breadcrumb + nav header above the iframe. `app.js` moves
+ * `.topbar-right` into a `.session-strip` inside `<main>` on boot. */
+html[data-embed="1"] .topbar { display: none; }
+html[data-embed="1"] main { padding-top: 16px; }
+
+/* Session strip — slim, non-sticky, right-aligned chip row inside <main>
+ * that hosts the relocated wallet / chain / logout controls when embedded.
+ * The strip is created by app.js, then `.topbar-right` is moved into it
+ * (preserves every load-bearing #id selector). */
+.session-strip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 0 16px 0;
+}
+.session-strip .topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  color: var(--muted);
+}
+.pill code { color: var(--text); }
+.dot {
+  width: 8px; height: 8px;
+  background: var(--muted);
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-ok { background: var(--ok); box-shadow: 0 0 6px rgba(107, 228, 142, 0.7); }
+
+.pill-ok    { border-color: rgba(107, 228, 142, 0.4); color: var(--ok); }
+.pill-ok code   { color: var(--ok); }
+.pill-warn  { border-color: rgba(255, 214, 65, 0.45); color: var(--warn); }
+.pill-warn code { color: var(--warn); }
+.btn-small { padding: 4px 10px; font-size: 12px; }
+
+/* ---------- Buttons ---------- */
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
+  font-family: inherit;
+}
+.btn:disabled { cursor: not-allowed; opacity: 0.5; }
+/* Primary: flat lime fill, dark text. No gradients in the parent system. */
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  border-color: var(--accent);
+}
+.btn-primary:not(:disabled):hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--line);
+}
+.btn-ghost:not(:disabled):hover {
+  background: var(--bg-2);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.btn-danger {
+  background: transparent;
+  color: var(--err);
+  border-color: rgba(255, 73, 74, 0.4);
+}
+.btn-danger:not(:disabled):hover { background: rgba(255, 73, 74, 0.08); }
+
+/* ---------- Layout ---------- */
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 24px 64px 24px;
+}
+.view { animation: fade .15s ease-out; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* ---------- Login ---------- */
+.view-login { display: flex; justify-content: center; padding-top: 64px; }
+/* The .view-login `display: flex` above wins over [hidden]'s UA default of
+ * `display: none`, so without this override the login section (and its
+ * "Sign in" button) stays visible after showAppView() flips view-login.hidden
+ * to true. Same pattern as .tab-pane[hidden] below. */
+.view-login[hidden] { display: none; }
+.login-card {
+  max-width: 480px;
+  width: 100%;
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 32px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.login-card h1 { margin-top: 0; font-size: 22px; }
+.login-card .muted { color: var(--muted); }
+.login-steps ol { padding-left: 20px; color: var(--muted); }
+.login-actions { margin-top: 16px; display: flex; gap: 10px; }
+.login-help { margin-top: 18px; }
+.login-help summary { cursor: pointer; color: var(--muted); }
+.small { font-size: 12px; }
+
+.status-line {
+  margin-top: 8px;
+  min-height: 1.2em;
+  font-size: 13px;
+  color: var(--muted);
+}
+.status-line.err { color: var(--err); }
+.status-line.ok { color: var(--ok); }
+
+/* ---------- Cards ---------- */
+.card {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.card > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.card > header h2 {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.card-sub { font-size: 12px; color: var(--muted); }
+.section-card { margin-top: 20px; }
+
+.grid { display: grid; gap: 16px; }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 12px; }
+.grid-soft { gap: 12px; }
+@media (max-width: 800px) {
+  .grid-3 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+.big-num {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 6px 0 4px 0;
+  font-family: var(--mono);
+  color: var(--text);
+}
+.big-num em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 6px;
+  font-family: var(--font-sans);
+}
+.muted { color: var(--muted); }
+
+.metric h3 {
+  margin: 0 0 4px 0;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+.metric h4 {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+.metric-mini p { margin: 2px 0 0 0; font-family: var(--mono); }
+
+/* ---------- Top up ---------- */
+.topup-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  align-items: end;
+}
+@media (max-width: 800px) { .topup-row { grid-template-columns: 1fr; } }
+.topup-amount label {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.topup-input {
+  display: flex;
+  align-items: center;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 0 12px;
+  transition: border-color 120ms ease;
+}
+.topup-input:focus-within { border-color: var(--accent); }
+.topup-input input {
+  background: transparent;
+  border: 0;
+  color: var(--text);
+  font-size: 18px;
+  flex: 1;
+  padding: 10px 0;
+  outline: none;
+  font-family: var(--mono);
+}
+.topup-input .suffix { color: var(--muted); font-size: 13px; }
+.topup-presets { display: flex; gap: 6px; margin-top: 8px; }
+.topup-presets button {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.topup-presets button:hover {
+  background: var(--bg-2);
+  color: var(--text);
+  border-color: var(--line-strong);
+}
+.topup-action { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+
+/* ---------- Tabs (parent header-nav pattern: ghost + underline) ---------- */
+.card-tabs { gap: 12px; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tab {
+  position: relative;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  transition: color 120ms ease;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); }
+.tab.active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -2px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+.tab-pane { padding-top: 12px; }
+.tab-pane[hidden] { display: none; }
+
+/* ---------- Tables ---------- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 16px;
+  font-size: 13px;
+}
+.data-table th, .data-table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+}
+.data-table th {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom-color: var(--line-strong);
+}
+.data-table .num { text-align: right; }
+.data-table tbody tr:hover { background: var(--accent-subtle); }
+.data-table .empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px;
+}
+
+.outcome-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+}
+.outcome-success { background: rgba(107, 228, 142, 0.15); color: var(--ok); }
+.outcome-failed  { background: rgba(255, 73, 74, 0.15); color: var(--err); }
+.outcome-other   { background: rgba(255, 214, 65, 0.15); color: var(--warn); }
+
+/* ---------- Charts ---------- */
+.chart-frame {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  overflow: hidden;
+}
+.chart-frame canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ---------- Pager ---------- */
+.pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  gap: 12px;
+}
+
+/* ---------- Key form ---------- */
+.key-create {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.key-create input {
+  flex: 1;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 120ms ease;
+}
+.key-create input:focus { border-color: var(--accent); }
+
+/* ---------- Modal ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 15, 0.78);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal[hidden] { display: none; }
+.modal-body {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px;
+  max-width: 560px;
+  width: 100%;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.modal-body h2 { margin: 0 0 6px 0; font-size: 18px; }
+.key-value {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  word-break: break-all;
+  font-family: var(--mono);
+  font-size: 13px;
+  margin: 14px 0;
+}
+.modal-actions { display: flex; gap: 10px; }
+
+footer {
+  text-align: center;
+  padding: 20px;
+  border-top: 1px solid var(--line);
+  margin-top: 40px;
+}
+footer a { color: var(--muted); }
+/* Footer is parent-supplied chrome territory when embedded — hide it
+ * inside the iframe so we don't double up on attribution / source links. */
+html[data-embed="1"] footer { display: none; }
