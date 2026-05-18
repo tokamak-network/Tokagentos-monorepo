@@ -1,7 +1,7 @@
 {
   "name": "@tokagentos/billing",
-  "version": "2.0.2",
-  "description": "Web3 credit-billing rail for tokagentos. Migrated from llm-api-gateway.",
+  "version": "2.0.0",
+  "description": "Pure-compute helpers for the tokagentos CLI: token estimation, model pricing, TWAP oracle, EIP-712/EIP-3009 typed-data builders, SIWE verifier. The ledger and chain writes live in the hosted gateway.",
   "type": "module",
   "publishConfig": {
     "access": "public",
@@ -15,7 +15,6 @@
   },
   "files": [
     "src",
-    "drizzle",
     "README.md",
     "LICENSE"
   ],
@@ -27,12 +26,9 @@
     "lint": "bunx @biomejs/biome check src",
     "lint:fix": "bunx @biomejs/biome check --write src",
     "sync-abis": "./scripts/sync-abis.sh",
-    "db:generate": "bunx drizzle-kit generate --config drizzle.config.ts",
-    "check-ledger": "bun run scripts/check-ledger-consistency.ts",
     "probe-twap": "bun run scripts/probe-twap.ts"
   },
   "dependencies": {
-    "drizzle-orm": "^0.45.1",
     "jose": "^5.9.6",
     "viem": "^2.21.0",
     "zod": "^4.3.6"
@@ -41,12 +37,9 @@
     "@tokagentos/core": "workspace:*"
   },
   "devDependencies": {
-    "@electric-sql/pglite": "^0.3.16",
     "@types/bun": "^1.3.5",
     "@types/node": "^25.0.3",
-    "drizzle-kit": "^0.31.10",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"
-  },
-  "gitHead": "0058d8455d9e56753b5e7527b46a6c406744ee5c"
+  }
 }

@@ -1,111 +1,84 @@
 /**
- * Plugin.init / Plugin.dispose runners for the tokagent-billing plugin.
+ * Plugin.init / Plugin.dispose for the tokagent-billing plugin (v2.0.0).
  *
- * Decision Z27: consolidate all pg.Pool construction into a single shared
- * pool at plugin boot. Services consume the pool via `getBillingState()`
- * (Decision Z28) rather than constructing independent pools.
+ * v1.x: built a pg.Pool, ran Drizzle migrations, constructed viem clients
+ * including a wallet client signed by the operator EOA.
+ * v2.x: builds nothing of that. The hosted gateway owns ledger, auth, chain
+ * writes, and operator key. The CLI is a forwarder.
  *
- * `initBillingPlugin(runtime)`:
- *   1. Reads all BILLING_* settings from the agent runtime.
- *   2. Runs `loadBillingConfig()` (Zod-validated; throws BillingConfigError).
- *   3. If `BILLING_ENABLED=false`, logs and returns early — billing is a
- *      no-op until the operator sets the flag (Decision Z31).
- *   4. Constructs a single `pg.Pool` and probes connectivity.
- *   5. Runs Drizzle migrations against the billing schema.
- *   6. Builds viem clients and stores everything via `setBillingState`.
+ * What init still does:
+ *   1. Reads BILLING_* + TOKAGENT_GATEWAY_* settings into a NodeJS.ProcessEnv
+ *      shape and runs `loadBillingConfig`.
+ *   2. If BILLING_ENABLED=false → log + return (no-op mode).
+ *   3. Logs a one-time deprecation warning when the v1.x env vars are still
+ *      present (BILLING_DATABASE_URL, BILLING_OPERATOR_PRIVATE_KEY,
+ *      BILLING_AUTH_SECRET). The values are NOT honored — the gateway is
+ *      the source of truth.
+ *   4. Constructs the gateway client + stashes shared state.
  *
- * `disposeBillingPlugin()`:
- *   - Calls `clearBillingState()` which closes the pool.
+ * No DB connection, no migration, no chain RPC handshake. The TWAP refresh
+ * service still owns its own mainnet RPC for the local /v1/estimate cache,
+ * but that's wired separately inside the service.
  */
 
-import { Pool } from "pg";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { fileURLToPath } from "node:url";
-import { createRequire } from "node:module";
-import path from "node:path";
-import {
-  schema,
-  createBillingClients,
-  loadBillingConfig,
-} from "@tokagentos/billing";
-import { logger, type IAgentRuntime } from "@tokagentos/core";
+import { logger, type IAgentRuntime } from '@tokagentos/core';
+import { loadBillingConfig } from '@tokagentos/billing';
 import {
   setBillingState,
   clearBillingState,
   isBillingStateInitialized,
-  getBillingState,
-} from "./state.js";
+} from './state.js';
+import { createGatewayClient, resetGatewayClient } from './lib/gateway-proxy.js';
 
-const log = logger.child({ src: "billing:init" });
+const log = logger.child({ src: 'billing:init' });
 
-// ---------------------------------------------------------------------------
-// Known BILLING_* keys — read from runtime settings and forwarded to
-// loadBillingConfig() as a NodeJS.ProcessEnv-shaped object.
-// ---------------------------------------------------------------------------
 const BILLING_KEYS = [
-  "BILLING_ENABLED",
-  "BILLING_AUTH_REQUIRED",
-  "BILLING_AUTH_SECRET",
-  "BILLING_AUTH_SESSION_TTL_MS",
-  "BILLING_AUTH_LOGIN_NONCE_TTL_MS",
-  "BILLING_RATE_LIMIT_ENABLED",
-  "BILLING_RATE_LIMIT_QUOTE_PER_MIN",
-  "BILLING_RATE_LIMIT_SETTLE_PER_MIN",
-  "BILLING_TOPUP_AMOUNT_PTON",
-  "BILLING_LITELLM_BASE_URL",
-  "BILLING_LITELLM_API_KEY",
-  "BILLING_DATABASE_URL",
-  // Phase 2-5 envs:
-  "BILLING_MAINNET_RPC_URL",
-  "BILLING_WTON_WETH_POOL_ADDRESS",
-  "BILLING_WTON_IS_TOKEN0_IN_WETH_POOL",
-  "BILLING_WTON_DECIMALS",
-  "BILLING_WETH_USDC_POOL_ADDRESS",
-  "BILLING_WETH_IS_TOKEN0_IN_USDC_POOL",
-  "BILLING_WETH_DECIMALS",
-  "BILLING_USDC_DECIMALS",
-  "BILLING_TWAP_WINDOW_SECONDS",
-  "BILLING_PRICE_CACHE_MS",
-  "BILLING_MAX_PRICE_STALENESS_MS",
-  "BILLING_PRICE_SANITY_MIN_USD",
-  "BILLING_PRICE_SANITY_MAX_USD",
-  "BILLING_MARGIN_BPS",
-  "BILLING_MARGIN_FLOOR_BPS",
-  "BILLING_PROMOTION_DISCOUNT_BPS",
-  "BILLING_FIXED_TON_USD",
-  "BILLING_CHAIN_RPC_URL",
-  "BILLING_CHAIN_ID",
-  "BILLING_VAULT_ADDRESS",
-  "BILLING_PTON_ADDRESS",
-  "BILLING_OPERATOR_PRIVATE_KEY",
-  "BILLING_CONSUME_BATCH_MIN_PTON",
-  "BILLING_CONSUME_MAX_AGE_MS",
-  "BILLING_CONSUME_SCAN_INTERVAL_MS",
-  "BILLING_CONSUME_MAX_PER_CYCLE",
-  "BILLING_USAGE_RETENTION_DAYS",
-  "BILLING_USAGE_CLEANUP_INTERVAL_MS",
-  "BILLING_PRICE_REFRESH_INTERVAL_MS",
+  // ---- Gateway thin-client (v2.0.0+) ----
+  'TOKAGENT_GATEWAY_URL',
+  'TOKAGENT_GATEWAY_TIMEOUT_MS',
+  // ---- Feature flags ----
+  'BILLING_ENABLED',
+  'BILLING_AUTH_REQUIRED',
+  // ---- TWAP / oracle ----
+  'BILLING_MAINNET_RPC_URL',
+  'BILLING_WTON_WETH_POOL_ADDRESS',
+  'BILLING_WTON_IS_TOKEN0_IN_WETH_POOL',
+  'BILLING_WTON_DECIMALS',
+  'BILLING_WETH_USDC_POOL_ADDRESS',
+  'BILLING_WETH_IS_TOKEN0_IN_USDC_POOL',
+  'BILLING_WETH_DECIMALS',
+  'BILLING_USDC_DECIMALS',
+  'BILLING_TWAP_WINDOW_SECONDS',
+  'BILLING_PRICE_CACHE_MS',
+  'BILLING_MAX_PRICE_STALENESS_MS',
+  'BILLING_PRICE_SANITY_MIN_USD',
+  'BILLING_PRICE_SANITY_MAX_USD',
+  'BILLING_PRICE_REFRESH_INTERVAL_MS',
+  'BILLING_FIXED_TON_USD',
+  // ---- Margin (display) ----
+  'BILLING_MARGIN_BPS',
+  'BILLING_MARGIN_FLOOR_BPS',
+  'BILLING_PROMOTION_DISCOUNT_BPS',
+  // ---- Chain identification (display + EIP-712 preview) ----
+  'BILLING_CHAIN_RPC_URL',
+  'BILLING_CHAIN_ID',
+  'BILLING_VAULT_ADDRESS',
+  'BILLING_PTON_ADDRESS',
+  // ---- LiteLLM passthrough fallback (CLI-local) ----
+  'BILLING_LITELLM_BASE_URL',
+  'BILLING_LITELLM_API_KEY',
+  // ---- Deprecated v1.x envs (read to warn, NOT honored) ----
+  'BILLING_DATABASE_URL',
+  'BILLING_OPERATOR_PRIVATE_KEY',
+  'BILLING_AUTH_SECRET',
 ] as const;
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function buildEnv(runtime: IAgentRuntime): NodeJS.ProcessEnv {
   const env: Record<string, string | undefined> = {};
   for (const k of BILLING_KEYS) {
-    // Prefer the live process.env value over the runtime settings snapshot.
-    // The setup wizard (POST /v1/billing/setup → writeBillingConfig)
-    // updates process.env in-place after persisting config.env, so a
-    // dispose → init cycle MUST see those updates here. runtime.getSetting()
-    // typically returns a boot-time snapshot that doesn't reflect post-boot
-    // env writes, which would silently leave BILLING_ENABLED stuck at its
-    // boot-time value (false) even after the wizard succeeds.
     const procVal = process.env[k];
-    const val = procVal !== undefined && procVal !== ""
-      ? procVal
-      : runtime.getSetting(k);
+    const val =
+      procVal !== undefined && procVal !== '' ? procVal : runtime.getSetting(k);
     if (val !== null && val !== undefined) {
       env[k] = String(val);
     }
@@ -113,227 +86,84 @@ function buildEnv(runtime: IAgentRuntime): NodeJS.ProcessEnv {
   return env as NodeJS.ProcessEnv;
 }
 
-/**
- * Resolve the Drizzle migrations folder.
- *
- * The authoritative migrations live in `packages/billing/drizzle/migrations/`
- * and are copied into `dist/drizzle/migrations/` by the billing build script
- * so they ship inside the published tarball (see packages/billing/build.ts
- * and the `drizzle` entry in packages/billing/package.json `files`).
- *
- * Resolution strategy:
- *   1. Preferred — `require.resolve('@tokagentos/billing/package.json')` then
- *      descend into `drizzle/migrations`. Works in the workspace (resolves to
- *      `packages/billing/`) AND in installed packages (resolves to
- *      `node_modules/@tokagentos/billing/dist/`, where the build step
- *      placed `drizzle/migrations`).
- *   2. Fallback — walk up the source-import layout. Used only in tests or
- *      environments where the package.json export map is unavailable.
- */
-function resolveMigrationsFolder(): string {
-  const thisFile = fileURLToPath(import.meta.url);
+/** Has the boot path already emitted the v1.x deprecation warning? */
+let _v1WarningEmitted = false;
 
-  try {
-    const req = createRequire(thisFile);
-    const pkgPath = req.resolve("@tokagentos/billing/package.json");
-    return path.join(path.dirname(pkgPath), "drizzle", "migrations");
-  } catch {
-    // Fall through to known-layout fallback.
+function emitV1DeprecationWarnings(cfg: {
+  deprecatedDatabaseUrl?: string;
+  deprecatedOperatorPrivateKey?: string;
+  deprecatedAuthSecret?: string;
+}): void {
+  if (_v1WarningEmitted) return;
+  if (
+    !cfg.deprecatedDatabaseUrl &&
+    !cfg.deprecatedOperatorPrivateKey &&
+    !cfg.deprecatedAuthSecret
+  ) {
+    return;
   }
+  _v1WarningEmitted = true;
 
-  // Fallback: scaffolded-app layout
-  // src/init.ts → plugin root → plugins/ → project root → tokagent/packages/billing/
-  const projectRoot = path.resolve(path.dirname(thisFile), "..", "..", "..");
-  return path.join(
-    projectRoot,
-    "tokagent",
-    "packages",
-    "billing",
-    "drizzle",
-    "migrations",
-  );
+  if (cfg.deprecatedDatabaseUrl) {
+    log.warn(
+      'BILLING_DATABASE_URL is no longer used. Billing is now served by ' +
+        'the gateway at TOKAGENT_GATEWAY_URL. ' +
+        'See https://docs.tokagent.ai/migrate-v2.',
+    );
+  }
+  if (cfg.deprecatedOperatorPrivateKey) {
+    log.warn(
+      'BILLING_OPERATOR_PRIVATE_KEY is no longer used by the CLI in v2.x. ' +
+        'The gateway holds the operator key. Remove this env var. ' +
+        'See https://docs.tokagent.ai/migrate-v2.',
+    );
+  }
+  if (cfg.deprecatedAuthSecret) {
+    log.warn(
+      'BILLING_AUTH_SECRET is no longer used by the CLI in v2.x. ' +
+        'The gateway mints JWTs. Remove this env var. ' +
+        'See https://docs.tokagent.ai/migrate-v2.',
+    );
+  }
 }
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-/**
- * Initialize the billing plugin: build pool, run migrations, wire state.
- *
- * Called from `Plugin.init` in `src/index.ts`. Idempotent guard is in
- * `setBillingState` — calling twice without `dispose` in between throws.
- */
 export async function initBillingPlugin(runtime: IAgentRuntime): Promise<void> {
   const env = buildEnv(runtime);
   const config = loadBillingConfig(env);
 
-  // Decision Z31: billing is off by default. No-op when disabled.
+  // Always emit v1.x deprecation warnings — even when billing is disabled —
+  // so an upgrader sees the message regardless of feature-flag state.
+  emitV1DeprecationWarnings(config);
+
   if (!config.enabled) {
     log.info(
-      "BILLING_ENABLED=false — billing plugin running in no-op mode; " +
-        "middleware and routes are inactive",
+      'BILLING_ENABLED=false — billing plugin running in no-op mode; ' +
+        'middleware and routes are inactive',
     );
     return;
   }
 
-  log.info("billing plugin initializing");
+  log.info(
+    { gatewayUrl: config.gatewayUrl },
+    'billing plugin initializing as thin-client forwarder',
+  );
 
-  // ---- 1. Construct pg Pool + probe connectivity ----
-  const pool = new Pool({ connectionString: config.databaseUrl });
-  try {
-    await pool.query("SELECT 1");
-  } catch (err) {
-    await pool.end();
-    throw new Error(
-      `Billing plugin: failed to connect to BILLING_DATABASE_URL: ` +
-        `${(err as Error).message}`,
-    );
-  }
-
-  // ---- 2. Run Drizzle migrations ----
-  const db = drizzle(pool, { schema });
-  const migrationsFolder = resolveMigrationsFolder();
-  try {
-    await migrate(db, { migrationsFolder });
-    log.info({ migrationsFolder }, "billing migrations applied");
-  } catch (err) {
-    await pool.end();
-    throw new Error(
-      `Billing plugin: migrations failed (folder=${migrationsFolder}): ` +
-        `${(err as Error).message}`,
-    );
-  }
-
-  // ---- 3. Build viem clients ----
-  const clients = createBillingClients({
-    chainRpcUrl: config.chainRpcUrl,
-    mainnetRpcUrl: config.mainnetRpcUrl ?? config.chainRpcUrl,
-    operatorPrivateKey: config.operatorPrivateKey,
+  const gateway = createGatewayClient({
+    baseUrl: config.gatewayUrl,
+    timeoutMs: config.gatewayTimeoutMs,
   });
 
-  // ---- 4. Bridge into the host app's wallet pipeline ----
-  // The scaffold's wallet/inventory tab discovers chains via provider API
-  // keys in process.env (ALCHEMY_API_KEY, INFURA_API_KEY, ...) and signs
-  // through EVM_PRIVATE_KEY. If the operator configured those values via
-  // the billing wizard, mirror them into the wallet's expected env vars
-  // so the Wallet tab works with no extra configuration.
-  // Idempotent: only writes if the target env var is unset.
-  bridgeRpcKeysToWalletEnv(config.chainRpcUrl);
-  bridgePrivateKeyToWalletEnv(config.operatorPrivateKey);
+  setBillingState({ config, gateway });
 
-  // ---- 5. Store shared state (Decision Z28) ----
-  setBillingState({ pool, db, clients, config });
-
-  // ---- 6. Wrap runtime.useModel so internal LLM calls bill the operator ----
-  // The scaffold's chat tab and most plugin actions call runtime.useModel
-  // directly; they don't go through the /v1/messages HTTP gate where the
-  // external-API-key middleware lives. Wrap useModel here so every text
-  // generation funnels through reserve/commit + call_log, populating the
-  // Usage tab with chat activity.
-  try {
-    const { wrapRuntimeUseModel } = await import("./middleware/model-billing-wrapper.js");
-    wrapRuntimeUseModel(runtime, {
-      db,
-      marginBps: config.marginBps,
-      tonUsdGetter: () => {
-        try {
-          const state = getBillingState();
-          return state.twapCache?.get()?.tonUsd ?? state.config.fixedTonUsd ?? null;
-        } catch {
-          return null;
-        }
-      },
-    });
-  } catch (err) {
-    log.warn(
-      { err: (err as Error).message },
-      "could not wrap runtime.useModel — chat-tab calls will not bill",
-    );
-  }
-
-  log.info("billing plugin initialized — BILLING_ENABLED=true");
+  log.info('billing plugin initialized — forwarding to gateway');
 }
 
-/**
- * Extract a provider API key from `billingRpcUrl` and seed the wallet's env
- * vars when the host hasn't set them. Supported providers:
- *   - Alchemy:  `https://<network>.g.alchemy.com/v2/<KEY>` → ALCHEMY_API_KEY
- *   - Infura:   `https://<network>.infura.io/v3/<KEY>`    → INFURA_API_KEY
- *
- * Other providers are ignored — the wallet page falls back to its own env
- * config in that case. This is best-effort; failures are silent.
- */
-function bridgeRpcKeysToWalletEnv(billingRpcUrl: string): void {
-  try {
-    const u = new URL(billingRpcUrl);
-    // Alchemy: host = `eth-sepolia.g.alchemy.com`, path = `/v2/<KEY>`
-    if (u.host.endsWith(".g.alchemy.com")) {
-      const key = u.pathname.split("/").pop();
-      if (key && key.length > 4 && !process.env.ALCHEMY_API_KEY) {
-        process.env.ALCHEMY_API_KEY = key;
-        log.info(
-          { provider: "alchemy" },
-          "bridged billing RPC API key into ALCHEMY_API_KEY so wallet tab works on mainnet",
-        );
-      }
-      return;
-    }
-    // Infura: host = `sepolia.infura.io`, path = `/v3/<KEY>`
-    if (u.host.endsWith(".infura.io")) {
-      const key = u.pathname.split("/").pop();
-      if (key && key.length > 4 && !process.env.INFURA_API_KEY) {
-        process.env.INFURA_API_KEY = key;
-        log.info(
-          { provider: "infura" },
-          "bridged billing RPC API key into INFURA_API_KEY so wallet tab works on mainnet",
-        );
-      }
-      return;
-    }
-    // Unrecognized provider — leave wallet env alone.
-    log.debug(
-      { host: u.host },
-      "billing RPC provider not recognized — wallet env not bridged",
-    );
-  } catch (err) {
-    log.debug(
-      { err: (err as Error).message },
-      "could not parse billing RPC URL for wallet key bridge",
-    );
-  }
-}
-
-/**
- * Seed `EVM_PRIVATE_KEY` from the billing operator key when the host hasn't
- * set it. This lets the scaffold's Wallet/Inventory tab sign transactions
- * with the same key the operator pasted into the billing wizard, instead
- * of asking the user to populate yet another env var.
- *
- * Idempotent: an explicit `EVM_PRIVATE_KEY=...` in `.env` always wins.
- */
-function bridgePrivateKeyToWalletEnv(operatorPrivateKey: string): void {
-  if (!operatorPrivateKey) return;
-  if (process.env.EVM_PRIVATE_KEY) return;
-  process.env.EVM_PRIVATE_KEY = operatorPrivateKey;
-  log.info(
-    "bridged BILLING_OPERATOR_PRIVATE_KEY → EVM_PRIVATE_KEY so the wallet tab can sign with the same key",
-  );
-}
-
-/**
- * Tear down the billing plugin: close the pg Pool and clear state.
- *
- * Called from `Plugin.dispose` in `src/index.ts`. Safe to call when the
- * plugin was never initialized (BILLING_ENABLED=false path, or test
- * cleanup) — short-circuits silently with no log noise.
- */
 export async function disposeBillingPlugin(): Promise<void> {
   if (!isBillingStateInitialized()) {
-    // Never initialized — nothing to dispose, no log needed.
     return;
   }
-  log.info("billing plugin disposing");
+  log.info('billing plugin disposing');
   await clearBillingState();
-  log.info("billing plugin disposed");
+  resetGatewayClient();
+  log.info('billing plugin disposed');
 }

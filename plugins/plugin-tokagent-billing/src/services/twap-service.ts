@@ -1,32 +1,73 @@
 /**
- * TwapRefreshService — elizaOS Service wrapper for the TWAP refresh worker.
+ * TwapRefreshService — owns the timer that keeps the local TWAP cache warm
+ * (v2.0.0).
  *
- * Owns the setInterval timer that periodically calls `refreshTwap(deps)`.
- * The pure refresh logic lives in
- * `@tokagentos/billing/workers/twap-refresh.ts`.
+ * The CLI keeps a local TWAP price ONLY for the offline `/v1/estimate` and
+ * `/v1/messages/count_tokens` paths. Charged calls (`/v1/messages`) hit the
+ * gateway, which has its own canonical TWAP. This service is purely a UX
+ * win: it lets the CLI show "this request will cost ~X PTON" without a
+ * round-trip per render.
  *
- * The TwapCache instance is owned by this service. Phase 6 route handlers
- * that need the current price should call `getCachedTonUsd` directly with
- * the same cache — or the plugin can expose a getter. For now the cache
- * is managed internally here.
+ * Requirements:
+ *   - BILLING_MAINNET_RPC_URL must be set (else the service no-ops; the
+ *     estimate route falls back to the gateway).
+ *   - The pool addresses (BILLING_WTON_*_POOL_ADDRESS) must be configured.
  *
- * Decision D18: Service wrappers own timers; pure workers own logic.
+ * When BILLING_FIXED_TON_USD is set we prime the cache once and skip the
+ * timer entirely — a fixed price never needs refreshing.
  */
 
-import { Service, logger, type IAgentRuntime } from "@tokagentos/core";
-import { refreshTwap, TwapCache, type TwapRefreshDeps } from "@tokagentos/billing";
-import { resolveBillingRuntime, type BillingRuntimeDeps } from "./_runtime-deps.js";
-import { registerTwapCache } from "../state.js";
+import { Service, logger, type IAgentRuntime } from '@tokagentos/core';
+import {
+  refreshTwap,
+  TwapCache,
+  createTwapClient,
+  loadBillingConfig,
+  type TwapRefreshDeps,
+  type BillingConfig,
+} from '@tokagentos/billing';
+import { registerTwapCache, isBillingStateInitialized } from '../state.js';
 
-const log = logger.child({ src: "billing:service:twap" });
+const log = logger.child({ src: 'billing:service:twap' });
+
+const TWAP_KEYS = [
+  'BILLING_MAINNET_RPC_URL',
+  'BILLING_WTON_WETH_POOL_ADDRESS',
+  'BILLING_WTON_IS_TOKEN0_IN_WETH_POOL',
+  'BILLING_WTON_DECIMALS',
+  'BILLING_WETH_USDC_POOL_ADDRESS',
+  'BILLING_WETH_IS_TOKEN0_IN_USDC_POOL',
+  'BILLING_WETH_DECIMALS',
+  'BILLING_USDC_DECIMALS',
+  'BILLING_TWAP_WINDOW_SECONDS',
+  'BILLING_PRICE_CACHE_MS',
+  'BILLING_MAX_PRICE_STALENESS_MS',
+  'BILLING_PRICE_SANITY_MIN_USD',
+  'BILLING_PRICE_SANITY_MAX_USD',
+  'BILLING_PRICE_REFRESH_INTERVAL_MS',
+  'BILLING_FIXED_TON_USD',
+  'BILLING_ENABLED',
+  'TOKAGENT_GATEWAY_URL',
+] as const;
+
+function buildEnv(runtime: IAgentRuntime): NodeJS.ProcessEnv {
+  const env: Record<string, string | undefined> = {};
+  for (const k of TWAP_KEYS) {
+    const procVal = process.env[k];
+    const v = procVal !== undefined && procVal !== '' ? procVal : runtime.getSetting(k);
+    if (v !== null && v !== undefined) env[k] = String(v);
+  }
+  return env as NodeJS.ProcessEnv;
+}
 
 export class TwapRefreshService extends Service {
-  static serviceType = "tokagent-billing-twap";
-  capabilityDescription = "Periodic refresh of composite TON/USD TWAP price";
+  static serviceType = 'tokagent-billing-twap';
+  capabilityDescription =
+    'Refreshes the local TON/USD TWAP cache so the CLI can quote /v1/estimate offline.';
 
   private timer: ReturnType<typeof setInterval> | null = null;
-  private runtimeDeps!: BillingRuntimeDeps;
   readonly cache = new TwapCache();
+  private billingConfig: BillingConfig | null = null;
 
   static async start(runtime: IAgentRuntime): Promise<TwapRefreshService> {
     const instance = new TwapRefreshService(runtime);
@@ -35,61 +76,83 @@ export class TwapRefreshService extends Service {
   }
 
   private async _init(): Promise<void> {
-    this.runtimeDeps = await resolveBillingRuntime(this.runtime);
-    const { clients, config } = this.runtimeDeps;
+    const env = buildEnv(this.runtime);
+    this.billingConfig = loadBillingConfig(env);
 
-    const deps: TwapRefreshDeps = {
-      mainnetClient: clients.mainnetClient,
-      oracleConfig: {
-        wtonWethPool: config.wtonWethPool,
-        wethUsdcPool: config.wethUsdcPool,
-        twapWindowSeconds: config.twapWindowSeconds,
-        cacheMs: config.priceCacheMs,
-        maxStalenessMs: config.maxPriceStalenessMs,
-        sanity: {
-          minUsd: config.priceSanityMinUsd,
-          maxUsd: config.priceSanityMaxUsd,
-        },
-        fixedPrice: config.fixedTonUsd,
-      },
-      cache: this.cache,
-      fixedTonUsd: config.fixedTonUsd,
-    };
-
-    // Register the cache with the shared plugin state so the billing gate can
-    // read the current price without holding a service reference (Decision Z28).
-    registerTwapCache(this.cache);
-
-    // Prime the cache immediately on start.
-    const initial = await refreshTwap(deps);
-    if (initial) {
-      log.info({ tonUsd: initial.tonUsd, source: initial.source }, "twap primed");
-    } else {
-      log.warn(
-        "initial twap refresh failed — price routes will 503 until it succeeds",
-      );
+    if (!this.billingConfig.enabled) {
+      log.info('BILLING_ENABLED=false — TwapRefreshService idle');
+      return;
     }
 
-    // Phase 5.2 Fix 6: when BILLING_FIXED_TON_USD is set, the cached value is
-    // a constant — every subsequent refresh is a no-op that still pays the
-    // RPC round-trip cost. Skip the interval entirely in dev/test mode.
-    if (config.fixedTonUsd !== undefined) {
-      log.info(
-        { fixedTonUsd: config.fixedTonUsd },
-        "TwapRefreshService: fixed price override active — refresh timer not started",
+    // Register the cache so the shared state knows about it (even when the
+    // refresh path can't run — the estimate route can still use whatever
+    // primer values land here via tests / manual seeding).
+    if (isBillingStateInitialized()) {
+      registerTwapCache(this.cache);
+    }
+
+    if (this.billingConfig.fixedTonUsd !== undefined) {
+      // Prime once with the fixed override; no need for a timer.
+      const tonUsd = this.billingConfig.fixedTonUsd;
+      this.cache.set({
+        tonUsd,
+        source: 'fixed',
+        fetchedAt: Date.now(),
+        ageMs: 0,
+      });
+      log.info({ fixedTonUsd: tonUsd }, 'TwapRefreshService: fixed price primed');
+      return;
+    }
+
+    if (
+      !this.billingConfig.mainnetRpcUrl ||
+      !this.billingConfig.wtonWethPool ||
+      !this.billingConfig.wethUsdcPool
+    ) {
+      log.warn(
+        'TwapRefreshService: mainnet RPC or pool addresses not configured — ' +
+          'offline /v1/estimate will fall back to the gateway',
       );
       return;
     }
 
+    const mainnetClient = createTwapClient({ mainnetRpcUrl: this.billingConfig.mainnetRpcUrl });
+    const deps: TwapRefreshDeps = {
+      mainnetClient,
+      oracleConfig: {
+        wtonWethPool: this.billingConfig.wtonWethPool,
+        wethUsdcPool: this.billingConfig.wethUsdcPool,
+        twapWindowSeconds: this.billingConfig.twapWindowSeconds,
+        cacheMs: this.billingConfig.priceCacheMs,
+        maxStalenessMs: this.billingConfig.maxPriceStalenessMs,
+        sanity: {
+          minUsd: this.billingConfig.priceSanityMinUsd,
+          maxUsd: this.billingConfig.priceSanityMaxUsd,
+        },
+        fixedPrice: this.billingConfig.fixedTonUsd,
+      },
+      cache: this.cache,
+      fixedTonUsd: this.billingConfig.fixedTonUsd,
+    };
+
+    const initial = await refreshTwap(deps);
+    if (initial) {
+      log.info({ tonUsd: initial.tonUsd, source: initial.source }, 'twap primed');
+    } else {
+      log.warn(
+        'initial twap refresh failed — /v1/estimate will forward to gateway until next tick succeeds',
+      );
+    }
+
     this.timer = setInterval(() => {
       void refreshTwap(deps).catch((err: unknown) =>
-        log.error({ err }, "twap service tick failed"),
+        log.error({ err }, 'twap service tick failed'),
       );
-    }, config.priceRefreshIntervalMs);
+    }, this.billingConfig.priceRefreshIntervalMs);
 
     log.info(
-      { intervalMs: config.priceRefreshIntervalMs },
-      "TwapRefreshService started",
+      { intervalMs: this.billingConfig.priceRefreshIntervalMs },
+      'TwapRefreshService started',
     );
   }
 
@@ -98,9 +161,6 @@ export class TwapRefreshService extends Service {
       clearInterval(this.timer);
       this.timer = null;
     }
-    if (this.runtimeDeps) {
-      await this.runtimeDeps.stop();
-    }
-    log.info("TwapRefreshService stopped");
+    log.info('TwapRefreshService stopped');
   }
 }

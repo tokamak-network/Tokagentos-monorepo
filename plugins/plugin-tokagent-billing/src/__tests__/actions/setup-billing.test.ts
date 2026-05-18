@@ -9,11 +9,16 @@ import type { Content, IAgentRuntime, Memory } from "@tokagentos/core";
 // Mock billing state so we can control isBillingStateInitialized()
 // ---------------------------------------------------------------------------
 
-const billingStateMock = vi.hoisted(() => ({ initialized: false }));
+const billingStateMock = vi.hoisted(() => ({
+  initialized: false,
+  gatewayUrl: 'https://gateway.tokagent.ai',
+}));
 
 vi.mock("../../state.js", () => ({
   isBillingStateInitialized: () => billingStateMock.initialized,
-  getBillingState: () => { throw new Error("not initialized"); },
+  getBillingState: () => ({
+    config: { gatewayUrl: billingStateMock.gatewayUrl },
+  }),
 }));
 
 // ---------------------------------------------------------------------------
@@ -92,7 +97,7 @@ describe("setupBillingAction.handler", () => {
     );
     expect(replies.length).toBe(1);
     expect(replies[0]).toMatch(/billing setup/i);
-    expect(replies[0]).toMatch(/setup-panel/i);
+    expect(replies[0]).toMatch(/TOKAGENT_GATEWAY_URL/);
   });
 
   it("informs user billing is already active when initialized", async () => {
@@ -107,7 +112,7 @@ describe("setupBillingAction.handler", () => {
     );
     expect(replies.length).toBe(1);
     expect(replies[0]).toMatch(/already active/i);
-    expect(replies[0]).toMatch(/reconfigur/i);
+    expect(replies[0]).toMatch(/TOKAGENT_GATEWAY_URL/);
   });
 
   it("includes action name in callback response", async () => {

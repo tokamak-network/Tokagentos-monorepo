@@ -1,1 +1,0 @@
-ALTER TABLE "billing_api_keys" ADD COLUMN "quota_pton" numeric(78, 0);

@@ -1,160 +1,79 @@
 /**
- * Billing middleware composer (Phase 6).
+ * Billing middleware seam — v2.0.0 passthrough.
  *
- * `applyBillingMiddleware` is the single integration point for server.ts.
- * It is called BEFORE the /v1/ dispatch block (BILLING_HOOK seam) and:
+ * v1.x: this enforced rate limits, resolved identity, reserved credits, and
+ * returned commit/release closures the agent server then called after
+ * streaming finished.
  *
- *   1. Short-circuits when billing is disabled or the path is not gated.
- *   2. Applies rate limiting per wallet (consumes a token bucket token).
- *   3. Calls `applyBillingGate` to reserve credits and return commit/release
- *      closures that the upstream proxy stores on the response context.
+ * v2.x: all of that lives on the hosted gateway. The agent server's
+ * BILLING_HOOK still calls this function (the seam survives so the agent
+ * doesn't need to know whether billing is local or remote) but it returns
+ * `{ allow: true }` unconditionally. The `/v1/messages` route in the plugin
+ * forwards to the gateway, and the gateway is the single source of truth
+ * for auth + ledger.
  *
- * The return type mirrors the gate result so callers can read `allow`,
- * `status`, and `body` without importing the gate directly.
- *
- * Decision Z28: state is read via `getBillingState()` at call time —
- * never at import time.
+ * The agent must still pre-read the JSON body when this is called so the
+ * downstream forwarder sees it; we keep that contract intact by exporting
+ * the same `isBillingGatedPath` helper.
  */
 
-import type { IncomingMessage, ServerResponse } from "node:http";
-import { createRateLimiter, type TokenBucketLimiter } from "./rate-limit.js";
-import { applyBillingGate, isBillingGatedPath, type BillingGateResult } from "./billing-gate.js";
-import { resolveBillingIdentity } from "./api-key-resolve.js";
-import { getBillingState, isBillingStateInitialized } from "../state.js";
-
-export type { BillingGateResult, ReleaseOutcome } from "./billing-gate.js";
-
-// ---------------------------------------------------------------------------
-// Module-level rate limiter singletons
-// ---------------------------------------------------------------------------
-// Created lazily on first use so tests that never call applyBillingMiddleware
-// don't pay the allocation cost.
-//
-// The settle-path limiter (BILLING_RATE_LIMIT_SETTLE_PER_MIN) will be
-// reintroduced in Phase 6b alongside `/v1/topup/settle` — keeping a dead
-// singleton here now would mask whether Phase 6b activates the limiter on
-// the correct route.
-
-let _quoteLimiter: TokenBucketLimiter | null = null;
-
-function getQuoteLimiter(): TokenBucketLimiter {
-  if (!_quoteLimiter) {
-    const { config } = getBillingState();
-    _quoteLimiter = createRateLimiter({
-      capacity: config.rateLimitQuotePerMin,
-      windowMs: 60_000,
-    });
-  }
-  return _quoteLimiter;
-}
-
-/**
- * Reset module-level limiter singletons.
- * Called by Plugin.dispose so rate-limit state doesn't bleed across restarts.
- * Also useful in tests.
- */
-export function resetBillingLimiters(): void {
-  _quoteLimiter = null;
-}
-
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
+import type { IncomingMessage } from 'node:http';
+import { isBillingStateInitialized, getBillingState } from '../state.js';
 
 export interface BillingMiddlewareResult {
-  /** Whether the request should proceed to the upstream handler. */
   allow: boolean;
-  /** HTTP status code to use when allow=false. */
   status: number;
-  /** JSON body to send when allow=false. */
   body?: object;
-  /** Commit actual cost after streaming completes. Only present when allow=true. */
-  commit?: BillingGateResult["commit"];
-  /** Release reservation on abort/error. Only present when allow=true. */
-  release?: BillingGateResult["release"];
+  /** v1.x compat — never present in v2.x (the gateway commits). */
+  commit?: undefined;
+  /** v1.x compat — never present in v2.x (the gateway releases). */
+  release?: undefined;
 }
 
 /**
- * Apply the billing middleware stack to a gated request.
+ * Always allow the request to proceed. Auth headers (Authorization,
+ * x-api-key) survive in `req` and the route forwarder relays them to the
+ * gateway, which is the canonical enforcer.
  *
- * Returns `{ allow: true }` + closures when the request may proceed,
- * or `{ allow: false, status, body }` when it should be rejected.
- *
- * Short-circuits with `{ allow: true }` (passthrough) when:
- *   - Billing state has not been initialized (disabled path).
- *   - The path is not one of the gated paths.
- *   - Rate limiting is disabled in config.
- *
- * @param req      - Raw Node IncomingMessage.
- * @param body     - Pre-parsed JSON body.
- * @param pathname - Parsed URL pathname (e.g. "/v1/messages").
+ * This function is intentionally async to match the v1.x signature the agent
+ * server calls — switching to sync would break the type guard in
+ * server.ts:isBillingMiddlewareService.
  */
 export async function applyBillingMiddleware(
-  req: IncomingMessage,
-  body: unknown,
-  pathname: string,
+  _req: IncomingMessage,
+  _body: unknown,
+  _pathname: string,
 ): Promise<BillingMiddlewareResult> {
-  // ---- 0. Short-circuit: billing not initialized ----
+  // Short-circuit when the plugin hasn't initialized or billing is off.
   if (!isBillingStateInitialized()) {
     return { allow: true, status: 200 };
   }
-
-  const { config } = getBillingState();
-
-  // ---- 0b. Short-circuit: billing disabled ----
-  if (!config.enabled) {
+  try {
+    const { config } = getBillingState();
+    if (!config.enabled) return { allow: true, status: 200 };
+  } catch {
     return { allow: true, status: 200 };
   }
-
-  // ---- 0c. Short-circuit: path not gated ----
-  if (!isBillingGatedPath(pathname)) {
-    return { allow: true, status: 200 };
-  }
-
-  // ---- 1. Rate limiting ----
-  if (config.rateLimitEnabled) {
-    // Resolve identity for rate-limit key; fall back to IP if unauthenticated.
-    // Rate limiting runs BEFORE the billing gate so it blocks even unauthenticated
-    // floods without hitting the DB.
-    const identity = await resolveBillingIdentity(req);
-    const rateLimitKey =
-      identity?.wallet ??
-      (req.socket.remoteAddress ?? "unknown");
-
-    const limiter = getQuoteLimiter();
-    const result = limiter.consume(rateLimitKey);
-    if (!result.allowed) {
-      return {
-        allow: false,
-        status: 429,
-        body: {
-          type: "billing_error",
-          code: "rate_limited",
-          message: "rate limit exceeded for billing-gated path",
-          retryAfterSec: result.retryAfterSec,
-        },
-      };
-    }
-  }
-
-  // ---- 2. Billing gate (reserve credits) ----
-  const gateResult = await applyBillingGate(req, body);
-
-  if (!gateResult.allow) {
-    return {
-      allow: false,
-      status: gateResult.status,
-      body: gateResult.body,
-    };
-  }
-
-  return {
-    allow: true,
-    status: 200,
-    commit: gateResult.commit,
-    release: gateResult.release,
-  };
+  // Always pass through. The gateway enforces billing on /v1/messages and the
+  // /v1/messages route in this plugin forwards to it.
+  return { allow: true, status: 200 };
 }
 
-// Re-export path helper so server.ts only imports from middleware/index.
-export { isBillingGatedPath } from "./billing-gate.js";
+/** Test / dispose hook kept for v1.x compatibility. */
+export function resetBillingLimiters(): void {
+  /* no-op in v2.x */
+}
+
+/**
+ * Path-classification helper kept for v1.x compatibility with the agent
+ * server's `if (isGatedPath) { _billingBody = await readJsonBody(...) }`
+ * preamble. The set of gated paths is unchanged; only the enforcement
+ * mechanism has moved.
+ */
+export function isBillingGatedPath(pathname: string): boolean {
+  return (
+    pathname === '/v1/messages' ||
+    pathname.startsWith('/v1/messages/') ||
+    pathname === '/v1/chat/completions'
+  );
+}

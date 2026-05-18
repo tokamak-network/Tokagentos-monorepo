@@ -1,27 +1,25 @@
 /**
- * BillingMiddlewareService — elizaOS Service wrapper that exposes
- * `applyBillingMiddleware` to the agent server via the runtime service registry.
+ * BillingMiddlewareService — v2.0.0 passthrough.
  *
- * Decision Z33 — late-bind via service registry:
- *   The agent server calls `runtime.getService('tokagent-billing-middleware')`
- *   after the billing plugin has been loaded. If the service is present it
- *   reads `.middleware` and assigns it to `state.billingMiddleware`, activating
- *   the BILLING_HOOK seam that was wired in Phase 6a.
+ * The agent server's BILLING_HOOK looks up this service via the runtime
+ * registry and assigns `.middleware` to `state.billingMiddleware`. The
+ * service contract (Z33) is preserved so the agent does not need any
+ * v2.x-specific knowledge.
  *
- *   No hard imports from `@tokagentos/agent` into the billing plugin. The
- *   Service registry is the decoupling mechanism.
- *
- * This is intentionally a thin wrapper — the real gate logic lives in
- * `../middleware/index.ts` (`applyBillingMiddleware`).
+ * In v1.x the middleware reserved credits and returned commit/release
+ * closures. In v2.x it returns `{allow: true}` unconditionally — the
+ * hosted gateway is the canonical enforcer of auth, rate limiting, and
+ * credit reservation. The plugin's `/v1/messages` route forwards the
+ * request (with the original Authorization / x-api-key headers) and the
+ * gateway responds 402 / 429 / 401 as appropriate.
  */
 
-import { Service, type IAgentRuntime } from "@tokagentos/core";
-import { applyBillingMiddleware, type BillingMiddlewareResult } from "../middleware/index.js";
-import type { IncomingMessage } from "node:http";
-
-// ---------------------------------------------------------------------------
-// Public type: shape of the middleware function exposed to the agent server.
-// ---------------------------------------------------------------------------
+import { Service, type IAgentRuntime } from '@tokagentos/core';
+import {
+  applyBillingMiddleware,
+  type BillingMiddlewareResult,
+} from '../middleware/index.js';
+import type { IncomingMessage } from 'node:http';
 
 export type BillingMiddlewareFn = (
   req: IncomingMessage,
@@ -29,24 +27,11 @@ export type BillingMiddlewareFn = (
   pathname: string,
 ) => Promise<BillingMiddlewareResult>;
 
-// ---------------------------------------------------------------------------
-// Service
-// ---------------------------------------------------------------------------
-
 export class BillingMiddlewareService extends Service {
-  static serviceType = "tokagent-billing-middleware";
+  static serviceType = 'tokagent-billing-middleware';
   capabilityDescription =
-    "Exposes applyBillingMiddleware to the agent server BILLING_HOOK seam (Decision Z33)";
+    'v2.0.0 passthrough — exposes the BILLING_HOOK seam expected by the agent server (Decision Z33). The gateway is the canonical enforcer.';
 
-  /**
-   * The middleware function. The agent server reads this property via:
-   * ```ts
-   * const svc = runtime.getService<BillingMiddlewareService>('tokagent-billing-middleware');
-   * if (svc && 'middleware' in svc) {
-   *   state.billingMiddleware = svc.middleware;
-   * }
-   * ```
-   */
   readonly middleware: BillingMiddlewareFn = applyBillingMiddleware;
 
   static async start(runtime: IAgentRuntime): Promise<BillingMiddlewareService> {
@@ -54,8 +39,6 @@ export class BillingMiddlewareService extends Service {
   }
 
   async stop(): Promise<void> {
-    // No resources to release — the middleware function is stateless.
-    // The module-level rate-limiter singletons (quota/settle limiters) are
-    // reset by `resetBillingLimiters()` called from Plugin.dispose.
+    /* no resources to release */
   }
 }
