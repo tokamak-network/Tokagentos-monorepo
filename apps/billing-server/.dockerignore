@@ -1,0 +1,37 @@
+# Anything that is not strictly needed for the billing-server runtime
+# is excluded to keep the image small and the build context fast to upload.
+
+# Build artifacts & caches
+**/node_modules/
+**/dist/
+**/.turbo/
+**/.cache/
+**/tsconfig.tsbuildinfo
+**/coverage/
+**/.next/
+
+# Other apps — billing-server does not load any of them
+apps/
+contracts/
+
+# Local secrets — Fly secrets supersede every .env file
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Tests, docs, dev-only artifacts (compiled at runtime if needed)
+**/__tests__/
+**/*.test.ts
+**/*.spec.ts
+docs/
+docker-compose*.yml
+
+# Git, editor, OS
+.git/
+.github/
+.vscode/
+.idea/
+.DS_Store
+*.log
+*.swp
