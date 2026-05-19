@@ -112,19 +112,12 @@ async function proxyToLiteLLM(
     return;
   }
 
-  // Streaming requires duplex passthrough — out of scope for this proxy
-  // until we wire up SSE forwarding. Reject loudly so clients don't hang.
-  if ((body as Record<string, unknown>).stream === true) {
-    res.status(501).json({
-      error: {
-        type: "not_implemented",
-        message:
-          "Streaming responses are not yet supported by this billing proxy. " +
-          "Set `stream: false` and retry.",
-      },
-    });
-    return;
-  }
+  // Detect streaming. plugin-openai (Vercel AI SDK) defaults to
+  // stream:true and there's no way to disable from the agent's chat flow,
+  // so we MUST support it. For non-stream we buffer the JSON response;
+  // for stream we pipe SSE bytes through and parse usage from the final
+  // chunk before committing billing.
+  const wantsStream = (body as Record<string, unknown>).stream === true;
 
   // ---- Auth + reserve ----
   const incoming = toIncomingMessage(req);
@@ -152,12 +145,27 @@ async function proxyToLiteLLM(
   const upstreamUrl = `${litellmBaseUrl.replace(/\/$/, "")}${upstreamPath}`;
   const upstreamHeaders = pickUpstreamHeaders(req, litellmApiKey);
 
+  // For streaming, request usage in the final SSE chunk (OpenAI's
+  // stream_options.include_usage convention — LiteLLM honors it). Without
+  // this we'd have no token counts and would commit zero, leaking PTON.
+  const upstreamBodyObj =
+    wantsStream
+      ? {
+          ...body,
+          stream_options: {
+            ...((body as { stream_options?: Record<string, unknown> })
+              .stream_options ?? {}),
+            include_usage: true,
+          },
+        }
+      : body;
+
   let upstreamRes: Response;
   try {
     upstreamRes = await fetch(upstreamUrl, {
       method: "POST",
       headers: upstreamHeaders,
-      body: JSON.stringify(body),
+      body: JSON.stringify(upstreamBodyObj),
     });
   } catch (err) {
     await gate.release?.("released_error");
@@ -168,6 +176,136 @@ async function proxyToLiteLLM(
         message: `LiteLLM proxy failed: ${msg}`,
       },
     });
+    return;
+  }
+
+  // ---- STREAMING PATH ----
+  // For SSE we need raw write() access to the underlying ServerResponse.
+  // RouteResponse's .json()/.send() helpers buffer + close; we instead
+  // forward bytes as they arrive, parse data: lines to extract usage from
+  // the final chunk, then end the response and commit billing.
+  if (wantsStream) {
+    if (!upstreamRes.ok || !upstreamRes.body) {
+      await gate.release?.("released_error");
+      const errText = await upstreamRes.text().catch(() => "");
+      let errBody: unknown;
+      try {
+        errBody = errText ? JSON.parse(errText) : { error: "upstream_error" };
+      } catch {
+        errBody = { error: { type: "upstream_error", message: errText.slice(0, 500) } };
+      }
+      res.status(upstreamRes.status).json(errBody as object);
+      return;
+    }
+
+    // Bypass the .json()/.send() helpers — write SSE bytes directly to the
+    // underlying http.ServerResponse. The shim attaches helpers ON res so
+    // the native write/end/setHeader are still available beneath them.
+    const rawRes = res as unknown as {
+      statusCode?: number;
+      setHeader?: (n: string, v: string) => void;
+      write?: (chunk: string | Uint8Array) => boolean;
+      end?: () => void;
+    };
+    rawRes.statusCode = 200;
+    rawRes.setHeader?.("Content-Type", "text/event-stream; charset=utf-8");
+    rawRes.setHeader?.("Cache-Control", "no-cache, no-transform");
+    rawRes.setHeader?.("Connection", "keep-alive");
+    rawRes.setHeader?.("X-Accel-Buffering", "no");
+
+    const model =
+      typeof (body as Record<string, unknown>)["model"] === "string"
+        ? ((body as Record<string, unknown>)["model"] as string)
+        : "unknown";
+    let lastUsage: Record<string, number> | null = null;
+    let buffer = "";
+    const decoder = new TextDecoder();
+    const reader = upstreamRes.body.getReader();
+
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const chunkText = decoder.decode(value, { stream: true });
+        // Forward to client verbatim. plugin-openai's SDK parses the SSE
+        // event stream — we don't transform.
+        rawRes.write?.(chunkText);
+        // Parse for usage extraction. SSE events are separated by blank
+        // lines; within an event, `data: <json>` carries the payload.
+        // The final usage chunk (when include_usage=true) is the LAST
+        // data line before [DONE], with content.choices empty + usage set.
+        buffer += chunkText;
+        const events = buffer.split("\n\n");
+        buffer = events.pop() ?? ""; // keep last (possibly partial) event
+        for (const evt of events) {
+          for (const line of evt.split("\n")) {
+            if (!line.startsWith("data:")) continue;
+            const data = line.slice(5).trim();
+            if (!data || data === "[DONE]") continue;
+            try {
+              const parsed = JSON.parse(data) as { usage?: Record<string, number> };
+              if (parsed.usage && typeof parsed.usage === "object") {
+                lastUsage = parsed.usage;
+              }
+            } catch {
+              // Ignore malformed chunks — keep streaming.
+            }
+          }
+        }
+      }
+    } catch (err) {
+      // Stream interrupted — best-effort release and end the response.
+      await gate.release?.("released_error");
+      try {
+        rawRes.end?.();
+      } catch {
+        /* response already ended */
+      }
+      return;
+    }
+
+    // Flush any final buffered bytes (rare — usually [DONE] ends the
+    // stream cleanly with a trailing blank line).
+    if (buffer.length > 0) rawRes.write?.(buffer);
+    rawRes.end?.();
+
+    // ---- Commit billing from extracted usage ----
+    if (lastUsage) {
+      const inputTokens = Number(
+        lastUsage["prompt_tokens"] ?? lastUsage["input_tokens"] ?? 0,
+      );
+      const outputTokens = Number(
+        lastUsage["completion_tokens"] ?? lastUsage["output_tokens"] ?? 0,
+      );
+      let actualUsd = 0;
+      try {
+        actualUsd = computeActualCostUsd({
+          model,
+          usage: lastUsage as Record<string, number>,
+        });
+      } catch {
+        actualUsd = 0;
+      }
+      try {
+        await gate.commit?.(actualUsd, {
+          model,
+          inputTokens,
+          outputTokens,
+          status: "ok",
+        });
+      } catch {
+        /* commit failure is non-fatal — user already got their response */
+      }
+    } else {
+      // No usage chunk arrived — upstream didn't honor include_usage, or
+      // the stream ended abnormally. Commit zero so we don't double-charge
+      // a reservation that may have been zero-sized anyway.
+      try {
+        await gate.commit?.(0, { model, status: "ok" });
+      } catch {
+        /* swallow */
+      }
+    }
     return;
   }
 
