@@ -311,7 +311,8 @@ const BILLING_PUBLIC_V1_ROOTS = [
   "/v1/keys",
   "/v1/estimate",
   "/v1/price",
-  "/v1/messages", // /v1/messages/count_tokens — Anthropic-compatible estimator
+  "/v1/messages", // /v1/messages (LiteLLM proxy) + /v1/messages/count_tokens
+  "/v1/chat", // /v1/chat/completions (OpenAI shape, used by plugin-openai)
   "/v1/stats",
   "/v1/quote", // /v1/quote/:id
 ];
