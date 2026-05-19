@@ -285,7 +285,34 @@ export function serveStaticUi(
 // Route classification
 // ---------------------------------------------------------------------------
 
+/**
+ * Public path prefixes carved out of the `/v1/*` auth gate so the billing
+ * plugin (plugin-tokagent-billing) can serve its client-facing routes from a
+ * Railway-hosted billing-server without requiring the operator's
+ * TOKAGENT_API_TOKEN. Every route under these prefixes is marked
+ * `public: true` in the plugin's Route definitions and has its own auth layer
+ * (SIWE EIP-712 LoginAuth + sk-ai-* HMAC API keys + per-route rate limits).
+ *
+ * The gate must allowlist them because `rawPath: true` plugin routes mount at
+ * the literal /v1/* path and the `public: true` flag is not propagated to
+ * `isAuthProtectedRoute` (which runs before plugin route resolution).
+ */
+const BILLING_PUBLIC_V1_PREFIXES = [
+  "/v1/auth/",
+  "/v1/billing/",
+  "/v1/topup/",
+  "/v1/credits/",
+  "/v1/usage/",
+  "/v1/keys/",
+  "/v1/estimate/",
+  "/v1/price",
+];
+
 export function isAuthProtectedRoute(pathname: string): boolean {
+  // Carve out billing-plugin public routes — they have their own auth.
+  if (BILLING_PUBLIC_V1_PREFIXES.some((p) => pathname.startsWith(p))) {
+    return false;
+  }
   return (
     pathname === "/api" ||
     pathname.startsWith("/api/") ||

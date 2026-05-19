@@ -124,8 +124,12 @@ export async function forward(
     send(res, upstream);
   } catch (err) {
     if (err instanceof GatewayProxyError) {
+      // Dashboard apiJson() reads body.error / body.detail / res.statusText.
+      // Use `error` so the user sees the real upstream message instead of
+      // falling through to the raw HTTP reason phrase ("Bad Gateway").
       res.status(err.status).json({
         type: "gateway_error",
+        error: err.message,
         message: err.message,
       });
       return;
@@ -133,6 +137,7 @@ export async function forward(
     const msg = err instanceof Error ? err.message : "unknown error";
     res.status(502).json({
       type: "gateway_error",
+      error: `Gateway forwarder failed: ${msg}`,
       message: `Gateway forwarder failed: ${msg}`,
     });
   }
