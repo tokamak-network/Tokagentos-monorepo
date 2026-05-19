@@ -100,6 +100,7 @@ export const creditsRoutes: Route[] = [
     type: "GET",
     path: "/v1/credits/me",
     rawPath: true,
+    public: true,
     name: "billing-credits-me",
     handler: handleGetCreditsMe,
   },
@@ -115,6 +116,7 @@ function clientCreditsRoutes(): Route[] {
       type: "GET",
       path: "/v1/credits/me",
       rawPath: true,
+      public: true,
       name: "billing-credits-me",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;

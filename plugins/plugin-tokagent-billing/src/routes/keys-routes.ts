@@ -177,6 +177,7 @@ export const keysRoutes: Route[] = [
     type: "POST",
     path: "/v1/keys",
     rawPath: true,
+    public: true,
     name: "billing-keys-mint",
     handler: handleMintKey,
   },
@@ -184,6 +185,7 @@ export const keysRoutes: Route[] = [
     type: "GET",
     path: "/v1/keys",
     rawPath: true,
+    public: true,
     name: "billing-keys-list",
     handler: handleListKeys,
   },
@@ -191,6 +193,7 @@ export const keysRoutes: Route[] = [
     type: "DELETE",
     path: "/v1/keys/:id",
     rawPath: true,
+    public: true,
     name: "billing-keys-revoke",
     handler: handleRevokeKey,
   },
@@ -206,6 +209,7 @@ function clientKeysRoutes(): Route[] {
       type: "POST",
       path: "/v1/keys",
       rawPath: true,
+      public: true,
       name: "billing-keys-mint",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -219,6 +223,7 @@ function clientKeysRoutes(): Route[] {
       type: "GET",
       path: "/v1/keys",
       rawPath: true,
+      public: true,
       name: "billing-keys-list",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -231,6 +236,7 @@ function clientKeysRoutes(): Route[] {
       type: "DELETE",
       path: "/v1/keys/:id",
       rawPath: true,
+      public: true,
       name: "billing-keys-revoke",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;

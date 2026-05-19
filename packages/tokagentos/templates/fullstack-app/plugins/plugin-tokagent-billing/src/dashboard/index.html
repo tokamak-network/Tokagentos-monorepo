@@ -121,30 +121,6 @@
         </article>
       </section>
 
-      <!-- ---- Faucet (test/fork only) ---- -->
-      <section class="card section-card">
-        <header>
-          <h2>Test PTON faucet</h2>
-          <span class="card-sub">Mint PTON to your wallet (works only when the deployed PTON has <code>faucetEnabled=true</code>)</span>
-        </header>
-        <div class="topup-row">
-          <div class="topup-amount">
-            <label for="faucet-amount">Amount</label>
-            <div class="topup-input">
-              <input id="faucet-amount" type="number" step="1" min="1" value="100" inputmode="decimal" />
-              <span class="suffix">PTON</span>
-            </div>
-            <p class="muted small">
-              Calls <code>PTON.faucet(amount)</code> from your wallet. Requires a small amount of native gas.
-            </p>
-          </div>
-          <div class="topup-action">
-            <button id="faucet-btn" class="btn btn-ghost" type="button">Mint test PTON</button>
-            <p id="faucet-status" class="status-line" role="status" aria-live="polite"></p>
-          </div>
-        </div>
-      </section>
-
       <!-- ---- Top up ---- -->
       <section class="card section-card">
         <header>

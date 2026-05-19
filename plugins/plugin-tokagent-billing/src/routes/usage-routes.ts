@@ -414,6 +414,7 @@ export const usageRoutes: Route[] = [
     type: "GET",
     path: "/v1/usage/summary",
     rawPath: true,
+    public: true,
     name: "billing-usage-summary",
     handler: handleUsageSummary,
   },
@@ -421,6 +422,7 @@ export const usageRoutes: Route[] = [
     type: "GET",
     path: "/v1/usage/calls",
     rawPath: true,
+    public: true,
     name: "billing-usage-calls",
     handler: handleUsageCalls,
   },
@@ -428,6 +430,7 @@ export const usageRoutes: Route[] = [
     type: "GET",
     path: "/v1/usage/keys",
     rawPath: true,
+    public: true,
     name: "billing-usage-keys",
     handler: handleUsageKeys,
   },
@@ -451,6 +454,7 @@ function clientUsageRoutes(): Route[] {
       type: "GET",
       path: "/v1/usage/summary",
       rawPath: true,
+      public: true,
       name: "billing-usage-summary",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -466,6 +470,7 @@ function clientUsageRoutes(): Route[] {
       type: "GET",
       path: "/v1/usage/calls",
       rawPath: true,
+      public: true,
       name: "billing-usage-calls",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -481,6 +486,7 @@ function clientUsageRoutes(): Route[] {
       type: "GET",
       path: "/v1/usage/keys",
       rawPath: true,
+      public: true,
       name: "billing-usage-keys",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;

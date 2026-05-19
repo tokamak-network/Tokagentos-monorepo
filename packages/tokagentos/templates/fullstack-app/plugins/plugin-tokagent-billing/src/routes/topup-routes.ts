@@ -808,6 +808,7 @@ export const topupRoutes: Route[] = [
     type: "GET",
     path: "/v1/topup/info",
     rawPath: true,
+    public: true,
     name: "billing-topup-info",
     handler: handleTopupInfo,
   },
@@ -815,6 +816,7 @@ export const topupRoutes: Route[] = [
     type: "POST",
     path: "/v1/topup/quote",
     rawPath: true,
+    public: true,
     name: "billing-topup-quote",
     handler: handleTopupQuote,
   },
@@ -822,6 +824,7 @@ export const topupRoutes: Route[] = [
     type: "POST",
     path: "/v1/topup/settle",
     rawPath: true,
+    public: true,
     name: "billing-topup-settle",
     handler: handleTopupSettle,
   },
@@ -829,6 +832,7 @@ export const topupRoutes: Route[] = [
     type: "POST",
     path: "/v1/topup/preauth",
     rawPath: true,
+    public: true,
     name: "billing-topup-preauth",
     handler: handleTopupPreauth,
   },
@@ -836,6 +840,7 @@ export const topupRoutes: Route[] = [
     type: "GET",
     path: "/v1/topup/status",
     rawPath: true,
+    public: true,
     name: "billing-topup-status",
     handler: handleTopupStatus,
   },
@@ -843,6 +848,7 @@ export const topupRoutes: Route[] = [
     type: "POST",
     path: "/v1/topup/revoke",
     rawPath: true,
+    public: true,
     name: "billing-topup-revoke",
     handler: handleTopupRevoke,
   },
@@ -850,6 +856,7 @@ export const topupRoutes: Route[] = [
     type: "GET",
     path: "/v1/quote/:id",
     rawPath: true,
+    public: true,
     name: "billing-quote-debug",
     handler: handleGetQuote,
   },
@@ -865,6 +872,7 @@ function clientTopupRoutes(): Route[] {
       type: "GET",
       path: "/v1/topup/info",
       rawPath: true,
+      public: true,
       name: "billing-topup-info",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -877,6 +885,7 @@ function clientTopupRoutes(): Route[] {
       type: "POST",
       path: "/v1/topup/quote",
       rawPath: true,
+      public: true,
       name: "billing-topup-quote",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -889,6 +898,7 @@ function clientTopupRoutes(): Route[] {
       type: "POST",
       path: "/v1/topup/settle",
       rawPath: true,
+      public: true,
       name: "billing-topup-settle",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -901,6 +911,7 @@ function clientTopupRoutes(): Route[] {
       type: "POST",
       path: "/v1/topup/preauth",
       rawPath: true,
+      public: true,
       name: "billing-topup-preauth",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -913,6 +924,7 @@ function clientTopupRoutes(): Route[] {
       type: "GET",
       path: "/v1/topup/status",
       rawPath: true,
+      public: true,
       name: "billing-topup-status",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -925,6 +937,7 @@ function clientTopupRoutes(): Route[] {
       type: "POST",
       path: "/v1/topup/revoke",
       rawPath: true,
+      public: true,
       name: "billing-topup-revoke",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -937,6 +950,7 @@ function clientTopupRoutes(): Route[] {
       type: "GET",
       path: "/v1/quote/:id",
       rawPath: true,
+      public: true,
       name: "billing-quote-debug",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;

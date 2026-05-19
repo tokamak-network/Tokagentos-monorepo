@@ -331,6 +331,7 @@ export const estimateRoutes: Route[] = [
     type: "POST",
     path: "/v1/estimate",
     rawPath: true,
+    public: true,
     name: "billing-estimate",
     handler: handleEstimate,
   },
@@ -338,6 +339,7 @@ export const estimateRoutes: Route[] = [
     type: "POST",
     path: "/v1/messages/count_tokens",
     rawPath: true,
+    public: true,
     name: "billing-count-tokens",
     handler: handleCountTokens,
   },
@@ -345,6 +347,7 @@ export const estimateRoutes: Route[] = [
     type: "GET",
     path: "/v1/price",
     rawPath: true,
+    public: true,
     name: "billing-price-debug",
     handler: handlePrice,
   },
@@ -360,6 +363,7 @@ function clientEstimateRoutes(): Route[] {
       type: "POST",
       path: "/v1/estimate",
       rawPath: true,
+      public: true,
       name: "billing-estimate",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -372,6 +376,7 @@ function clientEstimateRoutes(): Route[] {
       type: "POST",
       path: "/v1/messages/count_tokens",
       rawPath: true,
+      public: true,
       name: "billing-count-tokens",
       handler: async (req, res) => {
         if (!ensureClientReady(res)) return;
@@ -387,6 +392,7 @@ function clientEstimateRoutes(): Route[] {
       type: "GET",
       path: "/v1/price",
       rawPath: true,
+      public: true,
       name: "billing-price-debug",
       handler: async (_req, res) => {
         if (!ensureClientReady(res)) return;
