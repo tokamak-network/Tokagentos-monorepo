@@ -44,15 +44,23 @@ COPY packages/tokagentos/      ./packages/tokagentos/
 # directories at install time.
 COPY plugins/plugin-tokagent-billing/ ./plugins/plugin-tokagent-billing/
 
-# Only `app-companion` is committed to git in this repo (the other apps under
-# apps/* — lifeops, vincent, knowledge, etc. — were removed in commit 59868695
-# "remove 16 legacy app integrations"). packages/agent statically imports
-# several of those, but in server-only mode (BILLING_MODE=server, no chat) bun
-# never actually evaluates the import paths so the missing workspace packages
-# don't cause a runtime crash. Adding COPY lines for paths that don't exist
-# in the build context fails the Docker build outright — keep app-companion
-# only and let bun install resolve the rest gracefully.
+# packages/agent/src/api/server.ts statically imports @tokagentos/app-
+# tokagentmaker, app-knowledge, app-steward, app-task-coordinator, app-training
+# at module-load time. Even in server-only mode the API server module is
+# imported, so bun resolves these imports eagerly and the agent crashes with
+# "Cannot find module" before binding the port if they're absent. They were
+# briefly orphaned by commit 59868695 ("remove 16 legacy app integrations")
+# but the import sites were never cleaned up — committed back via cb5ce... so
+# the build context can resolve them.
 COPY apps/app-companion/        ./apps/app-companion/
+COPY apps/app-knowledge/        ./apps/app-knowledge/
+COPY apps/app-lifeops/          ./apps/app-lifeops/
+COPY apps/app-shopify/          ./apps/app-shopify/
+COPY apps/app-steward/          ./apps/app-steward/
+COPY apps/app-task-coordinator/ ./apps/app-task-coordinator/
+COPY apps/app-tokagentmaker/    ./apps/app-tokagentmaker/
+COPY apps/app-training/         ./apps/app-training/
+COPY apps/app-vincent/          ./apps/app-vincent/
 
 # bun install handles workspace symlinking automatically.
 #
