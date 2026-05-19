@@ -261,6 +261,63 @@ async function handleChatCompletions(
   return proxyToLiteLLM(req, res, "/v1/chat/completions");
 }
 
+/**
+ * OpenAI-compatible model catalog. plugin-openai (and many OpenAI SDKs)
+ * call GET /v1/models on startup to validate the API key — if this returns
+ * 401/404, the plugin marks the provider unhealthy and the agent's chat
+ * composer never gets an active backend.
+ *
+ * We return a static list of the models the gateway actually supports
+ * (currently glm-4.7 on Tokamak's LiteLLM). Two reasons static beats
+ * proxying upstream:
+ *   1. Tokamak's LiteLLM /v1/models requires the operator's key, not the
+ *      user's sk-ai-* — proxying would either expose the operator key or
+ *      require a separate auth path. Static avoids the leak.
+ *   2. The billing layer's allowlist is the source of truth for "what
+ *      models a billing client can use"; the upstream catalog is the
+ *      operator's concern. Decoupling them lets us add/remove allowlisted
+ *      models without redeploying the upstream.
+ *
+ * Auth: still gated by applyBillingGate so only authenticated clients see
+ * the list. Returns the same 401 envelope as the chat routes on bad auth.
+ */
+async function handleModels(
+  req: RouteRequest,
+  res: RouteResponse,
+  _runtime: IAgentRuntime,
+): Promise<void> {
+  if (!isBillingStateInitialized()) return billingUnavailable(res);
+  const state = getBillingState();
+  if (!state.config.enabled) return billingUnavailable(res);
+
+  // Auth check — applyBillingGate is overkill here (no model/body to gate
+  // on) but using it keeps the auth-error envelope consistent across routes.
+  const incoming = toIncomingMessage(req);
+  const { resolveBillingIdentity } = await import(
+    "../middleware/api-key-resolve.js"
+  );
+  const identity = await resolveBillingIdentity(incoming);
+  if (!identity) {
+    res.status(401).json({
+      error: { type: "invalid_auth", message: "Authentication required." },
+    });
+    return;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  res.status(200).json({
+    object: "list",
+    data: [
+      {
+        id: "glm-4.7",
+        object: "model",
+        created: now,
+        owned_by: "tokamak",
+      },
+    ],
+  });
+}
+
 export const messagesProxyRoutes: Route[] = [
   {
     type: "POST",
@@ -277,6 +334,14 @@ export const messagesProxyRoutes: Route[] = [
     public: true,
     name: "billing-chat-completions-proxy",
     handler: handleChatCompletions,
+  },
+  {
+    type: "GET",
+    path: "/v1/models",
+    rawPath: true,
+    public: true,
+    name: "billing-models-catalog",
+    handler: handleModels,
   },
 ];
 
