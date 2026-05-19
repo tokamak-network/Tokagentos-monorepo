@@ -858,8 +858,11 @@ async function renderKeysTable() {
     const status = k.revokedAt ? `<span class="outcome-pill outcome-failed">revoked</span>` : `<span class="outcome-pill outcome-success">active</span>`;
     const action = k.revokedAt
       ? `<button class="btn btn-danger" type="button" data-delete="${escape(k.id)}" title="Permanently remove this revoked key from the database">Delete</button>`
-      : `<button class="btn btn-danger" type="button" data-revoke="${escape(k.id)}">Revoke</button>
-         <button class="btn btn-ghost" type="button" data-delete="${escape(k.id)}" title="Skip the revoke step and hard-delete immediately">Delete</button>`;
+      : `<button class="btn btn-danger" type="button" data-revoke="${escape(k.id)}">Revoke</button>`;
+      // Note: Delete (hard-delete) is intentionally NOT shown next to Revoke
+      // for active keys — Revoke first, then Delete the revoked row. Avoids
+      // accidentally wiping an active key (which would lose all in-flight
+      // billing for any process still using it).
     tr.innerHTML = `
       <td><code>${escape(k.id)}</code></td>
       <td>${escape(k.name ?? "—")}</td>
