@@ -153,7 +153,14 @@ export function applyCors(
     );
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Content-Type, Authorization, X-Tokagent-Token, X-Api-Key, X-Tokagent-Export-Token, X-Tokagent-Client-Id, X-Tokagent-Terminal-Token, X-Tokagent-UI-Language, X-LifeOps-Browser-Companion-Id, X-Tokagent-Browser-Companion-Id",
+      // Billing-plugin additions: X-Payment carries the base64-encoded
+      // EIP-3009 authorization on the /v1/topup/settle deposit path (x402
+      // facilitator convention). Anthropic-Version is sent by the
+      // Anthropic SDK + the dashboard's /v1/messages calls. Without these
+      // in the allowlist, browser CORS preflight rejects the actual POST
+      // with a TypeError surfaced as "Failed to fetch" — no 4xx/5xx reaches
+      // the application layer to give a diagnosable error.
+      "Content-Type, Authorization, X-Tokagent-Token, X-Api-Key, X-Tokagent-Export-Token, X-Tokagent-Client-Id, X-Tokagent-Terminal-Token, X-Tokagent-UI-Language, X-LifeOps-Browser-Companion-Id, X-Tokagent-Browser-Companion-Id, X-Payment, Anthropic-Version, Anthropic-Beta",
     );
   }
 
