@@ -1383,13 +1383,21 @@ export class AgentRuntime implements IAgentRuntime {
 		}
 		if (pluginToRegister.routes) {
 			for (const route of pluginToRegister.routes) {
-				// namespace plugin name infront of paths
 				const routePath = route.path.startsWith("/")
 					? route.path
 					: `/${route.path}`;
+				// Honor `rawPath: true` — mount at the literal route path
+				// without prefixing the plugin name. Plugin routes that
+				// expose a legacy/stable surface (e.g. /v1/auth/nonce,
+				// /v1/billing/dashboard) need this to remain reachable at
+				// their documented URL after migration into a plugin.
+				// Default (no rawPath): namespace plugin name in front.
+				const finalPath = route.rawPath
+					? routePath
+					: `/${pluginToRegister.name}${routePath}`;
 				this.routes.push({
 					...route,
-					path: `/${pluginToRegister.name}${routePath}`,
+					path: finalPath,
 				});
 			}
 		}

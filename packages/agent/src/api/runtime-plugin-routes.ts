@@ -120,6 +120,52 @@ function augmentRequest(
 }
 
 /**
+ * Read and JSON-parse the request body for routes that expect one.
+ *
+ * Plugin route handlers (registered via `Route` definitions on a Plugin) call
+ * `req.body.field` expecting the body to be a parsed JSON object — that's the
+ * RouteRequest contract in @tokagentos/typescript. But this dispatcher
+ * historically never read the request stream, so `req.body` was always
+ * undefined for POST/PUT/PATCH routes and handlers crashed with
+ * "Cannot read properties of undefined" or rejected the request as missing
+ * required body fields. This populates `req.body` once per request (idempotent
+ * — skip if a previous middleware already parsed it) for methods that carry a
+ * body, when content-type is JSON. For non-JSON bodies we leave req.body
+ * alone — the handler can read the stream itself if it cares.
+ */
+async function parseJsonBodyIfApplicable(
+  req: IncomingMessage,
+  method: string,
+): Promise<void> {
+  if (method === "GET" || method === "HEAD" || method === "DELETE") return;
+  const withBody = req as IncomingMessage & { body?: unknown };
+  if (withBody.body !== undefined) return; // already parsed by upstream middleware
+  const ct = (req.headers["content-type"] || "").toLowerCase();
+  if (!ct.includes("application/json")) return;
+
+  const chunks: Buffer[] = [];
+  for await (const chunk of req) {
+    chunks.push(typeof chunk === "string" ? Buffer.from(chunk) : chunk);
+  }
+  if (chunks.length === 0) {
+    withBody.body = {};
+    return;
+  }
+  const raw = Buffer.concat(chunks).toString("utf8").trim();
+  if (raw.length === 0) {
+    withBody.body = {};
+    return;
+  }
+  try {
+    withBody.body = JSON.parse(raw);
+  } catch {
+    // Leave req.body undefined for the handler to decide how to handle
+    // invalid JSON. Most handlers return a 400 in this case anyway.
+    withBody.body = undefined;
+  }
+}
+
+/**
  * Runs the first matching runtime plugin route. Returns true if matched (even on handler error).
  */
 export async function tryHandleRuntimePluginRoute(options: {
@@ -153,6 +199,7 @@ export async function tryHandleRuntimePluginRoute(options: {
 
     attachExpressResponseHelpers(res);
     augmentRequest(req, url, params);
+    await parseJsonBodyIfApplicable(req, method);
 
     try {
       await route.handler(req as never, res as never, runtime);
