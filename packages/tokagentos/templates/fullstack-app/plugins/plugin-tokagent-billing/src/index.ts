@@ -17,6 +17,8 @@ import { getSetupRoutes } from "./routes/setup-routes.js";
 import { getSetupPanelRoutes } from "./routes/setup-panel-routes.js";
 // Operator dashboard SPA (migrated from llm-api-gateway)
 import { getDashboardRoutes } from "./routes/dashboard-routes.js";
+// LiteLLM proxy for /v1/messages + /v1/chat/completions (server-mode only)
+import { getMessagesProxyRoutes } from "./routes/messages-proxy-routes.js";
 
 /**
  * Detect the BILLING_MODE at module-load time. The Plugin.routes array is
@@ -118,6 +120,13 @@ export const tokagentBillingPlugin: Plugin = {
         ]
       : [],
   routes: [
+    // MUST be registered BEFORE other routes — these own /v1/messages and
+    // /v1/chat/completions in server-mode and run a pure LiteLLM proxy.
+    // Without these, elizaOS's chat-routes.ts dispatcher tries to handle
+    // /v1/messages as an agent chat (requires worlds DB + AI provider
+    // plugin) and fails with "tableName is required" on a billing-only
+    // deployment.
+    ...getMessagesProxyRoutes(BILLING_MODE),
     ...getAuthRoutes(BILLING_MODE),
     ...getKeysRoutes(BILLING_MODE),
     ...getCreditsRoutes(BILLING_MODE),

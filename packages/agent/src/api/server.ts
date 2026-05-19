@@ -3753,11 +3753,39 @@ async function handleRequest(
   }
 
   // ═══════════════════════════════════════════════════════════════════════
+  // Pure-proxy plugin routes for /v1/messages + /v1/chat/completions take
+  // PRIORITY over the agent chat handler. A billing-gateway deployment
+  // (plugin-tokagent-billing in server-mode) needs to forward these to
+  // LiteLLM verbatim, not run them through the agent's chat machinery —
+  // which would otherwise wrap the prompt with a character template,
+  // require a worlds/messages DB, and fail with "tableName is required"
+  // on a billing-only deployment. If a plugin owns the path, it handles
+  // the request fully (including its own auth + reserve + commit) and we
+  // skip both BILLING_HOOK and handleChatRoutes below.
+  // ═══════════════════════════════════════════════════════════════════════
+  if (
+    method === "POST" &&
+    (pathname === "/v1/messages" || pathname === "/v1/chat/completions")
+  ) {
+    const handled = await tryHandleRuntimePluginRoute({
+      req,
+      res,
+      method,
+      pathname,
+      url,
+      runtime: state.runtime,
+      isAuthorized: () => isAuthorized(req),
+    });
+    if (handled) return;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
   // BILLING_HOOK — gate /v1/messages and /v1/chat/completions (Decision Z27)
   // commit/release closures forwarded to chat-routes (Decision Z34).
   // Body forwarded via prefetchedBody to avoid double-read (Decision Z37):
   // re-reading the IncomingMessage stream would hang forever because the
   // 'end' event has already fired by the time chat-routes runs.
+  // Only fires when no plugin claimed the path above.
   // ═══════════════════════════════════════════════════════════════════════
   let _billingCommit: ChatRouteArg["billingCommit"] = undefined;
   let _billingRelease: ((outcome: string) => Promise<void>) | undefined;
