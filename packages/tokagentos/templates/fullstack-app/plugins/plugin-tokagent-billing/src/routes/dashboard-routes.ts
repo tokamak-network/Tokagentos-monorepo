@@ -89,9 +89,25 @@ function buildConfigJs(runtime: IAgentRuntime): string {
     10: "https://optimistic.etherscan.io",
   };
 
+  // In client-mode the dashboard talks to the upstream gateway DIRECTLY via
+  // CORS rather than forwarding through the local agent. This sidesteps three
+  // bugs in vanilla elizaOS that the scaffolder pins (the auth-gate runs
+  // before plugin route resolution and rejects /v1/* with 401 when the
+  // operator has TOKAGENT_API_TOKEN set; the runtime-plugin-routes shim
+  // historically only exposed res.json on the inline object returned by
+  // .status(); the plugin-prefixed mount path drops JSON body parsing). The
+  // Railway-hosted gateway has all three patched in its own fork. Server-mode
+  // keeps PROXY_BASE="" so same-origin calls hit the plugin's own
+  // serverAuthRoutes handlers locally — no upstream needed there.
+  const billingMode =
+    get("BILLING_MODE").toLowerCase() === "client" ? "client" : "server";
+  const proxyBase =
+    billingMode === "client"
+      ? get("TOKAGENT_GATEWAY_URL").replace(/\/+$/, "")
+      : "";
+
   const config = {
-    // Same-origin: the dashboard is served by the same agent API server.
-    PROXY_BASE: "",
+    PROXY_BASE: proxyBase,
     CHAIN_ID: chainId,
     CHAIN_NAME: chainNames[chainId] ?? `chain-${chainId}`,
     CHAIN_RPC_URL: get("BILLING_CHAIN_RPC_URL"),
