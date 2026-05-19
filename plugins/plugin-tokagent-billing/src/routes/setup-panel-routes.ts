@@ -106,6 +106,26 @@ const SETUP_PANEL_HTML = `<!DOCTYPE html>
     details.self-host[open] > summary::before { transform: rotate(90deg); }
     details.self-host > summary:hover { color: #fff; background: #1a1a1a; }
     .self-host-body { padding: 0 1.25rem 1.25rem; }
+    /* Embedded dashboard iframe */
+    .dashboard-embed { margin: 1.5rem 0 1rem; background: #0a0a0f;
+                       border: 1px solid #2a2a2a; border-radius: 10px;
+                       overflow: hidden; }
+    .dashboard-embed iframe { width: 100%; height: 720px; border: 0; display: block; }
+    .dashboard-embed-fallback { padding: 0.75rem 1rem; font-size: 0.85rem;
+                                color: #888; border-top: 1px solid #2a2a2a;
+                                background: #141414; text-align: center; }
+    .dashboard-embed-fallback a { color: #4caf50; text-decoration: none; }
+    .dashboard-embed-fallback a:hover { text-decoration: underline; }
+    /* Advanced override toggle (smaller than the self-host disclosure) */
+    details.advanced-toggle { margin: 1rem 0; background: transparent;
+                              border: 1px solid #2a2a2a; border-radius: 6px; }
+    details.advanced-toggle > summary {
+      cursor: pointer; padding: 0.65rem 1rem; user-select: none;
+      color: #888; font-size: 0.82rem; list-style: none;
+    }
+    details.advanced-toggle > summary::-webkit-details-marker { display: none; }
+    details.advanced-toggle > summary:hover { color: #c8c8c8; }
+    details.advanced-toggle .advanced-body { padding: 0 1rem 1rem; }
   </style>
 </head>
 <body>
@@ -119,28 +139,50 @@ const SETUP_PANEL_HTML = `<!DOCTYPE html>
     <p class="hero-desc">
       Your agent is configured to use the Tokamak-hosted billing server on Railway.
       No local database or chain setup required — the gateway handles on-chain settlement,
-      credit storage, and PTON accounting. Connect your wallet below to mint API keys
-      and start billing.
+      credit storage, and PTON accounting. Use the dashboard below to connect your
+      wallet, deposit PTON, and mint API keys.
     </p>
   </div>
 
-  <!-- Client-mode URL override -->
-  <div class="client-section">
-    <h2>Gateway URL</h2>
-    <label for="gateway-url">Use a custom gateway URL (optional)</label>
-    <input type="url" id="gateway-url" name="gatewayUrl"
-           placeholder="${RAILWAY_URL}" />
-    <small class="hint">Leave blank to use the default Tokamak Railway gateway above.
-Override only if your operator gave you a different billing server URL.
-Saving this persists <code>TOKAGENT_GATEWAY_URL</code> to your <code>.env</code>.</small>
-    <div id="gateway-url-error" class="field-error" style="display:none"></div>
-    <div class="actions">
-      <button type="button" class="btn btn-primary" id="client-submit-btn"
-              onclick="saveClientConfig()">Save gateway URL</button>
+  <!-- Embedded billing dashboard (wallet connect + topup + API keys + usage).
+       The SPA at /v1/billing/dashboard/ is mode-agnostic and supports ?embed=1
+       to hide its standalone topbar. -->
+  <div class="dashboard-embed">
+    <iframe
+      id="billing-dashboard-iframe"
+      src="/v1/billing/dashboard/?embed=1"
+      title="Tokamak.AI billing dashboard"
+      allow="clipboard-write"
+      loading="lazy"
+    ></iframe>
+    <div class="dashboard-embed-fallback">
+      Dashboard not loading?
+      <a href="/v1/billing/dashboard/" target="_blank" rel="noopener">
+        Open in a new tab →
+      </a>
     </div>
   </div>
 
   <div id="status"></div>
+
+  <!-- Client-mode URL override (advanced) -->
+  <details class="advanced-toggle">
+    <summary>Advanced: point at a different gateway URL</summary>
+    <div class="advanced-body">
+      <label for="gateway-url">Custom gateway URL</label>
+      <input type="url" id="gateway-url" name="gatewayUrl"
+             placeholder="${RAILWAY_URL}" />
+      <small class="hint">Leave blank to use the default Tokamak Railway gateway above.
+Override only if your operator gave you a different billing server URL.
+Saving this persists <code>TOKAGENT_GATEWAY_URL</code> to your <code>.env</code> and
+reloads the dashboard against the new URL.</small>
+      <div id="gateway-url-error" class="field-error" style="display:none"></div>
+      <div class="actions">
+        <button type="button" class="btn btn-secondary" id="client-submit-btn"
+                onclick="saveClientConfig()">Save gateway URL</button>
+      </div>
+    </div>
+  </details>
 
   <div class="divider"></div>
 
