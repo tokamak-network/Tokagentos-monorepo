@@ -80,11 +80,10 @@ describe("setupBillingAction.validate", () => {
 });
 
 describe("setupBillingAction.handler", () => {
-  it("replies with default server-mode (self-hosted) wizard when billing is not initialized (v2.0.5)", async () => {
-    // v2.0.5 default: server-mode self-hosted. The wizard lists the 5 things
-    // the operator needs (Postgres, RPC, vault, PTON, operator key), links the
-    // setup panel, and offers a "say 'I have a gateway URL'" hint to switch
-    // to client-mode.
+  it("replies with default client-mode (Railway gateway) reply when billing is not initialized (v2.0.7)", async () => {
+    // v2.0.7 default flip: client-mode is now default. The wizard leads with the
+    // hosted-gateway story (Railway URL), links the setup panel, and mentions the
+    // 'I want to self-host' branch for operators who want server-mode.
     billingStateMock.initialized = false;
     const replies: string[] = [];
     await setupBillingAction.handler!(
@@ -96,14 +95,15 @@ describe("setupBillingAction.handler", () => {
     );
     expect(replies.length).toBe(1);
     expect(replies[0]).toMatch(/setup-panel/i);
-    expect(replies[0]).toMatch(/ClaudeVault/i);
-    expect(replies[0]).toMatch(/Postgres/i);
-    expect(replies[0]).toMatch(/Operator/i);
-    // Includes the gateway-URL escape hatch hint.
-    expect(replies[0]).toMatch(/gateway URL/i);
+    // v2.0.7 default is client-mode pointing at Railway.
+    expect(replies[0]).toMatch(/billing-service-production-a8e7\.up\.railway\.app/i);
+    // Includes the self-host escape hatch hint.
+    expect(replies[0]).toMatch(/self.host/i);
   });
 
   it("branches to client-mode reply when user says 'gateway URL'", async () => {
+    // v2.0.7: client-mode is now the default, but users who explicitly say
+    // 'gateway URL' get a focused reply mentioning the Railway default URL.
     billingStateMock.initialized = false;
     const replies: string[] = [];
     await setupBillingAction.handler!(
@@ -115,7 +115,6 @@ describe("setupBillingAction.handler", () => {
     );
     expect(replies.length).toBe(1);
     expect(replies[0]).toMatch(/Client-mode/i);
-    expect(replies[0]).toMatch(/billing\.example\.com/i);
     expect(replies[0]).toMatch(/BILLING_MODE=client/);
   });
 
@@ -134,12 +133,14 @@ describe("setupBillingAction.handler", () => {
     expect(replies[0]).toMatch(/TOKAGENT_GATEWAY_URL/);
   });
 
-  it("server-mode reply is the same whether BILLING_MODE=server is set explicitly or not (server is default)", async () => {
+  it("branches to server-mode (self-host) reply when user says 'self-host' or 'server-mode' (v2.0.7)", async () => {
+    // v2.0.7: server is no longer the default, but is still reachable by asking.
+    // When the user says 'self-host', the wizard gives the 5-item checklist.
     billingStateMock.initialized = false;
     const replies: string[] = [];
     await setupBillingAction.handler!(
-      makeRuntime({ SERVER_PORT: "2138", BILLING_MODE: "server" }),
-      makeMessage("set up billing"),
+      makeRuntime({ SERVER_PORT: "2138" }),
+      makeMessage("I want to self-host the billing server"),
       undefined,
       undefined,
       async (response: Content) => { replies.push(String(response.text ?? "")); return []; },

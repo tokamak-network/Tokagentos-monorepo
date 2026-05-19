@@ -1,22 +1,20 @@
 /**
  * Billing setup panel — server-side HTML form (Phase 9, Decision Z48 fallback,
- * v2.0.5 self-hosted-first redesign).
+ * v2.0.7 Railway-hosted-first redesign).
  *
  * GET /v1/billing/setup-panel
  *
- * Returns the 7-field self-hosted server-mode setup form by default. Every
- * field includes inline help text explaining HOW to obtain or generate the
- * value (Docker Postgres one-liner, public RPC URLs, canonical mainnet
- * addresses, `cast wallet new` for the operator key, `openssl rand -hex 32`
- * for the auth secret). A "Use mainnet defaults" button fills the vault,
- * PTON, and chain-id fields with the canonical mainnet values.
+ * Default view: calm hero "Connected to Tokamak billing gateway" showing the
+ * Railway URL (https://billing-service-production-a8e7.up.railway.app). Users
+ * can connect their wallet to mint API keys immediately.
  *
- * Below the self-hosted form, a small native <details> disclosure offers
- * client-mode for users who've been given a gateway URL by an operator.
+ * The 7-field self-hosted server-mode setup form is behind a native <details>
+ * "Advanced: self-host your own billing server" disclosure at the bottom. It
+ * includes inline help text for each field (Docker Postgres one-liner, public
+ * RPC URLs, canonical mainnet addresses, `cast wallet new`, `openssl rand -hex 32`).
  *
- * Tokagent billing is self-hosted only — there is no shared hosted gateway.
- * Every operator deploys their own billing server (Postgres + operator EOA).
- * This panel is the in-product onboarding for that flow.
+ * This reverses the v2.0.5 self-hosted-first layout: gateway story is now
+ * front-and-center; self-hosting is the advanced opt-in path.
  */
 
 import type { Route, RouteRequest, RouteResponse, IAgentRuntime } from "@tokagentos/core";
@@ -26,25 +24,38 @@ function setupEnabled(): boolean {
   return !(raw === "false" || raw === "0" || raw === "no" || raw === "off");
 }
 
+const RAILWAY_URL = "https://billing-service-production-a8e7.up.railway.app";
+
 const SETUP_PANEL_HTML = `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Set up x402 billing — Tokagent</title>
+  <title>x402 billing — Tokagent</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
            background: #0f0f0f; color: #e8e8e8; min-height: 100vh; padding: 2rem; }
     .container { max-width: 720px; margin: 0 auto; }
-    h1.page-title { font-size: 1.5rem; font-weight: 600; color: #fff;
+    /* Hero */
+    .hero { background: #0d1f0d; border: 1px solid #1a5e1a; border-radius: 10px;
+            padding: 1.75rem; margin-bottom: 1.5rem; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 0.4rem;
+                  background: #1a5e1a; color: #4caf50; border-radius: 20px;
+                  padding: 0.2rem 0.75rem; font-size: 0.8rem; font-weight: 600;
+                  margin-bottom: 0.9rem; }
+    .hero-badge::before { content: "●"; font-size: 0.5rem; }
+    h1.page-title { font-size: 1.4rem; font-weight: 600; color: #fff;
                     margin-bottom: 0.5rem; }
-    p.page-intro { color: #aaa; font-size: 0.95rem; line-height: 1.5;
-                   margin-bottom: 1.5rem; }
-    /* Form */
-    .step { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
-            padding: 1.25rem; margin-bottom: 0.75rem; }
-    .step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem; color: #c8c8c8; }
+    .hero-url { font-family: monospace; font-size: 0.88rem; color: #4caf50;
+                background: #0a0a0a; padding: 0.35rem 0.6rem; border-radius: 5px;
+                display: inline-block; margin-bottom: 0.9rem; word-break: break-all; }
+    p.hero-desc { color: #aaa; font-size: 0.9rem; line-height: 1.55; }
+    /* Client URL form */
+    .client-section { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+                      padding: 1.25rem; margin-bottom: 1rem; }
+    .client-section h2 { font-size: 0.95rem; font-weight: 600; color: #c8c8c8;
+                          margin-bottom: 0.75rem; }
     label { display: block; font-size: 0.85rem; color: #c8c8c8; margin-bottom: 0.25rem; }
     input[type="text"], input[type="password"], input[type="number"], input[type="url"] {
       width: 100%; padding: 0.6rem 0.75rem; background: #0a0a0a; border: 1px solid #333;
@@ -62,7 +73,7 @@ const SETUP_PANEL_HTML = `<!DOCTYPE html>
     .btn-primary:hover { background: #7c57ff; }
     .btn-secondary:hover { background: #333; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.25rem; }
     .toolbar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
     #status { padding: 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.9rem;
               display: none; }
@@ -73,158 +84,182 @@ const SETUP_PANEL_HTML = `<!DOCTYPE html>
     .key-row input { flex: 1; margin-bottom: 0; }
     .key-row .btn { flex-shrink: 0; height: 38px; }
     .address-display { font-size: 0.78rem; color: #888; font-family: monospace; margin-bottom: 0.75rem; }
-    /* Client-mode disclosure */
+    /* Form steps */
+    .step { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
+            padding: 1.25rem; margin-bottom: 0.75rem; }
+    .step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem; color: #c8c8c8; }
+    /* Self-host disclosure */
     .divider { height: 1px; background: #2a2a2a; margin: 2rem 0 1rem; }
-    details.client-mode { background: #141414; border: 1px solid #2a2a2a;
-                          border-radius: 8px; padding: 0; overflow: hidden;
-                          margin-top: 0.5rem; }
-    details.client-mode > summary {
+    details.self-host { background: #141414; border: 1px solid #2a2a2a;
+                        border-radius: 8px; padding: 0; overflow: hidden;
+                        margin-top: 0.5rem; }
+    details.self-host > summary {
       cursor: pointer; padding: 0.9rem 1.25rem; user-select: none;
       color: #c8c8c8; font-size: 0.9rem; font-weight: 500;
       list-style: none; display: flex; align-items: center; gap: 0.5rem;
     }
-    details.client-mode > summary::-webkit-details-marker { display: none; }
-    details.client-mode > summary::before {
+    details.self-host > summary::-webkit-details-marker { display: none; }
+    details.self-host > summary::before {
       content: "▸"; font-size: 0.75rem; transition: transform 0.15s;
       display: inline-block; color: #666;
     }
-    details.client-mode[open] > summary::before { transform: rotate(90deg); }
-    details.client-mode > summary:hover { color: #fff; background: #1a1a1a; }
-    .client-body { padding: 0 1.25rem 1.25rem; }
+    details.self-host[open] > summary::before { transform: rotate(90deg); }
+    details.self-host > summary:hover { color: #fff; background: #1a1a1a; }
+    .self-host-body { padding: 0 1.25rem 1.25rem; }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1 class="page-title">Set up x402 billing</h1>
-  <p class="page-intro">
-    Run your own billing server backed by Postgres + an on-chain operator EOA.
-    Or connect as a client to someone else's server (advanced).
-  </p>
 
-  <div class="toolbar">
-    <button type="button" class="btn btn-secondary" onclick="fillMainnetDefaults()">Use mainnet defaults</button>
+  <!-- Hero: Connected to Tokamak billing gateway -->
+  <div class="hero">
+    <div class="hero-badge">Connected to Tokamak billing gateway</div>
+    <h1 class="page-title">x402 billing — ready to use</h1>
+    <div class="hero-url">${RAILWAY_URL}</div>
+    <p class="hero-desc">
+      Your agent is configured to use the Tokamak-hosted billing server on Railway.
+      No local database or chain setup required — the gateway handles on-chain settlement,
+      credit storage, and PTON accounting. Connect your wallet below to mint API keys
+      and start billing.
+    </p>
   </div>
 
-  <form id="setup-form">
-    <!-- 1. Database -->
-    <div class="step">
-      <div class="step-title">1. Database</div>
-      <label for="db-url">Postgres connection string</label>
-      <input type="text" id="db-url" name="databaseUrl"
-             placeholder="postgresql://postgres:postgres@localhost:5432/postgres" />
-      <small class="hint">Any Postgres 14+ works. Quickest local setup:
+  <!-- Client-mode URL override -->
+  <div class="client-section">
+    <h2>Gateway URL</h2>
+    <label for="gateway-url">Use a custom gateway URL (optional)</label>
+    <input type="url" id="gateway-url" name="gatewayUrl"
+           placeholder="${RAILWAY_URL}" />
+    <small class="hint">Leave blank to use the default Tokamak Railway gateway above.
+Override only if your operator gave you a different billing server URL.
+Saving this persists <code>TOKAGENT_GATEWAY_URL</code> to your <code>.env</code>.</small>
+    <div id="gateway-url-error" class="field-error" style="display:none"></div>
+    <div class="actions">
+      <button type="button" class="btn btn-primary" id="client-submit-btn"
+              onclick="saveClientConfig()">Save gateway URL</button>
+    </div>
+  </div>
+
+  <div id="status"></div>
+
+  <div class="divider"></div>
+
+  <!-- Self-host disclosure (advanced) -->
+  <details class="self-host" id="self-host-disclosure">
+    <summary>Advanced: self-host your own billing server →</summary>
+    <div class="self-host-body">
+      <p style="color:#888;font-size:0.85rem;margin:0.75rem 0 1rem;">
+        Run your own billing server backed by Postgres + an on-chain operator EOA.
+        You'll need 7 things: a Postgres database, a chain RPC, ClaudeVault address,
+        PTON address, an operator private key, an auth secret, and optionally a
+        mainnet RPC for the TWAP oracle.
+      </p>
+
+      <div class="toolbar">
+        <button type="button" class="btn btn-secondary" onclick="fillMainnetDefaults()">Use mainnet defaults</button>
+      </div>
+
+      <form id="setup-form">
+        <!-- 1. Database -->
+        <div class="step">
+          <div class="step-title">1. Database</div>
+          <label for="db-url">Postgres connection string</label>
+          <input type="text" id="db-url" name="databaseUrl"
+                 placeholder="postgresql://postgres:postgres@localhost:5432/postgres" />
+          <small class="hint">Any Postgres 14+ works. Quickest local setup:
 <code>docker run -d --name tokagent-pg -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16</code>
 Then use: <code>postgresql://postgres:postgres@localhost:5432/postgres</code>
 Or use any managed Postgres (Supabase, Railway, AWS RDS, your own server). The schema migrations run automatically on first boot.</small>
-      <div id="db-url-error" class="field-error" style="display:none"></div>
-      <button type="button" class="btn btn-secondary" onclick="testDb()">Test Connection</button>
-    </div>
+          <div id="db-url-error" class="field-error" style="display:none"></div>
+          <button type="button" class="btn btn-secondary" onclick="testDb()">Test Connection</button>
+        </div>
 
-    <!-- 2. Chain RPC URL -->
-    <div class="step">
-      <div class="step-title">2. Chain RPC URL</div>
-      <label for="rpc-url">Chain RPC URL</label>
-      <input type="url" id="rpc-url" name="chainRpcUrl"
-             placeholder="https://eth.llamarpc.com" oninput="autoDetectChainId()" />
-      <small class="hint">Ethereum mainnet RPC. Used to send <code>vault.consumeCredits</code> transactions.
+        <!-- 2. Chain RPC URL -->
+        <div class="step">
+          <div class="step-title">2. Chain RPC URL</div>
+          <label for="rpc-url">Chain RPC URL</label>
+          <input type="url" id="rpc-url" name="chainRpcUrl"
+                 placeholder="https://eth.llamarpc.com" oninput="autoDetectChainId()" />
+          <small class="hint">Ethereum mainnet RPC. Used to send <code>vault.consumeCredits</code> transactions.
 Free public endpoints: <code>https://eth.llamarpc.com</code>  |  <code>https://rpc.ankr.com/eth</code>  |  <code>https://ethereum.publicnode.com</code>
 Production: get an Alchemy or Infura API key for higher reliability and rate limits.</small>
-      <div id="rpc-url-error" class="field-error" style="display:none"></div>
-    </div>
+          <div id="rpc-url-error" class="field-error" style="display:none"></div>
+        </div>
 
-    <!-- 3. Chain ID -->
-    <div class="step">
-      <div class="step-title">3. Chain ID</div>
-      <label for="chain-id">Chain ID</label>
-      <input type="number" id="chain-id" name="chainId" placeholder="1" />
-      <small class="hint">Auto-detected from the RPC URL. <code>1</code> = Ethereum mainnet. The default PTON + ClaudeVault addresses below are on mainnet.</small>
-      <div id="chain-id-error" class="field-error" style="display:none"></div>
-    </div>
+        <!-- 3. Chain ID -->
+        <div class="step">
+          <div class="step-title">3. Chain ID</div>
+          <label for="chain-id">Chain ID</label>
+          <input type="number" id="chain-id" name="chainId" placeholder="1" />
+          <small class="hint">Auto-detected from the RPC URL. <code>1</code> = Ethereum mainnet. The default PTON + ClaudeVault addresses below are on mainnet.</small>
+          <div id="chain-id-error" class="field-error" style="display:none"></div>
+        </div>
 
-    <!-- 4. ClaudeVault address -->
-    <div class="step">
-      <div class="step-title">4. ClaudeVault address</div>
-      <label for="vault-address">ClaudeVault address</label>
-      <input type="text" id="vault-address" name="vaultAddress" placeholder="0x..." />
-      <small class="hint">Mainnet (live): <code>0x1072f70e7c490E460fA72AC4171F7aDD1ef2d79F</code>
+        <!-- 4. ClaudeVault address -->
+        <div class="step">
+          <div class="step-title">4. ClaudeVault address</div>
+          <label for="vault-address">ClaudeVault address</label>
+          <input type="text" id="vault-address" name="vaultAddress" placeholder="0x..." />
+          <small class="hint">Mainnet (live): <code>0x1072f70e7c490E460fA72AC4171F7aDD1ef2d79F</code>
 For your own testnet/private deploy: see <code>llm-api-gateway/contracts/src/ClaudeVault.sol</code> — deploy with foundry, then paste the deployed address here. Your operator EOA below must hold <code>OPERATOR_ROLE</code> on this contract.</small>
-      <div id="vault-address-error" class="field-error" style="display:none"></div>
-    </div>
+          <div id="vault-address-error" class="field-error" style="display:none"></div>
+        </div>
 
-    <!-- 5. PTON address -->
-    <div class="step">
-      <div class="step-title">5. PTON address</div>
-      <label for="pton-address">PTON token address</label>
-      <input type="text" id="pton-address" name="ptonAddress" placeholder="0x..." />
-      <small class="hint">Mainnet (live): <code>0x00D1EDcE8E7c617891FF76224DFf501c568f1Ce0</code>
+        <!-- 5. PTON address -->
+        <div class="step">
+          <div class="step-title">5. PTON address</div>
+          <label for="pton-address">PTON token address</label>
+          <input type="text" id="pton-address" name="ptonAddress" placeholder="0x..." />
+          <small class="hint">Mainnet (live): <code>0x00D1EDcE8E7c617891FF76224DFf501c568f1Ce0</code>
 PTON wraps Tokamak TON 1:1 and supports EIP-3009 for gasless x402 payments. Users wrap TON to PTON, then deposit PTON into ClaudeVault to fund their billing balance.</small>
-      <div id="pton-address-error" class="field-error" style="display:none"></div>
-      <button type="button" class="btn btn-secondary" onclick="verifyContracts()">Verify Contracts</button>
-    </div>
+          <div id="pton-address-error" class="field-error" style="display:none"></div>
+          <button type="button" class="btn btn-secondary" onclick="verifyContracts()">Verify Contracts</button>
+        </div>
 
-    <!-- 6. Operator private key -->
-    <div class="step">
-      <div class="step-title">6. Operator private key</div>
-      <label for="operator-key">Operator private key</label>
-      <div class="key-row">
-        <input type="password" id="operator-key" name="operatorPrivateKey"
-               placeholder="0x..." oninput="updateDerivedAddress()" />
-        <button type="button" class="btn btn-secondary" onclick="generateKey()">Generate</button>
-      </div>
-      <small class="hint">EOA that calls <code>vault.consumeCredits()</code> to settle user credits on-chain.
+        <!-- 6. Operator private key -->
+        <div class="step">
+          <div class="step-title">6. Operator private key</div>
+          <label for="operator-key">Operator private key</label>
+          <div class="key-row">
+            <input type="password" id="operator-key" name="operatorPrivateKey"
+                   placeholder="0x..." oninput="updateDerivedAddress()" />
+            <button type="button" class="btn btn-secondary" onclick="generateKey()">Generate</button>
+          </div>
+          <small class="hint">EOA that calls <code>vault.consumeCredits()</code> to settle user credits on-chain.
 Generate a fresh key: <code>cast wallet new</code>
 Fund the address with ~0.1 ETH for gas (caps blast radius if leaked).
 Grant <code>OPERATOR_ROLE</code> on ClaudeVault from your admin account.
 WARNING: never paste a wallet with significant balance. This is a hot key on whatever machine runs this server.</small>
-      <div id="derived-address" class="address-display"></div>
-      <div id="operator-key-error" class="field-error" style="display:none"></div>
-    </div>
+          <div id="derived-address" class="address-display"></div>
+          <div id="operator-key-error" class="field-error" style="display:none"></div>
+        </div>
 
-    <!-- 7. Auth secret -->
-    <div class="step">
-      <div class="step-title">7. Auth secret</div>
-      <label for="auth-secret">HMAC auth secret</label>
-      <div class="key-row">
-        <input type="password" id="auth-secret" name="authSecret" placeholder="min 32 chars" />
-        <button type="button" class="btn btn-secondary" onclick="generateSecret()">Generate</button>
-      </div>
-      <small class="hint">Random 32-byte hex. Used to sign JWTs and HMAC <code>sk-ai-*</code> API keys.
+        <!-- 7. Auth secret -->
+        <div class="step">
+          <div class="step-title">7. Auth secret</div>
+          <label for="auth-secret">HMAC auth secret</label>
+          <div class="key-row">
+            <input type="password" id="auth-secret" name="authSecret" placeholder="min 32 chars" />
+            <button type="button" class="btn btn-secondary" onclick="generateSecret()">Generate</button>
+          </div>
+          <small class="hint">Random 32-byte hex. Used to sign JWTs and HMAC <code>sk-ai-*</code> API keys.
 Generate: <code>openssl rand -hex 32</code>
 Click "Generate" above to fill automatically. Rotating this invalidates all sessions AND all API keys — users must re-login and re-mint keys.</small>
-      <div id="auth-secret-error" class="field-error" style="display:none"></div>
-    </div>
+          <div id="auth-secret-error" class="field-error" style="display:none"></div>
+        </div>
 
-    <!-- 8. Optional mainnet RPC -->
-    <div class="step">
-      <div class="step-title">Optional: Mainnet RPC</div>
-      <label for="mainnet-rpc">Mainnet RPC URL (optional)</label>
-      <input type="url" id="mainnet-rpc" name="mainnetRpcUrl"
-             placeholder="https://eth.llamarpc.com" />
-      <small class="hint">Defaults to your chain RPC above. Used to query Uniswap V3 for live TON/USD pricing (TWAP oracle). Can be a different provider — useful if your chain RPC has tight rate limits and you want to isolate the TWAP polling load.</small>
-    </div>
+        <!-- 8. Optional mainnet RPC -->
+        <div class="step">
+          <div class="step-title">Optional: Mainnet RPC</div>
+          <label for="mainnet-rpc">Mainnet RPC URL (optional)</label>
+          <input type="url" id="mainnet-rpc" name="mainnetRpcUrl"
+                 placeholder="https://eth.llamarpc.com" />
+          <small class="hint">Defaults to your chain RPC above. Used to query Uniswap V3 for live TON/USD pricing (TWAP oracle). Can be a different provider — useful if your chain RPC has tight rate limits and you want to isolate the TWAP polling load.</small>
+        </div>
 
-    <div id="status"></div>
-
-    <div class="actions">
-      <button type="button" class="btn btn-secondary" onclick="validateAll()">Validate All</button>
-      <button type="submit" class="btn btn-primary" id="submit-btn">Save self-hosted config</button>
-    </div>
-  </form>
-
-  <div class="divider"></div>
-
-  <details class="client-mode" id="client-mode-disclosure">
-    <summary>Already a client of a hosted billing server? Configure client-mode →</summary>
-    <div class="client-body">
-      <form id="client-form">
-        <label for="gateway-url">Gateway URL</label>
-        <input type="url" id="gateway-url" name="gatewayUrl"
-               placeholder="https://billing.example.com" />
-        <small class="hint">The HTTPS URL of the tokagent-billing-server you're connecting to. The operator who runs that server gave you this URL. Example: <code>https://billing.example.com</code>
-Client-mode skips ALL local config — your CLI just forwards calls to the gateway, which handles billing, on-chain settlement, and credit storage on its end.</small>
-        <div id="gateway-url-error" class="field-error" style="display:none"></div>
         <div class="actions">
-          <button type="submit" class="btn btn-primary" id="client-submit-btn">Save client-mode config</button>
+          <button type="button" class="btn btn-secondary" onclick="validateAll()">Validate All</button>
+          <button type="submit" class="btn btn-primary" id="submit-btn">Save self-hosted config</button>
         </div>
       </form>
     </div>
@@ -282,42 +317,32 @@ document.getElementById('setup-form').addEventListener('submit', async function(
   }
 });
 
-// ── Client-mode form submit ─────────────────────────────────────────────────
-const clientForm = document.getElementById('client-form');
-if (clientForm) {
-  clientForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    showFieldError('gateway-url', '');
-    const btn = document.getElementById('client-submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Saving...';
-    try {
-      const url = document.getElementById('gateway-url').value.trim();
-      if (!url) {
-        showFieldError('gateway-url', 'Enter the gateway URL your operator gave you.');
-        btn.disabled = false;
-        btn.textContent = 'Save client-mode config';
-        return;
-      }
-      const r = await fetch(BASE + '/v1/billing/setup', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ billingMode: 'client', gatewayUrl: url })
-      });
-      const data = await r.json();
-      if (data.ok) {
-        showStatus(data.message || 'Client-mode config saved.', false);
-        btn.textContent = 'Saved';
-      } else {
-        showFieldError('gateway-url', data.error || 'Could not save client-mode config.');
-        btn.disabled = false;
-        btn.textContent = 'Save client-mode config';
-      }
-    } catch (err) {
-      showStatus('Network error: ' + err.message, true);
+// ── Client gateway URL save ─────────────────────────────────────────────────
+async function saveClientConfig() {
+  showFieldError('gateway-url', '');
+  const btn = document.getElementById('client-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    const url = document.getElementById('gateway-url').value.trim();
+    const r = await fetch(BASE + '/v1/billing/setup', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ billingMode: 'client', gatewayUrl: url || undefined })
+    });
+    const data = await r.json();
+    if (data.ok) {
+      showStatus(data.message || 'Gateway URL saved.', false);
+      btn.textContent = 'Saved';
+    } else {
+      showFieldError('gateway-url', data.error || 'Could not save gateway URL.');
       btn.disabled = false;
-      btn.textContent = 'Save client-mode config';
+      btn.textContent = 'Save gateway URL';
     }
-  });
+  } catch (err) {
+    showStatus('Network error: ' + err.message, true);
+    btn.disabled = false;
+    btn.textContent = 'Save gateway URL';
+  }
 }
 
 function showFieldError(id, msg) {

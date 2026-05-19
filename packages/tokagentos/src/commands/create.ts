@@ -408,6 +408,22 @@ function preCompleteOnboarding(
 }
 
 /**
+ * Materialize <projectRoot>/.env from .env.example if .env doesn't already
+ * exist. No-op if .env exists (preserves any user edits from a re-run).
+ *
+ * Called for ALL scaffold flows (including x402-only) so the prefilled
+ * BILLING_MODE=client + TOKAGENT_GATEWAY_URL values from .env.example
+ * always reach the scaffolded project's .env without manual copy.
+ */
+function ensureEnvFromExample(projectRoot: string): void {
+  const envPath = path.join(projectRoot, ".env");
+  const examplePath = path.join(projectRoot, ".env.example");
+  if (fs.existsSync(envPath)) return;
+  if (!fs.existsSync(examplePath)) return;
+  fs.copyFileSync(examplePath, envPath);
+}
+
+/**
  * Create or update <projectRoot>/.env for a fresh scaffold.
  *
  * Strategy:
@@ -669,6 +685,15 @@ export async function create(
       values: values as Record<string, string>,
     }),
   );
+
+  // Always materialize .env from .env.example so the scaffolded project boots
+  // with the BILLING_MODE=client + TOKAGENT_GATEWAY_URL prefilled values
+  // baked into the template. Without this step, x402-only scaffolds (no LLM
+  // API key path) leave .env missing entirely — billing wouldn't auto-route
+  // to the hosted gateway and users would have to copy .env.example by hand.
+  // Idempotent: if .env already exists (e.g. re-running the CLI), don't
+  // overwrite — the writeLlmEnvFile call below will patch the API-key line.
+  ensureEnvFromExample(destinationDir);
 
   if (apiKey) {
     writeLlmEnvFile(destinationDir, llmProvider, apiKey);

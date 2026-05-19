@@ -22,14 +22,13 @@ describe('tokagentBillingPlugin', () => {
     expect(tokagentBillingPlugin.providers?.length).toBe(0);
   });
 
-  it('registers all 5 services by default (v2.0.5 — server-mode is the default)', () => {
-    // v2.0.5 reverted the default to BILLING_MODE=server. The Plugin.services
-    // array is static, declared at module-load time based on BILLING_MODE.
-    // With server as the default mode, all 5 lifecycle services are wired in
-    // regardless of BILLING_ENABLED — initBillingPlugin gates whether they
-    // actually do any work, but the plugin contract exposes them.
+  it('registers 0 services by default (v2.0.7 — client-mode is the new default)', () => {
+    // v2.0.7 default flip: BILLING_MODE now defaults to 'client', so the Plugin.services
+    // array is empty by default. Client-mode delegates all worker lifecycle to the
+    // upstream Railway billing server — mounting them locally would race the gateway.
+    // To get 5 services, set BILLING_MODE=server explicitly.
     expect(Array.isArray(tokagentBillingPlugin.services)).toBe(true);
-    expect(tokagentBillingPlugin.services?.length).toBe(5);
+    expect(tokagentBillingPlugin.services?.length).toBe(0);
   });
 
   it('mode-aware services contract: server → 5, client → 0', () => {
@@ -37,7 +36,8 @@ describe('tokagentBillingPlugin', () => {
     // services array is fixed at module load (see BILLING_MODE detection
     // above), so we cannot flip it mid-test, but we assert the static
     // expectation for the default install.
-    const mode = process.env.BILLING_MODE === 'client' ? 'client' : 'server';
+    // v2.0.7: default is client → any value other than 'server' resolves to client.
+    const mode = process.env.BILLING_MODE === 'server' ? 'server' : 'client';
     const expected = mode === 'server' ? 5 : 0;
     expect(tokagentBillingPlugin.services?.length).toBe(expected);
   });

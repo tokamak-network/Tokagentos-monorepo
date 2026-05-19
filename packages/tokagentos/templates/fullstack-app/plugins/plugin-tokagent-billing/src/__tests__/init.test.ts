@@ -117,8 +117,8 @@ function makeRuntime(env: Record<string, string | undefined>): IAgentRuntime {
 /** Minimum env required for a successful server-mode BILLING_ENABLED=true boot. */
 function fullEnabledEnv(overrides: Record<string, string | undefined> = {}): Record<string, string | undefined> {
   return {
-    // v2.0.5 default mode is `server`. Pinning BILLING_MODE=server explicitly
-    // is redundant with the default but documents intent for these tests.
+    // v2.0.7: default mode is now `client`. Pinning BILLING_MODE=server explicitly
+    // is required for these server-mode happy-path tests.
     BILLING_MODE: "server",
     BILLING_ENABLED: "true",
     BILLING_AUTH_REQUIRED: "true",
@@ -160,8 +160,7 @@ afterEach(async () => {
 
 describe("initBillingPlugin — BILLING_ENABLED=false short-circuit", () => {
   it("does nothing when billing is disabled in server-mode (no pool, no state)", async () => {
-    // v2.0.5: default mode is server. With BILLING_ENABLED=false the plugin
-    // is a no-op — no pool, no migrations, no state.
+    // server-mode with BILLING_ENABLED=false is still a no-op.
     const runtime = makeRuntime({
       BILLING_MODE: "server",
       BILLING_ENABLED: "false",
@@ -174,10 +173,24 @@ describe("initBillingPlugin — BILLING_ENABLED=false short-circuit", () => {
     expect(() => getBillingState()).toThrow(/not initialized/);
   });
 
-  it("does nothing when BILLING_ENABLED is missing (server-mode default = false)", async () => {
-    // v2.0.5: server is the default mode AND the default BILLING_ENABLED is
-    // false. A blank env stays a no-op until the operator runs the wizard.
+  it("initializes in client-mode when BILLING_ENABLED is missing (v2.0.7 — client-mode is the new default)", async () => {
+    // v2.0.7: default mode is client. With a blank env, loadBillingConfig
+    // returns billingMode=client + Railway default URL + enabled=true.
+    // initBillingPlugin takes the client-mode branch and stores state.
     const runtime = makeRuntime({});
+    await initBillingPlugin(runtime);
+
+    expect(isBillingStateInitialized()).toBe(true);
+    // No pool constructed (client-mode skips DB entirely).
+    expect(poolState.connectionString).toBeUndefined();
+    expect(migrateState.callCount).toBe(0);
+    const state = getBillingState();
+    expect(state.config.billingMode).toBe("client");
+  });
+
+  it("does nothing when BILLING_MODE=server and BILLING_ENABLED is missing (server-mode no-op)", async () => {
+    // Explicit server-mode with no BILLING_ENABLED → server default is false → no-op.
+    const runtime = makeRuntime({ BILLING_MODE: "server" });
     await initBillingPlugin(runtime);
 
     expect(isBillingStateInitialized()).toBe(false);

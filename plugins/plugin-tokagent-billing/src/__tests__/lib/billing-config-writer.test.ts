@@ -121,12 +121,11 @@ describe("writeBillingConfig", () => {
     expect(enabledIdx).toBe(lines.length - 1);
   });
 
-  it("writes BILLING_MODE=server (v2.0.5 — matches schema default, also overwrites any prior client-mode line)", async () => {
-    // Server-mode IS the schema default in v2.0.5, so this is the no-op-on-
-    // a-fresh-install case. The writer still writes it explicitly so that
-    // documentation in the config file reflects the operator's intent AND
-    // any prior BILLING_MODE=client line (from the client-mode disclosure)
-    // gets overwritten.
+  it("writes BILLING_MODE=server explicitly (v2.0.7 — server is opt-in, writer pins it to override the client default)", async () => {
+    // v2.0.7: client-mode is now the schema default, so the self-hosted wizard
+    // MUST pin BILLING_MODE=server explicitly so that (a) the config file
+    // reflects the operator's intent to self-host, and (b) the prior
+    // default BILLING_MODE=client (from the schema default) is overwritten.
     await writeBillingConfig(VALID_VALUES);
     const env = await readConfigEnv();
     expect(env.BILLING_MODE).toBe("server");

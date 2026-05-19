@@ -1,14 +1,15 @@
 /**
- * SETUP_BILLING conversational action (Phase 9, v2.0.5 self-hosted-first).
+ * SETUP_BILLING conversational action (Phase 9, v2.0.7 Railway-hosted-first).
  *
  * Triggered when the user asks the agent to "set up billing", "enable billing",
  * "configure payments", etc. The handler:
  *   1. Checks if billing is already initialized and asks to confirm reconfigure.
- *   2. By default replies with the server-mode (self-hosted) prompt sequence
- *      pointing at the setup panel, listing the 5 things the user needs.
- *   3. If the user mentions "gateway URL", "client mode", or pastes an
- *      http(s):// URL, branches to a single-question client-mode flow that
- *      persists BILLING_MODE=client + TOKAGENT_GATEWAY_URL.
+ *   2. By default replies with the client-mode (Railway-hosted gateway) story —
+ *      the new default in v2.0.7. Mentions the Railway URL and the setup panel.
+ *   3. If the user says "self-host" or "server-mode", branches to the 5-item
+ *      self-hosted wizard (Postgres, RPC, vault, PTON, operator key).
+ *   4. If the user mentions "gateway URL", "client mode", or pastes an
+ *      http(s):// URL, branches to the focused single-URL client-mode reply.
  *
  * Decision Z48: hybrid chat + side panel. The action responds with a short
  * message and a link to the setup panel. The panel itself is served at
@@ -34,10 +35,26 @@ function matchesBillingIntent(text: string): boolean {
 }
 
 /**
- * Detect whether the user wants to switch to client-mode. Triggers on
- * explicit phrasing ("gateway URL", "client mode") OR on the presence of
- * an http(s):// URL in the message — the user likely pasted the URL their
- * operator gave them.
+ * Detect whether the user wants to self-host (server-mode). Triggers on
+ * explicit phrasing ("self-host", "server mode", "my own billing server",
+ * "run billing myself", "own billing", etc.).
+ * v2.0.7: server-mode is no longer the default; it is the opt-in path.
+ */
+function looksLikeServerModeIntent(text: string): boolean {
+  if (/self[\s-]?host/i.test(text)) return true;
+  if (/server[\s-]?mode/i.test(text)) return true;
+  if (/my own billing/i.test(text)) return true;
+  if (/run.*billing.*myself/i.test(text)) return true;
+  if (/own billing server/i.test(text)) return true;
+  if (/host.*billing/i.test(text)) return true;
+  return false;
+}
+
+/**
+ * Detect whether the user explicitly wants to configure client-mode with
+ * a specific gateway URL (not the Railway default). Triggers on explicit
+ * phrasing ("gateway URL", "client mode") OR on the presence of an
+ * http(s):// URL in the message — the user likely pasted their operator's URL.
  */
 function looksLikeClientModeIntent(text: string): boolean {
   if (/gateway\s*url/i.test(text)) return true;
@@ -108,18 +125,41 @@ export const setupBillingAction: Action = {
       "31337";
     const setupPanelUrl = `http://localhost:${port}/v1/billing/setup-panel`;
 
-    // Branch on user intent. If the user has signalled client-mode (pasted a
-    // URL or mentioned "gateway URL" / "client mode"), give them the short
-    // single-question prompt. Otherwise default to the server-mode self-host
-    // wizard.
+    // Branch on user intent.
+    // v2.0.7: default is client-mode (Railway-hosted gateway).
+    // Server-mode (self-host) is the opt-in path, reachable by saying "self-host".
     const text = message.content?.text ?? "";
+    const RAILWAY_URL = "https://billing-service-production-a8e7.up.railway.app";
+
+    if (looksLikeServerModeIntent(text)) {
+      // User wants to self-host — give them the 5-item server-mode wizard.
+      await callback?.({
+        text:
+          `[Click here to open the billing setup panel](${setupPanelUrl})\n\n` +
+          `If the link doesn't open, copy it into your browser: ${setupPanelUrl}\n\n` +
+          "**Self-hosted (server-mode) setup** — you'll need:\n" +
+          "1. A Postgres connection string (any Postgres 14+ — local Docker, Supabase, Railway, RDS, your own server)\n" +
+          "2. Your chain RPC URL (Ethereum mainnet — free public endpoints like `https://eth.llamarpc.com` work)\n" +
+          "3. Your deployed ClaudeVault contract address (use the mainnet default or your own deploy)\n" +
+          "4. Your deployed PTON token address (use the mainnet default or your own deploy)\n" +
+          "5. An operator Ethereum private key (or click Generate in the panel — needs ~0.1 ETH for gas)\n\n" +
+          "The wizard also generates the HMAC auth secret for you. " +
+          "Once you submit the form, the billing plugin initializes automatically — " +
+          "no manual restart needed.",
+        action: "SETUP_BILLING",
+      } as Content);
+      return undefined;
+    }
+
     if (looksLikeClientModeIntent(text)) {
+      // User explicitly mentions a custom gateway URL or client-mode.
       await callback?.({
         text:
           "Client-mode setup: you connect to an existing tokagent-billing-server " +
-          "run by someone else.\n\n" +
-          "What gateway URL did your operator give you? Paste it as " +
-          "`https://billing.example.com` (the HTTPS URL of the server).\n\n" +
+          "run by an operator.\n\n" +
+          "**Default upstream**: `" + RAILWAY_URL + "` (the Tokamak-hosted Railway billing server).\n\n" +
+          "To use a custom gateway, set `BILLING_MODE=client` and " +
+          "`TOKAGENT_GATEWAY_URL=<your-operator-url>` in your `.env`.\n\n" +
           `Or open the setup panel at ${setupPanelUrl} and expand the ` +
           "**Already a client of a hosted billing server?** disclosure at the bottom — " +
           "submitting it persists `BILLING_MODE=client` + `TOKAGENT_GATEWAY_URL` to your `.env`.",
@@ -128,23 +168,19 @@ export const setupBillingAction: Action = {
       return undefined;
     }
 
-    // Default: server-mode (self-hosted) setup. Tokagent billing is
-    // self-hosted only — every operator runs their own billing server.
+    // Default: client-mode (Railway-hosted gateway). v2.0.7 — the out-of-the-box
+    // experience connects to the Tokamak Railway billing server automatically.
     await callback?.({
       text:
         `[Click here to open the billing setup panel](${setupPanelUrl})\n\n` +
         `If the link doesn't open, copy it into your browser: ${setupPanelUrl}\n\n` +
-        "You'll need:\n" +
-        "1. A Postgres connection string (any Postgres 14+ — local Docker, Supabase, Railway, RDS, your own server)\n" +
-        "2. Your chain RPC URL (Ethereum mainnet — free public endpoints like `https://eth.llamarpc.com` work)\n" +
-        "3. Your deployed ClaudeVault contract address (use the mainnet default or your own deploy)\n" +
-        "4. Your deployed PTON token address (use the mainnet default or your own deploy)\n" +
-        "5. An operator Ethereum private key (or click Generate in the panel — needs ~0.1 ETH for gas)\n\n" +
-        "The wizard also generates the HMAC auth secret for you. " +
-        "Once you submit the form, the billing plugin initializes automatically — " +
-        "no manual restart needed.\n\n" +
-        "Or, if you've been given a gateway URL by an operator, say " +
-        "\"I have a gateway URL\" to switch to client-mode.",
+        "**Billing is pre-configured to connect to the Tokamak-hosted gateway at:**\n" +
+        "`" + RAILWAY_URL + "`\n\n" +
+        "No local database or chain configuration needed — the Railway billing server handles " +
+        "on-chain settlement, credit storage, and PTON accounting on your behalf.\n\n" +
+        "To get started: open the setup panel above and connect your wallet to mint API keys.\n\n" +
+        "Want to self-host your own billing server instead? Say \"I want to self-host\" " +
+        "and I'll walk you through the server-mode setup.",
       action: "SETUP_BILLING",
     } as Content);
     return undefined;

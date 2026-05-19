@@ -22,20 +22,18 @@ import { getDashboardRoutes } from "./routes/dashboard-routes.js";
  * Detect the BILLING_MODE at module-load time. The Plugin.routes array is
  * static, so we MUST resolve the mode before the plugin object is exported.
  *
- * - Default: 'server' (v2.0.5 — self-hosted-first; a fresh install boots into
- *   server-mode with BILLING_ENABLED=false; the operator runs the 7-field
- *   setup wizard to opt in).
- * - 'client': operator explicitly opts into client-mode and supplies
- *   TOKAGENT_GATEWAY_URL pointing at the tokagent-billing-server they're a
- *   client of. Tokagent billing is self-hosted only — there is no default
- *   gateway URL.
+ * - Default: 'client' (v2.0.7 — Railway-hosted-first; a fresh install connects
+ *   to the Tokamak-hosted billing server at billing-service-production-a8e7.up.railway.app
+ *   by default. The operator overrides TOKAGENT_GATEWAY_URL to point at their
+ *   own server, or sets BILLING_MODE=server to self-host).
+ * - 'server': operator explicitly opts into self-hosting. Requires DB + chain
+ *   envs. The 7-field setup wizard is still available via /v1/billing/setup-panel.
  *
- * Any value other than the two known modes falls back to 'server' so the
- * plugin defaults to the safe, opt-in flow rather than silently trying to
- * forward to a missing URL.
+ * Any value other than the two known modes falls back to 'client' (the Railway
+ * default) so a fresh install works out of the box.
  */
 const BILLING_MODE: "server" | "client" =
-  process.env.BILLING_MODE === "client" ? "client" : "server";
+  process.env.BILLING_MODE === "server" ? "server" : "client";
 
 /**
  * v2.0.0: full billing plugin with lifecycle management + routes.
@@ -106,9 +104,9 @@ export const tokagentBillingPlugin: Plugin = {
   // Available in both modes — wizard branches on mode at run time.
   actions: [setupBillingAction],
   providers: [],
-  // Server-mode owns settlement workers. Client-mode skips them because the
-  // upstream gateway runs them; mounting them locally would race the gateway
-  // for nonces and double-charge.
+  // Server-mode owns settlement workers. Client-mode (default in v2.0.7) skips
+  // them because the upstream Railway gateway runs them; mounting them locally
+  // would race the gateway for nonces and double-charge.
   services:
     BILLING_MODE === "server"
       ? [

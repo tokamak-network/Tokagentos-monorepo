@@ -172,29 +172,30 @@ afterEach(async () => {
 // ---------------------------------------------------------------------------
 
 describe("BILLING_MODE=client config loading", () => {
-  it("throws when mode=client and TOKAGENT_GATEWAY_URL is unset (v2.0.5 self-hosted-first)", () => {
-    expect(() =>
-      loadBillingConfig({
-        BILLING_MODE: "client",
-      } as NodeJS.ProcessEnv),
-    ).toThrow(BillingConfigError);
-    expect(() =>
-      loadBillingConfig({
-        BILLING_MODE: "client",
-      } as NodeJS.ProcessEnv),
-    ).toThrow(/TOKAGENT_GATEWAY_URL/);
+  it("does NOT throw when mode=client and TOKAGENT_GATEWAY_URL is unset (v2.0.7 — Railway URL is the default)", () => {
+    // v2.0.7 default flip: TOKAGENT_GATEWAY_URL now defaults to the Railway-hosted
+    // billing server, so client-mode with no explicit URL is valid and uses Railway.
+    const c = loadBillingConfig({
+      BILLING_MODE: "client",
+    } as NodeJS.ProcessEnv);
+    expect(c.billingMode).toBe("client");
+    expect(c.gatewayUrl).toBe("https://billing-service-production-a8e7.up.railway.app");
   });
 
-  it("defaults billingMode to 'server' when not set (v2.0.5 default revert)", () => {
+  it("defaults billingMode to 'client' when not set (v2.0.7 — client-mode is the new default)", () => {
+    // v2.0.7 default flip: BILLING_MODE now defaults to 'client' (was 'server' in v2.0.5).
+    // A fresh install connects to the Railway-hosted billing server by default.
     const c = loadBillingConfig({} as NodeJS.ProcessEnv);
-    expect(c.billingMode).toBe("server");
-    // gatewayUrl is undefined in server-mode (no default)
-    expect(c.gatewayUrl).toBeUndefined();
+    expect(c.billingMode).toBe("client");
+    // gatewayUrl resolves to the Railway default when BILLING_MODE=client is the default
+    expect(c.gatewayUrl).toBe("https://billing-service-production-a8e7.up.railway.app");
   });
 
-  it("defaults BILLING_ENABLED=false in server-mode when unset (v2.0.5)", () => {
+  it("defaults BILLING_ENABLED=true in client-mode when unset (v2.0.7)", () => {
+    // v2.0.7: default mode is now client, so default BILLING_ENABLED is true
+    // (client-mode default = true; matches the mode-aware logic in loadBillingConfig).
     const c = loadBillingConfig({} as NodeJS.ProcessEnv);
-    expect(c.enabled).toBe(false);
+    expect(c.enabled).toBe(true);
   });
 
   it("defaults BILLING_ENABLED=true in client-mode when explicitly opted in + URL set", () => {
@@ -224,7 +225,8 @@ describe("BILLING_MODE=client config loading", () => {
     expect(c.gatewayTimeoutMs).toBe(30_000);
   });
 
-  it("explicit BILLING_MODE=server keeps the server-mode default for BILLING_ENABLED (false)", () => {
+  it("explicit BILLING_MODE=server selects server-mode with BILLING_ENABLED=false (v2.0.7 — server is opt-in)", () => {
+    // v2.0.7: server is no longer the default but still valid when set explicitly.
     const c = loadBillingConfig({
       BILLING_MODE: "server",
     } as NodeJS.ProcessEnv);

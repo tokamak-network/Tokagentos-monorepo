@@ -80,19 +80,20 @@ const BillingConfigSchema = z.object({
    *   - mode=client → TOKAGENT_GATEWAY_URL MUST be set explicitly
    *   - mode=server + BILLING_ENABLED=true → DB + chain envs MUST be set
    */
-  BILLING_MODE: z.enum(["server", "client"]).default("server"),
+  BILLING_MODE: z.enum(["server", "client"]).default("client"),
 
   /**
    * Base URL of the upstream tokagent-billing-server this client connects to.
    * Used when `BILLING_MODE=client`. Ignored when `BILLING_MODE=server`.
    *
-   * There is intentionally NO default — Tokagent billing is self-hosted
-   * only. Every operator runs their own billing server; if you've chosen
-   * client-mode, the operator of the server you're connecting to gave you
-   * the URL. Cross-validation throws at boot when mode=client and this is
-   * unset, with a clear message.
+   * Defaults to the Tokamak-hosted billing-server on Railway. Operators
+   * running their own gateway override via env. Setting BILLING_MODE=server
+   * makes this field ignored entirely (the local plugin IS the rail).
    */
-  TOKAGENT_GATEWAY_URL: z.string().url().optional(),
+  TOKAGENT_GATEWAY_URL: z
+    .string()
+    .url()
+    .default("https://billing-service-production-a8e7.up.railway.app"),
 
   /**
    * Per-request timeout in milliseconds for the gateway forwarder.
