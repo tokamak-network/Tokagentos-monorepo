@@ -33,13 +33,15 @@ COPY scripts/ ./scripts/
 COPY packages/billing/         ./packages/billing/
 COPY packages/agent/           ./packages/agent/
 COPY packages/app-core/        ./packages/app-core/
-COPY packages/native-plugins/  ./packages/native-plugins/
 COPY packages/shared/          ./packages/shared/
 COPY packages/typescript/      ./packages/typescript/
 COPY packages/schemas/         ./packages/schemas/
-COPY packages/scenario-runner/ ./packages/scenario-runner/
 COPY packages/ui/              ./packages/ui/
 COPY packages/tokagentos/      ./packages/tokagentos/
+# Skipped: packages/native-plugins and packages/scenario-runner — untracked
+# in git (only exist on dev disks). Nothing in the billing-server code path
+# imports either, and the workspace glob (packages/*) tolerates missing
+# directories at install time.
 COPY plugins/plugin-tokagent-billing/ ./plugins/plugin-tokagent-billing/
 
 # Only `app-companion` is committed to git in this repo (the other apps under
