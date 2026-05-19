@@ -29,6 +29,7 @@ import {
 } from "@tokagentos/billing";
 import { getBillingState, isBillingStateInitialized } from "../state.js";
 import { resolveBillingIdentity } from "../middleware/api-key-resolve.js";
+import { pickForward, forward, ensureClientReady } from "../lib/forward.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -276,15 +277,28 @@ async function handlePrice(
     return;
   }
 
-  // Prefer the live cache (Tokamak API / on-chain TWAP). Only fall back to
-  // the admin fixed override when the cache is empty — the wizard no longer
-  // exposes fixedTonUsd, so a stale env value should never shadow the live
-  // feed once at least one tick has populated the cache.
-  //
-  // Cold-cache path: TwapRefreshService ticks every 60s, so the first
-  // dashboard load after restart could land before the worker has run. Hit
-  // the Tokamak API inline as a one-shot warm-up so the user sees a real
-  // price on first paint instead of "—".
+  // 1. Priority override — operator-pinned price freeze.
+  //    `BILLING_FIXED_TON_USD` is env-only (not exposed in the setup wizard),
+  //    so anyone setting it has done so intentionally. We return it
+  //    immediately, bypassing all live sources. This is the emergency-freeze
+  //    path used during suspected oracle manipulation or in test/dev envs.
+  //    Same semantic as getCachedTonUsd step 1 — kept in sync so the route
+  //    behavior matches what the billing engine actually uses for charging.
+  if (config.fixedTonUsd !== undefined) {
+    res.status(200).json({
+      tonUsd: config.fixedTonUsd,
+      source: "fixed",
+      fetchedAt: null,
+      ageMs: null,
+    });
+    return;
+  }
+
+  // 2. Prefer the live cache (Tokamak API / on-chain TWAP).
+  //    Cold-cache path: TwapRefreshService ticks every 60s, so the first
+  //    dashboard load after restart could land before the worker has run.
+  //    Hit the Tokamak API inline as a one-shot warm-up so the user sees a
+  //    real price on first paint instead of "—".
   let snapshot = twapCache?.get() ?? null;
   if (!snapshot) {
     try {
@@ -292,7 +306,7 @@ async function handlePrice(
       twapCache?.set(live);
       snapshot = live;
     } catch {
-      // Live fetch failed — fall through to fixed/unavailable handling.
+      // Live fetch failed — fall through to unavailable handling.
     }
   }
   if (snapshot) {
@@ -301,16 +315,6 @@ async function handlePrice(
       source: snapshot.source,
       fetchedAt: snapshot.fetchedAt,
       ageMs: snapshot.ageMs,
-    });
-    return;
-  }
-
-  if (config.fixedTonUsd !== undefined) {
-    res.status(200).json({
-      tonUsd: config.fixedTonUsd,
-      source: "fixed",
-      fetchedAt: null,
-      ageMs: null,
     });
     return;
   }
@@ -345,3 +349,53 @@ export const estimateRoutes: Route[] = [
     handler: handlePrice,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Client-mode forwarders
+// ---------------------------------------------------------------------------
+
+function clientEstimateRoutes(): Route[] {
+  return [
+    {
+      type: "POST",
+      path: "/v1/estimate",
+      rawPath: true,
+      name: "billing-estimate",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.estimate.estimate(req.body),
+        );
+      },
+    },
+    {
+      type: "POST",
+      path: "/v1/messages/count_tokens",
+      rawPath: true,
+      name: "billing-count-tokens",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.estimate.countTokens(
+            pickForward(req),
+            req.body,
+          ),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/price",
+      rawPath: true,
+      name: "billing-price-debug",
+      handler: async (_req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () => getBillingState().gateway!.estimate.price());
+      },
+    },
+  ];
+}
+
+export function getEstimateRoutes(mode: "server" | "client"): Route[] {
+  return mode === "client" ? clientEstimateRoutes() : estimateRoutes;
+}

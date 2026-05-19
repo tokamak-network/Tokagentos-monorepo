@@ -25,22 +25,43 @@ import type {
   BillingConfig,
   TwapCache,
 } from "@tokagentos/billing";
+import type { GatewayProxy } from "./lib/gateway-proxy.js";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 export interface BillingPluginState {
-  pool: Pool;
-  db: BillingDatabase;
-  clients: BillingClients;
+  /**
+   * Postgres pool. Only populated in server-mode (config.billingMode='server').
+   * In client-mode the plugin owns no database.
+   */
+  pool?: Pool;
+  /**
+   * Drizzle-wrapped DB handle. Only populated in server-mode.
+   */
+  db?: BillingDatabase;
+  /**
+   * Viem chain clients (read + write). Only populated in server-mode.
+   */
+  clients?: BillingClients;
   config: BillingConfig;
   /**
    * TwapCache instance from TwapRefreshService, set once the service starts.
    * The billing gate reads this for the current TON/USD price.
-   * Optional: may be null if TwapRefreshService hasn't started yet.
+   * Only populated in server-mode (TwapRefreshService is not registered in
+   * client-mode).
    */
   twapCache?: TwapCache;
+  /**
+   * Typed HTTPS forwarder pointing at the upstream tokagent gateway.
+   * Only populated when config.billingMode === 'client'.
+   *
+   * In client-mode, every plugin route resolves through this object
+   * (e.g. `state.gateway.credits.me(headers)`) and returns the upstream
+   * response verbatim.
+   */
+  gateway?: GatewayProxy;
 }
 
 // ---------------------------------------------------------------------------
@@ -93,7 +114,10 @@ export async function clearBillingState(): Promise<void> {
   if (_state) {
     const pool = _state.pool;
     _state = null;
-    await pool.end();
+    // pool is only present in server-mode; client-mode never creates one.
+    if (pool) {
+      await pool.end();
+    }
   }
 }
 
@@ -115,4 +139,50 @@ export function registerTwapCache(cache: TwapCache): void {
  */
 export function isBillingStateInitialized(): boolean {
   return _state !== null;
+}
+
+// ---------------------------------------------------------------------------
+// Mode-specific narrowed state helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Server-mode shape of the billing state — `pool`, `db`, and `clients`
+ * are guaranteed non-null. Use this in route handlers that only run in
+ * server-mode (the mode check is enforced by `getServerBillingState()`).
+ */
+export interface ServerBillingState
+  extends Omit<BillingPluginState, "pool" | "db" | "clients" | "gateway"> {
+  pool: NonNullable<BillingPluginState["pool"]>;
+  db: NonNullable<BillingPluginState["db"]>;
+  clients: NonNullable<BillingPluginState["clients"]>;
+  /** Always undefined in server-mode. */
+  gateway?: undefined;
+}
+
+/**
+ * Get the billing state narrowed to server-mode. Throws when called in
+ * client-mode or before init. The cast is safe because server-mode
+ * `initBillingPlugin` populates pool/db/clients before `setBillingState`.
+ *
+ * Existing server-mode route handlers call this in place of
+ * `getBillingState()` to get a non-null `db`/`clients`/`pool` without
+ * scattering non-null assertions.
+ */
+export function getServerBillingState(): ServerBillingState {
+  const s = getBillingState();
+  // Treat undefined billingMode (e.g. legacy test fixtures that omit the
+  // field) as server-mode for backwards compatibility. Only 'client' is
+  // rejected.
+  if (s.config.billingMode === "client") {
+    throw new Error(
+      "getServerBillingState() called in client-mode. " +
+        "Use getBillingState().gateway in client-mode.",
+    );
+  }
+  if (!s.db || !s.pool || !s.clients) {
+    throw new Error(
+      "Server-mode billing state missing pool/db/clients — initBillingPlugin did not run",
+    );
+  }
+  return s as ServerBillingState;
 }

@@ -18,8 +18,13 @@ import {
   listApiKeys,
   revokeApiKey,
 } from "@tokagentos/billing";
-import { getBillingState, isBillingStateInitialized } from "../state.js";
+import {
+  getBillingState,
+  getServerBillingState,
+  isBillingStateInitialized,
+} from "../state.js";
 import { resolveBillingIdentity } from "../middleware/api-key-resolve.js";
+import { pickForward, forward, ensureClientReady } from "../lib/forward.js";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -54,7 +59,7 @@ async function handleMintKey(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -102,7 +107,7 @@ async function handleListKeys(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -133,7 +138,7 @@ async function handleRevokeKey(
   _runtime: IAgentRuntime,
 ): Promise<void> {
   if (!isBillingStateInitialized()) return billingUnavailable(res);
-  const { db, config } = getBillingState();
+  const { db, config } = getServerBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
   const identity = await resolveBillingIdentity(toIncomingMessage(req));
@@ -190,3 +195,55 @@ export const keysRoutes: Route[] = [
     handler: handleRevokeKey,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Client-mode forwarders
+// ---------------------------------------------------------------------------
+
+function clientKeysRoutes(): Route[] {
+  return [
+    {
+      type: "POST",
+      path: "/v1/keys",
+      rawPath: true,
+      name: "billing-keys-mint",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        const body = (req.body ?? {}) as { name?: string };
+        await forward(res, () =>
+          getBillingState().gateway!.keys.create(pickForward(req), body),
+        );
+      },
+    },
+    {
+      type: "GET",
+      path: "/v1/keys",
+      rawPath: true,
+      name: "billing-keys-list",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        await forward(res, () =>
+          getBillingState().gateway!.keys.list(pickForward(req)),
+        );
+      },
+    },
+    {
+      type: "DELETE",
+      path: "/v1/keys/:id",
+      rawPath: true,
+      name: "billing-keys-revoke",
+      handler: async (req, res) => {
+        if (!ensureClientReady(res)) return;
+        const id =
+          typeof req.params?.["id"] === "string" ? req.params["id"] : "";
+        await forward(res, () =>
+          getBillingState().gateway!.keys.delete(pickForward(req), id),
+        );
+      },
+    },
+  ];
+}
+
+export function getKeysRoutes(mode: "server" | "client"): Route[] {
+  return mode === "client" ? clientKeysRoutes() : keysRoutes;
+}

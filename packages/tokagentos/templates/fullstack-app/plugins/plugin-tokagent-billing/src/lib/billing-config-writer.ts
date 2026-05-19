@@ -216,6 +216,15 @@ export async function writeBillingConfig(values: BillingSetupValues): Promise<vo
   }
 
   try {
+    // ---- Mode pin (v2.0.5) ----
+    // Server-mode IS the schema default, so we don't strictly need to pin it.
+    // We still write BILLING_MODE=server explicitly so that:
+    //   (a) anyone reading the config file sees the operator's intent, and
+    //   (b) if the user previously opted into client-mode via the disclosure
+    //       and is now switching back, the prior BILLING_MODE=client line is
+    //       overwritten rather than left dangling.
+    await writeOne("BILLING_MODE", "server");
+
     // ---- Non-secret envs ----
     await writeOne("BILLING_DATABASE_URL", values.databaseUrl);
     await writeOne("BILLING_CHAIN_RPC_URL", values.chainRpcUrl);
@@ -257,6 +266,7 @@ export async function writeBillingConfig(values: BillingSetupValues): Promise<vo
 export async function clearBillingConfig(): Promise<void> {
   const persist = await getPersistFn();
   const BILLING_KEYS = [
+    "BILLING_MODE",
     "BILLING_ENABLED",
     "BILLING_DATABASE_URL",
     "BILLING_CHAIN_RPC_URL",

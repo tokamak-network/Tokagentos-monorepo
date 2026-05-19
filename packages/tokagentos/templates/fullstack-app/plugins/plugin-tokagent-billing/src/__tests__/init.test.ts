@@ -114,9 +114,12 @@ function makeRuntime(env: Record<string, string | undefined>): IAgentRuntime {
   } as unknown as IAgentRuntime;
 }
 
-/** Minimum env required for a successful BILLING_ENABLED=true boot. */
+/** Minimum env required for a successful server-mode BILLING_ENABLED=true boot. */
 function fullEnabledEnv(overrides: Record<string, string | undefined> = {}): Record<string, string | undefined> {
   return {
+    // v2.0.5 default mode is `server`. Pinning BILLING_MODE=server explicitly
+    // is redundant with the default but documents intent for these tests.
+    BILLING_MODE: "server",
     BILLING_ENABLED: "true",
     BILLING_AUTH_REQUIRED: "true",
     BILLING_AUTH_SECRET: "test-secret-for-init",
@@ -156,8 +159,13 @@ afterEach(async () => {
 // ---------------------------------------------------------------------------
 
 describe("initBillingPlugin — BILLING_ENABLED=false short-circuit", () => {
-  it("does nothing when billing is disabled (no pool, no state)", async () => {
-    const runtime = makeRuntime({ BILLING_ENABLED: "false" });
+  it("does nothing when billing is disabled in server-mode (no pool, no state)", async () => {
+    // v2.0.5: default mode is server. With BILLING_ENABLED=false the plugin
+    // is a no-op — no pool, no migrations, no state.
+    const runtime = makeRuntime({
+      BILLING_MODE: "server",
+      BILLING_ENABLED: "false",
+    });
     await initBillingPlugin(runtime);
 
     expect(isBillingStateInitialized()).toBe(false);
@@ -166,8 +174,10 @@ describe("initBillingPlugin — BILLING_ENABLED=false short-circuit", () => {
     expect(() => getBillingState()).toThrow(/not initialized/);
   });
 
-  it("does nothing when BILLING_ENABLED is missing (defaults to false)", async () => {
-    const runtime = makeRuntime({}); // no settings at all
+  it("does nothing when BILLING_ENABLED is missing (server-mode default = false)", async () => {
+    // v2.0.5: server is the default mode AND the default BILLING_ENABLED is
+    // false. A blank env stays a no-op until the operator runs the wizard.
+    const runtime = makeRuntime({});
     await initBillingPlugin(runtime);
 
     expect(isBillingStateInitialized()).toBe(false);

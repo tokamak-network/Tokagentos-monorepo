@@ -36,6 +36,7 @@ import {
   isBillingStateInitialized,
   getBillingState,
 } from "./state.js";
+import { createGatewayProxy } from "./lib/gateway-proxy.js";
 
 const log = logger.child({ src: "billing:init" });
 
@@ -44,6 +45,10 @@ const log = logger.child({ src: "billing:init" });
 // loadBillingConfig() as a NodeJS.ProcessEnv-shaped object.
 // ---------------------------------------------------------------------------
 const BILLING_KEYS = [
+  // v2.0.0 mode toggle
+  "BILLING_MODE",
+  "TOKAGENT_GATEWAY_URL",
+  "TOKAGENT_GATEWAY_TIMEOUT_MS",
   "BILLING_ENABLED",
   "BILLING_AUTH_REQUIRED",
   "BILLING_AUTH_SECRET",
@@ -116,21 +121,23 @@ function buildEnv(runtime: IAgentRuntime): NodeJS.ProcessEnv {
 /**
  * Resolve the Drizzle migrations folder.
  *
- * The authoritative migrations live in `packages/billing/drizzle/migrations/`.
- * When running from the workspace (Bun's source-import mode), `import.meta.url`
- * points to this file at `plugins/plugin-tokagent-billing/src/init.ts`, so we
- * walk up 3 levels (src → plugin-tokagent-billing → plugins → workspace root)
- * then descend into `packages/billing/drizzle/migrations`.
+ * The authoritative migrations live in `packages/billing/drizzle/migrations/`
+ * and are copied into `dist/drizzle/migrations/` by the billing build script
+ * so they ship inside the published tarball (see packages/billing/build.ts
+ * and the `drizzle` entry in packages/billing/package.json `files`).
  *
- * TODO(phase-8): derive path from `require.resolve('@tokagentos/billing/package.json')`
- * for published-package robustness.
+ * Resolution strategy:
+ *   1. Preferred — `require.resolve('@tokagentos/billing/package.json')` then
+ *      descend into `drizzle/migrations`. Works in the workspace (resolves to
+ *      `packages/billing/`) AND in installed packages (resolves to
+ *      `node_modules/@tokagentos/billing/dist/`, where the build step
+ *      placed `drizzle/migrations`).
+ *   2. Fallback — walk up the source-import layout. Used only in tests or
+ *      environments where the package.json export map is unavailable.
  */
 function resolveMigrationsFolder(): string {
   const thisFile = fileURLToPath(import.meta.url);
 
-  // Preferred: resolve `@tokagentos/billing/package.json` from the plugin's
-  // module context — works for publisher monorepo, scaffolded apps, and any
-  // future packaging where the billing lib path moves.
   try {
     const req = createRequire(thisFile);
     const pkgPath = req.resolve("@tokagentos/billing/package.json");
@@ -166,6 +173,32 @@ export async function initBillingPlugin(runtime: IAgentRuntime): Promise<void> {
   const env = buildEnv(runtime);
   const config = loadBillingConfig(env);
 
+  // ---- v2.0.0 CLIENT MODE BRANCH -----------------------------------------
+  // Pure HTTPS forwarder pointing at the upstream gateway. No Pool, no
+  // migrations, no chain clients, no workers. Routes pull state.gateway and
+  // proxy each request verbatim.
+  if (config.billingMode === "client") {
+    if (!config.gatewayUrl) {
+      // Cross-validation in loadBillingConfig should have prevented this,
+      // but guard defensively — a missing URL would silently 502 every
+      // request rather than failing at boot.
+      throw new Error(
+        "BILLING_MODE=client requires TOKAGENT_GATEWAY_URL — refusing to boot",
+      );
+    }
+    const gateway = createGatewayProxy({
+      baseUrl: config.gatewayUrl,
+      timeoutMs: config.gatewayTimeoutMs,
+    });
+    setBillingState({ config, gateway });
+    log.info(
+      { gatewayUrl: config.gatewayUrl, billingMode: "client" },
+      "billing plugin initialized in CLIENT mode — forwarding to upstream gateway",
+    );
+    return;
+  }
+
+  // ---- SERVER MODE (default, back-compat) --------------------------------
   // Decision Z31: billing is off by default. No-op when disabled.
   if (!config.enabled) {
     log.info(
@@ -175,7 +208,7 @@ export async function initBillingPlugin(runtime: IAgentRuntime): Promise<void> {
     return;
   }
 
-  log.info("billing plugin initializing");
+  log.info("billing plugin initializing in SERVER mode");
 
   // ---- 1. Construct pg Pool + probe connectivity ----
   const pool = new Pool({ connectionString: config.databaseUrl });

@@ -250,3 +250,218 @@ export const setupRoutes: Route[] = [
     handler: handleSetup,
   },
 ];
+
+// ---------------------------------------------------------------------------
+// Client-mode setup routes
+// ---------------------------------------------------------------------------
+//
+// In BILLING_MODE=client the wizard collects ONE value: the gateway URL
+// (and an optional timeout). No DB, no chain config, no operator key.
+// We expose `/v1/billing/validate` and `/v1/billing/setup` with the same
+// public unauth contract — but client-mode validators accept a tiny shape.
+
+async function handleClientSetup(
+  req: RouteRequest,
+  res: RouteResponse,
+  runtime: IAgentRuntime,
+): Promise<void> {
+  if (!setupEnabled()) return setupDisabled(res);
+  const body = req.body as
+    | { gatewayUrl?: string; timeoutMs?: number }
+    | undefined;
+  if (!body) {
+    res.status(400).json({ error: "Request body is required." });
+    return;
+  }
+  const url = typeof body.gatewayUrl === "string" ? body.gatewayUrl.trim() : "";
+  if (!url) {
+    res
+      .status(400)
+      .json({ error: "Missing required field: gatewayUrl (HTTPS URL of the upstream gateway)" });
+    return;
+  }
+  try {
+    new URL(url);
+  } catch {
+    res.status(422).json({
+      ok: false,
+      errors: { gatewayUrl: "gatewayUrl must be a valid URL" },
+    });
+    return;
+  }
+
+  // Persist + re-init. Setup writer is server-shaped, but the persistence
+  // primitives (config.env + .env mirror) are mode-agnostic. We bypass the
+  // full writeBillingConfig helper and write the two keys directly here so
+  // we never accidentally trigger BILLING_ENABLED=true for client-mode.
+  try {
+    const { persistKey } = await loadPersistKey();
+    await persistKey("BILLING_MODE", "client");
+    await persistKey("TOKAGENT_GATEWAY_URL", url);
+    if (typeof body.timeoutMs === "number" && body.timeoutMs > 0) {
+      await persistKey("TOKAGENT_GATEWAY_TIMEOUT_MS", String(body.timeoutMs));
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    log.error({ err }, "client-mode billing setup: persist failed");
+    res.status(500).json({ error: `Failed to persist gateway config: ${msg}` });
+    return;
+  }
+
+  // In-process re-init so the plugin starts forwarding immediately.
+  try {
+    if (isBillingStateInitialized()) {
+      await disposeBillingPlugin();
+    }
+    await initBillingPlugin(runtime);
+    log.info({ url }, "client-mode billing setup complete — forwarder online");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    log.error({ err }, "client-mode billing setup: re-init failed");
+    res.status(207).json({
+      ok: false,
+      persisted: true,
+      restarted: false,
+      error: `Config saved but re-init failed: ${msg}. Restart the agent to pick up the new config.`,
+    });
+    return;
+  }
+
+  res.status(200).json({
+    ok: true,
+    persisted: true,
+    restarted: true,
+    mode: "client",
+    gatewayUrl: url,
+    message:
+      "Client-mode billing is now active — every /v1/* request will forward " +
+      "to the configured gateway.",
+  });
+}
+
+async function handleClientValidate(
+  req: RouteRequest,
+  res: RouteResponse,
+  _runtime: IAgentRuntime,
+): Promise<void> {
+  if (!setupEnabled()) return setupDisabled(res);
+  const body = req.body as { gatewayUrl?: string } | undefined;
+  if (!body) {
+    res.status(400).json({ error: "Request body is required." });
+    return;
+  }
+  if (body.gatewayUrl !== undefined) {
+    try {
+      new URL(body.gatewayUrl);
+    } catch {
+      res.status(422).json({
+        ok: false,
+        errors: { gatewayUrl: "gatewayUrl must be a valid URL" },
+      });
+      return;
+    }
+  }
+  res.status(200).json({ ok: true });
+}
+
+/**
+ * Minimal persist helper. Avoids dragging the full writeBillingConfig
+ * machinery (which assumes server-mode keys + rollback semantics) into the
+ * single-key client-mode path.
+ */
+async function loadPersistKey(): Promise<{
+  persistKey: (key: string, value: string) => Promise<void>;
+}> {
+  // Reuse the same config.env + .env mirror logic by going through the
+  // writeBillingConfig module's exported `clearBillingConfig` import path.
+  // The writer module already exports its own persistence shape; we
+  // duplicate the minimal surface here for clarity.
+  const fs = await import("node:fs/promises");
+  const fsSync = await import("node:fs");
+  const pathMod = await import("node:path");
+  const os = await import("node:os");
+
+  function resolveConfigEnvPath(): string {
+    const stateDir =
+      process.env.TOKAGENT_STATE_DIR?.trim() ||
+      pathMod.join(os.homedir(), ".tokagent");
+    return pathMod.join(stateDir, "config.env");
+  }
+
+  function resolveProjectDotenv(): string | null {
+    try {
+      const c = pathMod.join(process.cwd(), ".env");
+      fsSync.accessSync(c);
+      return c;
+    } catch {
+      return null;
+    }
+  }
+
+  async function writeOne(
+    filePath: string,
+    key: string,
+    value: string,
+    mode: number,
+  ): Promise<void> {
+    await fs.mkdir(pathMod.dirname(filePath), { recursive: true });
+    let existing = "";
+    try {
+      existing = await fs.readFile(filePath, "utf8");
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== "ENOENT") throw err;
+    }
+    const lines = existing ? existing.split(/\r?\n/) : [];
+    if (lines.length && lines[lines.length - 1] === "") lines.pop();
+    const filtered = lines.filter((line) => {
+      const eq = line.indexOf("=");
+      if (eq <= 0) return true;
+      return line.slice(0, eq).trim() !== key;
+    });
+    if (value !== "") filtered.push(`${key}=${value}`);
+    const tmp = `${filePath}.setup.tmp`;
+    await fs.writeFile(tmp, `${filtered.join("\n")}\n`, {
+      encoding: "utf8",
+      mode,
+    });
+    await fs.rename(tmp, filePath);
+    try {
+      await fs.chmod(filePath, mode);
+    } catch {
+      /* non-fatal */
+    }
+  }
+
+  return {
+    persistKey: async (key, value) => {
+      await writeOne(resolveConfigEnvPath(), key, value, 0o600);
+      const dot = resolveProjectDotenv();
+      if (dot) await writeOne(dot, key, value, 0o600);
+      process.env[key] = value;
+    },
+  };
+}
+
+export function getSetupRoutes(mode: "server" | "client"): Route[] {
+  if (mode === "client") {
+    return [
+      {
+        type: "POST",
+        path: "/v1/billing/validate",
+        rawPath: true,
+        public: true,
+        name: "billing-setup-validate",
+        handler: handleClientValidate,
+      },
+      {
+        type: "POST",
+        path: "/v1/billing/setup",
+        rawPath: true,
+        public: true,
+        name: "billing-setup",
+        handler: handleClientSetup,
+      },
+    ];
+  }
+  return setupRoutes;
+}

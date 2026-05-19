@@ -60,18 +60,71 @@ const hexPrivateKey = z
 // ---------------------------------------------------------------------------
 
 const BillingConfigSchema = z.object({
+  // ---- v2.0.0 client/server mode toggle ----
+
+  /**
+   * Billing mode for the plugin instance.
+   *
+   *   - `server` (default — v2.0.5): this instance owns the Postgres database,
+   *     runs on-chain settlement workers, and exposes the full billing API
+   *     directly. A fresh tokagentos install boots into server-mode with
+   *     BILLING_ENABLED=false; the operator opts in by running the 7-field
+   *     setup wizard.
+   *   - `client`: this instance is a pure HTTPS forwarder pointing at
+   *     `TOKAGENT_GATEWAY_URL` (REQUIRED — there is no default; the operator
+   *     of the billing server you're connecting to must provide the URL).
+   *     It owns NO database, runs NO workers, and all /v1/* routes proxy to
+   *     the upstream server.
+   *
+   * Cross-validation in `loadBillingConfig` enforces:
+   *   - mode=client → TOKAGENT_GATEWAY_URL MUST be set explicitly
+   *   - mode=server + BILLING_ENABLED=true → DB + chain envs MUST be set
+   */
+  BILLING_MODE: z.enum(["server", "client"]).default("server"),
+
+  /**
+   * Base URL of the upstream tokagent-billing-server this client connects to.
+   * Used when `BILLING_MODE=client`. Ignored when `BILLING_MODE=server`.
+   *
+   * There is intentionally NO default — Tokagent billing is self-hosted
+   * only. Every operator runs their own billing server; if you've chosen
+   * client-mode, the operator of the server you're connecting to gave you
+   * the URL. Cross-validation throws at boot when mode=client and this is
+   * unset, with a clear message.
+   */
+  TOKAGENT_GATEWAY_URL: z.string().url().optional(),
+
+  /**
+   * Per-request timeout in milliseconds for the gateway forwarder.
+   * Default: 30_000 (30 seconds). Used only in client-mode.
+   */
+  TOKAGENT_GATEWAY_TIMEOUT_MS: positiveNumFromEnv(30_000),
+
   // ---- Phase 6: feature gate + auth + rate-limit + LiteLLM proxy ----
 
   /**
-   * Master feature flag. When false (default), the billing gate is disabled:
-   * all LLM requests pass through without deductions, and auth routes return
-   * 503. Flipping this to true requires BILLING_DATABASE_URL and the
-   * chain-write layer to also be configured (Decision Z31).
+   * Master feature flag.
+   *
+   * Default behavior (v2.0.5 — self-hosted-first):
+   *   - In `BILLING_MODE=server` (the default mode): when unset, defaults to
+   *     `false`. Server-mode requires DB + chain envs, so the operator must
+   *     explicitly opt in by running the setup wizard, which sets
+   *     BILLING_ENABLED=true after persisting all required envs.
+   *   - In `BILLING_MODE=client`: when unset, defaults to `true`. A user
+   *     who has explicitly opted into client-mode and supplied
+   *     TOKAGENT_GATEWAY_URL wants billing on.
+   *
+   * Explicit values (`true` / `false`) always win over the mode-aware default.
+   * The actual resolution happens in `loadBillingConfig` after the mode is
+   * known. Here we transform to `undefined | boolean` so the loader can tell
+   * "operator left it unset" apart from "operator explicitly set false."
    */
   BILLING_ENABLED: z
     .string()
     .optional()
-    .transform((v) => v === "true"),
+    .transform((v) =>
+      v === undefined || v === "" ? undefined : v === "true",
+    ),
 
   /**
    * Whether auth (x-api-key / Bearer JWT) is required on gated paths.
@@ -244,7 +297,8 @@ const BillingConfigSchema = z.object({
     .optional(),
 
   /**
-   * Postgres connection URL for the billing ledger.
+   * Postgres connection URL for the billing ledger. Any Postgres 14+ works
+   * (Supabase, Railway, AWS RDS, your own server, or local Docker for dev).
    * Required when BILLING_ENABLED=true. The plugin service layer constructs a
    * `pg.Pool` from this at start time (Decision Z23). Validated as a URL at
    * boot via Zod, so typos like `BILLING_DATABSE_URL` surface as a
@@ -349,11 +403,30 @@ export function loadBillingConfig(
 ) {
   const raw = BillingConfigSchema.parse(env);
 
-  // ---- Phase 6: BILLING_ENABLED cross-validation ----
-  const enabled = raw.BILLING_ENABLED ?? false;
+  // ---- v2.0.5: BILLING_MODE cross-validation (self-hosted-first) ----
+  // Mode=client: the plugin is a pure HTTPS forwarder pointing at an
+  // operator-provided billing server. TOKAGENT_GATEWAY_URL has NO default —
+  // Tokagent billing is self-hosted only, so we cannot ship a default URL.
+  // Throw at boot if client-mode is chosen without a URL.
+  const billingMode = raw.BILLING_MODE;
+  if (billingMode === "client" && !raw.TOKAGENT_GATEWAY_URL) {
+    throw new BillingConfigError(
+      "BILLING_MODE=client requires TOKAGENT_GATEWAY_URL — set it to the URL of the tokagent-billing-server you're a client of",
+    );
+  }
+
+  // ---- Phase 6: BILLING_ENABLED cross-validation (server-mode only) ----
+  // Mode-aware default (v2.0.5 — self-hosted-first):
+  //   - server-mode (default): default false when unset (Decision Z31 —
+  //     operator must explicitly opt in because DB + chain envs are required).
+  //   - client-mode: default true when unset. A user who has explicitly opted
+  //     into client-mode and supplied TOKAGENT_GATEWAY_URL wants billing on.
+  // Explicit BILLING_ENABLED=true/false always wins.
+  const enabled =
+    raw.BILLING_ENABLED ?? (billingMode === "client" ? true : false);
   const authRequired = raw.BILLING_AUTH_REQUIRED;
 
-  if (enabled) {
+  if (enabled && billingMode === "server") {
     // Chain-write and DB fields are required when billing is enabled.
     if (!raw.BILLING_DATABASE_URL) {
       throw new BillingConfigError(
@@ -453,6 +526,11 @@ export function loadBillingConfig(
       : undefined;
 
   return {
+    // ---- v2.0.0: client/server mode + gateway URL ----
+    billingMode,
+    gatewayUrl: raw.TOKAGENT_GATEWAY_URL,
+    gatewayTimeoutMs: raw.TOKAGENT_GATEWAY_TIMEOUT_MS,
+
     // ---- Phase 6: feature gate + auth + rate-limit + LiteLLM ----
     enabled,
     authRequired,

@@ -80,7 +80,11 @@ describe("setupBillingAction.validate", () => {
 });
 
 describe("setupBillingAction.handler", () => {
-  it("replies with setup instructions when billing is not initialized", async () => {
+  it("replies with default server-mode (self-hosted) wizard when billing is not initialized (v2.0.5)", async () => {
+    // v2.0.5 default: server-mode self-hosted. The wizard lists the 5 things
+    // the operator needs (Postgres, RPC, vault, PTON, operator key), links the
+    // setup panel, and offers a "say 'I have a gateway URL'" hint to switch
+    // to client-mode.
     billingStateMock.initialized = false;
     const replies: string[] = [];
     await setupBillingAction.handler!(
@@ -91,8 +95,59 @@ describe("setupBillingAction.handler", () => {
       async (response: Content) => { replies.push(String(response.text ?? "")); return []; },
     );
     expect(replies.length).toBe(1);
-    expect(replies[0]).toMatch(/billing setup/i);
     expect(replies[0]).toMatch(/setup-panel/i);
+    expect(replies[0]).toMatch(/ClaudeVault/i);
+    expect(replies[0]).toMatch(/Postgres/i);
+    expect(replies[0]).toMatch(/Operator/i);
+    // Includes the gateway-URL escape hatch hint.
+    expect(replies[0]).toMatch(/gateway URL/i);
+  });
+
+  it("branches to client-mode reply when user says 'gateway URL'", async () => {
+    billingStateMock.initialized = false;
+    const replies: string[] = [];
+    await setupBillingAction.handler!(
+      makeRuntime({ SERVER_PORT: "2138" }),
+      makeMessage("I have a gateway URL from my operator"),
+      undefined,
+      undefined,
+      async (response: Content) => { replies.push(String(response.text ?? "")); return []; },
+    );
+    expect(replies.length).toBe(1);
+    expect(replies[0]).toMatch(/Client-mode/i);
+    expect(replies[0]).toMatch(/billing\.example\.com/i);
+    expect(replies[0]).toMatch(/BILLING_MODE=client/);
+  });
+
+  it("branches to client-mode reply when user pastes an http(s) URL", async () => {
+    billingStateMock.initialized = false;
+    const replies: string[] = [];
+    await setupBillingAction.handler!(
+      makeRuntime({ SERVER_PORT: "2138" }),
+      makeMessage("set up billing pointing at https://billing.acme.com please"),
+      undefined,
+      undefined,
+      async (response: Content) => { replies.push(String(response.text ?? "")); return []; },
+    );
+    expect(replies.length).toBe(1);
+    expect(replies[0]).toMatch(/Client-mode/i);
+    expect(replies[0]).toMatch(/TOKAGENT_GATEWAY_URL/);
+  });
+
+  it("server-mode reply is the same whether BILLING_MODE=server is set explicitly or not (server is default)", async () => {
+    billingStateMock.initialized = false;
+    const replies: string[] = [];
+    await setupBillingAction.handler!(
+      makeRuntime({ SERVER_PORT: "2138", BILLING_MODE: "server" }),
+      makeMessage("set up billing"),
+      undefined,
+      undefined,
+      async (response: Content) => { replies.push(String(response.text ?? "")); return []; },
+    );
+    expect(replies.length).toBe(1);
+    expect(replies[0]).toMatch(/setup-panel/i);
+    expect(replies[0]).toMatch(/ClaudeVault/i);
+    expect(replies[0]).toMatch(/Postgres/i);
   });
 
   it("informs user billing is already active when initialized", async () => {

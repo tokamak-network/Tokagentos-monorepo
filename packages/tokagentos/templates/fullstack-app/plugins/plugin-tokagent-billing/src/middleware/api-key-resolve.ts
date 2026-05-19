@@ -61,11 +61,15 @@ function bearerToken(req: IncomingMessage): string | null {
 export async function resolveBillingIdentity(
   req: IncomingMessage,
 ): Promise<BillingIdentity | null> {
-  const { db, config } = getBillingState();
+  const state = getBillingState();
+  const config = state.config;
+  const db = state.db;
 
   // Safety: if authSecret is not configured (billing-disabled path should not
-  // reach here, but guard anyway) skip resolution.
+  // reach here, but guard anyway) skip resolution. In client-mode there is
+  // no local DB and no local auth — the gateway enforces auth.
   if (!config.authSecret) return null;
+  if (!db) return null;
   const authSecret = config.authSecret;
 
   // ---- 1. x-api-key: sk-ai-* ----

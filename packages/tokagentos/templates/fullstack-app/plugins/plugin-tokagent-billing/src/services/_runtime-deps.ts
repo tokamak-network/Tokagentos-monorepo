@@ -43,7 +43,10 @@ import {
   type BillingDatabase,
   schema,
 } from "@tokagentos/billing";
-import { isBillingStateInitialized, getBillingState } from "../state.js";
+import {
+  isBillingStateInitialized,
+  getServerBillingState,
+} from "../state.js";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -88,8 +91,9 @@ export async function resolveBillingRuntime(
   runtime: IAgentRuntime,
 ): Promise<BillingRuntimeDeps> {
   // ---- Phase 6: use shared singleton if Plugin.init has run ----
+  // Services are server-mode only — in client-mode they are not registered.
   if (isBillingStateInitialized()) {
-    const { db, clients, config } = getBillingState();
+    const { db, clients, config } = getServerBillingState();
     return {
       db,
       clients,
