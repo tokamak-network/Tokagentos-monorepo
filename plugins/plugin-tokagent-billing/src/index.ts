@@ -22,29 +22,33 @@ import { getDashboardRoutes } from "./routes/dashboard-routes.js";
  * Detect the BILLING_MODE at module-load time. The Plugin.routes array is
  * static, so we MUST resolve the mode before the plugin object is exported.
  *
- * - Default: 'client' (v2.1.0 — a fresh install boots into a working client
- *   that forwards to `https://gateway.tokagent.ai`).
- * - 'server': operator explicitly self-hosts the billing rail (DB + chain +
- *   operator key required). Opted into via the setup wizard's
- *   "Advanced: self-host" disclosure, which persists BILLING_MODE=server.
+ * - Default: 'server' (v2.0.5 — self-hosted-first; a fresh install boots into
+ *   server-mode with BILLING_ENABLED=false; the operator runs the 7-field
+ *   setup wizard to opt in).
+ * - 'client': operator explicitly opts into client-mode and supplies
+ *   TOKAGENT_GATEWAY_URL pointing at the tokagent-billing-server they're a
+ *   client of. Tokagent billing is self-hosted only — there is no default
+ *   gateway URL.
  *
- * Any value other than the two known modes falls back to 'client' so a typo
- * never silently drops the plugin into a state that requires DB envs to boot.
+ * Any value other than the two known modes falls back to 'server' so the
+ * plugin defaults to the safe, opt-in flow rather than silently trying to
+ * forward to a missing URL.
  */
 const BILLING_MODE: "server" | "client" =
-  process.env.BILLING_MODE === "server" ? "server" : "client";
+  process.env.BILLING_MODE === "client" ? "client" : "server";
 
 /**
  * v2.0.0: full billing plugin with lifecycle management + routes.
  *
  * Modes:
- *   server (default) — owns Neon, runs settlement workers, exposes the full
- *                      billing API directly. Original behavior preserved.
- *   client           — pure HTTPS forwarder pointing at TOKAGENT_GATEWAY_URL.
- *                      No database, no workers, no chain writes.
- *                      Every /v1/* route proxies the request to the upstream
- *                      tokagent gateway (another instance running in
- *                      server-mode).
+ *   server (default) — owns Postgres, runs settlement workers, exposes the
+ *                      full billing API directly. Operator opts in by running
+ *                      the setup wizard.
+ *   client           — pure HTTPS forwarder pointing at TOKAGENT_GATEWAY_URL
+ *                      (REQUIRED — supplied by the operator of the billing
+ *                      server you're a client of). No database, no workers,
+ *                      no chain writes. Every /v1/* route proxies the request
+ *                      to the upstream tokagent-billing-server.
  *
  * Lifecycle:
  *   init    — server-mode: constructs shared pg.Pool, runs migrations,
@@ -96,8 +100,8 @@ export const tokagentBillingPlugin: Plugin = {
   name: "tokagent-billing",
   description:
     "Web3 credit-billing routes and middleware for the tokagentos LLM gateway. " +
-    "Runs in server-mode (owns Neon + settlement workers) or client-mode " +
-    "(pure HTTPS forwarder pointing at TOKAGENT_GATEWAY_URL).",
+    "Runs in server-mode (owns Postgres + settlement workers) or client-mode " +
+    "(pure HTTPS forwarder pointing at an operator-provided TOKAGENT_GATEWAY_URL).",
   // Phase 9: SETUP_BILLING action enables the conversational setup flow (Z46).
   // Available in both modes — wizard branches on mode at run time.
   actions: [setupBillingAction],

@@ -1,9 +1,12 @@
 # tokagent-billing-server — deploy runbook
 
-The canonical tokagentos deployment that hosts the shared billing rail.
-**One** instance running with `BILLING_MODE=server`, holding the only Neon
-connection string and the only operator EOA. Every CLI user runs tokagentos
+A tokagentos deployment hosting a billing rail you control. **One** instance
+runs with `BILLING_MODE=server`, holding the Postgres connection string and
+the operator EOA. CLI users (your team, your customers) run tokagentos
 locally with `BILLING_MODE=client` pointing at this URL.
+
+Tokagent billing is self-hosted only. There is no shared hosted gateway —
+every operator deploys their own billing server (Postgres + operator EOA).
 
 This document is the operator runbook. The architectural rationale lives in
 the conversation history that produced this code; this file is purely the
@@ -17,24 +20,26 @@ the conversation history that produced this code; this file is purely the
 
 | What | Where to get it |
 |---|---|
-| `BILLING_DATABASE_URL` | Neon console → your project → Connection details → toggle **Pooled connection** → copy. Must contain `-pooler` in the hostname. |
+| `BILLING_DATABASE_URL` | Your Postgres (Supabase, Railway, RDS, self-hosted, or any managed provider). If your provider offers a pooled connection endpoint, use it. |
 | `BILLING_AUTH_SECRET` | `openssl rand -hex 32` |
 | `BILLING_OPERATOR_PRIVATE_KEY` | `cast wallet new`; fund the EOA with ~0.1 ETH on mainnet; grant it `OPERATOR_ROLE` on `ClaudeVault` at `0x1072f70e7c490E460fA72AC4171F7aDD1ef2d79F` via the admin multisig |
 | `BILLING_CHAIN_RPC_URL` + `BILLING_MAINNET_RPC_URL` | Alchemy or Infura mainnet API key (one project gives you both URLs) |
 | `BILLING_LITELLM_API_KEY` | LiteLLM admin at `https://api.ai.tokamak.network/` |
 
-### 1.2 Provision Neon
+### 1.2 Provision Postgres
 
 ```bash
-# In the Neon console:
-#   1. Create project in region eu-central-1 (matches Fly fra colocation).
-#   2. Default database `billing`.
-#   3. Toggle the connection pooler ON.
-#   4. Copy the POOLED connection string for BILLING_DATABASE_URL.
+# Pick any Postgres 14+ provider:
+#   - Local dev: docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16
+#   - Managed:   Supabase, Railway, AWS RDS, or any Postgres provider.
+#
+# If your provider offers a pooled connection endpoint (recommended for
+# serverless / multi-machine deployments), use that — it caps the upstream
+# connection count and avoids exhausting the DB connection limit.
 
 # Apply migrations once before the first deploy:
 cd tokagentos/packages/billing
-DATABASE_URL='<your-pooled-neon-url>' bun run drizzle-kit migrate
+DATABASE_URL='<your-postgres-url>' bun run drizzle-kit migrate
 ```
 
 ### 1.3 Create the Fly app + DNS
@@ -48,25 +53,25 @@ cp tokagentos/scripts/billing-server/.env.prod.example tokagentos/scripts/billin
 # (fill in the 6 <fill-in> values, then:)
 bash tokagentos/scripts/billing-server/setup-secrets.sh
 
-# DNS — point gateway.tokagent.ai at Fly's anycast:
+# DNS — point <your-billing-server-domain> at Fly's anycast:
 flyctl ips allocate-v4 --app tokagent-billing-server
 flyctl ips allocate-v6 --app tokagent-billing-server
 flyctl ips list --app tokagent-billing-server   # copy the v4 + v6 addresses
 # Then in your DNS provider:
-#   A    gateway.tokagent.ai → <IPv4>
-#   AAAA gateway.tokagent.ai → <IPv6>
+#   A    <your-billing-server-domain> → <IPv4>
+#   AAAA <your-billing-server-domain> → <IPv6>
 # Wait for propagation (≤5 min), then:
-flyctl certs add gateway.tokagent.ai --app tokagent-billing-server
+flyctl certs add <your-billing-server-domain> --app tokagent-billing-server
 ```
 
 ### 1.4 GitHub Actions setup
 
-In the **Tokamak-AI-Layer** GitHub repo (Settings → Secrets and variables → Actions):
+In your GitHub repo (Settings → Secrets and variables → Actions):
 
 | Secret | Value |
 |---|---|
 | `FLY_API_TOKEN` | `flyctl tokens create deploy` |
-| `NEON_BILLING_URL` | Same value as `BILLING_DATABASE_URL` (the workflow uses it to run migrations) |
+| `BILLING_DATABASE_URL` | Same value as the `BILLING_DATABASE_URL` Fly secret (the workflow uses it to run migrations) |
 
 ### 1.5 First deploy (manual sanity check before cutting CI loose)
 
@@ -83,7 +88,7 @@ Then probe:
 
 ```bash
 bun tokagentos/scripts/billing-server/check-readiness.ts \
-  https://gateway.tokagent.ai \
+  https://<your-billing-server-domain> \
   --full
 ```
 
@@ -102,7 +107,7 @@ git push origin billing-server-v$(date +%Y.%m.%d).0
 
 # GH Actions takes over:
 #   1. Typecheck billing surface
-#   2. Run Drizzle migrations against PROD Neon (idempotent)
+#   2. Run Drizzle migrations against PROD Postgres (idempotent)
 #   3. flyctl deploy --strategy bluegreen
 #   4. Wait 20 s, then run check-readiness.ts --full
 # If ANY step fails, prod stays on the previous revision.
@@ -131,10 +136,9 @@ flyctl releases rollback <version-number> --app tokagent-billing-server
 ```
 
 **DB rollback**: Drizzle migrations are FORWARD-ONLY. If a migration broke
-prod, restore from your most recent Neon point-in-time-recovery snapshot
-(Neon → Branches → Restore). This is why the pre-deploy step runs migrations
-BEFORE the app deploys: a broken migration aborts the deploy without ever
-touching the running app.
+prod, restore from your Postgres provider's point-in-time-recovery snapshot.
+This is why the pre-deploy step runs migrations BEFORE the app deploys: a
+broken migration aborts the deploy without ever touching the running app.
 
 ---
 
@@ -158,19 +162,19 @@ also becomes invalid until users mint new ones via the dashboard).
 
 Blast radius: every wallet with deposits.
 
-### R-2 — Neon outage (High)
+### R-2 — Postgres outage (High)
 
 ```bash
-# Check Neon status first:
-curl -s https://api.neon.tech/api/v2/status
-
-# If Neon is up but our connection is failing, the issue is likely
-# connection-limit exhaustion. Confirm we're using the pooler:
+# Check your Postgres provider's status page first.
+#
+# If the provider is up but our connection is failing, the issue is likely
+# connection-limit exhaustion. Confirm we're using the pooled endpoint if
+# one is available:
 flyctl secrets list --app tokagent-billing-server | grep BILLING_DATABASE_URL
 # (the value is redacted, but you can see if it's set)
 
-# Switch to a Neon read replica (paid tier feature) by updating the URL:
-flyctl secrets set BILLING_DATABASE_URL='<replica-pooled-url>' \
+# Switch to a read replica (if your provider supports it) by updating the URL:
+flyctl secrets set BILLING_DATABASE_URL='<replica-url>' \
   --app tokagent-billing-server
 ```
 
@@ -229,9 +233,9 @@ flyctl secrets unset BILLING_FIXED_TON_USD \
 
 | URL | Purpose | Expected |
 |---|---|---|
-| `https://gateway.tokagent.ai/api/health` | Liveness + readiness (one surface) | `{"ready":true,"database":"ok","agentState":"running"}` |
-| `https://gateway.tokagent.ai/tokagent-billing/v1/billing/status` | Plugin is initialised and serving | `{"enabled":true}` |
-| `https://gateway.tokagent.ai/tokagent-billing/v1/price` | Pricing surface live (returns 401 if AUTH_REQUIRED — that's still healthy) | 200 or 401 |
+| `https://<your-billing-server-domain>/api/health` | Liveness + readiness (one surface) | `{"ready":true,"database":"ok","agentState":"running"}` |
+| `https://<your-billing-server-domain>/tokagent-billing/v1/billing/status` | Plugin is initialised and serving | `{"enabled":true}` |
+| `https://<your-billing-server-domain>/tokagent-billing/v1/price` | Pricing surface live (returns 401 if AUTH_REQUIRED — that's still healthy) | 200 or 401 |
 
 `check-readiness.ts --full` exercises all three plus a SIWE nonce shape check.
 
@@ -248,4 +252,4 @@ Watch for:
 - `[tokagent-api] Listening on http://0.0.0.0:8080`     — boot complete
 - `consume worker completed`                            — on-chain settlements firing
 - `twap primed (tonUsd=…)`                              — oracle alive
-- `[PLUGIN:SQL] Failed query`                           — Neon connectivity issue (paging signal)
+- `[PLUGIN:SQL] Failed query`                           — Postgres connectivity issue (paging signal)

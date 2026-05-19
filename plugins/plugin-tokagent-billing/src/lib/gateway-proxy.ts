@@ -498,11 +498,19 @@ let _client: GatewayClient | null = null;
  * Idempotent — first call constructs, all subsequent calls return the same
  * instance. Used by tests and ad-hoc callers; the plugin itself prefers to
  * read the client from state.gateway constructed at init time.
+ *
+ * Tokagent billing is self-hosted only — there is no default gateway URL.
+ * Throws if TOKAGENT_GATEWAY_URL is unset.
  */
 export function getGatewayClient(): GatewayClient {
   if (!_client) {
-    const baseUrl =
-      process.env.TOKAGENT_GATEWAY_URL?.trim() || "https://gateway.tokagent.ai";
+    const baseUrl = process.env.TOKAGENT_GATEWAY_URL?.trim();
+    if (!baseUrl) {
+      throw new GatewayProxyError(
+        503,
+        "TOKAGENT_GATEWAY_URL is not set — set it to the URL of the tokagent-billing-server you're a client of",
+      );
+    }
     const rawTimeout = process.env.TOKAGENT_GATEWAY_TIMEOUT_MS?.trim();
     const timeoutMs =
       rawTimeout && Number.isFinite(Number(rawTimeout))

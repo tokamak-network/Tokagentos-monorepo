@@ -24,6 +24,7 @@ import {
   type BillingPluginState,
 } from "../state.js";
 import { createGatewayProxy } from "../lib/gateway-proxy.js";
+import { BillingConfigError } from "@tokagentos/billing";
 
 import { getAuthRoutes } from "../routes/auth-routes.js";
 import { getKeysRoutes } from "../routes/keys-routes.js";
@@ -171,27 +172,43 @@ afterEach(async () => {
 // ---------------------------------------------------------------------------
 
 describe("BILLING_MODE=client config loading", () => {
-  it("defaults TOKAGENT_GATEWAY_URL to the hosted gateway when mode=client and URL unset (v2.1.0)", () => {
+  it("throws when mode=client and TOKAGENT_GATEWAY_URL is unset (v2.0.5 self-hosted-first)", () => {
+    expect(() =>
+      loadBillingConfig({
+        BILLING_MODE: "client",
+      } as NodeJS.ProcessEnv),
+    ).toThrow(BillingConfigError);
+    expect(() =>
+      loadBillingConfig({
+        BILLING_MODE: "client",
+      } as NodeJS.ProcessEnv),
+    ).toThrow(/TOKAGENT_GATEWAY_URL/);
+  });
+
+  it("defaults billingMode to 'server' when not set (v2.0.5 default revert)", () => {
+    const c = loadBillingConfig({} as NodeJS.ProcessEnv);
+    expect(c.billingMode).toBe("server");
+    // gatewayUrl is undefined in server-mode (no default)
+    expect(c.gatewayUrl).toBeUndefined();
+  });
+
+  it("defaults BILLING_ENABLED=false in server-mode when unset (v2.0.5)", () => {
+    const c = loadBillingConfig({} as NodeJS.ProcessEnv);
+    expect(c.enabled).toBe(false);
+  });
+
+  it("defaults BILLING_ENABLED=true in client-mode when explicitly opted in + URL set", () => {
     const c = loadBillingConfig({
       BILLING_MODE: "client",
+      TOKAGENT_GATEWAY_URL: GATEWAY,
     } as NodeJS.ProcessEnv);
-    expect(c.billingMode).toBe("client");
-    expect(c.gatewayUrl).toBe("https://gateway.tokagent.ai");
-  });
-
-  it("defaults billingMode to 'client' when not set (v2.1.0 default flip)", () => {
-    const c = loadBillingConfig({} as NodeJS.ProcessEnv);
-    expect(c.billingMode).toBe("client");
-    expect(c.gatewayUrl).toBe("https://gateway.tokagent.ai");
-  });
-
-  it("defaults BILLING_ENABLED=true in client-mode when unset (v2.1.0)", () => {
-    const c = loadBillingConfig({} as NodeJS.ProcessEnv);
     expect(c.enabled).toBe(true);
   });
 
   it("respects explicit BILLING_ENABLED=false even in client-mode", () => {
     const c = loadBillingConfig({
+      BILLING_MODE: "client",
+      TOKAGENT_GATEWAY_URL: GATEWAY,
       BILLING_ENABLED: "false",
     } as NodeJS.ProcessEnv);
     expect(c.enabled).toBe(false);

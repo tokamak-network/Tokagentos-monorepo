@@ -18,7 +18,27 @@
 .cursor
 # Large dirs (keep all packages/ and plugins/ so workspace resolves)
 examples
-apps
+# Exclude most apps/*. Re-include the ones packages/agent + packages/app-core
+# statically import (they crash with "Cannot find module" otherwise).
+apps/*
+!apps/app-companion
+!apps/app-companion/**
+!apps/app-knowledge
+!apps/app-knowledge/**
+!apps/app-lifeops
+!apps/app-lifeops/**
+!apps/app-shopify
+!apps/app-shopify/**
+!apps/app-steward
+!apps/app-steward/**
+!apps/app-task-coordinator
+!apps/app-task-coordinator/**
+!apps/app-tokagentmaker
+!apps/app-tokagentmaker/**
+!apps/app-training
+!apps/app-training/**
+!apps/app-vincent
+!apps/app-vincent/**
 tokagent-cloud-v2
 **/fonts
 **/*.otf

@@ -216,11 +216,13 @@ export async function writeBillingConfig(values: BillingSetupValues): Promise<vo
   }
 
   try {
-    // ---- Mode pin (v2.1.0) ----
-    // The default install runs in BILLING_MODE=client (the schema default).
-    // Submitting the self-host form is an explicit opt-in to server-mode,
-    // so we pin BILLING_MODE=server FIRST. Once flipped, subsequent boots
-    // stay in server-mode regardless of the default-flip.
+    // ---- Mode pin (v2.0.5) ----
+    // Server-mode IS the schema default, so we don't strictly need to pin it.
+    // We still write BILLING_MODE=server explicitly so that:
+    //   (a) anyone reading the config file sees the operator's intent, and
+    //   (b) if the user previously opted into client-mode via the disclosure
+    //       and is now switching back, the prior BILLING_MODE=client line is
+    //       overwritten rather than left dangling.
     await writeOne("BILLING_MODE", "server");
 
     // ---- Non-secret envs ----

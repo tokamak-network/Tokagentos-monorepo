@@ -117,8 +117,8 @@ function makeRuntime(env: Record<string, string | undefined>): IAgentRuntime {
 /** Minimum env required for a successful server-mode BILLING_ENABLED=true boot. */
 function fullEnabledEnv(overrides: Record<string, string | undefined> = {}): Record<string, string | undefined> {
   return {
-    // v2.1.0 default mode is `client`; these tests exercise the server-mode
-    // pool/migrations/clients lifecycle, so we pin mode=server explicitly.
+    // v2.0.5 default mode is `server`. Pinning BILLING_MODE=server explicitly
+    // is redundant with the default but documents intent for these tests.
     BILLING_MODE: "server",
     BILLING_ENABLED: "true",
     BILLING_AUTH_REQUIRED: "true",
@@ -160,9 +160,8 @@ afterEach(async () => {
 
 describe("initBillingPlugin — BILLING_ENABLED=false short-circuit", () => {
   it("does nothing when billing is disabled in server-mode (no pool, no state)", async () => {
-    // v2.1.0: default mode is now `client`, which always inits the gateway
-    // forwarder. To test the server-mode disabled short-circuit, explicitly
-    // pin BILLING_MODE=server.
+    // v2.0.5: default mode is server. With BILLING_ENABLED=false the plugin
+    // is a no-op — no pool, no migrations, no state.
     const runtime = makeRuntime({
       BILLING_MODE: "server",
       BILLING_ENABLED: "false",
@@ -175,10 +174,10 @@ describe("initBillingPlugin — BILLING_ENABLED=false short-circuit", () => {
     expect(() => getBillingState()).toThrow(/not initialized/);
   });
 
-  it("does nothing in server-mode when BILLING_ENABLED is missing (server-mode default = false)", async () => {
-    // v2.1.0: explicit BILLING_MODE=server keeps the server-mode
-    // disabled-default. The client-mode branch is covered separately.
-    const runtime = makeRuntime({ BILLING_MODE: "server" });
+  it("does nothing when BILLING_ENABLED is missing (server-mode default = false)", async () => {
+    // v2.0.5: server is the default mode AND the default BILLING_ENABLED is
+    // false. A blank env stays a no-op until the operator runs the wizard.
+    const runtime = makeRuntime({});
     await initBillingPlugin(runtime);
 
     expect(isBillingStateInitialized()).toBe(false);

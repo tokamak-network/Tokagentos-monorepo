@@ -1,5 +1,5 @@
 node_modules
-bun.lock
+# bun.lock — tracked (required for reproducible Docker / CI / Railway builds)
 /out
 
 .next/
@@ -192,7 +192,7 @@ tasks/
 **/.taskmaster/
 **/.windsurfrules/
 .roomodes
-bun.lock
+# bun.lock — REQUIRED for reproducible Docker / CI / Railway builds. Tracked.
 /.kiro
 # TypeScript incremental compilation cache
 *.tsbuildinfo
@@ -225,13 +225,17 @@ standalone.ts
 .claude/cache/
 
 # Proto-generated files (regenerated from schemas/)
-packages/typescript/src/types/generated/
+# typescript/ tree is needed at RUNTIME (bun imports the generated *_pb.ts
+# stubs directly). Keep it tracked so Docker/CI/Railway builds work.
+# python + rust trees can stay excluded — not used at JS runtime.
+# packages/typescript/src/types/generated/
 packages/python/tokagentos/types/generated/
 packages/rust/src/types/generated/
 
 # i18n keyword codegen (regenerated from keywords/*.keywords.json)
-packages/shared/src/i18n/generated/
-packages/typescript/src/i18n/generated/
+# Same reasoning — typescript/ is needed at runtime.
+# packages/shared/src/i18n/generated/
+# packages/typescript/src/i18n/generated/
 
 # Vitest config files (if not needed in repo)
 vitest.config.ts

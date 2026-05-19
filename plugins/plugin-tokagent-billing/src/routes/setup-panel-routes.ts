@@ -1,24 +1,22 @@
 /**
  * Billing setup panel — server-side HTML form (Phase 9, Decision Z48 fallback,
- * v2.1.0 mode-picker redesign).
+ * v2.0.5 self-hosted-first redesign).
  *
  * GET /v1/billing/setup-panel
  *
- * Returns a calm "Connected to Tokagent gateway" hero by default — the
- * happy path for a fresh tokagentos install that's already pointing at the
- * hosted gateway. A native <details> disclosure reveals the original 7-field
- * server-mode form for operators who want to self-host the billing server.
+ * Returns the 7-field self-hosted server-mode setup form by default. Every
+ * field includes inline help text explaining HOW to obtain or generate the
+ * value (Docker Postgres one-liner, public RPC URLs, canonical mainnet
+ * addresses, `cast wallet new` for the operator key, `openssl rand -hex 32`
+ * for the auth secret). A "Use mainnet defaults" button fills the vault,
+ * PTON, and chain-id fields with the canonical mainnet values.
  *
- * The default view is intentionally quiet: no warnings, no form fields, no
- * scary configuration prompts. The user only sees the self-host form if they
- * explicitly open the disclosure.
+ * Below the self-hosted form, a small native <details> disclosure offers
+ * client-mode for users who've been given a gateway URL by an operator.
  *
- * This is the fallback UX path for environments where the companion UI's
- * side-panel mechanism is not available (e.g. headless, CLI, early onboarding).
- *
- * Decision Z48: Hybrid chat + side panel. The SETUP_BILLING action opens
- * this URL in the chat, and the user either clicks "Connect wallet" (default)
- * or opens the advanced disclosure to self-host.
+ * Tokagent billing is self-hosted only — there is no shared hosted gateway.
+ * Every operator deploys their own billing server (Postgres + operator EOA).
+ * This panel is the in-product onboarding for that flow.
  */
 
 import type { Route, RouteRequest, RouteResponse, IAgentRuntime } from "@tokagentos/core";
@@ -33,59 +31,30 @@ const SETUP_PANEL_HTML = `<!DOCTYPE html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Billing Setup — Tokagent</title>
+  <title>Set up x402 billing — Tokagent</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
            background: #0f0f0f; color: #e8e8e8; min-height: 100vh; padding: 2rem; }
-    .container { max-width: 640px; margin: 0 auto; }
-    /* Hero (default view) */
-    .hero { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px;
-            padding: 2rem; margin-bottom: 1rem; }
-    .hero-mark { font-size: 0.85rem; color: #4caf50; font-weight: 600;
-                 letter-spacing: 0.02em; margin-bottom: 0.75rem; }
-    .hero-title { font-size: 1.5rem; font-weight: 600; color: #fff;
-                  margin-bottom: 0.75rem; }
-    .hero-copy { color: #aaa; font-size: 0.95rem; line-height: 1.5;
-                 margin-bottom: 1.5rem; }
-    .hero-copy code { background: #111; padding: 0.1rem 0.4rem;
-                      border-radius: 4px; font-size: 0.85rem; color: #c8c8c8; }
-    .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    a.btn-cta { display: inline-block; padding: 0.7rem 1.4rem; border-radius: 6px;
-                background: #6c47ff; color: #fff; text-decoration: none;
-                font-size: 0.95rem; font-weight: 500; transition: background 0.15s; }
-    a.btn-cta:hover { background: #7c57ff; }
-    /* Divider + disclosure */
-    .divider { height: 1px; background: #2a2a2a; margin: 1.5rem 0; }
-    .disclosure-label { color: #888; font-size: 0.9rem; margin-bottom: 0.5rem; }
-    details.advanced { background: #1a1a1a; border: 1px solid #2a2a2a;
-                       border-radius: 8px; padding: 0; overflow: hidden; }
-    details.advanced > summary {
-      cursor: pointer; padding: 1rem 1.5rem; user-select: none;
-      color: #c8c8c8; font-size: 0.95rem; font-weight: 500;
-      list-style: none; display: flex; align-items: center; gap: 0.5rem;
-    }
-    details.advanced > summary::-webkit-details-marker { display: none; }
-    details.advanced > summary::before {
-      content: "▸"; font-size: 0.75rem; transition: transform 0.15s;
-      display: inline-block; color: #666;
-    }
-    details.advanced[open] > summary::before { transform: rotate(90deg); }
-    details.advanced > summary:hover { color: #fff; background: #1f1f1f; }
-    .advanced-body { padding: 0 1.5rem 1.5rem; }
-    .advanced-intro { color: #888; font-size: 0.88rem; line-height: 1.5;
-                      margin-bottom: 1.25rem; padding-top: 0.5rem; }
-    /* Form (revealed under disclosure) */
-    .step { background: #111; border: 1px solid #2a2a2a; border-radius: 8px;
+    .container { max-width: 720px; margin: 0 auto; }
+    h1.page-title { font-size: 1.5rem; font-weight: 600; color: #fff;
+                    margin-bottom: 0.5rem; }
+    p.page-intro { color: #aaa; font-size: 0.95rem; line-height: 1.5;
+                   margin-bottom: 1.5rem; }
+    /* Form */
+    .step { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px;
             padding: 1.25rem; margin-bottom: 0.75rem; }
-    .step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 1rem; color: #c8c8c8; }
-    label { display: block; font-size: 0.85rem; color: #999; margin-bottom: 0.25rem; }
+    .step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.75rem; color: #c8c8c8; }
+    label { display: block; font-size: 0.85rem; color: #c8c8c8; margin-bottom: 0.25rem; }
     input[type="text"], input[type="password"], input[type="number"], input[type="url"] {
       width: 100%; padding: 0.6rem 0.75rem; background: #0a0a0a; border: 1px solid #333;
       border-radius: 6px; color: #e8e8e8; font-size: 0.9rem; font-family: monospace;
-      margin-bottom: 0.75rem; }
+      margin-bottom: 0.4rem; }
     input:focus { outline: none; border-color: #555; }
-    .hint { font-size: 0.78rem; color: #666; margin-top: -0.5rem; margin-bottom: 0.75rem; }
+    small.hint { display: block; font-size: 0.78rem; color: #888; line-height: 1.5;
+                 margin-top: 0.1rem; margin-bottom: 0.75rem; white-space: pre-wrap; }
+    small.hint code { background: #0a0a0a; padding: 0.05rem 0.35rem; border-radius: 3px;
+                      color: #d8d8d8; font-size: 0.78rem; }
     .btn { padding: 0.6rem 1.2rem; border: none; border-radius: 6px; cursor: pointer;
            font-size: 0.9rem; font-weight: 500; }
     .btn-secondary { background: #2a2a2a; color: #ccc; border: 1px solid #3a3a3a; }
@@ -94,121 +63,168 @@ const SETUP_PANEL_HTML = `<!DOCTYPE html>
     .btn-secondary:hover { background: #333; }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .toolbar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
     #status { padding: 1rem; border-radius: 6px; margin-top: 1rem; font-size: 0.9rem;
               display: none; }
     #status.success { background: #0d2e0d; border: 1px solid #1a5e1a; color: #4caf50; }
     #status.error { background: #2e0d0d; border: 1px solid #5e1a1a; color: #f44336; }
     .field-error { font-size: 0.78rem; color: #f44336; margin-top: -0.5rem; margin-bottom: 0.75rem; }
-    .key-row { display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 0.75rem; }
+    .key-row { display: flex; gap: 0.5rem; align-items: flex-end; margin-bottom: 0.4rem; }
     .key-row input { flex: 1; margin-bottom: 0; }
     .key-row .btn { flex-shrink: 0; height: 38px; }
     .address-display { font-size: 0.78rem; color: #888; font-family: monospace; margin-bottom: 0.75rem; }
+    /* Client-mode disclosure */
+    .divider { height: 1px; background: #2a2a2a; margin: 2rem 0 1rem; }
+    details.client-mode { background: #141414; border: 1px solid #2a2a2a;
+                          border-radius: 8px; padding: 0; overflow: hidden;
+                          margin-top: 0.5rem; }
+    details.client-mode > summary {
+      cursor: pointer; padding: 0.9rem 1.25rem; user-select: none;
+      color: #c8c8c8; font-size: 0.9rem; font-weight: 500;
+      list-style: none; display: flex; align-items: center; gap: 0.5rem;
+    }
+    details.client-mode > summary::-webkit-details-marker { display: none; }
+    details.client-mode > summary::before {
+      content: "▸"; font-size: 0.75rem; transition: transform 0.15s;
+      display: inline-block; color: #666;
+    }
+    details.client-mode[open] > summary::before { transform: rotate(90deg); }
+    details.client-mode > summary:hover { color: #fff; background: #1a1a1a; }
+    .client-body { padding: 0 1.25rem 1.25rem; }
   </style>
 </head>
 <body>
 <div class="container">
-  <!-- Default view: hero showing the agent is already wired to the hosted gateway. -->
-  <section class="hero" aria-label="Billing status">
-    <div class="hero-mark">✓ Connected to Tokagent gateway</div>
-    <h1 class="hero-title">You're already set up.</h1>
-    <p class="hero-copy">
-      This Tokagent CLI uses the hosted billing rail at
-      <code>gateway.tokagent.ai</code>. You don't need to configure anything —
-      just connect your wallet to start.
-    </p>
-    <div class="cta-row">
-      <a class="btn-cta" href="/v1/billing/dashboard/">Connect wallet →</a>
+  <h1 class="page-title">Set up x402 billing</h1>
+  <p class="page-intro">
+    Run your own billing server backed by Postgres + an on-chain operator EOA.
+    Or connect as a client to someone else's server (advanced).
+  </p>
+
+  <div class="toolbar">
+    <button type="button" class="btn btn-secondary" onclick="fillMainnetDefaults()">Use mainnet defaults</button>
+  </div>
+
+  <form id="setup-form">
+    <!-- 1. Database -->
+    <div class="step">
+      <div class="step-title">1. Database</div>
+      <label for="db-url">Postgres connection string</label>
+      <input type="text" id="db-url" name="databaseUrl"
+             placeholder="postgresql://postgres:postgres@localhost:5432/postgres" />
+      <small class="hint">Any Postgres 14+ works. Quickest local setup:
+<code>docker run -d --name tokagent-pg -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16</code>
+Then use: <code>postgresql://postgres:postgres@localhost:5432/postgres</code>
+Or use any managed Postgres (Supabase, Railway, AWS RDS, your own server). The schema migrations run automatically on first boot.</small>
+      <div id="db-url-error" class="field-error" style="display:none"></div>
+      <button type="button" class="btn btn-secondary" onclick="testDb()">Test Connection</button>
     </div>
-  </section>
+
+    <!-- 2. Chain RPC URL -->
+    <div class="step">
+      <div class="step-title">2. Chain RPC URL</div>
+      <label for="rpc-url">Chain RPC URL</label>
+      <input type="url" id="rpc-url" name="chainRpcUrl"
+             placeholder="https://eth.llamarpc.com" oninput="autoDetectChainId()" />
+      <small class="hint">Ethereum mainnet RPC. Used to send <code>vault.consumeCredits</code> transactions.
+Free public endpoints: <code>https://eth.llamarpc.com</code>  |  <code>https://rpc.ankr.com/eth</code>  |  <code>https://ethereum.publicnode.com</code>
+Production: get an Alchemy or Infura API key for higher reliability and rate limits.</small>
+      <div id="rpc-url-error" class="field-error" style="display:none"></div>
+    </div>
+
+    <!-- 3. Chain ID -->
+    <div class="step">
+      <div class="step-title">3. Chain ID</div>
+      <label for="chain-id">Chain ID</label>
+      <input type="number" id="chain-id" name="chainId" placeholder="1" />
+      <small class="hint">Auto-detected from the RPC URL. <code>1</code> = Ethereum mainnet. The default PTON + ClaudeVault addresses below are on mainnet.</small>
+      <div id="chain-id-error" class="field-error" style="display:none"></div>
+    </div>
+
+    <!-- 4. ClaudeVault address -->
+    <div class="step">
+      <div class="step-title">4. ClaudeVault address</div>
+      <label for="vault-address">ClaudeVault address</label>
+      <input type="text" id="vault-address" name="vaultAddress" placeholder="0x..." />
+      <small class="hint">Mainnet (live): <code>0x1072f70e7c490E460fA72AC4171F7aDD1ef2d79F</code>
+For your own testnet/private deploy: see <code>llm-api-gateway/contracts/src/ClaudeVault.sol</code> — deploy with foundry, then paste the deployed address here. Your operator EOA below must hold <code>OPERATOR_ROLE</code> on this contract.</small>
+      <div id="vault-address-error" class="field-error" style="display:none"></div>
+    </div>
+
+    <!-- 5. PTON address -->
+    <div class="step">
+      <div class="step-title">5. PTON address</div>
+      <label for="pton-address">PTON token address</label>
+      <input type="text" id="pton-address" name="ptonAddress" placeholder="0x..." />
+      <small class="hint">Mainnet (live): <code>0x00D1EDcE8E7c617891FF76224DFf501c568f1Ce0</code>
+PTON wraps Tokamak TON 1:1 and supports EIP-3009 for gasless x402 payments. Users wrap TON to PTON, then deposit PTON into ClaudeVault to fund their billing balance.</small>
+      <div id="pton-address-error" class="field-error" style="display:none"></div>
+      <button type="button" class="btn btn-secondary" onclick="verifyContracts()">Verify Contracts</button>
+    </div>
+
+    <!-- 6. Operator private key -->
+    <div class="step">
+      <div class="step-title">6. Operator private key</div>
+      <label for="operator-key">Operator private key</label>
+      <div class="key-row">
+        <input type="password" id="operator-key" name="operatorPrivateKey"
+               placeholder="0x..." oninput="updateDerivedAddress()" />
+        <button type="button" class="btn btn-secondary" onclick="generateKey()">Generate</button>
+      </div>
+      <small class="hint">EOA that calls <code>vault.consumeCredits()</code> to settle user credits on-chain.
+Generate a fresh key: <code>cast wallet new</code>
+Fund the address with ~0.1 ETH for gas (caps blast radius if leaked).
+Grant <code>OPERATOR_ROLE</code> on ClaudeVault from your admin account.
+WARNING: never paste a wallet with significant balance. This is a hot key on whatever machine runs this server.</small>
+      <div id="derived-address" class="address-display"></div>
+      <div id="operator-key-error" class="field-error" style="display:none"></div>
+    </div>
+
+    <!-- 7. Auth secret -->
+    <div class="step">
+      <div class="step-title">7. Auth secret</div>
+      <label for="auth-secret">HMAC auth secret</label>
+      <div class="key-row">
+        <input type="password" id="auth-secret" name="authSecret" placeholder="min 32 chars" />
+        <button type="button" class="btn btn-secondary" onclick="generateSecret()">Generate</button>
+      </div>
+      <small class="hint">Random 32-byte hex. Used to sign JWTs and HMAC <code>sk-ai-*</code> API keys.
+Generate: <code>openssl rand -hex 32</code>
+Click "Generate" above to fill automatically. Rotating this invalidates all sessions AND all API keys — users must re-login and re-mint keys.</small>
+      <div id="auth-secret-error" class="field-error" style="display:none"></div>
+    </div>
+
+    <!-- 8. Optional mainnet RPC -->
+    <div class="step">
+      <div class="step-title">Optional: Mainnet RPC</div>
+      <label for="mainnet-rpc">Mainnet RPC URL (optional)</label>
+      <input type="url" id="mainnet-rpc" name="mainnetRpcUrl"
+             placeholder="https://eth.llamarpc.com" />
+      <small class="hint">Defaults to your chain RPC above. Used to query Uniswap V3 for live TON/USD pricing (TWAP oracle). Can be a different provider — useful if your chain RPC has tight rate limits and you want to isolate the TWAP polling load.</small>
+    </div>
+
+    <div id="status"></div>
+
+    <div class="actions">
+      <button type="button" class="btn btn-secondary" onclick="validateAll()">Validate All</button>
+      <button type="submit" class="btn btn-primary" id="submit-btn">Save self-hosted config</button>
+    </div>
+  </form>
 
   <div class="divider"></div>
 
-  <div class="disclosure-label">Want to run your own billing server?</div>
-
-  <details class="advanced" id="advanced-self-host">
-    <summary>Advanced: self-host billing</summary>
-    <div class="advanced-body">
-      <p class="advanced-intro">
-        Self-hosting means you provide your own Postgres database, operator
-        wallet, and ClaudeVault deployment. The CLI will use your local server
-        instead of the hosted gateway. You're responsible for funding the
-        operator EOA.
-      </p>
-
-      <form id="setup-form">
-        <!-- Step 1: Database -->
-        <div class="step">
-          <div class="step-title">1. Database</div>
-          <label for="db-url">Postgres connection string</label>
-          <input type="text" id="db-url" name="databaseUrl"
-                 placeholder="postgres://user:pass@localhost:5432/billing" />
-          <div class="hint">Use <code>pglite://./data/billing.pglite</code> for a dev/test in-process database.</div>
-          <div id="db-url-error" class="field-error" style="display:none"></div>
-          <button type="button" class="btn btn-secondary" onclick="testDb()">Test Connection</button>
-        </div>
-
-        <!-- Step 2: Chain -->
-        <div class="step">
-          <div class="step-title">2. Chain &amp; Contracts</div>
-          <label for="rpc-url">Chain RPC URL</label>
-          <input type="url" id="rpc-url" name="chainRpcUrl"
-                 placeholder="https://polygon-rpc.com" oninput="autoDetectChainId()" />
-          <div class="hint">The chain where your ClaudeVault is deployed.</div>
-          <div id="rpc-url-error" class="field-error" style="display:none"></div>
-
-          <label for="chain-id">Chain ID</label>
-          <input type="number" id="chain-id" name="chainId" placeholder="137" />
-          <div id="chain-id-error" class="field-error" style="display:none"></div>
-
-          <label for="vault-address">ClaudeVault address</label>
-          <input type="text" id="vault-address" name="vaultAddress" placeholder="0x..." />
-          <div id="vault-address-error" class="field-error" style="display:none"></div>
-
-          <label for="pton-address">PTON token address</label>
-          <input type="text" id="pton-address" name="ptonAddress" placeholder="0x..." />
-          <div id="pton-address-error" class="field-error" style="display:none"></div>
-          <button type="button" class="btn btn-secondary" onclick="verifyContracts()">Verify Contracts</button>
-        </div>
-
-        <!-- Step 3: Operator key -->
-        <div class="step">
-          <div class="step-title">3. Operator Key</div>
-          <label>Operator private key</label>
-          <div class="key-row">
-            <input type="password" id="operator-key" name="operatorPrivateKey"
-                   placeholder="0x..." oninput="updateDerivedAddress()" />
-            <button type="button" class="btn btn-secondary" onclick="generateKey()">Generate</button>
-          </div>
-          <div id="derived-address" class="address-display"></div>
-          <div id="operator-key-error" class="field-error" style="display:none"></div>
-          <div class="hint">The EOA that signs consume transactions on-chain. Keep this secret.</div>
-        </div>
-
-        <!-- Step 4: Auth secret -->
-        <div class="step">
-          <div class="step-title">4. Auth Secret</div>
-          <label>HMAC auth secret (for JWT signing)</label>
-          <div class="key-row">
-            <input type="password" id="auth-secret" name="authSecret" placeholder="min 32 chars" />
-            <button type="button" class="btn btn-secondary" onclick="generateSecret()">Generate</button>
-          </div>
-          <div id="auth-secret-error" class="field-error" style="display:none"></div>
-        </div>
-
-        <!-- Step 5: Optional / Review -->
-        <div class="step">
-          <div class="step-title">5. Optional Config</div>
-          <label for="mainnet-rpc">Mainnet RPC URL (for fallback on-chain TWAP)</label>
-          <input type="url" id="mainnet-rpc" name="mainnetRpcUrl"
-                 placeholder="https://mainnet.infura.io/v3/..." />
-          <div class="hint">TON/USD is fetched live from tokamak.network/api/price. This RPC is only used as fallback if that endpoint is unreachable. Leave blank to skip the fallback.</div>
-        </div>
-
-        <div id="status"></div>
-
+  <details class="client-mode" id="client-mode-disclosure">
+    <summary>Already a client of a hosted billing server? Configure client-mode →</summary>
+    <div class="client-body">
+      <form id="client-form">
+        <label for="gateway-url">Gateway URL</label>
+        <input type="url" id="gateway-url" name="gatewayUrl"
+               placeholder="https://billing.example.com" />
+        <small class="hint">The HTTPS URL of the tokagent-billing-server you're connecting to. The operator who runs that server gave you this URL. Example: <code>https://billing.example.com</code>
+Client-mode skips ALL local config — your CLI just forwards calls to the gateway, which handles billing, on-chain settlement, and credit storage on its end.</small>
+        <div id="gateway-url-error" class="field-error" style="display:none"></div>
         <div class="actions">
-          <button type="button" class="btn btn-secondary" onclick="validateAll()">Validate All</button>
-          <button type="submit" class="btn btn-primary" id="submit-btn">Save self-hosted config</button>
+          <button type="submit" class="btn btn-primary" id="client-submit-btn">Save client-mode config</button>
         </div>
       </form>
     </div>
@@ -216,66 +232,93 @@ const SETUP_PANEL_HTML = `<!DOCTYPE html>
 </div>
 
 <script>
-// The advanced form scripts are guarded: they only run when the user opens
-// the disclosure. We attach the form-submit listener and helper functions
-// lazily on first reveal so the default view never executes form logic.
-let advancedInit = false;
+const BASE = window.location.origin;
 
-function initAdvancedForm() {
-  if (advancedInit) return;
-  if (!document.getElementById('setup-form')) return;
-  advancedInit = true;
+// ── Mainnet defaults helper ─────────────────────────────────────────────────
+function fillMainnetDefaults() {
+  document.getElementById('vault-address').value = '0x1072f70e7c490E460fA72AC4171F7aDD1ef2d79F';
+  document.getElementById('pton-address').value = '0x00D1EDcE8E7c617891FF76224DFf501c568f1Ce0';
+  document.getElementById('chain-id').value = '1';
+}
 
-  document.getElementById('setup-form').addEventListener('submit', async function(e) {
+// ── Self-hosted form submit ─────────────────────────────────────────────────
+document.getElementById('setup-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  clearErrors();
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  try {
+    const values = getValues();
+    const r = await fetch(BASE + '/v1/billing/setup', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(values)
+    });
+    const data = await r.json();
+
+    if (data.ok) {
+      showStatus(data.message || 'Self-hosted billing saved successfully.', false);
+      btn.textContent = 'Saved';
+    } else if (data.persisted && !data.restarted) {
+      showStatus(data.error || 'Config saved but re-init failed. Restart the agent manually.', true);
+      btn.disabled = false;
+      btn.textContent = 'Save self-hosted config';
+    } else {
+      if (data.errors) {
+        Object.entries(data.errors).forEach(([field, msg]) => {
+          const id = field.replace(/([A-Z])/g, c => '-' + c.toLowerCase());
+          showFieldError(id, msg);
+        });
+      }
+      showStatus(data.error || 'Setup failed. See field errors above.', true);
+      btn.disabled = false;
+      btn.textContent = 'Save self-hosted config';
+    }
+  } catch (err) {
+    showStatus('Network error: ' + err.message, true);
+    btn.disabled = false;
+    btn.textContent = 'Save self-hosted config';
+  }
+});
+
+// ── Client-mode form submit ─────────────────────────────────────────────────
+const clientForm = document.getElementById('client-form');
+if (clientForm) {
+  clientForm.addEventListener('submit', async function(e) {
     e.preventDefault();
-    clearErrors();
-    const btn = document.getElementById('submit-btn');
+    showFieldError('gateway-url', '');
+    const btn = document.getElementById('client-submit-btn');
     btn.disabled = true;
     btn.textContent = 'Saving...';
-
     try {
-      const values = getValues();
+      const url = document.getElementById('gateway-url').value.trim();
+      if (!url) {
+        showFieldError('gateway-url', 'Enter the gateway URL your operator gave you.');
+        btn.disabled = false;
+        btn.textContent = 'Save client-mode config';
+        return;
+      }
       const r = await fetch(BASE + '/v1/billing/setup', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values)
+        body: JSON.stringify({ billingMode: 'client', gatewayUrl: url })
       });
       const data = await r.json();
-
       if (data.ok) {
-        showStatus(data.message || 'Self-hosted billing saved successfully.', false);
+        showStatus(data.message || 'Client-mode config saved.', false);
         btn.textContent = 'Saved';
-      } else if (data.persisted && !data.restarted) {
-        showStatus(data.error || 'Config saved but re-init failed. Restart the agent manually.', true);
-        btn.disabled = false;
-        btn.textContent = 'Save self-hosted config';
       } else {
-        if (data.errors) {
-          Object.entries(data.errors).forEach(([field, msg]) => {
-            const id = field.replace(/([A-Z])/g, c => '-' + c.toLowerCase());
-            showFieldError(id, msg);
-          });
-        }
-        showStatus(data.error || 'Setup failed. See field errors above.', true);
+        showFieldError('gateway-url', data.error || 'Could not save client-mode config.');
         btn.disabled = false;
-        btn.textContent = 'Save self-hosted config';
+        btn.textContent = 'Save client-mode config';
       }
     } catch (err) {
       showStatus('Network error: ' + err.message, true);
       btn.disabled = false;
-      btn.textContent = 'Save self-hosted config';
+      btn.textContent = 'Save client-mode config';
     }
   });
 }
-
-// Lazy-initialize on first disclosure open so the default view stays pristine.
-const advancedDetails = document.getElementById('advanced-self-host');
-if (advancedDetails) {
-  advancedDetails.addEventListener('toggle', () => {
-    if (advancedDetails.open) initAdvancedForm();
-  });
-}
-
-const BASE = window.location.origin;
 
 function showFieldError(id, msg) {
   const el = document.getElementById(id + '-error');
@@ -304,8 +347,6 @@ function getValues() {
   for (const [k, val] of data.entries()) { if (val) v[k] = val; }
   const chainId = parseInt(v.chainId, 10);
   if (!isNaN(chainId)) v.chainId = chainId;
-  // fixedTonUsd removed from the wizard (Tokamak API is canonical). Kept
-  // as a hidden admin escape hatch via BILLING_FIXED_TON_USD env var.
   delete v.fixedTonUsd;
   return v;
 }
@@ -335,7 +376,6 @@ async function autoDetectChainId() {
     });
     const data = await r.json();
     if (data.ok) {
-      // Chain ID auto-detection is server-side via validateChainRpcUrl
       showFieldError('rpc-url', '');
     }
   } catch {}
@@ -363,7 +403,6 @@ async function verifyContracts() {
 }
 
 function generateKey() {
-  // Generate client-side and fill the input.
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
   const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
@@ -372,14 +411,13 @@ function generateKey() {
 }
 
 function generateSecret() {
-  const bytes = new Uint8Array(36);
+  const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
-  const b64 = btoa(String.fromCharCode(...bytes)).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=/g,'');
-  document.getElementById('auth-secret').value = b64;
+  const hex = Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
+  document.getElementById('auth-secret').value = hex;
 }
 
 function updateDerivedAddress() {
-  // Address derivation requires secp256k1 — we show a note but can't derive in browser without a lib.
   const key = document.getElementById('operator-key').value.trim();
   const el = document.getElementById('derived-address');
   if (/^0x[0-9a-fA-F]{64}$/.test(key)) {
@@ -456,12 +494,9 @@ export const setupPanelRoutes: Route[] = [
 // Mode-aware factory
 // ---------------------------------------------------------------------------
 //
-// v2.1.0: with TOKAGENT_GATEWAY_URL now defaulted, the client-mode panel and
-// the server-mode panel collapse into the SAME panel — the mode-picker hero.
-// The client-mode-specific gateway-URL form is gone (the URL has a sensible
-// default; advanced users edit it via env var or a future admin UI). Both
-// modes return `setupPanelRoutes` so the panel UX is identical regardless
-// of which mode the plugin booted in.
+// v2.0.5: the panel is the same in both modes — the default-visible form is
+// the 7-field self-hosted setup, and the client-mode disclosure handles the
+// "I've been given a gateway URL" case. Both modes return `setupPanelRoutes`.
 export function getSetupPanelRoutes(_mode: "server" | "client"): Route[] {
   return setupPanelRoutes;
 }

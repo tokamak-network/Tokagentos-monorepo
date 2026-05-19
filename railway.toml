@@ -1,0 +1,107 @@
+# railway.toml — tokagent-billing-server on Railway
+#
+# This file lives at tokagentos/railway.toml. When you link the Railway
+# service to this repo, set the "Service Root Directory" in the Railway
+# dashboard to "tokagentos" so the dockerfilePath below resolves correctly.
+#
+# Why a Dockerfile (not Railway's default nixpacks builder):
+#   - The build is a bun workspace install, not a single-package app.
+#   - The Dockerfile excludes unrelated apps/ to keep the image small.
+#   - Identical artifact whether deployed to Railway, Fly, k8s, or local Docker.
+#
+# Deploy commands (one-time setup):
+#   railway login
+#   railway link            # link an existing project, or:
+#   railway init            # create a new project
+#   railway add postgres    # provision a managed Postgres
+#   railway variables set BILLING_DATABASE_URL='<copy from postgres service>'
+#   # ...set the rest of the secrets (see docs/billing-server-DEPLOY.md §1.1)
+#   railway up              # build + deploy
+#   railway domain          # mint a *.up.railway.app URL (or attach custom)
+#
+# Routine deploy (after initial setup, from this directory):
+#   railway up              # builds + deploys current local checkout
+#
+# Or wire GitHub auto-deploy via the dashboard: every push to your selected
+# branch triggers a new build.
+
+[build]
+  builder        = "DOCKERFILE"
+  dockerfilePath = "apps/billing-server/Dockerfile"
+
+[deploy]
+  # /api/health is the tokagentos agent's standard liveness+readiness surface.
+  # Returns {"ready":true,...} when DB + plugins are up.
+  healthcheckPath    = "/api/health"
+  # Agent boot is heavy: image is ~1.3 GB (full elizaOS plugin runtime + 9 apps
+  # + embedding model deps). Cold start = image pull (30-60s) + container start +
+  # bun load + Drizzle migrations + plugin pre-register loop + embedding model
+  # initialization. Realistic budget is 5-8 min for a cold deploy. Setting 600s
+  # (10 min) so healthcheck doesn't time out before the API server binds.
+  healthcheckTimeout = 600
+
+  # Always restart on crash. The consume worker, withdraw watcher, and TWAP
+  # poller all rely on continuous uptime — a stopped machine drops in-flight
+  # accruals and event subscriptions.
+  restartPolicyType       = "ON_FAILURE"
+  restartPolicyMaxRetries = 10
+
+  # The Dockerfile CMD is `bun --bun packages/agent/src/bin.ts` and the
+  # container honors TOKAGENT_PORT=8080 (set in the Dockerfile ENV layer
+  # AND below for clarity). Railway maps internal:8080 → public:443 by
+  # default once you generate a domain.
+  startCommand = "bun --bun packages/agent/src/bin.ts"
+
+# Non-secret env vars — set here so they're versioned with the deploy.
+# Secrets (DB URL, auth secret, operator key, RPCs, LiteLLM key) MUST be set
+# via `railway variables set …` or the dashboard — never committed.
+[deploy.envs]
+  TOKAGENT_PORT                       = "8080"
+  NODE_ENV                            = "production"
+  LOG_LEVEL                           = "info"
+
+  # Bind to all interfaces so Railway's healthcheck (hits from outside the
+  # container's localhost) can reach the API server. Default is 127.0.0.1
+  # (DEFAULT_API_BIND_HOST in shared/runtime-env.ts) — Railway gets connection
+  # refused with the default even though the process is healthy.
+  TOKAGENT_API_BIND                   = "0.0.0.0"
+  # The agent enforces a Host-header allowlist after binding wide. Allow the
+  # Railway-internal hostnames + public *.up.railway.app pattern. Add your
+  # custom domain here once you point one at this service.
+  TOKAGENT_ALLOWED_HOSTS              = "localhost,0.0.0.0,127.0.0.1,.up.railway.app,.railway.app,.railway.internal"
+  TOKAGENT_ALLOW_NULL_ORIGIN          = "true"
+
+  BILLING_MODE                        = "server"
+  BILLING_ENABLED                     = "true"
+  BILLING_AUTH_REQUIRED               = "true"
+
+  BILLING_CHAIN_ID                    = "1"
+  BILLING_VAULT_ADDRESS               = "0x1072f70e7c490E460fA72AC4171F7aDD1ef2d79F"
+  BILLING_PTON_ADDRESS                = "0x00D1EDcE8E7c617891FF76224DFf501c568f1Ce0"
+
+  BILLING_WTON_WETH_POOL_ADDRESS      = "0xC29271E3a68A7647Fd1399298Ef18FeCA3879F59"
+  BILLING_WTON_IS_TOKEN0_IN_WETH_POOL = "false"
+  BILLING_WETH_USDC_POOL_ADDRESS      = "0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640"
+  BILLING_WETH_IS_TOKEN0_IN_USDC_POOL = "false"
+  BILLING_WTON_DECIMALS               = "27"
+  BILLING_WETH_DECIMALS               = "18"
+  BILLING_USDC_DECIMALS               = "6"
+  BILLING_TWAP_WINDOW_SECONDS         = "60"
+
+  BILLING_LITELLM_BASE_URL            = "https://api.ai.tokamak.network/"
+
+  BILLING_MARGIN_BPS                  = "100"
+  BILLING_MARGIN_FLOOR_BPS            = "50"
+  BILLING_PROMOTION_DISCOUNT_BPS      = "0"
+
+  BILLING_RATE_LIMIT_ENABLED          = "true"
+  BILLING_RATE_LIMIT_QUOTE_PER_MIN    = "60"
+  BILLING_RATE_LIMIT_SETTLE_PER_MIN   = "30"
+
+  BILLING_CONSUME_SCAN_INTERVAL_MS    = "30000"
+  BILLING_CONSUME_BATCH_MIN_PTON      = "1000000000000000"
+  BILLING_CONSUME_MAX_PER_CYCLE       = "50"
+  BILLING_CONSUME_MAX_AGE_MS          = "300000"
+
+  BILLING_USAGE_RETENTION_DAYS        = "90"
+  BILLING_USAGE_CLEANUP_INTERVAL_MS   = "3600000"

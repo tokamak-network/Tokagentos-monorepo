@@ -349,3 +349,7 @@ export function configFileExists(): boolean {
 }
 
 // Backward-compat aliases for downstream forks using the old name
+// (restored elizaOS apps under tokagentos/apps/{lifeops,vincent,steward,...}
+// import these by their pre-rename names: loadElizaConfig / saveElizaConfig).
+export const loadElizaConfig = loadTokagentConfig;
+export const saveElizaConfig = saveTokagentConfig;

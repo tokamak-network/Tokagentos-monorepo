@@ -65,34 +65,34 @@ const BillingConfigSchema = z.object({
   /**
    * Billing mode for the plugin instance.
    *
-   *   - `client` (default — v2.1.0): this instance is a pure HTTPS forwarder
-   *     pointing at `TOKAGENT_GATEWAY_URL` (default: `https://gateway.tokagent.ai`).
-   *     It owns NO database, runs NO workers, and all /v1/* routes proxy to the
-   *     upstream gateway. A fresh tokagentos install boots into a working
-   *     client-mode plugin with zero configuration.
-   *   - `server`: this instance owns the Neon DB, runs on-chain settlement
-   *     workers, and exposes the full billing API directly. Operators opt into
-   *     this mode via the setup wizard's "Advanced: self-host" disclosure.
+   *   - `server` (default — v2.0.5): this instance owns the Postgres database,
+   *     runs on-chain settlement workers, and exposes the full billing API
+   *     directly. A fresh tokagentos install boots into server-mode with
+   *     BILLING_ENABLED=false; the operator opts in by running the 7-field
+   *     setup wizard.
+   *   - `client`: this instance is a pure HTTPS forwarder pointing at
+   *     `TOKAGENT_GATEWAY_URL` (REQUIRED — there is no default; the operator
+   *     of the billing server you're connecting to must provide the URL).
+   *     It owns NO database, runs NO workers, and all /v1/* routes proxy to
+   *     the upstream server.
    *
-   * Cross-validation in `loadBillingConfig` enforces that `BILLING_DATABASE_URL`
-   * (+ chain envs) are set when mode=server AND BILLING_ENABLED=true. In
-   * client-mode `TOKAGENT_GATEWAY_URL` always has a value because it defaults
-   * to the hosted gateway.
+   * Cross-validation in `loadBillingConfig` enforces:
+   *   - mode=client → TOKAGENT_GATEWAY_URL MUST be set explicitly
+   *   - mode=server + BILLING_ENABLED=true → DB + chain envs MUST be set
    */
-  BILLING_MODE: z.enum(["server", "client"]).default("client"),
+  BILLING_MODE: z.enum(["server", "client"]).default("server"),
 
   /**
-   * Base URL of the upstream tokagent gateway. Used when `BILLING_MODE=client`
-   * (the default). Ignored when `BILLING_MODE=server`.
+   * Base URL of the upstream tokagent-billing-server this client connects to.
+   * Used when `BILLING_MODE=client`. Ignored when `BILLING_MODE=server`.
    *
-   * Default: `https://gateway.tokagent.ai` — the hosted Tokagent gateway. A
-   * default-config CLI install points here automatically; advanced users
-   * override this to point at a self-hosted gateway.
+   * There is intentionally NO default — Tokagent billing is self-hosted
+   * only. Every operator runs their own billing server; if you've chosen
+   * client-mode, the operator of the server you're connecting to gave you
+   * the URL. Cross-validation throws at boot when mode=client and this is
+   * unset, with a clear message.
    */
-  TOKAGENT_GATEWAY_URL: z
-    .string()
-    .url()
-    .default("https://gateway.tokagent.ai"),
+  TOKAGENT_GATEWAY_URL: z.string().url().optional(),
 
   /**
    * Per-request timeout in milliseconds for the gateway forwarder.
@@ -105,12 +105,14 @@ const BillingConfigSchema = z.object({
   /**
    * Master feature flag.
    *
-   * Default behavior (v2.1.0):
-   *   - In `BILLING_MODE=client` (the default mode): when unset, defaults to
-   *     `true`. The client-mode forwarder needs no local resources, so the
-   *     default install is "billing on, pointing at the hosted gateway."
-   *   - In `BILLING_MODE=server`: when unset, defaults to `false`. Server-mode
-   *     requires DB + chain envs, so the operator must explicitly opt in.
+   * Default behavior (v2.0.5 — self-hosted-first):
+   *   - In `BILLING_MODE=server` (the default mode): when unset, defaults to
+   *     `false`. Server-mode requires DB + chain envs, so the operator must
+   *     explicitly opt in by running the setup wizard, which sets
+   *     BILLING_ENABLED=true after persisting all required envs.
+   *   - In `BILLING_MODE=client`: when unset, defaults to `true`. A user
+   *     who has explicitly opted into client-mode and supplied
+   *     TOKAGENT_GATEWAY_URL wants billing on.
    *
    * Explicit values (`true` / `false`) always win over the mode-aware default.
    * The actual resolution happens in `loadBillingConfig` after the mode is
@@ -295,7 +297,8 @@ const BillingConfigSchema = z.object({
     .optional(),
 
   /**
-   * Postgres connection URL for the billing ledger.
+   * Postgres connection URL for the billing ledger. Any Postgres 14+ works
+   * (Supabase, Railway, AWS RDS, your own server, or local Docker for dev).
    * Required when BILLING_ENABLED=true. The plugin service layer constructs a
    * `pg.Pool` from this at start time (Decision Z23). Validated as a URL at
    * boot via Zod, so typos like `BILLING_DATABSE_URL` surface as a
@@ -400,20 +403,24 @@ export function loadBillingConfig(
 ) {
   const raw = BillingConfigSchema.parse(env);
 
-  // ---- v2.0.0: BILLING_MODE cross-validation ----
-  // Mode=client: the plugin is a pure HTTPS forwarder pointing at the gateway.
-  // TOKAGENT_GATEWAY_URL is now defaulted to `https://gateway.tokagent.ai`
-  // at the schema level, so a fresh install boots into a working client-mode
-  // plugin with zero env vars. We still parse-validate the URL via Zod, but
-  // we no longer throw on "missing" — the schema default guarantees presence.
+  // ---- v2.0.5: BILLING_MODE cross-validation (self-hosted-first) ----
+  // Mode=client: the plugin is a pure HTTPS forwarder pointing at an
+  // operator-provided billing server. TOKAGENT_GATEWAY_URL has NO default —
+  // Tokagent billing is self-hosted only, so we cannot ship a default URL.
+  // Throw at boot if client-mode is chosen without a URL.
   const billingMode = raw.BILLING_MODE;
+  if (billingMode === "client" && !raw.TOKAGENT_GATEWAY_URL) {
+    throw new BillingConfigError(
+      "BILLING_MODE=client requires TOKAGENT_GATEWAY_URL — set it to the URL of the tokagent-billing-server you're a client of",
+    );
+  }
 
   // ---- Phase 6: BILLING_ENABLED cross-validation (server-mode only) ----
-  // Mode-aware default (v2.1.0):
-  //   - client-mode: default true when unset. The forwarder needs no local
-  //     resources, so the default install is "billing on, gateway URL set."
-  //   - server-mode: default false when unset (Decision Z31 — operator must
-  //     explicitly opt in because DB + chain envs are required).
+  // Mode-aware default (v2.0.5 — self-hosted-first):
+  //   - server-mode (default): default false when unset (Decision Z31 —
+  //     operator must explicitly opt in because DB + chain envs are required).
+  //   - client-mode: default true when unset. A user who has explicitly opted
+  //     into client-mode and supplied TOKAGENT_GATEWAY_URL wants billing on.
   // Explicit BILLING_ENABLED=true/false always wins.
   const enabled =
     raw.BILLING_ENABLED ?? (billingMode === "client" ? true : false);

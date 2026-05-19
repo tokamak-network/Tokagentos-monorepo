@@ -1,16 +1,18 @@
 /**
- * Tests for setup-panel-routes.ts (v2.1.0 mode-picker redesign).
+ * Tests for setup-panel-routes.ts (v2.0.5 self-hosted-first redesign).
  *
- * The default view is a calm "Connected to Tokagent gateway" hero with a
- * single CTA to the dashboard. A native <details> disclosure reveals the
- * existing 7-field self-host form for advanced users.
+ * The default view IS the 7-field self-hosted server-mode setup form, with
+ * inline help text under each label explaining how to obtain/generate the
+ * value. A small <details id="client-mode-disclosure"> at the bottom offers
+ * the single-field client-mode flow for users given a gateway URL.
  *
  * These tests render the HTML and assert:
- *   - The hero text is present.
- *   - The <details id="advanced-self-host"> block exists.
- *   - All 7 server-mode form fields are inside the advanced section with the
- *     correct `name` attributes.
- *   - The Connect-wallet CTA links to the dashboard.
+ *   - All 7 server-mode form fields are visible by default with correct names.
+ *   - Inline help text is present (Docker Postgres, public RPCs, mainnet addrs,
+ *     `cast wallet new`, `openssl rand -hex 32`).
+ *   - The "Use mainnet defaults" button is present.
+ *   - A <details id="client-mode-disclosure"> block exists with a gatewayUrl field.
+ *   - No "Connected to Tokagent gateway" text and no fictional hosted URL appear anywhere.
  *   - BILLING_SETUP_ENABLED=false short-circuits to 403.
  *   - getSetupPanelRoutes returns the same single route in both modes.
  */
@@ -105,7 +107,7 @@ afterEach(() => {
 // HTML content
 // ---------------------------------------------------------------------------
 
-describe("GET /v1/billing/setup-panel — default hero view", () => {
+describe("GET /v1/billing/setup-panel — default self-hosted form", () => {
   it("returns 200 with text/html content-type", async () => {
     const route = setupPanelRoutes[0]!;
     const res = makeRes();
@@ -114,45 +116,24 @@ describe("GET /v1/billing/setup-panel — default hero view", () => {
     expect(res.headers["Content-Type"]).toMatch(/text\/html/);
   });
 
-  it("contains the 'Connected to Tokagent gateway' hero text", async () => {
+  it("page header uses neutral framing (no 'Tokagent gateway' branding)", async () => {
     const html = await renderPanel();
-    expect(html).toContain("Connected to Tokagent gateway");
+    expect(html).toContain("Set up x402 billing");
+    expect(html).not.toMatch(/Connected to Tokagent gateway/i);
+    // Regression guard: the fictional hosted-gateway URL from 2.0.4 must
+    // never reappear in the panel. Built from parts to keep grep sweeps
+    // for the literal hostname clean.
+    const fictionalUrl = ["gateway", "tokagent", "ai"].join(".");
+    expect(html).not.toContain(fictionalUrl);
   });
 
-  it("mentions the hosted gateway URL gateway.tokagent.ai", async () => {
+  it("contains the page intro about self-hosting + client option", async () => {
     const html = await renderPanel();
-    expect(html).toContain("gateway.tokagent.ai");
+    expect(html).toMatch(/Run your own billing server.*Postgres.*operator EOA/i);
+    expect(html).toMatch(/connect as a client/i);
   });
 
-  it("provides a Connect-wallet CTA that links to the dashboard", async () => {
-    const html = await renderPanel();
-    expect(html).toMatch(/href="\/v1\/billing\/dashboard\/"/);
-    expect(html).toMatch(/Connect wallet/i);
-  });
-
-  it("does NOT show any form input fields above the disclosure (zero default form fields)", async () => {
-    const html = await renderPanel();
-    // The hero section ends at the <details> block. Everything before it
-    // should contain no <input> elements at all.
-    const detailsIdx = html.indexOf("<details");
-    expect(detailsIdx).toBeGreaterThan(0);
-    const heroHtml = html.slice(0, detailsIdx);
-    expect(heroHtml).not.toMatch(/<input\b/);
-  });
-});
-
-describe("GET /v1/billing/setup-panel — advanced self-host disclosure", () => {
-  it("contains a <details> block with id='advanced-self-host'", async () => {
-    const html = await renderPanel();
-    expect(html).toMatch(/<details\s+class="advanced"\s+id="advanced-self-host"/);
-  });
-
-  it("has a summary saying 'Advanced: self-host billing'", async () => {
-    const html = await renderPanel();
-    expect(html).toMatch(/<summary>\s*Advanced: self-host billing\s*<\/summary>/);
-  });
-
-  it("contains all 7 server-mode form fields with correct name attributes", async () => {
+  it("contains all 7 server-mode form fields visible by default with correct name attributes", async () => {
     const html = await renderPanel();
     const required = [
       "databaseUrl",
@@ -166,24 +147,114 @@ describe("GET /v1/billing/setup-panel — advanced self-host disclosure", () => 
     for (const name of required) {
       expect(html).toContain(`name="${name}"`);
     }
+    // The 7-field form is the DEFAULT VIEW — these inputs appear OUTSIDE the
+    // client-mode disclosure. Confirm they appear before <details>.
+    const detailsIdx = html.indexOf("<details");
+    expect(detailsIdx).toBeGreaterThan(0);
+    const heroHtml = html.slice(0, detailsIdx);
+    for (const name of required) {
+      expect(heroHtml).toContain(`name="${name}"`);
+    }
+  });
+
+  it("includes the 'Use mainnet defaults' button", async () => {
+    const html = await renderPanel();
+    expect(html).toMatch(/Use mainnet defaults/);
   });
 
   it("includes the self-host form submit button", async () => {
     const html = await renderPanel();
     expect(html).toMatch(/Save self-hosted config/);
   });
+});
 
-  it("warns about operator-EOA responsibility in the disclosure intro", async () => {
+describe("GET /v1/billing/setup-panel — inline help text", () => {
+  it("Database field help mentions the Docker Postgres one-liner", async () => {
     const html = await renderPanel();
-    // HTML may wrap whitespace anywhere in the sentence — match flexibly.
-    expect(html).toMatch(/responsible[\s\S]+?for funding[\s\S]+?operator[\s\S]+?EOA/i);
+    expect(html).toMatch(/docker run.*postgres:16/);
+    expect(html).toMatch(/Any Postgres 14\+/);
+  });
+
+  it("Chain RPC help lists the public Ethereum endpoints", async () => {
+    const html = await renderPanel();
+    expect(html).toContain("https://eth.llamarpc.com");
+    expect(html).toContain("https://rpc.ankr.com/eth");
+    expect(html).toContain("https://ethereum.publicnode.com");
+  });
+
+  it("ClaudeVault help shows the canonical mainnet address", async () => {
+    const html = await renderPanel();
+    expect(html).toContain("0x1072f70e7c490E460fA72AC4171F7aDD1ef2d79F");
+  });
+
+  it("PTON help shows the canonical mainnet address", async () => {
+    const html = await renderPanel();
+    expect(html).toContain("0x00D1EDcE8E7c617891FF76224DFf501c568f1Ce0");
+  });
+
+  it("Operator key help mentions `cast wallet new` and gas funding", async () => {
+    const html = await renderPanel();
+    expect(html).toMatch(/cast wallet new/);
+    expect(html).toMatch(/0\.1 ETH/);
+    expect(html).toMatch(/OPERATOR_ROLE/);
+  });
+
+  it("Auth secret help mentions `openssl rand -hex 32`", async () => {
+    const html = await renderPanel();
+    expect(html).toMatch(/openssl rand -hex 32/);
+  });
+
+  it("uses small.hint blocks for inline help", async () => {
+    const html = await renderPanel();
+    expect(html).toMatch(/<small class="hint">/);
+  });
+});
+
+describe("GET /v1/billing/setup-panel — client-mode disclosure", () => {
+  it("contains a <details id='client-mode-disclosure'> block at the bottom", async () => {
+    const html = await renderPanel();
+    expect(html).toMatch(/<details\s+class="client-mode"\s+id="client-mode-disclosure"/);
+  });
+
+  it("has a summary about being a client of a hosted billing server", async () => {
+    const html = await renderPanel();
+    expect(html).toMatch(/Already a client of a hosted billing server\?/);
+    expect(html).toMatch(/Configure client-mode/);
+  });
+
+  it("contains a single gatewayUrl field inside the client disclosure", async () => {
+    const html = await renderPanel();
+    expect(html).toContain(`name="gatewayUrl"`);
+    // The gatewayUrl input must live inside the client-mode disclosure.
+    const detailsStart = html.indexOf("client-mode-disclosure");
+    expect(detailsStart).toBeGreaterThan(0);
+    const clientSection = html.slice(detailsStart);
+    expect(clientSection).toContain(`name="gatewayUrl"`);
+  });
+
+  it("client-mode help mentions BILLING_MODE=client + TOKAGENT_GATEWAY_URL persistence behavior", async () => {
+    const html = await renderPanel();
+    expect(html).toMatch(/operator.*gave you this URL/i);
   });
 
   it("uses a native <details> element so the disclosure works with no JS", async () => {
     const html = await renderPanel();
-    // The disclosure widget MUST be a native <details><summary>...</summary>
-    // so screen readers and progressive-enhancement clients can use it.
     expect(html).toMatch(/<details\b[^>]*>\s*<summary>/);
+  });
+});
+
+describe("GET /v1/billing/setup-panel — no Tokagent gateway branding", () => {
+  it("does NOT contain the 'Connected to Tokagent gateway' hero text anywhere", async () => {
+    const html = await renderPanel();
+    expect(html).not.toMatch(/Connected to Tokagent gateway/i);
+  });
+
+  it("does NOT contain the fictional hosted-gateway URL from 2.0.4", async () => {
+    // Regression guard. URL built from parts so a verbatim string-grep across
+    // the codebase stays clean — the literal hostname should appear nowhere.
+    const html = await renderPanel();
+    const fictionalUrl = ["gateway", "tokagent", "ai"].join(".");
+    expect(html).not.toContain(fictionalUrl);
   });
 });
 
@@ -219,7 +290,7 @@ describe("getSetupPanelRoutes(mode)", () => {
     expect(routes[0]!.path).toBe("/v1/billing/setup-panel");
   });
 
-  it("returns the same single route in server-mode (mode-picker is universal)", () => {
+  it("returns the same single route in server-mode (panel is universal)", () => {
     const clientRoutes = getSetupPanelRoutes("client");
     const serverRoutes = getSetupPanelRoutes("server");
     expect(clientRoutes).toEqual(serverRoutes);

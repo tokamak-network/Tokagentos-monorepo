@@ -70,11 +70,6 @@ if [[ ! "${BILLING_DATABASE_URL}" =~ ^postgres(ql)?:// ]]; then
   echo "✗ BILLING_DATABASE_URL must start with postgres:// or postgresql://" >&2
   exit 1
 fi
-if [[ ! "${BILLING_DATABASE_URL}" =~ -pooler ]]; then
-  echo "⚠  BILLING_DATABASE_URL hostname does not contain '-pooler'." >&2
-  echo "   Using Neon's direct endpoint will exhaust connection limits." >&2
-  echo "   Use the POOLED connection string. Continuing anyway." >&2
-fi
 if [[ ! "${BILLING_OPERATOR_PRIVATE_KEY}" =~ ^0x[a-fA-F0-9]{64}$ ]]; then
   echo "✗ BILLING_OPERATOR_PRIVATE_KEY must be 0x followed by 64 hex chars (32 bytes)." >&2
   exit 1
@@ -97,4 +92,4 @@ flyctl secrets set \
 echo ""
 echo "✓ Secrets pushed. Fly is restarting the app with the new secrets."
 echo "  Tail logs:    flyctl logs --app ${APP}"
-echo "  Smoke test:   bun tokagentos/scripts/billing-server/check-readiness.ts https://gateway.tokagent.ai --full"
+echo "  Smoke test:   bun tokagentos/scripts/billing-server/check-readiness.ts https://<your-billing-server-domain> --full"

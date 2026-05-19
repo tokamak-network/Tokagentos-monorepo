@@ -122,13 +122,39 @@ describe("createGatewayClient()", () => {
     expect(cap.captured[0]!.url).toBe("https://gw.example.com/healthz");
   });
 
-  it("returns a singleton via getGatewayClient()", () => {
-    const a = getGatewayClient();
-    const b = getGatewayClient();
-    expect(a).toBe(b);
-    resetGatewayClient();
-    const c = getGatewayClient();
-    expect(c).not.toBe(a);
+  it("returns a singleton via getGatewayClient() when TOKAGENT_GATEWAY_URL is set", () => {
+    // v2.0.5: getGatewayClient throws if TOKAGENT_GATEWAY_URL is unset
+    // (self-hosted-first — no default URL). Provide one for this test.
+    const prev = process.env.TOKAGENT_GATEWAY_URL;
+    process.env.TOKAGENT_GATEWAY_URL = "https://gw-singleton.example.com";
+    try {
+      resetGatewayClient();
+      const a = getGatewayClient();
+      const b = getGatewayClient();
+      expect(a).toBe(b);
+      resetGatewayClient();
+      const c = getGatewayClient();
+      expect(c).not.toBe(a);
+    } finally {
+      if (prev === undefined) {
+        delete process.env.TOKAGENT_GATEWAY_URL;
+      } else {
+        process.env.TOKAGENT_GATEWAY_URL = prev;
+      }
+      resetGatewayClient();
+    }
+  });
+
+  it("throws GatewayProxyError(503) when TOKAGENT_GATEWAY_URL is unset (v2.0.5 self-hosted-first)", () => {
+    const prev = process.env.TOKAGENT_GATEWAY_URL;
+    delete process.env.TOKAGENT_GATEWAY_URL;
+    try {
+      resetGatewayClient();
+      expect(() => getGatewayClient()).toThrow(/TOKAGENT_GATEWAY_URL/);
+    } finally {
+      if (prev !== undefined) process.env.TOKAGENT_GATEWAY_URL = prev;
+      resetGatewayClient();
+    }
   });
 });
 

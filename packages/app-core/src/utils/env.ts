@@ -59,3 +59,8 @@ export function syncTokagentEnvAliases(): void {
   const aliases = getBootConfig().envAliases;
   if (aliases) syncTokagentEnvToBrand(aliases);
 }
+
+// Backward-compat aliases for restored elizaOS apps (app-steward, etc.)
+// that still import these by their pre-rename names.
+export const syncAppEnvToEliza = syncAppEnvToTokagent;
+export const syncElizaEnvAliases = syncTokagentEnvAliases;

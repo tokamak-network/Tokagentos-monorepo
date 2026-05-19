@@ -124,3 +124,8 @@ export function shouldLoadTokagentCloudPluginInConfig(
 ): boolean {
   return resolveTokagentCloudTopology(config).shouldLoadPlugin;
 }
+
+// Backward-compat aliases (elizaOS pre-rename symbols)
+export const isElizaCloudServiceSelectedInConfig = isTokagentCloudServiceSelectedInConfig;
+export const isElizaCloudLinkedInConfig = isTokagentCloudLinkedInConfig;
+export const shouldLoadElizaCloudPluginInConfig = shouldLoadTokagentCloudPluginInConfig;

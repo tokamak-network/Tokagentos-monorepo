@@ -121,10 +121,12 @@ describe("writeBillingConfig", () => {
     expect(enabledIdx).toBe(lines.length - 1);
   });
 
-  it("pins BILLING_MODE=server (v2.1.0 — self-host opt-in)", async () => {
-    // The default install runs in client-mode. Submitting the self-host form
-    // is an explicit opt-in to server-mode, so the writer pins BILLING_MODE
-    // = server so subsequent boots stay in server-mode.
+  it("writes BILLING_MODE=server (v2.0.5 — matches schema default, also overwrites any prior client-mode line)", async () => {
+    // Server-mode IS the schema default in v2.0.5, so this is the no-op-on-
+    // a-fresh-install case. The writer still writes it explicitly so that
+    // documentation in the config file reflects the operator's intent AND
+    // any prior BILLING_MODE=client line (from the client-mode disclosure)
+    // gets overwritten.
     await writeBillingConfig(VALID_VALUES);
     const env = await readConfigEnv();
     expect(env.BILLING_MODE).toBe("server");

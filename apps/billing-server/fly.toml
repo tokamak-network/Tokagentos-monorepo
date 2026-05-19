@@ -1,11 +1,12 @@
 # fly.toml — tokagent-billing-server
 #
-# ONE tokagentos instance running in BILLING_MODE=server, holding the only
-# Neon connection string and the only OPERATOR_PRIVATE_KEY. Other users run
-# tokagentos locally in BILLING_MODE=client pointing at this URL via
-# TOKAGENT_GATEWAY_URL.
+# ONE tokagentos instance running in BILLING_MODE=server, holding the
+# Postgres connection string and the OPERATOR_PRIVATE_KEY. Operators who
+# want to share this server distribute its URL to clients, who configure
+# their local tokagentos in BILLING_MODE=client + TOKAGENT_GATEWAY_URL.
 #
-# Region: fra (Frankfurt), colocated with Neon eu-central-1.
+# Region: fra (Frankfurt). Pick a region close to your Postgres provider
+# to minimize query latency.
 # Reference: https://fly.io/docs/reference/configuration/
 
 app            = "tokagent-billing-server"
@@ -112,5 +113,5 @@ primary_region = "fra"
   memory_mb = 1024
 
 # ── No persistent volume ──────────────────────────────────────────────────────
-# Unlike the earlier gateway prototype, ALL billing state lives in Neon
+# Unlike the earlier gateway prototype, ALL billing state lives in Postgres
 # (BILLING_DATABASE_URL). No /data volume needed.
