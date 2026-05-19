@@ -297,20 +297,33 @@ export function serveStaticUi(
  * the literal /v1/* path and the `public: true` flag is not propagated to
  * `isAuthProtectedRoute` (which runs before plugin route resolution).
  */
-const BILLING_PUBLIC_V1_PREFIXES = [
-  "/v1/auth/",
-  "/v1/billing/",
-  "/v1/topup/",
-  "/v1/credits/",
-  "/v1/usage/",
-  "/v1/keys/",
-  "/v1/estimate/",
+// Path roots for billing-plugin public routes. Each entry matches BOTH the
+// exact path (e.g. /v1/keys for the list/mint endpoints) AND any sub-path
+// (e.g. /v1/keys/:id for the revoke endpoint). Stored without trailing slash;
+// the check below adds one when comparing for the sub-path case so /v1/keys
+// doesn't accidentally exempt /v1/keysomething.
+const BILLING_PUBLIC_V1_ROOTS = [
+  "/v1/auth",
+  "/v1/billing",
+  "/v1/topup",
+  "/v1/credits",
+  "/v1/usage",
+  "/v1/keys",
+  "/v1/estimate",
   "/v1/price",
+  "/v1/messages", // /v1/messages/count_tokens — Anthropic-compatible estimator
+  "/v1/stats",
+  "/v1/quote", // /v1/quote/:id
 ];
 
 export function isAuthProtectedRoute(pathname: string): boolean {
-  // Carve out billing-plugin public routes — they have their own auth.
-  if (BILLING_PUBLIC_V1_PREFIXES.some((p) => pathname.startsWith(p))) {
+  // Carve out billing-plugin public routes — they have their own auth
+  // (SIWE EIP-712 LoginAuth + sk-ai-* HMAC API keys + per-route rate limits).
+  if (
+    BILLING_PUBLIC_V1_ROOTS.some(
+      (p) => pathname === p || pathname.startsWith(p + "/"),
+    )
+  ) {
     return false;
   }
   return (
