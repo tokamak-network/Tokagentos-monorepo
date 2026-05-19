@@ -49,31 +49,43 @@ function attachExpressResponseHelpers(res: ServerResponse): void {
   if (marked[EXPRESS_SHIM]) return;
   marked[EXPRESS_SHIM] = true;
 
+  // Concrete writers used by both the chained and the non-chained helpers.
+  // The RouteResponse interface in @tokagentos/typescript declares json/send/
+  // end/setHeader as methods directly on `res`, so plugin code following the
+  // interface contract may call `res.status(n); res.json(body)` (two calls)
+  // instead of the chained `res.status(n).json(body)`. Both must work.
+  const writeJson = (data: unknown): void => {
+    if (res.headersSent) return;
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.end(JSON.stringify(data));
+  };
+  const writeSend = (data: unknown): void => {
+    if (res.headersSent) return;
+    if (typeof data === "string" || Buffer.isBuffer(data)) {
+      res.end(data);
+    } else {
+      res.setHeader("Content-Type", "application/json; charset=utf-8");
+      res.end(JSON.stringify(data));
+    }
+  };
+
   const r = res as ServerResponse & {
-    status: (code: number) => {
-      json: (data: unknown) => void;
-      send: (data: unknown) => void;
-    };
+    status: (code: number) => ServerResponse;
+    json: (data: unknown) => ServerResponse;
+    send: (data: unknown) => ServerResponse;
   };
 
   r.status = (code: number) => {
     res.statusCode = code;
-    return {
-      json(data: unknown) {
-        if (res.headersSent) return;
-        res.setHeader("Content-Type", "application/json; charset=utf-8");
-        res.end(JSON.stringify(data));
-      },
-      send(data: unknown) {
-        if (res.headersSent) return;
-        if (typeof data === "string" || Buffer.isBuffer(data)) {
-          res.end(data);
-        } else {
-          res.setHeader("Content-Type", "application/json; charset=utf-8");
-          res.end(JSON.stringify(data));
-        }
-      },
-    };
+    return r;
+  };
+  r.json = (data: unknown) => {
+    writeJson(data);
+    return r;
+  };
+  r.send = (data: unknown) => {
+    writeSend(data);
+    return r;
   };
 }
 

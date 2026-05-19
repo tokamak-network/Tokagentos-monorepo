@@ -80,13 +80,21 @@ export function send(res: RouteResponse, upstream: ProxyResponse): void {
     }
   }
 
-  res.status(upstream.status);
+  // Use the CHAINED form (`res.status(n).json(body)`) instead of two separate
+  // calls. The agent's runtime-plugin-routes shim historically only exposed
+  // `.json()` / `.send()` on the object RETURNED by `.status(n)`, not on `res`
+  // directly. Older agent versions (< v0.5.x of @tokagentos/agent) crash with
+  // "res.json is not a function" if `.json()` is called on `res` after a bare
+  // `.status(n)`. The agent shim has since been fixed to attach the helpers
+  // both ways, but using the chained form here works against both old and new
+  // agent runtimes.
+  const chained = res.status(upstream.status);
   if (upstream.body === null) {
     res.end?.();
   } else if (typeof upstream.body === "string") {
-    res.send(upstream.body);
+    chained.send(upstream.body);
   } else {
-    res.json(upstream.body as object);
+    chained.json(upstream.body as object);
   }
 }
 
