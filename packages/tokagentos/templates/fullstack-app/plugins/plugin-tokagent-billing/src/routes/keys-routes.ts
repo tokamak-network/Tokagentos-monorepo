@@ -17,6 +17,7 @@ import {
   mintApiKey,
   listApiKeys,
   revokeApiKey,
+  deleteApiKey,
 } from "@tokagentos/billing";
 import {
   getBillingState,
@@ -153,9 +154,24 @@ async function handleRevokeKey(
     return;
   }
 
+  // `?hard=true` hard-deletes the row instead of soft-revoking. Soft revoke
+  // sets `revoked_at` and leaves the row in `billing_api_keys` for audit
+  // trail — useful but accumulates rows over time. Hard delete reclaims the
+  // row entirely; the historical `billing_call_log` rows still reference
+  // `api_key_id` as a plain text column (no FK), so call-log history is not
+  // affected. The default remains soft-revoke for backward compatibility.
+  const hardFlag = req.query?.["hard"];
+  const hardDelete =
+    hardFlag === "true" || hardFlag === "1" || hardFlag === "";
+
   try {
-    await revokeApiKey(db, keyId, identity.wallet);
-    res.status(200).json({ revoked: true, id: keyId });
+    if (hardDelete) {
+      await deleteApiKey(db, keyId, identity.wallet);
+      res.status(200).json({ deleted: true, id: keyId });
+    } else {
+      await revokeApiKey(db, keyId, identity.wallet);
+      res.status(200).json({ revoked: true, id: keyId });
+    }
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "revoke failed";
     if (message.includes("not found")) {

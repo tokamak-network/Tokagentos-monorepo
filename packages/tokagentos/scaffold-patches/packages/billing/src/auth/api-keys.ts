@@ -164,6 +164,40 @@ export async function revokeApiKey(
 }
 
 /**
+ * Hard-delete an API key row from the database (vs. {@link revokeApiKey},
+ * which sets `revokedAt` and keeps the row for audit trail).
+ *
+ * Use this when the operator wants to reclaim disk space or when revoked
+ * keys would otherwise accumulate unbounded over the lifetime of a wallet.
+ * The historical `billing_call_log` rows still reference `apiKeyId` as a
+ * plain text column (no FK constraint), so call-log history survives.
+ *
+ * Authorization: the caller MUST already have proven ownership — same
+ * checks as {@link revokeApiKey}.
+ *
+ * Idempotent: if the key doesn't exist, returns silently (no throw).
+ */
+export async function deleteApiKey(
+  db: BillingDatabase,
+  id: string,
+  wallet: Address,
+): Promise<void> {
+  const rows = await db
+    .select({ id: apiKeys.id, wallet: apiKeys.wallet })
+    .from(apiKeys)
+    .where(eq(apiKeys.id, id));
+
+  if (rows.length === 0) return; // already gone — idempotent
+
+  const row = rows[0]!;
+  if (row.wallet.toLowerCase() !== wallet.toLowerCase()) {
+    throw new Error(`deleteApiKey: key ${id} does not belong to wallet ${wallet}`);
+  }
+
+  await db.delete(apiKeys).where(eq(apiKeys.id, id));
+}
+
+/**
  * Batch-update `last_used_at` for a set of key IDs.
  * Called by the Phase 5 cron worker, not on the hot request path.
  */

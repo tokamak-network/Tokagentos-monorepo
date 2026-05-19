@@ -78,6 +78,50 @@ function configureLitellmEnvMirror(): void {
 configureLitellmEnvMirror();
 
 /**
+ * Tokagent billing gateway → OpenAI-compatible chat provider.
+ *
+ * When the user has set `BILLING_CHAT_KEY=sk-ai-...` in their .env (the
+ * minted billing API key) AND `TOKAGENT_GATEWAY_URL` is set (always true on
+ * v2.0.7+ scaffolds — defaults to the Tokamak-hosted Railway gateway), wire
+ * them onto OPENAI_* so plugin-openai treats the gateway as its provider.
+ *
+ * Effect: chat composer activates without the user needing to set
+ * OPENAI_API_KEY/OPENAI_BASE_URL manually. The minted sk-ai-* key is sent
+ * as `Authorization: Bearer sk-ai-...`, which the billing-server's
+ * resolveBillingIdentity recognizes (v2.0.18+) and routes through the
+ * billing rail (auth → reserve → upstream LiteLLM → commit).
+ *
+ * Coupled like the LiteLLM mirror — if only one of the two is set, this is
+ * a no-op (we don't want to point OpenAI plugin at the gateway with no key,
+ * or send the billing key to api.openai.com).
+ *
+ * Explicit OPENAI_* in .env still wins over BILLING_* — same precedence
+ * model as the LiteLLM block above.
+ */
+function configureBillingChatMirror(): void {
+  const hasKey = !!process.env.BILLING_CHAT_KEY?.trim();
+  const hasUrl = !!process.env.TOKAGENT_GATEWAY_URL?.trim();
+  if (!hasKey || !hasUrl) return;
+  if (process.env.OPENAI_API_KEY?.trim() || process.env.OPENAI_BASE_URL?.trim()) {
+    // User configured OpenAI explicitly — respect their choice.
+    return;
+  }
+  // The billing gateway exposes /v1/chat/completions + /v1/messages at the
+  // root of TOKAGENT_GATEWAY_URL. plugin-openai appends `/v1/...` itself, so
+  // strip any trailing /v1 the user may have appended and a trailing slash.
+  const base = process.env
+    .TOKAGENT_GATEWAY_URL!.trim()
+    .replace(/\/$/, "")
+    .replace(/\/v1$/, "");
+  process.env.OPENAI_API_KEY = process.env.BILLING_CHAT_KEY!.trim();
+  process.env.OPENAI_BASE_URL = `${base}/v1`;
+  console.info(
+    "[tokagent] BILLING_CHAT_KEY + TOKAGENT_GATEWAY_URL detected — wired as OpenAI-compatible provider for chat.",
+  );
+}
+configureBillingChatMirror();
+
+/**
  * Plugins that depend on PTY/native workspace tooling.
  * Keep them out of cloud images where those binaries are intentionally absent.
  * (Upstream verbatim.)

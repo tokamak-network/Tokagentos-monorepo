@@ -81,9 +81,22 @@ export async function resolveBillingIdentity(
     }
   }
 
-  // ---- 2. Authorization: Bearer <jwt> ----
+  // ---- 2. Authorization: Bearer (API key OR SIWE JWT) ----
+  // Anthropic and OpenAI SDKs (plus elizaOS's plugin-openai) send the API key
+  // as `Authorization: Bearer <key>`. Try as sk-ai-* API key first so a user
+  // can plug the billing gateway into any OpenAI-compatible client by setting
+  // OPENAI_API_KEY=sk-ai-... + OPENAI_BASE_URL=<gateway>. Falls back to SIWE
+  // JWT for the dashboard's wallet-signed session path.
   const bearer = bearerToken(req);
   if (bearer) {
+    if (bearer.startsWith("sk-ai-")) {
+      const result = await resolveApiKey(db, bearer, authSecret);
+      if (result) {
+        return { wallet: result.wallet, apiKeyId: result.id };
+      }
+      // Fall through to JWT path — defensive, in case some future API key
+      // format collides with the prefix check.
+    }
     const result = await verifySession(bearer, authSecret);
     if (result) {
       return { wallet: result.wallet };

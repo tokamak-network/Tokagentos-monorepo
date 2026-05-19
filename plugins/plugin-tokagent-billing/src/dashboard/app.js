@@ -857,8 +857,9 @@ async function renderKeysTable() {
     const tr = document.createElement("tr");
     const status = k.revokedAt ? `<span class="outcome-pill outcome-failed">revoked</span>` : `<span class="outcome-pill outcome-success">active</span>`;
     const action = k.revokedAt
-      ? ""
-      : `<button class="btn btn-danger" type="button" data-revoke="${escape(k.id)}">Revoke</button>`;
+      ? `<button class="btn btn-danger" type="button" data-delete="${escape(k.id)}" title="Permanently remove this revoked key from the database">Delete</button>`
+      : `<button class="btn btn-danger" type="button" data-revoke="${escape(k.id)}">Revoke</button>
+         <button class="btn btn-ghost" type="button" data-delete="${escape(k.id)}" title="Skip the revoke step and hard-delete immediately">Delete</button>`;
     tr.innerHTML = `
       <td><code>${escape(k.id)}</code></td>
       <td>${escape(k.name ?? "—")}</td>
@@ -878,6 +879,25 @@ async function renderKeysTable() {
         await renderKeysTable();
       } catch (e) {
         setStatus($("#key-create-status"), `Revoke failed: ${e.message}`, "err");
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+  // Hard-delete (?hard=true) removes the row from the DB instead of soft-
+  // revoking. Soft revoke keeps the row for audit trail but accumulates
+  // unbounded over time; hard delete reclaims the row. Call-log history
+  // survives because billing_call_log.api_key_id has no FK constraint.
+  for (const btn of tbody.querySelectorAll("[data-delete]")) {
+    btn.addEventListener("click", async () => {
+      const id = btn.getAttribute("data-delete");
+      if (!window.confirm(`Permanently delete API key ${id}?\nThis cannot be undone.`)) return;
+      btn.disabled = true;
+      try {
+        await apiJson(`/v1/keys/${encodeURIComponent(id)}?hard=true`, { method: "DELETE" });
+        await renderKeysTable();
+      } catch (e) {
+        setStatus($("#key-create-status"), `Delete failed: ${e.message}`, "err");
       } finally {
         btn.disabled = false;
       }
