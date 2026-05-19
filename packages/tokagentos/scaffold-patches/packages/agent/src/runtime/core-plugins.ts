@@ -115,8 +115,24 @@ function configureBillingChatMirror(): void {
     .replace(/\/v1$/, "");
   process.env.OPENAI_API_KEY = process.env.BILLING_CHAT_KEY!.trim();
   process.env.OPENAI_BASE_URL = `${base}/v1`;
+
+  // Default model: glm-4.7 is on the Tokamak LiteLLM allowlist. Without
+  // this, plugin-openai falls back to its OpenAI default (gpt-4o-mini /
+  // gpt-4o), which the billing gateway rejects with
+  // "unsupported_model" — and the agent's retry loop turns a fast 400
+  // into a multi-minute "Something went wrong" UX. User can override
+  // with OPENAI_SMALL_MODEL / OPENAI_LARGE_MODEL in .env.
+  const TOKAMAK_DEFAULT_MODEL = "glm-4.7";
+  if (!process.env.OPENAI_SMALL_MODEL?.trim()) {
+    process.env.OPENAI_SMALL_MODEL = TOKAMAK_DEFAULT_MODEL;
+  }
+  if (!process.env.OPENAI_LARGE_MODEL?.trim()) {
+    process.env.OPENAI_LARGE_MODEL = TOKAMAK_DEFAULT_MODEL;
+  }
   console.info(
-    "[tokagent] BILLING_CHAT_KEY + TOKAGENT_GATEWAY_URL detected — wired as OpenAI-compatible provider for chat.",
+    "[tokagent] BILLING_CHAT_KEY + TOKAGENT_GATEWAY_URL detected — wired as OpenAI-compatible provider for chat (model=" +
+      process.env.OPENAI_SMALL_MODEL +
+      ").",
   );
 }
 configureBillingChatMirror();
