@@ -194,26 +194,53 @@ async function handleTopupQuote(
     return;
   }
 
-  // Parse optional amountUsd from body; fall back to the configured default.
+  // Parse optional amountPton OR amountUsd from body; fall back to default.
+  // Prefer amountPton when both are present — it's the exact value the user
+  // signs in the EIP-3009 authorization, and settlement strictly equality-
+  // checks signature.value === quote.amountPton. Routing the user's intent
+  // through a USD round-trip would round and mismatch the signature.
   const body = req.body as Record<string, unknown> | undefined;
+  let amountPton: bigint;
   let amountUsd: number;
-  if (body?.["amountUsd"] !== undefined) {
+  if (body?.["amountPton"] !== undefined) {
+    const raw = body["amountPton"];
+    let parsed: bigint;
+    try {
+      // Accept either a decimal string (atto-units) or a JS number for
+      // backward compat with older clients.
+      if (typeof raw === "string") parsed = BigInt(raw);
+      else if (typeof raw === "number" && Number.isFinite(raw) && raw > 0)
+        parsed = BigInt(Math.floor(raw));
+      else throw new Error("amountPton must be a positive decimal string or number (atto-units)");
+    } catch (e) {
+      res.status(400).json({
+        error: e instanceof Error ? e.message : "Invalid amountPton",
+      });
+      return;
+    }
+    if (parsed <= 0n) {
+      res.status(400).json({ error: "amountPton must be > 0" });
+      return;
+    }
+    amountPton = parsed;
+    // Derive USD for the response envelope. Settlement only checks PTON.
+    amountUsd = (Number(amountPton) / 1e18) * tonUsd;
+  } else if (body?.["amountUsd"] !== undefined) {
     const raw = body["amountUsd"];
     if (typeof raw !== "number" || !Number.isFinite(raw) || raw <= 0) {
       res.status(400).json({ error: "amountUsd must be a positive finite number." });
       return;
     }
     amountUsd = raw;
+    amountPton = usdToPton(amountUsd, tonUsd);
   } else {
-    // Convert default PTON amount → USD.
-    const defaultPton = config.topupAmountPton;
-    // amountUsd = ptonAmount * tonUsd / 1e18
-    amountUsd = Number(defaultPton) * tonUsd / 1e18;
+    // Neither provided — use configured default PTON amount.
+    amountPton = config.topupAmountPton;
+    amountUsd = Number(amountPton) * tonUsd / 1e18;
   }
 
-  const amountPton = usdToPton(amountUsd, tonUsd);
   if (amountPton <= 0n) {
-    res.status(400).json({ error: "Computed PTON amount is zero — check amountUsd." });
+    res.status(400).json({ error: "Computed PTON amount is zero — check amount." });
     return;
   }
 

@@ -716,10 +716,15 @@ function renderTopBar() {
 
 function renderKpis() {
   const c = state.credits;
-  const balance = c?.ledger?.balance ?? c?.onChainCredits;
+  // Server returns BOTH nested (c.ledger.balance) and flat (c.balance).
+  // Prefer nested for clients that expect the structured shape, fall back
+  // to flat for forward/backward compat with the simpler API surface.
+  const balance = c?.ledger?.balance ?? c?.balance ?? c?.onChainCredits;
+  const reserved = c?.ledger?.reserved ?? c?.reserved ?? 0n;
+  const accrued = c?.ledger?.accrued ?? c?.accrued ?? 0n;
   $("#kpi-balance").textContent = fmtPton(balance);
-  $("#kpi-reserved").textContent = fmtPton(c?.ledger?.reserved ?? 0n) + " PTON";
-  $("#kpi-accrued").textContent = fmtPton(c?.ledger?.accrued ?? 0n) + " PTON";
+  $("#kpi-reserved").textContent = fmtPton(reserved) + " PTON";
+  $("#kpi-accrued").textContent = fmtPton(accrued) + " PTON";
   $("#kpi-balance-usd").textContent = fmtUsdFromAttoPton(balance, state.tonUsd);
   // Wallet holdings (outside the vault). ETH and PTON share 18 decimals so
   // fmtPton works for both — only the unit label differs.

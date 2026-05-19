@@ -263,7 +263,7 @@ async function handleCountTokens(
  * or `{ "available": false }` when no price is cached.
  */
 async function handlePrice(
-  req: RouteRequest,
+  _req: RouteRequest,
   res: RouteResponse,
   _runtime: IAgentRuntime,
 ): Promise<void> {
@@ -271,11 +271,9 @@ async function handlePrice(
   const { config, twapCache } = getBillingState();
   if (!config.enabled) return billingUnavailable(res);
 
-  const identity = await resolveBillingIdentity(toIncomingMessage(req));
-  if (!identity) {
-    res.status(401).json({ error: "Authentication required." });
-    return;
-  }
+  // TON/USD is a public oracle read — no identity required. The dashboard
+  // KPI shows this rate before the user has signed in, so gating it on
+  // SIWE auth would leave the price displayed as "—" until login completes.
 
   // 1. Priority override — operator-pinned price freeze.
   //    `BILLING_FIXED_TON_USD` is env-only (not exposed in the setup wizard),

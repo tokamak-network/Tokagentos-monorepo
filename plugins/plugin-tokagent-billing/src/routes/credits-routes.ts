@@ -83,11 +83,19 @@ async function handleGetCreditsMe(
 
   const row = rows[0];
 
+  // Response shape: both flat (legacy clients) and nested under `ledger`
+  // (the dashboard SPA which reads `c.ledger.balance`). Keeping both keys
+  // is cheap and avoids a contract break for any external caller already
+  // depending on the flat shape.
+  const balance = row ? row.balance.toString() : "0";
+  const reserved = row ? row.reserved.toString() : "0";
+  const accrued = row ? row.accrued.toString() : "0";
   res.status(200).json({
     wallet,
-    balance: row ? row.balance.toString() : "0",
-    reserved: row ? row.reserved.toString() : "0",
-    accrued: row ? row.accrued.toString() : "0",
+    balance,
+    reserved,
+    accrued,
+    ledger: { balance, reserved, accrued },
   });
 }
 
