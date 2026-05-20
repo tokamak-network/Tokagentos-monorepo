@@ -1642,6 +1642,94 @@ function wireKeyCreate() {
       setStatus($("#key-modal-copy-status"), "Copy failed — select the value above and copy manually.", "err");
     }
   });
+
+  // ── "Install & Restart Agent" — open the confirm modal ────────────────
+  $("#key-modal-install").addEventListener("click", () => {
+    // Reset any prior status text in the confirm modal so the user starts
+    // from a clean slate if they bounce in and out of the confirm dialog.
+    setStatus($("#key-install-status"), "");
+    $("#key-install-modal").hidden = false;
+    $("#key-install-confirm").disabled = false;
+    $("#key-install-cancel").disabled = false;
+  });
+  $("#key-install-cancel").addEventListener("click", () => {
+    $("#key-install-modal").hidden = true;
+  });
+  $("#key-install-confirm").addEventListener("click", async () => {
+    const installStatus = $("#key-install-status");
+    const confirmBtn = $("#key-install-confirm");
+    const cancelBtn = $("#key-install-cancel");
+    const key = $("#key-modal-value").textContent?.trim() ?? "";
+    if (!/^sk-ai-[A-Za-z0-9_-]{16,}$/.test(key)) {
+      setStatus(installStatus, "Key text is not a valid sk-ai-... value.", "err");
+      return;
+    }
+    confirmBtn.disabled = true;
+    cancelBtn.disabled = true;
+    setStatus(installStatus, "Writing key to .env…");
+    try {
+      // Server responds BEFORE process.exit(75) fires, so this request
+      // resolves cleanly. After ~1.5s the agent restarts and the dashboard
+      // origin briefly goes down — we then poll until it comes back up.
+      const r = await apiJson("/v1/keys/install", {
+        method: "POST",
+        body: JSON.stringify({ key, restart: true }),
+      });
+      setStatus(
+        installStatus,
+        `${r.message ?? "Key saved."} Waiting for agent to come back up…`,
+        "ok",
+      );
+      // Poll for server availability. The restart delay (1.5s) gives the
+      // process time to exit AFTER we got the response. We give the runner
+      // up to 60s to rebuild + relaunch — that's the realistic upper bound
+      // even on a cold tsdown rebuild.
+      const restored = await waitForServerBack({ timeoutMs: 60_000 });
+      if (restored) {
+        setStatus(installStatus, "Agent is back online — reloading page…", "ok");
+        // Brief pause so the user can see the success state before reload.
+        setTimeout(() => window.location.reload(), 800);
+      } else {
+        setStatus(
+          installStatus,
+          "Agent did not come back online within 60s. Check your terminal — you may need to relaunch it manually.",
+          "err",
+        );
+        cancelBtn.disabled = false;
+      }
+    } catch (err) {
+      setStatus(installStatus, `Install failed: ${err.message}`, "err");
+      confirmBtn.disabled = false;
+      cancelBtn.disabled = false;
+    }
+  });
+}
+
+// Poll the agent for availability — used by the install-and-restart flow.
+// We hit a fast public endpoint and treat ANY 2xx response as "back up".
+// During restart the fetch first throws (TCP refused), then briefly may
+// return 503 while the runtime initializes, then settles to 200.
+async function waitForServerBack({ timeoutMs = 60_000 } = {}) {
+  const deadline = Date.now() + timeoutMs;
+  // Initial settle delay so we don't poll the still-alive pre-exit server.
+  // The server told us restartDelayMs=1500 — add a small safety margin.
+  await new Promise((r) => setTimeout(r, 2_000));
+  while (Date.now() < deadline) {
+    try {
+      // /v1/price is a small, cache-able, unauthenticated endpoint.
+      // Cache-bust with a timestamp param so the browser doesn't serve a
+      // 200 from disk cache while the actual server is still down.
+      const resp = await fetch(`/v1/price?_=${Date.now()}`, {
+        method: "GET",
+        cache: "no-store",
+      });
+      if (resp.ok) return true;
+    } catch {
+      // TCP refused / DNS fail / fetch abort — server still down, keep waiting.
+    }
+    await new Promise((r) => setTimeout(r, 1_000));
+  }
+  return false;
 }
 
 function wireFaucet() {

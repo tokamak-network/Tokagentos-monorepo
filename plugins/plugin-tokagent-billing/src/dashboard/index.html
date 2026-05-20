@@ -402,10 +402,31 @@
       <p class="muted small">The proxy stores only an HMAC of the key. If you lose the plaintext, mint a new one.</p>
       <pre id="key-modal-value" class="key-value">sk-ai-…</pre>
       <div class="modal-actions">
-        <button id="key-modal-copy" class="btn btn-primary" type="button">Copy</button>
+        <button id="key-modal-install" class="btn btn-primary" type="button">Install &amp; Restart Agent</button>
+        <button id="key-modal-copy" class="btn btn-ghost" type="button">Copy</button>
         <button id="key-modal-close" class="btn btn-ghost" type="button">I have saved it</button>
       </div>
       <p id="key-modal-copy-status" class="status-line" role="status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <!-- Confirm-restart modal: shown before posting to /v1/keys/install. -->
+  <div id="key-install-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="key-install-title">
+    <div class="modal-body">
+      <div class="modal-eyebrow">Confirm install</div>
+      <h2 id="key-install-title">Install this key into your local .env?</h2>
+      <p class="muted small">
+        This will write <code>BILLING_CHAT_KEY=&lt;key&gt;</code> into the
+        <code>.env</code> in your project root and restart the agent so the
+        new key takes effect. The chat will be unavailable for a few seconds
+        while it relaunches.
+      </p>
+      <p class="muted small">If your agent isn't running under a supervisor (the standard <code>bun dev</code> setup), you may need to relaunch it manually.</p>
+      <div class="modal-actions">
+        <button id="key-install-confirm" class="btn btn-primary" type="button">Install &amp; restart</button>
+        <button id="key-install-cancel" class="btn btn-ghost" type="button">Cancel</button>
+      </div>
+      <p id="key-install-status" class="status-line" role="status" aria-live="polite"></p>
     </div>
   </div>
 
