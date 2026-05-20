@@ -667,42 +667,416 @@ async function topUp(ptonFloat) {
   };
 }
 
-// ----------------------------- Swap (UI shell — stub) -----------------------------
+// ----------------------------- Swap → PTON pipeline -----------------------------
 //
-// The Swap card lets the user fund their PTON balance by swapping from
-// USDC / USDT / ETH / WBTC → TON → PTON in a single user click. The on-chain
-// implementation is intentionally NOT in this commit — only the UI shell.
+// User flow: pick USDC / USDT / ETH / WBTC, click Swap, watch 3-4 wallet pops
+// fire in order, end up with vault credits.
 //
-// TODO(engineer): wire the body of `swapToPton()` below. The recommended
-// pipeline is:
+// Route (verified on-chain 2026-05-20):
 //
-//   1. (ERC-20 only) Approve the DEX router to spend `inputAmountFloat` of
-//      `inputToken`. Skip for native ETH. Submit via `eth_sendTransaction`
-//      and wait for the receipt before proceeding. If the user has prior
-//      allowance >= input, skip the approve.
+//   ERC-20 path:  input ──Uniswap V3──▶ WETH ──Uniswap V3──▶ WTON
+//                    (fee per token)         (0.3% pool, 0xC29271…)
+//                                    └──▶ WTON.swapToTON ▶ TON  (1 WTON_ray = 1e-9 TON_wei)
+//                                                          └──▶ TON.approve(PTON) ▶ PTON.deposit ▶ PTON
+//                                                                                    └──▶ EIP-3009 ▶ vault.depositX402
 //
-//   2. Call the DEX router's `exactInputSingle` / `exactInput` to swap
-//      `inputToken` → TON. Use the slippage bps (`slippageBps`) to compute
-//      `amountOutMinimum` from a quoter call. Wait for receipt.
+//   ETH  path:    SwapRouter02 with tokenIn=WETH, msg.value=amountIn (router auto-wraps),
+//                 then identical WTON→TON→PTON→vault tail.
 //
-//   3. Call PTON.deposit(tonAmount) (or the appropriate wrap function) so the
-//      received TON becomes PTON in the user's wallet. Wait for receipt.
+// Mainnet (chainId 1) contracts:
+//   SwapRouter02      0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45
+//   QuoterV2          0x61fFE014bA17989E743c5F6cB21bF9697530B21e
+//   WETH              0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2
+//   WTON   (ray=27d)  0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2
+//   TON    (18d)      0x2be5e8c109e2197D077D13A82dAead6a9b3433C5
+//   PTON   (18d)      0x00D1EDcE8E7c617891FF76224DFf501c568f1Ce0  (PTON.ton() == TON above)
 //
-//   4. Drive the existing `topUp()` flow (or equivalent vault.depositX402
-//      call) to credit the freshly-minted PTON to the user's ClaudeVault
-//      balance. The existing EIP-3009 signing path already handles this
-//      end-to-end if you pass the wrapped PTON amount through.
-//
-// Throughout, use `setStatus($("#swap-status"), "Approving USDC…", "")` to
-// surface progress. On failure, the calling wireSwap() handler catches the
-// thrown error and routes it to setStatus(..., "err").
+// Decimal contract: WTON uses 27-decimal "ray". TON / PTON use 18-decimal "wei".
+// WTON.swapToTON(wtonRay) burns wtonRay from caller and mints (wtonRay / 1e9) TON_wei.
+
+const SWAP_ADDRESSES = {
+  USDC: { address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", decimals: 6, weth_fee: 500 /* 0.05% */ },
+  USDT: { address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", decimals: 6, weth_fee: 500 },
+  WBTC: { address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", decimals: 8, weth_fee: 3000 /* 0.3% */ },
+  ETH:  { address: null,                                          decimals: 18, weth_fee: null /* native */ },
+};
+const SWAP_WETH         = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const SWAP_WTON         = "0xc4A11aaf6ea915Ed7Ac194161d2fC9384F15bff2";
+const SWAP_TON          = "0x2be5e8c109e2197D077D13A82dAead6a9b3433C5";
+const SWAP_ROUTER02     = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
+const SWAP_QUOTER_V2    = "0x61fFE014bA17989E743c5F6cB21bF9697530B21e";
+const SWAP_WTON_FEE     = 3000;     // WETH/WTON pool fee
+const WTON_RAY_PER_WEI  = 10n ** 9n; // WTON is 27d, TON is 18d → ratio 1e9
+
+// ---------------------- tiny ABI encoding helpers (no deps) ----------------------
+
+// Strip 0x, lowercase. Returns "" for falsy.
+function _stripHex(h) {
+  if (!h) return "";
+  return String(h).replace(/^0x/i, "").toLowerCase();
+}
+// Left-pad to 32 bytes (64 hex chars).
+function _pad32(hex) {
+  const clean = _stripHex(hex);
+  if (clean.length > 64) throw new Error(`_pad32: value too large (${clean.length} hex chars)`);
+  return clean.padStart(64, "0");
+}
+// uint256 → 32-byte hex (no 0x).
+function _encUint(n) {
+  const big = typeof n === "bigint" ? n : BigInt(n);
+  if (big < 0n) throw new Error("_encUint: negative");
+  return _pad32(big.toString(16));
+}
+// address → 32-byte hex (no 0x).
+function _encAddr(addr) {
+  return _pad32(_stripHex(addr));
+}
+// 4-byte selector via keccak256 over the canonical signature.
+// We don't have keccak in vanilla JS — but every selector we need is
+// well-known, so we hard-code them as constants (audited against 4byte.directory).
+const SEL_ERC20_APPROVE     = "095ea7b3"; // approve(address,uint256)
+const SEL_ERC20_ALLOWANCE   = "dd62ed3e"; // allowance(address,address)
+const SEL_ERC20_BALANCE_OF  = "70a08231"; // balanceOf(address)
+const SEL_PTON_DEPOSIT      = "b6b55f25"; // deposit(uint256)
+const SEL_WTON_SWAP_TO_TON  = "f53fe70f"; // swapToTON(uint256)
+const SEL_ROUTER_EXACT_IN   = "b858183f"; // exactInput((bytes,address,uint256,uint256))
+const SEL_QUOTER_EXACT_IN   = "cdca1753"; // quoteExactInput(bytes,uint256)
+
+// parseUnits — convert a JS Number/string to BigInt atto units of given decimals,
+// without floating-point drift for sane decimal strings.
+function parseUnits(amount, decimals) {
+  const s = String(amount).trim();
+  if (!/^\d+(\.\d+)?$/.test(s)) throw new Error(`parseUnits: bad amount "${amount}"`);
+  const [wholeStr, fracStr = ""] = s.split(".");
+  const fracPadded = (fracStr + "0".repeat(decimals)).slice(0, decimals);
+  const combined = (wholeStr === "0" ? "" : wholeStr) + fracPadded;
+  const cleaned = combined.replace(/^0+/, "") || "0";
+  return BigInt(cleaned);
+}
+
+// formatUnits — BigInt → display string with `decimals` precision, trimmed.
+function formatUnits(value, decimals, displayDigits = 6) {
+  const big = typeof value === "bigint" ? value : BigInt(value);
+  const neg = big < 0n;
+  const abs = neg ? -big : big;
+  const denom = 10n ** BigInt(decimals);
+  const whole = abs / denom;
+  const frac = abs % denom;
+  const fracStr = frac.toString().padStart(decimals, "0").slice(0, displayDigits);
+  const trimmed = fracStr.replace(/0+$/, "");
+  const body = trimmed.length === 0 ? whole.toString() : `${whole.toString()}.${trimmed}`;
+  return neg ? "-" + body : body;
+}
+
+// Build the Uniswap V3 path bytes: addr | fee(3) | addr | fee(3) | addr...
+// Returns 0x-prefixed hex string suitable as a `bytes` arg.
+function _buildV3Path(hops) {
+  // hops = [{ token: addr }, { fee, token }, { fee, token }, ...]
+  if (!Array.isArray(hops) || hops.length < 2) throw new Error("path needs >= 2 hops");
+  let out = _stripHex(hops[0].token);
+  for (let i = 1; i < hops.length; i++) {
+    const h = hops[i];
+    if (typeof h.fee !== "number") throw new Error(`hop ${i} missing fee`);
+    out += h.fee.toString(16).padStart(6, "0"); // uint24 = 3 bytes = 6 hex
+    out += _stripHex(h.token);
+  }
+  return "0x" + out;
+}
+
+// Encode `bytes` ABI param. Returns the dynamic offset+length+padded content
+// suitable for splicing into a calldata payload. The CALLER manages the
+// containing header (offsets).
+function _encBytes(hex) {
+  const clean = _stripHex(hex);
+  const lenHex = _encUint(BigInt(clean.length / 2));
+  // pad to 32-byte boundary
+  const padded = clean + "0".repeat((64 - (clean.length % 64)) % 64);
+  return { len: lenHex, content: padded };
+}
+
+// Encode a call to QuoterV2.quoteExactInput(bytes path, uint256 amountIn).
+// QuoterV2 returns (uint256 amountOut, uint160[] sqrtPriceX96AfterList,
+//                    uint32[] initializedTicksCrossedList, uint256 gasEstimate).
+// We only need amountOut — the first 32 bytes of the return data.
+function _encQuoteExactInput(path, amountIn) {
+  // Layout (after 4-byte selector):
+  //   word 0: offset to `bytes path`  = 0x40 (64 = two words ahead)
+  //   word 1: amountIn
+  //   word 2: bytes length
+  //   word 3+: padded bytes
+  const b = _encBytes(path);
+  const data = SEL_QUOTER_EXACT_IN
+    + _encUint(64n)
+    + _encUint(amountIn)
+    + b.len
+    + b.content;
+  return "0x" + data;
+}
+
+// Encode SwapRouter02.exactInput((bytes path, address recipient,
+//                                 uint256 amountIn, uint256 amountOutMinimum)).
+// The struct is dynamic because it contains `bytes`, so the outer arg is also
+// passed by offset. Layout:
+//   word 0: offset to struct = 0x20
+//   word 1..3: head of struct (offset to bytes, recipient, amountIn, amountOutMinimum)
+//   word 4+: bytes payload (length + content padded)
+function _encExactInput({ path, recipient, amountIn, amountOutMinimum }) {
+  const b = _encBytes(path);
+  // Inside the struct: 4 words (bytes offset, recipient, amountIn, amountOutMin).
+  // Bytes offset (within struct) = 0x80 (4 * 32).
+  const data = SEL_ROUTER_EXACT_IN
+    + _encUint(32n)                         // offset to struct
+    + _encUint(128n)                        // struct.bytes offset
+    + _encAddr(recipient)
+    + _encUint(amountIn)
+    + _encUint(amountOutMinimum)
+    + b.len
+    + b.content;
+  return "0x" + data;
+}
+
+// ---------------------- swap pipeline plumbing ----------------------
+
+// Read ERC-20 allowance(owner, spender). Returns BigInt.
+async function _readAllowance(token, owner, spender) {
+  const data = "0x" + SEL_ERC20_ALLOWANCE + _encAddr(owner) + _encAddr(spender);
+  const hex = await rpc("eth_call", [{ to: token, data }, "latest"]);
+  return BigInt(hex);
+}
+
+// Read ERC-20 balanceOf(owner). Returns BigInt.
+async function _readErc20Balance(token, owner) {
+  const data = "0x" + SEL_ERC20_BALANCE_OF + _encAddr(owner);
+  const hex = await rpc("eth_call", [{ to: token, data }, "latest"]);
+  return BigInt(hex);
+}
+
+// Quote: amountIn of inputToken → WTON (in ray). For ERC-20 we go
+// input→WETH→WTON. For ETH we go WETH→WTON directly (since the router pulls
+// the ETH wrap from msg.value when tokenIn=WETH).
+async function _quoteSwapToWton(inputToken, amountIn) {
+  let hops;
+  if (inputToken === "ETH") {
+    hops = [{ token: SWAP_WETH }, { fee: SWAP_WTON_FEE, token: SWAP_WTON }];
+  } else {
+    const cfg = SWAP_ADDRESSES[inputToken];
+    hops = [
+      { token: cfg.address },
+      { fee: cfg.weth_fee, token: SWAP_WETH },
+      { fee: SWAP_WTON_FEE, token: SWAP_WTON },
+    ];
+  }
+  const path = _buildV3Path(hops);
+  const data = _encQuoteExactInput(path, amountIn);
+  // QuoterV2 mutates storage with simulated swaps, so it MUST be invoked via
+  // eth_call — never sent as a tx. (It's safe via eth_call because state mutation
+  // inside eth_call is discarded.)
+  const hex = await rpc("eth_call", [{ to: SWAP_QUOTER_V2, data }, "latest"]);
+  // First 32 bytes of the return = amountOut (uint256 of WTON in ray).
+  if (!hex || hex === "0x") throw new Error("quoter returned empty data");
+  const amountOutWtonRay = BigInt("0x" + _stripHex(hex).slice(0, 64));
+  return { path, amountOutWtonRay };
+}
+
+// Submit `data` from the user's wallet to `to` (optional `value`) and poll for
+// receipt. Throws if the receipt reports failure or 90s timeout elapses.
+async function _sendAndWait({ to, data, value }) {
+  const from = await activeAccountOrThrow();
+  const txParams = { from, to, data };
+  if (value !== undefined && value > 0n) txParams.value = "0x" + value.toString(16);
+  const txHash = await rpc("eth_sendTransaction", [txParams]);
+  const deadline = Date.now() + 90_000;
+  while (Date.now() < deadline) {
+    const rcpt = await rpc("eth_getTransactionReceipt", [txHash]);
+    if (rcpt) {
+      if (rcpt.status === "0x1") return { txHash, rcpt };
+      throw new Error(`tx ${txHash} reverted on-chain`);
+    }
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  throw new Error(`tx ${txHash} receipt timeout after 90s`);
+}
+
+// Ensure `spender` has at least `amount` allowance of `token` from the user.
+// Handles the USDT quirk: USDT (and a handful of other tokens) revert any
+// approve() call where the current allowance is non-zero and the new allowance
+// is also non-zero. The fix is the standard "approve(0) then approve(amount)"
+// dance. We do that unconditionally for USDT to keep the code simple.
+async function _ensureAllowance({ token, owner, spender, amount, symbol }) {
+  const current = await _readAllowance(token, owner, spender);
+  if (current >= amount) return; // already enough — skip
+  const isUsdt = symbol === "USDT";
+  if (isUsdt && current > 0n) {
+    setStatus($("#swap-status"), `Resetting USDT allowance to 0…`);
+    const data0 = "0x" + SEL_ERC20_APPROVE + _encAddr(spender) + _encUint(0n);
+    await _sendAndWait({ to: token, data: data0 });
+  }
+  setStatus($("#swap-status"), `Approving ${symbol}…`);
+  const data = "0x" + SEL_ERC20_APPROVE + _encAddr(spender) + _encUint(amount);
+  await _sendAndWait({ to: token, data });
+}
+
+// Execute the full swap → wrap → vault pipeline.
 async function swapToPton({ inputToken, inputAmountFloat, slippageBps }) {
-  // The engineer task references will live alongside this throw — keep the
-  // throw so accidental wiring (e.g. preview UI auto-firing) reveals the
-  // unimplemented surface immediately rather than silently succeeding.
-  throw new Error(
-    "swap implementation pending — see TODO in plugin-tokagent-billing/src/dashboard/app.js (swapToPton)",
+  // ---- 0. validate inputs / wallet / chain --------------------------------
+  if (!inputToken || !SWAP_ADDRESSES[inputToken]) {
+    throw new Error(`Unsupported input token: ${inputToken}`);
+  }
+  if (!Number.isFinite(inputAmountFloat) || inputAmountFloat <= 0) {
+    throw new Error("Amount must be > 0");
+  }
+  if (!Number.isFinite(slippageBps) || slippageBps < 0 || slippageBps > 10_000) {
+    throw new Error("Slippage must be 0..10000 bps");
+  }
+  if (!state.provider || !state.wallet) {
+    throw new Error("Connect a wallet first.");
+  }
+  if (CHAIN_ID !== 1) {
+    throw new Error(`Swap is only supported on Ethereum mainnet (chainId=1); current=${CHAIN_ID}.`);
+  }
+  const user = await activeAccountOrThrow();
+  await ensureChain();
+
+  const cfg = SWAP_ADDRESSES[inputToken];
+  const amountIn = parseUnits(inputAmountFloat, cfg.decimals);
+  setStatus($("#swap-status"), `Quoting ${inputToken} → WTON…`);
+
+  // ---- 1. quote via QuoterV2 → compute amountOutMinimum -------------------
+  // QuoterV2 returns the expected WTON-ray output. We apply the user's
+  // slippage tolerance to derive the minOut we'll pass to the router.
+  const { path, amountOutWtonRay } = await _quoteSwapToWton(inputToken, amountIn);
+  if (amountOutWtonRay === 0n) {
+    throw new Error("Quote returned 0 — no liquidity on this route.");
+  }
+  const minOutWtonRay =
+    (amountOutWtonRay * BigInt(10_000 - slippageBps)) / 10_000n;
+
+  // The minimum TON we're guaranteed to be able to wrap from the swap.
+  // We use the realized WTON balance delta post-swap (see step 3) as the
+  // canonical wrap amount — that's safe against unrelated WTON dust the user
+  // might already hold because we snapshot the balance *before* the swap.
+  // This early sanity check just rejects quotes so small they'd round to 0.
+  const minOutTonWei = minOutWtonRay / WTON_RAY_PER_WEI;
+  if (minOutTonWei === 0n) {
+    throw new Error("Quote too small (rounds to 0 TON). Increase amount.");
+  }
+
+  // Refresh the visible preview now that we have a real quote (overrides
+  // the placeholder USD-price estimate the UI showed pre-click).
+  try {
+    const outEl = document.getElementById("swap-output-pton");
+    if (outEl) outEl.textContent = formatUnits(minOutTonWei, 18, 6);
+  } catch { /* presentational only */ }
+
+  // ---- 2. approve router (ERC-20 only) ------------------------------------
+  if (inputToken !== "ETH") {
+    await _ensureAllowance({
+      token: cfg.address,
+      owner: user,
+      spender: SWAP_ROUTER02,
+      amount: amountIn,
+      symbol: inputToken,
+    });
+  }
+
+  // ---- 3. swap via SwapRouter02.exactInput → recipient = user -------------
+  // For ETH input the router auto-wraps msg.value when path starts with WETH.
+  // For ERC-20 the router uses the allowance we just set.
+  setStatus(
+    $("#swap-status"),
+    inputToken === "ETH"
+      ? `Swapping ETH → WTON via Uniswap V3…`
+      : `Swapping ${inputToken} → WETH → WTON via Uniswap V3…`,
   );
+  const wtonBalanceBefore = await _readErc20Balance(SWAP_WTON, user);
+  const swapData = _encExactInput({
+    path,
+    recipient: user,
+    amountIn,
+    amountOutMinimum: minOutWtonRay,
+  });
+  await _sendAndWait({
+    to: SWAP_ROUTER02,
+    data: swapData,
+    value: inputToken === "ETH" ? amountIn : 0n,
+  });
+
+  // Use the realized post-swap WTON balance delta as the canonical amount
+  // for wrap → vault — this guarantees we don't over-wrap (which would
+  // revert in PTON.deposit on insufficient TON balance) and forwards the
+  // full swap output, not just the minimum.
+  const wtonBalanceAfter = await _readErc20Balance(SWAP_WTON, user);
+  const wtonReceived = wtonBalanceAfter - wtonBalanceBefore;
+  if (wtonReceived < minOutWtonRay) {
+    // Should be impossible (router enforced minOut) but guard anyway.
+    throw new Error(
+      `Swap underdelivered: got ${wtonReceived} WTON-ray, expected >= ${minOutWtonRay}`,
+    );
+  }
+  // Convert ray→wei. Truncate any sub-1e9-ray dust (will sit in wallet as WTON).
+  const tonToWrap = wtonReceived / WTON_RAY_PER_WEI;
+  if (tonToWrap === 0n) {
+    throw new Error("Swap produced sub-wei TON dust — increase amount.");
+  }
+  const wtonToBurn = tonToWrap * WTON_RAY_PER_WEI;
+
+  // ---- 4. WTON.swapToTON(wtonToBurn) → user's TON balance ----------------
+  setStatus($("#swap-status"), `Unwrapping WTON → TON…`);
+  {
+    const data = "0x" + SEL_WTON_SWAP_TO_TON + _encUint(wtonToBurn);
+    await _sendAndWait({ to: SWAP_WTON, data });
+  }
+
+  // ---- 5. TON.approve(PTON, tonToWrap) ------------------------------------
+  // Tokamak TON is a plain OZ ERC-20 with no USDT-style approve quirk, so the
+  // single approve + deposit pattern is safe.
+  await _ensureAllowance({
+    token: SWAP_TON,
+    owner: user,
+    spender: state.pton ?? (await resolveDepositTargets()).pton,
+    amount: tonToWrap,
+    symbol: "TON",
+  });
+
+  // ---- 6. PTON.deposit(tonToWrap) → user's PTON balance -------------------
+  setStatus($("#swap-status"), `Wrapping TON → PTON…`);
+  const ptonAddr = state.pton ?? (await resolveDepositTargets()).pton;
+  {
+    const data = "0x" + SEL_PTON_DEPOSIT + _encUint(tonToWrap);
+    await _sendAndWait({ to: ptonAddr, data });
+  }
+
+  // ---- 7. EIP-3009 sign + vault.depositX402 -------------------------------
+  // Reuse the existing topUp() pipeline: it builds the same TransferWithAuth
+  // we'd need (PTON, from=user, to=vault, value=ptonAmount) and POSTs
+  // /v1/topup/settle which drives the vault deposit.
+  setStatus($("#swap-status"), `Crediting vault…`);
+  // topUp() takes a float — convert atto-PTON back to a float. Use truncated
+  // micro-PTON arithmetic to match topUp()'s own atto<->float conversion path
+  // (it does `BigInt(Math.round(f * 1e6)) * (ATTO/1e6)`), so we avoid creating
+  // an atto value with sub-micro precision that topUp() would silently round.
+  const microPton = tonToWrap / (ATTO / 1_000_000n); // 18d → 6d truncation
+  if (microPton === 0n) throw new Error("Deposit too small (sub-micro PTON)");
+  const ptonFloat = Number(microPton) / 1_000_000;
+  await topUp(ptonFloat);
+
+  // ---- 8. UI refresh + reset ---------------------------------------------
+  setStatus(
+    $("#swap-status"),
+    `Done — ${formatUnits(tonToWrap, 18, 6)} PTON credited.`,
+    "ok",
+  );
+  try {
+    const amtEl = document.getElementById("swap-amount");
+    if (amtEl) amtEl.value = "";
+  } catch { /* ignore */ }
+  // Refresh the on-chain numbers. Each loader is allowed to fail (e.g. proxy
+  // briefly unavailable) without blocking the success status above.
+  await Promise.all([
+    loadCredits().catch(() => {}),
+    loadWalletHoldings().catch(() => {}),
+  ]);
+  renderKpis();
 }
 
 // ----------------------------- Loaders -----------------------------
@@ -747,9 +1121,33 @@ async function loadWalletHoldings() {
     const data = "0x70a08231" + padded;
     const ptonHex = await rpc("eth_call", [{ to: state.pton, data }, "latest"]);
     state.walletPton = BigInt(ptonHex);
+    // Mirror PTON into the swap-card balance map too — handy so a user who
+    // already holds PTON in their wallet can see it next to USDC/etc., and
+    // for forward compat if we ever add PTON as a swap input (no-op route).
+    state.walletBalances.PTON = Number(state.walletPton) / 1e18;
   } catch (e) {
     state.walletPton = null;
     console.warn("PTON.balanceOf failed", e);
+  }
+  // Pull the Swap-card ERC-20 balances (USDC / USDT / WBTC) so the "Max"
+  // button works and the balance hint isn't perpetually "— USDC". These calls
+  // are mainnet-only (the token addresses are mainnet constants); on any
+  // other chain we silently leave the entries undefined so the UI shows "—".
+  if (CHAIN_ID === 1) {
+    for (const sym of ["USDC", "USDT", "WBTC"]) {
+      const cfg = SWAP_ADDRESSES[sym];
+      try {
+        const padded = state.wallet.toLowerCase().replace(/^0x/, "").padStart(64, "0");
+        const data = "0x70a08231" + padded;
+        const hex = await rpc("eth_call", [{ to: cfg.address, data }, "latest"]);
+        const raw = BigInt(hex || "0x0");
+        state.walletBalances[sym] = Number(raw) / 10 ** cfg.decimals;
+      } catch (e) {
+        // Swallow per-token RPC errors so one flaky read can't blank the
+        // whole holdings card. Leaving the entry undefined falls back to "—".
+        console.warn(`${sym}.balanceOf failed`, e);
+      }
+    }
   }
 }
 
@@ -1455,9 +1853,10 @@ function wireSwap() {
     });
   }
 
-  // CTA — calls the stub. Failure flows back through setStatus so the user
-  // sees the "implementation pending" message clearly until the engineer
-  // wires the body of swapToPton().
+  // CTA — drives the full Swap → wrap → vault pipeline. `swapToPton` sets a
+  // detailed "Done — N PTON credited" status itself before returning, so we
+  // deliberately do NOT overwrite it here on success. On failure, surface the
+  // error to the same status line.
   const swapBtn = document.getElementById("swap-btn");
   if (swapBtn) {
     swapBtn.addEventListener("click", async () => {
@@ -1480,7 +1879,9 @@ function wireSwap() {
           inputAmountFloat: v,
           slippageBps: state.swapSlippageBps,
         });
-        setStatus(status, "Swap complete.", "ok");
+        // swapToPton already set "Done — N PTON credited" + refreshed credits
+        // and wallet holdings. refreshAll re-fetches usage + price + keys so
+        // the dashboard's other KPIs are also in sync after a long swap flow.
         await refreshAll();
       } catch (e) {
         setStatus(status, e.message, "err");
