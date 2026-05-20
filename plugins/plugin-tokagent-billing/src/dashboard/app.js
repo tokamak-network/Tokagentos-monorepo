@@ -1668,26 +1668,46 @@ function wireKeyCreate() {
     cancelBtn.disabled = true;
     setStatus(installStatus, "Writing key to .env…");
     try {
-      // Server responds BEFORE process.exit(75) fires, so this request
-      // resolves cleanly. After ~1.5s the agent restarts and the dashboard
-      // origin briefly goes down — we then poll until it comes back up.
-      const r = await apiJson("/v1/keys/install", {
+      // Step 1: write the .env. CRITICAL: this MUST hit the local agent,
+      // not the remote billing gateway — the gateway has no access to the
+      // user's local filesystem. We use a same-origin fetch (no PROXY_BASE
+      // prefix) so it lands on the local agent's /v1/keys/install handler.
+      // (apiJson() prefixes PROXY_BASE which in client-mode = Railway URL.)
+      const installRes = await fetch("/v1/keys/install", {
         method: "POST",
-        body: JSON.stringify({ key, restart: true }),
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ key }),
       });
-      setStatus(
-        installStatus,
-        `${r.message ?? "Key saved."} Waiting for agent to come back up…`,
-        "ok",
-      );
-      // Poll for server availability. The restart delay (1.5s) gives the
-      // process time to exit AFTER we got the response. We give the runner
-      // up to 60s to rebuild + relaunch — that's the realistic upper bound
-      // even on a cold tsdown rebuild.
+      if (!installRes.ok) {
+        let body = null;
+        try { body = await installRes.json(); } catch {}
+        throw new Error(
+          body?.error || `HTTP ${installRes.status} from /v1/keys/install`,
+        );
+      }
+      setStatus(installStatus, "Key saved. Requesting agent restart…");
+      // Step 2: trigger the restart via the existing /api/restart endpoint.
+      // That endpoint handles dev (in-process runtime bounce via
+      // setRestartHandler) and prod (process.exit + supervisor respawn)
+      // correctly; we don't reimplement that strategy here.
+      // /api/restart returns BEFORE the runtime is torn down (1s setTimeout),
+      // so this request itself succeeds. The poll below catches the moment
+      // the runtime is back up.
+      const restartRes = await fetch("/api/restart", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+      });
+      if (!restartRes.ok) {
+        throw new Error(
+          `/api/restart returned HTTP ${restartRes.status} — key was saved but agent did not restart. Try restarting manually.`,
+        );
+      }
+      setStatus(installStatus, "Agent restarting — waiting for it to come back…");
+      // Poll until /v1/price answers 200 again. The restart cycle is
+      // typically a few seconds; we allow up to 60s for slow rebuilds.
       const restored = await waitForServerBack({ timeoutMs: 60_000 });
       if (restored) {
         setStatus(installStatus, "Agent is back online — reloading page…", "ok");
-        // Brief pause so the user can see the success state before reload.
         setTimeout(() => window.location.reload(), 800);
       } else {
         setStatus(

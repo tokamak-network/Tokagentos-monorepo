@@ -188,7 +188,7 @@ async function handleRevokeKey(
 }
 
 // ---------------------------------------------------------------------------
-// POST /v1/keys/install — write BILLING_CHAT_KEY to project .env + restart
+// POST /v1/keys/install — write BILLING_CHAT_KEY to project .env
 // ---------------------------------------------------------------------------
 //
 // LOCAL ONLY. This endpoint runs on the user's local agent (whether it's
@@ -199,11 +199,13 @@ async function handleRevokeKey(
 //      lines are replaced in place rather than duplicated)
 //   3. Mirrors the new value into process.env immediately so in-flight
 //      chat calls pick it up without waiting for the restart
-//   4. Schedules `process.exit(75)` after a short delay — exit code 75 is
-//      the contract with `packages/app-core/scripts/run-node.mjs`, which
-//      catches it, rebuilds if needed, and respawns. If the user runs the
-//      agent without that supervisor, the process simply exits and the
-//      user must relaunch manually.
+//
+// The restart itself is DELEGATED to the existing `POST /api/restart`
+// endpoint — the dashboard calls this install endpoint first, and then
+// the restart endpoint second. Splitting them avoids duplicating restart
+// strategy logic across runners (dev-ui in-process bounce, prod CLI
+// supervisor catching exit 75, etc.) and keeps this route a pure
+// "write the file" operation.
 //
 // AUTH: requires the same authenticated identity as the rest of /v1/keys/*
 // (SIWE session OR existing API key). Format-validates `sk-ai-...` but does
@@ -278,8 +280,6 @@ async function upsertDotenvLine(
   await fs.rename(tmp, filePath);
 }
 
-const RESTART_EXIT_CODE = 75;
-
 async function handleInstallKey(
   req: RouteRequest,
   res: RouteResponse,
@@ -306,7 +306,6 @@ async function handleInstallKey(
     });
     return;
   }
-  const restart = body?.["restart"] !== false; // default: true
 
   const envPath = path.join(process.cwd(), ".env");
   try {
@@ -319,31 +318,16 @@ async function handleInstallKey(
 
   // Update in-flight env so subsequent chat calls work even before restart.
   // configureBillingChatMirror() at startup mirrors BILLING_CHAT_KEY → OPENAI_API_KEY,
-  // but the OpenAI plugin may cache its key — restart is still the safe path.
+  // but the OpenAI plugin may cache its key at init — restart is still the safe
+  // path. The dashboard calls POST /api/restart after this returns 200.
   process.env["BILLING_CHAT_KEY"] = key;
   process.env["OPENAI_API_KEY"] = key;
 
-  // Respond first, then exit so the runner can respawn. The dashboard polls
-  // for server availability and reloads on reconnect.
-  const restartDelayMs = 1500;
   res.status(200).json({
     ok: true,
     envPath,
-    restarting: restart,
-    restartDelayMs,
-    message: restart
-      ? "Key saved to .env. Agent restarting…"
-      : "Key saved to .env (restart skipped — restart manually to fully apply).",
+    message: "Key saved to .env. Call POST /api/restart to apply.",
   });
-
-  if (restart) {
-    setTimeout(() => {
-      // Use exit code 75 so the supervisor (run-node.mjs) catches it and
-      // respawns. Plain exit(0) would terminate the runner too.
-      // eslint-disable-next-line n/no-process-exit
-      process.exit(RESTART_EXIT_CODE);
-    }, restartDelayMs);
-  }
 }
 
 // ---------------------------------------------------------------------------
