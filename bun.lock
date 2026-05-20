@@ -372,7 +372,7 @@
     },
     "packages/billing": {
       "name": "@tokagentos/billing",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "drizzle-orm": "^0.45.1",
         "jose": "^5.9.6",
@@ -416,7 +416,7 @@
     },
     "packages/tokagentos": {
       "name": "@tokagent/tokagentos",
-      "version": "2.0.5",
+      "version": "2.0.28",
       "bin": {
         "tokagentos": "dist/cli.js",
       },
@@ -533,7 +533,7 @@
     },
     "plugins/plugin-tokagent-billing": {
       "name": "@tokagent/plugin-tokagent-billing",
-      "version": "2.0.0",
+      "version": "2.0.16",
       "dependencies": {
         "@tokagentos/billing": "workspace:*",
         "@tokagentos/core": "workspace:*",

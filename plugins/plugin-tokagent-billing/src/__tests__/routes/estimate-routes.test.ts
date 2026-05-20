@@ -219,10 +219,13 @@ describe("POST /v1/messages/count_tokens", () => {
 describe("GET /v1/price", () => {
   const handler = findHandler("GET", "/v1/price");
 
-  it("returns 401 when not authenticated", async () => {
+  it("is public (no auth required) — TON/USD is a read-only oracle", async () => {
+    // /v1/price was deliberately made public so the dashboard can show the
+    // TON/USD rate to logged-out visitors. Asserting 401 here was a stale
+    // expectation from the original auth-gated design.
     const res = makeRes();
     await handler({}, res, fakeRuntime);
-    expect(res.statusCode).toBe(401);
+    expect(res.statusCode).not.toBe(401);
   });
 
   it("returns fixed price when fixedTonUsd is set", async () => {
