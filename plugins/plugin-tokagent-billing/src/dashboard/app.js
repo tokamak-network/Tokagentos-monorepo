@@ -968,50 +968,76 @@ async function swapToPton({ inputToken, inputAmountFloat, slippageBps }) {
     if (outEl) outEl.textContent = formatUnits(minOutTonWei, 18, 6);
   } catch { /* presentational only */ }
 
-  // ---- 2. approve router (ERC-20 only) ------------------------------------
-  if (inputToken !== "ETH") {
-    await _ensureAllowance({
-      token: cfg.address,
-      owner: user,
-      spender: SWAP_ROUTER02,
-      amount: amountIn,
-      symbol: inputToken,
-    });
-  }
-
-  // ---- 3. swap via SwapRouter02.exactInput → recipient = user -------------
-  // For ETH input the router auto-wraps msg.value when path starts with WETH.
-  // For ERC-20 the router uses the allowance we just set.
-  setStatus(
-    $("#swap-status"),
-    inputToken === "ETH"
-      ? `Swapping ETH → WTON via Uniswap V3…`
-      : `Swapping ${inputToken} → WETH → WTON via Uniswap V3…`,
-  );
+  // ---- 2. stuck-flow recovery check ---------------------------------------
+  // If the user already has WTON in their wallet (>= the amount this swap
+  // would deliver), reuse it instead of doing another swap. This happens
+  // when a previous attempt completed step 3 (swap) but failed somewhere
+  // in step 4-6 (unwrap → deposit → vault) — the WTON ended up stranded
+  // in the wallet. The simplest, gas-cheapest recovery is to skip the
+  // fresh swap entirely and consume the existing WTON.
   const wtonBalanceBefore = await _readErc20Balance(SWAP_WTON, user);
-  const swapData = _encExactInput({
-    path,
-    recipient: user,
-    amountIn,
-    amountOutMinimum: minOutWtonRay,
-  });
-  await _sendAndWait({
-    to: SWAP_ROUTER02,
-    data: swapData,
-    value: inputToken === "ETH" ? amountIn : 0n,
-  });
-
-  // Use the realized post-swap WTON balance delta as the canonical amount
-  // for wrap → vault — this guarantees we don't over-wrap (which would
-  // revert in PTON.deposit on insufficient TON balance) and forwards the
-  // full swap output, not just the minimum.
-  const wtonBalanceAfter = await _readErc20Balance(SWAP_WTON, user);
-  const wtonReceived = wtonBalanceAfter - wtonBalanceBefore;
-  if (wtonReceived < minOutWtonRay) {
-    // Should be impossible (router enforced minOut) but guard anyway.
-    throw new Error(
-      `Swap underdelivered: got ${wtonReceived} WTON-ray, expected >= ${minOutWtonRay}`,
+  let wtonReceived; // amount we consider "ours" from this flow
+  if (wtonBalanceBefore >= minOutWtonRay) {
+    setStatus(
+      $("#swap-status"),
+      `Found ${formatUnits(wtonBalanceBefore / WTON_RAY_PER_WEI, 18, 4)} WTON from a previous attempt — reusing it (skipping swap).`,
     );
+    wtonReceived = wtonBalanceBefore;
+  } else {
+    // ---- 3a. approve router (ERC-20 only) ---------------------------------
+    if (inputToken !== "ETH") {
+      await _ensureAllowance({
+        token: cfg.address,
+        owner: user,
+        spender: SWAP_ROUTER02,
+        amount: amountIn,
+        symbol: inputToken,
+      });
+    }
+    // ---- 3b. swap via SwapRouter02.exactInput → recipient = user ----------
+    // For ETH input the router auto-wraps msg.value when path starts with WETH.
+    // For ERC-20 the router uses the allowance we just set.
+    setStatus(
+      $("#swap-status"),
+      inputToken === "ETH"
+        ? `Swapping ETH → WTON via Uniswap V3…`
+        : `Swapping ${inputToken} → WETH → WTON via Uniswap V3…`,
+    );
+    const swapData = _encExactInput({
+      path,
+      recipient: user,
+      amountIn,
+      amountOutMinimum: minOutWtonRay,
+    });
+    await _sendAndWait({
+      to: SWAP_ROUTER02,
+      data: swapData,
+      value: inputToken === "ETH" ? amountIn : 0n,
+    });
+    // Use the realized post-swap WTON balance delta as the canonical amount
+    // for wrap → vault — this guarantees we don't over-wrap (which would
+    // revert in PTON.deposit on insufficient TON balance) and forwards the
+    // full swap output, not just the minimum.
+    const wtonBalanceAfter = await _readErc20Balance(SWAP_WTON, user);
+    wtonReceived = wtonBalanceAfter - wtonBalanceBefore;
+    if (wtonReceived < minOutWtonRay) {
+      // The receipt said 0x1 but no WTON delta. Most likely the wallet
+      // returned a stale tx hash (e.g. dedup of an identical previous
+      // calldata) and we polled the OLD receipt. If the wallet's TOTAL
+      // WTON balance now exceeds minOut, treat that as the swap output
+      // (it must have come from somewhere — and the user paid for it).
+      if (wtonBalanceAfter >= minOutWtonRay) {
+        setStatus(
+          $("#swap-status"),
+          `Swap tx returned no new WTON, but wallet has ${formatUnits(wtonBalanceAfter / WTON_RAY_PER_WEI, 18, 4)} WTON — using that.`,
+        );
+        wtonReceived = wtonBalanceAfter;
+      } else {
+        throw new Error(
+          `Swap underdelivered: got ${wtonReceived} WTON-ray, expected >= ${minOutWtonRay}`,
+        );
+      }
+    }
   }
   // Convert ray→wei. Truncate any sub-1e9-ray dust (will sit in wallet as WTON).
   const tonToWrap = wtonReceived / WTON_RAY_PER_WEI;
