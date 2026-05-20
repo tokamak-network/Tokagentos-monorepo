@@ -7,7 +7,10 @@
 //   3. PTON top-up: client builds a TransferWithAuthorization EIP-712, signs
 //      it via the wallet, and submits it as X-PAYMENT on a one-call dummy
 //      /v1/messages POST so the proxy executes vault.depositX402.
-//   4. Usage tabs (overview / day / model / key / calls) backed by the
+//   4. Swap-to-PTON (UI shell only, v2.0.21): user picks USDC/USDT/ETH/WBTC,
+//      preview shows route + PTON output, CTA wires to a stub `swapToPton()`
+//      that the next engineer will fill in (approve → swap → wrap → deposit).
+//   5. Usage tabs (overview / day / model / key / calls) backed by the
 //      /v1/usage/* endpoints.
 //
 // The file intentionally keeps a single shared `state` object so view-render
@@ -36,6 +39,36 @@ const CHAIN_EXPLORER_URL = String(CONFIG.CHAIN_EXPLORER_URL ?? "");
 const SESSION_KEY = "ai-proxy-dashboard:session";
 const ATTO = 10n ** 18n;
 
+// ---- Swap UI catalog (used by Swap card; addresses are placeholders the
+// engineer will replace when wiring on-chain calls). Icons come from the
+// public CoinGecko CDN so we don't need a build pipeline for sprite assets.
+const SWAP_TOKENS = [
+  {
+    symbol: "USDC",
+    name: "USD Coin",
+    decimals: 6,
+    icon: "https://assets.coingecko.com/coins/images/6319/small/usdc.png",
+  },
+  {
+    symbol: "USDT",
+    name: "Tether",
+    decimals: 6,
+    icon: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
+  },
+  {
+    symbol: "ETH",
+    name: "Ether",
+    decimals: 18,
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+  },
+  {
+    symbol: "WBTC",
+    name: "Wrapped BTC",
+    decimals: 8,
+    icon: "https://assets.coingecko.com/coins/images/7598/small/wrapped_bitcoin_wbtc.png",
+  },
+];
+
 const state = {
   /** EIP-1193 provider (window.ethereum). */
   provider: null,
@@ -53,6 +86,17 @@ const state = {
   walletEth: null,
   /** Connected wallet's PTON token balance (atto, BigInt). */
   walletPton: null,
+  /** Per-token wallet balances for the Swap card. Keyed by symbol (USDC, USDT,
+   * ETH, WBTC). Engineer will populate via on-chain reads when wiring swap.
+   * Format: float (display units, NOT raw atto). */
+  walletBalances: {},
+  /** Per-token USD prices for the Swap output preview. Placeholders until the
+   * engineer wires a real price feed (Pyth / Chainlink / 1inch quote). */
+  tokenPrices: { USDC: 1, USDT: 1, ETH: 3000, WBTC: 65000 },
+  /** Currently-selected input token for the Swap card. */
+  swapInputToken: "USDC",
+  /** Slippage tolerance, basis points. 50 = 0.5%. */
+  swapSlippageBps: 50,
   /** Most recent /v1/usage/summary response. */
   usage: null,
   /** Pagination cursor for the "Recent calls" tab. */
@@ -623,6 +667,44 @@ async function topUp(ptonFloat) {
   };
 }
 
+// ----------------------------- Swap (UI shell — stub) -----------------------------
+//
+// The Swap card lets the user fund their PTON balance by swapping from
+// USDC / USDT / ETH / WBTC → TON → PTON in a single user click. The on-chain
+// implementation is intentionally NOT in this commit — only the UI shell.
+//
+// TODO(engineer): wire the body of `swapToPton()` below. The recommended
+// pipeline is:
+//
+//   1. (ERC-20 only) Approve the DEX router to spend `inputAmountFloat` of
+//      `inputToken`. Skip for native ETH. Submit via `eth_sendTransaction`
+//      and wait for the receipt before proceeding. If the user has prior
+//      allowance >= input, skip the approve.
+//
+//   2. Call the DEX router's `exactInputSingle` / `exactInput` to swap
+//      `inputToken` → TON. Use the slippage bps (`slippageBps`) to compute
+//      `amountOutMinimum` from a quoter call. Wait for receipt.
+//
+//   3. Call PTON.deposit(tonAmount) (or the appropriate wrap function) so the
+//      received TON becomes PTON in the user's wallet. Wait for receipt.
+//
+//   4. Drive the existing `topUp()` flow (or equivalent vault.depositX402
+//      call) to credit the freshly-minted PTON to the user's ClaudeVault
+//      balance. The existing EIP-3009 signing path already handles this
+//      end-to-end if you pass the wrapped PTON amount through.
+//
+// Throughout, use `setStatus($("#swap-status"), "Approving USDC…", "")` to
+// surface progress. On failure, the calling wireSwap() handler catches the
+// thrown error and routes it to setStatus(..., "err").
+async function swapToPton({ inputToken, inputAmountFloat, slippageBps }) {
+  // The engineer task references will live alongside this throw — keep the
+  // throw so accidental wiring (e.g. preview UI auto-firing) reveals the
+  // unimplemented surface immediately rather than silently succeeding.
+  throw new Error(
+    "swap implementation pending — see TODO in plugin-tokagent-billing/src/dashboard/app.js (swapToPton)",
+  );
+}
+
 // ----------------------------- Loaders -----------------------------
 
 async function loadPrice() {
@@ -651,6 +733,9 @@ async function loadWalletHoldings() {
   try {
     const ethHex = await rpc("eth_getBalance", [state.wallet, "latest"]);
     state.walletEth = BigInt(ethHex);
+    // Mirror native ETH into the per-token swap balance map for the "Max"
+    // button on the Swap card. ETH wallet balance is in wei (1e18).
+    state.walletBalances.ETH = Number(state.walletEth) / 1e18;
   } catch (e) {
     state.walletEth = null;
     console.warn("eth_getBalance failed", e);
@@ -723,8 +808,8 @@ function renderKpis() {
   const reserved = c?.ledger?.reserved ?? c?.reserved ?? 0n;
   const accrued = c?.ledger?.accrued ?? c?.accrued ?? 0n;
   $("#kpi-balance").textContent = fmtPton(balance);
-  $("#kpi-reserved").textContent = fmtPton(reserved) + " PTON";
-  $("#kpi-accrued").textContent = fmtPton(accrued) + " PTON";
+  $("#kpi-reserved").textContent = fmtPton(reserved);
+  $("#kpi-accrued").textContent = fmtPton(accrued);
   $("#kpi-balance-usd").textContent = fmtUsdFromAttoPton(balance, state.tonUsd);
   // Wallet holdings (outside the vault). ETH and PTON share 18 decimals so
   // fmtPton works for both — only the unit label differs.
@@ -739,7 +824,10 @@ function renderKpis() {
   $("#kpi-calls").textContent = fmtNumber(u?.calls ?? 0);
   $("#kpi-calls-ok").textContent = fmtNumber(u?.successCalls ?? 0);
   $("#kpi-calls-fail").textContent = fmtNumber(u?.failedCalls ?? 0);
-  $("#usage-retention").textContent = String(u?.retentionDays ?? "");
+  $("#usage-retention").textContent = String(u?.retentionDays ?? "90");
+
+  // Sync swap card balance hint whenever wallet balances refresh.
+  renderSwapPreview();
 }
 
 function renderUsageOverview() {
@@ -857,8 +945,8 @@ async function renderKeysTable() {
     const tr = document.createElement("tr");
     const status = k.revokedAt ? `<span class="outcome-pill outcome-failed">revoked</span>` : `<span class="outcome-pill outcome-success">active</span>`;
     const action = k.revokedAt
-      ? `<button class="btn btn-danger" type="button" data-delete="${escape(k.id)}" title="Permanently remove this revoked key from the database">Delete</button>`
-      : `<button class="btn btn-danger" type="button" data-revoke="${escape(k.id)}">Revoke</button>`;
+      ? `<button class="btn btn-danger btn-small" type="button" data-delete="${escape(k.id)}" title="Permanently remove this revoked key from the database">Delete</button>`
+      : `<button class="btn btn-danger btn-small" type="button" data-revoke="${escape(k.id)}">Revoke</button>`;
       // Note: Delete (hard-delete) is intentionally NOT shown next to Revoke
       // for active keys — Revoke first, then Delete the revoked row. Avoids
       // accidentally wiping an active key (which would lose all in-flight
@@ -925,18 +1013,18 @@ function drawBarChart(canvasId, data) {
   ctx.clearRect(0, 0, w, h);
 
   if (!data.length) {
-    ctx.fillStyle = "#94a3c1";
+    ctx.fillStyle = "#9ca3af";
     ctx.font = "12px Inter, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("No data in window.", w / 2, h / 2);
     return;
   }
-  const padL = 32, padR = 16, padT = 16, padB = 28;
+  const padL = 36, padR = 16, padT = 16, padB = 28;
   const max = Math.max(...data.map((d) => d.value), 1);
   const barW = (w - padL - padR) / data.length;
 
   // Axes
-  ctx.strokeStyle = "#1c2742";
+  ctx.strokeStyle = "#1c1c2a";
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(padL, padT);
@@ -945,14 +1033,14 @@ function drawBarChart(canvasId, data) {
   ctx.stroke();
 
   // Y grid + labels (3 horizontal lines)
-  ctx.fillStyle = "#94a3c1";
-  ctx.font = "10px JetBrains Mono, monospace";
+  ctx.fillStyle = "#6b7280";
+  ctx.font = "10px 'JetBrains Mono', monospace";
   ctx.textAlign = "right";
   for (let i = 0; i <= 3; i++) {
     const y = padT + ((h - padT - padB) * (3 - i)) / 3;
     const v = Math.round((max * i) / 3);
-    ctx.fillText(String(v), padL - 4, y + 3);
-    ctx.strokeStyle = "rgba(28,39,66,0.6)";
+    ctx.fillText(String(v), padL - 6, y + 3);
+    ctx.strokeStyle = "rgba(28,28,42,0.7)";
     ctx.beginPath();
     ctx.moveTo(padL, y);
     ctx.lineTo(w - padR, y);
@@ -963,7 +1051,7 @@ function drawBarChart(canvasId, data) {
   for (let i = 0; i < data.length; i++) {
     const d = data[i];
     const x = padL + i * barW + 2;
-    const innerW = barW - 4;
+    const innerW = Math.max(2, barW - 4);
     const barH = ((h - padT - padB) * d.value) / max;
     const y = h - padB - barH;
     // Match the parent app's lime accent. Read the computed --accent so
@@ -973,11 +1061,25 @@ function drawBarChart(canvasId, data) {
       ? getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()
       : "") || "#c4f547";
     ctx.fillStyle = accent;
-    ctx.fillRect(x, y, innerW, barH);
+    // Subtle rounded-top bars
+    const r = Math.min(3, innerW / 2);
+    if (barH > r * 2) {
+      ctx.beginPath();
+      ctx.moveTo(x, y + barH);
+      ctx.lineTo(x, y + r);
+      ctx.quadraticCurveTo(x, y, x + r, y);
+      ctx.lineTo(x + innerW - r, y);
+      ctx.quadraticCurveTo(x + innerW, y, x + innerW, y + r);
+      ctx.lineTo(x + innerW, y + barH);
+      ctx.closePath();
+      ctx.fill();
+    } else {
+      ctx.fillRect(x, y, innerW, barH);
+    }
   }
 
   // X labels (truncate to fit)
-  ctx.fillStyle = "#94a3c1";
+  ctx.fillStyle = "#9ca3af";
   ctx.font = "10px Inter, sans-serif";
   ctx.textAlign = "center";
   const everyN = Math.max(1, Math.ceil(data.length / 10));
@@ -1044,11 +1146,13 @@ function wireTabs() {
   for (const tab of document.querySelectorAll(".tab")) {
     tab.addEventListener("click", () => {
       document.querySelectorAll(".tab").forEach((t) => {
-        t.classList.remove("active");
+        // is-active is the new class; .active is preserved for any legacy
+        // CSS reader (the stylesheet keys off both).
+        t.classList.remove("is-active", "active");
         t.setAttribute("aria-selected", "false");
       });
       document.querySelectorAll(".tab-pane").forEach((p) => (p.hidden = true));
-      tab.classList.add("active");
+      tab.classList.add("is-active", "active");
       tab.setAttribute("aria-selected", "true");
       const name = tab.getAttribute("data-tab");
       state.activeTab = name;
@@ -1062,7 +1166,7 @@ function wireTabs() {
 }
 
 function wireTopupPresets() {
-  for (const b of document.querySelectorAll(".topup-presets button")) {
+  for (const b of document.querySelectorAll("#topup-preset-row .chip")) {
     b.addEventListener("click", () => {
       $("#topup-amount").value = b.getAttribute("data-preset");
       updateTopupUsd();
@@ -1073,6 +1177,8 @@ function wireTopupPresets() {
 
 function updateTopupUsd() {
   const v = parseFloat($("#topup-amount").value);
+  const estEl = $("#topup-est-pton");
+  if (estEl) estEl.textContent = Number.isFinite(v) && v > 0 ? String(v) : "0";
   if (!Number.isFinite(v) || v <= 0 || !state.tonUsd) {
     $("#topup-usd").textContent = "—";
     return;
@@ -1158,6 +1264,237 @@ function wireTopup() {
       $("#topup-btn").disabled = false;
     }
   });
+}
+
+// ----------------------------- Swap card wiring -----------------------------
+
+function getSelectedSwapToken() {
+  return SWAP_TOKENS.find((t) => t.symbol === state.swapInputToken) ?? SWAP_TOKENS[0];
+}
+
+function renderSwapTokenDisplay() {
+  const tok = getSelectedSwapToken();
+  const icon = document.getElementById("swap-token-icon");
+  const label = document.getElementById("swap-token-label");
+  if (icon) {
+    icon.src = tok.icon;
+    icon.alt = `${tok.symbol} logo`;
+  }
+  if (label) label.textContent = tok.symbol;
+}
+
+function renderSwapTokenMenu() {
+  const menu = document.getElementById("swap-token-menu");
+  if (!menu) return;
+  menu.innerHTML = "";
+  for (const t of SWAP_TOKENS) {
+    const opt = document.createElement("button");
+    opt.type = "button";
+    opt.className = "token-option";
+    opt.setAttribute("role", "option");
+    opt.setAttribute("data-symbol", t.symbol);
+    opt.innerHTML = `
+      <img class="token-icon" src="${escape(t.icon)}" alt="" />
+      <span>${escape(t.symbol)}</span>
+      <span class="token-option-sub">${escape(t.name)}</span>
+    `;
+    opt.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      state.swapInputToken = t.symbol;
+      renderSwapTokenDisplay();
+      renderSwapRoute();
+      renderSwapPreview();
+      closeSwapTokenMenu();
+    });
+    menu.appendChild(opt);
+  }
+}
+
+function openSwapTokenMenu() {
+  const menu = document.getElementById("swap-token-menu");
+  const sel = document.getElementById("swap-token-select");
+  if (!menu || !sel) return;
+  menu.hidden = false;
+  sel.setAttribute("aria-expanded", "true");
+}
+
+function closeSwapTokenMenu() {
+  const menu = document.getElementById("swap-token-menu");
+  const sel = document.getElementById("swap-token-select");
+  if (!menu || !sel) return;
+  menu.hidden = true;
+  sel.setAttribute("aria-expanded", "false");
+}
+
+function renderSwapRoute() {
+  const route = document.getElementById("swap-route");
+  if (!route) return;
+  const tok = getSelectedSwapToken();
+  // ETH skips the first leg; non-ETH ERC-20 routes via ETH on the way to TON.
+  const steps = tok.symbol === "ETH"
+    ? ["ETH", "TON", "PTON"]
+    : [tok.symbol, "ETH", "TON", "PTON"];
+  route.innerHTML = steps
+    .map((s, i) => {
+      const isEnd = i === steps.length - 1;
+      const stepHtml = `<span class="route-step${isEnd ? " route-step-end" : ""}">${escape(s)}</span>`;
+      return i < steps.length - 1 ? `${stepHtml}<span class="route-arrow">→</span>` : stepHtml;
+    })
+    .join("");
+}
+
+function renderSwapPreview() {
+  const tok = getSelectedSwapToken();
+  const amtEl = document.getElementById("swap-amount");
+  const outPton = document.getElementById("swap-output-pton");
+  const outUsd = document.getElementById("swap-output-usd");
+  const balEl = document.getElementById("swap-input-balance");
+  const btn = document.getElementById("swap-btn");
+
+  // Balance hint (the engineer will hydrate state.walletBalances on token
+  // selection / approve; ETH is mirrored from state.walletEth in
+  // loadWalletHoldings()).
+  const bal = state.walletBalances[tok.symbol];
+  if (balEl) {
+    balEl.textContent = (typeof bal === "number" && bal >= 0)
+      ? `${bal.toLocaleString(undefined, { maximumFractionDigits: 6 })} ${tok.symbol}`
+      : `— ${tok.symbol}`;
+  }
+
+  const v = parseFloat(amtEl?.value ?? "");
+  const tokenUsd = state.tokenPrices[tok.symbol] ?? null;
+  const tonUsd = state.tonUsd ?? null;
+
+  // Output preview: inputAmount × tokenUsd / tonUsd. Both prices are
+  // placeholder until the engineer wires a real quote feed.
+  let pton = 0;
+  let usd = 0;
+  if (Number.isFinite(v) && v > 0 && tokenUsd && tonUsd) {
+    usd = v * tokenUsd;
+    pton = usd / tonUsd;
+  }
+  if (outPton) {
+    outPton.textContent = (Number.isFinite(v) && v > 0 && tokenUsd && tonUsd)
+      ? pton.toLocaleString(undefined, { maximumFractionDigits: 6 })
+      : "0.00";
+  }
+  if (outUsd) {
+    outUsd.textContent = (Number.isFinite(v) && v > 0 && tokenUsd)
+      ? usd.toFixed(2)
+      : "—";
+  }
+
+  // CTA state machine: needs wallet, then amount, then enabled.
+  if (btn) {
+    if (!state.session?.wallet) {
+      btn.disabled = true;
+      btn.textContent = "Connect wallet";
+    } else if (!Number.isFinite(v) || v <= 0) {
+      btn.disabled = true;
+      btn.textContent = "Enter an amount";
+    } else {
+      btn.disabled = false;
+      btn.textContent = `Swap ${tok.symbol} to PTON`;
+    }
+  }
+}
+
+function wireSwap() {
+  // Token dropdown
+  const sel = document.getElementById("swap-token-select");
+  if (sel) {
+    sel.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const menu = document.getElementById("swap-token-menu");
+      if (!menu) return;
+      if (menu.hidden) openSwapTokenMenu();
+      else closeSwapTokenMenu();
+    });
+    sel.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        sel.click();
+      } else if (e.key === "Escape") {
+        closeSwapTokenMenu();
+      }
+    });
+  }
+  document.addEventListener("click", (e) => {
+    const menu = document.getElementById("swap-token-menu");
+    if (!menu || menu.hidden) return;
+    const within = e.target.closest && e.target.closest("#swap-token-select");
+    if (!within) closeSwapTokenMenu();
+  });
+
+  // Amount input
+  const amtEl = document.getElementById("swap-amount");
+  if (amtEl) amtEl.addEventListener("input", renderSwapPreview);
+
+  // Max button
+  const maxBtn = document.getElementById("swap-max-btn");
+  if (maxBtn) {
+    maxBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const tok = getSelectedSwapToken();
+      const bal = state.walletBalances[tok.symbol];
+      if (typeof bal === "number" && bal > 0 && amtEl) {
+        amtEl.value = String(bal);
+        renderSwapPreview();
+      } else {
+        setStatus($("#swap-status"), `No ${tok.symbol} balance detected.`, "");
+      }
+    });
+  }
+
+  // Slippage buttons
+  for (const b of document.querySelectorAll(".slippage-btn")) {
+    b.addEventListener("click", () => {
+      document.querySelectorAll(".slippage-btn").forEach((x) => x.classList.remove("is-active"));
+      b.classList.add("is-active");
+      state.swapSlippageBps = Number(b.getAttribute("data-slippage")) || 50;
+    });
+  }
+
+  // CTA — calls the stub. Failure flows back through setStatus so the user
+  // sees the "implementation pending" message clearly until the engineer
+  // wires the body of swapToPton().
+  const swapBtn = document.getElementById("swap-btn");
+  if (swapBtn) {
+    swapBtn.addEventListener("click", async () => {
+      const status = $("#swap-status");
+      const tok = getSelectedSwapToken();
+      const v = parseFloat(amtEl?.value ?? "");
+      if (!state.session?.wallet) {
+        setStatus(status, "Connect a wallet first.", "err");
+        return;
+      }
+      if (!Number.isFinite(v) || v <= 0) {
+        setStatus(status, "Amount must be > 0", "err");
+        return;
+      }
+      swapBtn.disabled = true;
+      setStatus(status, `Preparing ${tok.symbol} → PTON swap…`);
+      try {
+        await swapToPton({
+          inputToken: tok.symbol,
+          inputAmountFloat: v,
+          slippageBps: state.swapSlippageBps,
+        });
+        setStatus(status, "Swap complete.", "ok");
+        await refreshAll();
+      } catch (e) {
+        setStatus(status, e.message, "err");
+      } finally {
+        renderSwapPreview(); // re-evaluate CTA label
+      }
+    });
+  }
+
+  // Initial render
+  renderSwapTokenMenu();
+  renderSwapTokenDisplay();
+  renderSwapRoute();
+  renderSwapPreview();
 }
 
 function wireCallsPager() {
@@ -1337,6 +1674,7 @@ async function boot() {
   wireKeyCreate();
   wireFaucet();
   wireTopup();
+  wireSwap();
   wireCallsPager();
   wireLogout();
   wireSwitchChain();
@@ -1357,6 +1695,10 @@ async function boot() {
   } else {
     showLoginView();
   }
+  // After every render path the swap CTA should reflect connection state.
+  renderSwapPreview();
+  // Prime the topup USD estimate for the default value.
+  updateTopupUsd();
 }
 
 if (document.readyState === "loading") {

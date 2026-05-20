@@ -6,13 +6,21 @@
   <meta name="color-scheme" content="dark" />
   <meta name="theme-color" content="#0a0a0f" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Tokamak.AI — Dashboard</title>
-  <meta name="description" content="API key issuance, PTON top-up, credit balance, and 90-day usage history for the Tokamak.AI x402 gateway." />
+  <title>Tokamak.AI — Billing</title>
+  <meta name="description" content="API key issuance, PTON top-up, credit balance, swap-to-credits, and 90-day usage history for the Tokamak.AI x402 gateway." />
 
   <!-- Resolve all relative asset URLs (style.css, app.js, config.js) under
        the plugin's mount point. The trailing slash is required so style.css
        resolves to /v1/billing/dashboard/style.css. -->
   <base href="/v1/billing/dashboard/" />
+
+  <!-- Inter (UI sans) + JetBrains Mono (numeric / address mono).
+       Loaded preconnect-first so first paint of the balance hero hits
+       the locked monospace face without a FOUT-jiggle. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" />
 
   <link rel="stylesheet" href="style.css" />
 
@@ -39,19 +47,23 @@
   <header class="topbar">
     <div class="brand">
       <span class="brand-mark" aria-hidden="true">◎</span>
-      <strong>Tokamak.AI</strong>
-      <em>Dashboard</em>
+      <div class="brand-text">
+        <strong>Tokamak</strong>
+        <span class="brand-sub">Billing</span>
+      </div>
     </div>
     <div class="topbar-right">
       <span id="chain-pill" class="pill" hidden>
-        <span id="chain-name">—</span>&nbsp;<code id="chain-id">—</code>
+        <span class="dot" aria-hidden="true"></span>
+        <span id="chain-name">—</span>
+        <code id="chain-id" class="pill-mono">—</code>
       </span>
       <button id="switch-chain-btn" class="btn btn-ghost btn-small" type="button" hidden>Switch network</button>
-      <span id="wallet-pill" class="pill" hidden>
+      <span id="wallet-pill" class="pill pill-wallet" hidden>
         <span class="dot dot-ok" aria-hidden="true"></span>
-        <code id="wallet-addr">—</code>
+        <code id="wallet-addr" class="pill-mono">—</code>
       </span>
-      <button id="logout-btn" class="btn btn-ghost" type="button" hidden>Logout</button>
+      <button id="logout-btn" class="btn btn-ghost btn-small" type="button" hidden>Disconnect</button>
     </div>
   </header>
 
@@ -59,20 +71,22 @@
     <!-- ====================== LOGIN ====================== -->
     <section id="view-login" class="view view-login">
       <div class="login-card">
-        <h1>Sign in with your wallet</h1>
-        <p class="muted">SIWE (EIP-712) authentication is required. The dashboard never reads your private key — only one signature is requested, exchanged for a 24-hour session token.</p>
+        <div class="login-eyebrow">SIWE · EIP-712</div>
+        <h1>Connect your wallet</h1>
+        <p class="muted">
+          One signature exchanges your wallet for a 24-hour session token. The
+          dashboard never reads your private key.
+        </p>
 
-        <div class="login-steps">
-          <ol>
-            <li>Connect a browser wallet (MetaMask, Rabby, …).</li>
-            <li>Approve the <code>LoginAuth</code> typed-data signature.</li>
-            <li>Manage keys, top up credits, and inspect usage.</li>
-          </ol>
-        </div>
+        <ol class="login-steps">
+          <li><span class="step-num">1</span> Connect a browser wallet (MetaMask, Rabby, …).</li>
+          <li><span class="step-num">2</span> Approve the <code>LoginAuth</code> typed-data signature.</li>
+          <li><span class="step-num">3</span> Manage keys, top up credits, swap to PTON.</li>
+        </ol>
 
         <div class="login-actions">
-          <button id="connect-btn" class="btn btn-primary" type="button">Connect wallet</button>
-          <button id="signin-btn" class="btn btn-primary" type="button" hidden>Sign in</button>
+          <button id="connect-btn" class="btn btn-primary btn-block" type="button">Connect wallet</button>
+          <button id="signin-btn" class="btn btn-primary btn-block" type="button" hidden>Sign in</button>
         </div>
 
         <p id="login-status" class="status-line" role="status" aria-live="polite"></p>
@@ -90,91 +104,223 @@
 
     <!-- ====================== APP ====================== -->
     <section id="view-app" class="view view-app" hidden>
-      <!-- ---- Balance + price summary ---- -->
-      <section class="grid grid-3">
-        <article class="card">
-          <header><h2>Spendable balance</h2><span class="card-sub">on-chain credit + ledger</span></header>
-          <p class="big-num"><span id="kpi-balance">—</span><em>PTON</em></p>
-          <p class="muted small">
-            Reserved <code id="kpi-reserved">—</code> · Pending consume <code id="kpi-accrued">—</code>
-          </p>
-          <p class="muted small">≈ <span id="kpi-balance-usd">—</span> USD at the current TWAP</p>
-          <p class="muted small">
-            Wallet <code id="kpi-wallet-pton">—</code> PTON · <code id="kpi-wallet-eth">—</code> ETH
-          </p>
-        </article>
 
-        <article class="card">
-          <header><h2>TON / USD</h2><span class="card-sub">composite TWAP</span></header>
-          <p class="big-num"><span id="kpi-price">—</span><em>USD</em></p>
-          <p class="muted small">
-            Source <code id="kpi-price-source">—</code> · Age <code id="kpi-price-age">—</code>
-          </p>
-        </article>
-
-        <article class="card">
-          <header><h2>Calls (last 30d)</h2><span class="card-sub">SQLite audit log</span></header>
-          <p class="big-num"><span id="kpi-calls">—</span><em>requests</em></p>
-          <p class="muted small">
-            Success <code id="kpi-calls-ok">—</code> · Failed <code id="kpi-calls-fail">—</code>
-          </p>
-        </article>
-      </section>
-
-      <!-- ---- Top up ---- -->
-      <section class="card section-card">
-        <header>
-          <h2>Top up credits</h2>
-          <span class="card-sub">PTON deposited via EIP-3009 — one signature, no on-chain tx for you</span>
-        </header>
-        <div class="topup-row">
-          <div class="topup-amount">
-            <label for="topup-amount">Amount</label>
-            <div class="topup-input">
-              <input id="topup-amount" type="number" step="0.1" min="0.1" value="5" inputmode="decimal" />
-              <span class="suffix">PTON</span>
-            </div>
-            <div class="topup-presets">
-              <button type="button" data-preset="1">1</button>
-              <button type="button" data-preset="5">5</button>
-              <button type="button" data-preset="10">10</button>
-              <button type="button" data-preset="50">50</button>
-            </div>
-            <p class="muted small">
-              ≈ <span id="topup-usd">—</span> USD at current TWAP. The proxy will pull this PTON into <code>ClaudeVault</code> and credit your wallet.
-            </p>
+      <!-- ---- Balance hero ---- -->
+      <section class="hero">
+        <div class="hero-main">
+          <div class="hero-eyebrow">Spendable balance</div>
+          <div class="hero-balance">
+            <span id="kpi-balance" class="hero-num">—</span>
+            <span class="hero-unit">PTON</span>
           </div>
-          <div class="topup-action">
-            <button id="topup-btn" class="btn btn-primary" type="button">Sign &amp; deposit</button>
-            <p id="topup-status" class="status-line" role="status" aria-live="polite"></p>
+          <div class="hero-meta">
+            <span class="hero-usd">≈ $<span id="kpi-balance-usd">—</span> USD</span>
+            <span class="hero-sep">·</span>
+            <span>1 TON = $<span id="kpi-price">—</span></span>
+            <span class="hero-sep">·</span>
+            <span><span id="kpi-price-source">—</span> · <span id="kpi-price-age">—</span></span>
+          </div>
+        </div>
+        <div class="hero-side">
+          <div class="hero-stat">
+            <div class="stat-label">Reserved</div>
+            <div class="stat-num"><span id="kpi-reserved">—</span></div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-label">Pending consume</div>
+            <div class="stat-num"><span id="kpi-accrued">—</span></div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-label">Wallet PTON</div>
+            <div class="stat-num"><span id="kpi-wallet-pton">—</span></div>
+          </div>
+          <div class="hero-stat">
+            <div class="stat-label">Wallet ETH</div>
+            <div class="stat-num"><span id="kpi-wallet-eth">—</span></div>
           </div>
         </div>
       </section>
 
+      <!-- ---- KPI strip ---- -->
+      <section class="kpi-strip">
+        <div class="kpi">
+          <div class="kpi-label">Calls (30d)</div>
+          <div class="kpi-val"><span id="kpi-calls">—</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Success</div>
+          <div class="kpi-val ok"><span id="kpi-calls-ok">—</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Failed</div>
+          <div class="kpi-val err"><span id="kpi-calls-fail">—</span></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Retention</div>
+          <div class="kpi-val muted"><span id="usage-retention">90</span><span class="kpi-unit">d</span></div>
+        </div>
+      </section>
+
+      <!-- ---- Top up + Swap (2-col grid) ---- -->
+      <section class="grid-cards">
+
+        <!-- ---- Top up card ---- -->
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <div class="card-eyebrow">Deposit</div>
+              <h2 class="card-title">Top up credits</h2>
+            </div>
+            <span class="card-tag">EIP-3009 · gasless</span>
+          </header>
+
+          <div class="form-row">
+            <label for="topup-amount" class="field-label">Amount</label>
+            <div class="amount-input">
+              <input id="topup-amount" type="number" step="0.1" min="0.1" value="5" inputmode="decimal" />
+              <span class="amount-unit">PTON</span>
+            </div>
+          </div>
+
+          <div class="preset-row" id="topup-preset-row">
+            <button type="button" class="chip" data-preset="1">1</button>
+            <button type="button" class="chip" data-preset="5">5</button>
+            <button type="button" class="chip" data-preset="10">10</button>
+            <button type="button" class="chip" data-preset="50">50</button>
+          </div>
+
+          <div class="estimate-line">
+            <span class="est-label">You deposit</span>
+            <span class="est-val"><span id="topup-est-pton">5</span> PTON</span>
+          </div>
+          <div class="estimate-line subtle">
+            <span class="est-label">≈ USD</span>
+            <span class="est-val">$<span id="topup-usd">—</span></span>
+          </div>
+
+          <button id="topup-btn" class="btn btn-primary btn-block btn-cta" type="button">Sign &amp; deposit</button>
+          <p id="topup-status" class="status-line" role="status" aria-live="polite"></p>
+          <p class="muted xsmall">
+            The proxy pulls PTON into <code>ClaudeVault</code> via EIP-3009 and credits your wallet — no on-chain tx from you.
+          </p>
+        </article>
+
+        <!-- ---- Swap card (NEW) ---- -->
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <div class="card-eyebrow">Swap</div>
+              <h2 class="card-title">Swap to credits</h2>
+            </div>
+            <span class="card-tag">Route via TON</span>
+          </header>
+
+          <div class="form-row">
+            <div class="field-label-row">
+              <label for="swap-amount" class="field-label">You pay</label>
+              <span class="field-meta">
+                Balance <span id="swap-input-balance">—</span>
+                <button type="button" id="swap-max-btn" class="link-btn">Max</button>
+              </span>
+            </div>
+            <div class="amount-input amount-input-with-token">
+              <input id="swap-amount" type="number" step="0.000001" min="0" value="" placeholder="0.0" inputmode="decimal" />
+              <div class="token-select" id="swap-token-select" role="combobox" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
+                <img id="swap-token-icon" class="token-icon" alt="" src="" />
+                <span id="swap-token-label">USDC</span>
+                <svg class="caret" width="10" height="6" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <div class="token-menu" id="swap-token-menu" role="listbox" hidden>
+                  <!-- Populated by app.js from SWAP_TOKENS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="swap-arrow" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M7 1v12M3 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <div class="form-row">
+            <label class="field-label">You receive</label>
+            <div class="receive-box">
+              <span class="receive-num" id="swap-output-pton">0.00</span>
+              <span class="receive-unit">PTON</span>
+            </div>
+            <div class="estimate-line subtle compact">
+              <span class="est-label">≈ USD</span>
+              <span class="est-val">$<span id="swap-output-usd">—</span></span>
+            </div>
+          </div>
+
+          <div class="route-section">
+            <div class="route-label">Route</div>
+            <div class="route-chain" id="swap-route">
+              <span class="route-step">USDC</span>
+              <span class="route-arrow">→</span>
+              <span class="route-step">ETH</span>
+              <span class="route-arrow">→</span>
+              <span class="route-step">TON</span>
+              <span class="route-arrow">→</span>
+              <span class="route-step route-step-end">PTON</span>
+            </div>
+          </div>
+
+          <div class="slippage-row">
+            <span class="field-label">Slippage</span>
+            <div class="slippage-buttons" role="radiogroup" aria-label="Slippage tolerance">
+              <button type="button" class="chip slippage-btn" data-slippage="10">0.1%</button>
+              <button type="button" class="chip slippage-btn is-active" data-slippage="50">0.5%</button>
+              <button type="button" class="chip slippage-btn" data-slippage="100">1%</button>
+            </div>
+          </div>
+
+          <button id="swap-btn" class="btn btn-primary btn-block btn-cta" type="button" disabled>Enter an amount</button>
+          <p id="swap-status" class="status-line" role="status" aria-live="polite"></p>
+          <p class="muted xsmall">
+            Swaps route via DEX aggregator to TON, then wrap + deposit into <code>ClaudeVault</code>. Each step prompts a separate wallet signature.
+          </p>
+        </article>
+      </section>
+
       <!-- ---- Usage tabs ---- -->
       <section class="card section-card">
-        <header class="card-tabs">
-          <h2>Usage</h2>
+        <header class="card-header card-header-stack">
+          <div>
+            <div class="card-eyebrow">Usage</div>
+            <h2 class="card-title">Activity · last 30 days</h2>
+          </div>
           <div class="tabs" role="tablist">
-            <button class="tab active" type="button" data-tab="overview" role="tab" aria-selected="true">Overview</button>
+            <button class="tab is-active" type="button" data-tab="overview" role="tab" aria-selected="true">Overview</button>
             <button class="tab" type="button" data-tab="byday" role="tab" aria-selected="false">Daily</button>
             <button class="tab" type="button" data-tab="bymodel" role="tab" aria-selected="false">By model</button>
-            <button class="tab" type="button" data-tab="bykey" role="tab" aria-selected="false">By API key</button>
-            <button class="tab" type="button" data-tab="calls" role="tab" aria-selected="false">Recent calls</button>
+            <button class="tab" type="button" data-tab="bykey" role="tab" aria-selected="false">By key</button>
+            <button class="tab" type="button" data-tab="calls" role="tab" aria-selected="false">Calls</button>
           </div>
-          <span class="card-sub">Window: last 30 days · retention <code id="usage-retention">90</code> days</span>
         </header>
 
         <!-- Overview -->
-        <div class="tab-pane active" data-pane="overview">
-          <div class="grid grid-3">
-            <div class="metric"><h3>Input tokens</h3><p class="big-num"><span id="usage-input">—</span></p></div>
-            <div class="metric"><h3>Output tokens</h3><p class="big-num"><span id="usage-output">—</span></p></div>
-            <div class="metric"><h3>Total spend</h3><p class="big-num"><span id="usage-spent">—</span><em>PTON</em></p></div>
-          </div>
-          <div class="grid grid-2 grid-soft">
-            <div class="metric metric-mini"><h4>Cache reads</h4><p><span id="usage-cache-read">—</span> tokens</p></div>
-            <div class="metric metric-mini"><h4>Cache writes</h4><p><span id="usage-cache-write">—</span> tokens</p></div>
+        <div class="tab-pane is-active" data-pane="overview">
+          <div class="metric-grid">
+            <div class="metric">
+              <div class="metric-label">Input tokens</div>
+              <div class="metric-val"><span id="usage-input">—</span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Output tokens</div>
+              <div class="metric-val"><span id="usage-output">—</span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Total spend</div>
+              <div class="metric-val"><span id="usage-spent">—</span><span class="metric-unit">PTON</span></div>
+            </div>
+            <div class="metric metric-soft">
+              <div class="metric-label">Cache reads</div>
+              <div class="metric-val"><span id="usage-cache-read">—</span><span class="metric-unit">tok</span></div>
+            </div>
+            <div class="metric metric-soft">
+              <div class="metric-label">Cache writes</div>
+              <div class="metric-val"><span id="usage-cache-write">—</span><span class="metric-unit">tok</span></div>
+            </div>
           </div>
         </div>
 
@@ -183,7 +329,7 @@
           <div class="chart-frame">
             <canvas id="chart-byday" width="900" height="220" aria-label="Calls per day, last 30 days"></canvas>
           </div>
-          <p class="muted small">Bars are call counts per UTC day. Empty days show no bar.</p>
+          <p class="muted xsmall">Bars are call counts per UTC day. Empty days show no bar.</p>
         </div>
 
         <!-- By model -->
@@ -193,7 +339,7 @@
           </div>
           <table class="data-table" aria-label="By model breakdown">
             <thead>
-              <tr><th>Model</th><th class="num">Calls</th><th class="num">Input tokens</th><th class="num">Output tokens</th><th class="num">Spend (PTON)</th></tr>
+              <tr><th>Model</th><th class="num">Calls</th><th class="num">Input</th><th class="num">Output</th><th class="num">Spend (PTON)</th></tr>
             </thead>
             <tbody id="bymodel-rows"></tbody>
           </table>
@@ -203,7 +349,7 @@
         <div class="tab-pane" data-pane="bykey" hidden>
           <table class="data-table" aria-label="Per-API-key usage">
             <thead>
-              <tr><th>Key</th><th>Name</th><th class="num">Calls</th><th class="num">Input tokens</th><th class="num">Output tokens</th><th class="num">Spend (PTON)</th><th>Last used</th></tr>
+              <tr><th>Key</th><th>Name</th><th class="num">Calls</th><th class="num">Input</th><th class="num">Output</th><th class="num">Spend (PTON)</th><th>Last used</th></tr>
             </thead>
             <tbody id="bykey-rows"></tbody>
           </table>
@@ -218,7 +364,7 @@
             <tbody id="calls-rows"></tbody>
           </table>
           <div class="pager">
-            <button id="calls-load-more" class="btn btn-ghost" type="button">Load older</button>
+            <button id="calls-load-more" class="btn btn-ghost btn-small" type="button">Load older</button>
             <span id="calls-status" class="muted small"></span>
           </div>
         </div>
@@ -226,12 +372,15 @@
 
       <!-- ---- API keys ---- -->
       <section class="card section-card">
-        <header>
-          <h2>API keys</h2>
-          <span class="card-sub">For Claude Code / anthropic-sdk via <code>x-api-key</code></span>
+        <header class="card-header">
+          <div>
+            <div class="card-eyebrow">Auth</div>
+            <h2 class="card-title">API keys</h2>
+          </div>
+          <span class="card-tag">For Claude Code / anthropic-sdk · <code>x-api-key</code></span>
         </header>
         <form id="key-create-form" class="key-create">
-          <input id="key-name" type="text" maxlength="64" placeholder="key name (optional, e.g. claude-code-laptop)" />
+          <input id="key-name" type="text" maxlength="64" placeholder="Key name (optional, e.g. claude-code-laptop)" />
           <button class="btn btn-primary" type="submit">Mint key</button>
         </form>
         <p id="key-create-status" class="status-line" role="status" aria-live="polite"></p>
@@ -248,6 +397,7 @@
   <!-- One-shot key reveal modal — appears after a successful POST /v1/keys -->
   <div id="key-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="key-modal-title">
     <div class="modal-body">
+      <div class="modal-eyebrow">One-time secret</div>
       <h2 id="key-modal-title">Save this key — shown once</h2>
       <p class="muted small">The proxy stores only an HMAC of the key. If you lose the plaintext, mint a new one.</p>
       <pre id="key-modal-value" class="key-value">sk-ai-…</pre>
@@ -260,7 +410,7 @@
   </div>
 
   <footer>
-    <span class="muted small">SIWE-protected dashboard · 90-day call audit log · Source: <a href="/" target="_blank" rel="noopener">project landing</a></span>
+    <span class="muted small">SIWE-protected · 90-day call audit log · <a href="/" target="_blank" rel="noopener">project landing</a></span>
   </footer>
 
   <script src="app.js" defer></script>
