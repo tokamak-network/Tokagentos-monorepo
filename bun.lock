@@ -57,24 +57,6 @@
         "vitest": "^4.0.17",
       },
     },
-    "apps/app-babylon": {
-      "name": "@tokagentos/app-babylon",
-      "version": "0.0.0",
-      "dependencies": {
-        "@tokagentos/app-core": "workspace:*",
-        "@tokagentos/core": "workspace:*",
-        "@tokagentos/shared": "workspace:*",
-        "@tokagentos/ui": "workspace:*",
-      },
-    },
-    "apps/app-browser": {
-      "name": "@tokagentos/app-browser",
-      "version": "0.0.0",
-      "dependencies": {
-        "@tokagentos/agent": "workspace:*",
-        "@tokagentos/core": "workspace:*",
-      },
-    },
     "apps/app-companion": {
       "name": "@tokagentos/app-companion",
       "version": "0.0.0",
@@ -105,37 +87,6 @@
         "three": "^0.182.0",
       },
     },
-    "apps/app-defense-of-the-agents": {
-      "name": "@tokagentos/app-defense-of-the-agents",
-      "version": "0.0.0",
-      "dependencies": {
-        "@tokagentos/app-core": "workspace:*",
-        "@tokagentos/core": "workspace:*",
-        "@tokagentos/shared": "workspace:*",
-        "@tokagentos/ui": "workspace:*",
-      },
-    },
-    "apps/app-form": {
-      "name": "@tokagentos/app-form",
-      "version": "0.0.0",
-      "dependencies": {
-        "@tokagentos/core": "workspace:*",
-        "uuid": "^13.0.0",
-      },
-    },
-    "apps/app-hyperscape": {
-      "name": "@tokagentos/app-hyperscape",
-      "version": "0.1.0",
-      "dependencies": {
-        "@tokagentos/app-core": "workspace:*",
-        "@tokagentos/core": "workspace:*",
-        "@tokagentos/shared": "workspace:*",
-        "@tokagentos/ui": "workspace:*",
-      },
-      "peerDependencies": {
-        "@tokagentos/core": "workspace:*",
-      },
-    },
     "apps/app-knowledge": {
       "name": "@tokagentos/app-knowledge",
       "version": "0.0.1",
@@ -158,18 +109,6 @@
       },
       "peerDependencies": {
         "react": "*",
-      },
-    },
-    "apps/app-scape": {
-      "name": "@tokagentos/app-scape",
-      "version": "0.1.0",
-      "dependencies": {
-        "@tokagentos/agent": "workspace:*",
-        "@tokagentos/app-core": "workspace:*",
-        "@tokagentos/core": "workspace:*",
-        "@tokagentos/shared": "workspace:*",
-        "@tokagentos/ui": "workspace:*",
-        "@toon-format/toon": "2.1.0",
       },
     },
     "apps/app-shopify": {
@@ -298,7 +237,7 @@
       "name": "@tokagentos/app-core",
       "version": "2.0.2",
       "dependencies": {
-        "@capacitor/core": "8.3.1",
+        "@capacitor/core": "8.3.4",
         "@capacitor/haptics": "8.0.2",
         "@capacitor/keyboard": "8.0.3",
         "@capacitor/preferences": "^8.0.1",
@@ -878,7 +817,7 @@
 
     "@cacheable/utils": ["@cacheable/utils@2.4.1", "", { "dependencies": { "hashery": "^1.5.1", "keyv": "^5.6.0" } }, "sha512-eiFgzCbIneyMlLOmNG4g9xzF7Hv3Mga4LjxjcSC/ues6VYq2+gUbQI8JqNuw/ZM8tJIeIaBGpswAsqV2V7ApgA=="],
 
-    "@capacitor/core": ["@capacitor/core@8.3.1", "", { "dependencies": { "tslib": "^2.1.0" } }, "sha512-UF8ItlHguU1Z6GXfPTeT2gakf+ctNI8pAS1kwSBQlsJMlfD4OPoto/SmKnOxKCQvnF4WRcdWeg6C0zREUNaAQg=="],
+    "@capacitor/core": ["@capacitor/core@8.3.4", "", { "dependencies": { "tslib": "^2.1.0" } }, "sha512-CqRQCkb6HXxcx/N7s+hHTN6ef2CmamFiRMITwm4qB840ph56mS42bzUgn6tKCP+RZjdDweiRHj9ytDDeN6jFag=="],
 
     "@capacitor/haptics": ["@capacitor/haptics@8.0.2", "", { "peerDependencies": { "@capacitor/core": ">=8.0.0" } }, "sha512-c2hZzRR5Fk1tbTvhG1jhh2XBAf3EhnIerMIb2sl7Mt41Gxx1fhBJFDa0/BI1IbY4loVepyyuqNC9820/GZuoWQ=="],
 
@@ -1788,25 +1727,13 @@
 
     "@tokagentos/agent": ["@tokagentos/agent@workspace:packages/agent"],
 
-    "@tokagentos/app-babylon": ["@tokagentos/app-babylon@workspace:apps/app-babylon"],
-
-    "@tokagentos/app-browser": ["@tokagentos/app-browser@workspace:apps/app-browser"],
-
     "@tokagentos/app-companion": ["@tokagentos/app-companion@workspace:apps/app-companion"],
 
     "@tokagentos/app-core": ["@tokagentos/app-core@workspace:packages/app-core"],
 
-    "@tokagentos/app-defense-of-the-agents": ["@tokagentos/app-defense-of-the-agents@workspace:apps/app-defense-of-the-agents"],
-
-    "@tokagentos/app-form": ["@tokagentos/app-form@workspace:apps/app-form"],
-
-    "@tokagentos/app-hyperscape": ["@tokagentos/app-hyperscape@workspace:apps/app-hyperscape"],
-
     "@tokagentos/app-knowledge": ["@tokagentos/app-knowledge@workspace:apps/app-knowledge"],
 
     "@tokagentos/app-lifeops": ["@tokagentos/app-lifeops@workspace:apps/app-lifeops"],
-
-    "@tokagentos/app-scape": ["@tokagentos/app-scape@workspace:apps/app-scape"],
 
     "@tokagentos/app-shopify": ["@tokagentos/app-shopify@workspace:apps/app-shopify"],
 
