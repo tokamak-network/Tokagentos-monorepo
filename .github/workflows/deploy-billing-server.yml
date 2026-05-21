@@ -1,0 +1,79 @@
+name: deploy-billing-server
+
+# Deploys tokagent-billing-server to Fly.io on tag `billing-server-v*`.
+# Migrations run PRE-DEPLOY against the production Postgres database; if the
+# migration fails, the deploy aborts and prod stays on the previous revision.
+#
+# Required GitHub secrets (Settings → Secrets and variables → Actions):
+#   FLY_API_TOKEN          — flyctl tokens create deploy
+#   BILLING_DATABASE_URL   — same value as the BILLING_DATABASE_URL Fly secret
+#                            (this workflow needs DB access to run migrations)
+
+on:
+  push:
+    tags:
+      - 'billing-server-v*'
+
+concurrency:
+  # Only one deploy in flight at a time. Cancel-in-progress = false so we
+  # never abort a half-applied bluegreen swap.
+  group: deploy-billing-server
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production-billing-server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          # Pin to the same bun version typecheck-billing uses so deploy
+          # builds against the same lockfile resolution as the gate.
+          bun-version: '1.3.14'
+
+      - name: Install workspace deps
+        # Keep --frozen-lockfile here: deploy MUST use byte-exact deps.
+        # If this fails, regenerate the lockfile locally and commit
+        # rather than dropping the flag.
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck billing surface
+        run: |
+          ./packages/billing/node_modules/.bin/tsc --noEmit -p packages/billing/tsconfig.json
+          ./plugins/plugin-tokagent-billing/node_modules/.bin/tsc --noEmit -p plugins/plugin-tokagent-billing/tsconfig.json
+
+      - name: Run Drizzle migrations (production Postgres, idempotent)
+        working-directory: packages/billing
+        env:
+          DATABASE_URL: ${{ secrets.BILLING_DATABASE_URL }}
+        run: bun run drizzle-kit migrate
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Deploy (bluegreen)
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+        run: |
+          flyctl deploy \
+            --config apps/billing-server/fly.toml \
+            --dockerfile apps/billing-server/Dockerfile \
+            --remote-only \
+            --strategy bluegreen \
+            --app tokagent-billing-server
+
+      - name: Wait for warm-up
+        run: sleep 20
+
+      - name: Post-deploy readiness check
+        env:
+          BILLING_SERVER_URL: ${{ vars.BILLING_SERVER_URL }}
+        run: |
+          bun scripts/billing-server/check-readiness.ts \
+            "${BILLING_SERVER_URL}" \
+            --full

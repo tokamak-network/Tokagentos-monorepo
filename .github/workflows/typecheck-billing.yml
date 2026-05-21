@@ -1,0 +1,78 @@
+name: typecheck-billing
+
+# PR gate. Runs on every push to a branch that touches the billing surface
+# (packages/billing, plugin-tokagent-billing, or the deploy infra).
+# Independent from the main release CI to keep feedback fast on billing-only PRs.
+
+on:
+  pull_request:
+    paths:
+      - 'packages/billing/**'
+      - 'plugins/plugin-tokagent-billing/**'
+      - 'apps/billing-server/**'
+      - 'scripts/billing-server/**'
+      - '.github/workflows/typecheck-billing.yml'
+      - '.github/workflows/deploy-billing-server.yml'
+  push:
+    branches:
+      - main
+      - master
+      - alpha
+    paths:
+      - 'packages/billing/**'
+      - 'plugins/plugin-tokagent-billing/**'
+      - 'bun.lock'
+      - '.github/workflows/typecheck-billing.yml'
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          # Pin to a specific version. The floating `1.3` tag was
+          # resolving to 1.3.0 in CI which rejected lockfiles written by
+          # newer bun (different lockfileVersion handling). 1.3.14 matches
+          # the workspace-committed lockfile.
+          bun-version: '1.3.14'
+
+      - name: Install workspace deps
+        # NOTE: not --frozen-lockfile. Running `bun install` (no flag) in
+        # this Linux runner resolves a few platform-specific optional
+        # deps differently than the lockfile committed from macOS/arm64
+        # dev machines. The lockfile itself is idempotent locally (3×
+        # `bun install` → 0-line diff). Until bun's frozen-lockfile is
+        # truly platform-independent, accept lockfile updates in CI.
+        # Deploy workflows that need byte-exact reproducibility should
+        # still use --frozen-lockfile.
+        run: bun install
+
+      - name: Build workspace deps the billing plugin imports
+        # @tokagent/plugin-tokagent-billing imports @tokagentos/core
+        # (= packages/typescript) and @tokagentos/billing at runtime.
+        # Their dist/ output is gitignored and vitest can't run without
+        # it ("Failed to resolve entry for package @tokagentos/core").
+        # Use turbo to build only the transitive dep graph — full
+        # `bun run build` rebuilds the entire monorepo (slow + flaky on
+        # unrelated packages we don't typecheck here).
+        run: bunx turbo run build --filter=@tokagentos/core --filter=@tokagentos/billing
+
+      - name: Typecheck @tokagentos/billing
+        working-directory: packages/billing
+        run: ./node_modules/.bin/tsc --noEmit
+
+      - name: Typecheck @tokagent/plugin-tokagent-billing
+        working-directory: plugins/plugin-tokagent-billing
+        run: ./node_modules/.bin/tsc --noEmit
+
+      - name: Test @tokagent/plugin-tokagent-billing
+        working-directory: plugins/plugin-tokagent-billing
+        # Plugin tests use vitest (vi.importActual / vi.stubEnv / etc.),
+        # which `bun test` does NOT implement. Invoke via the package
+        # script so it actually runs vitest.
+        run: bun run test
