@@ -6,6 +6,7 @@ const COLUMNS = [
     links: [
       { href: "https://x402.org/", label: "x402", external: true },
       { href: "https://tokamak.network", label: "tokamak", external: true },
+      { href: "https://tokagent.network", label: "tokagent", external: true },
     ],
   },
   {
@@ -17,7 +18,11 @@ const COLUMNS = [
         external: true,
       },
       { href: "https://x.com/tokagent", label: "twitter", external: true },
-      { href: "#blog", label: "blog" },
+      {
+        href: "https://medium.com/@mehd1b",
+        label: "blog",
+        external: true,
+      },
     ],
   },
 ];

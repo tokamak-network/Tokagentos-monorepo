@@ -1,4 +1,3 @@
-import { AddressLink } from "@/components/AddressLink";
 import { AgentTicker } from "@/components/AgentTicker";
 import { BillingSection } from "@/components/BillingSection";
 import { CLIWalkthrough } from "@/components/CLIWalkthrough";
@@ -13,14 +12,13 @@ import { QuickStartTabs } from "@/components/QuickStartTabs";
 import { SectionHeader } from "@/components/SectionHeader";
 import { type Panel, TwoPathsToggle } from "@/components/TwoPathsToggle";
 
-const VAULT_ADDRESS = "0x091365301a461bEeFd5e2Fe1BD244befCE274F5c";
-
 const quickStartTabs = [
   {
     id: "bun",
     label: "bun",
     lines: [
       "bunx @tokagent/tokagentos@latest",
+      "tokagentos",
       "cd my-agent && bun install",
       "bun run dev   # UI :2138 · API :31337",
     ],
@@ -30,7 +28,7 @@ const quickStartTabs = [
     label: "npm",
     lines: [
       "npm install -g @tokagent/tokagentos",
-      "tokagentos create",
+      "tokagentos",
       "cd my-agent && npm install && npm run dev",
     ],
   },
@@ -39,6 +37,7 @@ const quickStartTabs = [
     label: "pnpm",
     lines: [
       "pnpm dlx @tokagent/tokagentos@latest",
+      "tokagentos",
       "cd my-agent && pnpm install",
       "pnpm dev",
     ],
@@ -57,31 +56,6 @@ export default defineAgent({
   onMessage: async ({ wallet }) => {
     const eth = await wallet.balance('mainnet')
     return \`I hold \${eth} ETH at \${wallet.address}\`
-  },
-})`;
-
-const liveAgentCode = `import { defineAgent } from '@tokagent/core'
-import { lifeops } from '@tokagent/app-lifeops'
-
-export default defineAgent({
-  name: 'concierge',
-  apps: [lifeops()],
-
-  // Path B — agent's wallet pays per call
-  llm: {
-    provider: 'x402',
-    vault: '0x091365301a461bEeFd5e2Fe1BD244befCE274F5c',
-  },
-
-  // Production: every tx routes through ClaudeVault
-  wallet: { mode: 'vault' },
-
-  onMessage: async ({ wallet, prompt, llm }) => {
-    const plan = await llm.respond(prompt)
-    if (plan.action === 'transfer') {
-      return wallet.execute(plan.tx)   // allowlist-checked on-chain
-    }
-    return plan.text
   },
 })`;
 
@@ -185,7 +159,7 @@ export default function Page() {
           <div className="container-page">
             <SectionHeader
               number="01"
-              eyebrow="scaffold"
+              eyebrow="quick start"
               heading="One command. Then it's just TypeScript."
               sub="Pick a template, pick plugins, set .env, run. No boilerplate, no wallet plumbing."
               headingId="scaffold-heading"
@@ -306,50 +280,6 @@ export default function Page() {
           </div>
         </section>
 
-        {/* 06 / LIVE */}
-        <section
-          aria-labelledby="live-heading"
-          className="border-border border-t py-20 md:py-28"
-          id="live"
-        >
-          <div className="container-page">
-            <SectionHeader
-              number="06"
-              eyebrow="live"
-              heading="A real agent. In twenty lines."
-              sub="Wallet-native. x402-billed. Vault-allowlisted. The whole story in one config."
-              headingId="live-heading"
-            />
-            <div className="mt-10">
-              <CodeWindow
-                filename="agent.ts"
-                code={liveAgentCode}
-                live
-                trailingNote="bun run dev"
-                cursor
-              />
-            </div>
-            <div className="mt-6 flex flex-wrap gap-4 font-mono text-[12px]">
-              <span className="text-fg-muted">
-                <span aria-hidden="true" className="text-accent">
-                  ⟩{" "}
-                </span>
-                READY :2138
-              </span>
-              <span className="text-fg-muted">
-                <span aria-hidden="true" className="text-accent">
-                  ⟩{" "}
-                </span>
-                API :31337
-              </span>
-              <span className="text-accent">
-                <span aria-hidden="true">⟩ </span>
-                WALLET <AddressLink address={VAULT_ADDRESS} />
-              </span>
-            </div>
-          </div>
-        </section>
-
         {/* SHIP */}
         <section
           aria-labelledby="ship-heading"
@@ -358,7 +288,7 @@ export default function Page() {
         >
           <div className="container-page">
             <SectionHeader
-              number="07"
+              number="06"
               eyebrow="get started"
               heading="One command. Then it's just TypeScript."
               sub="The CLI scaffolds a self-contained project wired to the right versions of every package."
