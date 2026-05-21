@@ -33,6 +33,15 @@ updates:
     labels:
       - deps
       - ci
+    ignore:
+      # `.github/workflows/run-prr.yml` references the reusable workflow
+      # `tokagentOS/prr/.github/workflows/run-prr-server.yml@babylon`,
+      # which lives in a private (or never-published) repo Dependabot
+      # can't reach. Ignoring it suppresses the
+      # `git_dependencies_not_reachable` failure on every Dependabot run
+      # without removing the workflow itself (it's a no-op until manually
+      # triggered with the `run-prr` PR label).
+      - dependency-name: tokagentOS/prr/*
 
   - package-ecosystem: docker
     directory: /apps/billing-server
