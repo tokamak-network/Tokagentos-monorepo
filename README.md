@@ -1,133 +1,203 @@
-# tokagentOS — monorepo
+<div align="center">
+  <h1>tokagentOS</h1>
+  <p><strong>An open-source framework for building autonomous, on-chain AI agents — billed in crypto, not subscriptions.</strong></p>
 
-[![typecheck-billing](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/typecheck-billing.yml/badge.svg)](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/typecheck-billing.yml)
+  [![typecheck-billing](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/typecheck-billing.yml/badge.svg)](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/typecheck-billing.yml)
+  [![ci](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/ci.yaml/badge.svg)](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/ci.yaml)
+  [![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+  [![bun](https://img.shields.io/badge/bun-%E2%89%A5%201.3.14-black.svg)](https://bun.sh)
+  [![node](https://img.shields.io/badge/node-24.15.0-339933.svg)](./.nvmrc)
+</div>
 
-**tokagentOS** is Tokamak's autonomous on-chain agent framework. It runs DeFi strategies (Hyperliquid perps, Aave yield, Polymarket positions, custom vault flows) behind a chat UI or as a headless daemon, billed by a Web3 credit rail (PTON / EIP-3009 / ClaudeVault) instead of a SaaS subscription.
+## What is tokagentOS?
 
-Built on a fork of [elizaOS](https://github.com/elizaos/eliza) — see [`NOTICE.md`](./NOTICE.md) for attribution.
+**tokagentOS** is Tokamak's autonomous on-chain agent framework. It runs DeFi strategies — Hyperliquid perpetuals, Aave v3 yield, Polymarket positions, custom vault flows — behind a chat UI or as a headless daemon, with execution mediated by a non-custodial `ClaudeVault` contract and metered by a Web3 credit rail (PTON / EIP-3009) instead of a SaaS subscription.
 
-> **Repo provenance.** This is the standalone home of what used to live at `tokagentos/` inside [`tokamak-network/Tokamak-AI-Layer`](https://github.com/tokamak-network/Tokamak-AI-Layer). Git history is preserved — `git log` here goes back to the original commits, but every path has been rewritten to drop the `tokagentos/` prefix.
+It is a fork of [elizaOS](https://github.com/elizaos/eliza) restyled for the Tokamak ecosystem: the runtime, plugin model, and agent loop come from upstream; the strategy engine, vault bindings, billing gateway, and project scaffolder are Tokamak-native. See [`NOTICE.md`](./NOTICE.md) for attribution.
 
----
-
-## Quick start
-
-> Prereqs: macOS or Linux, [Bun ≥ 1.3.14](https://bun.sh), Node ≥ 20 (for some build scripts), Git ≥ 2.40. An EVM wallet (MetaMask / Rabby) if you want to run the billing dashboard locally.
-
-### Option A — scaffold a new agent project (recommended)
-
-The [`@tokagent/tokagentos`](./packages/tokagentos) CLI generates a fresh, self-contained project directory wired to the right versions of every package. Use this when you just want to run an agent, not develop the framework.
-
-```bash
-# 1. Run the CLI directly (no install needed — bunx pulls the published version)
-bunx @tokagent/tokagentos@latest
-
-# 2. Follow the prompts: pick a project name, template, plugins.
-#    The CLI creates ./<your-project>/ with package.json, .env.example,
-#    apps/app (Vite + React UI), and the plugin set you chose.
-
-# 3. Configure
-cd <your-project>
-cp .env.example .env
-# Fill in: ANTHROPIC_API_KEY (or BILLING_CHAT_KEY + TOKAGENT_GATEWAY_URL),
-#          TOKAGENT_PRIVATE_KEY, TOKAGENT_VAULT_ADDRESS, RPC URLs as needed
-
-# 4. Run
-bun install
-bun run dev
-# UI → http://localhost:2138
-```
-
-The dev loop launches Vite for the React UI on `:2138`, an in-process API server on `:31337` (or whatever `TOKAGENT_API_PORT` is set to), and the headless tokagent runtime that owns the agent loop. Hot-reload works for both the UI and the runtime.
-
-### Option B — clone this monorepo (framework development)
-
-Use this when you're editing one of the packages or plugins themselves.
-
-```bash
-git clone https://github.com/tokamak-network/Tokagentos-monorepo.git
-cd Tokagentos-monorepo
-
-bun install
-bun run build                # turbo builds all workspace packages
-
-# Smoke test: typecheck the whole tree
-bun run typecheck            # ~30s, runs `tsc --noEmit` per package via turbo
-
-# Run a sample agent against your local edits
-cd packages/tokagentos
-bun run dev                  # builds the CLI in watch mode, then …
-# In another shell:
-bunx ../packages/tokagentos  # invokes your local CLI build
-```
+> **Repo provenance.** This is the standalone home of what used to live at `tokagentos/` inside [`tokamak-network/Tokamak-AI-Layer`](https://github.com/tokamak-network/Tokamak-AI-Layer). Git history is preserved — `git log` here goes back to the original commits, with the `tokagentos/` prefix rewritten out of every path.
 
 ---
 
-## What's in here
+## Table of Contents
+
+- [Key features](#key-features)
+- [Framework, projects, and plugins](#framework-projects-and-plugins)
+- [Pick your starting point](#pick-your-starting-point)
+- [CLI quick start](#cli-quick-start)
+- [Standalone usage (monorepo)](#standalone-usage-monorepo)
+- [Runtime modes](#runtime-modes)
+- [Web3 billing rail](#web3-billing-rail)
+- [Architecture](#architecture)
+- [Environment variables](#environment-variables)
+- [Common commands](#common-commands)
+- [Per-package commands](#per-package-commands)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [CI workflows](#ci-workflows)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License and attribution](#license-and-attribution)
+
+---
+
+## Key features
+
+- **Non-custodial execution** — strategies route through a deployed `ClaudeVault` contract with per-method allowlists. The operator key signs transactions; the vault decides what is actually executable on-chain.
+- **DeFi strategy engine** — `StrategyRunnerService` composes Hyperliquid perps, Aave v3 yield, and Polymarket positions into long-running, persisted strategies that survive restarts.
+- **Web3 billing rail** — PTON-denominated credits settled via EIP-3009, gated by SIWE login or HMAC API keys (`sk-ai-*`), with a full top-up dashboard (USDC/USDT/ETH/WBTC → TON → PTON).
+- **Model-agnostic** — Anthropic, OpenAI, OpenRouter, Google Gemini, Groq, Ollama (local), or any LiteLLM-fronted provider. Auto-enables when the matching API key is present.
+- **Multi-channel** — chat UI, headless daemon, Discord, Telegram, Twitter/X, WhatsApp, Signal, BlueBubbles (iMessage). Each channel is env-gated and opt-in.
+- **Project scaffolder** — the `@tokagent/tokagentos` CLI generates a self-contained project workspace wired to the right versions of every package, with template + per-file patch overrides.
+- **White-label apps** — `@tokagentos/app-core` is a runnable dev-server + plugin registry that hosts branded UIs (companion avatars, LifeOps, Shopify, TokagentMaker NFT drops, …) without forking the runtime.
+- **First-class TypeScript** — protobuf schemas (`@tokagentos/schemas`) are the single source of truth across services; every runtime surface is typed end-to-end.
+
+> **Looking for plugins?** First-party Tokagent plugins live in [`plugins/plugin-tokagent-*`](./plugins). Upstream elizaOS plugins (`@elizaos/plugin-anthropic`, `@elizaos/plugin-sql`, `@elizaos/plugin-ollama`, …) are pulled from npm. Submodule-managed upstream plugins (`plugin-signal`, `plugin-bluebubbles`) populate via `git submodule update --init`.
+
+---
+
+## Framework, projects, and plugins
+
+tokagentOS is a framework plus packages built on top of it. Knowing which layer you are working with keeps projects, plugins, and app surfaces from getting mixed together.
+
+**The framework** is the runtime: `@tokagentos/core`, the agent loop, the plugin model (actions, providers, services), the message/memory/state primitives, and the model-agnostic LLM layer. If you depend on `@tokagentos/core` from your own code, you are using the framework.
+
+**A project** is a deployable product workspace generated by the `tokagentos` CLI. A generated project owns its branded app shell (Vite + React UI under `apps/app/`), its `.env`, and its plugin selection.
+
+**A plugin** is a runtime extension — actions, providers, or services that mount into the agent. First-party plugins live in [`plugins/plugin-tokagent-*`](./plugins) and ship as npm packages under `@tokagent/plugin-*`. They are loaded by package name.
+
+**An app** is a top-level workspace under [`apps/`](./apps) that contributes its own UI surface — companion avatar runtime, LifeOps routines, Shopify integration, NFT minting flows — and is consumed by `@tokagentos/app-core` at boot.
+
+The directory tree reflects this split:
 
 ```
 Tokagentos-monorepo/
-├── packages/                # workspace libraries — never run standalone
+├── packages/                # framework + shared libraries (workspace-only)
 │   ├── typescript/          #  @tokagentos/core    — runtime interfaces, action/route types, logger, Service base
-│   ├── shared/              #  @tokagentos/shared  — env-var resolution, port discovery, helpers used by agent+app-core
-│   ├── agent/               #  @tokagentos/agent   — the headless agent runtime + API server
+│   ├── shared/              #  @tokagentos/shared  — env resolution, port discovery, connectors
+│   ├── agent/               #  @tokagentos/agent   — headless agent runtime + API server (Elysia)
 │   ├── app-core/            #  @tokagentos/app-core— dev-server + Vite bridge + plugin registry for white-label apps
 │   ├── ui/                  #  @tokagentos/ui      — shared React primitives + design tokens
 │   ├── billing/             #  @tokagentos/billing — Postgres-backed credit ledger + EIP-3009 settlement + TWAP oracle
-│   ├── schemas/             #  @tokagentos/schemas — protobuf-generated types (single source of truth across services)
-│   └── tokagentos/          #  @tokagent/tokagentos — the public CLI that scaffolds new projects (npm-published)
+│   ├── schemas/             #  @tokagentos/schemas — protobuf-generated types (single source of truth)
+│   └── tokagentos/          #  @tokagent/tokagentos — public CLI that scaffolds new projects (npm-published)
 │
-├── plugins/                 # elizaOS plugins — opt-in features mounted into a runtime
+├── plugins/                 # runtime plugins — opt-in features mounted into a runtime
 │   ├── plugin-tokagent-shared/        # vault bindings, chain config, wallet helpers, risk constants
 │   ├── plugin-tokagent-strategy/      # strategy engine + StrategyRunnerService
 │   ├── plugin-tokagent-perps/         # Hyperliquid perpetuals via vault allowlist
 │   ├── plugin-tokagent-yield/         # Aave v3 deposit/withdraw on Polygon via vault allowlist
 │   ├── plugin-tokagent-polymarket/    # Polymarket buy/sell/redeem via vault allowlist
-│   └── plugin-tokagent-billing/       # /v1/auth, /v1/keys, /v1/topup, /v1/messages routes + middleware
+│   ├── plugin-tokagent-billing/       # /v1/auth, /v1/keys, /v1/topup, /v1/messages routes + middleware
+│   ├── plugin-signal/                 # (upstream submodule) Signal messaging
+│   └── plugin-bluebubbles/            # (upstream submodule) iMessage via BlueBubbles
 │
-├── apps/                    # standalone deployable applications
+├── apps/                    # top-level deployable apps (each its own workspace)
 │   ├── billing-server/      # the LiteLLM-fronting credit gateway (Fly.io)
-│   └── …                    # specialized apps (steward, lifeops, tokagentmaker, etc.)
+│   ├── app-companion/       # VRM scene runtime + avatar utilities
+│   ├── app-lifeops/         # routines, goals, Google Workspace, Apple Reminders, Twilio, hosts-file blocking
+│   ├── app-tokagentmaker/   # ERC-8041 NFT drop/mint, Merkle-proof whitelists, OG codes
+│   ├── app-shopify/         # Shopify storefront agent surfaces
+│   ├── app-knowledge/       # RAG over user documents
+│   ├── app-steward/         # multi-agent steward orchestration
+│   ├── app-task-coordinator/# multi-agent task coordination
+│   ├── app-training/        # trajectory capture + prompt optimization
+│   └── app-vincent/         # Lit Protocol Vincent integration
 │
 ├── scripts/                 # dev tooling: lockfile sync, plugin submodule bootstrap, build orchestration
-└── docs/                    # design notes, ADRs, runbooks
+├── docs/                    # design notes, ADRs, runbooks
+└── packages/tokagentos/templates/   # CLI scaffolds (fullstack-app, headless-daemon, …)
+```
+
+---
+
+## Pick your starting point
+
+| You want to…                                                  | Start here                                                  |
+| ------------------------------------------------------------- | ----------------------------------------------------------- |
+| Run an agent in 5 minutes                                     | [CLI quick start](#cli-quick-start)                         |
+| Hack on the framework, plugins, or apps                       | [Standalone usage (monorepo)](#standalone-usage-monorepo)   |
+| Understand the runtime, billing, and vault model              | [Architecture](#architecture)                               |
+| Know every env var                                            | [Environment variables](#environment-variables)             |
+| Ship a project to production                                  | [Deployment](#deployment)                                   |
+| Wire chat-driven trades / route through your own LLM provider | [Runtime modes](#runtime-modes)                             |
+| Bill agent usage in crypto                                    | [Web3 billing rail](#web3-billing-rail)                     |
+
+---
+
+## CLI quick start
+
+> **Prerequisites:** macOS or Linux, [Bun ≥ 1.3.14](https://bun.sh), [Node 24.15.0](./.nvmrc) (for build scripts), Git ≥ 2.40. An EVM wallet (MetaMask / Rabby) if you want to use the billing dashboard. Windows users: run inside [WSL 2](https://learn.microsoft.com/en-us/windows/wsl/install-manual).
+
+The [`@tokagent/tokagentos`](./packages/tokagentos) CLI scaffolds a fresh, self-contained project wired to published versions of every package. Use this when you want to **run** an agent, not develop the framework.
+
+```bash
+# 1. Run the CLI directly — no install needed (bunx fetches the published version)
+bunx @tokagent/tokagentos@latest
+
+# 2. Follow the prompts: pick a project name, template, plugin set.
+#    Output: ./<your-project>/ with package.json, .env.example,
+#    apps/app/ (Vite + React UI), and the plugins you selected.
+
+# 3. Configure
+cd <your-project>
+cp .env.example .env
+# Fill in at minimum:
+#   ANTHROPIC_API_KEY=...                   (or another provider key)
+#   TOKAGENT_PRIVATE_KEY=0x...              (operator hot wallet)
+#   TOKAGENT_VAULT_ADDRESS=0x...            (if running in vault mode)
+#   TOKAGENT_RPC_URL=https://...            (Ethereum mainnet RPC)
+
+# 4. Run
+bun install
+bun run dev
+# UI         → http://localhost:2138
+# API server → http://localhost:31337   (or TOKAGENT_API_PORT)
+```
+
+The dev loop launches Vite for the React UI on `:2138`, an in-process API server on `:31337` (overridable via `TOKAGENT_API_PORT`), and the headless tokagent runtime that owns the agent loop. Hot-reload works for both the UI and the runtime.
+
+Full CLI reference: `bunx @tokagent/tokagentos --help`.
+
+---
+
+## Standalone usage (monorepo)
+
+Clone this repo when you are editing one of the packages, plugins, or apps themselves.
+
+```bash
+git clone https://github.com/tokamak-network/Tokagentos-monorepo.git
+cd Tokagentos-monorepo
+
+bun install                  # workspace install; postinstall patches nested core dist
+bun run build                # turbo builds all workspace packages (~1-3 min cold)
+
+# Smoke test: typecheck the whole tree
+bun run typecheck            # ~30s, runs `tsc --noEmit` per package via turbo
+
+# Run a sample agent against your local edits
+cp .env.example .env
+# (edit .env — at minimum set an LLM provider key)
+bun run dev                  # multi-process supervisor (scripts/dev.mjs)
+```
+
+To iterate on a single package, run its build in watch mode in a side shell:
+
+```bash
+bun run dev:core             # watch-build @tokagentos/core
+# or, per package:
+cd packages/agent && bun run dev
 ```
 
 ### The scaffold mechanism
 
-`@tokagent/tokagentos` (the CLI in [`packages/tokagentos/`](./packages/tokagentos)) is more than a `cp -r` — it generates a project that **references the same workspace packages this monorepo defines**, with one important twist:
+`@tokagent/tokagentos` (in [`packages/tokagentos/`](./packages/tokagentos)) is more than `cp -r` — it generates a project that **references the same workspace packages this monorepo defines**, with one important twist:
 
-- `templates/` holds project skeletons (root `package.json`, `vite.config.ts`, etc.) per template (`fullstack-app`, `headless-daemon`, …).
-- `scaffold-patches/` holds **per-file overrides applied on top of the chosen template** at scaffold time. This is how the scaffolded project gets things like the `BILLING_CHAT_KEY → OPENAI_API_KEY` mirror in `core-plugins.ts` without those edits living in the upstream agent package.
-- `templates-manifest.json` lists which files are scaffolded from which template + which patches apply.
+- **`templates/`** — project skeletons per template (`fullstack-app`, `headless-daemon`, …). Each is a near-complete `package.json` + `vite.config.ts` + entry points.
+- **`scaffold-patches/`** — per-file overrides applied on top of the chosen template at scaffold time. This is how scaffolded projects pick up things like the `BILLING_CHAT_KEY → OPENAI_API_KEY` mirror in `core-plugins.ts` without those edits living in the upstream agent package.
+- **`templates-manifest.json`** — declarative list of which files are scaffolded from which template + which patches apply.
 
 The scaffolded project depends on `@tokagentos/*` and `@tokagent/plugin-*` via published npm versions (or `workspace:*` when running locally), so you can edit a plugin in this monorepo and `bun link` it into a scaffolded project for testing without re-publishing.
-
----
-
-## Common commands
-
-| Command (from repo root) | What it does |
-|---|---|
-| `bun install` | Install everything. Postinstall runs `scripts/patch-nested-core-dist.mjs` to fix nested core dist resolution. |
-| `bun run build` | Turbo builds every package in dependency order. ~1-3 min cold, seconds cached. |
-| `bun run typecheck` | Turbo runs `tsc --noEmit` per package. |
-| `bun run lint:check` | Biome lint (read-only). |
-| `bun run lint` | Biome lint with `--write`. |
-| `bun run dev` | Launches `scripts/dev.mjs` (multi-process supervisor for ad-hoc local dev). |
-| `bun run dev:core` | Watch-build just `@tokagentos/core`. Use this in a side shell when iterating on runtime types. |
-| `bun run clean` | Nuclear option — wipes `dist/`, `.turbo`, `node_modules`, lockfile, then re-installs and rebuilds. |
-| `bun run fix-deps:check` | Verify workspace `workspace:*` deps are pointing at packages that exist. |
-
-### Per-package commands
-
-Most packages also support:
-
-```bash
-cd packages/<name>
-bun run build      # bun build.ts (each package owns its build script)
-bun run test       # vitest run (preferred — bun test does NOT implement vi.importActual / vi.stubEnv)
-```
 
 ---
 
@@ -135,11 +205,19 @@ bun run test       # vitest run (preferred — bun test does NOT implement vi.im
 
 Selected via `TOKAGENT_EXECUTION_MODE` in `.env`:
 
-- **`daemon`** — headless; `StrategyRunnerService` ticks, actions sign via the operator private key. No UI served.
-- **`operator`** — daemon + local React UI on `TOKAGENT_UI_PORT` (default `2138`). Chat / Automations / Wallet / Settings / Billing.
-- **`vault`** — operator mode with strategies routed through a deployed `ClaudeVault` contract instead of a hot wallet.
+| Mode       | What it does                                                                                                                              | Plugins loaded                                                                            | Use when                                                                                       |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `vault`    | Actions go through the deployed `ClaudeVault` contract. Vault enforces per-method allowlists. No raw EVM signing from chat.               | `plugin-tokagent-{shared,strategy,perps,yield,polymarket}`. **No** `plugin-evm`.          | Production. Safe default. Operator key cannot drain funds even if compromised at the LLM tier. |
+| `direct`   | Operator wallet signs transactions directly. Chat can drive swaps and transfers via `plugin-evm`.                                         | `plugin-evm` + non-vault plugins. **No** Tokagent vault plugins.                          | Development. When you want chat-driven trades without deploying a vault.                       |
+| `both`     | Both vault and direct plugins loaded; the LLM picks per request.                                                                          | Everything.                                                                               | Rare. Reduced safety guarantees — use only when you understand both paths.                     |
 
-AI providers and messaging channels are env-gated — set the relevant API key (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `DISCORD_API_TOKEN`, `TELEGRAM_BOT_TOKEN`, …) to auto-enable. If no provider key is set, the runtime falls back to `@elizaos/plugin-ollama`.
+Additionally, the framework distinguishes three **UI** modes:
+
+- **`daemon`** — headless. `StrategyRunnerService` ticks, actions sign via the operator private key. No UI served.
+- **`operator`** — daemon + local React UI on `TOKAGENT_UI_PORT` (default `2138`). Chat / Automations / Wallet / Settings / Billing tabs.
+- **`vault`** — operator mode with strategies routed through the deployed `ClaudeVault` contract instead of a hot wallet.
+
+AI providers and messaging channels are env-gated. Setting the relevant API key auto-enables the channel — `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `GROQ_API_KEY`, `DISCORD_BOT_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TWITTER_API_KEY`, `WHATSAPP_ACCESS_TOKEN`, `SIGNAL_PHONE_NUMBER`. If no provider key is set, the runtime falls back to `@elizaos/plugin-ollama` (local).
 
 ---
 
@@ -147,26 +225,417 @@ AI providers and messaging channels are env-gated — set the relevant API key (
 
 Set `BILLING_CHAT_KEY=sk-ai-...` + `TOKAGENT_GATEWAY_URL=https://billing-service-production-a8e7.up.railway.app` to route LLM calls through the credit gateway instead of an upstream provider. The gateway:
 
-- Authenticates via SIWE (EIP-712 LoginAuth → 24-hour session JWT) or HMAC API keys (`sk-ai-*`).
-- Settles spend in PTON (an EIP-3009 wrapper over Tokamak TON) deposited into `ClaudeVault` (`0x091365301a461bEeFd5e2Fe1BD244befCE274F5c` on Ethereum mainnet).
-- Forwards `/v1/messages` and `/v1/chat/completions` to LiteLLM with full SSE pass-through.
-- Exposes a dashboard at `/v1/billing/dashboard/` for top-ups (USDC/USDT/ETH/WBTC → TON → PTON in one flow), key management (mint + auto-install into local `.env`), and 30-day usage analytics.
+- **Authenticates** via SIWE (EIP-712 `LoginAuth` → 24-hour session JWT) or HMAC API keys (`sk-ai-*`).
+- **Settles spend** in PTON (an EIP-3009 wrapper over Tokamak TON) deposited into `ClaudeVault` (`0x091365301a461bEeFd5e2Fe1BD244befCE274F5c` on Ethereum mainnet).
+- **Forwards** `/v1/messages` (Anthropic) and `/v1/chat/completions` (OpenAI-compatible) to LiteLLM with full SSE pass-through.
+- **Dashboards** at `/v1/billing/dashboard/`: top-ups (USDC/USDT/ETH/WBTC → TON → PTON in one flow), key management (mint + auto-install into local `.env`), and 30-day usage analytics.
 
-See [`packages/billing/`](./packages/billing) and [`plugins/plugin-tokagent-billing/`](./plugins/plugin-tokagent-billing) for the implementation, and [`apps/billing-server/`](./apps/billing-server) for the Fly.io deployment.
+Implementation lives in:
+- [`packages/billing/`](./packages/billing) — Postgres-backed ledger, EIP-3009 settlement, TON/USD TWAP oracle, Drizzle migrations.
+- [`plugins/plugin-tokagent-billing/`](./plugins/plugin-tokagent-billing) — `/v1/auth`, `/v1/keys`, `/v1/topup`, `/v1/messages` routes + middleware.
+- [`apps/billing-server/`](./apps/billing-server) — the Fly.io deployment that exposes the gateway publicly.
 
----
-
-## CI
-
-| Workflow | Triggers | What it gates |
-|---|---|---|
-| [`typecheck-billing.yml`](./.github/workflows/typecheck-billing.yml) | PR / push touching `packages/billing/**`, `plugins/plugin-tokagent-billing/**`, `bun.lock` | Install → build `@tokagentos/core` + `@tokagentos/billing` → typecheck both billing packages → vitest the plugin (290 tests). Fast feedback for billing-only changes. |
-| [`deploy-billing-server.yml`](./.github/workflows/deploy-billing-server.yml) | Tag push `billing-server-v*` | Run Drizzle migrations against prod Postgres, then Fly.io bluegreen deploy of [`apps/billing-server/`](./apps/billing-server), then a `--full` readiness check. |
-
-Other workflows (`ci.yaml`, `pr.yaml`, `multi-lang-tests.yaml`, `codeql.yml`, …) come from upstream elizaOS and run when matching paths change. See [`.github/workflows/README.md`](./.github/workflows/README.md) for the full list.
+See [`scripts/billing-server-DEPLOY.md`](./scripts/billing-server-DEPLOY.md) for the deploy runbook.
 
 ---
 
-## License + attribution
+## Architecture
 
-MIT — see [`LICENSE`](./LICENSE). This codebase is a fork of [elizaOS](https://github.com/elizaos/eliza); see [`NOTICE.md`](./NOTICE.md) for upstream credits and the list of files we override via `scaffold-patches/`.
+### High-level data flow
+
+```
+                              ┌────────────────────────────┐
+                              │   Chat UI (Vite + React)   │
+                              │   :2138                    │
+                              └─────────────┬──────────────┘
+                                            │ HTTP / SSE
+                              ┌─────────────▼──────────────┐
+                              │   @tokagentos/app-core     │
+                              │   - plugin registry        │
+                              │   - dev server / Vite bridge│
+                              └─────────────┬──────────────┘
+                                            │
+                              ┌─────────────▼──────────────┐
+                              │   @tokagentos/agent        │
+                              │   - AgentRuntime           │
+                              │   - StrategyRunnerService  │
+                              │   - API server (Elysia)    │
+                              │   :31337                   │
+                              └──┬──────────────┬──────────┘
+                                 │              │
+            ┌────────────────────┘              └────────────────────┐
+            │                                                        │
+┌───────────▼────────────┐                              ┌────────────▼─────────────┐
+│  LLM provider          │                              │   On-chain                │
+│  - Anthropic           │                              │   - viem / ethers         │
+│  - OpenAI              │                              │   - ClaudeVault (vault)   │
+│  - LiteLLM             │                              │   - plugin-evm (direct)   │
+│  - billing gateway     │                              │   - Hyperliquid helper    │
+│    (PTON-billed)       │                              │   - Aave v3 / Polygon     │
+└────────────────────────┘                              │   - Polymarket CLOB       │
+                                                        └───────────────────────────┘
+```
+
+### Request lifecycle (operator mode, vault execution)
+
+1. User types into chat UI → POST `/v1/messages` to API server.
+2. `AgentRuntime` builds context (memory, providers, state) and calls the configured LLM provider.
+3. If the LLM emits a strategy action, `StrategyRunnerService` queues it.
+4. The strategy action calls a Tokagent plugin (e.g. `plugin-tokagent-yield → depositToAave`).
+5. The plugin builds a `VaultCall` calldata blob and submits it via the operator key to `ClaudeVault.execute()`.
+6. The vault validates the calldata against its per-method allowlist; if allowed, forwards to the target contract.
+7. Transaction hash, receipt, and side effects flow back through `StrategyRunnerService` → API → UI.
+
+### Key components
+
+**`@tokagentos/core`** (`packages/typescript/`) — runtime interfaces, `Action` / `Provider` / `Service` base types, logger, message and memory primitives. Every other package depends on this.
+
+**`@tokagentos/agent`** (`packages/agent/`) — the headless agent runtime. Owns `AgentRuntime`, plugin loader, default plugin map, API server (Elysia), and CLI entry (`tokagent-autonomous`). The standalone `start` script lives here.
+
+**`@tokagentos/app-core`** (`packages/app-core/`) — dev-server + Vite bridge + plugin registry that powers white-label apps. Scaffolded projects use this as their entry point.
+
+**`@tokagentos/shared`** (`packages/shared/`) — env-var resolution (with i18n keyword generation), port discovery, message connectors, runtime env helpers used by both `agent` and `app-core`.
+
+**`@tokagentos/billing`** (`packages/billing/`) — Postgres-backed credit ledger with Drizzle ORM, EIP-3009 receive-with-authorization settlement, TON/USD TWAP oracle, and the chain address book.
+
+**`@tokagentos/ui`** (`packages/ui/`) — shared React primitives + design tokens. Built on Radix UI + Tailwind.
+
+**`@tokagentos/schemas`** (`packages/schemas/`) — protobuf schemas with Buf-generated TypeScript / Python / Rust types. The single source of truth for cross-service types.
+
+**`@tokagent/tokagentos`** (`packages/tokagentos/`) — the public CLI that scaffolds new projects. Published to npm.
+
+**Tokagent plugins** (`plugins/plugin-tokagent-*/`) — strategy primitives, vault bindings, and the billing route handlers. Loaded by name into the runtime.
+
+### Database
+
+- **Local dev** — defaults to PGLite (file-backed, no separate process). Set `PGLITE_DATA_DIR=memory://` for in-memory.
+- **Production** — set `POSTGRES_URL=postgres://...`. Migrations are managed per package (`bun run migrate` from the repo root migrates `plugin-sql`; the billing package has its own Drizzle migrations in `packages/billing/drizzle/`).
+
+---
+
+## Environment variables
+
+Full reference: [`.env.example`](./.env.example). Highlights below.
+
+### Required for any agent run
+
+| Variable                              | Description                                                            | Notes                                                                                                                                                              |
+| ------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `TOKAGENT_EXECUTION_MODE`             | `vault` / `direct` / `both`                                            | See [Runtime modes](#runtime-modes). Default `vault`.                                                                                                              |
+| `ANTHROPIC_API_KEY` (or other)        | At least one LLM provider key                                          | Or set `OPENAI_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `GROQ_API_KEY`, or `OLLAMA_API_ENDPOINT`. Falls back to local Ollama if none set.   |
+
+### Required for on-chain execution
+
+| Variable                  | Description                                                                                  |
+| ------------------------- | -------------------------------------------------------------------------------------------- |
+| `TOKAGENT_PRIVATE_KEY`    | Operator hot wallet (hex, 0x-prefixed). Auto-mirrored to `EVM_PRIVATE_KEY` at boot.          |
+| `TOKAGENT_RPC_URL`        | Ethereum mainnet RPC. Auto-mirrored to `EVM_PROVIDER_URL`, `ETHEREUM_PROVIDER_MAINNET`, etc. |
+| `TOKAGENT_VAULT_ADDRESS`  | Deployed `ClaudeVault` address on the target chain (vault mode only).                        |
+| `POLYGON_RPC_URL`         | Polygon RPC (Aave yield plugin).                                                             |
+| `HYPERLIQUID_API_URL`     | Hyperliquid API base URL (default: `https://api.hyperliquid.xyz`).                           |
+
+### Server
+
+| Variable              | Description                                          | Default     |
+| --------------------- | ---------------------------------------------------- | ----------- |
+| `SERVER_PORT`         | API server port (operator mode)                      | `3000`      |
+| `SERVER_HOST`         | API server host                                      | `0.0.0.0`   |
+| `NODE_ENV`            | `development` / `production`                         | -           |
+| `EXPRESS_MAX_PAYLOAD` | Max request body size                                | `2mb`       |
+| `TOKAGENT_UI_PORT`    | React UI dev-server port                             | `2138`      |
+| `TOKAGENT_API_PORT`   | In-process API server port (scaffolded projects)     | `31337`     |
+
+### Messaging channels (all optional, auto-enabled when set)
+
+| Variable                                            | Channel                  |
+| --------------------------------------------------- | ------------------------ |
+| `TELEGRAM_BOT_TOKEN`                                | Telegram                 |
+| `DISCORD_BOT_TOKEN`                                 | Discord                  |
+| `TWITTER_API_KEY`, `TWITTER_API_SECRET`             | Twitter / X              |
+| `WHATSAPP_ACCESS_TOKEN`                             | WhatsApp                 |
+| `SIGNAL_PHONE_NUMBER`                               | Signal                   |
+
+### Billing (all optional; required only when `BILLING_ENABLED=true`)
+
+| Variable                          | Description                                                                                                |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `BILLING_ENABLED`                 | Master flag. Default `false` (passthrough).                                                                |
+| `BILLING_AUTH_REQUIRED`           | Require API-key / JWT on gated paths. Default `true`.                                                      |
+| `BILLING_AUTH_SECRET`             | HMAC secret for JWT signing + API-key hashing. Generate with `openssl rand -hex 32`. Per-deployment.       |
+| `BILLING_AUTH_SESSION_TTL_MS`     | Session JWT lifetime. Default `86400000` (24h).                                                            |
+| `BILLING_DATABASE_URL`            | Postgres URL for the credit ledger.                                                                        |
+| `BILLING_CHAIN_RPC_URL`           | L2 RPC (Polygon / Base / Titan / …).                                                                       |
+| `BILLING_CHAIN_ID`                | L2 chain id.                                                                                               |
+| `BILLING_VAULT_ADDRESS`           | Deployed `ClaudeVault` on L2.                                                                              |
+| `BILLING_PTON_ADDRESS`            | Deployed PTON token on L2.                                                                                 |
+| `BILLING_OPERATOR_PRIVATE_KEY`    | Hot key controlling vault writes. Store in a secret manager, never commit.                                 |
+| `BILLING_LITELLM_BASE_URL`        | LiteLLM proxy base URL (LLM calls forwarded here).                                                         |
+| `BILLING_LITELLM_API_KEY`         | LiteLLM proxy bearer token.                                                                                |
+| `BILLING_MAINNET_RPC_URL`         | Ethereum mainnet RPC for TON/USD TWAP oracle.                                                              |
+| `BILLING_MARGIN_BPS`              | Operator margin in basis points. Default `10` (dev) / `100` (prod).                                        |
+| `BILLING_TOPUP_AMOUNT_PTON`       | Default top-up amount (atto-PTON) after a successful deposit. Default `5e18` (5 PTON).                     |
+| `BILLING_RATE_LIMIT_ENABLED`      | Token-bucket rate limiter. Default `true`.                                                                 |
+| `BILLING_RATE_LIMIT_QUOTE_PER_MIN`| Requests/min on nonce/quote path. Default `60`.                                                            |
+| `BILLING_RATE_LIMIT_SETTLE_PER_MIN`| Requests/min on settle/commit path. Default `30`.                                                          |
+
+### Gateway client (use a hosted billing gateway)
+
+| Variable                | Description                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `BILLING_CHAT_KEY`      | `sk-ai-...` API key minted from the dashboard. Routes chat-tier LLM calls through the gateway.               |
+| `TOKAGENT_GATEWAY_URL`  | Base URL of a hosted gateway (e.g. `https://billing-service-production-a8e7.up.railway.app`).                |
+
+---
+
+## Common commands
+
+All commands run from the repo root unless noted.
+
+| Command                       | What it does                                                                                                 |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| `bun install`                 | Install everything. Postinstall runs `scripts/patch-nested-core-dist.mjs` to fix nested core dist resolution. |
+| `bun run build`               | Turbo builds every package in dependency order. ~1-3 min cold, seconds cached.                               |
+| `bun run build:core`          | Force-rebuild just `@tokagentos/core` (no cache).                                                            |
+| `bun run build:server`        | Force-rebuild just `@tokagentos/server` (no cache).                                                          |
+| `bun run typecheck`           | Turbo runs `tsc --noEmit` per package. ~30s warm.                                                            |
+| `bun run lint:check`          | Biome lint, read-only.                                                                                       |
+| `bun run lint`                | Biome lint with `--write` (autofix).                                                                         |
+| `bun run lint:all`            | `lint:check` + `typecheck`.                                                                                  |
+| `bun run format:check`        | Biome format, read-only.                                                                                     |
+| `bun run format`              | Biome format with `--write`.                                                                                 |
+| `bun run dev`                 | Launches `scripts/dev.mjs` — multi-process supervisor for ad-hoc local dev.                                  |
+| `bun run dev:core`            | Watch-build just `@tokagentos/core`. Use in a side shell when iterating on runtime types.                    |
+| `bun run dev:agent`           | Watch-mode for the agent package.                                                                            |
+| `bun run start`               | Runs the agent (`bun run --cwd agent start`).                                                                |
+| `bun run start:tokagent`      | Runs `packages/app-core/src/entry.ts start` — the app-core entry point used by scaffolded projects.          |
+| `bun run start:debug`         | `start` with `LOG_LEVEL=debug`.                                                                              |
+| `bun run test`                | Full test suite via turbo (serial: `--concurrency 1`).                                                       |
+| `bun run test:core`           | Tests for `@tokagentos/core` only.                                                                           |
+| `bun run test:server`         | Tests for `@tokagentos/server` only.                                                                         |
+| `bun run test:client`         | Tests for `@tokagentos/client` only.                                                                         |
+| `bun run test:plugins`        | Tests for all `plugins/*` packages.                                                                          |
+| `bun run migrate`             | Run pending Drizzle migrations for `plugin-sql`.                                                             |
+| `bun run migrate:generate`    | Generate a new Drizzle migration from schema diff.                                                           |
+| `bun run generate:types`      | Regenerate protobuf types in `packages/@schemas`.                                                            |
+| `bun run check:env-sync`      | Verify `.env.example` is in sync with what plugins actually read.                                            |
+| `bun run fix-deps:check`      | Verify workspace `workspace:*` deps point at packages that exist.                                            |
+| `bun run fix-deps`            | Rewrite workspace deps to match the lockfile.                                                                |
+| `bun run clean`               | Nuclear: wipes `dist/`, `.turbo`, `node_modules`, lockfile, then re-installs and rebuilds.                   |
+| `bun run clean:cache`         | Wipes only turbo + tool caches, no reinstall.                                                                |
+| `bun run release`             | Lerna publishes `latest` from current package versions.                                                      |
+| `bun run release:alpha`       | Lerna publishes `alpha` dist-tag.                                                                            |
+| `bun run version:patch`       | Lerna bumps patch version (no push, no tag).                                                                 |
+| `bun run version:alpha`       | Lerna bumps alpha prerelease.                                                                                |
+
+---
+
+## Per-package commands
+
+Every package in `packages/` supports a uniform script surface (some packages add extras):
+
+```bash
+cd packages/<name>
+bun run build       # bun build.ts (each package owns its build script)
+bun run typecheck   # tsc --noEmit
+bun run test        # vitest run (preferred — bun test does NOT implement vi.importActual / vi.stubEnv)
+bun run lint        # biome check
+bun run lint:fix    # biome check --write
+bun run format      # biome format
+bun run clean       # rm -rf dist
+```
+
+Plugin packages (`plugins/plugin-*`) follow the same convention. The billing package adds:
+
+```bash
+cd packages/billing
+bun run sync-abis      # pull latest ABIs from upstream contracts repo
+bun run db:generate    # generate Drizzle migration from schema
+```
+
+---
+
+## Testing
+
+The test runner is **Vitest** (not `bun test` — Bun does not implement `vi.importActual` or `vi.stubEnv`, which several tests depend on).
+
+```bash
+# Whole tree (serial, ~3-5 min)
+bun run test
+
+# Single package
+cd packages/typescript && bun run test
+
+# Single file
+cd packages/billing && bunx vitest run src/ledger/credit-ledger.test.ts
+
+# Watch a single file
+cd packages/billing && bunx vitest src/ledger/credit-ledger.test.ts
+
+# All plugins
+bun run test:plugins
+```
+
+The CI workflow [`typecheck-billing.yml`](./.github/workflows/typecheck-billing.yml) is a fast path for billing-only changes: it installs, builds `@tokagentos/core` + `@tokagentos/billing`, typechecks both, and runs the 290-test plugin suite — under 5 minutes end-to-end.
+
+---
+
+## Deployment
+
+### Hosted billing gateway (Fly.io)
+
+[`apps/billing-server/`](./apps/billing-server) is the gateway deployed to Fly.io. It is fronted by LiteLLM, backed by a Postgres ledger, and gates on-chain settlement against the `ClaudeVault`.
+
+```bash
+# Manual deploy (CI does this automatically on `billing-server-v*` tag push)
+fly deploy --config apps/billing-server/fly.toml
+```
+
+The CI workflow [`deploy-billing-server.yml`](./.github/workflows/deploy-billing-server.yml) runs Drizzle migrations against prod Postgres, then Fly.io bluegreen deploy, then a `--full` readiness check. Full runbook in [`scripts/billing-server-DEPLOY.md`](./scripts/billing-server-DEPLOY.md).
+
+### Operator agents (Railway / Docker / VPS)
+
+Operator agents (chat UI + headless runtime) are deployable as a single container.
+
+```bash
+# Build the container
+docker build -t tokagentos .
+
+# Run with required env
+docker run -p 3000:3000 -p 2138:2138 \
+  -e TOKAGENT_EXECUTION_MODE=vault \
+  -e ANTHROPIC_API_KEY=sk-ant-... \
+  -e TOKAGENT_PRIVATE_KEY=0x... \
+  -e TOKAGENT_VAULT_ADDRESS=0x... \
+  -e TOKAGENT_RPC_URL=https://eth.llamarpc.com \
+  -e POSTGRES_URL=postgres://... \
+  tokagentos
+```
+
+The repo also ships [`railway.toml`](./railway.toml) for Railway deployments and [`docker-compose.billing.yml`](./docker-compose.billing.yml) for a local Postgres + billing-server stack.
+
+### TEE (Trusted Execution Environment)
+
+The [`tee-build-deploy.yml`](./.github/workflows/tee-build-deploy.yml) workflow builds and deploys hardware-attested agent images for cases where operator-key custody must be provable. See the upstream elizaOS TEE docs for the runtime contract.
+
+---
+
+## CI workflows
+
+| Workflow                                                              | Triggers                                                                                          | What it gates                                                                                                                                                       |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`typecheck-billing.yml`](./.github/workflows/typecheck-billing.yml)  | PR / push touching `packages/billing/**`, `plugins/plugin-tokagent-billing/**`, `bun.lock`        | Install → build `@tokagentos/core` + `@tokagentos/billing` → typecheck both → vitest the plugin (290 tests). Fast feedback for billing-only changes (~5 min).        |
+| [`deploy-billing-server.yml`](./.github/workflows/deploy-billing-server.yml) | Tag push `billing-server-v*`                                                                | Run Drizzle migrations against prod Postgres → Fly.io bluegreen deploy → `--full` readiness check.                                                                  |
+| [`ci.yaml`](./.github/workflows/ci.yaml)                              | PR / push to default branches                                                                     | Workspace-wide lint + typecheck + test on upstream-affected paths.                                                                                                  |
+| [`pr.yaml`](./.github/workflows/pr.yaml)                              | PR opened / synchronized                                                                          | PR-only checks (changesets, label gates).                                                                                                                           |
+| [`codeql.yml`](./.github/workflows/codeql.yml)                        | Weekly + PR                                                                                       | CodeQL security scan.                                                                                                                                               |
+| [`multi-lang-tests.yaml`](./.github/workflows/multi-lang-tests.yaml)  | Per-language path matching                                                                        | Python + Rust test suites (for the protobuf-generated client libraries).                                                                                            |
+| [`release.yaml`](./.github/workflows/release.yaml)                    | Manual or tag push                                                                                | Lerna publish from package versions.                                                                                                                                |
+| [`tee-build-deploy.yml`](./.github/workflows/tee-build-deploy.yml)   | TEE-specific tag                                                                                  | Build + deploy TEE-attested agent images.                                                                                                                           |
+
+See [`.github/workflows/README.md`](./.github/workflows/README.md) for the full list (Electron / iOS / Android builds, JSDoc automation, supply-chain attestation, weekly maintenance, etc.).
+
+---
+
+## Troubleshooting
+
+### `bun install` fails with peer dep / native build errors
+
+The postinstall step (`scripts/patch-nested-core-dist.mjs`) rewrites a few nested `@tokagentos/core` resolutions. If it fails partway through:
+
+```bash
+bun run clean        # nuclear option: wipes dist/, node_modules, lockfile, then reinstalls
+```
+
+If native modules (`canvas`, `sharp`, `node-llama-cpp`, `secp256k1`) fail on macOS, install system deps:
+
+```bash
+brew install cairo pango libpng jpeg giflib librsvg
+```
+
+### Workspace dep version mismatch
+
+```bash
+bun run fix-deps:check     # report drift
+bun run fix-deps           # rewrite workspace:* refs to match lockfile
+```
+
+### "Cannot find module '@tokagentos/core'" after editing core
+
+Core compiles first; re-run the build or use watch mode:
+
+```bash
+bun run build:core         # one-shot rebuild
+# or
+bun run dev:core           # watch mode
+```
+
+### Vault transactions reverting
+
+Symptoms: chat says "transaction executed" but no on-chain effect, or revert with `Allowlist`.
+
+1. Confirm `TOKAGENT_EXECUTION_MODE=vault` and `TOKAGENT_VAULT_ADDRESS` points to a deployed vault on the chain you are targeting.
+2. The vault enforces per-method allowlists at the contract level. Check the vault admin has whitelisted the target contract + selector your plugin is calling. Logs will show the rejected calldata.
+3. For Hyperliquid, ensure `TOKAGENT_HYPERLIQUID_HELPER_ADDRESS` is set (mainnet default: `0x8350777738059f29f639e493ea96e20d2f58171c`).
+
+### Billing gateway: "401 Unauthorized" on `/v1/messages`
+
+1. Confirm `BILLING_CHAT_KEY` is set and starts with `sk-ai-`.
+2. Confirm `TOKAGENT_GATEWAY_URL` matches a reachable gateway.
+3. The dashboard has a "Test key" button — use it to verify the key resolves to a funded wallet before routing through code.
+
+### Tests fail with "vi.importActual is not a function" or "vi.stubEnv is not a function"
+
+You ran them with `bun test` instead of `vitest`. Use `bun run test` (which delegates to `vitest run`) or `bunx vitest run` directly. Do not use `bun test` for this repo.
+
+### PGLite "database is locked"
+
+Two processes are touching the same PGLite directory. Either point each process at its own `PGLITE_DATA_DIR`, or switch to in-memory for dev:
+
+```bash
+export PGLITE_DATA_DIR=memory://
+```
+
+### Postgres migrations stuck / out of order
+
+For the main app database:
+
+```bash
+bun run migrate              # apply pending migrations (plugin-sql)
+```
+
+For the billing ledger:
+
+```bash
+cd packages/billing
+bun run db:generate          # generate from schema diff
+bunx drizzle-kit migrate     # apply
+```
+
+---
+
+## Contributing
+
+Contributions welcome. Open an issue before sending a non-trivial PR — the upstream architectural model is intentionally constrained and reviews go faster when we agree on shape first.
+
+Before submitting:
+
+```bash
+bun run lint:all             # lint:check + typecheck
+bun run test                 # full suite
+```
+
+Conventional Commits are enforced on the default branch. See [`.github/`](./.github/) for issue and PR templates.
+
+---
+
+## License and attribution
+
+MIT — see [`LICENSE`](./LICENSE).
+
+This codebase is a fork of [elizaOS](https://github.com/elizaos/eliza) (commit `4552f7b98c`, upstream version `v2.0.0-alpha.223`). See [`NOTICE.md`](./NOTICE.md) for upstream credits and the list of files we override via `scaffold-patches/`.
+
+### Contributors
+
+<a href="https://github.com/tokamak-network/Tokagentos-monorepo/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=tokamak-network/Tokagentos-monorepo" alt="tokagentOS project contributors" />
+</a>
