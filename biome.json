@@ -11,7 +11,8 @@
     "maxSize": 1048576,
     "includes": [
       "**",
-      "!packages/app-core/src/styles/**"
+      "!packages/app-core/src/styles/**",
+      "!frontend/src/app/globals.css"
     ]
   },
   "linter": {

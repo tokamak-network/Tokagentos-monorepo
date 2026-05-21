@@ -61,7 +61,8 @@
   "workspaces": [
     "packages/*",
     "apps/*",
-    "plugins/plugin-*"
+    "plugins/plugin-*",
+    "frontend"
   ],
   "devDependencies": {
     "@bufbuild/buf": "^1.47.2",
