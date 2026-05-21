@@ -1,10 +1,8 @@
 import { AgentTicker } from "@/components/AgentTicker";
 import { BillingSection } from "@/components/BillingSection";
-import { CLIWalkthrough } from "@/components/CLIWalkthrough";
 import { CodeWindow } from "@/components/CodeWindow";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
-import { InlineLink } from "@/components/InlineLink";
 import { MarqueeStrip } from "@/components/MarqueeStrip";
 import { ModesSection } from "@/components/ModesSection";
 import { Nav } from "@/components/Nav";
@@ -277,37 +275,6 @@ export default function Page() {
             <div className="mt-12">
               <BillingSection />
             </div>
-          </div>
-        </section>
-
-        {/* SHIP */}
-        <section
-          aria-labelledby="ship-heading"
-          className="border-border border-t bg-elev py-24 md:py-32"
-          id="ship"
-        >
-          <div className="container-page">
-            <SectionHeader
-              number="06"
-              eyebrow="get started"
-              heading="One command. Then it's just TypeScript."
-              sub="The CLI scaffolds a self-contained project wired to the right versions of every package."
-              headingId="ship-heading"
-              centered
-            />
-            <div className="mx-auto mt-12 max-w-3xl">
-              <CLIWalkthrough />
-            </div>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-              <InlineLink href="https://github.com/tokamak-network/Tokagentos-monorepo">
-                github
-              </InlineLink>
-              <InlineLink href="https://x402.org/">x402.org</InlineLink>
-              <InlineLink href="https://tokagent.network">tokagent</InlineLink>
-            </div>
-            <p className="mt-16 text-center font-mono text-[12px] text-accent italic">
-              Don&apos;t trust. Verify with math.
-            </p>
           </div>
         </section>
       </main>
