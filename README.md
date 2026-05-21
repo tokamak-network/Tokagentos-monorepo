@@ -1,6 +1,6 @@
 <div align="center">
   <h1>tokagentOS</h1>
-  <p><strong>An open-source framework for building autonomous, on-chain AI agents — billed in crypto, not subscriptions.</strong></p>
+  <p><strong>An open-source framework for building autonomous AI agents with native crypto-wallet integration.</strong></p>
 
   [![typecheck-billing](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/typecheck-billing.yml/badge.svg)](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/typecheck-billing.yml)
   [![ci](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/ci.yaml/badge.svg)](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/ci.yaml)
@@ -11,9 +11,14 @@
 
 ## What is tokagentOS?
 
-**tokagentOS** is Tokamak's autonomous on-chain agent framework. It runs DeFi strategies — Hyperliquid perpetuals, Aave v3 yield, Polymarket positions, custom vault flows — behind a chat UI or as a headless daemon, with execution mediated by a non-custodial `ClaudeVault` contract and metered by a Web3 credit rail (PTON / EIP-3009) instead of a SaaS subscription.
+**tokagentOS** is an open-source framework for building autonomous AI agents that have a crypto wallet by default. Every agent ships with a built-in EVM wallet, so any agent can sign messages, hold tokens, top up its own LLM credits, mint NFTs, manage on-chain identity, or run trading strategies — without the developer wiring a separate wallet stack.
 
-It is a fork of [elizaOS](https://github.com/elizaos/eliza) restyled for the Tokamak ecosystem: the runtime, plugin model, and agent loop come from upstream; the strategy engine, vault bindings, billing gateway, and project scaffolder are Tokamak-native. See [`NOTICE.md`](./NOTICE.md) for attribution.
+Two things make it different from a generic agent framework:
+
+1. **Wallet-native runtime.** The wallet is a first-class runtime primitive, not a plugin. Agents can read balances, sign EIP-712 / EIP-3009 / SIWE payloads, and execute transactions through configurable safety boundaries (raw signing, or routed through a non-custodial `ClaudeVault` with per-method allowlists).
+2. **Two paths for paying LLM providers** — bring your own API key (Anthropic, OpenAI, OpenRouter, Grok / xAI, Google Gemini, Groq, Ollama), **or** pay per call in crypto via an [x402](https://x402.org/)-compatible payment rail (EIP-3009 → PTON → `ClaudeVault`), where the agent's own wallet funds inference without any centralized account.
+
+It is a fork of [elizaOS](https://github.com/elizaos/eliza) restyled for the Tokamak ecosystem. The runtime, plugin model, and agent loop come from upstream; wallet integration, the x402 billing rail, the project scaffolder, and the Tokamak-branded app catalog (companion avatars, productivity, commerce, multi-agent coordination, NFT drops, DeFi, …) are Tokamak-native. See [`NOTICE.md`](./NOTICE.md) for attribution.
 
 > **Repo provenance.** This is the standalone home of what used to live at `tokagentos/` inside [`tokamak-network/Tokamak-AI-Layer`](https://github.com/tokamak-network/Tokamak-AI-Layer). Git history is preserved — `git log` here goes back to the original commits, with the `tokagentos/` prefix rewritten out of every path.
 
@@ -27,7 +32,7 @@ It is a fork of [elizaOS](https://github.com/elizaos/eliza) restyled for the Tok
 - [CLI quick start](#cli-quick-start)
 - [Standalone usage (monorepo)](#standalone-usage-monorepo)
 - [Runtime modes](#runtime-modes)
-- [Web3 billing rail](#web3-billing-rail)
+- [LLM access: x402 or bring-your-own-key](#llm-access-x402-or-bring-your-own-key)
 - [Architecture](#architecture)
 - [Environment variables](#environment-variables)
 - [Common commands](#common-commands)
@@ -43,16 +48,16 @@ It is a fork of [elizaOS](https://github.com/elizaos/eliza) restyled for the Tok
 
 ## Key features
 
-- **Non-custodial execution** — strategies route through a deployed `ClaudeVault` contract with per-method allowlists. The operator key signs transactions; the vault decides what is actually executable on-chain.
-- **DeFi strategy engine** — `StrategyRunnerService` composes Hyperliquid perps, Aave v3 yield, and Polymarket positions into long-running, persisted strategies that survive restarts.
-- **Web3 billing rail** — PTON-denominated credits settled via EIP-3009, gated by SIWE login or HMAC API keys (`sk-ai-*`), with a full top-up dashboard (USDC/USDT/ETH/WBTC → TON → PTON).
-- **Model-agnostic** — Anthropic, OpenAI, OpenRouter, Google Gemini, Groq, Ollama (local), or any LiteLLM-fronted provider. Auto-enables when the matching API key is present.
-- **Multi-channel** — chat UI, headless daemon, Discord, Telegram, Twitter/X, WhatsApp, Signal, BlueBubbles (iMessage). Each channel is env-gated and opt-in.
+- **Wallet-native agents** — every agent has a built-in EVM wallet. Sign EIP-712 / EIP-3009 / SIWE payloads, read balances across chains, mint or hold tokens, and execute transactions — without bolting on a separate wallet stack.
+- **Two paths for LLM access** — (a) **bring your own API key** for any of Anthropic, OpenAI, OpenRouter, Grok / xAI, Google Gemini, Groq, or local Ollama; or (b) **fully decentralized** pay-per-call via [x402](https://x402.org/) — the agent's wallet funds inference through EIP-3009 → PTON → `ClaudeVault` with no centralized account, no subscription, no API key.
+- **Configurable execution safety** — sign raw EVM transactions directly with the operator key, or route every call through a non-custodial `ClaudeVault` contract that enforces per-method allowlists at the chain level. Pick your trust boundary per project.
+- **Wide app catalog** — first-party apps under [`apps/`](./apps) span companion avatars (VRM), productivity (LifeOps), commerce (Shopify), multi-agent orchestration (Steward, Task Coordinator), NFT drops (TokagentMaker, ERC-8041), document RAG (Knowledge), Lit Protocol agent auth (Vincent), training data capture, and DeFi strategy automation. Each is a standalone workspace; mix and match.
+- **Model-, channel-, and chain-agnostic** — provider keys, messaging channels (Discord, Telegram, Twitter/X, WhatsApp, Signal, iMessage), and RPC endpoints are env-gated and auto-enable when set. No code changes to swap any of them.
 - **Project scaffolder** — the `@tokagent/tokagentos` CLI generates a self-contained project workspace wired to the right versions of every package, with template + per-file patch overrides.
-- **White-label apps** — `@tokagentos/app-core` is a runnable dev-server + plugin registry that hosts branded UIs (companion avatars, LifeOps, Shopify, TokagentMaker NFT drops, …) without forking the runtime.
+- **White-label app shell** — `@tokagentos/app-core` is a runnable dev-server + plugin registry that hosts branded UIs without forking the runtime.
 - **First-class TypeScript** — protobuf schemas (`@tokagentos/schemas`) are the single source of truth across services; every runtime surface is typed end-to-end.
 
-> **Looking for plugins?** First-party Tokagent plugins live in [`plugins/plugin-tokagent-*`](./plugins). Upstream elizaOS plugins (`@elizaos/plugin-anthropic`, `@elizaos/plugin-sql`, `@elizaos/plugin-ollama`, …) are pulled from npm. Submodule-managed upstream plugins (`plugin-signal`, `plugin-bluebubbles`) populate via `git submodule update --init`.
+> **Looking for plugins?** First-party Tokagent plugins live in [`plugins/plugin-tokagent-*`](./plugins). Upstream elizaOS plugins (`@elizaos/plugin-anthropic`, `@elizaos/plugin-evm`, `@elizaos/plugin-sql`, `@elizaos/plugin-ollama`, …) are pulled from npm. Submodule-managed upstream plugins (`plugin-signal`, `plugin-bluebubbles`) populate via `git submodule update --init`.
 
 ---
 
@@ -83,26 +88,28 @@ Tokagentos-monorepo/
 │   └── tokagentos/          #  @tokagent/tokagentos — public CLI that scaffolds new projects (npm-published)
 │
 ├── plugins/                 # runtime plugins — opt-in features mounted into a runtime
-│   ├── plugin-tokagent-shared/        # vault bindings, chain config, wallet helpers, risk constants
-│   ├── plugin-tokagent-strategy/      # strategy engine + StrategyRunnerService
-│   ├── plugin-tokagent-perps/         # Hyperliquid perpetuals via vault allowlist
-│   ├── plugin-tokagent-yield/         # Aave v3 deposit/withdraw on Polygon via vault allowlist
-│   ├── plugin-tokagent-polymarket/    # Polymarket buy/sell/redeem via vault allowlist
-│   ├── plugin-tokagent-billing/       # /v1/auth, /v1/keys, /v1/topup, /v1/messages routes + middleware
+│   ├── plugin-tokagent-billing/       # x402 LLM payment rail: /v1/auth, /v1/keys, /v1/topup, /v1/messages
+│   ├── plugin-tokagent-shared/        # (DeFi pack) vault bindings, chain config, wallet helpers, risk constants
+│   ├── plugin-tokagent-strategy/      # (DeFi pack) strategy engine + StrategyRunnerService
+│   ├── plugin-tokagent-perps/         # (DeFi pack) Hyperliquid perpetuals via vault allowlist
+│   ├── plugin-tokagent-yield/         # (DeFi pack) Aave v3 deposit/withdraw on Polygon via vault allowlist
+│   ├── plugin-tokagent-polymarket/    # (DeFi pack) Polymarket buy/sell/redeem via vault allowlist
 │   ├── plugin-signal/                 # (upstream submodule) Signal messaging
 │   └── plugin-bluebubbles/            # (upstream submodule) iMessage via BlueBubbles
 │
-├── apps/                    # top-level deployable apps (each its own workspace)
-│   ├── billing-server/      # the LiteLLM-fronting credit gateway (Fly.io)
-│   ├── app-companion/       # VRM scene runtime + avatar utilities
-│   ├── app-lifeops/         # routines, goals, Google Workspace, Apple Reminders, Twilio, hosts-file blocking
-│   ├── app-tokagentmaker/   # ERC-8041 NFT drop/mint, Merkle-proof whitelists, OG codes
+├── apps/                    # top-level deployable apps — each is a standalone workspace,
+│   │                        # pick the ones you want; none are required
+│   ├── app-companion/       # VRM 3D avatar runtime — voice + face + body for chat-first agents
+│   ├── app-lifeops/         # personal-productivity agent: routines, goals, Google Workspace,
+│   │                        #   Apple Reminders, Twilio, browser companion control, hosts-file blocking
 │   ├── app-shopify/         # Shopify storefront agent surfaces
-│   ├── app-knowledge/       # RAG over user documents
 │   ├── app-steward/         # multi-agent steward orchestration
 │   ├── app-task-coordinator/# multi-agent task coordination
+│   ├── app-tokagentmaker/   # NFT minting workflow: ERC-8041 drops, Twitter-verified Merkle whitelists, OG codes
+│   ├── app-knowledge/       # RAG over user documents (scoped per agent / per owner)
 │   ├── app-training/        # trajectory capture + prompt optimization
-│   └── app-vincent/         # Lit Protocol Vincent integration
+│   ├── app-vincent/         # Lit Protocol Vincent integration (agent auth + policy)
+│   └── billing-server/      # the hosted x402 LLM credit gateway (Fly.io deployment)
 │
 ├── scripts/                 # dev tooling: lockfile sync, plugin submodule bootstrap, build orchestration
 ├── docs/                    # design notes, ADRs, runbooks
@@ -117,11 +124,11 @@ Tokagentos-monorepo/
 | ------------------------------------------------------------- | ----------------------------------------------------------- |
 | Run an agent in 5 minutes                                     | [CLI quick start](#cli-quick-start)                         |
 | Hack on the framework, plugins, or apps                       | [Standalone usage (monorepo)](#standalone-usage-monorepo)   |
-| Understand the runtime, billing, and vault model              | [Architecture](#architecture)                               |
+| Understand the wallet, runtime, and execution boundary        | [Architecture](#architecture)                               |
 | Know every env var                                            | [Environment variables](#environment-variables)             |
 | Ship a project to production                                  | [Deployment](#deployment)                                   |
-| Wire chat-driven trades / route through your own LLM provider | [Runtime modes](#runtime-modes)                             |
-| Bill agent usage in crypto                                    | [Web3 billing rail](#web3-billing-rail)                     |
+| Pick a wallet-execution mode (raw signing vs vault allowlist) | [Runtime modes](#runtime-modes)                             |
+| Pay for LLM calls with crypto instead of an API key           | [LLM access: x402 or bring-your-own-key](#llm-access-x402-or-bring-your-own-key) |
 
 ---
 
@@ -143,10 +150,19 @@ bunx @tokagent/tokagentos@latest
 cd <your-project>
 cp .env.example .env
 # Fill in at minimum:
-#   ANTHROPIC_API_KEY=...                   (or another provider key)
-#   TOKAGENT_PRIVATE_KEY=0x...              (operator hot wallet)
-#   TOKAGENT_VAULT_ADDRESS=0x...            (if running in vault mode)
+#   TOKAGENT_PRIVATE_KEY=0x...              (the agent's built-in wallet — required)
 #   TOKAGENT_RPC_URL=https://...            (Ethereum mainnet RPC)
+#
+# Then pick ONE LLM access path:
+#   ANTHROPIC_API_KEY=sk-ant-...            (bring-your-own — also works: OPENAI_API_KEY,
+#                                            OPENROUTER_API_KEY, XAI_API_KEY,
+#                                            GOOGLE_GENERATIVE_AI_API_KEY, GROQ_API_KEY)
+# OR
+#   BILLING_CHAT_KEY=sk-ai-...              (x402 decentralized — agent's wallet pays per call)
+#   TOKAGENT_GATEWAY_URL=https://...
+#
+# Optional, only if running in vault execution mode:
+#   TOKAGENT_VAULT_ADDRESS=0x...            (your deployed ClaudeVault)
 
 # 4. Run
 bun install
@@ -203,39 +219,83 @@ The scaffolded project depends on `@tokagentos/*` and `@tokagent/plugin-*` via p
 
 ## Runtime modes
 
-Selected via `TOKAGENT_EXECUTION_MODE` in `.env`:
+Two orthogonal switches: **how the agent's wallet signs transactions** (`TOKAGENT_EXECUTION_MODE`) and **what UI it serves**.
 
-| Mode       | What it does                                                                                                                              | Plugins loaded                                                                            | Use when                                                                                       |
-| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `vault`    | Actions go through the deployed `ClaudeVault` contract. Vault enforces per-method allowlists. No raw EVM signing from chat.               | `plugin-tokagent-{shared,strategy,perps,yield,polymarket}`. **No** `plugin-evm`.          | Production. Safe default. Operator key cannot drain funds even if compromised at the LLM tier. |
-| `direct`   | Operator wallet signs transactions directly. Chat can drive swaps and transfers via `plugin-evm`.                                         | `plugin-evm` + non-vault plugins. **No** Tokagent vault plugins.                          | Development. When you want chat-driven trades without deploying a vault.                       |
-| `both`     | Both vault and direct plugins loaded; the LLM picks per request.                                                                          | Everything.                                                                               | Rare. Reduced safety guarantees — use only when you understand both paths.                     |
+### Wallet-execution mode (`TOKAGENT_EXECUTION_MODE`)
 
-Additionally, the framework distinguishes three **UI** modes:
+This is the trust boundary around the agent's wallet. It applies to every on-chain action — token transfers, contract calls, NFT mints, DeFi strategies, anything.
 
-- **`daemon`** — headless. `StrategyRunnerService` ticks, actions sign via the operator private key. No UI served.
-- **`operator`** — daemon + local React UI on `TOKAGENT_UI_PORT` (default `2138`). Chat / Automations / Wallet / Settings / Billing tabs.
-- **`vault`** — operator mode with strategies routed through the deployed `ClaudeVault` contract instead of a hot wallet.
+| Mode       | What it does                                                                                                                                                       | Use when                                                                                                                                                  |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `vault`    | Every on-chain call routes through a deployed `ClaudeVault` contract that enforces per-method allowlists at the chain level. No raw EVM signing reachable from chat. | Production. Operator hot key cannot drain funds even if the LLM is compromised or prompt-injected. Loads the Tokagent vault plugins; **does not** load `plugin-evm`. |
+| `direct`   | The operator wallet signs transactions directly. Chat can drive arbitrary swaps and transfers via `@elizaos/plugin-evm`.                                           | Development, demos, or use cases where you want full chat-driven on-chain control. Loads `plugin-evm`; **does not** load the vault plugins.                |
+| `both`     | Both code paths loaded; the LLM picks per request.                                                                                                                 | Rare. Reduced safety guarantees — use only when you understand both paths.                                                                                |
 
-AI providers and messaging channels are env-gated. Setting the relevant API key auto-enables the channel — `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `OPENAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `GROQ_API_KEY`, `DISCORD_BOT_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TWITTER_API_KEY`, `WHATSAPP_ACCESS_TOKEN`, `SIGNAL_PHONE_NUMBER`. If no provider key is set, the runtime falls back to `@elizaos/plugin-ollama` (local).
+### UI mode
+
+- **`daemon`** — headless. Agent loop runs, signs autonomously. No UI served.
+- **`operator`** — daemon + local React UI on `TOKAGENT_UI_PORT` (default `2138`): Chat / Automations / Wallet / Settings / Billing tabs.
+
+### Channels (env-gated, opt-in)
+
+Set any of these to activate the matching channel: `DISCORD_BOT_TOKEN`, `TELEGRAM_BOT_TOKEN`, `TWITTER_API_KEY` + `TWITTER_API_SECRET`, `WHATSAPP_ACCESS_TOKEN`, `SIGNAL_PHONE_NUMBER`. iMessage via BlueBubbles is available through the upstream submodule plugin (`git submodule update --init plugins/plugin-bluebubbles`).
+
+LLM provider selection is its own decision tree — see the next section.
 
 ---
 
-## Web3 billing rail
+## LLM access: x402 or bring-your-own-key
 
-Set `BILLING_CHAT_KEY=sk-ai-...` + `TOKAGENT_GATEWAY_URL=https://billing-service-production-a8e7.up.railway.app` to route LLM calls through the credit gateway instead of an upstream provider. The gateway:
+tokagentOS gives you two paths to model inference. Pick one, or run both side by side.
 
-- **Authenticates** via SIWE (EIP-712 `LoginAuth` → 24-hour session JWT) or HMAC API keys (`sk-ai-*`).
-- **Settles spend** in PTON (an EIP-3009 wrapper over Tokamak TON) deposited into `ClaudeVault` (`0x091365301a461bEeFd5e2Fe1BD244befCE274F5c` on Ethereum mainnet).
-- **Forwards** `/v1/messages` (Anthropic) and `/v1/chat/completions` (OpenAI-compatible) to LiteLLM with full SSE pass-through.
-- **Dashboards** at `/v1/billing/dashboard/`: top-ups (USDC/USDT/ETH/WBTC → TON → PTON in one flow), key management (mint + auto-install into local `.env`), and 30-day usage analytics.
+### Option 1 — Bring your own API key (centralized)
 
-Implementation lives in:
-- [`packages/billing/`](./packages/billing) — Postgres-backed ledger, EIP-3009 settlement, TON/USD TWAP oracle, Drizzle migrations.
-- [`plugins/plugin-tokagent-billing/`](./plugins/plugin-tokagent-billing) — `/v1/auth`, `/v1/keys`, `/v1/topup`, `/v1/messages` routes + middleware.
-- [`apps/billing-server/`](./apps/billing-server) — the Fly.io deployment that exposes the gateway publicly.
+Set any of the following in `.env`; the matching plugin auto-loads at boot:
 
-See [`scripts/billing-server-DEPLOY.md`](./scripts/billing-server-DEPLOY.md) for the deploy runbook.
+| Provider           | Env var                                                                                |
+| ------------------ | -------------------------------------------------------------------------------------- |
+| Anthropic Claude   | `ANTHROPIC_API_KEY`                                                                    |
+| OpenAI             | `OPENAI_API_KEY`                                                                       |
+| OpenRouter         | `OPENROUTER_API_KEY`                                                                   |
+| Grok / xAI         | `XAI_API_KEY`                                                                          |
+| Google Gemini      | `GOOGLE_GENERATIVE_AI_API_KEY`                                                         |
+| Groq               | `GROQ_API_KEY`                                                                         |
+| Ollama (local)     | `OLLAMA_API_ENDPOINT`                                                                  |
+| LiteLLM (proxy)    | `LITELLM_BASE_URL` + `LITELLM_API_KEY` + `LITELLM_SMALL_MODEL` + `LITELLM_LARGE_MODEL` |
+
+If no provider key is set, the runtime falls back to a local model via `@elizaos/plugin-ollama`. You pay the upstream provider directly with your own account. Same path any elizaOS agent uses.
+
+### Option 2 — x402 decentralized pay-per-call (no API key, no account)
+
+The agent's own wallet funds each LLM call via [x402](https://x402.org/), the HTTP-402 payment standard. No signup, no centralized billing account, no monthly subscription — every request is settled on-chain in PTON.
+
+**How it works end-to-end:**
+
+1. The agent makes an LLM request to the gateway (`/v1/messages` for Anthropic-shaped, `/v1/chat/completions` for OpenAI-shaped).
+2. Either a SIWE login (EIP-712 → 24-hour session JWT) or an HMAC API key (`sk-ai-*`) authenticates the wallet. SIWE is interactive; API keys are stateless and good for headless agents.
+3. The gateway reserves credits against the wallet's PTON balance in `ClaudeVault`, forwards to LiteLLM (which fans out to any supported model), streams the response back via SSE, then commits actual usage.
+4. Periodic on-chain `consumeCredits` flushes batch the per-request charges. Wallets top up by depositing PTON via EIP-3009 (`vault.depositX402`) — gasless from the user's side, anyone can submit.
+5. PTON is an EIP-3009 wrapper over Tokamak TON, 1:1. The dashboard swaps USDC / USDT / ETH / WBTC → TON → PTON in one flow.
+
+To use the hosted Tokamak gateway:
+
+```bash
+BILLING_CHAT_KEY=sk-ai-...                                              # mint via the dashboard
+TOKAGENT_GATEWAY_URL=https://billing-service-production-a8e7.up.railway.app
+```
+
+Or run your own gateway from [`apps/billing-server/`](./apps/billing-server) — same code, your own Fly.io app, your own `ClaudeVault` deployment.
+
+The dashboard at `/v1/billing/dashboard/` provides API-key minting (with auto-install into local `.env`), swap-to-PTON top-up, 90-day usage history, and balance / quote endpoints.
+
+**Implementation:**
+
+- [`packages/billing/`](./packages/billing) — Postgres-backed ledger (Drizzle ORM), EIP-3009 settlement, TON/USD composite Uniswap V3 TWAP oracle, on-chain `consumeCredits` flusher.
+- [`plugins/plugin-tokagent-billing/`](./plugins/plugin-tokagent-billing) — `/v1/auth`, `/v1/keys`, `/v1/topup`, `/v1/messages` routes + middleware. Drop this into any tokagentOS agent to expose x402 endpoints.
+- [`apps/billing-server/`](./apps/billing-server) — the hosted gateway. See [`scripts/billing-server-DEPLOY.md`](./scripts/billing-server-DEPLOY.md) for the deploy runbook.
+- [`docs/x402-e2e-test.md`](./docs/x402-e2e-test.md) — end-to-end walkthrough (scaffold → deploy contracts → fund wallet → run a metered LLM call).
+
+`ClaudeVault` mainnet address: `0x091365301a461bEeFd5e2Fe1BD244befCE274F5c`.
 
 ---
 
@@ -258,7 +318,7 @@ See [`scripts/billing-server-DEPLOY.md`](./scripts/billing-server-DEPLOY.md) for
                               ┌─────────────▼──────────────┐
                               │   @tokagentos/agent        │
                               │   - AgentRuntime           │
-                              │   - StrategyRunnerService  │
+                              │   - Built-in wallet        │
                               │   - API server (Elysia)    │
                               │   :31337                   │
                               └──┬──────────────┬──────────┘
@@ -266,37 +326,40 @@ See [`scripts/billing-server-DEPLOY.md`](./scripts/billing-server-DEPLOY.md) for
             ┌────────────────────┘              └────────────────────┐
             │                                                        │
 ┌───────────▼────────────┐                              ┌────────────▼─────────────┐
-│  LLM provider          │                              │   On-chain                │
-│  - Anthropic           │                              │   - viem / ethers         │
-│  - OpenAI              │                              │   - ClaudeVault (vault)   │
-│  - LiteLLM             │                              │   - plugin-evm (direct)   │
-│  - billing gateway     │                              │   - Hyperliquid helper    │
-│    (PTON-billed)       │                              │   - Aave v3 / Polygon     │
-└────────────────────────┘                              │   - Polymarket CLOB       │
-                                                        └───────────────────────────┘
+│  LLM access            │                              │   On-chain (wallet)       │
+│                        │                              │                           │
+│  ── Option A ──        │                              │  ── vault mode ──         │
+│  Anthropic / OpenAI /  │                              │  ClaudeVault.execute()    │
+│  OpenRouter / xAI /    │                              │  (per-method allowlists)  │
+│  Gemini / Groq / Ollama│                              │                           │
+│  (your API key)        │                              │  ── direct mode ──        │
+│                        │                              │  plugin-evm raw signing   │
+│  ── Option B (x402) ── │                              │                           │
+│  PTON / EIP-3009 /     │                              │  Either mode → viem →     │
+│  ClaudeVault           │                              │  any EVM chain + the      │
+│  (wallet pays per call)│                              │  app/plugin contracts     │
+└────────────────────────┘                              └───────────────────────────┘
 ```
 
-### Request lifecycle (operator mode, vault execution)
+### Request lifecycle (typical chat → action flow)
 
-1. User types into chat UI → POST `/v1/messages` to API server.
-2. `AgentRuntime` builds context (memory, providers, state) and calls the configured LLM provider.
-3. If the LLM emits a strategy action, `StrategyRunnerService` queues it.
-4. The strategy action calls a Tokagent plugin (e.g. `plugin-tokagent-yield → depositToAave`).
-5. The plugin builds a `VaultCall` calldata blob and submits it via the operator key to `ClaudeVault.execute()`.
-6. The vault validates the calldata against its per-method allowlist; if allowed, forwards to the target contract.
-7. Transaction hash, receipt, and side effects flow back through `StrategyRunnerService` → API → UI.
+1. User sends a message via chat UI → POST to API server (`:31337`).
+2. `AgentRuntime` builds context (memory, providers, state) and calls the configured LLM provider — either an upstream API directly, or the x402 gateway. If x402 is in use, the agent's wallet auto-funds the call.
+3. If the LLM emits a structured action (send tokens, mint an NFT, post to Shopify, deposit to Aave, …), the runtime dispatches it to the appropriate plugin.
+4. If the action is on-chain, the plugin builds calldata. In **direct** mode, the operator wallet signs and broadcasts directly. In **vault** mode, the plugin submits to `ClaudeVault.execute()`, which validates against per-method allowlists before forwarding to the target contract.
+5. Transaction hash, receipt, and side effects flow back through the runtime → API → UI. Memory is updated; subsequent turns can reason about the result.
 
 ### Key components
 
 **`@tokagentos/core`** (`packages/typescript/`) — runtime interfaces, `Action` / `Provider` / `Service` base types, logger, message and memory primitives. Every other package depends on this.
 
-**`@tokagentos/agent`** (`packages/agent/`) — the headless agent runtime. Owns `AgentRuntime`, plugin loader, default plugin map, API server (Elysia), and CLI entry (`tokagent-autonomous`). The standalone `start` script lives here.
+**`@tokagentos/agent`** (`packages/agent/`) — the headless agent runtime. Owns `AgentRuntime`, plugin loader, default plugin map, API server (Elysia), and CLI entry (`tokagent-autonomous`). The standalone `start` script lives here. The built-in wallet is wired up here via the core plugin map.
 
 **`@tokagentos/app-core`** (`packages/app-core/`) — dev-server + Vite bridge + plugin registry that powers white-label apps. Scaffolded projects use this as their entry point.
 
 **`@tokagentos/shared`** (`packages/shared/`) — env-var resolution (with i18n keyword generation), port discovery, message connectors, runtime env helpers used by both `agent` and `app-core`.
 
-**`@tokagentos/billing`** (`packages/billing/`) — Postgres-backed credit ledger with Drizzle ORM, EIP-3009 receive-with-authorization settlement, TON/USD TWAP oracle, and the chain address book.
+**`@tokagentos/billing`** (`packages/billing/`) — the x402 LLM payment rail. Postgres-backed credit ledger (Drizzle ORM), EIP-3009 settlement against `ClaudeVault`, TON/USD composite Uniswap V3 TWAP oracle, on-chain `consumeCredits` flusher. Only loaded if you opt into x402; bring-your-own-key paths never touch this.
 
 **`@tokagentos/ui`** (`packages/ui/`) — shared React primitives + design tokens. Built on Radix UI + Tailwind.
 
@@ -304,7 +367,7 @@ See [`scripts/billing-server-DEPLOY.md`](./scripts/billing-server-DEPLOY.md) for
 
 **`@tokagent/tokagentos`** (`packages/tokagentos/`) — the public CLI that scaffolds new projects. Published to npm.
 
-**Tokagent plugins** (`plugins/plugin-tokagent-*/`) — strategy primitives, vault bindings, and the billing route handlers. Loaded by name into the runtime.
+**Tokagent plugins** (`plugins/plugin-tokagent-*/`) — the optional Tokamak feature pack. `plugin-tokagent-billing` provides the x402 routes any agent can mount; `plugin-tokagent-{shared,strategy,perps,yield,polymarket}` are the DeFi automation pack that runs Hyperliquid / Aave / Polymarket through `ClaudeVault`. None of these are required for a wallet-only agent.
 
 ### Database
 
@@ -319,20 +382,26 @@ Full reference: [`.env.example`](./.env.example). Highlights below.
 
 ### Required for any agent run
 
-| Variable                              | Description                                                            | Notes                                                                                                                                                              |
-| ------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `TOKAGENT_EXECUTION_MODE`             | `vault` / `direct` / `both`                                            | See [Runtime modes](#runtime-modes). Default `vault`.                                                                                                              |
-| `ANTHROPIC_API_KEY` (or other)        | At least one LLM provider key                                          | Or set `OPENAI_API_KEY`, `OPENROUTER_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `GROQ_API_KEY`, or `OLLAMA_API_ENDPOINT`. Falls back to local Ollama if none set.   |
+| Variable                              | Description                                                            | Notes                                                                                                                                                                          |
+| ------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `TOKAGENT_EXECUTION_MODE`             | `vault` / `direct` / `both`                                            | See [Runtime modes](#runtime-modes). Default `vault`.                                                                                                                          |
+| LLM access — **one of**:              | -                                                                      | -                                                                                                                                                                              |
+| `ANTHROPIC_API_KEY` (or other)        | Bring-your-own provider key                                            | Any of `OPENAI_API_KEY`, `OPENROUTER_API_KEY`, `XAI_API_KEY`, `GOOGLE_GENERATIVE_AI_API_KEY`, `GROQ_API_KEY`, or `OLLAMA_API_ENDPOINT`. Falls back to local Ollama if none set. |
+| `BILLING_CHAT_KEY` + `TOKAGENT_GATEWAY_URL` | x402 gateway — pay per call from the agent's wallet              | Use this for fully decentralized inference. See [LLM access](#llm-access-x402-or-bring-your-own-key).                                                                          |
 
-### Required for on-chain execution
+### Required for on-chain actions (any wallet activity)
 
-| Variable                  | Description                                                                                  |
-| ------------------------- | -------------------------------------------------------------------------------------------- |
-| `TOKAGENT_PRIVATE_KEY`    | Operator hot wallet (hex, 0x-prefixed). Auto-mirrored to `EVM_PRIVATE_KEY` at boot.          |
-| `TOKAGENT_RPC_URL`        | Ethereum mainnet RPC. Auto-mirrored to `EVM_PROVIDER_URL`, `ETHEREUM_PROVIDER_MAINNET`, etc. |
-| `TOKAGENT_VAULT_ADDRESS`  | Deployed `ClaudeVault` address on the target chain (vault mode only).                        |
-| `POLYGON_RPC_URL`         | Polygon RPC (Aave yield plugin).                                                             |
-| `HYPERLIQUID_API_URL`     | Hyperliquid API base URL (default: `https://api.hyperliquid.xyz`).                           |
+The agent's built-in wallet needs a signing key and at least one RPC endpoint. Even a "pure chat" agent that occasionally checks its balance or pays for an x402 LLM call needs these.
+
+| Variable                  | Description                                                                                                                            |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `TOKAGENT_PRIVATE_KEY`    | Operator hot wallet (hex, 0x-prefixed). Auto-mirrored to `EVM_PRIVATE_KEY` at boot. Generate with `cast wallet new` for tests.         |
+| `TOKAGENT_RPC_URL`        | Ethereum mainnet RPC. Auto-mirrored to `EVM_PROVIDER_URL`, `ETHEREUM_PROVIDER_MAINNET`, etc.                                           |
+| `TOKAGENT_VAULT_ADDRESS`  | Deployed `ClaudeVault` address on the target chain (vault mode only).                                                                  |
+| `POLYGON_RPC_URL`         | Polygon RPC (only if you run the Aave yield plugin).                                                                                   |
+| `HYPERLIQUID_API_URL`     | Hyperliquid API base URL (only if you run the perps plugin). Default: `https://api.hyperliquid.xyz`.                                   |
+
+> Alternatively, leave `TOKAGENT_PRIVATE_KEY` empty and use the `/wallet` page wizard's "Generate" or "Import" path — the key is stored in the OS keychain instead of `.env`.
 
 ### Server
 
