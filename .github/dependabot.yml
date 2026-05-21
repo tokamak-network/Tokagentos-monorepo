@@ -1,12 +1,45 @@
-# To get started with Dependabot version updates, you'll need to specify which
-# package ecosystems to update and where the package manifests are located.
-# Please see the documentation for all configuration options:
-# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
-
+# Dependabot config for tokagentOS monorepo.
+#
+# Why these specific entries:
+# - `bun` at root   → keeps the bun workspace (package.json + bun.lock) current.
+#                     `npm` ecosystem would also work but `bun` understands
+#                     bun.lock semantics better.
+# - `github-actions`→ keeps actions/checkout@v4, oven-sh/setup-bun@v1, etc. updated.
+# - `docker`        → tracks the billing-server image's base image. Only the
+#                     Dockerfile path is enabled; docker-compose.billing.yml
+#                     is dev-only and not worth weekly PRs.
+#
+# All update PRs are batched at most once per week and labelled `deps` so they
+# show up together in the PR list. Manual review still required for major
+# bumps (no auto-merge).
 version: 2
 updates:
-  # Note: placeholder to remind users to specify a valid package ecosystem before use
-  - package-ecosystem: "" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: bun
+    directory: "/"
     schedule:
-      interval: "weekly"
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - deps
+      - javascript
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - deps
+      - ci
+
+  - package-ecosystem: docker
+    directory: /apps/billing-server
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    labels:
+      - deps
+      - docker
