@@ -1,6 +1,6 @@
 {
   "name": "@tokagentos/agent",
-  "version": "2.0.2",
+  "version": "2.0.2-beta.0",
   "description": "Standalone tokagentOS-based agent and backend server package.",
   "type": "module",
   "license": "MIT",

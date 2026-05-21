@@ -1,6 +1,6 @@
 {
   "name": "@tokagentos/shared",
-  "version": "2.0.2",
+  "version": "2.0.2-beta.0",
   "description": "Shared code for Tokagent agent and app-core.",
   "type": "module",
   "main": "src/index.ts",
