@@ -4,9 +4,13 @@ type Props = {
 };
 
 /**
- * Plasma ring symbol + wordmark. Inlined SVG so the symbol renders crisp
- * at any size and inherits page styles. Wordmark is rendered as HTML text
+ * tokagentOS "Key" mark + wordmark. The mark is a stylized T that doubles
+ * as a key (crossbar, stem, two notches, tip) — visual shorthand for
+ * "agents that hold their own keys". Inlined SVG so it renders crisp at
+ * any size and inherits page styles. Wordmark is rendered as HTML text
  * so it picks up DM Sans from the page.
+ *
+ * Source: frontend/tokagentos-key 2/symbols/key.svg (brand kit).
  */
 export function Logo({ size = 28, showWordmark = true }: Props) {
   return (
@@ -21,44 +25,29 @@ export function Logo({ size = 28, showWordmark = true }: Props) {
         className="shrink-0"
       >
         <defs>
-          <radialGradient id="logo-glow" cx="50%" cy="50%" r="50%">
-            <stop offset="0%" stopColor="#f3ba2f" stopOpacity="0.85" />
-            <stop offset="55%" stopColor="#f0b90b" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#f0b90b" stopOpacity="0" />
-          </radialGradient>
-          <linearGradient id="logo-stroke" x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id="logo-key" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#f3ba2f" />
             <stop offset="100%" stopColor="#d8a000" />
           </linearGradient>
         </defs>
-        <circle cx="20" cy="20" r="18" fill="url(#logo-glow)" />
-        <circle
-          cx="20"
-          cy="20"
-          r="14"
-          fill="none"
-          stroke="url(#logo-stroke)"
-          strokeWidth="1.4"
+        <rect x="6" y="6" width="28" height="6" rx="1.2" fill="url(#logo-key)" />
+        <rect
+          x="7"
+          y="6.5"
+          width="26"
+          height="1.2"
+          fill="rgba(255,255,255,0.42)"
         />
-        <ellipse
-          cx="20"
-          cy="20"
-          rx="9"
-          ry="3.6"
-          fill="none"
-          stroke="#f0b90b"
-          strokeWidth="1.2"
-          opacity="0.95"
-        />
-        <circle cx="20" cy="20" r="1.8" fill="#f3ba2f" />
-        <circle
-          cx="20"
-          cy="20"
-          r="3.4"
-          fill="none"
-          stroke="#f0b90b"
-          strokeWidth="0.6"
-          opacity="0.45"
+        <rect x="17" y="12" width="6" height="18" fill="url(#logo-key)" />
+        <rect x="23" y="22" width="5" height="3.2" fill="url(#logo-key)" />
+        <rect x="23" y="27" width="3.5" height="3.2" fill="url(#logo-key)" />
+        <rect
+          x="17"
+          y="30"
+          width="6"
+          height="3.5"
+          rx="0.6"
+          fill="url(#logo-key)"
         />
       </svg>
       {showWordmark && (
