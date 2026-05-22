@@ -1,9 +1,7 @@
 <div align="center">
-  <h1>tokagentOS</h1>
+  <img src="./docs/logo.svg" alt="tokagentOS" width="320" />
   <p><strong>An open-source framework for building autonomous AI agents with native crypto-wallet integration.</strong></p>
 
-  [![typecheck-billing](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/typecheck-billing.yml/badge.svg)](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/typecheck-billing.yml)
-  [![ci](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/ci.yaml/badge.svg)](https://github.com/tokamak-network/Tokagentos-monorepo/actions/workflows/ci.yaml)
   [![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
   [![bun](https://img.shields.io/badge/bun-%E2%89%A5%201.3.14-black.svg)](https://bun.sh)
   [![node](https://img.shields.io/badge/node-24.15.0-339933.svg)](./.nvmrc)
