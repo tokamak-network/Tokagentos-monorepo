@@ -2,7 +2,7 @@ import { AgentTicker } from "@/components/AgentTicker";
 import { BillingSection } from "@/components/BillingSection";
 import { CodeWindow } from "@/components/CodeWindow";
 import { Footer } from "@/components/Footer";
-import { Hero } from "@/components/Hero";
+import { Hero } from "@/components/hero/Hero";
 import { MarqueeStrip } from "@/components/MarqueeStrip";
 import { MobileNav } from "@/components/MobileNav";
 import { ModesSection } from "@/components/ModesSection";
@@ -17,7 +17,6 @@ const quickStartTabs = [
     label: "bun",
     lines: [
       "bunx @tokagent/tokagentos@latest",
-      "tokagentos",
       "cd my-agent && bun install",
       "bun run dev   # UI :2138 · API :31337",
     ],
@@ -27,7 +26,6 @@ const quickStartTabs = [
     label: "npm",
     lines: [
       "npm install -g @tokagent/tokagentos",
-      "tokagentos",
       "cd my-agent && npm install && npm run dev",
     ],
   },
@@ -36,7 +34,6 @@ const quickStartTabs = [
     label: "pnpm",
     lines: [
       "pnpm dlx @tokagent/tokagentos@latest",
-      "tokagentos",
       "cd my-agent && pnpm install",
       "pnpm dev",
     ],
