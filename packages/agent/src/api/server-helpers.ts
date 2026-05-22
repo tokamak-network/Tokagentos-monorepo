@@ -19,12 +19,6 @@ import {
   type Media,
   type UUID,
 } from "@tokagentos/core";
-import {
-  normalizeCharacterLanguage,
-  resolveStylePresetByAvatarIndex,
-  resolveStylePresetById,
-  resolveStylePresetByName,
-} from "@tokagentos/shared/onboarding-presets";
 import type { TokagentConfig } from "../config/config.js";
 import { resolveStateDir } from "../config/paths.js";
 import {
@@ -294,44 +288,18 @@ export function patchTouchesProviderSelection(
 // ---------------------------------------------------------------------------
 
 export function resolveConversationGreetingText(
-  runtime: AgentRuntime,
-  lang: string,
-  uiConfig?: TokagentConfig["ui"],
+  _runtime: AgentRuntime,
+  _lang: string,
+  _uiConfig?: TokagentConfig["ui"],
 ): string {
-  const pickRandom = (values: string[] | undefined): string => {
-    const choices = (values ?? [])
-      .map((value) => value.trim())
-      .filter((value) => value.length > 0);
-
-    if (choices.length === 0) {
-      return "";
-    }
-
-    return choices[Math.floor(Math.random() * choices.length)] ?? "";
-  };
-
-  const normalizedLanguage = normalizeCharacterLanguage(lang);
-  const characterName = runtime.character.name?.trim();
-  const assistantName = uiConfig?.assistant?.name?.trim();
-
-  // Prefer explicit UI selections over the loaded character card: users pick a
-  // style in onboarding/roster (avatar + preset) while `runtime.character.name`
-  // can still reflect the bundled preset name until save/restart.
-  const preset =
-    resolveStylePresetByAvatarIndex(
-      uiConfig?.avatarIndex,
-      normalizedLanguage,
-    ) ??
-    resolveStylePresetById(uiConfig?.presetId, normalizedLanguage) ??
-    resolveStylePresetByName(assistantName, normalizedLanguage) ??
-    resolveStylePresetByName(characterName, normalizedLanguage);
-
-  const presetGreeting = pickRandom(preset?.postExamples);
-  if (presetGreeting) {
-    return presetGreeting;
-  }
-
-  return pickRandom(runtime.character.postExamples);
+  // Chat must open empty. Earlier versions picked a random `postExamples`
+  // entry as a fake greeting, but `postExamples` are training-time example
+  // posts the agent could author on its own — not conversation openers —
+  // and surfacing them before any user input rendered messages like
+  // "moved idle USDC into Aave..." as if the agent had spoken first.
+  // Downstream callers (`ensureConversationGreetingStored`, `fetchGreeting`)
+  // already short-circuit on empty text and skip persistence/rendering.
+  return "";
 }
 
 // ---------------------------------------------------------------------------
