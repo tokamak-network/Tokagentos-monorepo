@@ -1,13 +1,14 @@
 /**
  * Decorative plasma-ring backdrop for the hero.
  * Concentric containment rings + gradient glow + animated core dot.
- * Positioned absolute, top-right of the hero, aria-hidden.
+ * Hidden below md — at 900x900 it overflows narrow viewports and
+ * adds visual noise that competes with the hero copy on phones.
  */
 export function PlasmaBackdrop() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute -top-32 -right-44 h-[900px] w-[900px] opacity-80"
+      className="pointer-events-none absolute -top-32 -right-44 hidden h-[900px] w-[900px] opacity-80 md:block"
     >
       <svg
         viewBox="0 0 900 900"
@@ -88,6 +89,27 @@ export function PlasmaBackdrop() {
           />
         </circle>
       </svg>
+      {/* Mobile substitute: a single subtle radial gradient driven by CSS
+          (much lighter than the 900px SVG). Lives above for visibility but
+          we keep the SVG above this for desktop. Below md only the gradient
+          shows because the SVG is display:none. */}
     </div>
+  );
+}
+
+/**
+ * Lightweight CSS-only glow for small viewports — replaces the 900px SVG
+ * backdrop with a single radial gradient that respects the hero's box.
+ */
+export function PlasmaBackdropMobile() {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 md:hidden"
+      style={{
+        background:
+          "radial-gradient(ellipse 90% 60% at 80% 0%, rgba(240,185,11,0.10), transparent 70%)",
+      }}
+    />
   );
 }

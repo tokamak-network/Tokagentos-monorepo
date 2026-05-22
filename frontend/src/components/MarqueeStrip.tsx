@@ -28,9 +28,18 @@ function renderRun(groups: Group[], keyPrefix: string) {
 export function MarqueeStrip({ groups }: Props) {
   return (
     <section
-      className="marquee-pause overflow-hidden border-border border-y py-4"
+      className="marquee-pause relative overflow-hidden border-border border-y py-4"
       aria-label="Supported providers, channels, and chains"
     >
+      {/* Edge fades — smooth loop entry/exit on both sides */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-8 bg-gradient-to-r from-page to-transparent"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 z-[1] w-8 bg-gradient-to-l from-page to-transparent"
+      />
       <div className="marquee gap-8 font-mono text-[12px] tracking-wide">
         <div className="flex shrink-0 items-center gap-8 pr-8">
           {renderRun(groups, "a")}

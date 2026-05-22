@@ -294,10 +294,10 @@ export function ModesSection() {
   const m = MODES[active];
 
   return (
-    <div className="grid items-start gap-12 lg:grid-cols-[320px_1fr]">
-      {/* Picker */}
+    <div className="grid items-start gap-6 lg:grid-cols-[320px_1fr] lg:gap-12">
+      {/* Picker — 3-up grid on mobile (per spec), vertical stack on lg+ */}
       <div
-        className="flex flex-col gap-2.5"
+        className="grid grid-cols-3 gap-2 lg:flex lg:flex-col lg:gap-2.5"
         role="tablist"
         aria-label="Runtime modes"
       >
@@ -311,25 +311,25 @@ export function ModesSection() {
               role="tab"
               aria-selected={isActive}
               onClick={() => setActive(k)}
-              className={`w-full rounded-xl border p-4 text-left transition-colors ${
+              className={`flex flex-col items-start gap-1 rounded-[10px] border p-3 text-left transition-colors lg:flex-row lg:items-center lg:justify-between lg:gap-3 lg:p-4 ${
                 isActive
-                  ? "border-accent bg-surface"
-                  : "border-border bg-surface hover:border-border-strong"
+                  ? "border-accent/[0.42] bg-gradient-to-b from-accent/[0.1] to-surface/[0.8]"
+                  : "border-border bg-surface/[0.7] hover:border-border-strong"
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span
-                  className={`font-mono text-[18px] ${
-                    isActive ? "text-accent" : "text-fg"
-                  }`}
-                >
-                  {v.display}
-                </span>
-                <span className="font-mono text-[10px] text-fg-dim uppercase tracking-[0.08em]">
-                  {v.tag}
-                </span>
-              </div>
-              <div className="mt-2 text-[12px] text-fg-dim leading-relaxed">
+              <span
+                className={`font-medium font-mono text-[14px] lg:text-[18px] ${
+                  isActive ? "text-accent" : "text-fg"
+                }`}
+              >
+                {v.display}
+              </span>
+              <span className="font-mono text-[8.5px] text-fg-dim uppercase tracking-[0.06em] lg:text-[10px] lg:tracking-[0.08em]">
+                {v.tag}
+              </span>
+              {/* Long-form "best for" copy hidden on mobile (3-up pills are dense),
+                  shown on desktop layout */}
+              <div className="hidden text-[12px] text-fg-dim leading-relaxed lg:mt-2 lg:block lg:w-full">
                 {v.best}
               </div>
             </button>
@@ -338,24 +338,31 @@ export function ModesSection() {
       </div>
 
       {/* Diagram + meta */}
-      <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-6">
-        <div className="absolute top-4 left-5 font-mono text-[10px] text-fg-dim uppercase tracking-[0.08em]">
+      <div className="relative overflow-hidden rounded-2xl border border-border bg-surface p-4 sm:p-6">
+        <div className="absolute top-3 left-4 z-[1] font-mono text-[10px] text-fg-dim uppercase tracking-[0.08em] sm:top-4 sm:left-5">
           mode_diagram · {m.display}
         </div>
-        <div className="pt-6">
-          <ModeDiagram mode={active} />
+        {/* On phones the diagram scales down responsively; on larger screens it
+            uses the full container width. Min-width set just high enough that
+            13px node labels remain legible at typical phone widths. */}
+        <div className="-mx-1 overflow-x-auto pt-6 sm:mx-0">
+          <div className="min-w-[420px] px-1 sm:min-w-0 sm:px-0">
+            <ModeDiagram mode={active} />
+          </div>
         </div>
         <div className="border-border border-t pt-5">
-          <div className="mb-3 flex items-center gap-3">
-            <span className="font-medium text-[22px] text-fg">
+          <div className="mb-3 flex flex-wrap items-center gap-2 sm:gap-3">
+            <span className="font-medium text-[20px] text-fg sm:text-[22px]">
               {m.display} mode
             </span>
             <span className="rounded-md border border-border bg-surface-2 px-2 py-0.5 font-mono text-[10px] text-fg-dim uppercase tracking-[0.06em]">
               {m.tag}
             </span>
           </div>
-          <p className="max-w-[58ch] text-fg-muted leading-relaxed">{m.desc}</p>
-          <code className="mt-4 inline-block rounded-md border border-border bg-surface-2 px-3 py-1.5 font-mono text-[12px] text-fg">
+          <p className="max-w-[58ch] text-[14px] text-fg-muted leading-relaxed sm:text-base">
+            {m.desc}
+          </p>
+          <code className="mt-4 block w-full overflow-x-auto rounded-md border border-border bg-surface-2 px-3 py-1.5 font-mono text-[11.5px] text-fg sm:inline-block sm:w-auto sm:text-[12px]">
             <span className="text-fg-dim">.env →</span> {m.env}
           </code>
         </div>

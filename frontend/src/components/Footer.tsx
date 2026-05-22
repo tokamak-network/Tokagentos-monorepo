@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "./Logo";
 
 const COLUMNS = [
   {
@@ -30,15 +31,20 @@ const COLUMNS = [
 export function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="border-border border-t bg-elev pt-16 pb-10">
+    <footer className="border-border border-t bg-elev pt-12 pb-8 md:pt-16 md:pb-10">
       <div className="container-page">
-        <div className="grid gap-10 sm:grid-cols-2">
+        {/* Brand mark — consistent with nav, hero, vault card */}
+        <div className="mb-8 md:mb-10">
+          <Logo size={20} />
+        </div>
+
+        <div className="grid grid-cols-2 gap-6 md:gap-10">
           {COLUMNS.map((col) => (
             <div key={col.label}>
-              <p className="font-mono text-[11px] text-fg-dim tracking-[0.14em] uppercase">
+              <p className="font-mono text-[10px] text-fg-dim tracking-[0.12em] uppercase md:text-[11px] md:tracking-[0.14em]">
                 {col.label}
               </p>
-              <ul className="mt-4 space-y-2">
+              <ul className="mt-3 space-y-1.5 md:mt-4 md:space-y-2">
                 {col.links.map((l) => (
                   <li key={l.label}>
                     <Link
@@ -46,9 +52,17 @@ export function Footer() {
                       {...(l.external
                         ? { target: "_blank", rel: "noreferrer noopener" }
                         : {})}
-                      className="font-mono text-[13px] text-fg-muted hover:text-fg"
+                      className="flex items-baseline justify-between font-mono text-[13px] text-fg-muted hover:text-fg"
                     >
-                      {l.label}
+                      <span>{l.label}</span>
+                      {l.external && (
+                        <span
+                          aria-hidden="true"
+                          className="text-[10px] text-accent"
+                        >
+                          ↗
+                        </span>
+                      )}
                     </Link>
                   </li>
                 ))}

@@ -8,7 +8,7 @@ const LINKS = [
 
 export function Nav() {
   return (
-    <header className="sticky top-0 z-50 border-border border-b bg-page/70 backdrop-blur-md">
+    <header className="sticky top-0 z-50 hidden border-border border-b bg-page/70 backdrop-blur-md md:block">
       <div className="container-page flex h-16 items-center justify-between">
         <Link
           href="/"

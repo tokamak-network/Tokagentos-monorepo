@@ -79,7 +79,50 @@ export function TwoPathsToggle({
       <span id={`${baseId}-title`} className="sr-only">
         LLM payment path comparison
       </span>
-      <div className="flex justify-center">
+
+      {/* Mobile: full-width A/B chip buttons per spec */}
+      <div
+        role="tablist"
+        aria-label="Choose an LLM payment path"
+        className="flex gap-2 md:hidden"
+      >
+        {panels.map((p, i) => {
+          const selected = i === active;
+          return (
+            <button
+              key={p.id}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              aria-controls={`${baseId}-panel-${p.id}`}
+              id={`${baseId}-tab-${p.id}`}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => switchTo(i as 0 | 1, true)}
+              onKeyDown={onKeyDown}
+              className={`flex flex-1 items-center gap-2 rounded-[10px] border px-3.5 py-3 text-left font-medium text-[12.5px] transition-colors ${
+                selected
+                  ? "border-accent/[0.42] bg-gradient-to-b from-accent/[0.08] to-elev/[0.8] text-fg shadow-[0_0_0_1px_rgba(240,185,11,0.12)]"
+                  : "border-border bg-elev/[0.7] text-fg-muted"
+              }`}
+            >
+              <span
+                aria-hidden="true"
+                className="inline-flex h-[22px] w-[22px] items-center justify-center rounded-[5px] border border-accent/[0.28] bg-accent/[0.12] font-mono text-[11px] text-accent"
+              >
+                {String.fromCharCode(65 + i)}
+              </span>
+              <span className="lowercase">
+                {p.label.replace(/^(BYO API KEY|x402 WALLET)$/, (m) =>
+                  m === "BYO API KEY" ? "BYO API key" : "x402 wallet",
+                )}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Desktop: segmented pill with sliding indicator */}
+      <div className="hidden justify-center md:flex">
         <div
           role="tablist"
           aria-label="Choose an LLM payment path"
@@ -98,12 +141,12 @@ export function TwoPathsToggle({
             const selected = i === active;
             return (
               <button
-                key={p.id}
+                key={`d-${p.id}`}
                 type="button"
                 role="tab"
                 aria-selected={selected}
-                aria-controls={`${baseId}-panel-${p.id}`}
-                id={`${baseId}-tab-${p.id}`}
+                aria-controls={`${baseId}-panel-${p.id}-d`}
+                id={`${baseId}-tab-${p.id}-d`}
                 tabIndex={selected ? 0 : -1}
                 onClick={() => switchTo(i as 0 | 1, true)}
                 onKeyDown={onKeyDown}

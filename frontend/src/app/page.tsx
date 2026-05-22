@@ -4,6 +4,7 @@ import { CodeWindow } from "@/components/CodeWindow";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/Hero";
 import { MarqueeStrip } from "@/components/MarqueeStrip";
+import { MobileNav } from "@/components/MobileNav";
 import { ModesSection } from "@/components/ModesSection";
 import { Nav } from "@/components/Nav";
 import { QuickStartTabs } from "@/components/QuickStartTabs";
@@ -125,6 +126,7 @@ export default function Page() {
         Skip to content
       </a>
 
+      <MobileNav />
       <Nav />
 
       <main id="main">
@@ -133,7 +135,7 @@ export default function Page() {
         {/* AGENT LOG — replaces the static hero terminal */}
         <section
           aria-labelledby="agent-log-heading"
-          className="border-border border-t py-12 md:py-16"
+          className="border-border border-t py-10 md:py-16"
           id="agent-log"
         >
           <div className="container-page">
@@ -151,7 +153,7 @@ export default function Page() {
         {/* 01 / SCAFFOLD */}
         <section
           aria-labelledby="scaffold-heading"
-          className="border-border border-t bg-elev py-20 md:py-28"
+          className="border-border border-t bg-elev py-14 md:py-28"
           id="scaffold"
         >
           <div className="container-page">
@@ -171,7 +173,7 @@ export default function Page() {
         {/* 02 / WALLET-NATIVE */}
         <section
           aria-labelledby="wallet-heading"
-          className="border-border border-t py-20 md:py-28"
+          className="border-border border-t py-14 md:py-28"
           id="wallet"
         >
           <div className="container-page grid items-start gap-12 lg:grid-cols-[1fr_1.1fr]">
@@ -193,17 +195,24 @@ export default function Page() {
                   identity is on-chain.
                 </p>
               </div>
-              <ul className="mt-8 space-y-2 font-mono text-[13px]">
+              {/* Checklist — 3 stacked cards per spec, each with a gold ⟩ marker */}
+              <ul className="mt-6 flex flex-col gap-2 md:mt-8">
                 {[
                   "Built on @elizaos/plugin-evm",
                   "Native EIP-712 / EIP-3009 / SIWE signing",
                   "Multi-chain balance reads out of the box",
                 ].map((line) => (
-                  <li key={line} className="flex items-baseline gap-2 text-fg">
-                    <span aria-hidden="true" className="text-accent">
+                  <li
+                    key={line}
+                    className="flex items-start gap-2.5 rounded-lg border border-border bg-elev/[0.6] p-3 text-[13px] text-fg leading-snug md:px-3.5 md:py-3"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="shrink-0 font-medium font-mono text-accent"
+                    >
                       ⟩
                     </span>
-                    {line}
+                    <span>{line}</span>
                   </li>
                 ))}
               </ul>
@@ -217,7 +226,7 @@ export default function Page() {
         {/* 03 / PAY YOUR LLM */}
         <section
           aria-labelledby="llm-heading"
-          className="border-border border-t bg-elev py-20 md:py-28"
+          className="border-border border-t bg-elev py-14 md:py-28"
           id="llm"
         >
           <div className="container-page">
@@ -238,7 +247,7 @@ export default function Page() {
         {/* 04 / RUNTIME MODES */}
         <section
           aria-labelledby="modes-heading"
-          className="border-border border-t py-20 md:py-28"
+          className="border-border border-t py-14 md:py-28"
           id="modes"
         >
           <div className="container-page">
@@ -261,7 +270,7 @@ export default function Page() {
         {/* 05 / BILLING */}
         <section
           aria-labelledby="billing-heading"
-          className="border-border border-t bg-elev py-20 md:py-28"
+          className="border-border border-t bg-elev py-14 md:py-28"
           id="billing"
         >
           <div className="container-page">

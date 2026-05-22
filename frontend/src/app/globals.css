@@ -143,6 +143,15 @@
     color: var(--color-syntax-prop);
   }
 
+  /* Gold gradient text — used on hero headline span */
+  .gold-grad {
+    background: linear-gradient(95deg, #f3ba2f 0%, #f0b90b 50%, #d8a000 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+
   /* Aurora — three drifting gold radial gradients, very low alpha */
   .aurora {
     position: absolute;
@@ -219,6 +228,34 @@
   @keyframes cursor-blink {
     to {
       visibility: hidden;
+    }
+  }
+
+  /* Mobile menu sheet animations */
+  .m-slide-down {
+    animation: m-slide-down 240ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  @keyframes m-slide-down {
+    from {
+      transform: translateY(-12px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  .m-fade-up {
+    animation: m-fade-up 360ms ease backwards;
+  }
+  @keyframes m-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
