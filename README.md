@@ -1,5 +1,8 @@
 <div align="center">
-  <img src="./docs/logo.svg" alt="tokagentOS" width="320" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="./docs/logo.svg" />
+    <img src="./docs/logo-light.svg" alt="tokagentOS" width="320" />
+  </picture>
   <p><strong>An open-source framework for building autonomous AI agents with native crypto-wallet integration.</strong></p>
 
   [![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
