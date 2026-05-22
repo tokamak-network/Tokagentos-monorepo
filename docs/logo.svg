@@ -1,22 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" width="320" height="64" role="img" aria-label="tokagentOS">
   <defs>
-    <radialGradient id="pr-glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#f3ba2f" stop-opacity="0.85"/>
-      <stop offset="55%" stop-color="#f0b90b" stop-opacity="0.35"/>
-      <stop offset="100%" stop-color="#f0b90b" stop-opacity="0"/>
-    </radialGradient>
-    <linearGradient id="pr-stroke" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="key-grad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#f3ba2f"/>
       <stop offset="100%" stop-color="#d8a000"/>
     </linearGradient>
   </defs>
   <g transform="translate(8, 10) scale(1.1)">
-    <circle cx="20" cy="20" r="18" fill="url(#pr-glow)"/>
-    <circle cx="20" cy="20" r="14" fill="none" stroke="url(#pr-stroke)" stroke-width="1.4"/>
-    <ellipse cx="20" cy="20" rx="9" ry="3.6" fill="none" stroke="#f0b90b" stroke-width="1.2" opacity="0.95"/>
-    <circle cx="20" cy="20" r="1.8" fill="#f3ba2f"/>
-    <circle cx="20" cy="20" r="3.4" fill="none" stroke="#f0b90b" stroke-width="0.6" opacity="0.45"/>
+    <rect x="6" y="6" width="28" height="6" rx="1.2" fill="url(#key-grad)"/>
+    <rect x="7" y="6.5" width="26" height="1.2" fill="rgba(255,255,255,0.42)"/>
+    <rect x="17" y="12" width="6" height="18" fill="url(#key-grad)"/>
+    <rect x="23" y="22" width="5" height="3.2" fill="url(#key-grad)"/>
+    <rect x="23" y="27" width="3.5" height="3.2" fill="url(#key-grad)"/>
+    <rect x="17" y="30" width="6" height="3.5" rx="0.6" fill="url(#key-grad)"/>
   </g>
   <text x="64" y="42" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="600" font-size="30" letter-spacing="-0.6" fill="#f0f0f4">tokagent<tspan fill="#f0b90b">OS</tspan></text>
 </svg>
