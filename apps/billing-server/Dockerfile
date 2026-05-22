@@ -44,6 +44,14 @@ COPY packages/tokagentos/      ./packages/tokagentos/
 # directories at install time.
 COPY plugins/plugin-tokagent-billing/ ./plugins/plugin-tokagent-billing/
 
+# Frontend marketing site — server-mode never runs it, but the root
+# package.json declares "frontend" as a literal workspace member (not a glob),
+# so `bun install` aborts with "Workspace not found 'frontend'" if the
+# manifest is missing at /workspace/frontend/package.json. Copy just the
+# package.json (~700 B) to satisfy the resolver; the actual frontend source
+# stays out of the runtime image.
+COPY frontend/package.json     ./frontend/package.json
+
 # packages/agent/src/api/server.ts statically imports @tokagentos/app-
 # tokagentmaker, app-knowledge, app-steward, app-task-coordinator, app-training
 # at module-load time. Even in server-only mode the API server module is
