@@ -1,6 +1,7 @@
 import type http from "node:http";
 import type { AgentRuntime } from "@tokagentos/core";
 import type { TokagentConfig } from "../config/config.js";
+import { hasDirectLlmProvider } from "../services/version-compat.js";
 import { isCloudProvisionedContainer } from "./cloud-provisioning.js";
 import type { ConnectorHealthMonitor } from "./connector-health.js";
 import { resolveCloudApiKey } from "./wallet-rpc.js";
@@ -391,6 +392,21 @@ export async function handleHealthRoutes(
       hasApiKey: hasCloudApiKey,
     };
 
+    // Billing-redirect signal — true when no direct LLM provider plugin
+    // loaded (anthropic/openai/openrouter/google-genai/groq/xai/zai). The
+    // SPA lands the user on /billing instead of /chat at root '/' when
+    // this is true, so users on x402-only or Ollama-only setups see the
+    // billing surface before discovering the chat doesn't respond.
+    // Source of truth is the runtime's loaded plugins (not env vars) —
+    // captures malformed keys that prevent plugin load.
+    const loadedPluginNames =
+      state.runtime && Array.isArray(state.runtime.plugins)
+        ? state.runtime.plugins
+            .map((p) => (typeof p?.name === "string" ? p.name : ""))
+            .filter((n) => n.length > 0)
+        : [];
+    const needsBilling = !hasDirectLlmProvider(loadedPluginNames);
+
     json(res, {
       state: state.agentState,
       agentName: state.agentName,
@@ -401,6 +417,7 @@ export async function handleHealthRoutes(
       cloud: cloudStatus,
       pendingRestart: state.pendingRestartReasons.length > 0,
       pendingRestartReasons: state.pendingRestartReasons,
+      needsBilling,
     });
     return true;
   }

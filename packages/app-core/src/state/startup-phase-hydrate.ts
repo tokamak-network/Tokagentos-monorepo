@@ -265,13 +265,33 @@ export async function runHydrating(
       navPath,
       urlTab,
     });
+
+  // Billing-redirect — when the agent reports no direct LLM provider loaded
+  // (no Anthropic/OpenAI/OpenRouter/Google-GenAI/Groq/xAI/zAI key), land
+  // root '/' on /billing instead of /chat. Character-select takes
+  // precedence (onboarding finishes first). Fail-open: any error or
+  // missing field leaves the redirect off, user lands on /chat as today.
+  let needsBilling = false;
+  if (!shouldCharSelect && isRoot && !deps.initialTabSetRef.current) {
+    try {
+      const status = await client.getStatus();
+      needsBilling = status.needsBilling === true;
+    } catch {
+      needsBilling = false;
+    }
+  }
+
   if (!deps.initialTabSetRef.current) {
     deps.initialTabSetRef.current = true;
     if (shouldCharSelect) {
       deps.onboardingCompletionCommittedRef.current = false;
       deps.setTab("character-select");
       void deps.loadCharacter();
-    } else if (isRoot) deps.setTab(DEFAULT_LANDING_TAB);
+    } else if (isRoot && needsBilling) {
+      deps.setTab("billing");
+    } else if (isRoot) {
+      deps.setTab(DEFAULT_LANDING_TAB);
+    }
   }
   if (urlTab && urlTab !== "chat" && urlTab !== "companion") {
     deps.setTabRaw(urlTab);

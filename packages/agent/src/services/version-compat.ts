@@ -59,6 +59,29 @@ export const AI_PROVIDER_PLUGINS: readonly string[] = [
 
 const AI_PROVIDER_PLUGIN_ALIASES: readonly string[] = [];
 
+/**
+ * Subset of AI providers that count as a "direct LLM API key in .env" for the
+ * billing-redirect rule. Excludes ollama (local, keyless) and Tokagent Cloud
+ * (separate billing rail with its own auth). When NONE of these are loaded,
+ * the user has no way to make a chat request without configuring billing —
+ * the SPA uses this signal to land on /billing instead of /chat.
+ */
+const DIRECT_LLM_PROVIDER_PLUGINS: readonly string[] = [
+  "@elizaos/plugin-anthropic",
+  "@elizaos/plugin-openai",
+  "@elizaos/plugin-openrouter",
+  "@elizaos/plugin-google-genai",
+  "@elizaos/plugin-groq",
+  "@elizaos/plugin-xai",
+  "@homunculuslabs/plugin-zai",
+];
+
+export function hasDirectLlmProvider(loadedPluginNames: string[]): boolean {
+  return loadedPluginNames.some((name) =>
+    DIRECT_LLM_PROVIDER_PLUGINS.includes(name),
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Semver comparison (simplified for alpha tags)
 // ---------------------------------------------------------------------------

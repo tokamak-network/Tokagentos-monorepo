@@ -111,6 +111,13 @@ export interface AgentStatus {
   pendingRestart?: boolean;
   pendingRestartReasons?: string[];
   startup?: AgentStartupDiagnostics;
+  /**
+   * True when no direct LLM provider plugin is loaded (no Anthropic/OpenAI/
+   * OpenRouter/Google-GenAI/Groq/xAI/zAI key in env). The SPA's initial-tab
+   * decision routes to /billing instead of /chat at root '/' when this is
+   * true. Optional — older agent builds omit it (treat as false: no redirect).
+   */
+  needsBilling?: boolean;
 }
 
 export type AgentAutomationMode = "connectors-only" | "full";
