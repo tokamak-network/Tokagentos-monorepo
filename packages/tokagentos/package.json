@@ -1,6 +1,6 @@
 {
   "name": "@tokagent/tokagentos",
-  "version": "2.0.30",
+  "version": "2.0.31",
   "description": "tokagentOS CLI - Create and upgrade tokagentOS project templates",
   "type": "module",
   "bin": {
