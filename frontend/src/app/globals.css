@@ -1321,6 +1321,9 @@
   .sc-x402-cards {
     grid-template-columns: 1fr 1fr;
   }
+  .stage {
+    display: none;
+  }
   .stage-meta-tl { left: 16px; }
   .stage-meta-tr { right: 16px; }
   .ticker-v {

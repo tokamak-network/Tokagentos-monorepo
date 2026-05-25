@@ -2,14 +2,6 @@ type Tone = "ok" | "gold" | "mute";
 type Item = { label: string; value: string; sub: string; tone: Tone };
 
 const ITEMS: Item[] = [
-  { label: "AGENTS LIVE", value: "8,247", sub: "+184 24h", tone: "ok" },
-  { label: "VAULT TVL", value: "$1.42M", sub: "PTON · mainnet", tone: "gold" },
-  {
-    label: "LLM CALLS / 24H",
-    value: "312,408",
-    sub: "+8.1% 7d",
-    tone: "ok",
-  },
   { label: "x402 SETTLED", value: "41,392", sub: "EIP-3009", tone: "gold" },
   { label: "NETWORKS", value: "12", sub: "EVM · L1+L2", tone: "mute" },
   {
