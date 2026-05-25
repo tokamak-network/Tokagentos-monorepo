@@ -26,10 +26,113 @@ import type { Route, RouteRequest, RouteResponse, IAgentRuntime } from "@tokagen
 import type { IncomingMessage } from "node:http";
 import { getBillingState, isBillingStateInitialized } from "../state.js";
 import { applyBillingGate } from "../middleware/billing-gate.js";
-import { computeActualCostUsd } from "@tokagentos/billing";
+import {
+  computeActualCostUsd,
+  estimateInputTokens,
+} from "@tokagentos/billing";
 
 function billingUnavailable(res: RouteResponse): void {
   res.status(503).json({ error: "Billing service unavailable." });
+}
+
+// ---------------------------------------------------------------------------
+// Anthropic prompt-cache auto-injection
+// ---------------------------------------------------------------------------
+
+/**
+ * Anthropic's minimum cacheable prefix is 1024 tokens for Sonnet/Opus and
+ * 2048 for Haiku. Below that the cache_control marker is a no-op. Use the
+ * stricter bound so the optimization always pays off when we add it.
+ */
+const MIN_CACHEABLE_PREFIX_TOKENS = 2048;
+
+/** Returns true if any node anywhere in `value` has a `cache_control` key. */
+function hasCacheControlDeep(value: unknown): boolean {
+  if (!value || typeof value !== "object") return false;
+  if (Array.isArray(value)) return value.some(hasCacheControlDeep);
+  const obj = value as Record<string, unknown>;
+  if ("cache_control" in obj) return true;
+  for (const k of Object.keys(obj)) {
+    if (hasCacheControlDeep(obj[k])) return true;
+  }
+  return false;
+}
+
+/**
+ * Auto-inject Anthropic prompt-cache markers on stable parts of the request.
+ *
+ * The billing engine already supports cache pricing end-to-end (see
+ * pricing/rates.ts cacheRead/cacheWrite columns and computeActualCostUsd),
+ * but most anthropic-sdk callers never set cache_control themselves. Without
+ * markers, Anthropic re-reads the full system + tools prefix on every turn
+ * at base input rate. With markers, the prefix is served from cache at ~10×
+ * cheaper after the first call within 5 minutes.
+ *
+ * What we touch:
+ *   - `system`: normalised to array form, marker on the LAST text block
+ *   - `tools`: marker on the LAST tool definition (Anthropic caches the
+ *     entire prefix up to and including the marker, so this also covers
+ *     `system`)
+ *
+ * What we DON'T touch:
+ *   - Non-Claude models — other providers ignore or reject the field; their
+ *     caching is implicit.
+ *   - Bodies that already have ANY cache_control set — respect client intent.
+ *   - Bodies whose stable prefix is below Anthropic's minimum cacheable size.
+ *
+ * Returns a new body when injection happens; the same reference otherwise.
+ * Never mutates the input.
+ */
+function maybeInjectAnthropicCache(
+  body: Record<string, unknown>,
+): Record<string, unknown> {
+  const model = body.model;
+  if (typeof model !== "string" || !model.startsWith("claude-")) return body;
+  if (hasCacheControlDeep(body)) return body;
+
+  const tools = Array.isArray(body.tools) ? body.tools : undefined;
+  const sys = body.system;
+  const prefixTokens = estimateInputTokens([], tools, sys);
+  if (prefixTokens < MIN_CACHEABLE_PREFIX_TOKENS) return body;
+
+  const next: Record<string, unknown> = { ...body };
+
+  if (typeof sys === "string" && sys.length > 0) {
+    next.system = [
+      { type: "text", text: sys, cache_control: { type: "ephemeral" } },
+    ];
+  } else if (Array.isArray(sys) && sys.length > 0) {
+    const cloned = sys.map((b) =>
+      b && typeof b === "object" ? { ...(b as Record<string, unknown>) } : b,
+    );
+    for (let i = cloned.length - 1; i >= 0; i--) {
+      const blk = cloned[i];
+      if (
+        blk &&
+        typeof blk === "object" &&
+        (blk as Record<string, unknown>).type === "text"
+      ) {
+        (cloned[i] as Record<string, unknown>).cache_control = {
+          type: "ephemeral",
+        };
+        break;
+      }
+    }
+    next.system = cloned;
+  }
+
+  if (tools && tools.length > 0) {
+    const clonedTools = tools.map((t) =>
+      t && typeof t === "object" ? { ...(t as Record<string, unknown>) } : t,
+    );
+    const last = clonedTools[clonedTools.length - 1];
+    if (last && typeof last === "object") {
+      (last as Record<string, unknown>).cache_control = { type: "ephemeral" };
+    }
+    next.tools = clonedTools;
+  }
+
+  return next;
 }
 
 /**
@@ -104,13 +207,21 @@ async function proxyToLiteLLM(
   const config = state.config;
   if (!config.enabled) return billingUnavailable(res);
 
-  const body = req.body as Record<string, unknown> | undefined;
-  if (!body || typeof body !== "object") {
+  const rawBody = req.body as Record<string, unknown> | undefined;
+  if (!rawBody || typeof rawBody !== "object") {
     res.status(400).json({
       error: { type: "invalid_request_error", message: "JSON body required" },
     });
     return;
   }
+
+  // Auto-inject Anthropic prompt-cache markers on stable parts of the
+  // request. Done BEFORE the billing gate so the reservation sees the
+  // markers (gate.detectCacheControl reads them to size at cacheWrite rate
+  // — slightly higher first-call reservation, dramatically lower steady
+  // state). No-op for non-Claude models or bodies where the caller already
+  // set cache_control. See maybeInjectAnthropicCache for the full policy.
+  const body = maybeInjectAnthropicCache(rawBody);
 
   // Detect streaming. plugin-openai (Vercel AI SDK) defaults to
   // stream:true and there's no way to disable from the agent's chat flow,
