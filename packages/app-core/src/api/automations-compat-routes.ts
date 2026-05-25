@@ -560,6 +560,47 @@ async function buildAutomationListResponse(
   };
 }
 
+/**
+ * Returns true when the error is "the LifeOps schema isn't migrated in this
+ * deployment" — relation/table missing. Postgres surfaces this as SQLSTATE
+ * 42P01; SQLite as "no such table". When LifeOps isn't loaded (it's an
+ * optional plugin), the migration never runs but these resolvers still get
+ * called by the Automations page refresh — that's expected, not an error.
+ */
+function isMissingLifeOpsTableError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const code = (error as { code?: unknown }).code;
+  if (code === "42P01") return true; // Postgres: undefined_table
+  if (code === "SQLITE_ERROR") {
+    const msg = (error as { message?: unknown }).message;
+    if (typeof msg === "string" && /no such table/i.test(msg)) return true;
+  }
+  const msg = (error as { message?: unknown }).message;
+  if (typeof msg !== "string") return false;
+  return (
+    /relation\s+"?life_connector_grants"?\s+does not exist/i.test(msg) ||
+    /no such table:\s*life_connector_grants/i.test(msg)
+  );
+}
+
+/**
+ * Log connector-resolver failures with severity matched to the cause.
+ * Missing-table errors go to debug (LifeOps isn't installed — expected); any
+ * other error stays at warn so real problems remain visible.
+ */
+function logConnectorResolverError(connector: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  if (isMissingLifeOpsTableError(error)) {
+    logger.debug(
+      `[automations] ${connector} connector status unavailable (LifeOps schema not migrated in this deployment).`,
+    );
+    return;
+  }
+  logger.warn(
+    `[automations] Failed to resolve ${connector} connector status: ${message}`,
+  );
+}
+
 async function resolveGoogleStatus(
   lifeOps: LifeOpsService,
 ): Promise<LifeOpsGoogleConnectorStatus | null> {
@@ -570,11 +611,7 @@ async function resolveGoogleStatus(
       "owner",
     );
   } catch (error) {
-    logger.warn(
-      `[automations] Failed to resolve Google connector status: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
+    logConnectorResolverError("Google", error);
     return null;
   }
 }
@@ -585,11 +622,7 @@ async function resolveTelegramStatus(
   try {
     return await lifeOps.getTelegramConnectorStatus("owner");
   } catch (error) {
-    logger.warn(
-      `[automations] Failed to resolve Telegram connector status: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
+    logConnectorResolverError("Telegram", error);
     return null;
   }
 }
@@ -600,11 +633,7 @@ async function resolveSignalStatus(
   try {
     return await lifeOps.getSignalConnectorStatus("owner");
   } catch (error) {
-    logger.warn(
-      `[automations] Failed to resolve Signal connector status: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
+    logConnectorResolverError("Signal", error);
     return null;
   }
 }
@@ -615,11 +644,7 @@ async function resolveDiscordStatus(
   try {
     return await lifeOps.getDiscordConnectorStatus("owner");
   } catch (error) {
-    logger.warn(
-      `[automations] Failed to resolve Discord connector status: ${
-        error instanceof Error ? error.message : String(error)
-      }`,
-    );
+    logConnectorResolverError("Discord", error);
     return null;
   }
 }
