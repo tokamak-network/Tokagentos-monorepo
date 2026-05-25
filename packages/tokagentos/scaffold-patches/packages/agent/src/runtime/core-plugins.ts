@@ -175,6 +175,10 @@ const TOKAGENT_PLUGINS: readonly string[] = [
   // so auto-loading is safe — it only makes the SETUP_BILLING action reachable
   // before the operator has configured billing. The kill switch is BILLING_ENABLED.
   "@tokagent/plugin-tokagent-billing",
+  // FETCH_URL + WEB_SEARCH actions — Node-fetch + Tavily-backed web access
+  // for triggers and chat. No external service for FETCH_URL; WEB_SEARCH
+  // requires TAVILY_API_KEY (handler returns a clear error if missing).
+  "@tokagent/plugin-web-fetch",
 ];
 
 /** Core plugins always loaded. Upstream list, then Tokagent overlays. */

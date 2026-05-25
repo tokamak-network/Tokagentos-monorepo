@@ -174,6 +174,7 @@ const TOKAGENT_PLUGIN_PATHS = [
   "plugins/plugin-tokagent-polymarket",
   "plugins/plugin-tokagent-strategy",
   "plugins/plugin-tokagent-billing",
+  "plugins/plugin-web-fetch",
 ];
 
 /**

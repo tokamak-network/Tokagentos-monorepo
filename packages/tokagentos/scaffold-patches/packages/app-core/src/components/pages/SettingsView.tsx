@@ -55,6 +55,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { client } from "../../api/client";
 import { CodingAgentSettingsSection } from "../../app-shell/task-coordinator-slots.js";
 import { useApp } from "../../state";
 import { WidgetHost } from "../../widgets";
@@ -172,6 +173,25 @@ const SETTINGS_SECTIONS: SettingsSectionDef[] = [
       "agent",
     ],
     keywordKeys: ["settings.keyword.voice"],
+    level: "simple",
+  },
+  {
+    // Tavily API key for the WEB_SEARCH action (plugin-web-fetch). Lives
+    // outside ai-model because Tavily isn't a model provider — it's a
+    // search backend the agent calls when a trigger or chat instruction
+    // asks for web search.
+    id: "web-search",
+    label: "settings.sections.webSearch.label",
+    description: "settings.sections.webSearch.desc",
+    keywords: [
+      "web search",
+      "tavily",
+      "search",
+      "internet",
+      "online",
+      "trends",
+      "api key",
+    ],
     level: "simple",
   },
   {
@@ -665,6 +685,125 @@ function AdvancedSection() {
   );
 }
 
+/* ── WebSearchKeySection ──────────────────────────────────────────────── */
+
+/**
+ * Single-purpose Tavily API key input. Calls a dedicated endpoint
+ * (`PUT /api/integrations/tavily-key`) instead of the plugin-config-save
+ * pipeline because the web-fetch plugin is a workspace plugin not in the
+ * bundled plugin-discovery manifest — its `TAVILY_API_KEY` parameter is
+ * invisible to the generic plugin-config validator, which rejects with
+ * 422 ("not a declared config key").
+ *
+ * The endpoint writes to config.env, mirrors to process.env (so the next
+ * WEB_SEARCH call sees the key immediately), and triggers a runtime
+ * restart so any cached `runtime.getSetting` value refreshes.
+ */
+function WebSearchKeySection() {
+  const app = useApp();
+  const setActionNotice = app.setActionNotice;
+  const [value, setValue] = useState("");
+  const [revealed, setRevealed] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [savedAt, setSavedAt] = useState<number | null>(null);
+  const saved = savedAt != null && Date.now() - savedAt < 4000;
+
+  const trimmed = value.trim();
+  const canSave =
+    !saving && /^tvly-[A-Za-z0-9_-]{8,}$/.test(trimmed);
+
+  const onSave = useCallback(async () => {
+    if (!canSave) return;
+    setSaving(true);
+    try {
+      const result = await client.setTavilyApiKey(trimmed);
+      setActionNotice?.(
+        result.restartScheduled
+          ? "Tavily key saved. Web search is active; agent restart scheduled."
+          : "Tavily key saved. Web search is active.",
+        "success",
+        4000,
+      );
+      setValue("");
+      setSavedAt(Date.now());
+    } catch (err) {
+      setActionNotice?.(
+        err instanceof Error ? `Save failed: ${err.message}` : "Save failed.",
+        "error",
+        5000,
+      );
+    } finally {
+      setSaving(false);
+    }
+  }, [canSave, setActionNotice, trimmed]);
+
+  const formatHint =
+    value.length > 0 && !canSave && !saving
+      ? "Expected format: tvly- followed by 8+ alphanumeric characters."
+      : null;
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-muted">
+        Tavily powers the agent's <code className="text-txt">WEB_SEARCH</code>{" "}
+        action — needed for triggers like "fetch daily AI trends" and any
+        chat instruction that asks the agent to search the web. Get a free
+        key (1,000 searches/month, no credit card) at{" "}
+        <a
+          href="https://app.tavily.com/sign-in"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-accent underline-offset-2 hover:underline"
+        >
+          app.tavily.com
+        </a>
+        . Saving here writes to <code className="text-txt">config.env</code>{" "}
+        and restarts the runtime so the key takes effect.
+      </p>
+
+      <div className="space-y-2">
+        <Label htmlFor="settings-tavily-key" className="text-txt-strong">
+          Tavily API key
+        </Label>
+        <div className="flex gap-2">
+          <Input
+            id="settings-tavily-key"
+            type={revealed ? "text" : "password"}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            placeholder="tvly-…"
+            autoComplete="off"
+            spellCheck={false}
+            className="rounded-lg bg-bg font-mono text-sm"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setRevealed((v) => !v)}
+            aria-label={revealed ? "Hide key" : "Show key"}
+          >
+            {revealed ? "Hide" : "Show"}
+          </Button>
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={() => void onSave()}
+            disabled={!canSave}
+          >
+            {saving && <Spinner size={14} />}
+            {saving ? "Saving" : saved ? "Saved" : "Save"}
+          </Button>
+        </div>
+        {formatHint && (
+          <p className="text-xs text-danger">{formatHint}</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* ── SettingsView ─────────────────────────────────────────────────────── */
 
 export function SettingsView({
@@ -948,6 +1087,22 @@ export function SettingsView({
           ref={registerContentItem("cloud")}
         >
           <CloudDashboard />
+        </SettingsSection>
+      )}
+
+      {visibleSectionIds.has("web-search") && (
+        <SettingsSection
+          id="web-search"
+          title={t("settings.sections.webSearch.label", {
+            defaultValue: "Web search",
+          })}
+          description={t("settings.sections.webSearch.desc", {
+            defaultValue:
+              "Configure the Tavily API key the agent uses to search the web.",
+          })}
+          ref={registerContentItem("web-search")}
+        >
+          <WebSearchKeySection />
         </SettingsSection>
       )}
 

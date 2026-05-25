@@ -24,7 +24,8 @@
     "build:desktop": "node tokagent/packages/app-core/scripts/desktop-build.mjs build --variant=base",
     "build:ios": "bun run --cwd apps/app build:ios",
     "build:android": "bun run --cwd apps/app build:android",
-    "dev": "node scripts/ensure-plugin-builds.mjs && node tokagent/packages/app-core/scripts/rt.mjs tokagent/packages/app-core/scripts/dev-ui.mjs --name=__PROJECT_SLUG__",
+    "postinstall": "node scripts/verify-llm-plugins.mjs",
+    "dev": "node scripts/verify-llm-plugins.mjs && node scripts/ensure-plugin-builds.mjs && node tokagent/packages/app-core/scripts/rt.mjs tokagent/packages/app-core/scripts/dev-ui.mjs --name=__PROJECT_SLUG__",
     "dev:ui": "node tokagent/packages/app-core/scripts/rt.mjs tokagent/packages/app-core/scripts/dev-ui.mjs --name=__PROJECT_SLUG__ --ui-only",
     "plugins:build": "node scripts/ensure-plugin-builds.mjs",
     "dev:desktop": "bun tokagent/packages/app-core/scripts/dev-platform.mjs",
@@ -47,17 +48,20 @@
     "@elizaos/plugin-local-embedding": "2.0.0-alpha.537",
     "@elizaos/plugin-ollama": "2.0.0-alpha.537",
     "@elizaos/plugin-openai": "2.0.0-alpha.537",
-    "@elizaos/plugin-openrouter": "2.0.0-alpha.13",
+    "@elizaos/plugin-openrouter": "2.0.0-alpha.10",
     "@elizaos/plugin-shell": "2.0.0-alpha.537",
-    "@elizaos/plugin-sql": "2.0.0-alpha.20"
+    "@elizaos/plugin-sql": "2.0.0-alpha.20",
+    "@tokagent/plugin-web-fetch": "workspace:*"
   },
   "devDependencies": {
     "typescript": "~5.9.3"
   },
   "resolutions": {
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "@elizaos/plugin-openrouter": "2.0.0-alpha.10"
   },
   "overrides": {
-    "typescript": "~5.9.3"
+    "typescript": "~5.9.3",
+    "@elizaos/plugin-openrouter": "2.0.0-alpha.10"
   }
 }

@@ -1,0 +1,37 @@
+{
+  "name": "@tokagent/plugin-web-fetch",
+  "version": "0.1.0",
+  "description": "Web fetch + Tavily search actions for the agent. FETCH_URL (Node built-in fetch, no key) + WEB_SEARCH (Tavily-backed, requires TAVILY_API_KEY).",
+  "type": "module",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "bun run build.ts",
+    "dev": "bun run build.ts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@elizaos/core": "workspace:*"
+  },
+  "agentConfig": {
+    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginParameters": {
+      "TAVILY_API_KEY": {
+        "type": "string",
+        "description": "Tavily search API key — required for the WEB_SEARCH action. Get a free key (1,000 searches/month, no credit card) at https://app.tavily.com/sign-in. Without it the agent cannot fulfill 'search the web' requests; it will reply with a clear error pointing here. Saving this key persists to config.env and triggers a runtime restart so the action picks it up.",
+        "required": false,
+        "sensitive": true
+      }
+    }
+  }
+}

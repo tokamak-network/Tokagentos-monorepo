@@ -23,6 +23,7 @@ import {
 } from "@elizaos/ui";
 import {
   Calendar,
+  Check,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
@@ -3045,6 +3046,356 @@ function WorkflowDataFlowStrip({
   );
 }
 
+/**
+ * Single row in the Run history list. Click to expand → lazy-fetches the
+ * agent output for this run via /api/triggers/:triggerId/runs/:runId/output
+ * and renders it inline. Caches per-row, so toggling collapse/expand
+ * doesn't re-fetch. Errors are rendered in place, never crash the list.
+ */
+function TriggerRunRow({
+  run,
+  triggerId,
+  triggerInstructions,
+  expanded,
+  onToggle,
+  uiLanguage,
+  t,
+}: {
+  run: import("../../api").TriggerRunRecord;
+  triggerId: string;
+  triggerInstructions: string;
+  expanded: boolean;
+  onToggle: () => void;
+  uiLanguage: string;
+  t: (key: string, opts?: Record<string, unknown>) => string;
+}) {
+  type OutputState =
+    | { phase: "idle" }
+    | { phase: "loading" }
+    | {
+        phase: "ready";
+        text: string;
+        truncated: boolean;
+        messageCount?: number;
+        segments?: Array<{
+          stage: "action" | "final";
+          action?: string;
+          text: string;
+        }>;
+      }
+    | {
+        phase: "pending";
+        kind: "still_processing" | "skipped" | "no_output" | "no_autonomy_room";
+        message?: string;
+        diagnostics?: {
+          memoriesInWindow: number;
+          agentId: string;
+          roomId: string;
+          windowStart: number;
+          windowEnd: number;
+          peek: Array<{
+            entityIdMatches: boolean;
+            source: string | null;
+            metadataType: unknown;
+            textPreview: string | null;
+            createdAt: number | null;
+          }>;
+        };
+      }
+    | { phase: "error"; message: string };
+
+  const [output, setOutput] = useState<OutputState>({ phase: "idle" });
+
+  const fetchOutput = useCallback(async () => {
+    setOutput({ phase: "loading" });
+    try {
+      const res = await client.getTriggerRunOutput(triggerId, run.triggerRunId);
+      if (res.output && res.status === "ready") {
+        setOutput({
+          phase: "ready",
+          text: res.output.text,
+          truncated: res.output.truncated,
+          messageCount: res.messageCount,
+          segments: res.segments,
+        });
+        return;
+      }
+      if (
+        res.status === "still_processing" ||
+        res.status === "skipped" ||
+        res.status === "no_output" ||
+        res.status === "no_autonomy_room"
+      ) {
+        setOutput({
+          phase: "pending",
+          kind: res.status,
+          message: res.message,
+          diagnostics: res.diagnostics,
+        });
+        return;
+      }
+      setOutput({
+        phase: "error",
+        message: res.message ?? `Lookup returned status: ${res.status}`,
+      });
+    } catch (err) {
+      setOutput({
+        phase: "error",
+        message: err instanceof Error ? err.message : String(err),
+      });
+    }
+  }, [triggerId, run.triggerRunId]);
+
+  // Lazy: fetch the first time the row is expanded, not on render.
+  useEffect(() => {
+    if (expanded && output.phase === "idle") {
+      void fetchOutput();
+    }
+  }, [expanded, output.phase, fetchOutput]);
+
+  const ChevronIcon = expanded ? ChevronDown : ChevronRight;
+  const startedAt = new Date(run.startedAt);
+  const finishedAt = new Date(run.finishedAt);
+  const fullStarted = `${startedAt.toLocaleString(uiLanguage || undefined)} (${startedAt.toISOString()})`;
+  const fullFinished = finishedAt.toISOString();
+
+  const pendingCopy =
+    output.phase === "pending"
+      ? output.kind === "still_processing"
+        ? "Agent is still working on this run. Try refresh in a moment."
+        : output.kind === "skipped"
+          ? "This run was skipped — no output to show."
+          : output.kind === "no_output"
+            ? "No agent reply was recorded in the autonomy room for this run's time window."
+            : output.kind === "no_autonomy_room"
+              ? "Autonomy room not configured — cannot resolve outputs for past runs."
+              : null
+      : null;
+
+  return (
+    <div className="border-b border-border/20 last:border-b-0">
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={expanded}
+        className={`flex w-full flex-wrap items-center gap-2 px-3 py-2 text-left text-xs-tight transition-colors hover:bg-muted/30 ${
+          expanded ? "bg-muted/20" : ""
+        }`}
+      >
+        <ChevronIcon className="h-3 w-3 shrink-0 text-muted/60" />
+        <StatusBadge
+          label={localizedExecutionStatus(run.status, t)}
+          variant={toneForLastStatus(run.status)}
+        />
+        <span className="text-muted/70 tabular-nums">
+          {formatDateTime(run.startedAt, { locale: uiLanguage })}
+        </span>
+        <span className="text-muted/60">
+          {formatDurationMs(run.latencyMs, { t })}
+        </span>
+        <span className="ml-auto rounded bg-bg/40 px-1 py-0.5 font-mono text-[10px] text-muted/60">
+          {run.source}
+        </span>
+      </button>
+
+      {expanded ? (
+        <div className="border-t border-border/20 bg-bg/20 px-3 py-3 text-xs-tight space-y-3">
+          {/* Timestamps + IDs */}
+          <div className="grid grid-cols-1 gap-1 text-[11px] text-muted/70 sm:grid-cols-2">
+            <div>
+              <span className="text-muted/50">Started:</span> {fullStarted}
+            </div>
+            <div>
+              <span className="text-muted/50">Finished:</span> {fullFinished}
+            </div>
+            <div className="font-mono text-[10px] text-muted/50 truncate">
+              run {run.triggerRunId}
+            </div>
+            <div className="font-mono text-[10px] text-muted/50 truncate">
+              task {run.taskId}
+            </div>
+          </div>
+
+          {/* Instruction */}
+          {triggerInstructions ? (
+            <div>
+              <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-muted/60">
+                Instruction
+              </div>
+              <div className="whitespace-pre-wrap rounded border border-border/30 bg-bg/40 px-2 py-1.5 text-[11px] text-muted/90">
+                {triggerInstructions}
+              </div>
+            </div>
+          ) : null}
+
+          {/* Output */}
+          <div>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted/60">
+                Output
+              </span>
+              {output.phase === "ready" || output.phase === "pending" || output.phase === "error" ? (
+                <button
+                  type="button"
+                  className="text-[10px] text-muted/60 underline-offset-2 hover:text-txt hover:underline"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    void fetchOutput();
+                  }}
+                >
+                  {t("common.refresh")}
+                </button>
+              ) : null}
+            </div>
+            {output.phase === "idle" || output.phase === "loading" ? (
+              <div className="flex items-center gap-2 rounded border border-border/30 bg-bg/40 px-2 py-2 text-[11px] text-muted/60">
+                <div className="h-3 w-3 animate-spin rounded-full border-2 border-muted/30 border-t-muted/80" />
+                Loading output…
+              </div>
+            ) : output.phase === "ready" ? (
+              <div className="space-y-2">
+                {output.segments && output.segments.length > 0 ? (
+                  output.segments.map((seg, i) => {
+                    const isAction = seg.stage === "action";
+                    return (
+                      <div
+                        key={`${seg.stage}-${i}`}
+                        className={`rounded border px-2 py-1.5 text-[11px] ${
+                          isAction
+                            ? "border-accent/30 bg-accent/5"
+                            : "border-border/30 bg-bg/40 text-txt/85"
+                        }`}
+                      >
+                        <div
+                          className={`mb-1 text-[9px] font-semibold uppercase tracking-wider ${
+                            isAction ? "text-accent" : "text-muted/60"
+                          }`}
+                        >
+                          {isAction
+                            ? `Tool · ${seg.action ?? "action"}`
+                            : "Agent reply"}
+                        </div>
+                        <div className="whitespace-pre-wrap font-mono text-[11px]">
+                          {seg.text}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="whitespace-pre-wrap rounded border border-border/30 bg-bg/40 px-2 py-1.5 text-[11px] text-txt/85">
+                    {output.text}
+                  </div>
+                )}
+                {output.truncated ? (
+                  <div className="text-[10px] text-muted/50">
+                    Output truncated — see autonomy room for full reply.
+                  </div>
+                ) : null}
+              </div>
+            ) : output.phase === "pending" ? (
+              <div className="space-y-2">
+                <div className="rounded border border-border/30 bg-bg/40 px-2 py-1.5 text-[11px] italic text-muted/70">
+                  {pendingCopy}
+                </div>
+                {output.diagnostics ? (
+                  <details className="text-[10px] text-muted/60">
+                    <summary className="cursor-pointer select-none hover:text-txt">
+                      Diagnostics ({output.diagnostics.memoriesInWindow}{" "}
+                      memor{output.diagnostics.memoriesInWindow === 1 ? "y" : "ies"}{" "}
+                      in window)
+                    </summary>
+                    <div className="mt-1.5 space-y-1.5 rounded border border-border/30 bg-bg/40 px-2 py-1.5 font-mono">
+                      <div>
+                        agentId:{" "}
+                        <span className="text-muted/80">
+                          {output.diagnostics.agentId}
+                        </span>
+                      </div>
+                      <div>
+                        roomId:{" "}
+                        <span className="text-muted/80">
+                          {output.diagnostics.roomId}
+                        </span>
+                      </div>
+                      <div>
+                        window:{" "}
+                        <span className="text-muted/80">
+                          {new Date(output.diagnostics.windowStart).toISOString()}{" "}
+                          → {new Date(output.diagnostics.windowEnd).toISOString()}
+                        </span>
+                      </div>
+                      {output.diagnostics.peek.length === 0 ? (
+                        <div className="italic">
+                          No memories at all in window — autonomy loop never
+                          wrote to the room.
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="mb-1">First {output.diagnostics.peek.length} memories:</div>
+                          <ul className="space-y-1 pl-3">
+                            {output.diagnostics.peek.map((p, i) => (
+                              <li
+                                key={`${p.createdAt ?? ""}-${i}`}
+                                className="border-l border-border/40 pl-2"
+                              >
+                                <div>
+                                  entityIdMatches:{" "}
+                                  <span
+                                    className={
+                                      p.entityIdMatches
+                                        ? "text-ok/80"
+                                        : "text-warning/80"
+                                    }
+                                  >
+                                    {String(p.entityIdMatches)}
+                                  </span>
+                                </div>
+                                <div>
+                                  source: {p.source ?? "(none)"}
+                                </div>
+                                <div>
+                                  metadata.type: {String(p.metadataType ?? "(none)")}
+                                </div>
+                                {p.textPreview ? (
+                                  <div className="text-muted/80">
+                                    text: "{p.textPreview}"
+                                  </div>
+                                ) : (
+                                  <div className="italic">no text</div>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </details>
+                ) : null}
+              </div>
+            ) : (
+              <div className="whitespace-pre-wrap rounded border border-danger/20 bg-danger/10 px-2 py-1.5 font-mono text-[11px] text-danger/90">
+                Couldn't load output: {output.message}
+              </div>
+            )}
+          </div>
+
+          {/* Error trace */}
+          {run.error ? (
+            <div>
+              <div className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-danger/70">
+                Error
+              </div>
+              <div className="whitespace-pre-wrap rounded border border-danger/20 bg-danger/10 px-2 py-1.5 font-mono text-[11px] text-danger/90">
+                {run.error}
+              </div>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function TriggerAutomationDetailPane({
   automation,
   onPromoteToWorkflow,
@@ -3072,6 +3423,67 @@ function TriggerAutomationDetailPane({
   const hasLoadedRuns = triggerId
     ? Object.hasOwn(triggerRunsById, triggerId)
     : false;
+
+  // "Run now" UX — local state so the button gives feedback instead of
+  // looking like a static link. While the dispatch is in flight: button
+  // disabled + spinner. After it resolves: brief "Triggered" green tick,
+  // toast in the global notice tray, and the run-history list refreshes
+  // so the new run row appears immediately (no manual refresh needed).
+  const { setActionNotice } = useApp();
+  const [runNowState, setRunNowState] = useState<
+    "idle" | "running" | "fired"
+  >("idle");
+  const runNowFiredTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  useEffect(() => {
+    return () => {
+      if (runNowFiredTimeoutRef.current) {
+        clearTimeout(runNowFiredTimeoutRef.current);
+      }
+    };
+  }, []);
+  const handleRunNow = useCallback(async () => {
+    if (!triggerId || runNowState === "running") return;
+    setRunNowState("running");
+    try {
+      await onRunSelectedTrigger(triggerId);
+      setActionNotice?.(
+        "Trigger fired. Watch the Run history for the agent's output.",
+        "success",
+        4000,
+      );
+      // Refresh runs so the new row pops in without a manual refresh.
+      void loadTriggerRuns(triggerId);
+      setRunNowState("fired");
+      runNowFiredTimeoutRef.current = setTimeout(() => {
+        setRunNowState("idle");
+      }, 2500);
+    } catch (err) {
+      setActionNotice?.(
+        err instanceof Error
+          ? `Trigger dispatch failed: ${err.message}`
+          : "Trigger dispatch failed.",
+        "error",
+        5000,
+      );
+      setRunNowState("idle");
+    }
+  }, [
+    triggerId,
+    runNowState,
+    onRunSelectedTrigger,
+    setActionNotice,
+    loadTriggerRuns,
+  ]);
+
+  // Accordion: at most one run row is open at a time. Reset when the
+  // user switches to a different trigger (different triggerId) so the
+  // state doesn't leak across automations.
+  const [openRunId, setOpenRunId] = useState<string | null>(null);
+  useEffect(() => {
+    setOpenRunId(null);
+  }, [triggerId]);
 
   useEffect(() => {
     if (triggerId && !hasLoadedRuns) {
@@ -3132,9 +3544,26 @@ function TriggerAutomationDetailPane({
               tone={trigger.enabled ? "warning" : "ok"}
             />
             <IconAction
-              label={t("triggersview.RunNow")}
-              onClick={() => void onRunSelectedTrigger(trigger.id)}
-              icon={<Zap className="h-3.5 w-3.5" />}
+              label={
+                runNowState === "running"
+                  ? "Firing trigger…"
+                  : runNowState === "fired"
+                    ? "Trigger fired"
+                    : t("triggersview.RunNow")
+              }
+              onClick={() => void handleRunNow()}
+              disabled={runNowState === "running"}
+              ariaBusy={runNowState === "running"}
+              tone={runNowState === "fired" ? "ok" : undefined}
+              icon={
+                runNowState === "running" ? (
+                  <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                ) : runNowState === "fired" ? (
+                  <Check className="h-3.5 w-3.5" />
+                ) : (
+                  <Zap className="h-3.5 w-3.5" />
+                )
+              }
             />
             <IconAction
               label={t("triggersview.Edit")}
@@ -3241,31 +3670,22 @@ function TriggerAutomationDetailPane({
               No runs yet.
             </div>
           ) : (
-            <div className="divide-y divide-border/20">
+            <div>
               {selectedRuns.map((run) => (
-                <div
+                <TriggerRunRow
                   key={run.triggerRunId}
-                  className="flex flex-wrap items-center gap-2 px-3 py-2 text-xs-tight"
-                >
-                  <StatusBadge
-                    label={localizedExecutionStatus(run.status, t)}
-                    variant={toneForLastStatus(run.status)}
-                  />
-                  <span className="text-muted/70 tabular-nums">
-                    {formatDateTime(run.startedAt, { locale: uiLanguage })}
-                  </span>
-                  <span className="text-muted/60">
-                    {formatDurationMs(run.latencyMs, { t })}
-                  </span>
-                  <span className="ml-auto rounded bg-bg/40 px-1 py-0.5 font-mono text-[10px] text-muted/60">
-                    {run.source}
-                  </span>
-                  {run.error ? (
-                    <div className="basis-full whitespace-pre-wrap rounded border border-danger/20 bg-danger/10 px-2 py-1 font-mono text-[11px] text-danger/90">
-                      {run.error}
-                    </div>
-                  ) : null}
-                </div>
+                  run={run}
+                  triggerId={trigger.id}
+                  triggerInstructions={trigger.instructions ?? ""}
+                  expanded={openRunId === run.triggerRunId}
+                  onToggle={() =>
+                    setOpenRunId((current) =>
+                      current === run.triggerRunId ? null : run.triggerRunId,
+                    )
+                  }
+                  uiLanguage={uiLanguage}
+                  t={t}
+                />
               ))}
             </div>
           )}
