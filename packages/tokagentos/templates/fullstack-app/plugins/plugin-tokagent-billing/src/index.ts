@@ -38,6 +38,70 @@ const BILLING_MODE: "server" | "client" =
   process.env.BILLING_MODE === "server" ? "server" : "client";
 
 /**
+ * Env keys that indicate the user has configured a direct LLM provider —
+ * their own API key, not the x402 billing rail. Keep this aligned with
+ * @tokagentos/agent's PROVIDER_PLUGIN_MAP / AUTH_PROVIDER_PLUGINS so a new
+ * direct-provider plugin upstream automatically opts users out here.
+ */
+const DIRECT_LLM_PROVIDER_ENV_KEYS = [
+  "ANTHROPIC_API_KEY",
+  "OPENAI_API_KEY",
+  "OPENROUTER_API_KEY",
+  "GOOGLE_GENERATIVE_AI_API_KEY",
+  "GOOGLE_API_KEY",
+  "GEMINI_API_KEY",
+  "GROQ_API_KEY",
+  "XAI_API_KEY",
+  "GROK_API_KEY",
+  "ZAI_API_KEY",
+  "DEEPSEEK_API_KEY",
+  "MISTRAL_API_KEY",
+  "TOGETHER_API_KEY",
+  "AI_GATEWAY_API_KEY",
+  "AIGATEWAY_API_KEY",
+  "OLLAMA_BASE_URL",
+] as const;
+
+/**
+ * True when the user has wired a direct LLM provider AND has NOT set
+ * BILLING_CHAT_KEY. In that case the user wants chat routed through their
+ * own provider plugin, not the x402 gateway proxy — so the billing plugin
+ * MUST NOT claim /v1/messages and /v1/chat/completions. Without this guard
+ * the proxy intercepts those paths and rejects every chat request (no
+ * BILLING_CHAT_KEY → no sk-ai-* auth header → 401), which the agent UI
+ * surfaces as the generic "Sorry, I'm having a provider issue".
+ *
+ * BILLING_CHAT_KEY being set is the explicit "I want chat to flow through
+ * the billing rail" signal — when present, keep the proxy active even if a
+ * direct provider key is also set (advanced setups).
+ *
+ * The billing tab, top-up, dashboard, auth, and key-management routes stay
+ * registered — only the chat-message proxy is skipped. The user can still
+ * mint keys, top up PTON, and switch to x402 later by setting
+ * BILLING_CHAT_KEY (which flips this flag back).
+ */
+const HAS_BILLING_CHAT_KEY = !!process.env.BILLING_CHAT_KEY?.trim();
+const HAS_DIRECT_LLM_PROVIDER = DIRECT_LLM_PROVIDER_ENV_KEYS.some(
+  (key) => !!process.env[key]?.trim(),
+);
+const SKIP_CHAT_PROXY = HAS_DIRECT_LLM_PROVIDER && !HAS_BILLING_CHAT_KEY;
+
+if (SKIP_CHAT_PROXY) {
+  // Use console.info because the elizaOS logger isn't initialized at
+  // module-load time. Mirrors the same logging style as the LiteLLM /
+  // BILLING_CHAT_KEY mirror in scaffold-patched core-plugins.ts.
+  console.info(
+    "[tokagent-billing] direct LLM provider key detected (one of: " +
+      DIRECT_LLM_PROVIDER_ENV_KEYS.filter(
+        (key) => !!process.env[key]?.trim(),
+      ).join(", ") +
+      ") — skipping /v1/messages + /v1/chat/completions proxy so the " +
+      "direct provider plugin handles chat. Billing tab remains available; " +
+      "set BILLING_CHAT_KEY to re-route chat through the x402 gateway.",
+  );
+}
+
+/**
  * v2.0.0: full billing plugin with lifecycle management + routes.
  *
  * Modes:
@@ -126,7 +190,12 @@ export const tokagentBillingPlugin: Plugin = {
     // /v1/messages as an agent chat (requires worlds DB + AI provider
     // plugin) and fails with "tableName is required" on a billing-only
     // deployment.
-    ...getMessagesProxyRoutes(BILLING_MODE),
+    //
+    // Skipped when the user has a direct LLM provider key configured and
+    // no BILLING_CHAT_KEY — see SKIP_CHAT_PROXY above. Without this guard,
+    // the proxy rejects every chat request with a generic auth failure that
+    // the agent UI surfaces as "Sorry, I'm having a provider issue".
+    ...(SKIP_CHAT_PROXY ? [] : getMessagesProxyRoutes(BILLING_MODE)),
     ...getAuthRoutes(BILLING_MODE),
     ...getKeysRoutes(BILLING_MODE),
     ...getCreditsRoutes(BILLING_MODE),
