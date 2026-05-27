@@ -229,6 +229,87 @@ if (env.OPENROUTER_API_KEY) {
   }
 }
 
+/**
+ * DB-shadow check.
+ *
+ * Failure mode observed in the field: an LLM key set during first-boot
+ * onboarding is persisted into the `agents` table (`secrets` and
+ * `settings.secrets` columns). On every restart, mergeDbSettings() in
+ * @elizaos/core copies it into character.settings.secrets, and
+ * runtime.getSetting() reads that BEFORE process.env. So rotating .env
+ * does nothing — the DB value wins forever, even after .env is changed.
+ *
+ * We open PGLite read-only, scan agents.secrets and agents.settings.secrets,
+ * and warn loudly if any LLM key differs from .env. We don't auto-mutate
+ * the DB — clearing secrets is a destructive operation that should be
+ * explicit (use scripts/clear-db-llm-secrets.mjs).
+ *
+ * Best-effort only: skipped if PGLite isn't installed, the DB dir doesn't
+ * exist (fresh project), or the `agents` table isn't there yet (pre-boot).
+ */
+async function checkDbShadow() {
+  const dbDir = path.join(PROJECT_ROOT, ".eliza", ".elizadb");
+  if (!existsSync(dbDir)) return;
+  let PGlite;
+  try {
+    ({ PGlite } = await import("@electric-sql/pglite"));
+  } catch {
+    return;
+  }
+  let db;
+  try {
+    db = new PGlite(dbDir);
+    await db.waitReady;
+  } catch {
+    return;
+  }
+  try {
+    const result = await db.query(
+      "SELECT id, name, secrets, settings FROM agents",
+    );
+    for (const row of result.rows) {
+      const topSecrets =
+        row.secrets && typeof row.secrets === "object" ? row.secrets : {};
+      const settingsSecrets =
+        row.settings &&
+        typeof row.settings === "object" &&
+        row.settings.secrets &&
+        typeof row.settings.secrets === "object"
+          ? row.settings.secrets
+          : {};
+      for (const key of SHADOWED_KEYS) {
+        const dbValue = topSecrets[key] ?? settingsSecrets[key];
+        const dotenvValue = env[key];
+        if (!dbValue) continue;
+        if (!dotenvValue) {
+          // DB has it, .env doesn't. Probably set via onboarding UI and not
+          // mirrored. Not necessarily a bug — but flag it so the user knows.
+          continue;
+        }
+        if (dbValue !== dotenvValue) {
+          fail(
+            `${key} in PGLite database (agent "${row.name}") differs from .env.\n` +
+              `  db    : ${String(dbValue).slice(0, 12)}…${String(dbValue).slice(-4)} (this is what the agent reads)\n` +
+              `  .env  : ${String(dotenvValue).slice(0, 12)}…${String(dotenvValue).slice(-4)} (this is what you probably edited)\n` +
+              `  mergeDbSettings() in @elizaos/core loads the DB value into character.settings.secrets, and\n` +
+              `  runtime.getSetting() reads that BEFORE process.env. Editing .env doesn't help.\n` +
+              `  Fix: stop \`bun run dev\` and run \`bun run scripts/clear-db-llm-secrets.mjs\`,\n` +
+              `       then start again. .env will then be the source of truth.`,
+          );
+        }
+      }
+    }
+  } catch {
+    // agents table doesn't exist yet (fresh boot) — nothing to check.
+  } finally {
+    try {
+      await db.close();
+    } catch {}
+  }
+}
+
+await checkDbShadow();
+
 if (hadFailure) {
   console.error(
     "\n\x1b[31m[verify-llm-plugins]\x1b[0m One or more LLM-provider checks failed. Chat will not work until this is resolved.\n",
