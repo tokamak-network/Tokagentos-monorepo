@@ -310,6 +310,67 @@ async function checkDbShadow() {
 
 await checkDbShadow();
 
+/**
+ * No-provider-configured check.
+ *
+ * Failure mode observed in the field: the user clears all direct provider
+ * keys (ANTHROPIC_API_KEY, OPENROUTER_API_KEY, etc.) intending to run in
+ * x402-only mode, but doesn't set BILLING_CHAT_KEY. The runtime then has
+ * NO TEXT_SMALL/TEXT_LARGE provider registered — every chat request fails
+ * with `[router] No provider registered for TEXT_SMALL`, which is opaque
+ * about the actual fix (mint a sk-ai-* key and set BILLING_CHAT_KEY).
+ *
+ * Wire (see core-plugins.ts:configureBillingChatMirror): when both
+ * BILLING_CHAT_KEY and TOKAGENT_GATEWAY_URL are set, OPENAI_API_KEY +
+ * OPENAI_BASE_URL are mirrored onto the gateway and plugin-openai loads
+ * as the gateway provider. Either one alone is a no-op.
+ */
+const DIRECT_LLM_KEYS = [
+  "ANTHROPIC_API_KEY",
+  "OPENAI_API_KEY",
+  "OPENROUTER_API_KEY",
+  "GOOGLE_GENERATIVE_AI_API_KEY",
+  "GOOGLE_API_KEY",
+  "GEMINI_API_KEY",
+  "GROQ_API_KEY",
+  "XAI_API_KEY",
+  "DEEPSEEK_API_KEY",
+  "MISTRAL_API_KEY",
+  "TOGETHER_API_KEY",
+  "OLLAMA_BASE_URL",
+];
+const hasDirectKey = DIRECT_LLM_KEYS.some((k) => env[k]?.trim());
+const hasBillingChatKey = !!env.BILLING_CHAT_KEY?.trim();
+const hasGatewayUrl = !!env.TOKAGENT_GATEWAY_URL?.trim();
+const hasLiteLLM =
+  !!env.LITELLM_BASE_URL?.trim() && !!env.LITELLM_API_KEY?.trim();
+if (!hasDirectKey && !hasBillingChatKey && !hasLiteLLM) {
+  fail(
+    `No LLM provider configured. The agent has nothing to call for chat.\n` +
+      `  Pick one of these three paths:\n` +
+      `\n` +
+      `  [A] Direct provider: set one of ${DIRECT_LLM_KEYS.slice(0, 4).join(", ")},\n` +
+      `      etc. in .env. Plugin auto-loads, chat hits the provider directly.\n` +
+      `\n` +
+      `  [B] x402 billing (Tokamak rail): mint a sk-ai-* key from the billing\n` +
+      `      dashboard, then set BILLING_CHAT_KEY=sk-ai-... in .env.\n` +
+      `      Open http://localhost:3000/tokagent-billing/v1/billing/dashboard/\n` +
+      `      → connect wallet → top up PTON → mint key. Without this, the\n` +
+      `      runtime router has zero TEXT_SMALL/TEXT_LARGE providers.\n` +
+      `\n` +
+      `  [C] LiteLLM proxy: set LITELLM_BASE_URL + LITELLM_API_KEY in .env\n` +
+      `      (plus LITELLM_SMALL_MODEL / LITELLM_LARGE_MODEL).`,
+  );
+} else if (hasBillingChatKey && !hasGatewayUrl) {
+  fail(
+    `BILLING_CHAT_KEY is set but TOKAGENT_GATEWAY_URL is not. The billing\n` +
+      `  mirror in core-plugins.ts requires BOTH to wire the gateway as an\n` +
+      `  OpenAI-compatible provider — set TOKAGENT_GATEWAY_URL to the URL of\n` +
+      `  the tokagent-billing-server you're a client of (the hosted default is\n` +
+      `  https://billing-service-production-a8e7.up.railway.app).`,
+  );
+}
+
 if (hadFailure) {
   console.error(
     "\n\x1b[31m[verify-llm-plugins]\x1b[0m One or more LLM-provider checks failed. Chat will not work until this is resolved.\n",
