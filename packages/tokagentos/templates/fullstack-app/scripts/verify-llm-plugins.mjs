@@ -149,6 +149,47 @@ function readDotenv() {
 }
 
 const env = readDotenv();
+
+/**
+ * Shell-env vs .env conflict check.
+ *
+ * Failure mode observed in the field: user rotates an API key in .env, but
+ * an old value is still exported in their shell from a prior `export` or a
+ * line in ~/.zshrc / ~/.bashrc. dotenv defaults to `override: false`, which
+ * means existing process.env values are NOT overwritten by .env. The agent
+ * sees the stale shell value, OpenRouter returns 401 "User not found", and
+ * the AI SDK surfaces the opaque `AI_NoOutputGeneratedError`. Changing the
+ * .env does nothing because the shell value still wins.
+ *
+ * We don't flip dotenv's `override` flag — that breaks legitimate CI/devops
+ * setups that intentionally pass secrets via env vars. Instead we detect
+ * the mismatch and tell the user which value will actually be used and how
+ * to fix it.
+ */
+const SHADOWED_KEYS = [
+  "OPENROUTER_API_KEY",
+  "ANTHROPIC_API_KEY",
+  "OPENAI_API_KEY",
+  "GOOGLE_GENERATIVE_AI_API_KEY",
+  "GROQ_API_KEY",
+  "TAVILY_API_KEY",
+];
+for (const key of SHADOWED_KEYS) {
+  const dotenvValue = env[key];
+  const shellValue = process.env[key];
+  if (dotenvValue && shellValue && dotenvValue !== shellValue) {
+    fail(
+      `${key} differs between your shell environment and .env.\n` +
+        `  shell  : ${shellValue.slice(0, 12)}…${shellValue.slice(-4)} (this is what the agent reads)\n` +
+        `  .env   : ${dotenvValue.slice(0, 12)}…${dotenvValue.slice(-4)} (this is what you probably edited)\n` +
+        `  dotenv runs with override:false by default, so the shell value wins. To fix:\n` +
+        `    unset ${key}   # remove from the current shell\n` +
+        `    grep -n ${key} ~/.zshrc ~/.zprofile ~/.bashrc ~/.bash_profile 2>/dev/null\n` +
+        `    # delete any matching lines, restart the shell, then re-run \`bun run dev\``,
+    );
+  }
+}
+
 if (env.OPENROUTER_API_KEY) {
   const MODEL_KEYS = [
     "OPENROUTER_SMALL_MODEL",
