@@ -114,9 +114,83 @@ for (const check of CHECKS) {
   pass(`${check.pkg}@${installedVersion} ✓ (entry=${check.entry}, lines=${lineCount})`);
 }
 
+/**
+ * Model-id sanity check.
+ *
+ * Failure mode observed in the field: a user "fixes" `OPENROUTER_SMALL_MODEL`
+ * by stripping the `anthropic/` prefix or by using a version that doesn't
+ * exist on OpenRouter. The plugin sends the id verbatim, OpenRouter returns
+ * an error event the AI SDK can't translate to a message, and the symptom
+ * is the opaque `AI_NoOutputGeneratedError: No output generated`. The error
+ * never mentions the model id, so users blame the plugin or the API key
+ * (both fine) and spend hours debugging.
+ *
+ * We only inspect the .env — `runtime.getSetting()` is a process.env wrapper,
+ * so the .env value is what the plugin will see. We don't hit the network;
+ * we just enforce the `<provider>/<model>` shape and warn if a known-bad
+ * id is set. If OPENROUTER_API_KEY is empty the user isn't using OpenRouter,
+ * so the check is skipped.
+ */
+function readDotenv() {
+  const dotenvPath = path.join(PROJECT_ROOT, ".env");
+  if (!existsSync(dotenvPath)) return {};
+  const out = {};
+  for (const rawLine of readFileSync(dotenvPath, "utf8").split("\n")) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eq = line.indexOf("=");
+    if (eq < 1) continue;
+    out[line.slice(0, eq).trim()] = line
+      .slice(eq + 1)
+      .trim()
+      .replace(/^["']|["']$/g, "");
+  }
+  return out;
+}
+
+const env = readDotenv();
+if (env.OPENROUTER_API_KEY) {
+  const MODEL_KEYS = [
+    "OPENROUTER_SMALL_MODEL",
+    "OPENROUTER_LARGE_MODEL",
+    "OPENROUTER_IMAGE_MODEL",
+    "OPENROUTER_IMAGE_GENERATION_MODEL",
+    "OPENROUTER_EMBEDDING_MODEL",
+  ];
+  // Provider-namespaced model id. OpenRouter ids are `<provider>/<model>`
+  // (e.g. anthropic/claude-haiku-4.5, google/gemini-2.0-flash-001).
+  const validIdShape = /^[a-z0-9._-]+\/[a-z0-9._-]+(:[a-z0-9._-]+)?$/i;
+  for (const key of MODEL_KEYS) {
+    const value = env[key];
+    if (!value) continue;
+    if (!validIdShape.test(value)) {
+      fail(
+        `${key}=${value} is not a valid OpenRouter model id.\n` +
+          `  OpenRouter requires "<provider>/<model>" (e.g. anthropic/claude-haiku-4.5).\n` +
+          `  Bad ids surface as AI_NoOutputGeneratedError — the request leaves your machine,\n` +
+          `  OpenRouter rejects the model, the AI SDK can't translate the error event, and you\n` +
+          `  see "No output generated" with no hint about the model.\n` +
+          `  Catalog: https://openrouter.ai/api/v1/models`,
+      );
+      continue;
+    }
+    // Catch the specific typo we shipped pre-2.0.31 (claude-haiku-4-5 with
+    // a hyphen instead of a dot). OpenRouter uses dotted version suffixes.
+    if (/\/claude-(haiku|sonnet|opus)-\d+-\d/i.test(value)) {
+      fail(
+        `${key}=${value} uses hyphens in the version suffix. OpenRouter uses dots — e.g.\n` +
+          `  anthropic/claude-haiku-4.5, anthropic/claude-sonnet-4.6, anthropic/claude-opus-4.1.\n` +
+          `  The hyphen form is silently rejected and surfaces as AI_NoOutputGeneratedError.`,
+      );
+      continue;
+    }
+    pass(`${key}=${value} ✓ (shape valid)`);
+  }
+}
+
 if (hadFailure) {
   console.error(
-    "\n\x1b[31m[verify-llm-plugins]\x1b[0m One or more LLM-provider plugin checks failed. Chat will not work until this is resolved.\n",
+    "\n\x1b[31m[verify-llm-plugins]\x1b[0m One or more LLM-provider checks failed. Chat will not work until this is resolved.\n",
   );
   process.exit(1);
 }
