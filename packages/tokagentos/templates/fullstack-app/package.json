@@ -51,7 +51,8 @@
     "@elizaos/plugin-openrouter": "2.0.0-alpha.10",
     "@elizaos/plugin-shell": "2.0.0-alpha.537",
     "@elizaos/plugin-sql": "2.0.0-alpha.20",
-    "@tokagent/plugin-web-fetch": "workspace:*"
+    "@tokagent/plugin-web-fetch": "workspace:*",
+    "@tokagent/plugin-a2a-client": "workspace:*"
   },
   "devDependencies": {
     "typescript": "~5.9.3"

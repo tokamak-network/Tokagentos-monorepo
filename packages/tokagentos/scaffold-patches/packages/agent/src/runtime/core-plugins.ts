@@ -227,6 +227,11 @@ const TOKAGENT_PLUGINS: readonly string[] = [
   // for triggers and chat. No external service for FETCH_URL; WEB_SEARCH
   // requires TAVILY_API_KEY (handler returns a clear error if missing).
   "@tokagent/plugin-web-fetch",
+  // CALL_A2A_AGENT action — discovers and invokes other agents via
+  // Google's A2A protocol, paying with x402 vouchers (EIP-3009 PTON
+  // authorizations) when the peer returns 402. Observer-mode without a
+  // wallet; payment caps prevent runaway spend.
+  "@tokagent/plugin-a2a-client",
 ];
 
 /** Core plugins always loaded. Upstream list, then Tokagent overlays. */

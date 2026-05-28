@@ -1,0 +1,60 @@
+{
+  "name": "@tokagent/plugin-a2a-client",
+  "version": "0.1.0",
+  "description": "Call other agents via Google's A2A protocol, paying with x402 vouchers when required. Discovers AgentCards at /.well-known/agent.json, invokes JSON-RPC tasks, and handles the HTTP 402 challenge-response loop transparently using EIP-3009 PTON authorizations signed by the operator wallet.",
+  "type": "module",
+  "private": true,
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "bun run build.ts",
+    "dev": "bun run build.ts --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@elizaos/core": "workspace:*"
+  },
+  "dependencies": {
+    "viem": "*"
+  },
+  "agentConfig": {
+    "pluginType": "elizaos:plugin:1.0.0",
+    "pluginParameters": {
+      "X402_FACILITATOR_URL": {
+        "type": "string",
+        "description": "Optional URL of an x402 facilitator that verifies payment vouchers on-chain before the upstream service trusts them. If unset, we send the signed EIP-3009 voucher directly via X-Payment and trust the 2xx response from the upstream service. Most users leave this unset; the gateway/server handles verification.",
+        "required": false,
+        "sensitive": false
+      },
+      "X402_MAX_PAYMENT_PER_CALL_PTON": {
+        "type": "string",
+        "description": "Hard cap on any single x402 payment. The middleware refuses to sign vouchers above this amount and surfaces a clear error showing both the requested amount and the cap. Default: 1.0 PTON. Increase via .env if you call expensive paid agents.",
+        "required": false,
+        "sensitive": false,
+        "default": "1.0"
+      },
+      "X402_MAX_TOTAL_SPEND_PTON": {
+        "type": "string",
+        "description": "Session-wide spend cap. When cumulative x402 payments exceed this, subsequent 402 challenges emit X402_SESSION_CAP_HIT and are refused until the agent restarts or the cap is raised. Default: 10.0 PTON.",
+        "required": false,
+        "sensitive": false,
+        "default": "10.0"
+      },
+      "A2A_REGISTRY_URL": {
+        "type": "string",
+        "description": "Optional cache of known AgentCards by ID. Falls back to direct GET /.well-known/agent.json fetch when unset. No registry is required for v0.1.",
+        "required": false,
+        "sensitive": false
+      }
+    }
+  }
+}
