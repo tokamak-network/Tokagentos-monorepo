@@ -210,14 +210,21 @@ export async function handleTelegramSetupRoute(
       let envWritten = false;
       try {
         await writeProjectEnvVar("TELEGRAM_BOT_TOKEN", token);
-        // Auto-enable replies. Without TELEGRAM_AUTO_REPLY=true the
-        // plugin ingests inbound messages into memory but never invokes
-        // the agent's reply pipeline — a silent failure that's logged
-        // only at debug level. Default-on when the user explicitly
-        // connects a bot via the Settings UI matches the user's
-        // intent: "I want this bot to reply to me."
+        // Auto-enable replies. The plugin's handleMessage gates on TWO
+        // independent flags, both silent skips with debug-level logging
+        // when the gate trips. Setting both default-on whenever the
+        // user explicitly connects a bot via Settings matches their
+        // intent: "I want this bot to reply to me." Connecting via the
+        // UI is the unambiguous signal that the bot should respond.
+        //   TELEGRAM_AUTO_REPLY=true — without this the plugin
+        //     early-returns at line 1145 of plugin-telegram/dist/index.js
+        //   LIFEOPS_PASSIVE_CONNECTORS=false — default is "enabled"
+        //     which gives lifeOps ownership of connector replies and
+        //     bypasses the main LLM pipeline
         await writeProjectEnvVar("TELEGRAM_AUTO_REPLY", "true");
+        await writeProjectEnvVar("LIFEOPS_PASSIVE_CONNECTORS", "false");
         process.env.TELEGRAM_AUTO_REPLY = "true";
+        process.env.LIFEOPS_PASSIVE_CONNECTORS = "false";
         envWritten = true;
       } catch (err) {
         // Persisting to .env is best-effort — the token is also in the
