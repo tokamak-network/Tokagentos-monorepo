@@ -84,24 +84,38 @@ const PATCHED_BLOCK =
   "        // never race against the loop delivering updates without a handler.\n" +
   "        service.setupMiddlewares();\n" +
   "        service.setupMessageHandlers();\n" +
-  "        // Fire-and-forget the polling loop. Telegraf 4.x's bot.launch()\n" +
-  "        // awaits startPolling() which awaits the infinite polling loop —\n" +
-  "        // it resolves only when the bot is stopped. Awaiting it here blocks\n" +
-  "        // forever, the rest of start() never runs, the service is never\n" +
-  "        // registered, and incoming messages have no handler. Treat launch\n" +
-  "        // as start-polling-in-background.\n" +
-  "        service.initializeBot().catch((err) => {\n" +
-  "          logger4.error(\n" +
-  "            { src: \"plugin:telegram\", agentId: runtime.agentId, err: err?.message ?? String(err) },\n" +
-  '            "initializeBot rejected (background)"\n' +
-  "          );\n" +
-  "        });\n" +
   "        const bot = service.bot;\n" +
   "        if (!bot) {\n" +
   '          throw new Error("Telegram bot was not initialized");\n' +
   "        }\n" +
-  "        // Give launch one tick to wire up polling before getMe.\n" +
-  "        await new Promise((r) => setTimeout(r, 100));\n" +
+  "        // Race initializeBot() against a 3s timeout. Telegraf 4.x's\n" +
+  "        // bot.launch() awaits the infinite polling loop, so its Promise\n" +
+  "        // resolves only when the bot stops — but it DOES reject fast on\n" +
+  "        // 409 / network errors. If we get a fast rejection, throw to\n" +
+  "        // trigger the outer retry loop (Telegram's polling-slot grace\n" +
+  "        // period from a previous run releases within a few seconds).\n" +
+  "        // If the timer wins, polling is running successfully.\n" +
+  "        const initPromise = service.initializeBot();\n" +
+  "        const settled = await Promise.race([\n" +
+  "          initPromise.then(\n" +
+  "            (v) => ({ ok: true, value: v }),\n" +
+  "            (err) => ({ ok: false, error: err })\n" +
+  "          ),\n" +
+  "          new Promise((resolve) =>\n" +
+  "            setTimeout(() => resolve({ timeout: true }), 3000)\n" +
+  "          ),\n" +
+  "        ]);\n" +
+  "        if (settled && settled.ok === false) {\n" +
+  "          throw settled.error;\n" +
+  "        }\n" +
+  "        if (!settled || !settled.ok) {\n" +
+  "          initPromise.catch((err) => {\n" +
+  "            logger4.error(\n" +
+  "              { src: \"plugin:telegram\", agentId: runtime.agentId, err: err?.message ?? String(err) },\n" +
+  '              "polling loop exited (background)"\n' +
+  "            );\n" +
+  "          });\n" +
+  "        }\n" +
   "        await bot.telegram.getMe();\n";
 
 const patched = original.replace(BUGGY_BLOCK, PATCHED_BLOCK);
