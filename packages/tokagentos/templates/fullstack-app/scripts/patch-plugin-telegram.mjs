@@ -46,10 +46,68 @@ if (!existsSync(pluginPath)) {
 }
 
 const TOKAGENT_PATCH_MARKER = "// TOKAGENT PATCH: register handlers BEFORE";
-const original = readFileSync(pluginPath, "utf8");
+const AUTO_REPLY_PATCH_MARKER = "// TOKAGENT PATCH: runtime.getSetting() only checks";
+let original = readFileSync(pluginPath, "utf8");
+
+// Two independent patches. The first (poll-loop replacement) is
+// idempotent via TOKAGENT_PATCH_MARKER. The second (auto-reply env
+// fallback) needs its own marker because the buggy gate code is in a
+// different location than the launch-await bug.
+let dirty = false;
+
+// ─── Patch 2: env fallback for TELEGRAM_AUTO_REPLY / LIFEOPS_PASSIVE_CONNECTORS ──
+if (!original.includes(AUTO_REPLY_PATCH_MARKER)) {
+  const BUGGY_GATE =
+    '      const telegramAutoReplyRaw = this.runtime.getSetting(\n' +
+    '        "TELEGRAM_AUTO_REPLY"\n' +
+    "      );\n" +
+    "      const telegramAutoReply = !lifeOpsPassiveConnectorsEnabled(this.runtime) && (telegramAutoReplyRaw === true || telegramAutoReplyRaw === \"true\");\n";
+
+  const PATCHED_GATE =
+    "      " + AUTO_REPLY_PATCH_MARKER + " character.secrets\n" +
+    "      // / settings, NEVER process.env. So setting TELEGRAM_AUTO_REPLY in\n" +
+    "      // .env is invisible to the auto-reply gate. Fall back to process.env\n" +
+    "      // when the runtime returns null. Same trap with\n" +
+    "      // lifeOpsPassiveConnectorsEnabled — force-override with process.env\n" +
+    "      // so the user's explicit setting wins over runtime defaults.\n" +
+    '      let telegramAutoReplyRaw = this.runtime.getSetting("TELEGRAM_AUTO_REPLY");\n' +
+    "      if (telegramAutoReplyRaw === null || telegramAutoReplyRaw === undefined) {\n" +
+    "        telegramAutoReplyRaw = process.env.TELEGRAM_AUTO_REPLY;\n" +
+    "      }\n" +
+    "      let _lifeOpsPassive = lifeOpsPassiveConnectorsEnabled(this.runtime);\n" +
+    "      const _envLifeOps = process.env.LIFEOPS_PASSIVE_CONNECTORS ?? process.env.ELIZA_LIFEOPS_PASSIVE_CONNECTORS;\n" +
+    "      if (_envLifeOps !== undefined && _envLifeOps !== null) {\n" +
+    "        const _v = String(_envLifeOps).trim().toLowerCase();\n" +
+    '        if (_v === "false" || _v === "0" || _v === "no" || _v === "off") {\n' +
+    "          _lifeOpsPassive = false;\n" +
+    '        } else if (_v === "true" || _v === "1" || _v === "yes" || _v === "on") {\n' +
+    "          _lifeOpsPassive = true;\n" +
+    "        }\n" +
+    "      }\n" +
+    '      const telegramAutoReply = !_lifeOpsPassive && (telegramAutoReplyRaw === true || telegramAutoReplyRaw === "true");\n';
+
+  if (original.includes(BUGGY_GATE)) {
+    original = original.replace(BUGGY_GATE, PATCHED_GATE);
+    dirty = true;
+    console.log(
+      "\x1b[32m[patch-plugin-telegram]\x1b[0m " +
+        "Applied auto-reply env-fallback fix. TELEGRAM_AUTO_REPLY and " +
+        "LIFEOPS_PASSIVE_CONNECTORS in .env will now activate the bot's " +
+        "reply path even though runtime.getSetting() doesn't consult process.env.",
+    );
+  } else {
+    console.warn(
+      "\x1b[33m[patch-plugin-telegram]\x1b[0m " +
+        "Auto-reply gate doesn't match expected pattern — upstream may " +
+        "have fixed it. Skipping that patch.",
+    );
+  }
+}
 
 if (original.includes(TOKAGENT_PATCH_MARKER)) {
-  // Already patched — nothing to do.
+  // Launch patch already applied — nothing more to do (auto-reply
+  // patch above already wrote if needed).
+  if (dirty) writeFileSync(pluginPath, original);
   process.exit(0);
 }
 
