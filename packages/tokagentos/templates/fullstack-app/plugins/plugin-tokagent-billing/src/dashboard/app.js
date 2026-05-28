@@ -968,50 +968,76 @@ async function swapToPton({ inputToken, inputAmountFloat, slippageBps }) {
     if (outEl) outEl.textContent = formatUnits(minOutTonWei, 18, 6);
   } catch { /* presentational only */ }
 
-  // ---- 2. approve router (ERC-20 only) ------------------------------------
-  if (inputToken !== "ETH") {
-    await _ensureAllowance({
-      token: cfg.address,
-      owner: user,
-      spender: SWAP_ROUTER02,
-      amount: amountIn,
-      symbol: inputToken,
-    });
-  }
-
-  // ---- 3. swap via SwapRouter02.exactInput → recipient = user -------------
-  // For ETH input the router auto-wraps msg.value when path starts with WETH.
-  // For ERC-20 the router uses the allowance we just set.
-  setStatus(
-    $("#swap-status"),
-    inputToken === "ETH"
-      ? `Swapping ETH → WTON via Uniswap V3…`
-      : `Swapping ${inputToken} → WETH → WTON via Uniswap V3…`,
-  );
+  // ---- 2. stuck-flow recovery check ---------------------------------------
+  // If the user already has WTON in their wallet (>= the amount this swap
+  // would deliver), reuse it instead of doing another swap. This happens
+  // when a previous attempt completed step 3 (swap) but failed somewhere
+  // in step 4-6 (unwrap → deposit → vault) — the WTON ended up stranded
+  // in the wallet. The simplest, gas-cheapest recovery is to skip the
+  // fresh swap entirely and consume the existing WTON.
   const wtonBalanceBefore = await _readErc20Balance(SWAP_WTON, user);
-  const swapData = _encExactInput({
-    path,
-    recipient: user,
-    amountIn,
-    amountOutMinimum: minOutWtonRay,
-  });
-  await _sendAndWait({
-    to: SWAP_ROUTER02,
-    data: swapData,
-    value: inputToken === "ETH" ? amountIn : 0n,
-  });
-
-  // Use the realized post-swap WTON balance delta as the canonical amount
-  // for wrap → vault — this guarantees we don't over-wrap (which would
-  // revert in PTON.deposit on insufficient TON balance) and forwards the
-  // full swap output, not just the minimum.
-  const wtonBalanceAfter = await _readErc20Balance(SWAP_WTON, user);
-  const wtonReceived = wtonBalanceAfter - wtonBalanceBefore;
-  if (wtonReceived < minOutWtonRay) {
-    // Should be impossible (router enforced minOut) but guard anyway.
-    throw new Error(
-      `Swap underdelivered: got ${wtonReceived} WTON-ray, expected >= ${minOutWtonRay}`,
+  let wtonReceived; // amount we consider "ours" from this flow
+  if (wtonBalanceBefore >= minOutWtonRay) {
+    setStatus(
+      $("#swap-status"),
+      `Found ${formatUnits(wtonBalanceBefore / WTON_RAY_PER_WEI, 18, 4)} WTON from a previous attempt — reusing it (skipping swap).`,
     );
+    wtonReceived = wtonBalanceBefore;
+  } else {
+    // ---- 3a. approve router (ERC-20 only) ---------------------------------
+    if (inputToken !== "ETH") {
+      await _ensureAllowance({
+        token: cfg.address,
+        owner: user,
+        spender: SWAP_ROUTER02,
+        amount: amountIn,
+        symbol: inputToken,
+      });
+    }
+    // ---- 3b. swap via SwapRouter02.exactInput → recipient = user ----------
+    // For ETH input the router auto-wraps msg.value when path starts with WETH.
+    // For ERC-20 the router uses the allowance we just set.
+    setStatus(
+      $("#swap-status"),
+      inputToken === "ETH"
+        ? `Swapping ETH → WTON via Uniswap V3…`
+        : `Swapping ${inputToken} → WETH → WTON via Uniswap V3…`,
+    );
+    const swapData = _encExactInput({
+      path,
+      recipient: user,
+      amountIn,
+      amountOutMinimum: minOutWtonRay,
+    });
+    await _sendAndWait({
+      to: SWAP_ROUTER02,
+      data: swapData,
+      value: inputToken === "ETH" ? amountIn : 0n,
+    });
+    // Use the realized post-swap WTON balance delta as the canonical amount
+    // for wrap → vault — this guarantees we don't over-wrap (which would
+    // revert in PTON.deposit on insufficient TON balance) and forwards the
+    // full swap output, not just the minimum.
+    const wtonBalanceAfter = await _readErc20Balance(SWAP_WTON, user);
+    wtonReceived = wtonBalanceAfter - wtonBalanceBefore;
+    if (wtonReceived < minOutWtonRay) {
+      // The receipt said 0x1 but no WTON delta. Most likely the wallet
+      // returned a stale tx hash (e.g. dedup of an identical previous
+      // calldata) and we polled the OLD receipt. If the wallet's TOTAL
+      // WTON balance now exceeds minOut, treat that as the swap output
+      // (it must have come from somewhere — and the user paid for it).
+      if (wtonBalanceAfter >= minOutWtonRay) {
+        setStatus(
+          $("#swap-status"),
+          `Swap tx returned no new WTON, but wallet has ${formatUnits(wtonBalanceAfter / WTON_RAY_PER_WEI, 18, 4)} WTON — using that.`,
+        );
+        wtonReceived = wtonBalanceAfter;
+      } else {
+        throw new Error(
+          `Swap underdelivered: got ${wtonReceived} WTON-ray, expected >= ${minOutWtonRay}`,
+        );
+      }
+    }
   }
   // Convert ray→wei. Truncate any sub-1e9-ray dust (will sit in wallet as WTON).
   const tonToWrap = wtonReceived / WTON_RAY_PER_WEI;
@@ -1616,6 +1642,114 @@ function wireKeyCreate() {
       setStatus($("#key-modal-copy-status"), "Copy failed — select the value above and copy manually.", "err");
     }
   });
+
+  // ── "Install & Restart Agent" — open the confirm modal ────────────────
+  $("#key-modal-install").addEventListener("click", () => {
+    // Reset any prior status text in the confirm modal so the user starts
+    // from a clean slate if they bounce in and out of the confirm dialog.
+    setStatus($("#key-install-status"), "");
+    $("#key-install-modal").hidden = false;
+    $("#key-install-confirm").disabled = false;
+    $("#key-install-cancel").disabled = false;
+  });
+  $("#key-install-cancel").addEventListener("click", () => {
+    $("#key-install-modal").hidden = true;
+  });
+  $("#key-install-confirm").addEventListener("click", async () => {
+    const installStatus = $("#key-install-status");
+    const confirmBtn = $("#key-install-confirm");
+    const cancelBtn = $("#key-install-cancel");
+    const key = $("#key-modal-value").textContent?.trim() ?? "";
+    if (!/^sk-ai-[A-Za-z0-9_-]{16,}$/.test(key)) {
+      setStatus(installStatus, "Key text is not a valid sk-ai-... value.", "err");
+      return;
+    }
+    confirmBtn.disabled = true;
+    cancelBtn.disabled = true;
+    setStatus(installStatus, "Writing key to .env…");
+    try {
+      // Step 1: write the .env. CRITICAL: this MUST hit the local agent,
+      // not the remote billing gateway — the gateway has no access to the
+      // user's local filesystem. We use a same-origin fetch (no PROXY_BASE
+      // prefix) so it lands on the local agent's /v1/keys/install handler.
+      // (apiJson() prefixes PROXY_BASE which in client-mode = Railway URL.)
+      const installRes = await fetch("/v1/keys/install", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ key }),
+      });
+      if (!installRes.ok) {
+        let body = null;
+        try { body = await installRes.json(); } catch {}
+        throw new Error(
+          body?.error || `HTTP ${installRes.status} from /v1/keys/install`,
+        );
+      }
+      setStatus(installStatus, "Key saved. Requesting agent restart…");
+      // Step 2: trigger the restart via the existing /api/restart endpoint.
+      // That endpoint handles dev (in-process runtime bounce via
+      // setRestartHandler) and prod (process.exit + supervisor respawn)
+      // correctly; we don't reimplement that strategy here.
+      // /api/restart returns BEFORE the runtime is torn down (1s setTimeout),
+      // so this request itself succeeds. The poll below catches the moment
+      // the runtime is back up.
+      const restartRes = await fetch("/api/restart", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+      });
+      if (!restartRes.ok) {
+        throw new Error(
+          `/api/restart returned HTTP ${restartRes.status} — key was saved but agent did not restart. Try restarting manually.`,
+        );
+      }
+      setStatus(installStatus, "Agent restarting — waiting for it to come back…");
+      // Poll until /v1/price answers 200 again. The restart cycle is
+      // typically a few seconds; we allow up to 60s for slow rebuilds.
+      const restored = await waitForServerBack({ timeoutMs: 60_000 });
+      if (restored) {
+        setStatus(installStatus, "Agent is back online — reloading page…", "ok");
+        setTimeout(() => window.location.reload(), 800);
+      } else {
+        setStatus(
+          installStatus,
+          "Agent did not come back online within 60s. Check your terminal — you may need to relaunch it manually.",
+          "err",
+        );
+        cancelBtn.disabled = false;
+      }
+    } catch (err) {
+      setStatus(installStatus, `Install failed: ${err.message}`, "err");
+      confirmBtn.disabled = false;
+      cancelBtn.disabled = false;
+    }
+  });
+}
+
+// Poll the agent for availability — used by the install-and-restart flow.
+// We hit a fast public endpoint and treat ANY 2xx response as "back up".
+// During restart the fetch first throws (TCP refused), then briefly may
+// return 503 while the runtime initializes, then settles to 200.
+async function waitForServerBack({ timeoutMs = 60_000 } = {}) {
+  const deadline = Date.now() + timeoutMs;
+  // Initial settle delay so we don't poll the still-alive pre-exit server.
+  // The server told us restartDelayMs=1500 — add a small safety margin.
+  await new Promise((r) => setTimeout(r, 2_000));
+  while (Date.now() < deadline) {
+    try {
+      // /v1/price is a small, cache-able, unauthenticated endpoint.
+      // Cache-bust with a timestamp param so the browser doesn't serve a
+      // 200 from disk cache while the actual server is still down.
+      const resp = await fetch(`/v1/price?_=${Date.now()}`, {
+        method: "GET",
+        cache: "no-store",
+      });
+      if (resp.ok) return true;
+    } catch {
+      // TCP refused / DNS fail / fetch abort — server still down, keep waiting.
+    }
+    await new Promise((r) => setTimeout(r, 1_000));
+  }
+  return false;
 }
 
 function wireFaucet() {
@@ -2068,6 +2202,226 @@ function startAutoRefresh() {
 
 // ----------------------------- Boot -----------------------------
 
+// ============================================================================
+// x402 Outbound section — talks to the agent's main API port (/api/integrations/x402/*)
+// ============================================================================
+
+/**
+ * The x402 endpoints live on the AGENT's API port (default 31337 — same
+ * origin as the dashboard when served via the agent process), NOT on the
+ * billing gateway. Use a relative URL so it follows whichever origin
+ * loaded the dashboard.
+ */
+const X402_BASE = "/api/integrations/x402";
+
+function shortAddr(addr) {
+  if (!addr || typeof addr !== "string" || addr.length < 10) return addr || "—";
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+}
+
+function setX402SaveStatus(msg, tone) {
+  const el = document.getElementById("x402-save-status");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.className = `status-line ${tone === "ok" ? "ok" : tone === "err" ? "err" : ""}`;
+}
+
+function setX402DiscoverStatus(msg, tone) {
+  const el = document.getElementById("x402-discover-status");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.className = `status-line ${tone === "ok" ? "ok" : tone === "err" ? "err" : ""}`;
+}
+
+async function loadX402Status() {
+  let body;
+  try {
+    const r = await fetch(`${X402_BASE}/status`, { headers: { Accept: "application/json" } });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    body = await r.json();
+  } catch (err) {
+    // Endpoint may be unavailable (older agent, embedded view without
+    // the patched plugin-routes). Degrade gracefully — leave placeholders
+    // and surface a hint on the wallet meta line.
+    const meta = document.getElementById("x402-wallet-meta");
+    if (meta) {
+      meta.textContent = "Could not reach agent: " + (err && err.message ? err.message : err);
+      meta.className = "x402-stat-meta muted small err";
+    }
+    return;
+  }
+
+  // Wallet row
+  const walletEl = document.getElementById("x402-wallet");
+  const walletMeta = document.getElementById("x402-wallet-meta");
+  if (body.walletConfigured && body.walletAddress) {
+    walletEl.textContent = shortAddr(body.walletAddress);
+    walletEl.title = body.walletAddress;
+    walletMeta.textContent = "Configured · signs EIP-3009 vouchers";
+    walletMeta.className = "x402-stat-meta muted small ok";
+  } else {
+    walletEl.textContent = "—";
+    walletMeta.textContent = "Not configured · observer mode (free endpoints only)";
+    walletMeta.className = "x402-stat-meta muted small";
+  }
+
+  // Caps + facilitator
+  document.getElementById("x402-cap-per-call").textContent = body.maxPerCallPton || "1.0";
+  document.getElementById("x402-cap-total").textContent = body.maxTotalPton || "10.0";
+  const facEl = document.getElementById("x402-facilitator-state");
+  facEl.textContent = body.facilitatorUrl ? "set" : "trust 2xx";
+  facEl.title = body.facilitatorUrl || "trust upstream 2xx as receipt";
+
+  // Pre-fill the form
+  const perCallInput = document.getElementById("x402-input-per-call");
+  const totalInput = document.getElementById("x402-input-total");
+  const facInput = document.getElementById("x402-input-facilitator");
+  if (perCallInput && !perCallInput.value) perCallInput.value = body.maxPerCallPton || "";
+  if (totalInput && !totalInput.value) totalInput.value = body.maxTotalPton || "";
+  if (facInput && !facInput.value) facInput.value = body.facilitatorUrl || "";
+}
+
+function wireX402Config() {
+  const form = document.getElementById("x402-config-form");
+  if (!form) return;
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const maxPerCall = document.getElementById("x402-input-per-call").value.trim();
+    const maxTotal = document.getElementById("x402-input-total").value.trim();
+    const facilitator = document.getElementById("x402-input-facilitator").value.trim();
+    const payload = {};
+    if (maxPerCall) payload.maxPerCallPton = maxPerCall;
+    if (maxTotal) payload.maxTotalPton = maxTotal;
+    payload.facilitatorUrl = facilitator;
+    if (Object.keys(payload).length === 0) {
+      setX402SaveStatus("Nothing to save.", "err");
+      return;
+    }
+    setX402SaveStatus("Saving…");
+    try {
+      const r = await fetch(`${X402_BASE}/config`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const body = await r.json();
+      if (!r.ok || body.ok === false) {
+        setX402SaveStatus(body.error || `Save failed (${r.status})`, "err");
+        return;
+      }
+      setX402SaveStatus(
+        body.restartScheduled
+          ? `Saved (${body.updated.join(", ")}) — agent restarting…`
+          : `Saved (${body.updated.join(", ")}). Restart the agent for changes to take effect.`,
+        "ok"
+      );
+      // Wait a beat then re-read in case the restart window lets us
+      // observe the new values cleanly.
+      setTimeout(loadX402Status, 4000);
+    } catch (err) {
+      setX402SaveStatus("Network error: " + (err && err.message ? err.message : err), "err");
+    }
+  });
+
+  const reset = document.getElementById("x402-reset");
+  if (reset) {
+    reset.addEventListener("click", () => {
+      document.getElementById("x402-input-per-call").value = "1.0";
+      document.getElementById("x402-input-total").value = "10.0";
+      document.getElementById("x402-input-facilitator").value = "";
+      setX402SaveStatus("Defaults restored. Click Save to apply.");
+    });
+  }
+}
+
+function renderAgentCard(payload) {
+  const out = document.getElementById("x402-discover-result");
+  if (!out) return;
+  if (!payload.ok) {
+    out.hidden = false;
+    out.innerHTML = `<div class="x402-discover-err">
+      <div class="muted small">Fetched: <code>${escapeHtml(payload.cardUrl)}</code></div>
+      <p class="err small">${escapeHtml(payload.error || `${payload.status} ${payload.statusText || ""}`)}</p>
+    </div>`;
+    return;
+  }
+  const card = payload.card || {};
+  const skills = Array.isArray(card.skills) ? card.skills : [];
+  const skillsHtml = skills.length
+    ? `<ul class="x402-skill-list">${skills
+        .map(
+          (s) => `
+        <li>
+          <div class="x402-skill-id"><code>${escapeHtml(s.id || "(no id)")}</code>${s.name ? ` — ${escapeHtml(s.name)}` : ""}</div>
+          ${s.description ? `<div class="x402-skill-desc muted small">${escapeHtml(s.description)}</div>` : ""}
+          ${
+            s.tags && s.tags.length
+              ? `<div class="x402-skill-tags">${s.tags
+                  .map((t) => `<span class="pill">${escapeHtml(String(t))}</span>`)
+                  .join("")}</div>`
+              : ""
+          }
+        </li>`
+        )
+        .join("")}</ul>`
+    : `<p class="muted small">No skills advertised by this AgentCard.</p>`;
+  const auth = card.authentication && card.authentication.schemes ? card.authentication.schemes.join(", ") : "(unspecified)";
+  out.hidden = false;
+  out.innerHTML = `
+    <div class="x402-card-summary">
+      <div class="x402-card-head">
+        <div>
+          <h4>${escapeHtml(card.name || "(unnamed)")}</h4>
+          <p class="muted small">${escapeHtml(card.description || "")}</p>
+        </div>
+        <div class="x402-card-meta">
+          <div class="muted small">URL: <code>${escapeHtml(card.url || "(none)")}</code></div>
+          <div class="muted small">Version: ${escapeHtml(card.version || "—")}</div>
+          <div class="muted small">Auth schemes: ${escapeHtml(auth)}</div>
+        </div>
+      </div>
+      <h5 class="x402-skill-header">Skills (${skills.length})</h5>
+      ${skillsHtml}
+      <div class="x402-skill-howto muted small">
+        To invoke a skill from chat: <code>"Ask the agent at ${escapeHtml(card.url || "<URL>")} to use skill &lt;id&gt; with input &lt;json&gt;"</code> — the CALL_A2A_AGENT action will handle the rest.
+      </div>
+    </div>`;
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function wireX402Discover() {
+  const form = document.getElementById("x402-discover-form");
+  if (!form) return;
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const url = document.getElementById("x402-discover-url").value.trim();
+    if (!url) return;
+    setX402DiscoverStatus("Fetching AgentCard…");
+    const out = document.getElementById("x402-discover-result");
+    if (out) out.hidden = true;
+    try {
+      const r = await fetch(`${X402_BASE}/discover`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ baseUrl: url }),
+      });
+      const body = await r.json();
+      renderAgentCard(body);
+      setX402DiscoverStatus(body.ok ? "" : "Discovery failed.", body.ok ? "ok" : "err");
+    } catch (err) {
+      setX402DiscoverStatus("Network error: " + (err && err.message ? err.message : err), "err");
+    }
+  });
+}
+
 async function boot() {
   setupEmbedMode();
   wireTabs();
@@ -2080,6 +2434,12 @@ async function boot() {
   wireLogout();
   wireSwitchChain();
   wireLogin();
+  wireX402Config();
+  wireX402Discover();
+  // x402 state lives on the agent's main API port, not the billing
+  // gateway. Load it asynchronously so the rest of the boot sequence
+  // isn't blocked by a slow agent or missing endpoint.
+  void loadX402Status();
 
   state.session = loadSession();
   if (state.session) {

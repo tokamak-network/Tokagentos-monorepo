@@ -1789,7 +1789,10 @@ async function handleRequest(
     pathname.startsWith("/api/plugins/") ||
     pathname === "/api/secrets" ||
     pathname === "/api/core/status" ||
-    pathname === "/api/integrations/tavily-key"
+    pathname === "/api/integrations/tavily-key" ||
+    pathname === "/api/integrations/x402/status" ||
+    pathname === "/api/integrations/x402/config" ||
+    pathname === "/api/integrations/x402/discover"
   ) {
     if (
       await handlePluginRoutes({

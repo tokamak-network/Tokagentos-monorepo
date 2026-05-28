@@ -1240,3 +1240,252 @@ html[data-embed="1"] footer { display: none; }
   .data-table th, .data-table td { padding: 8px 6px; }
   .modal-body { padding: 22px; }
 }
+
+/* ============================================================
+   x402 OUTBOUND CARD — sits below "API keys", educates + configures
+   the outbound payment middleware shipped by plugin-a2a-client.
+   ============================================================ */
+
+.x402-card {
+  background:
+    radial-gradient(80% 60% at 100% 0%, rgba(192,123,255,0.07) 0%, transparent 60%),
+    var(--card-bg, #11121a);
+}
+
+.x402-eyebrow {
+  color: #c07bff !important;
+}
+
+/* --- collapsible primer --- */
+.x402-primer {
+  margin: 0 0 18px 0;
+  padding: 0;
+  border: 1px solid rgba(192,123,255,0.18);
+  border-radius: 10px;
+  background: rgba(192,123,255,0.04);
+  overflow: hidden;
+}
+.x402-primer > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #d9c2ff;
+}
+.x402-primer > summary::-webkit-details-marker { display: none; }
+.x402-primer > summary::before {
+  content: "▸";
+  color: #c07bff;
+  font-size: 11px;
+  transition: transform 120ms ease;
+}
+.x402-primer[open] > summary::before {
+  transform: rotate(90deg);
+}
+.x402-primer-body {
+  padding: 4px 18px 16px 18px;
+  border-top: 1px solid rgba(192,123,255,0.10);
+}
+.x402-primer-body p { margin: 12px 0; line-height: 1.55; }
+.x402-steps {
+  margin: 12px 0;
+  padding-left: 22px;
+  line-height: 1.6;
+}
+.x402-steps li { margin-bottom: 6px; }
+.x402-steps code {
+  background: rgba(192,123,255,0.10);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 11.5px;
+}
+
+/* --- 4-up status grid --- */
+.x402-status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 0 0 18px 0;
+}
+.x402-stat {
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.015);
+}
+.x402-stat .stat-num {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 4px 0;
+  word-break: break-all;
+}
+.x402-stat-meta { margin-top: 4px; line-height: 1.4; }
+.x402-stat-meta.ok { color: #6ad48d; }
+.x402-stat-meta.err { color: #ff7575; }
+.mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+/* --- config form --- */
+.x402-config-form {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 18px;
+  margin-top: 4px;
+}
+.x402-config-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.x402-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.x402-field-wide { grid-column: 1 / -1; }
+.x402-field .field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #c0c2cc;
+}
+.x402-field input {
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #ededf2;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 13px;
+}
+.x402-field input:focus {
+  outline: none;
+  border-color: #c07bff;
+  box-shadow: 0 0 0 2px rgba(192,123,255,0.18);
+}
+.x402-field .field-hint { line-height: 1.4; }
+.x402-config-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* --- discover sub-section --- */
+.x402-discover {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding-top: 18px;
+  margin-top: 18px;
+}
+.x402-subheader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 10px 0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.x402-subheader .subhead {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ededf2;
+}
+.x402-discover-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.x402-discover-form input {
+  flex: 1;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #ededf2;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 13px;
+}
+.x402-discover-form input:focus {
+  outline: none;
+  border-color: #c07bff;
+  box-shadow: 0 0 0 2px rgba(192,123,255,0.18);
+}
+.x402-discover-result {
+  margin-top: 10px;
+  border: 1px solid rgba(192,123,255,0.18);
+  border-radius: 10px;
+  padding: 16px;
+  background: rgba(192,123,255,0.03);
+}
+.x402-discover-err { color: #ff7575; }
+.x402-card-summary h4 { margin: 0 0 4px 0; font-size: 15px; }
+.x402-card-summary h5 { margin: 14px 0 8px 0; font-size: 13px; font-weight: 600; color: #c0c2cc; text-transform: uppercase; letter-spacing: 0.04em; }
+.x402-card-head {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.x402-card-meta { text-align: right; min-width: 200px; }
+.x402-card-meta .small { line-height: 1.6; }
+
+.x402-skill-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.x402-skill-list li {
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.015);
+}
+.x402-skill-id code {
+  background: rgba(192,123,255,0.10);
+  color: #d9c2ff;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.x402-skill-desc { margin-top: 4px; line-height: 1.5; }
+.x402-skill-tags {
+  margin-top: 6px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.x402-skill-tags .pill {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(192,123,255,0.10);
+  color: #d9c2ff;
+  border-radius: 999px;
+  border: 1px solid rgba(192,123,255,0.20);
+  height: auto;
+}
+.x402-skill-howto {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px dashed rgba(255,255,255,0.10);
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+/* responsive */
+@media (max-width: 880px) {
+  .x402-status-grid { grid-template-columns: repeat(2, 1fr); }
+  .x402-config-grid { grid-template-columns: 1fr; }
+  .x402-card-meta { text-align: left; min-width: 0; }
+}
+@media (max-width: 520px) {
+  .x402-status-grid { grid-template-columns: 1fr; }
+  .x402-discover-form { flex-direction: column; }
+  .x402-discover-form .btn { width: 100%; }
+}

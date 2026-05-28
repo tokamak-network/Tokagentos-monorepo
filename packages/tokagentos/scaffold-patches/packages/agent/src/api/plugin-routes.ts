@@ -1056,6 +1056,204 @@ export async function handlePluginRoutes(
     return true;
   }
 
+  // ── GET /api/integrations/x402/status ─────────────────────────────────
+  // Read-only snapshot of x402 outbound payment state for the gateway
+  // dashboard. Returns wallet config status, current caps, optional
+  // facilitator URL. Never returns the private key — only the public
+  // address derived from it.
+  if (method === "GET" && pathname === "/api/integrations/x402/status") {
+    let walletAddress: string | null = null;
+    const rawKey =
+      process.env.TOKAGENT_PRIVATE_KEY?.trim() ||
+      process.env.EVM_PRIVATE_KEY?.trim();
+    if (rawKey) {
+      const hex = rawKey.startsWith("0x") ? rawKey : `0x${rawKey}`;
+      if (/^0x[0-9a-fA-F]{64}$/.test(hex)) {
+        try {
+          // viem is shipped transitively via plugin-evm. Import lazily so
+          // a missing viem (extremely unlikely) degrades to wallet=null
+          // instead of breaking the whole endpoint.
+          const viem = await import("viem/accounts");
+          walletAddress = viem.privateKeyToAccount(hex as `0x${string}`).address;
+        } catch {
+          walletAddress = null;
+        }
+      }
+    }
+    json(res, {
+      walletConfigured: Boolean(walletAddress),
+      walletAddress,
+      maxPerCallPton:
+        process.env.X402_MAX_PAYMENT_PER_CALL_PTON?.trim() || "1.0",
+      maxTotalPton: process.env.X402_MAX_TOTAL_SPEND_PTON?.trim() || "10.0",
+      facilitatorUrl: process.env.X402_FACILITATOR_URL?.trim() || null,
+      a2aRegistryUrl: process.env.A2A_REGISTRY_URL?.trim() || null,
+    });
+    return true;
+  }
+
+  // ── PUT /api/integrations/x402/config ─────────────────────────────────
+  // Persist x402 caps / facilitator URL to project .env and schedule a
+  // runtime restart so the next CALL_A2A_AGENT picks up the new values.
+  // Mirrors the Tavily-key pattern: write .env, mirror to process.env,
+  // respond before scheduling the restart so the HTTP roundtrip doesn't
+  // get killed mid-response.
+  if (method === "PUT" && pathname === "/api/integrations/x402/config") {
+    const body = await readJsonBody<{
+      maxPerCallPton?: unknown;
+      maxTotalPton?: unknown;
+      facilitatorUrl?: unknown;
+    }>(req, res);
+    if (!body) return true;
+
+    const decimalRe = /^\d+(\.\d+)?$/;
+    const isOptUrl = (v: unknown): v is string =>
+      typeof v === "string" && (v === "" || /^https?:\/\//i.test(v));
+    const updates: Array<[string, string]> = [];
+
+    if (typeof body.maxPerCallPton === "string") {
+      const v = body.maxPerCallPton.trim();
+      if (!decimalRe.test(v)) {
+        error(
+          res,
+          "maxPerCallPton must be a non-negative decimal number (e.g. '1.0').",
+          400,
+        );
+        return true;
+      }
+      updates.push(["X402_MAX_PAYMENT_PER_CALL_PTON", v]);
+    }
+    if (typeof body.maxTotalPton === "string") {
+      const v = body.maxTotalPton.trim();
+      if (!decimalRe.test(v)) {
+        error(
+          res,
+          "maxTotalPton must be a non-negative decimal number (e.g. '10.0').",
+          400,
+        );
+        return true;
+      }
+      updates.push(["X402_MAX_TOTAL_SPEND_PTON", v]);
+    }
+    if (body.facilitatorUrl !== undefined) {
+      if (!isOptUrl(body.facilitatorUrl)) {
+        error(
+          res,
+          "facilitatorUrl must be empty or an http(s) URL.",
+          400,
+        );
+        return true;
+      }
+      updates.push(["X402_FACILITATOR_URL", body.facilitatorUrl]);
+    }
+    if (updates.length === 0) {
+      error(res, "Nothing to update.", 400);
+      return true;
+    }
+    try {
+      for (const [k, v] of updates) {
+        await writeProjectEnvVar(k, v);
+        if (v) process.env[k] = v;
+        else delete process.env[k];
+      }
+    } catch (err) {
+      error(
+        res,
+        `Failed to persist x402 config: ${err instanceof Error ? err.message : String(err)}`,
+        500,
+      );
+      return true;
+    }
+    logger.info(
+      `[integrations] x402 config updated: ${updates.map(([k]) => k).join(", ")} (restart scheduled)`,
+    );
+    const restartScheduled = typeof scheduleRuntimeRestart === "function";
+    json(res, {
+      ok: true,
+      updated: updates.map(([k]) => k),
+      restartScheduled,
+    });
+    if (restartScheduled) {
+      setImmediate(() => {
+        try {
+          scheduleRuntimeRestart("x402-config-updated");
+        } catch {}
+      });
+    }
+    return true;
+  }
+
+  // ── POST /api/integrations/x402/discover ──────────────────────────────
+  // AgentCard discovery helper for the gateway dashboard's "test a peer"
+  // workflow. Takes a baseUrl, fetches /.well-known/agent.json, returns
+  // the parsed card. Uses plain fetch (no x402 challenge handling here —
+  // discovery is almost always free, and if it isn't, the CALL_A2A_AGENT
+  // action is the right entry point with full cap enforcement).
+  if (method === "POST" && pathname === "/api/integrations/x402/discover") {
+    const body = await readJsonBody<{ baseUrl?: unknown }>(req, res);
+    if (!body) return true;
+    const baseUrl =
+      typeof body.baseUrl === "string" ? body.baseUrl.trim() : "";
+    if (!baseUrl || !/^https?:\/\//i.test(baseUrl)) {
+      error(res, "baseUrl is required and must be an http(s) URL.", 400);
+      return true;
+    }
+    const cardUrl = baseUrl.endsWith("/agent.json")
+      ? baseUrl
+      : `${baseUrl.replace(/\/$/, "")}/.well-known/agent.json`;
+    try {
+      const r = await fetch(cardUrl, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!r.ok) {
+        json(res, {
+          ok: false,
+          status: r.status,
+          statusText: r.statusText,
+          cardUrl,
+          error: `AgentCard fetch returned ${r.status} ${r.statusText}`,
+        });
+        return true;
+      }
+      const raw = (await r.json()) as Record<string, unknown>;
+      json(res, {
+        ok: true,
+        cardUrl,
+        card: {
+          name: typeof raw.name === "string" ? raw.name : null,
+          description:
+            typeof raw.description === "string" ? raw.description : null,
+          url: typeof raw.url === "string" ? raw.url : null,
+          version: typeof raw.version === "string" ? raw.version : null,
+          authentication: raw.authentication ?? null,
+          capabilities: raw.capabilities ?? null,
+          skills: Array.isArray(raw.skills)
+            ? raw.skills
+                .filter(
+                  (s): s is Record<string, unknown> =>
+                    Boolean(s) && typeof s === "object",
+                )
+                .map((s) => ({
+                  id: typeof s.id === "string" ? s.id : null,
+                  name: typeof s.name === "string" ? s.name : null,
+                  description:
+                    typeof s.description === "string" ? s.description : null,
+                  tags: Array.isArray(s.tags) ? s.tags : null,
+                }))
+            : [],
+        },
+      });
+    } catch (err) {
+      json(res, {
+        ok: false,
+        cardUrl,
+        error: err instanceof Error ? err.message : String(err),
+      });
+    }
+    return true;
+  }
+
   // ── POST /api/plugins/:id/test ────────────────────────────────────────
   // Test a plugin's connection / configuration validity.
   const pluginTestMatch =
