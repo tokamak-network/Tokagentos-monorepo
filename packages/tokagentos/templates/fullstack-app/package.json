@@ -58,10 +58,12 @@
   },
   "resolutions": {
     "typescript": "~5.9.3",
-    "@elizaos/plugin-openrouter": "2.0.0-alpha.10"
+    "@elizaos/plugin-openrouter": "2.0.0-alpha.10",
+    "@elizaos/plugin-telegram": "2.0.0-alpha.537"
   },
   "overrides": {
     "typescript": "~5.9.3",
-    "@elizaos/plugin-openrouter": "2.0.0-alpha.10"
+    "@elizaos/plugin-openrouter": "2.0.0-alpha.10",
+    "@elizaos/plugin-telegram": "2.0.0-alpha.537"
   }
 }

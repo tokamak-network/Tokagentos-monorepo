@@ -45,8 +45,41 @@ if (!existsSync(pluginPath)) {
   process.exit(0);
 }
 
+// Version sanity check. The patch is tested against a specific version;
+// if the installed version drifts, the buggy patterns may have changed
+// shape and the patch silently fails to match. Warn loudly so users
+// don't get stuck debugging a regression we already solved.
+const TESTED_PLUGIN_VERSION = "2.0.0-alpha.537";
+const pkgPath = path.join(
+  PROJECT_ROOT,
+  "node_modules",
+  "@elizaos",
+  "plugin-telegram",
+  "package.json",
+);
+try {
+  const installedVersion = JSON.parse(readFileSync(pkgPath, "utf8")).version;
+  if (installedVersion !== TESTED_PLUGIN_VERSION) {
+    console.warn(
+      "\x1b[33m[patch-plugin-telegram]\x1b[0m " +
+        "@elizaos/plugin-telegram installed at " + installedVersion +
+        " but our patch was tested against " + TESTED_PLUGIN_VERSION + ".\n" +
+        "  If the bot fails to reply (silent skip in handleMessage, " +
+        "polling never starts, or 409 with no resolution), upstream may " +
+        "have refactored the buggy code blocks and the patch's exact-" +
+        "match patterns no longer hit.\n" +
+        "  Resolve by pinning @elizaos/plugin-telegram to " +
+        TESTED_PLUGIN_VERSION + " in package.json resolutions+overrides " +
+        "until we've validated the new upstream version.",
+    );
+  }
+} catch {
+  // Couldn't read version — proceed anyway.
+}
+
 const TOKAGENT_PATCH_MARKER = "// TOKAGENT PATCH: register handlers BEFORE";
 const AUTO_REPLY_PATCH_MARKER = "// TOKAGENT PATCH: runtime.getSetting() only checks";
+const TYPING_PATCH_MARKER = "// TOKAGENT PATCH: show \"typing…\" indicator";
 let original = readFileSync(pluginPath, "utf8");
 
 // Two independent patches. The first (poll-loop replacement) is
@@ -100,6 +133,71 @@ if (!original.includes(AUTO_REPLY_PATCH_MARKER)) {
       "\x1b[33m[patch-plugin-telegram]\x1b[0m " +
         "Auto-reply gate doesn't match expected pattern — upstream may " +
         "have fixed it. Skipping that patch.",
+    );
+  }
+}
+
+// ─── Patch 3: typing indicator while LLM thinks ─────────────────────────
+// 76-second response times feel broken without feedback. Show Telegram's
+// native "typing…" indicator while messageManager.handleMessage runs.
+// Re-emit every 4s (Telegram clears it after ~5s).
+if (!original.includes(TYPING_PATCH_MARKER)) {
+  // Match upstream's setupMessageHandlers (uses optional chaining for
+  // messageManager, no early return).
+  const BUGGY_HANDLER =
+    "  setupMessageHandlers() {\n" +
+    '    this.bot?.on("message", async (ctx) => {\n' +
+    "      try {\n" +
+    "        await this.messageManager?.handleMessage(ctx);\n";
+
+  const PATCHED_HANDLER =
+    "  setupMessageHandlers() {\n" +
+    '    this.bot?.on("message", async (ctx) => {\n' +
+    "      " + TYPING_PATCH_MARKER + " while the LLM thinks.\n" +
+    "      let typingTimer = null;\n" +
+    "      try {\n" +
+    "        if (ctx.chat?.id) {\n" +
+    "          const sendTyping = () => {\n" +
+    '            ctx.telegram.sendChatAction(ctx.chat.id, "typing").catch(() => {});\n' +
+    "          };\n" +
+    "          sendTyping();\n" +
+    "          typingTimer = setInterval(sendTyping, 4000);\n" +
+    "        }\n" +
+    "        await this.messageManager?.handleMessage(ctx);\n";
+
+  if (original.includes(BUGGY_HANDLER)) {
+    original = original.replace(BUGGY_HANDLER, PATCHED_HANDLER);
+    // Also need a finally clause to clear the timer. Insert it after the
+    // existing catch block of this handler. Pattern-match the closing
+    // sequence so we hit the right one.
+    const HANDLER_FOOTER =
+      '          "Error handling message"\n' +
+      "        );\n" +
+      "      }\n" +
+      "    });\n" +
+      '    this.bot?.on("message_reaction"';
+    const PATCHED_FOOTER =
+      '          "Error handling message"\n' +
+      "        );\n" +
+      "      } finally {\n" +
+      "        if (typingTimer) clearInterval(typingTimer);\n" +
+      "      }\n" +
+      "    });\n" +
+      '    this.bot?.on("message_reaction"';
+    if (original.includes(HANDLER_FOOTER)) {
+      original = original.replace(HANDLER_FOOTER, PATCHED_FOOTER);
+    }
+    dirty = true;
+    console.log(
+      "\x1b[32m[patch-plugin-telegram]\x1b[0m " +
+        "Applied typing-indicator patch. Telegram will show 'typing…' " +
+        "while the agent processes the message (refreshed every 4s).",
+    );
+  } else {
+    console.warn(
+      "\x1b[33m[patch-plugin-telegram]\x1b[0m " +
+        "setupMessageHandlers doesn't match expected pattern — typing " +
+        "indicator patch skipped.",
     );
   }
 }
