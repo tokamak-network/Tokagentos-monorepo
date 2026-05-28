@@ -51,13 +51,49 @@ function warn(channel, msg) {
   warnings.push(`  [${channel}] ${msg}`);
 }
 
-// Telegram — single-token, env name matches. Just check format.
+// Telegram — single-token, env name matches. Check format then probe
+// for the 409 Conflict failure mode (another process polling with the
+// same token). The plugin's retry loop gives up after ~10s and the
+// service is stuck in a not-started state with no error in the chat UI
+// — the user just sees the bot stay offline forever. Catching this at
+// install / dev surface time saves hours of debugging.
 if (env.TELEGRAM_BOT_TOKEN) {
   if (!/^\d+:[A-Za-z0-9_-]{30,}$/.test(env.TELEGRAM_BOT_TOKEN)) {
     warn(
       "telegram",
       `TELEGRAM_BOT_TOKEN doesn't match BotFather format (id:secret). The plugin will fail to connect.`,
     );
+  } else {
+    // Probe for an existing long-poll consumer. getUpdates returns
+    // 409 Conflict when another instance is already polling. We use a
+    // 1-second timeout to keep the install hook snappy and a small
+    // limit because we only care about the status code, not the data.
+    try {
+      const probe = await fetch(
+        `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getUpdates?timeout=1&limit=1`,
+        { signal: AbortSignal.timeout(3000) },
+      );
+      if (probe.status === 409) {
+        const body = await probe.text();
+        warn(
+          "telegram",
+          `Another process is already long-polling with this bot token (Telegram returned 409 Conflict). ` +
+            `Telegram allows only ONE consumer per token at a time. ` +
+            `Common culprits: a stale \`bun run dev\` from another shell, a Claude Code Telegram plugin, ` +
+            `or a deployed bot somewhere else using the same token. ` +
+            `Fix: \`lsof -nP -iTCP | grep 149.154\` to find the holder, or use a fresh BotFather token. ` +
+            `Detail: ${body.slice(0, 200)}`,
+        );
+      } else if (probe.status === 401) {
+        warn(
+          "telegram",
+          `TELEGRAM_BOT_TOKEN was rejected by Telegram (401 Unauthorized). The bot was either deleted or the token was revoked. Mint a fresh one via BotFather.`,
+        );
+      }
+    } catch {
+      // Network/timeout — non-fatal. The plugin will discover this at
+      // boot.
+    }
   }
 }
 
