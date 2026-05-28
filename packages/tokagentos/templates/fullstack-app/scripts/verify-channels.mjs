@@ -79,10 +79,15 @@ if (env.TELEGRAM_BOT_TOKEN) {
           "telegram",
           `Another process is already long-polling with this bot token (Telegram returned 409 Conflict). ` +
             `Telegram allows only ONE consumer per token at a time. ` +
-            `Common culprits: a stale \`bun run dev\` from another shell, a Claude Code Telegram plugin, ` +
-            `or a deployed bot somewhere else using the same token. ` +
-            `Fix: \`lsof -nP -iTCP | grep 149.154\` to find the holder, or use a fresh BotFather token. ` +
-            `Detail: ${body.slice(0, 200)}`,
+            `Most common culprits, in order of likelihood:\n` +
+            `      1. \`bun --watch\` hot-reloading the agent: when a file changes, bun re-imports the\n` +
+            `         module without killing the previous Telegraf instance, so the new instance 409s\n` +
+            `         against the old one's poll. Fix: hard-kill bun and re-run \`bun run dev\`.\n` +
+            `      2. A stale \`bun run dev\` from another shell — \`lsof -nP -iTCP | grep 149.154\`.\n` +
+            `      3. A Claude Code Telegram plugin or external deployment using the same token.\n` +
+            `      4. Telegram hasn't released the polling slot from the previous consumer yet —\n` +
+            `         wait ~10s after killing the previous process and retry.\n` +
+            `      Detail: ${body.slice(0, 200)}`,
         );
       } else if (probe.status === 401) {
         warn(
