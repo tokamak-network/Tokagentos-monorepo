@@ -21,13 +21,81 @@
  *     restart so the running plugin disconnects without manual restart.
  */
 
+import nodeFs from "node:fs/promises";
 import type http from "node:http";
+import nodePath from "node:path";
 import { registerEscalationChannel } from "../services/escalation.js";
 import { setOwnerContact } from "./owner-contact-helpers.js";
 import type { RouteHelpers } from "./route-helpers.js";
 
 const TELEGRAM_API_BASE = "https://api.telegram.org";
 const MAX_BODY_BYTES = 4096;
+
+/**
+ * Write or update a key in the project's `.env` file (process.cwd()/.env).
+ * Inlined copy of the same helper in plugin-routes.ts — keep behavior in
+ * sync if you edit one, fix the other.
+ *
+ * Behavior:
+ *   - If `.env` doesn't exist → create it.
+ *   - If the key already appears (active line) → replace.
+ *   - If the key appears commented (`# KEY=...`) → uncomment and set.
+ *   - Otherwise → append `KEY=value\n`.
+ * Atomic write via tmp-file + rename. chmod 0600 because tokens are
+ * sensitive.
+ */
+async function writeProjectEnvVar(
+  key: string,
+  value: string,
+): Promise<string> {
+  const envPath = nodePath.join(process.cwd(), ".env");
+  let existing = "";
+  try {
+    existing = await nodeFs.readFile(envPath, "utf8");
+  } catch (err: unknown) {
+    if ((err as NodeJS.ErrnoException)?.code !== "ENOENT") throw err;
+  }
+  const line = `${key}=${value}`;
+  const activeRe = new RegExp(`^${key}=.*$`, "m");
+  const commentedRe = new RegExp(`^#\\s*${key}=.*$`, "m");
+  let next: string;
+  if (activeRe.test(existing)) {
+    next = existing.replace(activeRe, line);
+  } else if (commentedRe.test(existing)) {
+    next = existing.replace(commentedRe, line);
+  } else if (existing.length === 0) {
+    next = `${line}\n`;
+  } else {
+    const sep = existing.endsWith("\n") ? "" : "\n";
+    next = `${existing}${sep}${line}\n`;
+  }
+  const tmpPath = `${envPath}.tmp.${process.pid}`;
+  await nodeFs.writeFile(tmpPath, next, { mode: 0o600 });
+  await nodeFs.rename(tmpPath, envPath);
+  try {
+    await nodeFs.chmod(envPath, 0o600);
+  } catch {
+    // best-effort permission tighten
+  }
+  return envPath;
+}
+
+async function clearProjectEnvVar(key: string): Promise<void> {
+  const envPath = nodePath.join(process.cwd(), ".env");
+  let existing = "";
+  try {
+    existing = await nodeFs.readFile(envPath, "utf8");
+  } catch (err: unknown) {
+    if ((err as NodeJS.ErrnoException)?.code !== "ENOENT") throw err;
+    return;
+  }
+  const activeRe = new RegExp(`^${key}=.*$`, "m");
+  if (!activeRe.test(existing)) return;
+  const next = existing.replace(activeRe, `${key}=`);
+  const tmpPath = `${envPath}.tmp.${process.pid}`;
+  await nodeFs.writeFile(tmpPath, next, { mode: 0o600 });
+  await nodeFs.rename(tmpPath, envPath);
+}
 
 interface TelegramBotInfo {
   id: number;
@@ -129,12 +197,32 @@ export async function handleTelegramSetupRoute(
 
       state.saveConfig();
 
-      // Mirror to process.env IMMEDIATELY so the plugin-loader gate in
-      // character.ts sees the value on the next plugin-list build.
-      // Without this, `applyConnectorSecretsToEnv` only runs at boot — a
-      // hot-save-then-restart only works because the .json file is on
-      // disk by then; if a future code path tries to read the token
-      // from process.env before restart, it would be empty.
+      // Persist to project .env — the PRIMARY source of truth. Bun
+      // auto-loads .env at process start, so after the scheduled
+      // restart, process.env.TELEGRAM_BOT_TOKEN will be populated BEFORE
+      // any agent code runs (including character.ts's plugin-list
+      // builder). Writing only to ~/.NAME/NAME.json is unreliable
+      // because `applyConnectorSecretsToEnv` may run after the plugin
+      // list has already been computed, leaving the plugin unloaded.
+      // Keeping the namespace-config write above for backward compat
+      // with any code path that reads connectors.telegram.botToken
+      // directly.
+      let envWritten = false;
+      try {
+        await writeProjectEnvVar("TELEGRAM_BOT_TOKEN", token);
+        envWritten = true;
+      } catch (err) {
+        // Persisting to .env is best-effort — the token is also in the
+        // namespace config, which is enough for the next boot via
+        // applyConnectorSecretsToEnv. Log but don't fail the save.
+        console.warn(
+          `[telegram-setup] Failed to write TELEGRAM_BOT_TOKEN to project .env: ${err instanceof Error ? err.message : String(err)}. The token is still saved in the namespace config and will be picked up on next boot.`,
+        );
+      }
+
+      // Mirror to process.env IMMEDIATELY for the current process so
+      // any code path that reads process.env before the restart cycle
+      // (logging, status endpoints, etc.) sees the value.
       process.env.TELEGRAM_BOT_TOKEN = token;
 
       // Respond BEFORE scheduling the restart. `scheduleRuntimeRestart`
@@ -149,6 +237,7 @@ export async function handleTelegramSetupRoute(
           firstName: bot.first_name,
         },
         restartScheduled: canRestart,
+        envWritten,
       });
       if (canRestart) {
         setImmediate(() => {
@@ -197,6 +286,13 @@ export async function handleTelegramSetupRoute(
     if (tgConfig) {
       delete tgConfig.botToken;
       state.saveConfig();
+    }
+    // Clear from project .env so the next boot doesn't re-load the
+    // plugin from the stale value. Symmetric with connect.
+    try {
+      await clearProjectEnvVar("TELEGRAM_BOT_TOKEN");
+    } catch {
+      // best-effort
     }
     // Clear from process.env and restart so the running plugin tears
     // down without a manual restart. Symmetric with connect.
