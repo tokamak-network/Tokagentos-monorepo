@@ -11,17 +11,20 @@ import {
   DialogTitle,
   FieldLabel,
   Input,
+  Label,
   PageLayout,
   PagePanel,
   SidebarCollapsedActionButton,
   SidebarContent,
   SidebarPanel,
   SidebarScrollRegion,
+  Spinner,
   StatusBadge,
   StatusDot,
   Textarea,
 } from "@elizaos/ui";
 import {
+  AlertTriangle,
   Calendar,
   Check,
   CheckCircle2,
@@ -33,6 +36,7 @@ import {
   Edit as EditIcon,
   FileText,
   GitBranch,
+  Globe,
   Grid3x3,
   LayoutDashboard,
   ArrowRight,
@@ -2251,6 +2255,173 @@ function OverviewListItem({
   );
 }
 
+/* ── TavilyKeyBanner ──────────────────────────────────────────────────────
+ *
+ * Top-of-page prompt shown ONLY when TAVILY_API_KEY is missing. The web-fetch
+ * plugin's WEB_SEARCH action silently degrades to "no results" without a
+ * Tavily key, and triggers like "search for daily AI trends" depend on it.
+ * Surfacing the missing-key state on the Automations page where those
+ * triggers live is more discoverable than burying the input in Settings.
+ *
+ * Hides itself once a valid key is saved (no permanent UI clutter once the
+ * problem is fixed). Calls the same `client.setTavilyApiKey()` endpoint as
+ * the Settings page — single source of truth for the persistence layer.
+ *
+ * Status fetch (`GET /api/integrations/tavily-key`) returns `{ configured,
+ * lastFour }` — never the key itself.
+ */
+function TavilyKeyBanner() {
+  const app = useApp();
+  const setActionNotice = app.setActionNotice;
+  const [status, setStatus] = useState<"loading" | "missing" | "configured">(
+    "loading",
+  );
+  const [value, setValue] = useState("");
+  const [revealed, setRevealed] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    void client
+      .getTavilyKeyStatus()
+      .then(({ configured }) => {
+        if (!cancelled) setStatus(configured ? "configured" : "missing");
+      })
+      .catch(() => {
+        // Endpoint not available (older agent, network blip) — hide rather
+        // than show a misleading "missing" warning.
+        if (!cancelled) setStatus("configured");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const trimmed = value.trim();
+  const canSave =
+    !saving && /^tvly-[A-Za-z0-9_-]{8,}$/.test(trimmed);
+
+  const onSave = useCallback(async () => {
+    if (!canSave) return;
+    setSaving(true);
+    try {
+      const result = await client.setTavilyApiKey(trimmed);
+      setActionNotice?.(
+        result.restartScheduled
+          ? "Tavily key saved. Web search is active; agent restart scheduled."
+          : "Tavily key saved. Web search is active.",
+        "success",
+        4000,
+      );
+      setValue("");
+      setStatus("configured");
+    } catch (err) {
+      setActionNotice?.(
+        err instanceof Error ? `Save failed: ${err.message}` : "Save failed.",
+        "error",
+        5000,
+      );
+    } finally {
+      setSaving(false);
+    }
+  }, [canSave, setActionNotice, trimmed]);
+
+  if (status !== "missing") return null;
+
+  const formatHint =
+    value.length > 0 && !canSave && !saving
+      ? "Expected format: tvly- followed by 8+ alphanumeric characters."
+      : null;
+
+  return (
+    <div className="rounded-xl border border-amber-500/30 bg-amber-500/[0.06] px-4 py-3 sm:px-5">
+      <div className="flex items-start gap-3">
+        <div className="flex h-9 w-9 flex-none items-center justify-center rounded-lg bg-amber-500/10">
+          <AlertTriangle
+            className="h-5 w-5 text-amber-500"
+            aria-hidden
+          />
+        </div>
+        <div className="min-w-0 flex-1 space-y-3">
+          <div>
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="text-sm font-semibold text-txt">
+                Web search requires a Tavily API key
+              </h3>
+              <span className="inline-flex items-center gap-1 rounded-full border border-border/30 bg-bg/40 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted">
+                <Globe className="h-3 w-3" aria-hidden />
+                WEB_SEARCH
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-muted">
+              Triggers that fetch URLs or search the web need a Tavily key —
+              without it, the agent's <code className="text-txt">WEB_SEARCH</code>{" "}
+              action returns no results. Free tier covers 1,000 searches/month
+              (no credit card) at{" "}
+              <a
+                href="https://app.tavily.com/sign-in"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-accent underline-offset-2 hover:underline"
+              >
+                app.tavily.com
+              </a>
+              . Saving writes to the project's <code className="text-txt">.env</code>{" "}
+              and restarts the runtime.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Label
+              htmlFor="automations-tavily-key"
+              className="sr-only"
+            >
+              Tavily API key
+            </Label>
+            <Input
+              id="automations-tavily-key"
+              type={revealed ? "text" : "password"}
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && canSave) {
+                  e.preventDefault();
+                  void onSave();
+                }
+              }}
+              placeholder="tvly-…"
+              autoComplete="off"
+              spellCheck={false}
+              className="min-w-[220px] flex-1 rounded-lg bg-bg font-mono text-sm"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setRevealed((v) => !v)}
+              aria-label={revealed ? "Hide key" : "Show key"}
+            >
+              {revealed ? "Hide" : "Show"}
+            </Button>
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              onClick={() => void onSave()}
+              disabled={!canSave}
+            >
+              {saving && <Spinner size={14} />}
+              {saving ? "Saving" : "Save"}
+            </Button>
+          </div>
+          {formatHint && (
+            <p className="text-xs text-amber-500">{formatHint}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AutomationsDashboard({
   items,
   onSelectItem,
@@ -2468,6 +2639,7 @@ function AutomationsDashboard({
 
   return (
     <div className="space-y-4 px-1 pt-4">
+      <TavilyKeyBanner />
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
         <div className="rounded-xl border border-border/25 bg-[radial-gradient(circle_at_top_left,rgba(34,197,94,0.1),transparent_34%),radial-gradient(circle_at_top_right,rgba(56,189,248,0.12),transparent_30%),rgba(255,255,255,0.02)] px-4 py-4 sm:px-5">
           <div className="flex flex-wrap items-start justify-between gap-3">

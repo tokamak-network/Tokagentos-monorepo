@@ -974,6 +974,20 @@ export async function handlePluginRoutes(
     return true;
   }
 
+  // ── GET /api/integrations/tavily-key ─────────────────────────────────
+  // Status check: returns whether TAVILY_API_KEY is configured (and where
+  // from) without exposing the value itself. Used by the Automations
+  // dashboard banner to decide whether to prompt the user for a key.
+  if (method === "GET" && pathname === "/api/integrations/tavily-key") {
+    const raw = process.env.TAVILY_API_KEY?.trim() ?? "";
+    const configured = /^tvly-[A-Za-z0-9_-]{8,}$/.test(raw);
+    // Return a hash-friendly hint (last 4 chars) so the UI can show "ending
+    // in …abcd" without ever leaking the full key. Empty when not configured.
+    const lastFour = configured ? raw.slice(-4) : "";
+    json(res, { configured, lastFour });
+    return true;
+  }
+
   // ── PUT /api/integrations/tavily-key ─────────────────────────────────
   // Dedicated endpoint for the Tavily search API key used by the WEB_SEARCH
   // action (@tokagent/plugin-web-fetch). Bypasses the plugin-discovery

@@ -503,6 +503,7 @@ declare module "./client-base" {
       config: Record<string, unknown>,
     ): Promise<PluginMutationResult>;
     setTavilyApiKey(apiKey: string): Promise<{ ok: boolean; restartScheduled: boolean }>;
+    getTavilyKeyStatus(): Promise<{ configured: boolean; lastFour: string }>;
     getSecrets(): Promise<{ secrets: SecretInfo[] }>;
     updateSecrets(
       secrets: Record<string, string>,
@@ -1573,6 +1574,13 @@ ElizaClient.prototype.setTavilyApiKey = async function (
     method: "PUT",
     body: JSON.stringify({ apiKey }),
   })) as { ok: boolean; restartScheduled: boolean };
+};
+
+ElizaClient.prototype.getTavilyKeyStatus = async function (this: ElizaClient) {
+  return (await this.fetch("/api/integrations/tavily-key")) as {
+    configured: boolean;
+    lastFour: string;
+  };
 };
 
 ElizaClient.prototype.getSecrets = async function (this: ElizaClient) {
