@@ -82,41 +82,72 @@ if (!original.includes(BUGGY_BLOCK)) {
 const PATCHED_BLOCK =
   "        " + TOKAGENT_PATCH_MARKER + " launching polling so we\n" +
   "        // never race against the loop delivering updates without a handler.\n" +
+  "        // Field-observed failure mode: Telegraf 4.x bot.launch() under Bun\n" +
+  "        // appears to enter polling.loop() but never actually emits getUpdates\n" +
+  "        // requests (TCP connections to api.telegram.org open but idle).\n" +
+  "        // Service registers, looks healthy, but inbound messages stay queued.\n" +
+  "        // We bypass Telegraf's launch entirely and drive polling ourselves\n" +
+  "        // via bot.telegram.getUpdates + bot.handleUpdate — the same primitives\n" +
+  "        // Telegraf's internal loop is supposed to use, just without the\n" +
+  "        // broken middle layer.\n" +
   "        service.setupMiddlewares();\n" +
   "        service.setupMessageHandlers();\n" +
   "        const bot = service.bot;\n" +
   "        if (!bot) {\n" +
   '          throw new Error("Telegram bot was not initialized");\n' +
   "        }\n" +
-  "        // Race initializeBot() against a 3s timeout. Telegraf 4.x's\n" +
-  "        // bot.launch() awaits the infinite polling loop, so its Promise\n" +
-  "        // resolves only when the bot stops — but it DOES reject fast on\n" +
-  "        // 409 / network errors. If we get a fast rejection, throw to\n" +
-  "        // trigger the outer retry loop (Telegram's polling-slot grace\n" +
-  "        // period from a previous run releases within a few seconds).\n" +
-  "        // If the timer wins, polling is running successfully.\n" +
-  "        const initPromise = service.initializeBot();\n" +
-  "        const settled = await Promise.race([\n" +
-  "          initPromise.then(\n" +
-  "            (v) => ({ ok: true, value: v }),\n" +
-  "            (err) => ({ ok: false, error: err })\n" +
-  "          ),\n" +
-  "          new Promise((resolve) =>\n" +
-  "            setTimeout(() => resolve({ timeout: true }), 3000)\n" +
-  "          ),\n" +
-  "        ]);\n" +
-  "        if (settled && settled.ok === false) {\n" +
-  "          throw settled.error;\n" +
-  "        }\n" +
-  "        if (!settled || !settled.ok) {\n" +
-  "          initPromise.catch((err) => {\n" +
-  "            logger4.error(\n" +
-  "              { src: \"plugin:telegram\", agentId: runtime.agentId, err: err?.message ?? String(err) },\n" +
-  '              "polling loop exited (background)"\n' +
-  "            );\n" +
+  "        bot.start((ctx) => {\n" +
+  "          service.runtime.emitEvent(\n" +
+  '            "TELEGRAM_SLASH_START",\n' +
+  '            { ctx, runtime: service.runtime, source: "telegram" }\n' +
+  "          );\n" +
+  "        });\n" +
+  "        await bot.telegram.getMe();\n" +
+  "        await bot.telegram.deleteWebhook({ drop_pending_updates: false });\n" +
+  "        if (service.botToken) {\n" +
+  "          ACTIVE_TELEGRAM_POLLERS.set(service.botToken, {\n" +
+  "            bot,\n" +
+  "            agentId: runtime.agentId,\n" +
   "          });\n" +
   "        }\n" +
-  "        await bot.telegram.getMe();\n";
+  '        const allowedUpdates = ["message", "message_reaction"];\n' +
+  "        let offset = 0;\n" +
+  "        let pollErrorBackoffMs = 1000;\n" +
+  "        service._tokagentPollingActive = true;\n" +
+  "        (async () => {\n" +
+  "          while (service._tokagentPollingActive) {\n" +
+  "            try {\n" +
+  "              const updates = await bot.telegram.getUpdates(\n" +
+  "                30, 100, offset, allowedUpdates\n" +
+  "              );\n" +
+  "              if (!service._tokagentPollingActive) break;\n" +
+  "              for (const update of updates) {\n" +
+  "                offset = update.update_id + 1;\n" +
+  "                try {\n" +
+  "                  await bot.handleUpdate(update);\n" +
+  "                } catch (err) {\n" +
+  "                  logger4.error(\n" +
+  '                    { src: "plugin:telegram", agentId: runtime.agentId, err: err?.message ?? String(err) },\n' +
+  '                    "handleUpdate failed"\n' +
+  "                  );\n" +
+  "                }\n" +
+  "              }\n" +
+  "              pollErrorBackoffMs = 1000;\n" +
+  "            } catch (err) {\n" +
+  "              const msg = err?.message ?? String(err);\n" +
+  "              logger4.warn(\n" +
+  '                { src: "plugin:telegram", agentId: runtime.agentId, err: msg, backoffMs: pollErrorBackoffMs },\n' +
+  '                "getUpdates failed; backing off"\n' +
+  "              );\n" +
+  "              await new Promise((r) => setTimeout(r, pollErrorBackoffMs));\n" +
+  "              pollErrorBackoffMs = Math.min(pollErrorBackoffMs * 2, 30000);\n" +
+  "            }\n" +
+  "          }\n" +
+  "          logger4.info(\n" +
+  '            { src: "plugin:telegram", agentId: runtime.agentId },\n' +
+  '            "Manual polling loop exited"\n' +
+  "          );\n" +
+  "        })();\n";
 
 const patched = original.replace(BUGGY_BLOCK, PATCHED_BLOCK);
 writeFileSync(pluginPath, patched);
