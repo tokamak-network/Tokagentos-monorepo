@@ -138,6 +138,54 @@ function configureBillingChatMirror(): void {
 configureBillingChatMirror();
 
 /**
+ * Messaging-channel env-name mirroring.
+ *
+ * The shipped .env.example uses friendly names (DISCORD_BOT_TOKEN,
+ * TWITTER_API_KEY, etc.) but the upstream plugin loader checks different
+ * canonical names (DISCORD_API_TOKEN, X_API_KEY, etc.). Users who set
+ * the .env vars verbatim end up with the token in process.env but the
+ * plugin never loads — the bot stays silently offline.
+ *
+ * Mirror both directions so either name works. Mirrors only when the
+ * canonical name is unset, so explicit canonical overrides win.
+ */
+function configureChannelEnvAliases(): void {
+  const aliases: Array<[friendly: string, canonical: string]> = [
+    // Discord: upstream plugin reads DISCORD_API_TOKEN; .env.example uses
+    // the BotFather-style DISCORD_BOT_TOKEN. Bridge them.
+    ["DISCORD_BOT_TOKEN", "DISCORD_API_TOKEN"],
+    // X/Twitter: plugin-x reads X_* names; .env.example uses the legacy
+    // Twitter v1 naming. Mirror all four so a verbatim copy works.
+    ["TWITTER_API_KEY", "X_API_KEY"],
+    ["TWITTER_API_SECRET", "X_API_SECRET"],
+    ["TWITTER_ACCESS_TOKEN", "X_ACCESS_TOKEN"],
+    ["TWITTER_ACCESS_TOKEN_SECRET", "X_ACCESS_TOKEN_SECRET"],
+  ];
+  const mirrored: string[] = [];
+  for (const [friendly, canonical] of aliases) {
+    const friendlyVal = process.env[friendly]?.trim();
+    const canonicalVal = process.env[canonical]?.trim();
+    if (friendlyVal && !canonicalVal) {
+      process.env[canonical] = friendlyVal;
+      mirrored.push(`${friendly} → ${canonical}`);
+    } else if (canonicalVal && !friendlyVal) {
+      // Reverse mirror so saveConfig-style code paths that re-read the
+      // friendly name still see the value after the canonical was set.
+      process.env[friendly] = canonicalVal;
+    }
+  }
+  if (mirrored.length > 0) {
+    console.info(
+      `[tokagent] Channel env aliases mirrored: ${mirrored.join(", ")}. ` +
+        `Plugin loader checks the canonical names; the friendly names in ` +
+        `.env.example are mirrored at boot so verbatim .env values activate ` +
+        `the right plugins.`,
+    );
+  }
+}
+configureChannelEnvAliases();
+
+/**
  * Plugins that depend on PTY/native workspace tooling.
  * Keep them out of cloud images where those binaries are intentionally absent.
  * (Upstream verbatim.)

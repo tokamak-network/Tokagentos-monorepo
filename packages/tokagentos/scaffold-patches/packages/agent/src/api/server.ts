@@ -243,6 +243,7 @@ import { discoverSkills } from "./skill-discovery-helpers.js";
 import { handleSkillsRoutes } from "./skills-routes.js";
 import { handleSubscriptionRoutes } from "./subscription-routes.js";
 import { handleTelegramAccountRoute } from "./telegram-account-routes.js";
+import { handleTelegramSetupRoute } from "./telegram-setup-routes.js";
 import { handleTriggerRoutes } from "./trigger-routes.js";
 import { handleTtsRoutes } from "./tts-routes.js";
 import { handleUpdateRoutes } from "./update-routes.js";
@@ -2212,6 +2213,45 @@ async function handleRequest(
     );
     state.telegramAccountAuthSession =
       routeState.telegramAccountAuthSession ?? null;
+    if (handled) return;
+  }
+
+  // ── Telegram bot setup routes (/api/telegram-setup/*) ─────────────────
+  // Bootstrapping endpoint that lets users paste a BotFather token via the
+  // Settings UI BEFORE the plugin is loaded. The plugin only loads when
+  // TELEGRAM_BOT_TOKEN is in process.env, so without a pre-plugin route
+  // the setup flow is impossible from a cold start. Mirrors to env +
+  // schedules a restart on save so the plugin comes online without the
+  // user manually restarting.
+  if (pathname.startsWith("/api/telegram-setup")) {
+    const handled = await handleTelegramSetupRoute(
+      req,
+      res,
+      pathname,
+      method,
+      {
+        config: state.config as Parameters<
+          typeof handleTelegramSetupRoute
+        >[4]["config"],
+        saveConfig: () => saveElizaConfig(state.config),
+        runtime: state.runtime
+          ? {
+              getService: (type: string) =>
+                (
+                  state.runtime as { getService: (t: string) => unknown }
+                ).getService(type),
+              getSetting: (key: string) =>
+                (
+                  state.runtime as {
+                    getSetting: (k: string) => string | undefined;
+                  }
+                ).getSetting(key),
+            }
+          : undefined,
+        scheduleRuntimeRestart,
+      },
+      { json, error, readJsonBody },
+    );
     if (handled) return;
   }
 
