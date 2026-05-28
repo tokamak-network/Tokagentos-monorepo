@@ -644,7 +644,7 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="max-h-64">
+          <SelectContent className="max-h-64 bg-black">
             {providerChoices.map((choice) => (
               <SelectItem
                 key={choice.id}
@@ -749,7 +749,7 @@ export function ProviderSwitcher(props: ProviderSwitcherProps = {}) {
                   })}
                 />
               </SelectTrigger>
-              <SelectContent className="max-h-64">
+              <SelectContent className="max-h-64 bg-black">
                 {largeModelOptions.map((model) => (
                   <SelectItem key={model.id} value={model.id}>
                     {model.name}
