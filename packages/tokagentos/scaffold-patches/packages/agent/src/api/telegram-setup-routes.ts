@@ -210,6 +210,14 @@ export async function handleTelegramSetupRoute(
       let envWritten = false;
       try {
         await writeProjectEnvVar("TELEGRAM_BOT_TOKEN", token);
+        // Auto-enable replies. Without TELEGRAM_AUTO_REPLY=true the
+        // plugin ingests inbound messages into memory but never invokes
+        // the agent's reply pipeline — a silent failure that's logged
+        // only at debug level. Default-on when the user explicitly
+        // connects a bot via the Settings UI matches the user's
+        // intent: "I want this bot to reply to me."
+        await writeProjectEnvVar("TELEGRAM_AUTO_REPLY", "true");
+        process.env.TELEGRAM_AUTO_REPLY = "true";
         envWritten = true;
       } catch (err) {
         // Persisting to .env is best-effort — the token is also in the
