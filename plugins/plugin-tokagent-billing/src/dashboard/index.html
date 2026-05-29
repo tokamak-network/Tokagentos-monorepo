@@ -408,94 +408,233 @@
       </section>
 
       <!-- ====================== x402 OUTBOUND ====================== -->
+      <!--
+        Visual layout (top → bottom):
+          1. card-header with eyebrow + title + tag
+          2. x402-hero — one-sentence value prop + tiny HTTP-flow SVG
+          3. x402-stats — 3 glanceable tiles (wallet · caps · facilitator)
+          4. x402-discover — input → loading → AgentCard result (the actual workflow)
+          5. x402-config — quiet form, opt-in to tweak caps + facilitator URL
+          6. x402-primer — rich "what this actually does" disclosure, closed by default
+
+        We deliberately surface Discover above Config: the everyday user wants to
+        find peer agents, not re-tune caps every visit.
+      -->
       <section class="card section-card x402-card">
         <header class="card-header">
           <div>
             <div class="card-eyebrow x402-eyebrow">Outbound · x402</div>
-            <h2 class="card-title">Agent-to-agent payments</h2>
+            <h2 class="card-title">Pay other agents</h2>
           </div>
-          <span class="card-tag">EIP-3009 PTON vouchers · CALL_A2A_AGENT</span>
+          <span class="card-tag">EIP-3009 vouchers · CALL_A2A_AGENT</span>
         </header>
 
-        <details class="x402-primer">
-          <summary>How x402 works <span class="muted small">(open to read)</span></summary>
-          <div class="x402-primer-body">
-            <p class="muted small">
-              x402 is the open HTTP-native payment protocol — pay per call, no API keys to manage. When this agent calls another agent or paid endpoint, the server can demand payment by returning <code>402 Payment Required</code>. The client signs a one-shot EIP-3009 voucher and retries with <code>X-Payment</code>.
+        <!-- Hero strip: one sentence + a small HTTP flow diagram. -->
+        <div class="x402-hero">
+          <div class="x402-hero-copy">
+            <p class="x402-lede">
+              Your agent can <strong>spend its top-up balance to call other agents</strong> that demand payment —
+              no separate API keys, no per-vendor accounts. Hard caps prevent runaway spend.
             </p>
-            <ol class="x402-steps">
-              <li><strong>Request</strong> — agent sends a normal HTTP call.</li>
-              <li><strong>402 challenge</strong> — server replies with payment requirements: asset, amount, recipient, validity window, nonce.</li>
-              <li><strong>Cap check</strong> — local middleware checks the request against <code>X402_MAX_PAYMENT_PER_CALL_PTON</code> and <code>X402_MAX_TOTAL_SPEND_PTON</code>. Over cap → refuse with a clear error, never sign.</li>
-              <li><strong>Sign + retry</strong> — operator wallet signs an EIP-3009 <code>TransferWithAuthorization</code>; agent retries with the base64 voucher in <code>X-Payment</code>.</li>
-              <li><strong>200 receipt</strong> — server accepts, response unblocks. The receipt is emitted as <code>X402_PAYMENT</code> for observability.</li>
-            </ol>
-            <p class="muted small">
-              The same operator wallet that holds your PTON top-up signs outbound vouchers. You don't need a separate identity — your top-up balance funds both inbound gateway calls (your bot's chat) and outbound calls to other paid agents.
+            <p class="x402-sublede muted small">
+              The same PTON balance that pays for your bot's chat now pays outbound, signed one call at a time
+              with EIP-3009 vouchers over HTTP <code>402</code>.
             </p>
           </div>
-        </details>
-
-        <div id="x402-status-grid" class="x402-status-grid">
-          <div class="x402-stat">
-            <div class="stat-label">Operator wallet</div>
-            <div class="stat-num"><code id="x402-wallet" class="mono">—</code></div>
-            <div class="x402-stat-meta muted small" id="x402-wallet-meta">checking…</div>
-          </div>
-          <div class="x402-stat">
-            <div class="stat-label">Per-call cap</div>
-            <div class="stat-num"><span id="x402-cap-per-call">—</span> <span class="kpi-unit">PTON</span></div>
-            <div class="x402-stat-meta muted small">X402_MAX_PAYMENT_PER_CALL_PTON</div>
-          </div>
-          <div class="x402-stat">
-            <div class="stat-label">Session cap</div>
-            <div class="stat-num"><span id="x402-cap-total">—</span> <span class="kpi-unit">PTON</span></div>
-            <div class="x402-stat-meta muted small">X402_MAX_TOTAL_SPEND_PTON</div>
-          </div>
-          <div class="x402-stat">
-            <div class="stat-label">Facilitator</div>
-            <div class="stat-num"><span id="x402-facilitator-state">—</span></div>
-            <div class="x402-stat-meta muted small">X402_FACILITATOR_URL</div>
+          <div class="x402-hero-flow" aria-hidden="true">
+            <svg viewBox="0 0 220 96" width="220" height="96" role="img" aria-label="x402 request-and-pay flow">
+              <defs>
+                <linearGradient id="x402-flow-line" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="rgba(192,123,255,0.15)"/>
+                  <stop offset="50%" stop-color="rgba(192,123,255,0.65)"/>
+                  <stop offset="100%" stop-color="rgba(192,123,255,0.15)"/>
+                </linearGradient>
+              </defs>
+              <!-- left node: your agent -->
+              <rect x="6" y="34" width="56" height="28" rx="6" fill="rgba(192,123,255,0.08)" stroke="rgba(192,123,255,0.35)"/>
+              <text x="34" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#d9c2ff">your agent</text>
+              <!-- right node: peer -->
+              <rect x="158" y="34" width="56" height="28" rx="6" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.12)"/>
+              <text x="186" y="52" text-anchor="middle" font-family="Inter,sans-serif" font-size="10" font-weight="600" fill="#ededf2">peer agent</text>
+              <!-- request arrow (top) -->
+              <line x1="62" y1="42" x2="158" y2="42" stroke="url(#x402-flow-line)" stroke-width="1.5"/>
+              <polygon points="158,42 152,39 152,45" fill="rgba(192,123,255,0.65)"/>
+              <text x="110" y="34" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#c0c2cc">GET /skill</text>
+              <!-- 402 response + voucher retry (bottom) -->
+              <line x1="158" y1="56" x2="62" y2="56" stroke="url(#x402-flow-line)" stroke-width="1.5"/>
+              <polygon points="62,56 68,53 68,59" fill="rgba(192,123,255,0.65)"/>
+              <text x="110" y="72" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#c0c2cc">402 → sign → X-Payment</text>
+              <!-- 200 receipt label -->
+              <text x="110" y="20" text-anchor="middle" font-family="Inter,sans-serif" font-size="9" font-weight="600" fill="#6ad48d">200 OK · receipt</text>
+            </svg>
           </div>
         </div>
 
-        <form id="x402-config-form" class="x402-config-form">
-          <div class="x402-config-grid">
-            <label class="x402-field">
-              <span class="field-label">Per-call cap (PTON)</span>
-              <input id="x402-input-per-call" type="text" inputmode="decimal" placeholder="1.0" pattern="\d+(\.\d+)?" />
-              <span class="field-hint muted small">Hard refusal above this amount.</span>
-            </label>
-            <label class="x402-field">
-              <span class="field-label">Session cap (PTON)</span>
-              <input id="x402-input-total" type="text" inputmode="decimal" placeholder="10.0" pattern="\d+(\.\d+)?" />
-              <span class="field-hint muted small">Cumulative across the agent process lifetime.</span>
-            </label>
-            <label class="x402-field x402-field-wide">
-              <span class="field-label">Facilitator URL (optional)</span>
-              <input id="x402-input-facilitator" type="url" placeholder="https://facilitator.example.com" />
-              <span class="field-hint muted small">Leave empty to trust the upstream 2xx as the receipt.</span>
-            </label>
+        <!-- Three glanceable status tiles. Wallet · Caps · Facilitator.
+             Caps tile combines per-call + session into one (still uses the
+             original two ids so app.js loadX402Status() keeps writing them). -->
+        <div id="x402-status-grid" class="x402-status-grid">
+          <div class="x402-stat x402-stat-wallet">
+            <div class="x402-stat-head">
+              <span class="x402-stat-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14"><path d="M2 4.5A1.5 1.5 0 0 1 3.5 3h9A1.5 1.5 0 0 1 14 4.5V6h-1V4.5a.5.5 0 0 0-.5-.5h-9a.5.5 0 0 0-.5.5v7a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5V11h1v.5A1.5 1.5 0 0 1 12.5 13h-9A1.5 1.5 0 0 1 2 11.5v-7Z" fill="currentColor"/><path d="M10 6.5A1.5 1.5 0 0 1 11.5 5h2A1.5 1.5 0 0 1 15 6.5v3A1.5 1.5 0 0 1 13.5 11h-2A1.5 1.5 0 0 1 10 9.5v-3Zm1.5-.5a.5.5 0 0 0-.5.5v3a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-.5-.5h-2Z" fill="currentColor"/></svg>
+              </span>
+              <span class="x402-stat-label">Operator wallet</span>
+            </div>
+            <div class="x402-stat-value"><code id="x402-wallet" class="mono">—</code></div>
+            <div class="x402-stat-meta muted small" id="x402-wallet-meta">checking…</div>
           </div>
-          <div class="x402-config-actions">
-            <button class="btn btn-primary" type="submit">Save &amp; restart agent</button>
-            <button id="x402-reset" class="btn btn-ghost" type="button">Reset to defaults</button>
-            <span id="x402-save-status" class="status-line" role="status" aria-live="polite"></span>
-          </div>
-        </form>
 
+          <div class="x402-stat x402-stat-caps">
+            <div class="x402-stat-head">
+              <span class="x402-stat-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1.5a.5.5 0 0 1 .5.5v1.05a5 5 0 0 1 4.45 4.45H14a.5.5 0 0 1 0 1h-1.05a5 5 0 0 1-4.45 4.45V14a.5.5 0 0 1-1 0v-1.05A5 5 0 0 1 3.05 8.5H2a.5.5 0 0 1 0-1h1.05A5 5 0 0 1 7.5 3.05V2a.5.5 0 0 1 .5-.5Zm0 2.5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm.5 1.5a.5.5 0 0 0-1 0V8H6a.5.5 0 0 0 0 1h2a.5.5 0 0 0 .5-.5V5.5Z" fill="currentColor"/></svg>
+              </span>
+              <span class="x402-stat-label">Spend caps</span>
+            </div>
+            <div class="x402-stat-value x402-caps-value">
+              <span class="x402-caps-num"><span id="x402-cap-per-call">—</span></span>
+              <span class="x402-caps-sep">/</span>
+              <span class="x402-caps-num"><span id="x402-cap-total">—</span></span>
+              <span class="x402-caps-unit">PTON</span>
+            </div>
+            <div class="x402-stat-meta muted small">per call · session total</div>
+          </div>
+
+          <div class="x402-stat x402-stat-fac">
+            <div class="x402-stat-head">
+              <span class="x402-stat-icon" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1.5a.5.5 0 0 1 .224.053l5.5 2.75A.5.5 0 0 1 14 4.75v3.5a6.5 6.5 0 0 1-5.776 6.46.5.5 0 0 1-.448 0A6.5 6.5 0 0 1 2 8.25v-3.5a.5.5 0 0 1 .276-.447l5.5-2.75A.5.5 0 0 1 8 1.5Zm0 1.059L3 5.06v3.19a5.5 5.5 0 0 0 5 5.477 5.5 5.5 0 0 0 5-5.477V5.06L8 2.559Z" fill="currentColor"/></svg>
+              </span>
+              <span class="x402-stat-label">Receipt mode</span>
+            </div>
+            <div class="x402-stat-value"><span id="x402-facilitator-state">—</span></div>
+            <div class="x402-stat-meta muted small">facilitator off → trust upstream 2xx</div>
+          </div>
+        </div>
+
+        <!-- Discover panel — the primary workflow. Promoted above config. -->
         <div class="x402-discover">
           <header class="x402-subheader">
-            <h3 class="subhead">Discover a peer agent's skills</h3>
-            <span class="muted small">No payment. Fetches <code>/.well-known/agent.json</code>.</span>
+            <div>
+              <h3 class="x402-subhead">Discover a peer agent</h3>
+              <p class="x402-subhead-hint muted small">
+                Paste a base URL. We fetch <code>/.well-known/agent.json</code> — no payment, no signature.
+              </p>
+            </div>
           </header>
           <form id="x402-discover-form" class="x402-discover-form">
-            <input id="x402-discover-url" type="url" placeholder="https://peer-agent.example.com" required />
+            <div class="x402-discover-input">
+              <span class="x402-discover-prefix" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="14" height="14"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 1a6 6 0 0 1 5.917 5H10.5a8.46 8.46 0 0 0-.85-3.61A6.01 6.01 0 0 1 8 2Zm-2.65 1.39A8.46 8.46 0 0 0 4.5 7H2.083A6.01 6.01 0 0 1 5.35 3.39ZM2.083 9H4.5c.063 1.295.36 2.524.85 3.61A6.01 6.01 0 0 1 2.083 9ZM6.5 9h3c-.07 1.4-.43 2.66-.95 3.55a6.04 6.04 0 0 1-1.1 0C6.93 11.66 6.57 10.4 6.5 9Zm0-2c.07-1.4.43-2.66.95-3.55a6.04 6.04 0 0 1 1.1 0C9.07 4.34 9.43 5.6 9.5 7h-3ZM10.5 9h2.417a6.01 6.01 0 0 1-3.267 3.61A8.46 8.46 0 0 0 10.5 9Z" fill="currentColor"/></svg>
+              </span>
+              <input id="x402-discover-url" type="url" placeholder="https://peer-agent.example.com" required autocomplete="off" />
+            </div>
             <button class="btn btn-primary" type="submit">Discover</button>
           </form>
           <p id="x402-discover-status" class="status-line" role="status" aria-live="polite"></p>
           <div id="x402-discover-result" class="x402-discover-result" hidden></div>
+          <!-- empty-state placeholder, shown when no discovery has run yet -->
+          <div class="x402-discover-empty">
+            <div class="x402-empty-glyph" aria-hidden="true">
+              <svg viewBox="0 0 20 20" width="18" height="18"><path d="M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16Zm0 1.5A6.5 6.5 0 1 1 10 16.5 6.5 6.5 0 0 1 10 3.5Zm-.5 3a.5.5 0 0 1 1 0v3.293l2.146 2.147a.5.5 0 0 1-.707.707L9.146 10.354A.5.5 0 0 1 9 10V6.5Z" fill="currentColor"/></svg>
+            </div>
+            <div class="x402-empty-text">
+              <div>Discover any A2A-compatible agent.</div>
+              <div class="muted small">Result shows the agent's skills, auth schemes, and a one-click chat prompt to invoke each skill from your bot.</div>
+            </div>
+          </div>
         </div>
+
+        <!-- Quiet config form. Inputs feel like settings, not a primary action. -->
+        <details class="x402-config-wrap">
+          <summary class="x402-config-summary">
+            <span class="x402-config-summary-label">
+              <span class="x402-config-summary-glyph" aria-hidden="true">
+                <svg viewBox="0 0 16 16" width="13" height="13"><path d="M9.4 1.5a.5.5 0 0 1 .49.4l.27 1.36c.41.13.8.31 1.16.54l1.14-.77a.5.5 0 0 1 .63.06l1.32 1.32a.5.5 0 0 1 .06.63l-.77 1.14c.23.36.41.75.54 1.16l1.36.27a.5.5 0 0 1 .4.49v1.86a.5.5 0 0 1-.4.49l-1.36.27c-.13.41-.31.8-.54 1.16l.77 1.14a.5.5 0 0 1-.06.63l-1.32 1.32a.5.5 0 0 1-.63.06l-1.14-.77c-.36.23-.75.41-1.16.54l-.27 1.36a.5.5 0 0 1-.49.4H7.6a.5.5 0 0 1-.49-.4l-.27-1.36a5.5 5.5 0 0 1-1.16-.54l-1.14.77a.5.5 0 0 1-.63-.06L2.59 12.04a.5.5 0 0 1-.06-.63l.77-1.14a5.5 5.5 0 0 1-.54-1.16l-1.36-.27a.5.5 0 0 1-.4-.49V6.5a.5.5 0 0 1 .4-.49l1.36-.27c.13-.41.31-.8.54-1.16l-.77-1.14a.5.5 0 0 1 .06-.63L3.96 1.49a.5.5 0 0 1 .63-.06l1.14.77c.36-.23.75-.41 1.16-.54l.27-1.36a.5.5 0 0 1 .49-.4Zm-.91 1h-.98l-.22 1.13a.5.5 0 0 1-.36.39 4.5 4.5 0 0 0-1.41.66.5.5 0 0 1-.53.02l-.94-.63-.7.7.63.94a.5.5 0 0 1-.02.53 4.5 4.5 0 0 0-.66 1.41.5.5 0 0 1-.39.36L2.5 7.52v.96l1.13.22a.5.5 0 0 1 .39.36 4.5 4.5 0 0 0 .66 1.41.5.5 0 0 1 .02.53l-.63.94.7.7.94-.63a.5.5 0 0 1 .53-.02 4.5 4.5 0 0 0 1.41.66.5.5 0 0 1 .36.39l.22 1.13h.96l.22-1.13a.5.5 0 0 1 .36-.39 4.5 4.5 0 0 0 1.41-.66.5.5 0 0 1 .53-.02l.94.63.7-.7-.63-.94a.5.5 0 0 1-.02-.53 4.5 4.5 0 0 0 .66-1.41.5.5 0 0 1 .39-.36L13.5 8.48v-.96l-1.13-.22a.5.5 0 0 1-.39-.36 4.5 4.5 0 0 0-.66-1.41.5.5 0 0 1-.02-.53l.63-.94-.7-.7-.94.63a.5.5 0 0 1-.53.02 4.5 4.5 0 0 0-1.41-.66.5.5 0 0 1-.36-.39L8.49 2.5ZM8 5.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Zm0 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z" fill="currentColor"/></svg>
+              </span>
+              Caps &amp; facilitator
+            </span>
+            <span class="x402-config-summary-hint muted small">Tweak limits and (optionally) point at a facilitator.</span>
+          </summary>
+          <form id="x402-config-form" class="x402-config-form">
+            <div class="x402-config-grid">
+              <label class="x402-field">
+                <span class="field-label">Per-call cap</span>
+                <div class="x402-input-wrap">
+                  <input id="x402-input-per-call" type="text" inputmode="decimal" placeholder="1.0" pattern="\d+(\.\d+)?" />
+                  <span class="x402-input-suffix">PTON</span>
+                </div>
+                <span class="field-hint muted small">Wallet refuses to sign any single voucher above this.</span>
+              </label>
+              <label class="x402-field">
+                <span class="field-label">Session cap</span>
+                <div class="x402-input-wrap">
+                  <input id="x402-input-total" type="text" inputmode="decimal" placeholder="10.0" pattern="\d+(\.\d+)?" />
+                  <span class="x402-input-suffix">PTON</span>
+                </div>
+                <span class="field-hint muted small">Cumulative ceiling for the agent process lifetime.</span>
+              </label>
+              <label class="x402-field x402-field-wide">
+                <span class="field-label">Facilitator URL <span class="muted">(optional)</span></span>
+                <input id="x402-input-facilitator" type="url" placeholder="https://facilitator.example.com" />
+                <span class="field-hint muted small">Leave empty and we'll trust the upstream <code>2xx</code> as the receipt — same trust model as the inbound billing rail.</span>
+              </label>
+            </div>
+            <div class="x402-config-actions">
+              <button class="btn btn-primary" type="submit">Save &amp; restart agent</button>
+              <button id="x402-reset" class="btn btn-ghost" type="button">Reset to defaults</button>
+              <span id="x402-save-status" class="status-line" role="status" aria-live="polite"></span>
+            </div>
+          </form>
+        </details>
+
+        <!-- Comprehensive "what this actually does" disclosure — closed by default.
+             Richer than the previous primer: opens with WHY this matters, then
+             HOW it works mechanically, then TRUST + SAFETY. -->
+        <details class="x402-primer">
+          <summary>
+            <span class="x402-primer-summary-label">What's x402, really?</span>
+            <span class="muted small">A 60-second read on agent-to-agent commerce.</span>
+          </summary>
+          <div class="x402-primer-body">
+            <section class="x402-primer-section">
+              <h4 class="x402-primer-h">Why it matters</h4>
+              <p>
+                Agents are starting to charge for their work the same way humans do — per request, in real money. The
+                old answer was "sign up, get an API key, store a secret, watch a bill." That doesn't scale when your
+                agent might want to call ten peers it discovered five seconds ago.
+              </p>
+              <p>
+                x402 collapses the whole thing into the HTTP layer. A paid endpoint replies <code>402 Payment Required</code>
+                with a structured quote, the client signs a one-shot voucher, retries, and gets the response. The
+                <strong>same PTON balance</strong> that funds your bot's inbound chat now funds outbound calls — one wallet, one budget,
+                no per-vendor accounts.
+              </p>
+            </section>
+
+            <section class="x402-primer-section">
+              <h4 class="x402-primer-h">How it works</h4>
+              <ol class="x402-steps">
+                <li><strong>Request.</strong> Your agent sends a normal HTTP call to a peer's endpoint.</li>
+                <li><strong>402 challenge.</strong> The server replies with payment requirements — asset, amount, recipient, validity window, nonce.</li>
+                <li><strong>Cap check.</strong> Local middleware compares the quote to <code>X402_MAX_PAYMENT_PER_CALL_PTON</code> and <code>X402_MAX_TOTAL_SPEND_PTON</code>. Over the cap → refuse immediately. The wallet is never asked to sign a refused payment.</li>
+                <li><strong>Sign + retry.</strong> The operator wallet signs an EIP-3009 <code>TransferWithAuthorization</code> over PTON; the agent retries with the base64 voucher in <code>X-Payment</code>.</li>
+                <li><strong>200 receipt.</strong> Server accepts the voucher and serves the response. We emit a <code>X402_PAYMENT</code> event so you can audit every outbound spend.</li>
+              </ol>
+            </section>
+
+            <section class="x402-primer-section">
+              <h4 class="x402-primer-h">Trust &amp; safety</h4>
+              <ul class="x402-primer-list">
+                <li><strong>Caps are enforced locally</strong>, before the wallet sees the request. You can't be tricked into signing a 100 PTON voucher when your per-call cap is 1.0.</li>
+                <li><strong>Each voucher is single-use.</strong> EIP-3009 nonces prevent replay; the validity window prevents long-lived signatures from sitting around.</li>
+                <li><strong>No facilitator by default.</strong> We trust the upstream <code>2xx</code> as proof of settlement — the same model as Tokamak's inbound billing rail. <code>X402_FACILITATOR_URL</code> is reserved for a future verification mode if you'd rather check settlement out-of-band.</li>
+                <li><strong>Discovery is read-only.</strong> Fetching an AgentCard never spends money. You pick which skill to invoke from chat — the <code>CALL_A2A_AGENT</code> action runs the paid request.</li>
+              </ul>
+            </section>
+          </div>
+        </details>
       </section>
     </section>
   </main>
