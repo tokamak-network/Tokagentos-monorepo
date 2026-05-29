@@ -2200,21 +2200,14 @@ function startAutoRefresh() {
   }
 }
 
-// ----------------------------- Boot -----------------------------
-
 // ============================================================================
-// x402 Outbound section — talks to the agent's main API port (/api/integrations/x402/*)
+// x402 Outbound section — talks to the agent's main API port
+// (/api/integrations/x402/*)
 // ============================================================================
 
-/**
- * The x402 endpoints live on the AGENT's API port (default 31337 — same
- * origin as the dashboard when served via the agent process), NOT on the
- * billing gateway. Use a relative URL so it follows whichever origin
- * loaded the dashboard.
- */
 const X402_BASE = "/api/integrations/x402";
 
-function shortAddr(addr) {
+function x402ShortAddr(addr) {
   if (!addr || typeof addr !== "string" || addr.length < 10) return addr || "—";
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 }
@@ -2240,9 +2233,6 @@ async function loadX402Status() {
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     body = await r.json();
   } catch (err) {
-    // Endpoint may be unavailable (older agent, embedded view without
-    // the patched plugin-routes). Degrade gracefully — leave placeholders
-    // and surface a hint on the wallet meta line.
     const meta = document.getElementById("x402-wallet-meta");
     if (meta) {
       meta.textContent = "Could not reach agent: " + (err && err.message ? err.message : err);
@@ -2250,12 +2240,10 @@ async function loadX402Status() {
     }
     return;
   }
-
-  // Wallet row
   const walletEl = document.getElementById("x402-wallet");
   const walletMeta = document.getElementById("x402-wallet-meta");
   if (body.walletConfigured && body.walletAddress) {
-    walletEl.textContent = shortAddr(body.walletAddress);
+    walletEl.textContent = x402ShortAddr(body.walletAddress);
     walletEl.title = body.walletAddress;
     walletMeta.textContent = "Configured · signs EIP-3009 vouchers";
     walletMeta.className = "x402-stat-meta muted small ok";
@@ -2264,15 +2252,11 @@ async function loadX402Status() {
     walletMeta.textContent = "Not configured · observer mode (free endpoints only)";
     walletMeta.className = "x402-stat-meta muted small";
   }
-
-  // Caps + facilitator
   document.getElementById("x402-cap-per-call").textContent = body.maxPerCallPton || "1.0";
   document.getElementById("x402-cap-total").textContent = body.maxTotalPton || "10.0";
   const facEl = document.getElementById("x402-facilitator-state");
   facEl.textContent = body.facilitatorUrl ? "set" : "trust 2xx";
   facEl.title = body.facilitatorUrl || "trust upstream 2xx as receipt";
-
-  // Pre-fill the form
   const perCallInput = document.getElementById("x402-input-per-call");
   const totalInput = document.getElementById("x402-input-total");
   const facInput = document.getElementById("x402-input-facilitator");
@@ -2315,14 +2299,11 @@ function wireX402Config() {
           : `Saved (${body.updated.join(", ")}). Restart the agent for changes to take effect.`,
         "ok"
       );
-      // Wait a beat then re-read in case the restart window lets us
-      // observe the new values cleanly.
       setTimeout(loadX402Status, 4000);
     } catch (err) {
       setX402SaveStatus("Network error: " + (err && err.message ? err.message : err), "err");
     }
   });
-
   const reset = document.getElementById("x402-reset");
   if (reset) {
     reset.addEventListener("click", () => {
@@ -2334,14 +2315,23 @@ function wireX402Config() {
   }
 }
 
+function x402EscapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function renderAgentCard(payload) {
   const out = document.getElementById("x402-discover-result");
   if (!out) return;
   if (!payload.ok) {
     out.hidden = false;
     out.innerHTML = `<div class="x402-discover-err">
-      <div class="muted small">Fetched: <code>${escapeHtml(payload.cardUrl)}</code></div>
-      <p class="err small">${escapeHtml(payload.error || `${payload.status} ${payload.statusText || ""}`)}</p>
+      <div class="muted small">Fetched: <code>${x402EscapeHtml(payload.cardUrl)}</code></div>
+      <p class="err small">${x402EscapeHtml(payload.error || `${payload.status} ${payload.statusText || ""}`)}</p>
     </div>`;
     return;
   }
@@ -2352,12 +2342,12 @@ function renderAgentCard(payload) {
         .map(
           (s) => `
         <li>
-          <div class="x402-skill-id"><code>${escapeHtml(s.id || "(no id)")}</code>${s.name ? ` — ${escapeHtml(s.name)}` : ""}</div>
-          ${s.description ? `<div class="x402-skill-desc muted small">${escapeHtml(s.description)}</div>` : ""}
+          <div class="x402-skill-id"><code>${x402EscapeHtml(s.id || "(no id)")}</code>${s.name ? ` — ${x402EscapeHtml(s.name)}` : ""}</div>
+          ${s.description ? `<div class="x402-skill-desc muted small">${x402EscapeHtml(s.description)}</div>` : ""}
           ${
             s.tags && s.tags.length
               ? `<div class="x402-skill-tags">${s.tags
-                  .map((t) => `<span class="pill">${escapeHtml(String(t))}</span>`)
+                  .map((t) => `<span class="pill">${x402EscapeHtml(String(t))}</span>`)
                   .join("")}</div>`
               : ""
           }
@@ -2371,30 +2361,21 @@ function renderAgentCard(payload) {
     <div class="x402-card-summary">
       <div class="x402-card-head">
         <div>
-          <h4>${escapeHtml(card.name || "(unnamed)")}</h4>
-          <p class="muted small">${escapeHtml(card.description || "")}</p>
+          <h4>${x402EscapeHtml(card.name || "(unnamed)")}</h4>
+          <p class="muted small">${x402EscapeHtml(card.description || "")}</p>
         </div>
         <div class="x402-card-meta">
-          <div class="muted small">URL: <code>${escapeHtml(card.url || "(none)")}</code></div>
-          <div class="muted small">Version: ${escapeHtml(card.version || "—")}</div>
-          <div class="muted small">Auth schemes: ${escapeHtml(auth)}</div>
+          <div class="muted small">URL: <code>${x402EscapeHtml(card.url || "(none)")}</code></div>
+          <div class="muted small">Version: ${x402EscapeHtml(card.version || "—")}</div>
+          <div class="muted small">Auth schemes: ${x402EscapeHtml(auth)}</div>
         </div>
       </div>
       <h5 class="x402-skill-header">Skills (${skills.length})</h5>
       ${skillsHtml}
       <div class="x402-skill-howto muted small">
-        To invoke a skill from chat: <code>"Ask the agent at ${escapeHtml(card.url || "<URL>")} to use skill &lt;id&gt; with input &lt;json&gt;"</code> — the CALL_A2A_AGENT action will handle the rest.
+        To invoke a skill from chat: <code>"Ask the agent at ${x402EscapeHtml(card.url || "<URL>")} to use skill &lt;id&gt; with input &lt;json&gt;"</code> — the CALL_A2A_AGENT action will handle the rest.
       </div>
     </div>`;
-}
-
-function escapeHtml(s) {
-  return String(s == null ? "" : s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 }
 
 function wireX402Discover() {
@@ -2422,6 +2403,8 @@ function wireX402Discover() {
   });
 }
 
+// ----------------------------- Boot -----------------------------
+
 async function boot() {
   setupEmbedMode();
   wireTabs();
@@ -2436,9 +2419,6 @@ async function boot() {
   wireLogin();
   wireX402Config();
   wireX402Discover();
-  // x402 state lives on the agent's main API port, not the billing
-  // gateway. Load it asynchronously so the rest of the boot sequence
-  // isn't blocked by a slow agent or missing endpoint.
   void loadX402Status();
 
   state.session = loadSession();

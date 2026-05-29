@@ -1251,12 +1251,8 @@ html[data-embed="1"] footer { display: none; }
     radial-gradient(80% 60% at 100% 0%, rgba(192,123,255,0.07) 0%, transparent 60%),
     var(--card-bg, #11121a);
 }
+.x402-eyebrow { color: #c07bff !important; }
 
-.x402-eyebrow {
-  color: #c07bff !important;
-}
-
-/* --- collapsible primer --- */
 .x402-primer {
   margin: 0 0 18px 0;
   padding: 0;
@@ -1283,9 +1279,7 @@ html[data-embed="1"] footer { display: none; }
   font-size: 11px;
   transition: transform 120ms ease;
 }
-.x402-primer[open] > summary::before {
-  transform: rotate(90deg);
-}
+.x402-primer[open] > summary::before { transform: rotate(90deg); }
 .x402-primer-body {
   padding: 4px 18px 16px 18px;
   border-top: 1px solid rgba(192,123,255,0.10);
@@ -1304,7 +1298,6 @@ html[data-embed="1"] footer { display: none; }
   font-size: 11.5px;
 }
 
-/* --- 4-up status grid --- */
 .x402-status-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1329,7 +1322,6 @@ html[data-embed="1"] footer { display: none; }
 .x402-stat-meta.err { color: #ff7575; }
 .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
 
-/* --- config form --- */
 .x402-config-form {
   border-top: 1px solid rgba(255,255,255,0.05);
   padding-top: 18px;
@@ -1341,17 +1333,9 @@ html[data-embed="1"] footer { display: none; }
   gap: 14px;
   margin-bottom: 14px;
 }
-.x402-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+.x402-field { display: flex; flex-direction: column; gap: 6px; }
 .x402-field-wide { grid-column: 1 / -1; }
-.x402-field .field-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #c0c2cc;
-}
+.x402-field .field-label { font-size: 12px; font-weight: 600; color: #c0c2cc; }
 .x402-field input {
   background: rgba(0,0,0,0.30);
   border: 1px solid rgba(255,255,255,0.10);
@@ -1367,14 +1351,8 @@ html[data-embed="1"] footer { display: none; }
   box-shadow: 0 0 0 2px rgba(192,123,255,0.18);
 }
 .x402-field .field-hint { line-height: 1.4; }
-.x402-config-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-}
+.x402-config-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
-/* --- discover sub-section --- */
 .x402-discover {
   border-top: 1px solid rgba(255,255,255,0.05);
   padding-top: 18px;
@@ -1388,17 +1366,8 @@ html[data-embed="1"] footer { display: none; }
   gap: 12px;
   flex-wrap: wrap;
 }
-.x402-subheader .subhead {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #ededf2;
-}
-.x402-discover-form {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-}
+.x402-subheader .subhead { margin: 0; font-size: 14px; font-weight: 600; color: #ededf2; }
+.x402-discover-form { display: flex; gap: 8px; margin-bottom: 8px; }
 .x402-discover-form input {
   flex: 1;
   background: rgba(0,0,0,0.30);
@@ -1424,24 +1393,11 @@ html[data-embed="1"] footer { display: none; }
 .x402-discover-err { color: #ff7575; }
 .x402-card-summary h4 { margin: 0 0 4px 0; font-size: 15px; }
 .x402-card-summary h5 { margin: 14px 0 8px 0; font-size: 13px; font-weight: 600; color: #c0c2cc; text-transform: uppercase; letter-spacing: 0.04em; }
-.x402-card-head {
-  display: flex;
-  gap: 16px;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
-}
+.x402-card-head { display: flex; gap: 16px; justify-content: space-between; flex-wrap: wrap; margin-bottom: 8px; }
 .x402-card-meta { text-align: right; min-width: 200px; }
 .x402-card-meta .small { line-height: 1.6; }
 
-.x402-skill-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
+.x402-skill-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
 .x402-skill-list li {
   padding: 10px 12px;
   border: 1px solid rgba(255,255,255,0.05);
@@ -1455,12 +1411,7 @@ html[data-embed="1"] footer { display: none; }
   border-radius: 4px;
 }
 .x402-skill-desc { margin-top: 4px; line-height: 1.5; }
-.x402-skill-tags {
-  margin-top: 6px;
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
+.x402-skill-tags { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
 .x402-skill-tags .pill {
   font-size: 10px;
   padding: 2px 8px;
@@ -1478,7 +1429,6 @@ html[data-embed="1"] footer { display: none; }
   line-height: 1.5;
 }
 
-/* responsive */
 @media (max-width: 880px) {
   .x402-status-grid { grid-template-columns: repeat(2, 1fr); }
   .x402-config-grid { grid-template-columns: 1fr; }
