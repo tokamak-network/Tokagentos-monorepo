@@ -36,9 +36,9 @@ function cssWithAlpha(prop: string, alpha: number, fallback: string): string {
 /** Read current theme tokens for canvas rendering. Call once per paint. */
 export function getSceneTokens() {
   return {
-    accent: css("--tokagent-accent", "#c4f547"),
-    accentDark: css("--tokagent-accent-dark", "#8ab81d"),
-    accentLight: css("--tokagent-accent-light", "#d5f972"),
+    accent: css("--tokagent-accent", "#f0b90b"),
+    accentDark: css("--tokagent-accent-dark", "#d8a000"),
+    accentLight: css("--tokagent-accent-light", "#f3ba2f"),
     accentBorder: cssWithAlpha("--status-info", 0.3, "rgba(58, 123, 213, 0.3)"),
     bgPanel: cssWithAlpha("--card", 0.82, "rgba(255, 255, 255, 0.82)"),
     bgCard: cssWithAlpha("--bg-accent", 0.75, "rgba(240, 243, 248, 0.75)"),

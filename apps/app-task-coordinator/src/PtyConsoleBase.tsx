@@ -64,9 +64,8 @@ export function PtyConsoleBase({
 
   return (
     <>
-      {/* Side-panel has its own header + tab bar. The drawer variant owns its
-          own tab bar externally (PtyConsoleDrawer), so we only render terminal
-          panes here in that case. */}
+      {/* Side-panel has its own header + tab bar; other variants render only
+          terminal panes here. */}
       {isSidePanel && (
         <>
           <div className="flex items-center justify-between px-3 py-2 border-b border-border shrink-0">

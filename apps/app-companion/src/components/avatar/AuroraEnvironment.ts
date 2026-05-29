@@ -2,7 +2,7 @@
  * AuroraEnvironment — Tokagent companion scene background.
  *
  * Replaces the upstream Matrix-style MathEnvironment. Renders three
- * radial-gradient blobs in Tokamak's lime accent palette on a dark base.
+ * radial-gradient blobs in Tokamak's gold accent palette on a dark base.
  * Blobs drift slowly (12-20s loop) with no pulse. No grid, no screen panels.
  *
  * Interface matches MathEnvironment exactly so VrmEngine (and re-exports) can

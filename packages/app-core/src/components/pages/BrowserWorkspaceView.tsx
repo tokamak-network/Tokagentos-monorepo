@@ -1171,7 +1171,7 @@ export function BrowserWorkspaceView(): JSX.Element {
 
           {chatSidebarCollapsed ? null : (
             <div className="flex min-h-0 flex-1 flex-col">
-              <ChatView variant="default" hideTerminalPanel />
+              <ChatView variant="default" />
             </div>
           )}
         </aside>

@@ -61,7 +61,7 @@ export function SplashServerChooser({
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="shrink-0 border-2 border-black bg-white text-black font-semibold hover:bg-black hover:text-[#ffe600]"
+                  className="shrink-0 border-2 border-black bg-white text-black font-semibold hover:bg-black hover:text-[#f0b90b]"
                   onClick={() => onConnectGateway(gateway)}
                 >
                   {t("startupshell.Connect", { defaultValue: "Connect" })}
@@ -76,13 +76,13 @@ export function SplashServerChooser({
         <Button
           type="button"
           variant="default"
-          className="justify-start border-2 border-black bg-black px-3 py-5 text-left text-[#ffe600] font-semibold shadow-md hover:bg-[#ffe600] hover:text-black hover:border-black"
+          className="justify-start border-2 border-black bg-black px-3 py-5 text-left text-[#f0b90b] font-semibold shadow-md hover:bg-[#f0b90b] hover:text-black hover:border-black"
           onClick={onCreateLocal}
         >
           <span className="flex flex-col items-start gap-1">
             <span
               style={{ fontFamily: MONO_FONT }}
-              className="text-3xs uppercase text-[#ffe600]/80"
+              className="text-3xs uppercase text-[#f0b90b]/80"
             >
               {t("startupshell.CreateAgentLabel", {
                 defaultValue: "Desktop only",
@@ -100,7 +100,7 @@ export function SplashServerChooser({
       <Button
         type="button"
         variant="default"
-        className="justify-start border-2 border-black bg-white px-3 py-5 text-left text-black font-semibold shadow-md hover:bg-black hover:text-[#ffe600]"
+        className="justify-start border-2 border-black bg-white px-3 py-5 text-left text-black font-semibold shadow-md hover:bg-black hover:text-[#f0b90b]"
         onClick={onManageCloudAgents}
       >
         <span className="flex flex-col items-start gap-1">
@@ -123,7 +123,7 @@ export function SplashServerChooser({
       <Button
         type="button"
         variant="default"
-        className="justify-start border-2 border-black bg-white px-3 py-5 text-left text-black font-semibold shadow-md hover:bg-black hover:text-[#ffe600]"
+        className="justify-start border-2 border-black bg-white px-3 py-5 text-left text-black font-semibold shadow-md hover:bg-black hover:text-[#f0b90b]"
         onClick={onManualConnect}
       >
         <span className="flex flex-col items-start gap-1">

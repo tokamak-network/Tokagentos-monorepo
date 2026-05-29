@@ -82,6 +82,7 @@ export * from "./settings/SubscriptionStatus";
 export * from "./settings/VoiceConfigView";
 export * from "./shared/confirm-delete-control";
 export * from "./shared/LanguageDropdown";
+export * from "./shared/Logo";
 export * from "./shared/ThemeToggle";
 export * from "./shell/BugReportModal";
 export * from "./shell/CommandPalette";

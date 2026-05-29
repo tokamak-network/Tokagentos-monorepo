@@ -1,5 +1,6 @@
 import {
   LanguageDropdown,
+  Logo,
   ThemeToggle,
   type UiLanguage,
   type UiTheme,
@@ -111,6 +112,11 @@ export const CompanionHeader = memo(function CompanionHeader(
               className="flex shrink-0 items-center gap-2"
               data-no-camera-drag="true"
             >
+              <Logo
+                size={22}
+                className="mr-1 pl-1"
+                wordmarkClassName="hidden sm:inline"
+              />
               <fieldset
                 className="inline-flex items-center gap-0.5 rounded-xl border border-border/45 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--card)_52%,transparent),color-mix(in_srgb,var(--bg)_34%,transparent))] p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_28px_rgba(3,5,10,0.12)] ring-1 ring-inset ring-white/6 backdrop-blur-xl"
                 data-testid="companion-shell-toggle"

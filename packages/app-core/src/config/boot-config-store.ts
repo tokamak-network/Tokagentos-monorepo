@@ -19,7 +19,6 @@ import type {
   StewardTxRecord,
 } from "@tokagentos/app-steward/types/steward";
 import type { ComponentType, ReactNode } from "react";
-import type { CodingAgentSession } from "../api/client-types-cloud";
 import type { Tab } from "../navigation";
 import type { ActionNotice } from "../state/action-notice";
 import type { BrandingConfig } from "./branding";
@@ -109,14 +108,6 @@ export interface CompanionVectorBrowserRuntime {
 
 export interface CodingAgentTasksPanelProps {
   fullPage?: boolean;
-}
-
-export interface PtyConsoleDrawerProps {
-  activeSessionId: string | null;
-  sessions: CodingAgentSession[];
-  onSessionClick: (sessionId: string) => void;
-  onNewSession: () => void;
-  onClose: () => void;
 }
 
 export interface FineTuningViewProps {
@@ -228,8 +219,6 @@ export interface AppBootConfig {
   codingAgentSettingsSection?: ComponentType<Record<string, never>>;
   /** Coding-agent chat control chip provided by the host app. */
   codingAgentControlChip?: ComponentType<Record<string, never>>;
-  /** Coding-agent PTY drawer provided by the host app. */
-  ptyConsoleDrawer?: ComponentType<PtyConsoleDrawerProps>;
   /** Fine-tuning view provided by the host app. */
   fineTuningView?: ComponentType<FineTuningViewProps>;
   /** Vincent UI state hook provided by the host app. */

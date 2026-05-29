@@ -1,7 +1,4 @@
-import {
-  CodingAgentControlChip,
-  PtyConsoleDrawer,
-} from "@tokagentos/app-task-coordinator";
+import { CodingAgentControlChip } from "@tokagentos/app-task-coordinator";
 import {
   ChatAttachmentStrip,
   ChatComposer,
@@ -60,8 +57,6 @@ interface ChatViewProps {
   variant?: ChatViewVariant;
   /** Override click handler for agent activity box sessions. */
   onPtySessionClick?: (sessionId: string) => void;
-  /** Hide the always-visible terminal/PTY panel (used in embedded overlays). */
-  hideTerminalPanel?: boolean;
 }
 
 function normalizeInboxChatSelection(
@@ -106,7 +101,6 @@ function normalizeInboxChatSelection(
 export function ChatView({
   variant = "default",
   onPtySessionClick,
-  hideTerminalPanel = false,
 }: ChatViewProps) {
   const app = useApp();
   const isGameModal = variant === "game-modal";
@@ -177,20 +171,6 @@ export function ChatView({
   const composerRef = useRef<HTMLDivElement>(null);
   const [composerHeight, setComposerHeight] = useState(0);
   const [imageDragOver, setImageDragOver] = useState(false);
-  const [ptyDrawerSessionId, setPtyDrawerSessionId] = useState<string | null>(
-    null,
-  );
-
-  // Auto-expand terminal when a session hits error or blocked status
-  useEffect(() => {
-    const problemSession = ptySessions.find(
-      (s) => s.status === "error" || s.status === "blocked",
-    );
-    if (problemSession && ptyDrawerSessionId !== problemSession.sessionId) {
-      setPtyDrawerSessionId(problemSession.sessionId);
-    }
-  }, [ptySessions, ptyDrawerSessionId]);
-
   // ── Coding agent preflight ──────────────────────────────────────
   const [codingAgentsAvailable, setCodingAgentsAvailable] = useState(false);
   useEffect(() => {
@@ -500,32 +480,6 @@ export function ChatView({
       />
     );
 
-  const handleNewShellSession = useCallback(async () => {
-    try {
-      const { sessionId } = await client.spawnShellSession();
-      setPtyDrawerSessionId(sessionId);
-    } catch (err) {
-      console.error("[ChatView] Failed to spawn shell session:", err);
-    }
-  }, []);
-
-  const drawerProps = {
-    activeSessionId: ptyDrawerSessionId,
-    sessions: ptySessions,
-    onSessionClick: (id: string) =>
-      setPtyDrawerSessionId((prev) => (prev === id ? null : id)),
-    onNewSession: handleNewShellSession,
-    onClose: () => setPtyDrawerSessionId(null),
-  };
-
-  const terminalPanelNode = isGameModal ? (
-    <div className="pointer-events-auto">
-      <PtyConsoleDrawer {...drawerProps} />
-    </div>
-  ) : (
-    <PtyConsoleDrawer {...drawerProps} />
-  );
-
   const auxiliaryNode = (
     <>
       {shareIngestNotice ? (
@@ -594,11 +548,7 @@ export function ChatView({
           <CodingAgentControlChip />
           <AgentActivityBox
             sessions={ptySessions}
-            onSessionClick={
-              onPtySessionClick ??
-              ((id) =>
-                setPtyDrawerSessionId((prev) => (prev === id ? null : id)))
-            }
+            onSessionClick={onPtySessionClick ?? (() => {})}
           />
         </>
       }
@@ -695,12 +645,7 @@ export function ChatView({
       composerHeight={composerHeight}
       imageDragOver={imageDragOver}
       messagesRef={messagesRef}
-      footerStack={
-        <>
-          {auxiliaryNode}
-          {hideTerminalPanel ? null : terminalPanelNode}
-        </>
-      }
+      footerStack={auxiliaryNode}
       composer={composerNode}
       onDragOver={(event) => {
         event.preventDefault();

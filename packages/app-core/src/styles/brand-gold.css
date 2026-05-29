@@ -4,6 +4,14 @@
   --font-sans: "DM Sans", "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", "Cascadia Code", "Courier New", monospace;
 
+  /* Drive the app's body/display/chat/mono tokens with the brand fonts so the
+     whole gateway renders in DM Sans + JetBrains Mono, matching
+     www.tokagentos.com. base.css sets these to system fonts by default. */
+  --font-body: var(--font-sans);
+  --font-display: var(--font-sans);
+  --font-chat: var(--font-sans);
+  --mono: var(--font-mono);
+
   --jet-black: #050506;
   --rich-black: #0a0a0c;
   --charcoal: #121214;
@@ -216,6 +224,14 @@
 .dark {
   font-family: var(--font-sans);
 
+  /* Re-assert the brand fonts in dark mode: base.css's .dark block resets
+     --font-body/--font-display/--font-chat/--mono to system fonts and would
+     otherwise win the cascade over the :root values above. */
+  --font-body: var(--font-sans);
+  --font-display: var(--font-sans);
+  --font-chat: var(--font-sans);
+  --mono: var(--font-mono);
+
   --bg: #09090d;
   --bg-accent: #111118;
   --bg-elevated: #181820;
@@ -278,7 +294,59 @@
   border-color: rgba(240, 185, 11, 0.32);
 }
 
+/* ── Settings / Apps / Advanced surfaces ──────────────────────────────────
+ * Light is the default; the dark gold treatment is layered on under
+ * [data-theme="dark"], .dark below (dark values are unchanged). The
+ * bg-card/bg-black/input/sticky-header rules override the components' own
+ * theme-aware Tailwind classes, so they are dark-only — in light mode those
+ * elements fall back to their native (light) Tailwind tokens. */
+
 .settings-icon-sidebar {
+  background: linear-gradient(
+    180deg,
+    rgba(252, 253, 253, 0.98) 0%,
+    rgba(247, 248, 250, 0.96) 100%
+  );
+  border-right-color: rgba(206, 214, 223, 0.6);
+  box-shadow: inset -1px 0 0 rgba(15, 23, 42, 0.04);
+}
+
+.settings-content-area {
+  --s-panel-bg: rgba(252, 253, 253, 0.97);
+  --s-card-bg: rgba(255, 255, 255, 0.92);
+  --s-card-bg-hover: rgba(248, 250, 252, 0.96);
+  --s-input-bg: rgba(255, 255, 255, 0.92);
+  --s-input-bg-hover: rgba(248, 250, 252, 0.95);
+  --s-input-bg-focus: rgba(255, 255, 255, 0.98);
+  --s-sidebar-bg: rgba(247, 248, 250, 0.98);
+  --s-text: var(--text-strong);
+  --s-text-secondary: #474d57;
+  --s-text-muted: #5e6673;
+  --s-text-txt: var(--text-strong);
+  --s-border-subtle: rgba(206, 214, 223, 0.5);
+  --s-border: rgba(206, 214, 223, 0.7);
+  --s-border-medium: rgba(138, 138, 148, 0.34);
+  --s-border-strong: rgba(110, 118, 130, 0.3);
+  --s-accent: var(--classic-gold);
+  --s-accent-glow: rgba(240, 185, 11, 0.16);
+  --s-accent-subtle: rgba(240, 185, 11, 0.1);
+  --s-grid-line: rgba(240, 185, 11, 0.02);
+  --s-glow-edge: rgba(240, 185, 11, 0.08);
+
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(240, 185, 11, 0.05),
+      transparent 26%
+    ),
+    linear-gradient(180deg, rgba(252, 253, 253, 0.98), rgba(247, 248, 250, 1));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.06);
+}
+
+[data-theme="dark"] .settings-icon-sidebar,
+.dark .settings-icon-sidebar {
   background: linear-gradient(
     180deg,
     rgba(10, 10, 12, 0.98) 0%,
@@ -288,7 +356,8 @@
   box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.03);
 }
 
-.settings-content-area {
+[data-theme="dark"] .settings-content-area,
+.dark .settings-content-area {
   --s-panel-bg: rgba(10, 10, 12, 0.97);
   --s-card-bg: rgba(18, 18, 21, 0.92);
   --s-card-bg-hover: rgba(24, 24, 28, 0.96);
@@ -304,11 +373,6 @@
   --s-border: rgba(49, 49, 56, 0.42);
   --s-border-medium: rgba(138, 138, 148, 0.34);
   --s-border-strong: rgba(177, 183, 191, 0.2);
-  --s-accent: var(--classic-gold);
-  --s-accent-glow: rgba(240, 185, 11, 0.16);
-  --s-accent-subtle: rgba(240, 185, 11, 0.1);
-  --s-grid-line: rgba(240, 185, 11, 0.018);
-  --s-glow-edge: rgba(240, 185, 11, 0.08);
 
   background:
     radial-gradient(
@@ -337,7 +401,8 @@
   background-size: 52px 52px;
 }
 
-.settings-content-area > [class*="sticky top-0"][class*="border-b"] {
+[data-theme="dark"] .settings-content-area > [class*="sticky top-0"][class*="border-b"],
+.dark .settings-content-area > [class*="sticky top-0"][class*="border-b"] {
   border-color: rgba(49, 49, 56, 0.4);
   background: linear-gradient(
     180deg,
@@ -349,17 +414,25 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.settings-content-area [class*="bg-black/5"],
-.settings-content-area [class*="bg-black/10"],
-.settings-content-area [class*="bg-black/20"] {
+[data-theme="dark"] .settings-content-area [class*="bg-black/5"],
+[data-theme="dark"] .settings-content-area [class*="bg-black/10"],
+[data-theme="dark"] .settings-content-area [class*="bg-black/20"],
+.dark .settings-content-area [class*="bg-black/5"],
+.dark .settings-content-area [class*="bg-black/10"],
+.dark .settings-content-area [class*="bg-black/20"] {
   background: rgba(5, 5, 6, 0.56);
 }
 
-.settings-content-area [class*="bg-card/40"],
-.settings-content-area [class*="bg-card/55"],
-.settings-content-area [class*="bg-card/60"],
-.settings-content-area [class*="bg-card/70"],
-.settings-content-area [class*="bg-card/90"] {
+[data-theme="dark"] .settings-content-area [class*="bg-card/40"],
+[data-theme="dark"] .settings-content-area [class*="bg-card/55"],
+[data-theme="dark"] .settings-content-area [class*="bg-card/60"],
+[data-theme="dark"] .settings-content-area [class*="bg-card/70"],
+[data-theme="dark"] .settings-content-area [class*="bg-card/90"],
+.dark .settings-content-area [class*="bg-card/40"],
+.dark .settings-content-area [class*="bg-card/55"],
+.dark .settings-content-area [class*="bg-card/60"],
+.dark .settings-content-area [class*="bg-card/70"],
+.dark .settings-content-area [class*="bg-card/90"] {
   background: linear-gradient(
     180deg,
     rgba(18, 18, 21, 0.92) 0%,
@@ -371,12 +444,18 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.settings-content-area input[type="text"],
-.settings-content-area input[type="password"],
-.settings-content-area input[type="number"],
-.settings-content-area input[type="email"],
-.settings-content-area textarea,
-.settings-content-area select {
+[data-theme="dark"] .settings-content-area input[type="text"],
+[data-theme="dark"] .settings-content-area input[type="password"],
+[data-theme="dark"] .settings-content-area input[type="number"],
+[data-theme="dark"] .settings-content-area input[type="email"],
+[data-theme="dark"] .settings-content-area textarea,
+[data-theme="dark"] .settings-content-area select,
+.dark .settings-content-area input[type="text"],
+.dark .settings-content-area input[type="password"],
+.dark .settings-content-area input[type="number"],
+.dark .settings-content-area input[type="email"],
+.dark .settings-content-area textarea,
+.dark .settings-content-area select {
   color: var(--chrome-highlight);
 }
 
@@ -388,15 +467,15 @@
 .plugins-game-card {
   padding: 0.875rem 1rem;
   border-radius: 1rem;
-  border: 1px solid rgba(49, 49, 56, 0.42);
+  border: 1px solid rgba(206, 214, 223, 0.7);
   background: linear-gradient(
     180deg,
-    rgba(18, 18, 21, 0.92) 0%,
-    rgba(10, 10, 12, 0.9) 100%
+    rgba(255, 255, 255, 0.94) 0%,
+    rgba(247, 248, 250, 0.92) 100%
   );
   box-shadow:
-    0 14px 32px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 10px 28px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .plugins-game-card::after {
@@ -411,6 +490,82 @@
 .plugins-game-card:hover {
   background: linear-gradient(
     180deg,
+    rgba(255, 255, 255, 0.98) 0%,
+    rgba(241, 243, 245, 0.96) 100%
+  );
+  border-color: rgba(240, 185, 11, 0.4);
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.plugins-game-card.is-selected {
+  border-color: rgba(240, 185, 11, 0.5);
+  border-left-color: var(--deep-gold);
+  background: linear-gradient(
+    180deg,
+    rgba(240, 185, 11, 0.14) 0%,
+    rgba(255, 255, 255, 0.94) 100%
+  );
+  box-shadow:
+    0 0 0 1px rgba(240, 185, 11, 0.18),
+    0 14px 32px rgba(15, 23, 42, 0.1);
+}
+
+.plugins-game-card-icon-shell,
+.plugins-game-detail-icon-shell {
+  border-color: rgba(206, 214, 223, 0.7);
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(241, 243, 245, 0.7)
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.plugins-game-card-name {
+  color: var(--text-strong);
+  letter-spacing: 0.03em;
+}
+
+.plugins-game-card-meta,
+.plugins-game-detail-meta {
+  color: #5e6673;
+}
+
+.plugins-game-badge {
+  border-color: rgba(206, 214, 223, 0.7);
+  background: rgba(241, 243, 245, 0.6);
+  color: #5e6673;
+}
+
+.plugins-game-badge.is-on {
+  border-color: rgba(240, 185, 11, 0.4);
+  background: rgba(240, 185, 11, 0.14);
+  color: var(--deep-gold);
+}
+
+/* Dark gold treatment for the plugin/app cards — overrides the light
+ * defaults above; values match the original dark design exactly. */
+[data-theme="dark"] .plugins-game-card,
+.dark .plugins-game-card {
+  border-color: rgba(49, 49, 56, 0.42);
+  background: linear-gradient(
+    180deg,
+    rgba(18, 18, 21, 0.92) 0%,
+    rgba(10, 10, 12, 0.9) 100%
+  );
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .plugins-game-card:hover,
+.dark .plugins-game-card:hover {
+  background: linear-gradient(
+    180deg,
     rgba(24, 24, 28, 0.96) 0%,
     rgba(10, 10, 12, 0.92) 100%
   );
@@ -420,7 +575,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
-.plugins-game-card.is-selected {
+[data-theme="dark"] .plugins-game-card.is-selected,
+.dark .plugins-game-card.is-selected {
   border-color: rgba(240, 185, 11, 0.42);
   border-left-color: var(--highlight-gold);
   background: linear-gradient(
@@ -434,8 +590,10 @@
     0 0 18px rgba(240, 185, 11, 0.08);
 }
 
-.plugins-game-card-icon-shell,
-.plugins-game-detail-icon-shell {
+[data-theme="dark"] .plugins-game-card-icon-shell,
+[data-theme="dark"] .plugins-game-detail-icon-shell,
+.dark .plugins-game-card-icon-shell,
+.dark .plugins-game-detail-icon-shell {
   border-color: rgba(138, 138, 148, 0.24);
   background: linear-gradient(
     145deg,
@@ -447,23 +605,27 @@
     0 8px 18px rgba(0, 0, 0, 0.2);
 }
 
-.plugins-game-card-name {
+[data-theme="dark"] .plugins-game-card-name,
+.dark .plugins-game-card-name {
   color: var(--chrome-highlight);
-  letter-spacing: 0.03em;
 }
 
-.plugins-game-card-meta,
-.plugins-game-detail-meta {
+[data-theme="dark"] .plugins-game-card-meta,
+[data-theme="dark"] .plugins-game-detail-meta,
+.dark .plugins-game-card-meta,
+.dark .plugins-game-detail-meta {
   color: #b7bdc6;
 }
 
-.plugins-game-badge {
+[data-theme="dark"] .plugins-game-badge,
+.dark .plugins-game-badge {
   border-color: rgba(49, 49, 56, 0.36);
   background: rgba(5, 5, 6, 0.48);
   color: #b7bdc6;
 }
 
-.plugins-game-badge.is-on {
+[data-theme="dark"] .plugins-game-badge.is-on,
+.dark .plugins-game-badge.is-on {
   border-color: rgba(240, 185, 11, 0.28);
   background: rgba(240, 185, 11, 0.12);
   color: var(--highlight-gold);

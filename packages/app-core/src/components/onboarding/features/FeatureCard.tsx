@@ -92,7 +92,7 @@ export function FeatureCard({
             type="button"
             variant="default"
             size="sm"
-            className="h-7 border-2 border-black bg-black text-[#ffe600] text-xs font-semibold hover:bg-[#ffe600] hover:text-black"
+            className="h-7 border-2 border-black bg-black text-[#f0b90b] text-xs font-semibold hover:bg-[#f0b90b] hover:text-black"
             onClick={() => onToggle(true)}
           >
             {managed

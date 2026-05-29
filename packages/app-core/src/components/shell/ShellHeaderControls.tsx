@@ -18,6 +18,7 @@ import type { UiLanguage } from "../../i18n/messages";
 import type { ShellView } from "../../state/types";
 import type { UiTheme } from "../../state/ui-preferences";
 import { LanguageDropdown } from "../shared/LanguageDropdown";
+import { Logo } from "../shared/Logo";
 import { ThemeToggle } from "../shared/ThemeToggle";
 
 type ShellHeaderTranslator = (key: string) => string;
@@ -231,8 +232,9 @@ export function ShellHeaderControls({
       className={`min-w-0 w-full overflow-visible flex items-center ${className ?? ""}`}
       data-no-camera-drag="true"
     >
-      {/* Left: shell view toggle (hidden outside companion overlay) */}
+      {/* Left: brand logo + shell view toggle (pill hidden outside companion overlay) */}
       <div className="flex shrink-0 items-center gap-2">
+        <Logo size={22} className="mr-1 pl-1" wordmarkClassName="hidden sm:inline" />
         {showShellViewToggle && (
           <fieldset
             className="inline-flex items-center gap-0.5 rounded-xl border border-border/45 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--card)_52%,transparent),color-mix(in_srgb,var(--bg)_34%,transparent))] p-0.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_12px_28px_rgba(3,5,10,0.12)] ring-1 ring-inset ring-white/6 backdrop-blur-xl"

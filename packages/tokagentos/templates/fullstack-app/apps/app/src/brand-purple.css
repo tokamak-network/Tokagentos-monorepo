@@ -1,128 +1,17 @@
-/**
- * Tokagent brand palette — locked.
+/*
+ * DEPRECATED — intentionally empty.
  *
- * Mirrors the design tokens used by the Tokagent marketing site
- * (www.tokagent.network):
+ * This file used to lock the gateway to the lime/dark "tokagent.network"
+ * palette and was imported last in `main.tsx` to override the gold brand and
+ * re-declare a dark-only palette under every theme selector (which also
+ * neutralized the header dark/light toggle).
  *
- *   --background:           #0a0a0f
- *   --background-secondary: #111118
- *   --accent / --primary:   #c4f547   (lime)
- *   --primary-light:        #d5f972
- *   --primary-dark:         #8ab81d
- *   --primary-glow:         rgba(196,245,71,.3)
- *   --text-primary:         #ffffff
- *   --text-secondary:       #9ca3af
- *   --text-muted:           #6b7280
- *   --border:               rgba(255,255,255,.1)
- *   --card-bg:              rgba(255,255,255,.05)
+ * The gateway now matches the official www.tokagentos.com brand — gold
+ * (#f0b90b) accent + DM Sans — which is defined by `@elizaos/app-core`'s
+ * `base.css` (full light + dark themes) and `brand-gold.css`. The import was
+ * removed from `main.tsx`, so this file is no longer loaded.
  *
- * This file is imported AFTER `@elizaos/app-core/styles/brand-gold.css`
- * in `apps/app/src/main.tsx`, so its declarations win. We re-declare the
- * palette under every theme selector (`:root`, `[data-theme="dark"]`,
- * `[data-theme="light"]`, `.dark`, `.light`) so the Tokagent look is
- * locked regardless of any internal theme-toggle attempt.
- *
- * Keeping the legacy file name `brand-purple.css` avoids touching the
- * import in `main.tsx`. Despite the name, the palette is lime+dark.
+ * Kept as an empty file (rather than deleted) so tooling that references the
+ * path — the templates manifest and scaffold sync — does not break. Do not
+ * re-add a palette override here: it would re-break the dark/light toggle.
  */
-
-:root,
-[data-theme="dark"],
-[data-theme="light"],
-.dark,
-.light {
-	color-scheme: dark;
-
-	/* ── Tokagent canonical tokens (mirror www.tokagent.network) ─────────── */
-	--tk-background: #0a0a0f;
-	--tk-background-secondary: #111118;
-	--tk-foreground: #ffffff;
-	--tk-accent: #c4f547;
-	--tk-accent-rgb: 196, 245, 71;
-	--tk-primary: #c4f547;
-	--tk-primary-light: #d5f972;
-	--tk-primary-dark: #8ab81d;
-	--tk-primary-glow: rgba(196, 245, 71, 0.3);
-	--tk-gradient-shine: #d5f972;
-	--tk-text-primary: #ffffff;
-	--tk-text-secondary: #9ca3af;
-	--tk-text-muted: #6b7280;
-	--tk-border: rgba(255, 255, 255, 0.1);
-	--tk-card-bg: rgba(255, 255, 255, 0.05);
-	--tk-card-border: rgba(255, 255, 255, 0.1);
-
-	/* ── App surface tokens (override theme.css :root + .dark blocks) ───── */
-	--bg: var(--tk-background);
-	--bg-accent: var(--tk-background-secondary);
-	--bg-elevated: var(--tk-background-secondary);
-	--bg-hover: rgba(255, 255, 255, 0.04);
-	--bg-muted: var(--tk-background-secondary);
-	--card: var(--tk-card-bg);
-	--card-foreground: var(--tk-text-primary);
-	--surface: var(--tk-background-secondary);
-
-	--text: var(--tk-text-primary);
-	--text-strong: var(--tk-text-primary);
-	--txt: var(--tk-text-primary);
-	--muted: var(--tk-text-secondary);
-	--muted-strong: var(--tk-text-muted);
-
-	--border: var(--tk-border);
-	--border-strong: rgba(255, 255, 255, 0.16);
-	--border-hover: var(--tk-accent);
-
-	/* ── Brand-name shades (legacy --*-gold variables consumed by app-core
-	 *     components; all remapped to Tokagent lime palette). ─────────── */
-	--deep-gold: var(--tk-primary-dark);
-	--classic-gold: var(--tk-accent);
-	--highlight-gold: var(--tk-primary-light);
-	--champagne-gold: rgba(196, 245, 71, 0.08);
-	--burnished-gold: var(--tk-primary-dark);
-	--gold-glow: var(--tk-primary-glow);
-
-	/* ── Semantic accents (these are what most components reference). ───── */
-	--accent: var(--tk-accent);
-	--accent-rgb: var(--tk-accent-rgb);
-	--accent-hover: var(--tk-primary-light);
-	--accent-muted: var(--tk-primary-dark);
-	--accent-subtle: rgba(196, 245, 71, 0.12);
-	/* lime on dark text — accent buttons read as "primary action" with
-	 * dark text on the lime background, matching the marketing site. */
-	--accent-foreground: #0a0a0f;
-
-	--primary: var(--tk-accent);
-	--primary-foreground: #0a0a0f;
-
-	--ring: var(--tk-primary-light);
-
-	/* ── Status colors — kept tonally distinct but harmonized to dark UI. ── */
-	--destructive: #ff494a;
-	--destructive-foreground: #ffffff;
-	--destructive-subtle: rgba(255, 73, 74, 0.12);
-	--status-success: #6be48e;
-	--status-success-bg: rgba(107, 228, 142, 0.12);
-	--status-danger: #ff494a;
-	--status-danger-bg: rgba(255, 73, 74, 0.12);
-	--status-warning: #ffd641;
-	--status-warning-bg: rgba(255, 214, 65, 0.12);
-	--status-info: #8fa1b3;
-	--status-info-bg: rgba(143, 161, 179, 0.12);
-
-	--warn: #ffd641;
-	--warn-muted: rgba(255, 214, 65, 0.7);
-	--warn-subtle: rgba(255, 214, 65, 0.14);
-
-	--focus: rgba(196, 245, 71, 0.22);
-	--focus-ring: 0 0 0 2px rgba(196, 245, 71, 0.38);
-
-	--link-color: var(--tk-accent);
-	--link-hover-color: var(--tk-primary-light);
-}
-
-/* Force the page chrome to the Tokagent dark background even before
- * React mounts (prevents a flash of light theme). */
-html,
-body {
-	background-color: var(--tk-background);
-	color: var(--tk-text-primary);
-}
