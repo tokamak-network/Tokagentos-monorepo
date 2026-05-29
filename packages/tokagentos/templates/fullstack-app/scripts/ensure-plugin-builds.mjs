@@ -9,7 +9,7 @@
  * Idempotent — each plugin is skipped if its `dist/` already exists.
  * Runs plugins sequentially (they're small; parallelism adds flakiness).
  */
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 import process from "node:process";
@@ -202,6 +202,61 @@ function hasBuildOutput(dir) {
 }
 
 /**
+ * Find the most-recently-modified timestamp under a directory. Used to
+ * detect when `src/` has been edited after `dist/` was last built — in
+ * which case the cached build is stale and must be re-run.
+ *
+ * Recurses into subdirs. Skips `node_modules` (irrelevant + huge), `dist`
+ * (we compare against that), and dotdirs.
+ */
+function latestMtimeMs(dir) {
+  if (!existsSync(dir)) return 0;
+  let latest = 0;
+  const stack = [dir];
+  while (stack.length > 0) {
+    const cur = stack.pop();
+    let entries;
+    try {
+      entries = readdirSync(cur, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const e of entries) {
+      if (e.name === "node_modules" || e.name === "dist" || e.name.startsWith(".")) continue;
+      const p = join(cur, e.name);
+      let st;
+      try {
+        st = statSync(p);
+      } catch {
+        continue;
+      }
+      if (st.mtimeMs > latest) latest = st.mtimeMs;
+      if (e.isDirectory()) stack.push(p);
+    }
+  }
+  return latest;
+}
+
+/**
+ * Returns true when the existing dist/ output is stale relative to src/.
+ * Triggered when a developer edits a workspace plugin's source after the
+ * initial build — the skip-if-dist-exists optimization would otherwise
+ * cache the stale build forever. Static assets like the billing dashboard
+ * SPA (HTML/CSS/JS under src/dashboard/) are the most common bite —
+ * they get copied to dist/dashboard/ at build time and the dev server
+ * serves from dist/, so source edits are invisible without a rebuild.
+ */
+function srcNewerThanDist(rootDir) {
+  const distDir = join(rootDir, "dist");
+  const srcDir = join(rootDir, "src");
+  if (!existsSync(distDir) || !existsSync(srcDir)) return false;
+  const distLatest = latestMtimeMs(distDir);
+  const srcLatest = latestMtimeMs(srcDir);
+  // 1s tolerance so a single `cp -p` round-trip doesn't trigger a rebuild.
+  return srcLatest > distLatest + 1000;
+}
+
+/**
  * Build one package from its own `build` script. Returns {status}:
  *   - "built": command succeeded
  *   - "js-only": command exited non-zero but JS output is on disk (tsc
@@ -209,16 +264,18 @@ function hasBuildOutput(dir) {
  *      don't affect runtime)
  *   - "skipped": dir missing
  *   - "present": already has build output
+ *   - "rebuilt": dist/ was present but stale (src/ newer); rebuilt
  * Throws if build failed AND no JS output landed (hard fail).
  */
 function buildPackage(rel) {
   const dir = join(UPSTREAM_ROOT, rel);
   if (!existsSync(join(dir, "package.json"))) return "skipped";
-  if (hasBuildOutput(dir)) return "present";
-  console.log(`[ensure-plugin-builds] building ${rel}...`);
+  if (hasBuildOutput(dir) && !srcNewerThanDist(dir)) return "present";
+  const reason = hasBuildOutput(dir) ? "src/ newer than dist/ — rebuilding" : "first build";
+  console.log(`[ensure-plugin-builds] ${reason}: ${rel}`);
   try {
     execFileSync("bun", ["run", "build"], { cwd: dir, stdio: "inherit" });
-    return "built";
+    return hasBuildOutput(dir) ? "built" : "built";
   } catch (err) {
     if (hasBuildOutput(dir)) {
       console.warn(
@@ -242,8 +299,9 @@ function buildPackage(rel) {
 function buildTokagentPlugin(rel) {
   // rel is relative to the project root, e.g. "plugins/plugin-tokagent-shared"
   if (!existsSync(join(rel, "package.json"))) return "skipped";
-  if (hasBuildOutput(rel)) return "present";
-  console.log(`[ensure-plugin-builds] building tokagent plugin ${rel}...`);
+  if (hasBuildOutput(rel) && !srcNewerThanDist(rel)) return "present";
+  const reason = hasBuildOutput(rel) ? "src/ newer than dist/ — rebuilding" : "first build";
+  console.log(`[ensure-plugin-builds] ${reason}: tokagent plugin ${rel}`);
   try {
     execFileSync("bun", ["run", "build"], { cwd: rel, stdio: "inherit" });
     return "built";
