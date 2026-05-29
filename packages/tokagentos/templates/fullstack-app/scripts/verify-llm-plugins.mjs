@@ -35,10 +35,27 @@ const CHECKS = [
   },
 ];
 
+// Detect whether we're running as a postinstall hook vs in the pre-dev
+// chain. At postinstall the user has just run `bun install` and hasn't
+// had a chance to configure anything yet — failing the install blocks
+// them from getting to the UI where they'd configure a provider. At
+// dev time the agent genuinely cannot start without a provider, so the
+// hard fail is the right behavior.
+//
+// Hard configuration BUGS (broken plugin bundle, malformed model id,
+// shell-shadow, db-shadow) still fail at postinstall — those are real
+// problems the user can't fix by "waiting for the UI to be up."
+const IS_POSTINSTALL =
+  process.argv.includes("--postinstall") ||
+  process.env.npm_lifecycle_event === "postinstall";
+
 let hadFailure = false;
 function fail(msg) {
   console.error(`\n\x1b[31m[verify-llm-plugins]\x1b[0m ${msg}`);
   hadFailure = true;
+}
+function warn(msg) {
+  console.warn(`\n\x1b[33m[verify-llm-plugins]\x1b[0m ${msg}`);
 }
 function pass(msg) {
   console.log(`\x1b[32m[verify-llm-plugins]\x1b[0m ${msg}`);
@@ -345,9 +362,15 @@ const hasGatewayUrl = !!env.TOKAGENT_GATEWAY_URL?.trim();
 const hasLiteLLM =
   !!env.LITELLM_BASE_URL?.trim() && !!env.LITELLM_API_KEY?.trim();
 if (!hasDirectKey && !hasBillingChatKey && !hasLiteLLM) {
-  fail(
-    `No LLM provider configured. The agent has nothing to call for chat.\n` +
-      `  Pick one of these three paths:\n` +
+  // At postinstall, downgrade to a warning — the user is literally
+  // installing dependencies right now and hasn't had a chance to
+  // configure anything yet. We need install to succeed so they can
+  // get to `bun run dev` and then the UI / .env where they'll configure
+  // a provider. The same check at dev time WILL hard-fail.
+  const report = IS_POSTINSTALL ? warn : fail;
+  report(
+    `No LLM provider configured yet. ${IS_POSTINSTALL ? "Install will continue. " : "Chat will not work. "}` +
+      `Configure one of these three paths before \`bun run dev\`:\n` +
       `\n` +
       `  [A] Direct provider: set one of ${DIRECT_LLM_KEYS.slice(0, 4).join(", ")},\n` +
       `      etc. in .env. Plugin auto-loads, chat hits the provider directly.\n` +
