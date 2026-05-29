@@ -362,27 +362,35 @@ const hasGatewayUrl = !!env.TOKAGENT_GATEWAY_URL?.trim();
 const hasLiteLLM =
   !!env.LITELLM_BASE_URL?.trim() && !!env.LITELLM_API_KEY?.trim();
 if (!hasDirectKey && !hasBillingChatKey && !hasLiteLLM) {
-  // At postinstall, downgrade to a warning — the user is literally
-  // installing dependencies right now and hasn't had a chance to
-  // configure anything yet. We need install to succeed so they can
-  // get to `bun run dev` and then the UI / .env where they'll configure
-  // a provider. The same check at dev time WILL hard-fail.
-  const report = IS_POSTINSTALL ? warn : fail;
-  report(
-    `No LLM provider configured yet. ${IS_POSTINSTALL ? "Install will continue. " : "Chat will not work. "}` +
-      `Configure one of these three paths before \`bun run dev\`:\n` +
+  // ALWAYS a warning — never a hard fail. The agent's runtime onboarding
+  // gracefully redirects to the billing dashboard when no provider is
+  // configured (app-core commit 7d55b524). Failing the script here would
+  // block the dev server from starting, which would prevent the user
+  // from REACHING the billing dashboard to mint a key. Classic
+  // chicken-and-egg the user hit when bun run dev gated on this.
+  //
+  // The yellow warning is still loud enough to tell users what to do,
+  // and the agent will boot far enough for them to open the UI and
+  // complete the billing flow (or set a direct provider key in .env).
+  warn(
+    `No LLM provider configured yet. The agent will boot but chat won't ` +
+      `work until you pick one of these three paths:\n` +
       `\n` +
       `  [A] Direct provider: set one of ${DIRECT_LLM_KEYS.slice(0, 4).join(", ")},\n` +
       `      etc. in .env. Plugin auto-loads, chat hits the provider directly.\n` +
       `\n` +
       `  [B] x402 billing (Tokamak rail): mint a sk-ai-* key from the billing\n` +
       `      dashboard, then set BILLING_CHAT_KEY=sk-ai-... in .env.\n` +
-      `      Open http://localhost:3000/tokagent-billing/v1/billing/dashboard/\n` +
-      `      → connect wallet → top up PTON → mint key. Without this, the\n` +
-      `      runtime router has zero TEXT_SMALL/TEXT_LARGE providers.\n` +
+      `      Once the agent is up, open the billing dashboard (linked from\n` +
+      `      the agent UI's billing tab) → connect wallet → top up PTON →\n` +
+      `      mint key. Without this, the runtime router has zero\n` +
+      `      TEXT_SMALL/TEXT_LARGE providers.\n` +
       `\n` +
       `  [C] LiteLLM proxy: set LITELLM_BASE_URL + LITELLM_API_KEY in .env\n` +
-      `      (plus LITELLM_SMALL_MODEL / LITELLM_LARGE_MODEL).`,
+      `      (plus LITELLM_SMALL_MODEL / LITELLM_LARGE_MODEL).\n` +
+      `\n` +
+      `  The agent UI redirects to billing automatically when chat is invoked\n` +
+      `  without a provider, so you can complete setup interactively.`,
   );
 } else if (hasBillingChatKey && !hasGatewayUrl) {
   fail(
