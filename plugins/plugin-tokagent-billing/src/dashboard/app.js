@@ -2200,6 +2200,189 @@ function startAutoRefresh() {
   }
 }
 
+// ============================================================================
+// x402 Outbound section — talks to the agent's main API port
+// (/api/integrations/x402/*)
+// ============================================================================
+
+const X402_BASE = "/api/integrations/x402";
+
+function x402ShortAddr(addr) {
+  if (!addr || typeof addr !== "string" || addr.length < 10) return addr || "—";
+  return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
+}
+function setX402SaveStatus(msg, tone) {
+  const el = document.getElementById("x402-save-status");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.className = `status-line ${tone === "ok" ? "ok" : tone === "err" ? "err" : ""}`;
+}
+function setX402DiscoverStatus(msg, tone) {
+  const el = document.getElementById("x402-discover-status");
+  if (!el) return;
+  el.textContent = msg || "";
+  el.className = `status-line ${tone === "ok" ? "ok" : tone === "err" ? "err" : ""}`;
+}
+async function loadX402Status() {
+  let body;
+  try {
+    const r = await fetch(`${X402_BASE}/status`, { headers: { Accept: "application/json" } });
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    body = await r.json();
+  } catch (err) {
+    const meta = document.getElementById("x402-wallet-meta");
+    if (meta) {
+      meta.textContent = "Could not reach agent: " + (err && err.message ? err.message : err);
+      meta.className = "x402-stat-meta muted small err";
+    }
+    return;
+  }
+  const walletEl = document.getElementById("x402-wallet");
+  const walletMeta = document.getElementById("x402-wallet-meta");
+  if (body.walletConfigured && body.walletAddress) {
+    walletEl.textContent = x402ShortAddr(body.walletAddress);
+    walletEl.title = body.walletAddress;
+    walletMeta.textContent = "Configured · signs EIP-3009 vouchers";
+    walletMeta.className = "x402-stat-meta muted small ok";
+  } else {
+    walletEl.textContent = "—";
+    walletMeta.textContent = "Not configured · observer mode (free endpoints only)";
+    walletMeta.className = "x402-stat-meta muted small";
+  }
+  document.getElementById("x402-cap-per-call").textContent = body.maxPerCallPton || "1.0";
+  document.getElementById("x402-cap-total").textContent = body.maxTotalPton || "10.0";
+  const facEl = document.getElementById("x402-facilitator-state");
+  facEl.textContent = body.facilitatorUrl ? "set" : "trust 2xx";
+  facEl.title = body.facilitatorUrl || "trust upstream 2xx as receipt";
+  const perCallInput = document.getElementById("x402-input-per-call");
+  const totalInput = document.getElementById("x402-input-total");
+  const facInput = document.getElementById("x402-input-facilitator");
+  if (perCallInput && !perCallInput.value) perCallInput.value = body.maxPerCallPton || "";
+  if (totalInput && !totalInput.value) totalInput.value = body.maxTotalPton || "";
+  if (facInput && !facInput.value) facInput.value = body.facilitatorUrl || "";
+}
+function wireX402Config() {
+  const form = document.getElementById("x402-config-form");
+  if (!form) return;
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const maxPerCall = document.getElementById("x402-input-per-call").value.trim();
+    const maxTotal = document.getElementById("x402-input-total").value.trim();
+    const facilitator = document.getElementById("x402-input-facilitator").value.trim();
+    const payload = {};
+    if (maxPerCall) payload.maxPerCallPton = maxPerCall;
+    if (maxTotal) payload.maxTotalPton = maxTotal;
+    payload.facilitatorUrl = facilitator;
+    if (Object.keys(payload).length === 0) {
+      setX402SaveStatus("Nothing to save.", "err");
+      return;
+    }
+    setX402SaveStatus("Saving…");
+    try {
+      const r = await fetch(`${X402_BASE}/config`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const body = await r.json();
+      if (!r.ok || body.ok === false) {
+        setX402SaveStatus(body.error || `Save failed (${r.status})`, "err");
+        return;
+      }
+      setX402SaveStatus(
+        body.restartScheduled
+          ? `Saved (${body.updated.join(", ")}) — agent restarting…`
+          : `Saved (${body.updated.join(", ")}). Restart the agent for changes to take effect.`,
+        "ok"
+      );
+      setTimeout(loadX402Status, 4000);
+    } catch (err) {
+      setX402SaveStatus("Network error: " + (err && err.message ? err.message : err), "err");
+    }
+  });
+  const reset = document.getElementById("x402-reset");
+  if (reset) {
+    reset.addEventListener("click", () => {
+      document.getElementById("x402-input-per-call").value = "1.0";
+      document.getElementById("x402-input-total").value = "10.0";
+      document.getElementById("x402-input-facilitator").value = "";
+      setX402SaveStatus("Defaults restored. Click Save to apply.");
+    });
+  }
+}
+function x402EscapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+function renderAgentCard(payload) {
+  const out = document.getElementById("x402-discover-result");
+  if (!out) return;
+  if (!payload.ok) {
+    out.hidden = false;
+    out.innerHTML = `<div class="x402-discover-err">
+      <div class="muted small">Fetched: <code>${x402EscapeHtml(payload.cardUrl)}</code></div>
+      <p class="err small">${x402EscapeHtml(payload.error || `${payload.status} ${payload.statusText || ""}`)}</p>
+    </div>`;
+    return;
+  }
+  const card = payload.card || {};
+  const skills = Array.isArray(card.skills) ? card.skills : [];
+  const skillsHtml = skills.length
+    ? `<ul class="x402-skill-list">${skills.map((s) => `
+        <li>
+          <div class="x402-skill-id"><code>${x402EscapeHtml(s.id || "(no id)")}</code>${s.name ? ` — ${x402EscapeHtml(s.name)}` : ""}</div>
+          ${s.description ? `<div class="x402-skill-desc muted small">${x402EscapeHtml(s.description)}</div>` : ""}
+          ${s.tags && s.tags.length ? `<div class="x402-skill-tags">${s.tags.map((t) => `<span class="pill">${x402EscapeHtml(String(t))}</span>`).join("")}</div>` : ""}
+        </li>`).join("")}</ul>`
+    : `<p class="muted small">No skills advertised by this AgentCard.</p>`;
+  const auth = card.authentication && card.authentication.schemes ? card.authentication.schemes.join(", ") : "(unspecified)";
+  out.hidden = false;
+  out.innerHTML = `
+    <div class="x402-card-summary">
+      <div class="x402-card-head">
+        <div>
+          <h4>${x402EscapeHtml(card.name || "(unnamed)")}</h4>
+          <p class="muted small">${x402EscapeHtml(card.description || "")}</p>
+        </div>
+        <div class="x402-card-meta">
+          <div class="muted small">URL: <code>${x402EscapeHtml(card.url || "(none)")}</code></div>
+          <div class="muted small">Version: ${x402EscapeHtml(card.version || "—")}</div>
+          <div class="muted small">Auth schemes: ${x402EscapeHtml(auth)}</div>
+        </div>
+      </div>
+      <h5 class="x402-skill-header">Skills (${skills.length})</h5>
+      ${skillsHtml}
+      <div class="x402-skill-howto muted small">
+        To invoke a skill from chat: <code>"Ask the agent at ${x402EscapeHtml(card.url || "<URL>")} to use skill &lt;id&gt; with input &lt;json&gt;"</code> — the CALL_A2A_AGENT action will handle the rest.
+      </div>
+    </div>`;
+}
+function wireX402Discover() {
+  const form = document.getElementById("x402-discover-form");
+  if (!form) return;
+  form.addEventListener("submit", async (ev) => {
+    ev.preventDefault();
+    const url = document.getElementById("x402-discover-url").value.trim();
+    if (!url) return;
+    setX402DiscoverStatus("Fetching AgentCard…");
+    const out = document.getElementById("x402-discover-result");
+    if (out) out.hidden = true;
+    try {
+      const r = await fetch(`${X402_BASE}/discover`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ baseUrl: url }),
+      });
+      const body = await r.json();
+      renderAgentCard(body);
+      setX402DiscoverStatus(body.ok ? "" : "Discovery failed.", body.ok ? "ok" : "err");
+    } catch (err) {
+      setX402DiscoverStatus("Network error: " + (err && err.message ? err.message : err), "err");
+    }
+  });
+}
+
 // ----------------------------- Boot -----------------------------
 
 async function boot() {
@@ -2214,6 +2397,9 @@ async function boot() {
   wireLogout();
   wireSwitchChain();
   wireLogin();
+  wireX402Config();
+  wireX402Discover();
+  void loadX402Status();
 
   state.session = loadSession();
   if (state.session) {

@@ -2211,21 +2211,18 @@ function x402ShortAddr(addr) {
   if (!addr || typeof addr !== "string" || addr.length < 10) return addr || "—";
   return `${addr.slice(0, 6)}…${addr.slice(-4)}`;
 }
-
 function setX402SaveStatus(msg, tone) {
   const el = document.getElementById("x402-save-status");
   if (!el) return;
   el.textContent = msg || "";
   el.className = `status-line ${tone === "ok" ? "ok" : tone === "err" ? "err" : ""}`;
 }
-
 function setX402DiscoverStatus(msg, tone) {
   const el = document.getElementById("x402-discover-status");
   if (!el) return;
   el.textContent = msg || "";
   el.className = `status-line ${tone === "ok" ? "ok" : tone === "err" ? "err" : ""}`;
 }
-
 async function loadX402Status() {
   let body;
   try {
@@ -2264,7 +2261,6 @@ async function loadX402Status() {
   if (totalInput && !totalInput.value) totalInput.value = body.maxTotalPton || "";
   if (facInput && !facInput.value) facInput.value = body.facilitatorUrl || "";
 }
-
 function wireX402Config() {
   const form = document.getElementById("x402-config-form");
   if (!form) return;
@@ -2314,16 +2310,11 @@ function wireX402Config() {
     });
   }
 }
-
 function x402EscapeHtml(s) {
   return String(s == null ? "" : s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
-
 function renderAgentCard(payload) {
   const out = document.getElementById("x402-discover-result");
   if (!out) return;
@@ -2338,22 +2329,12 @@ function renderAgentCard(payload) {
   const card = payload.card || {};
   const skills = Array.isArray(card.skills) ? card.skills : [];
   const skillsHtml = skills.length
-    ? `<ul class="x402-skill-list">${skills
-        .map(
-          (s) => `
+    ? `<ul class="x402-skill-list">${skills.map((s) => `
         <li>
           <div class="x402-skill-id"><code>${x402EscapeHtml(s.id || "(no id)")}</code>${s.name ? ` — ${x402EscapeHtml(s.name)}` : ""}</div>
           ${s.description ? `<div class="x402-skill-desc muted small">${x402EscapeHtml(s.description)}</div>` : ""}
-          ${
-            s.tags && s.tags.length
-              ? `<div class="x402-skill-tags">${s.tags
-                  .map((t) => `<span class="pill">${x402EscapeHtml(String(t))}</span>`)
-                  .join("")}</div>`
-              : ""
-          }
-        </li>`
-        )
-        .join("")}</ul>`
+          ${s.tags && s.tags.length ? `<div class="x402-skill-tags">${s.tags.map((t) => `<span class="pill">${x402EscapeHtml(String(t))}</span>`).join("")}</div>` : ""}
+        </li>`).join("")}</ul>`
     : `<p class="muted small">No skills advertised by this AgentCard.</p>`;
   const auth = card.authentication && card.authentication.schemes ? card.authentication.schemes.join(", ") : "(unspecified)";
   out.hidden = false;
@@ -2377,7 +2358,6 @@ function renderAgentCard(payload) {
       </div>
     </div>`;
 }
-
 function wireX402Discover() {
   const form = document.getElementById("x402-discover-form");
   if (!form) return;

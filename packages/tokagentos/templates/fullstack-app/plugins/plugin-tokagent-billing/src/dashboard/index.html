@@ -421,26 +421,17 @@
           <summary>How x402 works <span class="muted small">(open to read)</span></summary>
           <div class="x402-primer-body">
             <p class="muted small">
-              x402 is the open HTTP-native payment protocol — pay per call,
-              no API keys to manage. When this agent calls another agent or
-              paid endpoint, the server can demand payment by returning
-              <code>402 Payment Required</code>. The client signs a one-shot
-              EIP-3009 voucher and retries with <code>X-Payment</code>.
+              x402 is the open HTTP-native payment protocol — pay per call, no API keys to manage. When this agent calls another agent or paid endpoint, the server can demand payment by returning <code>402 Payment Required</code>. The client signs a one-shot EIP-3009 voucher and retries with <code>X-Payment</code>.
             </p>
             <ol class="x402-steps">
               <li><strong>Request</strong> — agent sends a normal HTTP call.</li>
               <li><strong>402 challenge</strong> — server replies with payment requirements: asset, amount, recipient, validity window, nonce.</li>
-              <li><strong>Cap check</strong> — local middleware checks the request against
-                <code>X402_MAX_PAYMENT_PER_CALL_PTON</code> and
-                <code>X402_MAX_TOTAL_SPEND_PTON</code>. Over cap → refuse with a clear error, never sign.</li>
-              <li><strong>Sign + retry</strong> — operator wallet signs an EIP-3009
-                <code>TransferWithAuthorization</code>; agent retries with the base64 voucher in <code>X-Payment</code>.</li>
+              <li><strong>Cap check</strong> — local middleware checks the request against <code>X402_MAX_PAYMENT_PER_CALL_PTON</code> and <code>X402_MAX_TOTAL_SPEND_PTON</code>. Over cap → refuse with a clear error, never sign.</li>
+              <li><strong>Sign + retry</strong> — operator wallet signs an EIP-3009 <code>TransferWithAuthorization</code>; agent retries with the base64 voucher in <code>X-Payment</code>.</li>
               <li><strong>200 receipt</strong> — server accepts, response unblocks. The receipt is emitted as <code>X402_PAYMENT</code> for observability.</li>
             </ol>
             <p class="muted small">
-              The same operator wallet that holds your PTON top-up signs outbound vouchers.
-              You don't need a separate identity — your top-up balance funds both inbound
-              gateway calls (your bot's chat) and outbound calls to other paid agents.
+              The same operator wallet that holds your PTON top-up signs outbound vouchers. You don't need a separate identity — your top-up balance funds both inbound gateway calls (your bot's chat) and outbound calls to other paid agents.
             </p>
           </div>
         </details>
