@@ -1,17 +1,16 @@
 import chalk from "chalk";
 
-// Tokagent palette — mirrors the design tokens used by the marketing site
-// (www.tokagent.network). Lime accent (#c4f547) on dark, with a tight
-// dark-lime → lime → light-lime gradient used by the CLI banner. See
-// apps/app/src/brand-purple.css in the scaffold-patches for the full UI
-// token map this is derived from.
+// tokagentOS palette — mirrors the design tokens of the official marketing
+// site (www.tokagentos.com): gold accent (#f0b90b) on dark, with a tight
+// deep-gold → gold → highlight-gold gradient used by the CLI banner. Matches
+// brand-gold.css (the app's UI token map).
 export const palette = {
-	brand: "#c4f547",
-	gradientStart: "#8ab81d",
-	gradientMid: "#c4f547",
-	gradientEnd: "#d5f972",
-	secondary: "#d5f972",
-	highlight: "#d5f972",
+	brand: "#f0b90b",
+	gradientStart: "#d8a000",
+	gradientMid: "#f0b90b",
+	gradientEnd: "#f3ba2f",
+	secondary: "#f3ba2f",
+	highlight: "#f3ba2f",
 	warning: "#ffd641",
 	error: "#ff494a",
 	muted: "#9ca3af",

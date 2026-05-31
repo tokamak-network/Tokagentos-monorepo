@@ -1,5 +1,6 @@
 import pc from "picocolors";
 import { getTemplateById, loadManifest } from "../manifest.js";
+import { c } from "../theme.js";
 import type { InfoOptions } from "../types.js";
 
 const TEMPLATE_ICONS: Record<string, string> = {
@@ -23,7 +24,7 @@ export function info(options: InfoOptions): void {
   }
 
   console.log();
-  console.log(pc.bold(pc.cyan("tokagentOS Templates")));
+  console.log(c.brandBold("tokagentOS Templates"));
   console.log(pc.dim(`Generated: ${manifest.generatedAt}`));
   console.log();
 
