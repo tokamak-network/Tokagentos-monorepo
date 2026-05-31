@@ -21,7 +21,7 @@
  *      before stylesheet evaluation, so it never flashes the standalone
  *      topbar inside the parent shell.
  *   2. After the iframe loads we postMessage a small token bundle keyed
- *      to the parent app's locked dark lime palette (parent has no rich
+ *      to the parent app's gold brand palette (parent has no rich
  *      theme state to read, so the values are hardcoded here — the
  *      dashboard's stylesheet keys every visual off :root custom props,
  *      so a single push re-skins the UI without touching iframe markup).
@@ -29,19 +29,20 @@
 
 import { useEffect, useRef, useState } from "react";
 
-// Locked dark-lime tokens from apps/app/src/brand-purple.css. The dashboard
-// uses CSS custom properties of the same names, so this object is a direct
-// :root override on the iframe document. Kept inline (not imported) because
-// scaffold-patches must stay independent of any specific app's bundling.
+// tokagentOS gold brand tokens (mirrors www.tokagentos.com / brand-gold.css).
+// The dashboard uses CSS custom properties of the same names, so this object
+// is a direct :root override on the iframe document. Kept inline (not
+// imported) because scaffold-patches must stay independent of any specific
+// app's bundling.
 const PARENT_THEME_TOKENS = {
-  bg0: "#0a0a0f",
+  bg0: "#050506",
   bg1: "rgba(255,255,255,0.05)",
-  bg2: "#111118",
+  bg2: "#0a0a0c",
   line: "rgba(255,255,255,0.10)",
-  text: "#ffffff",
+  text: "#f0f0f4",
   muted: "#9ca3af",
-  accent: "#c4f547",
-  accent2: "#c4f547",
+  accent: "#f0b90b",
+  accent2: "#f3ba2f",
 } as const;
 
 function BillingPageView(): React.ReactElement {
@@ -110,7 +111,7 @@ function BillingPageView(): React.ReactElement {
         minHeight: 0,
         display: "flex",
         flexDirection: "column",
-        background: "#0a0a0f",
+        background: "#050506",
       }}
     >
       {loading ? (
@@ -139,7 +140,7 @@ function BillingPageView(): React.ReactElement {
           style={{
             flex: 1,
             border: "none",
-            background: "#0a0a0f",
+            background: "#050506",
           }}
           allow="clipboard-read; clipboard-write"
         />
