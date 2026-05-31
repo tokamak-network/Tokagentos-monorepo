@@ -5,8 +5,7 @@ import { useState } from "react";
 const CLI_CMD = "bunx @tokagent/tokagentos@latest";
 
 const META: Array<[string, string]> = [
-  ["EST.", "2017"],
-  ["NETWORK", "Tokamak"],
+  ["NETWORK", "Ethereum"],
   ["LICENSE", "MIT"],
   ["RUNTIME", "Bun ≥ 1.3"],
 ];
