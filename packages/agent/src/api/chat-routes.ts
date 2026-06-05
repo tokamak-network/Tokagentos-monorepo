@@ -101,6 +101,12 @@ export interface ChatGenerateOptions {
   onChunk?: (chunk: string) => void;
   onSnapshot?: (text: string) => void;
   isAborted?: () => boolean;
+  /**
+   * Aborts the in-flight LLM generation when the client disconnects or the
+   * turn times out. Threaded into messageService.handleMessage so the model
+   * call is cancelled rather than left running (leaked) after the turn ends.
+   */
+  signal?: AbortSignal;
   resolveNoResponseText?: () => string;
   preferredLanguage?: string;
   timeoutDuration?: number;
@@ -799,6 +805,12 @@ export async function generateChatResponse(
     opts?.timeoutDuration,
   );
   let generationTimedOut = false;
+  // Unified abort check: the turn is aborted if it timed out, the route's
+  // isAborted() reports a client disconnect, or the AbortSignal fired.
+  const isGenerationAborted = (): boolean =>
+    generationTimedOut ||
+    opts?.isAborted?.() === true ||
+    opts?.signal?.aborted === true;
   if (generationTimeoutMs <= 1) {
     generationTimedOut = true;
     throw createChatGenerationTimeoutError(generationTimeoutMs);
@@ -987,7 +999,7 @@ export async function generateChatResponse(
                   undefined,
                   {},
                   async (content: Content) => {
-                    if (generationTimedOut || opts?.isAborted?.()) {
+                    if (isGenerationAborted()) {
                       throw createChatGenerationTimeoutError(
                         generationTimeoutMs,
                       );
@@ -1032,7 +1044,7 @@ export async function generateChatResponse(
             runtime,
             generationMessage,
             async (content: Content) => {
-              if (generationTimedOut || opts?.isAborted?.()) {
+              if (isGenerationAborted()) {
                 throw createChatGenerationTimeoutError(generationTimeoutMs);
               }
 
@@ -1053,9 +1065,10 @@ export async function generateChatResponse(
             {
               timeoutDuration: generationTimeoutMs,
               keepExistingResponses: true,
+              abortSignal: opts?.signal,
               onStreamChunk: opts?.onChunk
                 ? async (chunk: string) => {
-                    if (generationTimedOut || opts?.isAborted?.()) {
+                    if (isGenerationAborted()) {
                       throw createChatGenerationTimeoutError(
                         generationTimeoutMs,
                       );

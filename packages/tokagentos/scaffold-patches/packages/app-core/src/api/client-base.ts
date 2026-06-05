@@ -629,6 +629,8 @@ export class ElizaClient {
     completed: boolean;
     noResponseReason?: "ignored";
     usage?: ChatTokenUsage;
+    /** True when the idle watchdog fired (stalled stream), not a clean end. */
+    timedOut?: boolean;
   }> {
     const res = await this.rawRequest(path, {
       method: "POST",
@@ -659,6 +661,12 @@ export class ElizaClient {
     let doneNoResponseReason: "ignored" | null = null;
     let doneUsage: ChatTokenUsage | undefined;
     let receivedDone = false;
+    // Timestamp of the last MEANINGFUL SSE event (token/done/error). The server
+    // emits `: heartbeat` comments every 5s which keep the socket alive but are
+    // NOT progress — the idle watchdog measures elapsed time against this, not
+    // against the last raw read, so heartbeats can't mask a stalled generation.
+    let lastProgressAt = Date.now();
+    let idleTimedOut = false;
 
     const findSseEventBreak = (
       chunkBuffer: string,
@@ -677,6 +685,8 @@ export class ElizaClient {
     const parseDataLine = (line: string): void => {
       const payload = line.startsWith("data:") ? line.slice(5).trim() : "";
       if (!payload) return;
+      // A real data event arrived — reset the idle watchdog window.
+      lastProgressAt = Date.now();
 
       let parsed: {
         type?: string;
@@ -747,25 +757,52 @@ export class ElizaClient {
     // Contract: the API must emit `data: {"type":"done",...}` or
     // `data: {"type":"error",...}` and then end the response. If the server
     // stalls mid-stream (e.g. LLM provider timeout without error propagation),
-    // the idle timeout below aborts the read so the UI doesn't hang forever.
-    const SSE_IDLE_TIMEOUT_MS = 60_000;
+    // the watchdog below aborts the read so the UI doesn't hang forever. The
+    // window is measured from `lastProgressAt` (last token/done/error) rather
+    // than from the last raw read, so the 5s `: heartbeat` comments the server
+    // sends to keep the socket open do NOT keep a dead generation alive.
+    const SSE_IDLE_TIMEOUT_MS = 90_000;
     while (true) {
       let done = false;
       let value: Uint8Array | undefined;
       try {
         const readPromise = reader.read();
+        const remainingMs = Math.max(
+          0,
+          SSE_IDLE_TIMEOUT_MS - (Date.now() - lastProgressAt),
+        );
         const timeoutPromise = new Promise<never>((_, reject) => {
           const id = setTimeout(
-            () => reject(new Error("SSE idle timeout — no data for 60s")),
-            SSE_IDLE_TIMEOUT_MS,
+            () =>
+              reject(
+                new Error(
+                  `SSE idle timeout — no token for ${Math.round(
+                    SSE_IDLE_TIMEOUT_MS / 1000,
+                  )}s`,
+                ),
+              ),
+            remainingMs,
           );
           // Clear timeout if the read resolves first
           void readPromise.finally(() => clearTimeout(id));
         });
         ({ done, value } = await Promise.race([readPromise, timeoutPromise]));
       } catch (streamErr) {
-        console.warn("[api-client] SSE stream interrupted:", streamErr);
-        void reader.cancel("elizaos-sse-idle-timeout").catch(() => {});
+        // Distinguish a caller-initiated abort (user pressed stop, started a
+        // new send, or edited a message) from a genuine stall. Only the latter
+        // is a "no response" condition the UI should surface for retry.
+        const callerAborted = signal?.aborted === true;
+        if (!callerAborted) {
+          console.warn("[api-client] SSE stream stalled:", streamErr);
+          idleTimedOut = true;
+        }
+        void reader
+          .cancel(
+            callerAborted
+              ? "elizaos-sse-caller-abort"
+              : "elizaos-sse-idle-timeout",
+          )
+          .catch(() => {});
         break;
       }
       if (done || !value) break;
@@ -802,6 +839,7 @@ export class ElizaClient {
         ? { noResponseReason: doneNoResponseReason }
         : {}),
       ...(doneUsage ? { usage: doneUsage } : {}),
+      ...(idleTimedOut ? { timedOut: true } : {}),
     };
   }
 }

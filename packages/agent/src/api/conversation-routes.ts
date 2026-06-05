@@ -1220,10 +1220,17 @@ export async function handleConversationRoutes(
     // ── Local runtime path (streaming) ───────────────────────
 
     initSse(res);
+    // AbortController drives generation cancellation. It fires when the client
+    // disconnects, and again in `finally` after the turn ends — so a generation
+    // that outlived its turn (e.g. the route already wrote `done` on timeout)
+    // is told to unwind at its next checkpoint instead of running to completion.
+    const abortController = new AbortController();
     let aborted = false;
-    req.on("close", () => {
+    const markAborted = () => {
       aborted = true;
-    });
+      if (!abortController.signal.aborted) abortController.abort();
+    };
+    req.on("close", markAborted);
 
     // SSE heartbeat to keep connection alive during long generation
     const heartbeatInterval = setInterval(() => {
@@ -1241,6 +1248,7 @@ export async function handleConversationRoutes(
         state.agentName,
         {
           isAborted: () => aborted,
+          signal: abortController.signal,
           onChunk: (chunk) => {
             if (!chunk) return;
             streamedText += chunk;
@@ -1265,36 +1273,54 @@ export async function handleConversationRoutes(
             state.logBuffer,
             runtime,
           );
-          if (result.actionCallbackHistory?.length) {
-            await persistRecentAssistantActionCallbackHistory(
-              runtime,
-              conv.roomId,
-              result.actionCallbackHistory,
-              turnStartedAt,
-            );
-          }
-          if (
-            await shouldPersistFinalAssistantTurn(
-              runtime,
-              conv.roomId,
-              turnStartedAt,
-              result,
-            )
-          ) {
-            await persistAssistantConversationMemory(
-              runtime,
-              conv.roomId,
-              buildPersistedAssistantContent(resolvedText, result),
-              channelType,
-              turnStartedAt,
-            );
-          }
+          // Send `done` BEFORE persisting. The answer is complete; gating the
+          // terminal event on a DB write meant a slow/remote store left the
+          // client's "thinking" indicator spinning after the reply was ready
+          // (heartbeats kept the socket open, so the UI could hang until reload).
           writeSseJson(res, {
             type: "done",
             fullText: resolvedText,
             agentName: result.agentName,
             ...(result.usage ? { estimatedUsage: result.usage } : {}),
           });
+          // Persistence is server-side bookkeeping (conversation history); it no
+          // longer affects what the user sees, so failures here are logged, not
+          // surfaced as a stream error after a successful turn.
+          try {
+            if (result.actionCallbackHistory?.length) {
+              await persistRecentAssistantActionCallbackHistory(
+                runtime,
+                conv.roomId,
+                result.actionCallbackHistory,
+                turnStartedAt,
+              );
+            }
+            if (
+              await shouldPersistFinalAssistantTurn(
+                runtime,
+                conv.roomId,
+                turnStartedAt,
+                result,
+              )
+            ) {
+              await persistAssistantConversationMemory(
+                runtime,
+                conv.roomId,
+                buildPersistedAssistantContent(resolvedText, result),
+                channelType,
+                turnStartedAt,
+              );
+            }
+          } catch (persistErr) {
+            logger.warn(
+              {
+                err: getErrorMessage(persistErr),
+                src: "tokagent-api",
+                roomId: conv.roomId,
+              },
+              "Post-done assistant persistence failed (turn already delivered)",
+            );
+          }
         } else {
           writeSseJson(res, {
             type: "done",
@@ -1368,6 +1394,10 @@ export async function handleConversationRoutes(
       }
     } finally {
       clearInterval(heartbeatInterval);
+      // Signal any generation still running past this turn (e.g. a leaked LLM
+      // call after a 90s timeout fallback was already sent) to unwind at its
+      // next checkpoint instead of consuming provider capacity to completion.
+      if (!abortController.signal.aborted) abortController.abort();
       res.end();
     }
     return true;

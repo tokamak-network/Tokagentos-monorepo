@@ -189,6 +189,8 @@ declare module "./client-base" {
       completed: boolean;
       noResponseReason?: "ignored";
       usage?: ChatTokenUsage;
+      /** True when the stream stalled (watchdog fired), not a clean end. */
+      timedOut?: boolean;
     }>;
     requestGreeting(
       id: string,

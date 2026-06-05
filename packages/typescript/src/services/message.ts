@@ -968,6 +968,8 @@ type ResolvedMessageOptions = {
 	keepExistingResponses: boolean;
 	onStreamChunk?: StreamChunkCallback;
 	shouldRespondModel: ShouldRespondModelType;
+	/** Propagated to model generation so an aborted turn cancels the LLM call. */
+	abortSignal?: AbortSignal;
 };
 
 function normalizeShouldRespondModelType(
@@ -2448,6 +2450,7 @@ export class DefaultMessageService implements IMessageService {
 							String(runtime.getSetting("BASIC_CAPABILITIES_KEEP_RESP") ?? ""),
 						),
 					shouldRespondModel: resolvedShouldRespondModel,
+					abortSignal: options?.abortSignal,
 				};
 
 				const instrumentedCallback = wrapSingleTurnVisibleCallback(
@@ -4782,6 +4785,7 @@ export class DefaultMessageService implements IMessageService {
 						streamingExtractor,
 						opts.onStreamChunk,
 						responseId,
+						opts.abortSignal,
 					)
 				: undefined;
 
@@ -4859,6 +4863,7 @@ export class DefaultMessageService implements IMessageService {
 				maxRetries: opts.maxRetries,
 				// Stream through the filtered context callback for real-time output
 				onStreamChunk: streamingCtx?.onStreamChunk,
+				abortSignal: opts.abortSignal,
 			},
 		});
 
@@ -4952,6 +4957,7 @@ Output ONLY the continuation, starting immediately after the last character abov
 						preferredEncapsulation: "xml",
 						contextCheckLevel: 0, // Fast mode for continuations - we trust the model
 						onStreamChunk: streamingCtx?.onStreamChunk,
+						abortSignal: opts.abortSignal,
 					},
 				});
 
@@ -6059,6 +6065,7 @@ Output ONLY the continuation, starting immediately after the last character abov
 				requiredFields: ["text"],
 				// Stream the final summary to the user
 				onStreamChunk: opts.onStreamChunk,
+				abortSignal: opts.abortSignal,
 			},
 		});
 

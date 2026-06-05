@@ -1009,6 +1009,7 @@ export function createStreamingContext(
 	extractor: IStreamExtractor,
 	onStreamChunk: StreamChunkCallback,
 	messageId?: string,
+	abortSignal?: AbortSignal,
 ): StreamingContext & IStreamingRetryState {
 	const retryState = createStreamingRetryState(extractor);
 
@@ -1032,6 +1033,7 @@ export function createStreamingContext(
 			}
 		},
 		messageId,
+		...(abortSignal ? { abortSignal } : {}),
 		reset: retryState.reset,
 		getStreamedText: retryState.getStreamedText,
 		isComplete: retryState.isComplete,

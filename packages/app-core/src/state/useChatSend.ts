@@ -546,6 +546,17 @@ export function useChatSend(deps: UseChatSendDeps) {
           setConversationMessages((prev) =>
             prev.filter((message) => message.id !== assistantMsgId),
           );
+          if (data.timedOut) {
+            // The stream stalled before any token arrived. Sending state is
+            // reset by flushQueuedChatSends' finally, so the UI self-heals —
+            // surface the failure and keep the user's message for an easy retry
+            // instead of leaving an empty thread that needs a page refresh.
+            setActionNotice(
+              "The agent didn't respond in time. Please try again.",
+              "error",
+              5000,
+            );
+          }
         } else if (
           shouldApplyFinalStreamText(streamedAssistantText, data.text)
         ) {
@@ -693,6 +704,7 @@ export function useChatSend(deps: UseChatSendDeps) {
       setCompanionMessageCutoffTs,
       setConversationMessages,
       setConversations,
+      setActionNotice,
       uiLanguage,
       tokagentCloudEnabled,
       tokagentCloudConnected,
@@ -902,6 +914,16 @@ export function useChatSend(deps: UseChatSendDeps) {
             setConversationMessages((prev) =>
               prev.filter((message) => message.id !== assistantMsgId),
             );
+            if (data.timedOut) {
+              // Stream stalled before any token — self-heal and tell the user
+              // rather than silently dropping the turn (which looked like a hang
+              // that only a page refresh recovered).
+              setActionNotice(
+                "The agent didn't respond in time. Please try again.",
+                "error",
+                5000,
+              );
+            }
           } else if (
             shouldApplyFinalStreamText(streamedAssistantText, data.text)
           ) {
