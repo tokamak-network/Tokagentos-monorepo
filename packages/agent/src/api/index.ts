@@ -25,6 +25,7 @@ export * from "./parse-action-block.js";
 export * from "./permissions-routes.js";
 export * from "./plugin-validation.js";
 export * from "./provider-switch-config.js";
+export * from "./quick-config-routes.js";
 export * from "./rate-limiter.js";
 export * from "./registry-routes.js";
 export * from "./registry-service.js";

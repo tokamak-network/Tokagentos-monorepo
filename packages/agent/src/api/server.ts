@@ -31,8 +31,6 @@ const MAX_BODY_BYTES = 1024 * 1024; // 1 MB
 import net from "node:net";
 import os from "node:os";
 import path from "node:path";
-// Discord local routes extracted to @elizaos/plugin-discord (setup-routes.ts)
-import { DropService, handleDropRoutes } from "@tokagentos/app-tokagentmaker";
 import { handleKnowledgeRoutes } from "@tokagentos/app-knowledge/routes";
 import { TxService } from "@tokagentos/app-steward/api/tx-service";
 import type {
@@ -42,6 +40,8 @@ import type {
 } from "@tokagentos/app-task-coordinator/api/coordinator-types";
 import { wireCoordinatorBridgesWhenReady } from "@tokagentos/app-task-coordinator/api/coordinator-wiring";
 import { routeTaskAgentTextToConnector } from "@tokagentos/app-task-coordinator/api/task-agent-message-routing";
+// Discord local routes extracted to @elizaos/plugin-discord (setup-routes.ts)
+import { DropService, handleDropRoutes } from "@tokagentos/app-tokagentmaker";
 // Phase 2 extraction: LifeOps routes → app-lifeops/src/routes/plugin.ts (lifeopsPlugin)
 // import { handleWalletTradeExecuteRoute } from "./wallet-trade-routes.js";
 // import {
@@ -76,9 +76,9 @@ import { type WebSocket, WebSocketServer } from "ws";
 import { getGlobalAwarenessRegistry } from "../awareness/registry.js";
 import { CharacterSchema } from "../config/character-schema.js";
 import {
-  type TokagentConfig,
   loadTokagentConfig,
   saveTokagentConfig,
+  type TokagentConfig,
 } from "../config/config.js";
 import { resolveModelsCacheDir, resolveStateDir } from "../config/paths.js";
 import { isStreamingDestinationConfigured } from "../config/plugin-auto-enable.js";
@@ -216,6 +216,7 @@ import { handlePermissionRoutes } from "./permissions-routes.js";
 import { handlePermissionsExtraRoutes } from "./permissions-routes-extra.js";
 import { handlePluginRoutes } from "./plugin-routes.js";
 import { handleProviderSwitchRoutes } from "./provider-switch-routes.js";
+import { handleQuickConfigRoutes } from "./quick-config-routes.js";
 import { handleRegistryRoutes } from "./registry-routes.js";
 import { RegistryService } from "./registry-service.js";
 import { handleRelationshipsRoutes } from "./relationships-routes.js";
@@ -3357,6 +3358,25 @@ async function handleRequest(
     ) {
       return;
     }
+
+    // POST /api/config/quick-setup — minimal Settings page hand-off:
+    // writes TOKAGENT_PRIVATE_KEY + per-chain RPC URLs to config.env via
+    // persistConfigEnv, then triggers a runtime restart.
+    if (
+      await handleQuickConfigRoutes({
+        req,
+        res,
+        method,
+        pathname,
+        restartRuntime,
+        scheduleRuntimeRestart,
+        readJsonBody,
+        json,
+        error,
+      })
+    ) {
+      return;
+    }
   }
 
   // ═══════════════════════════════════════════════════════════════════════
@@ -3787,9 +3807,9 @@ async function handleRequest(
   // 'end' event has already fired by the time chat-routes runs.
   // Only fires when no plugin claimed the path above.
   // ═══════════════════════════════════════════════════════════════════════
-  let _billingCommit: ChatRouteArg["billingCommit"] = undefined;
+  let _billingCommit: ChatRouteArg["billingCommit"];
   let _billingRelease: ((outcome: string) => Promise<void>) | undefined;
-  let _billingBody: unknown = undefined;
+  let _billingBody: unknown;
   if (state.billingMiddleware) {
     const isGatedPath =
       pathname === "/v1/messages" || pathname === "/v1/chat/completions";
@@ -4231,7 +4251,9 @@ export async function startApiServer(opts?: {
   const port = opts?.port ?? resolveServerOnlyPort(process.env);
   const host = resolveApiBindHost(process.env);
   ensureApiTokenForBindHost(host);
-  console.log(`[tokagent-api] Token check done (${Date.now() - apiStartTime}ms)`);
+  console.log(
+    `[tokagent-api] Token check done (${Date.now() - apiStartTime}ms)`,
+  );
 
   let config: TokagentConfig;
   try {
@@ -4296,7 +4318,8 @@ export async function startApiServer(opts?: {
         persistedEnv.EVM_PRIVATE_KEY.trim()) ||
       (typeof persistedEnv?.SOLANA_PRIVATE_KEY === "string" &&
         persistedEnv.SOLANA_PRIVATE_KEY.trim());
-    const osStoreRaw = process.env.TOKAGENT_WALLET_OS_STORE?.trim().toLowerCase();
+    const osStoreRaw =
+      process.env.TOKAGENT_WALLET_OS_STORE?.trim().toLowerCase();
     const osStoreEnabled =
       osStoreRaw === "1" ||
       osStoreRaw === "true" ||
@@ -5139,7 +5162,9 @@ export async function startApiServer(opts?: {
             ws.send(JSON.stringify({ type: "auth-ok" }));
             activateAuthenticatedConnection();
           } else {
-            logger.warn("[tokagent-api] WebSocket message rejected before auth");
+            logger.warn(
+              "[tokagent-api] WebSocket message rejected before auth",
+            );
             ws.close(1008, "Unauthorized");
           }
           return;

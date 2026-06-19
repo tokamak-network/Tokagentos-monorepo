@@ -1,1244 +1,353 @@
-import { CodingAgentSettingsSection } from "@tokagentos/app-task-coordinator";
+/**
+ * Settings page — minimal "paste a key + RPC URLs, restart" surface.
+ *
+ * Two inputs:
+ *   1. operator private key  → TOKAGENT_PRIVATE_KEY
+ *   2. one URL per chain     → per-chain env keys (see quick-config-routes.ts)
+ *
+ * Submit calls /api/config/quick-setup (same-origin → local agent), which
+ * writes config.env via persistConfigEnv() and triggers a runtime restart.
+ *
+ * Anything richer (cloud wallet provisioning, OS-keychain import, balance
+ * reads, per-chain fallback lists) lives in the /wallet page — keep this
+ * one ruthlessly simple.
+ */
+
 import {
   Button,
-  Checkbox,
   cn,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
   Input,
   Label,
-  PageLayout,
   PagePanel,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarPanel,
-  SidebarScrollRegion,
   Spinner,
-  Switch,
-  useLinkedSidebarSelection,
 } from "@tokagentos/ui";
-import { AlertTriangle, Download, Upload } from "lucide-react";
-import {
-  type ComponentPropsWithoutRef,
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { type ComputerUseApprovalMode, client } from "../../api/client";
+import { Plus, Trash2 } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+
+import { client } from "../../api/client";
+import type {
+  QuickConfigChain,
+  QuickConfigRpcEntry,
+  QuickConfigSaveResponse,
+} from "../../api/client-quick-config";
 import { useApp } from "../../state";
-import { WidgetHost } from "../../widgets";
-import { LocalInferencePanel } from "../local-inference/LocalInferencePanel";
-import { AppearanceSettingsSection } from "../settings/AppearanceSettingsSection";
-import { LearnedSkillsPanel } from "../settings/LearnedSkills";
-import { MediaSettingsSection } from "../settings/MediaSettingsSection";
-import { FeatureTogglesSection } from "../settings/FeatureTogglesSection";
-import { PermissionsSection } from "../settings/PermissionsSection";
-import { ProviderSwitcher } from "../settings/ProviderSwitcher";
-import { TrainingSettingsPanel } from "../settings/TrainingSettings";
-import { ReleaseCenterView } from "./ReleaseCenterView";
 
-interface SettingsSectionDef {
-  id: string;
-  label: string;
-  description?: string;
-  keywords?: string[];
-  keywordKeys?: string[];
-}
+const PRIVATE_KEY_PATTERN = /^0x[0-9a-fA-F]{64}$/;
 
-const SETTINGS_CONTENT_CLASS =
-  "[scroll-padding-top:7rem] [scrollbar-gutter:stable] scroll-smooth bg-bg/10 pb-6 pt-4 sm:pb-8 sm:pt-5 lg:pb-10 lg:pt-6";
-const SETTINGS_CONTENT_WIDTH_CLASS = "w-full min-h-0";
-const SETTINGS_SECTION_STACK_CLASS = "space-y-6 pb-14 sm:space-y-8 sm:pb-16";
-
-const SETTINGS_SECTIONS: SettingsSectionDef[] = [
-  {
-    // One section for every model source — cloud providers, local llama.cpp
-    // engine, and paired-device bridge all live here. Multiple can be
-    // enabled simultaneously; the runtime dispatches each ModelType to the
-    // highest-priority handler that claimed it.
-    id: "ai-model",
-    label: "settings.sections.aimodel.label",
-    description: "settings.sections.aimodel.desc",
-    keywords: [
-      "model",
-      "provider",
-      "openai",
-      "anthropic",
-      "grok",
-      "gemini",
-      "api key",
-      "inference",
-      "llm",
-      "local",
-      "llama",
-      "llama.cpp",
-      "gguf",
-      "download",
-      "offline",
-      "gpu",
-      "vram",
-      "device",
-      "phone",
-    ],
-    keywordKeys: [
-      "settings.keyword.model",
-      "settings.keyword.provider",
-      "settings.keyword.apiKey",
-      "settings.keyword.inference",
-    ],
-  },
-  {
-    id: "coding-agents",
-    label: "settings.sections.codingagents.label",
-    description: "settings.codingAgentsDescription",
-    keywords: [
-      "codex",
-      "agent",
-      "reasoning",
-      "parallel",
-      "approval",
-      "routing",
-      "provider routing",
-      "task coordinator",
-      "task agents",
-    ],
-  },
-  {
-    id: "media",
-    label: "settings.sections.media.label",
-    description: "settings.sections.media.desc",
-    keywords: [
-      "audio",
-      "voice",
-      "video",
-      "camera",
-      "microphone",
-      "speech",
-      "tts",
-      "avatar",
-    ],
-    keywordKeys: [
-      "settings.keyword.voice",
-      "settings.keyword.audio",
-      "settings.keyword.camera",
-      "settings.keyword.microphone",
-    ],
-  },
-  {
-    id: "appearance",
-    label: "settings.sections.appearance.label",
-    description: "settings.sections.appearance.desc",
-    keywords: [
-      "appearance",
-      "theme",
-      "content pack",
-      "vrm",
-      "avatar",
-      "background",
-      "color scheme",
-      "skin",
-      "character",
-    ],
-    keywordKeys: [
-      "settings.keyword.theme",
-      "settings.keyword.avatar",
-      "settings.keyword.appearance",
-    ],
-  },
-  {
-    id: "capabilities",
-    label: "settings.sections.capabilities.label",
-    description: "settings.sections.capabilities.desc",
-    keywords: [
-      "capabilities",
-      "wallet",
-      "browser",
-      "computer use",
-      "computeruse",
-      "desktop control",
-      "screen recording",
-      "accessibility",
-      "approval mode",
-      "enable",
-      "disable",
-      "feature",
-    ],
-    keywordKeys: ["settings.keyword.wallet", "settings.keyword.browser"],
-  },
-  {
-    id: "feature-toggles",
-    label: "Features",
-    description: "Opt in to LifeOps capabilities like push notifications and browser automation.",
-    keywords: [
-      "feature",
-      "toggle",
-      "push",
-      "notification",
-      "browser",
-      "automation",
-      "opt in",
-      "opt out",
-    ],
-    keywordKeys: ["settings.keyword.features"],
-  },
-  {
-    id: "permissions",
-    label: "settings.sections.permissions.label",
-    description: "settings.sections.permissions.desc",
-    keywords: [
-      "permissions",
-      "desktop",
-      "filesystem",
-      "security",
-      "microphone permission",
-      "camera permission",
-      "file access",
-    ],
-    keywordKeys: ["settings.keyword.permissions", "settings.keyword.security"],
-  },
-  {
-    id: "learned-skills",
-    label: "settings.sections.learnedSkills.label",
-    description: "settings.sections.learnedSkills.desc",
-    keywords: [
-      "learned",
-      "skills",
-      "curated",
-      "trajectory",
-      "training",
-      "agent",
-      "promote",
-      "disable",
-    ],
-    keywordKeys: ["settings.keyword.skills", "settings.keyword.training"],
-  },
-  {
-    id: "auto-training",
-    label: "settings.sections.autoTraining.label",
-    description: "settings.sections.autoTraining.desc",
-    keywords: [
-      "auto",
-      "training",
-      "auto-train",
-      "trigger",
-      "threshold",
-      "cooldown",
-      "vertex",
-      "atropos",
-      "tinker",
-      "native",
-      "trajectory",
-      "fine-tune",
-      "fine tune",
-    ],
-    keywordKeys: ["settings.keyword.training"],
-  },
-  {
-    id: "updates",
-    label: "settings.sections.updates.label",
-    description: "settings.sections.updates.desc",
-    keywords: ["updates", "release", "version", "download"],
-    keywordKeys: ["settings.keyword.updates"],
-  },
-  {
-    id: "advanced",
-    label: "nav.advanced",
-    description: "settings.sections.advanced.desc",
-    keywords: [
-      "advanced",
-      "export",
-      "import",
-      "reset",
-      "debug",
-      "backup",
-      "restore",
-      "danger zone",
-    ],
-    keywordKeys: [
-      "settings.keyword.advanced",
-      "settings.keyword.export",
-      "settings.keyword.import",
-      "settings.keyword.reset",
-    ],
-  },
+const CHAIN_OPTIONS: { value: QuickConfigChain; label: string }[] = [
+  { value: "ethereum", label: "Ethereum mainnet" },
+  { value: "polygon", label: "Polygon" },
+  { value: "base", label: "Base" },
+  { value: "arbitrum", label: "Arbitrum" },
+  { value: "optimism", label: "Optimism" },
+  { value: "bsc", label: "BNB Chain" },
 ];
 
-function matchesSettingsSection(
-  section: SettingsSectionDef,
-  query: string,
-  t: (key: string) => string,
-): boolean {
-  const normalized = query.trim().toLowerCase();
-  if (!normalized) return true;
-  return (
-    t(section.label).toLowerCase().includes(normalized) ||
-    (section.description
-      ? t(section.description).toLowerCase().includes(normalized)
-      : false) ||
-    (section.keywords ?? []).some((keyword) =>
-      keyword.toLowerCase().includes(normalized),
-    ) ||
-    (section.keywordKeys ?? []).some((key) =>
-      t(key).toLowerCase().includes(normalized),
-    )
-  );
+interface RpcRow {
+  // Stable React key — independent of chain so re-selecting chain doesn't
+  // remount the row.
+  rowId: string;
+  chain: QuickConfigChain;
+  url: string;
 }
 
-interface SettingsSectionProps extends ComponentPropsWithoutRef<"section"> {
-  title?: string;
-  description?: string;
-  bodyClassName?: string;
+function newRowId(): string {
+  return `rpc-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-const SettingsSection = forwardRef<HTMLElement, SettingsSectionProps>(
-  function SettingsSection(
-    { title, description, bodyClassName, className, children, ...props },
-    ref,
-  ) {
-    if (title || description) {
-      return (
-        <PagePanel.CollapsibleSection
-          ref={ref}
-          as="section"
-          expanded
-          variant="section"
-          heading={title ?? ""}
-          description={description}
-          bodyClassName={bodyClassName}
-          className={className}
-          {...props}
-        >
-          {children}
-        </PagePanel.CollapsibleSection>
-      );
-    }
-
-    return (
-      <section
-        ref={ref}
-        data-content-align-offset={4}
-        className={className}
-        {...props}
-      >
-        <PagePanel variant="section">
-          <div className={cn("p-4 sm:p-5", bodyClassName)}>{children}</div>
-        </PagePanel>
-      </section>
-    );
-  },
-);
-
-/* ── Capabilities Section ────────────────────────────────────────────── */
-
-function CapabilitiesSection() {
-  const {
-    walletEnabled,
-    browserEnabled,
-    computerUseEnabled,
-    setActionNotice,
-    setState,
-    t,
-  } = useApp();
-  const [computerUseApprovalMode, setComputerUseApprovalMode] =
-    useState<ComputerUseApprovalMode>("full_control");
-  const [computerUseModeBusy, setComputerUseModeBusy] = useState(false);
-
-  useEffect(() => {
-    if (!computerUseEnabled) {
-      return;
-    }
-
-    let cancelled = false;
-    void client
-      .getComputerUseApprovals()
-      .then((snapshot) => {
-        if (!cancelled) {
-          setComputerUseApprovalMode(snapshot.mode);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setComputerUseApprovalMode("full_control");
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [computerUseEnabled]);
-
-  const handleComputerUseApprovalModeChange = useCallback(
-    async (nextMode: string) => {
-      setComputerUseApprovalMode(nextMode as ComputerUseApprovalMode);
-      setComputerUseModeBusy(true);
-      try {
-        const result = await client.setComputerUseApprovalMode(
-          nextMode as ComputerUseApprovalMode,
-        );
-        setComputerUseApprovalMode(result.mode);
-        setActionNotice(
-          t("settings.sections.capabilities.computerUseModeSaved", {
-            defaultValue: `Computer use approval mode set to ${result.mode}.`,
-          }),
-          "success",
-          2600,
-        );
-      } catch (error) {
-        setActionNotice(
-          error instanceof Error
-            ? error.message
-            : t("settings.sections.capabilities.computerUseModeFailed", {
-                defaultValue: "Failed to update computer use approval mode.",
-              }),
-          "error",
-          3600,
-        );
-      } finally {
-        setComputerUseModeBusy(false);
-      }
-    },
-    [setActionNotice, t],
-  );
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="font-medium text-sm">
-            {t("settings.sections.capabilities.walletLabel", {
-              defaultValue: "Enable Wallet",
-            })}
-          </div>
-          <div className="text-xs text-muted">
-            {t("settings.sections.wallet.enableHint", {
-              defaultValue:
-                "Show the Wallet tab for managing crypto wallets and token balances",
-            })}
-          </div>
-        </div>
-        <Switch
-          checked={walletEnabled}
-          onCheckedChange={(checked: boolean | "indeterminate") =>
-            setState("walletEnabled", !!checked)
-          }
-          aria-label={t("settings.sections.capabilities.walletLabel", {
-            defaultValue: "Enable Wallet",
-          })}
-        />
-      </div>
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="font-medium text-sm">
-            {t("settings.sections.capabilities.browserLabel", {
-              defaultValue: "Enable Browser",
-            })}
-          </div>
-          <div className="text-xs text-muted">
-            {t("settings.sections.capabilities.browserHint", {
-              defaultValue:
-                "Show the Browser tab for agent-controlled web browsing",
-            })}
-          </div>
-        </div>
-        <Switch
-          checked={browserEnabled}
-          onCheckedChange={(checked: boolean | "indeterminate") =>
-            setState("browserEnabled", !!checked)
-          }
-          aria-label={t("settings.sections.capabilities.browserLabel", {
-            defaultValue: "Enable Browser",
-          })}
-        />
-      </div>
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="font-medium text-sm">
-            {t("settings.sections.capabilities.computerUseLabel", {
-              defaultValue: "Enable Computer Use",
-            })}
-          </div>
-          <div className="text-xs text-muted">
-            {t("settings.sections.capabilities.computerUseHint", {
-              defaultValue:
-                "Allow the agent to control your mouse, keyboard, take screenshots, and automate browsers",
-            })}
-          </div>
-        </div>
-        <Switch
-          checked={computerUseEnabled}
-          onCheckedChange={(checked: boolean | "indeterminate") =>
-            setState("computerUseEnabled", !!checked)
-          }
-          aria-label={t("settings.sections.capabilities.computerUseLabel", {
-            defaultValue: "Enable Computer Use",
-          })}
-        />
-      </div>
-      {computerUseEnabled && (
-        <div className="ml-4 space-y-2 border-l-2 border-border/40 pl-4">
-          <div className="text-xs text-muted">
-            {t("settings.sections.capabilities.computerUseConfigHint", {
-              defaultValue:
-                "Computer Use requires Accessibility and Screen Recording permissions on macOS. On Linux, install xdotool. Configure fine-grained permissions in the Permissions section below.",
-            })}
-          </div>
-          <div className="space-y-2">
-            <div className="font-medium text-sm">
-              {t("settings.sections.capabilities.computerUseModeLabel", {
-                defaultValue: "Approval Mode",
-              })}
-            </div>
-            <div className="text-xs text-muted">
-              {t("settings.sections.capabilities.computerUseModeHint", {
-                defaultValue:
-                  "Choose whether computer actions run automatically, only safe reads auto-run, every action requires review, or all actions are paused.",
-              })}
-            </div>
-            <Select
-              value={computerUseApprovalMode}
-              onValueChange={(value) => {
-                void handleComputerUseApprovalModeChange(value);
-              }}
-              disabled={computerUseModeBusy}
-            >
-              <SelectTrigger className="max-w-xs">
-                <SelectValue
-                  placeholder={t(
-                    "settings.sections.capabilities.computerUseModeLabel",
-                    {
-                      defaultValue: "Approval Mode",
-                    },
-                  )}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="full_control">Full Control</SelectItem>
-                <SelectItem value="smart_approve">Smart Approve</SelectItem>
-                <SelectItem value="approve_all">Review Every Action</SelectItem>
-                <SelectItem value="off">Pause Computer Use</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+function defaultRows(): RpcRow[] {
+  return [{ rowId: newRowId(), chain: "ethereum", url: "" }];
 }
 
-/* ── Updates Section ─────────────────────────────────────────────────── */
-
-function UpdatesSection() {
-  return <ReleaseCenterView />;
+function isValidUrl(value: string): boolean {
+  if (value.length === 0) return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
 }
-
-/* ── Advanced Section ─────────────────────────────────────────────────── */
-
-function AdvancedSection() {
-  const { t } = useApp();
-  const {
-    handleReset,
-    exportBusy,
-    exportPassword,
-    exportIncludeLogs,
-    exportError,
-    exportSuccess,
-    importBusy,
-    importPassword,
-    importFile,
-    importError,
-    importSuccess,
-    handleAgentExport,
-    handleAgentImport,
-    setState,
-  } = useApp();
-  const [exportModalOpen, setExportModalOpen] = useState(false);
-  const [importModalOpen, setImportModalOpen] = useState(false);
-  const importFileInputRef = useRef<HTMLInputElement>(null);
-
-  const resetExportState = useCallback(() => {
-    setState("exportPassword", "");
-    setState("exportIncludeLogs", false);
-    setState("exportError", null);
-    setState("exportSuccess", null);
-  }, [setState]);
-
-  const resetImportState = useCallback(() => {
-    if (importFileInputRef.current) {
-      importFileInputRef.current.value = "";
-    }
-    setState("importPassword", "");
-    setState("importFile", null);
-    setState("importError", null);
-    setState("importSuccess", null);
-  }, [setState]);
-
-  const openExportModal = useCallback(() => {
-    resetExportState();
-    setExportModalOpen(true);
-  }, [resetExportState]);
-
-  const closeExportModal = useCallback(() => {
-    setExportModalOpen(false);
-    resetExportState();
-  }, [resetExportState]);
-
-  const openImportModal = useCallback(() => {
-    resetImportState();
-    setImportModalOpen(true);
-  }, [resetImportState]);
-
-  const closeImportModal = useCallback(() => {
-    setImportModalOpen(false);
-    resetImportState();
-  }, [resetImportState]);
-
-  return (
-    <>
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={openExportModal}
-            className="min-h-[5.5rem] h-auto rounded-[calc(var(--radius-xl)+2px)] border border-border/50 bg-card/60 p-5 text-left backdrop-blur-md transition-[transform,border-color,background-color,box-shadow] group hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_4px_20px_rgba(var(--accent-rgb),0.1)]"
-            aria-haspopup="dialog"
-          >
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-bg-accent p-3 shadow-sm transition-all group-hover:border-accent group-hover:bg-accent">
-              <Download className="h-5 w-5 shrink-0 text-txt transition-colors group-hover:text-accent-fg" />
-            </div>
-            <div>
-              <div className="font-medium text-sm">
-                {t("settings.exportAgent")}
-              </div>
-              <div className="text-xs text-muted">
-                {t("settings.exportAgentShort")}
-              </div>
-            </div>
-          </Button>
-
-          <Button
-            variant="outline"
-            type="button"
-            onClick={openImportModal}
-            className="min-h-[5.5rem] h-auto rounded-[calc(var(--radius-xl)+2px)] border border-border/50 bg-card/60 p-5 text-left backdrop-blur-md transition-[transform,border-color,background-color,box-shadow] group hover:-translate-y-0.5 hover:border-accent hover:shadow-[0_4px_20px_rgba(var(--accent-rgb),0.1)]"
-            aria-haspopup="dialog"
-          >
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-border/50 bg-bg-accent p-3 shadow-sm transition-all group-hover:border-accent group-hover:bg-accent">
-              <Upload className="h-5 w-5 shrink-0 text-txt transition-colors group-hover:text-accent-fg" />
-            </div>
-            <div>
-              <div className="font-medium text-sm">
-                {t("settings.importAgent")}
-              </div>
-              <div className="text-xs text-muted">
-                {t("settings.importAgentShort")}
-              </div>
-            </div>
-          </Button>
-        </div>
-        <div className="border border-danger/30 rounded-2xl overflow-hidden bg-bg/40 backdrop-blur-sm">
-          <div className="bg-danger/10 px-5 py-3 border-b border-danger/20 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-danger" />
-            <span className="font-bold text-sm text-danger tracking-wide uppercase">
-              {t("settings.dangerZone")}
-            </span>
-          </div>
-          <div className="p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium text-sm">
-                  {t("settings.resetAgent")}
-                </div>
-                <div className="text-xs text-muted">
-                  {t("settings.resetAgentHint")}
-                </div>
-              </div>
-              <Button
-                variant="destructive"
-                size="sm"
-                className="rounded-xl shadow-sm whitespace-nowrap"
-                onClick={() => {
-                  void handleReset();
-                }}
-              >
-                {t("settings.resetEverything")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <Dialog
-        open={exportModalOpen}
-        onOpenChange={(open: boolean) => {
-          if (!open) closeExportModal();
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("settings.exportAgent")}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label
-                htmlFor="settings-export-password"
-                className="text-txt-strong"
-              >
-                {t("settingsview.Password")}
-              </Label>
-              <Input
-                id="settings-export-password"
-                type="password"
-                value={exportPassword}
-                onChange={(e) => setState("exportPassword", e.target.value)}
-                placeholder={t("settingsview.EnterExportPasswor")}
-                className="rounded-lg bg-bg"
-              />
-              <Label className="flex items-center gap-2 font-normal text-muted">
-                <Checkbox
-                  checked={exportIncludeLogs}
-                  onCheckedChange={(checked: boolean | "indeterminate") =>
-                    setState("exportIncludeLogs", !!checked)
-                  }
-                />
-
-                {t("settingsview.IncludeRecentLogs")}
-              </Label>
-            </div>
-
-            {exportError && (
-              <div
-                className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger"
-                role="alert"
-                aria-live="assertive"
-              >
-                {exportError}
-              </div>
-            )}
-            {exportSuccess && (
-              <div
-                className="rounded-lg border border-ok/30 bg-ok/10 px-3 py-2 text-sm text-ok"
-                role="status"
-                aria-live="polite"
-              >
-                {exportSuccess}
-              </div>
-            )}
-
-            <div className="flex items-center justify-end gap-2 pt-1">
-              <Button
-                variant="outline"
-                size="sm"
-                className="min-h-[2.625rem] px-4 rounded-[calc(var(--radius-lg)+2px)]"
-                onClick={closeExportModal}
-              >
-                {t("common.cancel")}
-              </Button>
-              <Button
-                variant="default"
-                size="sm"
-                className="min-h-[2.625rem] px-4 rounded-[calc(var(--radius-lg)+2px)]"
-                disabled={exportBusy}
-                onClick={() => void handleAgentExport()}
-              >
-                {exportBusy && <Spinner size={16} />}
-                {t("common.export")}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog
-        open={importModalOpen}
-        onOpenChange={(open: boolean) => {
-          if (!open) closeImportModal();
-        }}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t("settings.importAgent")}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <input
-              ref={importFileInputRef}
-              type="file"
-              className="hidden"
-              accept=".tokagent-agent,.agent,application/octet-stream"
-              onChange={(e) =>
-                setState("importFile", e.target.files?.[0] ?? null)
-              }
-            />
-
-            <div className="space-y-2">
-              <div className="text-sm font-medium text-txt-strong">
-                {t("settingsview.BackupFile")}
-              </div>
-              <Button
-                variant="outline"
-                className="min-h-[2.625rem] px-4 rounded-[calc(var(--radius-lg)+2px)] flex w-full items-center justify-between gap-3 text-left"
-                onClick={() => importFileInputRef.current?.click()}
-              >
-                <span className="min-w-0 flex-1 truncate text-sm text-txt">
-                  {importFile?.name ?? t("settingsview.ChooseAnExportedBack")}
-                </span>
-                <span className="shrink-0 text-xs font-medium text-txt">
-                  {importFile
-                    ? t("settings.change", { defaultValue: "Change" })
-                    : t("settings.browse", { defaultValue: "Browse" })}
-                </span>
-              </Button>
-            </div>
-
-            <div className="space-y-2">
-              <Label
-                htmlFor="settings-import-password"
-                className="text-txt-strong"
-              >
-                {t("settingsview.Password")}
-              </Label>
-              <Input
-                id="settings-import-password"
-                type="password"
-                value={importPassword}
-                onChange={(e) => setState("importPassword", e.target.value)}
-                placeholder={t("settingsview.EnterImportPasswor")}
-                className="rounded-lg bg-bg"
-              />
-            </div>
-
-            {importError && (
-              <div
-                className="rounded-lg border border-danger/30 bg-danger/10 px-3 py-2 text-sm text-danger"
-                role="alert"
-                aria-live="assertive"
-              >
-                {importError}
-              </div>
-            )}
-            {importSuccess && (
-              <div
-                className="rounded-lg border border-ok/30 bg-ok/10 px-3 py-2 text-sm text-ok"
-                role="status"
-                aria-live="polite"
-              >
-                {importSuccess}
-              </div>
-            )}
-
-            <div className="flex items-center justify-end gap-2 pt-1">
-              <Button
-                variant="outline"
-                size="sm"
-                className="min-h-[2.625rem] px-4 rounded-[calc(var(--radius-lg)+2px)]"
-                onClick={closeImportModal}
-              >
-                {t("common.cancel")}
-              </Button>
-              <Button
-                variant="default"
-                size="sm"
-                className="min-h-[2.625rem] px-4 rounded-[calc(var(--radius-lg)+2px)]"
-                disabled={importBusy}
-                onClick={() => void handleAgentImport()}
-              >
-                {importBusy && <Spinner size={16} />}
-                {t("settings.import")}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
-  );
-}
-
-/* ── SettingsView ─────────────────────────────────────────────────────── */
 
 export function SettingsView({
   inModal,
   onClose: _onClose,
-  initialSection,
+  initialSection: _initialSection,
 }: {
   inModal?: boolean;
   onClose?: () => void;
   initialSection?: string;
 } = {}) {
-  const { t, loadPlugins } = useApp();
-  const [activeSection, setActiveSection] = useState(initialSection ?? "ai-model");
-  const [searchQuery, setSearchQuery] = useState("");
-  const shellRef = useRef<HTMLDivElement>(null);
+  const { setActionNotice } = useApp();
 
-  const visibleSections = useMemo(
-    () =>
-      SETTINGS_SECTIONS.filter((section) =>
-        matchesSettingsSection(section, searchQuery, t),
-      ),
-    [searchQuery, t],
-  );
-  const visibleSectionIds = useMemo(
-    () => new Set(visibleSections.map((section) => section.id)),
-    [visibleSections],
-  );
-  const {
-    contentContainerRef,
-    queueContentAlignment,
-    registerContentItem,
-    registerSidebarItem,
-  } = useLinkedSidebarSelection<string>({
-    contentTopOffset: 24,
-    enabled: visibleSections.length > 0,
-    selectedId: visibleSectionIds.has(activeSection) ? activeSection : null,
-    topAlignedId: visibleSections[0]?.id ?? null,
-  });
-
-  useEffect(() => {
-    void loadPlugins();
-  }, [loadPlugins]);
-
-  const handleSectionChange = useCallback(
-    (sectionId: string) => {
-      setActiveSection(sectionId);
-      queueContentAlignment(sectionId);
-    },
-    [queueContentAlignment],
+  const [privateKey, setPrivateKey] = useState("");
+  const [showPrivateKey, setShowPrivateKey] = useState(false);
+  const [rows, setRows] = useState<RpcRow[]>(defaultRows);
+  const [busy, setBusy] = useState(false);
+  const [lastResult, setLastResult] = useState<QuickConfigSaveResponse | null>(
+    null,
   );
 
-  useEffect(() => {
-    if (visibleSections.length === 0) return;
-    if (!visibleSectionIds.has(activeSection)) {
-      setActiveSection(visibleSections[0].id);
-    }
-  }, [activeSection, visibleSectionIds, visibleSections]);
+  // Chains already in use elsewhere in the table — disabled in other rows'
+  // selectors so the user can't accidentally send a duplicate to the API
+  // (the server enforces this too, but better to prevent than report).
+  const chainsInUse = useMemo(
+    () => new Set(rows.map((row) => row.chain)),
+    [rows],
+  );
 
-  useEffect(() => {
-    if (!initialSection) return;
-    handleSectionChange(initialSection);
-  }, [handleSectionChange, initialSection]);
+  const pkValid = PRIVATE_KEY_PATTERN.test(privateKey);
+  const rowsValid =
+    rows.length === 0 || rows.every((row) => isValidUrl(row.url));
+  const canSubmit = pkValid && rowsValid && !busy;
 
-  useEffect(() => {
-    const shell = shellRef.current;
-    const root = contentContainerRef.current;
-    if (!shell || !root) return;
+  const updateRow = useCallback((rowId: string, patch: Partial<RpcRow>) => {
+    setRows((prev) =>
+      prev.map((row) => (row.rowId === rowId ? { ...row, ...patch } : row)),
+    );
+  }, []);
 
-    const handleScroll = () => {
-      const sections = visibleSections
-        .map((section) => {
-          const el = shell.querySelector(`#${section.id}`);
-          return { id: section.id, el };
-        })
-        .filter(
-          (section): section is { id: string; el: HTMLElement } =>
-            section.el instanceof HTMLElement,
-        );
+  const removeRow = useCallback((rowId: string) => {
+    setRows((prev) => prev.filter((row) => row.rowId !== rowId));
+  }, []);
 
-      if (sections.length === 0) return;
+  const addRow = useCallback(() => {
+    setRows((prev) => {
+      const used = new Set(prev.map((row) => row.chain));
+      const nextChain =
+        CHAIN_OPTIONS.find((opt) => !used.has(opt.value))?.value ?? "ethereum";
+      return [...prev, { rowId: newRowId(), chain: nextChain, url: "" }];
+    });
+  }, []);
 
-      if (
-        root.scrollHeight - Math.ceil(root.scrollTop) <=
-        root.clientHeight + 10
-      ) {
-        setActiveSection(sections[sections.length - 1].id);
-        return;
-      }
-
-      const rootRect = root.getBoundingClientRect();
-      let currentSection = sections[0].id;
-
-      for (const { id, el } of sections) {
-        const elRect = el.getBoundingClientRect();
-        if (elRect.top - rootRect.top <= 150) {
-          currentSection = id;
-        }
-      }
-
-      setActiveSection((prev) =>
-        prev !== currentSection ? currentSection : prev,
+  const handleSubmit = useCallback(async () => {
+    if (!canSubmit) return;
+    setBusy(true);
+    setLastResult(null);
+    try {
+      const rpcs: QuickConfigRpcEntry[] = rows.map((row) => ({
+        chain: row.chain,
+        url: row.url.trim(),
+      }));
+      const result = await client.saveQuickConfig({
+        privateKey,
+        rpcs,
+      });
+      setLastResult(result);
+      setActionNotice(
+        result.restarting
+          ? `Saved ${result.written.length} key(s). Restarting agent…`
+          : `Saved ${result.written.length} key(s). Restart scheduled for next idle window.`,
+        "success",
+        4000,
       );
-    };
-
-    root.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    return () => root.removeEventListener("scroll", handleScroll);
-  }, [contentContainerRef, visibleSections]);
-
-  const searchLabel = t("settingsview.SearchSettings", {
-    defaultValue: "Search settings",
-  });
-  const activeSectionDef =
-    visibleSections.find((section) => section.id === activeSection) ??
-    SETTINGS_SECTIONS.find((section) => section.id === activeSection) ??
-    visibleSections[0] ??
-    null;
-
-  const settingsSidebar = (
-    <Sidebar
-      testId="settings-sidebar"
-      collapsible
-      contentIdentity="settings"
-      collapseButtonTestId="settings-sidebar-collapse-toggle"
-      expandButtonTestId="settings-sidebar-expand-toggle"
-      collapseButtonAriaLabel="Collapse settings"
-      expandButtonAriaLabel="Expand settings"
-      mobileTitle={t("nav.settings")}
-      mobileMeta={activeSectionDef ? t(activeSectionDef.label) : undefined}
-      header={
-        <SidebarHeader
-          search={{
-            value: searchQuery,
-            onChange: (event) => setSearchQuery(event.target.value),
-            onClear: () => setSearchQuery(""),
-            placeholder: searchLabel,
-            "aria-label": searchLabel,
-            autoComplete: "off",
-            spellCheck: false,
-          }}
-        />
-      }
-    >
-      <SidebarScrollRegion>
-        <SidebarPanel>
-          {visibleSections.length === 0 ? (
-            <SidebarContent.EmptyState className="px-4 py-6">
-              {t("settingsview.NoMatchingSettings")}
-            </SidebarContent.EmptyState>
-          ) : (
-            <nav className="space-y-1.5" aria-label={t("nav.settings")}>
-              {visibleSections.map((section) => {
-                const isActive = activeSection === section.id;
-                return (
-                  <SidebarContent.Item
-                    key={section.id}
-                    as="div"
-                    active={isActive}
-                    className="gap-2"
-                    ref={registerSidebarItem(section.id)}
-                  >
-                    <SidebarContent.ItemButton
-                      onClick={() => handleSectionChange(section.id)}
-                      aria-current={isActive ? "page" : undefined}
-                    >
-                      <SidebarContent.ItemBody>
-                        <SidebarContent.ItemTitle
-                          className={isActive ? "font-semibold" : "font-medium"}
-                        >
-                          {t(section.label)}
-                        </SidebarContent.ItemTitle>
-                        {section.description ? (
-                          <SidebarContent.ItemDescription>
-                            {t(section.description)}
-                          </SidebarContent.ItemDescription>
-                        ) : null}
-                      </SidebarContent.ItemBody>
-                    </SidebarContent.ItemButton>
-                  </SidebarContent.Item>
-                );
-              })}
-            </nav>
-          )}
-        </SidebarPanel>
-      </SidebarScrollRegion>
-    </Sidebar>
-  );
-
-  const sectionsContent = (
-    <>
-      {visibleSectionIds.has("ai-model") && (
-        <SettingsSection
-          id="ai-model"
-          title={t("settings.sections.aimodel.label")}
-          description={t("settings.sections.aimodel.desc")}
-          ref={registerContentItem("ai-model")}
-        >
-          {/*
-            Cloud providers + subscriptions (Tokagent Cloud, Anthropic, OpenAI,
-            Grok, Claude/ChatGPT subscriptions). Sets API keys and small /
-            large tier defaults.
-          */}
-          <ProviderSwitcher />
-
-          {/*
-            Local llama.cpp engine + paired-device bridge. Lives in the same
-            section because "what's running inference?" is one mental
-            question — multiple providers can coexist and the runtime
-            dispatches each ModelType to the highest-priority handler.
-          */}
-          <div className="mt-8 border-t border-border/40 pt-6">
-            <LocalInferencePanel />
-          </div>
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("coding-agents") && (
-        <SettingsSection
-          id="coding-agents"
-          title={t("settings.sections.codingagents.label")}
-          description={t("settings.codingAgentsDescription")}
-          ref={registerContentItem("coding-agents")}
-        >
-          <CodingAgentSettingsSection />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("media") && (
-        <SettingsSection
-          id="media"
-          title={t("settings.sections.media.label")}
-          description={t("settings.sections.media.desc")}
-          ref={registerContentItem("media")}
-        >
-          <MediaSettingsSection />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("appearance") && (
-        <SettingsSection
-          id="appearance"
-          title={t("settings.sections.appearance.label", {
-            defaultValue: "Appearance",
-          })}
-          description={t("settings.sections.appearance.desc", {
-            defaultValue: "Content packs, VRM avatars, backgrounds, and themes",
-          })}
-          ref={registerContentItem("appearance")}
-        >
-          <AppearanceSettingsSection />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("capabilities") && (
-        <SettingsSection
-          id="capabilities"
-          title={t("settings.sections.capabilities.label", {
-            defaultValue: "Capabilities",
-          })}
-          description={t("settings.sections.capabilities.desc", {
-            defaultValue: "Enable or disable agent capabilities",
-          })}
-          ref={registerContentItem("capabilities")}
-        >
-          <CapabilitiesSection />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("permissions") && (
-        <SettingsSection
-          id="permissions"
-          title={t("settings.sections.permissions.label")}
-          description={t("settings.sections.permissions.desc")}
-          ref={registerContentItem("permissions")}
-        >
-          <PermissionsSection />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("feature-toggles") && (
-        <SettingsSection
-          id="feature-toggles"
-          title="Features"
-          description="Opt in to LifeOps capabilities like push notifications and browser automation."
-          ref={registerContentItem("feature-toggles")}
-        >
-          <FeatureTogglesSection />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("learned-skills") && (
-        <SettingsSection
-          id="learned-skills"
-          title={t("settings.sections.learnedSkills.label")}
-          description={t("settings.sections.learnedSkills.desc")}
-          ref={registerContentItem("learned-skills")}
-        >
-          <LearnedSkillsPanel />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("auto-training") && (
-        <SettingsSection
-          id="auto-training"
-          title={t("settings.sections.autoTraining.label", {
-            defaultValue: "Auto-training",
-          })}
-          description={t("settings.sections.autoTraining.desc", {
-            defaultValue:
-              "Counts completed trajectories per task and fires a training run when the threshold is hit.",
-          })}
-          ref={registerContentItem("auto-training")}
-        >
-          <TrainingSettingsPanel />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("updates") && (
-        <SettingsSection
-          id="updates"
-          title={t("settings.sections.updates.label")}
-          description={t("settings.sections.updates.desc")}
-          ref={registerContentItem("updates")}
-        >
-          <UpdatesSection />
-        </SettingsSection>
-      )}
-
-      {visibleSectionIds.has("advanced") && (
-        <SettingsSection
-          id="advanced"
-          title={t("nav.advanced")}
-          description={t("settings.sections.advanced.desc")}
-          ref={registerContentItem("advanced")}
-        >
-          <AdvancedSection />
-        </SettingsSection>
-      )}
-
-      {visibleSections.length === 0 && (
-        <SettingsSection
-          id="settings-empty"
-          title={t("settingsview.NoMatchingSettings")}
-          description={t("settings.noMatchingSettingsDescription")}
-        >
-          <Button
-            variant="outline"
-            className="min-h-[2.625rem] px-4 rounded-[calc(var(--radius-lg)+2px)]"
-            onClick={() => setSearchQuery("")}
-          >
-            {t("settingsview.ClearSearch")}
-          </Button>
-        </SettingsSection>
-      )}
-    </>
-  );
+    } catch (err) {
+      setActionNotice(
+        err instanceof Error ? err.message : "Failed to save settings.",
+        "error",
+        5000,
+      );
+    } finally {
+      setBusy(false);
+    }
+  }, [canSubmit, privateKey, rows, setActionNotice]);
 
   return (
-    <PageLayout
-      className={cn("h-full", inModal && "min-h-0")}
+    <div
       data-testid="settings-shell"
-      footer={<WidgetHost slot="settings" />}
-      footerClassName="pt-2"
-      sidebar={settingsSidebar}
-      contentRef={contentContainerRef}
-      contentClassName={SETTINGS_CONTENT_CLASS}
-      contentInnerClassName={SETTINGS_CONTENT_WIDTH_CLASS}
-      mobileSidebarLabel={
-        activeSectionDef ? t(activeSectionDef.label) : t("nav.settings")
-      }
+      className={cn(
+        "h-full overflow-y-auto bg-bg/10 pb-10 pt-6",
+        inModal && "min-h-0",
+      )}
     >
-      <div ref={shellRef} className={`w-full ${SETTINGS_SECTION_STACK_CLASS}`}>
-        {sectionsContent}
+      <div className="mx-auto w-full max-w-2xl space-y-6 px-4">
+        <PagePanel variant="section">
+          <div className="p-5 space-y-2">
+            <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+            <p className="text-sm text-muted">
+              Configure the agent's wallet. The runtime restarts after saving so
+              the new values take effect immediately.
+            </p>
+          </div>
+        </PagePanel>
+
+        <PagePanel variant="section">
+          <div className="p-5 space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="settings-private-key" className="text-txt-strong">
+                Operator private key
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  id="settings-private-key"
+                  type={showPrivateKey ? "text" : "password"}
+                  value={privateKey}
+                  onChange={(e) => setPrivateKey(e.target.value.trim())}
+                  placeholder="0x…"
+                  autoComplete="off"
+                  spellCheck={false}
+                  aria-invalid={privateKey.length > 0 && !pkValid}
+                  className="rounded-lg bg-bg font-mono text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowPrivateKey((v) => !v)}
+                  aria-label={showPrivateKey ? "Hide key" : "Show key"}
+                >
+                  {showPrivateKey ? "Hide" : "Show"}
+                </Button>
+              </div>
+              <p className="text-xs text-muted">
+                64-character hex, 0x-prefixed. Stored locally in{" "}
+                <code className="text-txt">~/.milady/config.env</code>; never
+                sent to any remote service.
+              </p>
+              {privateKey.length > 0 && !pkValid && (
+                <p className="text-xs text-danger">
+                  Must be 0x followed by exactly 64 hex characters.
+                </p>
+              )}
+            </div>
+          </div>
+        </PagePanel>
+
+        <PagePanel variant="section">
+          <div className="p-5 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <h2 className="text-base font-medium">RPC endpoints</h2>
+                <p className="text-xs text-muted">
+                  One URL per chain. Each row writes to its canonical env
+                  variable.
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addRow}
+                disabled={rows.length >= CHAIN_OPTIONS.length}
+              >
+                <Plus className="h-4 w-4" />
+                Add chain
+              </Button>
+            </div>
+
+            {rows.length === 0 ? (
+              <p className="text-sm text-muted italic">
+                No RPC endpoints — only the private key will be written.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {rows.map((row) => {
+                  const urlInvalid = row.url.length > 0 && !isValidUrl(row.url);
+                  return (
+                    <li key={row.rowId} className="flex items-start gap-2">
+                      <div className="w-44 shrink-0">
+                        <Select
+                          value={row.chain}
+                          onValueChange={(value: string) =>
+                            updateRow(row.rowId, {
+                              chain: value as QuickConfigChain,
+                            })
+                          }
+                        >
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {CHAIN_OPTIONS.map((opt) => (
+                              <SelectItem
+                                key={opt.value}
+                                value={opt.value}
+                                disabled={
+                                  opt.value !== row.chain &&
+                                  chainsInUse.has(opt.value)
+                                }
+                              >
+                                {opt.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <Input
+                          value={row.url}
+                          onChange={(e) =>
+                            updateRow(row.rowId, { url: e.target.value })
+                          }
+                          placeholder="https://eth.llamarpc.com"
+                          aria-invalid={urlInvalid}
+                          className="rounded-lg bg-bg font-mono text-sm"
+                        />
+                        {urlInvalid && (
+                          <p className="text-xs text-danger">
+                            Must be an http(s) URL.
+                          </p>
+                        )}
+                      </div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => removeRow(row.rowId)}
+                        aria-label="Remove row"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        </PagePanel>
+
+        <PagePanel variant="section">
+          <div className="p-5 flex items-center justify-between gap-4">
+            <p className="text-xs text-muted">
+              Saving will write to <code className="text-txt">config.env</code>{" "}
+              and restart the local agent process.
+            </p>
+            <Button
+              type="button"
+              variant="default"
+              onClick={() => void handleSubmit()}
+              disabled={!canSubmit}
+            >
+              {busy && <Spinner size={14} />}
+              Save & Restart
+            </Button>
+          </div>
+        </PagePanel>
+
+        {lastResult && (
+          <PagePanel variant="section">
+            <div className="p-5 space-y-2">
+              <h3 className="text-sm font-medium">Last save</h3>
+              <p className="text-xs text-muted">
+                Wrote {lastResult.written.length} key(s):{" "}
+                <code className="text-txt">
+                  {lastResult.written.join(", ")}
+                </code>
+              </p>
+              <p className="text-xs text-muted">
+                {lastResult.restarting
+                  ? "Runtime restart triggered."
+                  : "Runtime restart scheduled."}
+              </p>
+            </div>
+          </PagePanel>
+        )}
       </div>
-    </PageLayout>
+    </div>
   );
 }
