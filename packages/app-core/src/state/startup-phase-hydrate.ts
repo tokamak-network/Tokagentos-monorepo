@@ -148,7 +148,7 @@ function getNavigationPathFromWindow(): string {
   return window.location.pathname || "/";
 }
 
-const DEFAULT_LANDING_TAB: Tab = "chat";
+const DEFAULT_LANDING_TAB: Tab = "operator";
 
 /**
  * Runs the hydrating phase.

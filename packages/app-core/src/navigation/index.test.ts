@@ -11,4 +11,8 @@ describe("navigation", () => {
   it("does not expose a standalone node catalog tab group", () => {
     expect(getTabGroups().some((group) => group.label === "Nodes")).toBe(false);
   });
+
+  it("defaults the root path to the operator console", () => {
+    expect(tabFromPath("/")).toBe("operator");
+  });
 });

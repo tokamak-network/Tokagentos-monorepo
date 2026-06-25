@@ -338,7 +338,7 @@ const APPS_SUB_TABS: Record<string, Tab> = {
 
 export function tabFromPath(pathname: string, basePath = ""): Tab | null {
   const normalized = normalizePathForLookup(pathname, basePath);
-  if (normalized === "/") return "chat";
+  if (normalized === "/") return "operator";
 
   if (
     normalized === "/node-catalog" ||
