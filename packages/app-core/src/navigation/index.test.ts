@@ -15,4 +15,9 @@ describe("navigation", () => {
   it("defaults the root path to the operator console", () => {
     expect(tabFromPath("/")).toBe("operator");
   });
+
+  it("exposes only the operator and settings tab groups", () => {
+    const labels = getTabGroups().map((g) => g.label);
+    expect(labels).toEqual(["Operator", "Settings"]);
+  });
 });

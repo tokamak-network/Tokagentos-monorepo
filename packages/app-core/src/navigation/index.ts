@@ -96,66 +96,17 @@ export interface TabGroup {
 
 export const ALL_TAB_GROUPS: TabGroup[] = [
   {
-    label: "Chat",
-    tabs: ["chat", "connectors"],
-    icon: MessageSquare,
+    label: "Operator",
+    tabs: ["operator"],
+    icon: KeyRound,
     description:
-      "Conversations with your agent, inbound messages from every connector, and connector management",
-  },
-  {
-    label: "Apps",
-    tabs: ["apps", ...APPS_TOOL_TABS],
-    icon: Gamepad2,
-    description: "Games, LifeOps, integrations, and app tools",
-  },
-  {
-    label: "Character",
-    tabs: ["character", "character-select", "knowledge"],
-    icon: PencilLine,
-    description: "Avatar identity, style, examples, and knowledge",
-  },
-  {
-    label: "Wallet",
-    tabs: ["inventory"],
-    icon: Wallet,
-    description: "Crypto wallets and token balances",
-  },
-  {
-    label: "Browser",
-    tabs: ["browser"],
-    icon: Monitor,
-    description: "Agent-controlled browser workspace",
-  },
-  {
-    label: "Stream",
-    tabs: ["stream"],
-    icon: Radio,
-    description: "Live streaming controls",
-  },
-  {
-    label: "Automations",
-    tabs: ["automations"],
-    icon: Clock3,
-    description: "Tasks, scheduled tasks, and recurring workflows",
+      "Local operator console — x402 credits & agent-to-agent network",
   },
   {
     label: "Settings",
     tabs: ["settings"],
     icon: Settings,
     description: "Configuration and preferences",
-  },
-  {
-    label: "Billing",
-    tabs: ["billing"],
-    icon: Coins,
-    description: "Credits, top-up, API keys, and usage",
-  },
-  {
-    label: "Operator",
-    tabs: ["operator"],
-    icon: KeyRound,
-    description:
-      "Local operator console — x402 credits & agent-to-agent network",
   },
 ];
 
