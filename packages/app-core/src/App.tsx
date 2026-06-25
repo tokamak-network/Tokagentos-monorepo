@@ -3,15 +3,7 @@
  */
 
 import { Keyboard } from "@capacitor/keyboard";
-import { FineTuningView } from "@tokagentos/app-training/ui/FineTuningView";
-import {
-  Button,
-  DrawerSheet,
-  DrawerSheetContent,
-  DrawerSheetHeader,
-  DrawerSheetTitle,
-  ErrorBoundary,
-} from "@tokagentos/ui";
+import { ErrorBoundary } from "@tokagentos/ui";
 import {
   lazy,
   type ReactNode,
@@ -22,11 +14,6 @@ import {
   useState,
 } from "react";
 
-const BillingPageView = lazy(() =>
-  import("./components/pages/BillingPageView.js").then((m) => ({
-    default: m.BillingPageView,
-  })),
-);
 const OperatorShell = lazy(() =>
   import("./components/pages/operator/OperatorShell.js").then((m) => ({
     default: m.OperatorShell,
@@ -36,30 +23,11 @@ const OperatorShell = lazy(() =>
 import { subscribeDesktopBridgeEvent } from "./bridge/electrobun-rpc";
 import { GameViewOverlay } from "./components/apps/GameViewOverlay";
 import { getOverlayApp } from "./components/apps/overlay-app-registry";
-import { CharacterEditor } from "./components/character/CharacterEditor";
 import { SaveCommandModal } from "./components/chat/SaveCommandModal";
-import { TasksEventsPanel } from "./components/chat/TasksEventsPanel";
-import { ConversationsSidebar } from "./components/conversations/ConversationsSidebar";
 import { CustomActionEditor } from "./components/custom-actions/CustomActionEditor";
-import { CustomActionsPanel } from "./components/custom-actions/CustomActionsPanel";
 import { MusicPlayerGlobal } from "./components/music/MusicPlayerGlobal";
-import { AppsPageView } from "./components/pages/AppsPageView";
-import { AutomationsView } from "./components/pages/AutomationsView";
-import { BrowserWorkspaceView } from "./components/pages/BrowserWorkspaceView";
-import { ChatView } from "./components/pages/ChatView";
-import { ConnectorsPageView } from "./components/pages/ConnectorsPageView";
-import { DatabasePageView } from "./components/pages/DatabasePageView";
-import { InventoryView } from "./components/pages/InventoryView";
-import { LogsPageView } from "./components/pages/LogsPageView";
-import { MemoryViewerView } from "./components/pages/MemoryViewerView";
-import { PluginsPageView } from "./components/pages/PluginsPageView";
-import { RelationshipsView } from "./components/pages/RelationshipsView";
-import { RuntimeView } from "./components/pages/RuntimeView";
 import { SettingsView } from "./components/pages/SettingsView";
-import { SkillsView } from "./components/pages/SkillsView";
 import { StreamView } from "./components/pages/StreamView";
-import { TrajectoriesView } from "./components/pages/TrajectoriesView";
-import { DesktopWorkspaceSection } from "./components/settings/DesktopWorkspaceSection";
 import { BugReportModal } from "./components/shell/BugReportModal";
 import { ConnectionFailedBanner } from "./components/shell/ConnectionFailedBanner";
 import { ConnectionLostOverlay } from "./components/shell/ConnectionLostOverlay";
@@ -74,12 +42,8 @@ import {
   useContextMenu,
   useStreamPopoutNavigation,
 } from "./hooks";
-import { useActivityEvents } from "./hooks/useActivityEvents";
-import { APPS_ENABLED, isAppsToolTab } from "./navigation";
 import { isIOS, isNative } from "./platform/init";
 import { useApp } from "./state";
-
-const CHAT_MOBILE_BREAKPOINT_PX = 820;
 
 /** Check if we're in pop-out mode (StreamView only, no chrome). */
 function useIsPopout(): boolean {
@@ -93,23 +57,6 @@ function useIsPopout(): boolean {
   return popout;
 }
 
-function TabScrollView({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      data-shell-scroll-region="true"
-      className={`flex-1 min-h-0 min-w-0 w-full overflow-y-auto ${className}`}
-    >
-      {children}
-    </div>
-  );
-}
-
 function TabContentView({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-col flex-1 min-h-0 min-w-0 w-full overflow-hidden">
@@ -118,162 +65,18 @@ function TabContentView({ children }: { children: ReactNode }) {
   );
 }
 
-function ViewRouter({
-  onCharacterHeaderActionsChange,
-}: {
-  onCharacterHeaderActionsChange?: (actions: ReactNode | null) => void;
-}) {
+function ViewRouter() {
   const { tab } = useApp();
-  const { lifeOpsPageView: LifeOpsPageView } = useBootConfig();
   const view = (() => {
     switch (tab) {
-      case "chat":
-        return <ChatView />;
-      case "lifeops":
-        return LifeOpsPageView ? (
-          <TabScrollView>
-            <LifeOpsPageView />
-          </TabScrollView>
-        ) : (
-          <ChatView />
-        );
-      case "browser":
-        return (
-          <TabContentView>
-            <BrowserWorkspaceView />
-          </TabContentView>
-        );
-      case "companion":
-        // Companion is now an app — redirect /companion URL to chat
-        return <ChatView />;
-      case "stream":
-        return <StreamView />;
-      case "apps":
-        // Apps disabled in production builds; fall through to chat
-        return APPS_ENABLED ? (
-          <TabScrollView>
-            <AppsPageView />
-          </TabScrollView>
-        ) : (
-          <ChatView />
-        );
-      case "tasks":
-        return (
-          <TabContentView>
-            <AutomationsView />
-          </TabContentView>
-        );
-      case "character":
-      case "character-select":
-      case "knowledge":
-        return (
-          <TabContentView>
-            <CharacterEditor
-              onHeaderActionsChange={onCharacterHeaderActionsChange}
-            />
-          </TabContentView>
-        );
-      case "inventory":
-        return (
-          <TabScrollView>
-            <InventoryView />
-          </TabScrollView>
-        );
-      case "connectors":
-        return (
-          <TabContentView>
-            <ConnectorsPageView connectorDesktopPlacement="right" />
-          </TabContentView>
-        );
-      case "automations":
-      case "triggers":
-        return (
-          <TabContentView>
-            <AutomationsView />
-          </TabContentView>
-        );
-      case "voice":
-        return (
-          <TabContentView>
-            <SettingsView key="settings-media" initialSection="media" />
-          </TabContentView>
-        );
       case "settings":
         return (
           <TabContentView>
             <SettingsView key="settings-root" />
           </TabContentView>
         );
-      case "plugins":
-        return (
-          <TabContentView>
-            <PluginsPageView />
-          </TabContentView>
-        );
-      case "skills":
-        return (
-          <TabContentView>
-            <SkillsView />
-          </TabContentView>
-        );
-      case "trajectories":
-        return (
-          <TabContentView>
-            <TrajectoriesView />
-          </TabContentView>
-        );
-      case "relationships":
-        return (
-          <TabContentView>
-            <RelationshipsView />
-          </TabContentView>
-        );
-      case "memories":
-        return (
-          <TabContentView>
-            <MemoryViewerView />
-          </TabContentView>
-        );
-      case "runtime":
-        return (
-          <TabContentView>
-            <RuntimeView />
-          </TabContentView>
-        );
-      case "database":
-        return (
-          <TabContentView>
-            <DatabasePageView />
-          </TabContentView>
-        );
-      case "logs":
-        return (
-          <TabContentView>
-            <LogsPageView />
-          </TabContentView>
-        );
-      case "fine-tuning":
-      case "advanced":
-        return (
-          <TabContentView>
-            <FineTuningView />
-          </TabContentView>
-        );
-      case "desktop":
-        return (
-          <TabContentView>
-            <DesktopWorkspaceSection />
-          </TabContentView>
-        );
-      case "billing":
-        return (
-          <TabContentView>
-            <Suspense fallback={null}>
-              <BillingPageView />
-            </Suspense>
-          </TabContentView>
-        );
       case "operator":
+      default:
         return (
           <TabContentView>
             <Suspense fallback={null}>
@@ -281,8 +84,6 @@ function ViewRouter({
             </Suspense>
           </TabContentView>
         );
-      default:
-        return <ChatView />;
     }
   })();
 
@@ -299,9 +100,7 @@ export function App() {
     actionNotice,
     activeOverlayApp,
     uiTheme,
-    agentStatus,
     backendConnection,
-    unreadConversations,
     activeGameViewerUrl,
     gameOverlayEnabled,
     uiShellMode,
@@ -352,123 +151,22 @@ export function App() {
     };
   }, [activeOverlayApp, backendConnection?.state, startupCoordinator.phase]);
 
-  const [customActionsPanelOpen, setCustomActionsPanelOpen] = useState(false);
   const [customActionsEditorOpen, setCustomActionsEditorOpen] = useState(false);
   const [settingsInitialSection, setSettingsInitialSection] = useState<
     string | null
   >(null);
-  const [tasksEventsPanelOpen, setTasksEventsPanelOpen] = useState(false);
-  const { events: activityEvents, clearEvents: clearActivityEvents } =
-    useActivityEvents();
   const [editingAction, setEditingAction] = useState<
     import("./api").CustomActionDef | null
   >(null);
-  const [isChatMobileLayout, setIsChatMobileLayout] = useState(() =>
-    typeof window !== "undefined"
-      ? window.innerWidth < CHAT_MOBILE_BREAKPOINT_PX
-      : false,
-  );
-  const [mobileConversationsOpen, setMobileConversationsOpen] = useState(false);
   const [desktopShuttingDown, setDesktopShuttingDown] = useState(false);
-  const [characterHeaderActions, setCharacterHeaderActions] =
-    useState<ReactNode | null>(null);
 
-  const isConnectors = tab === "connectors";
   const isCompanionTab = tab === "companion";
-  const isChat = tab === "chat";
-  const isChatWorkspace = isChat || isConnectors;
-  const isCharacterPage =
-    tab === "character" || tab === "character-select" || tab === "knowledge";
-  const isWallets = tab === "inventory";
-  const isHeartbeats = tab === "triggers" || tab === "automations";
   const isSettingsPage = tab === "settings" || tab === "voice";
-  const isAppsToolPage = isAppsToolTab(tab);
-  const isBillingPage = tab === "billing";
-  const isDesktopWorkspacePage = tab === "desktop";
-  const unreadCount = unreadConversations?.size ?? 0;
-  const mobileChatControls = useMemo(
-    () =>
-      isChatMobileLayout ? (
-        <div className="flex items-center gap-2 w-max">
-          <Button
-            variant="outline"
-            size="sm"
-            className={`inline-flex items-center gap-2 px-3 py-2 text-xs font-semibold transition-all cursor-pointer ${
-              mobileConversationsOpen
-                ? "border-accent bg-accent-subtle text-txt"
-                : "border-border bg-card text-txt hover:border-accent hover:text-txt"
-            }`}
-            onClick={() => {
-              setMobileConversationsOpen(true);
-            }}
-            aria-label={t("aria.openChatsPanel")}
-          >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden
-            >
-              <title>{t("conversations.chats")}</title>
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            {t("conversations.chats")}
-            {unreadCount > 0 && (
-              <span className="inline-flex min-w-[18px] h-[18px] items-center justify-center rounded-full bg-accent text-accent-fg text-2xs font-bold px-1">
-                {unreadCount > 99 ? "99+" : unreadCount}
-              </span>
-            )}
-          </Button>
-        </div>
-      ) : undefined,
-    [isChatMobileLayout, mobileConversationsOpen, unreadCount, t],
-  );
-
-  // Keep hook order stable across onboarding/auth state transitions.
-  // Otherwise React can throw when onboarding completes and the main shell mounts.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const handler = () => setCustomActionsPanelOpen((v) => !v);
-    window.addEventListener("toggle-custom-actions-panel", handler);
-    return () =>
-      window.removeEventListener("toggle-custom-actions-panel", handler);
-  }, []);
 
   const handleEditorSave = useCallback(() => {
     setCustomActionsEditorOpen(false);
     setEditingAction(null);
   }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const handleResize = () => {
-      setIsChatMobileLayout(window.innerWidth < CHAT_MOBILE_BREAKPOINT_PX);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!isChatMobileLayout) {
-      setMobileConversationsOpen(false);
-      setTasksEventsPanelOpen(false);
-    }
-  }, [isChatMobileLayout]);
-
-  useEffect(() => {
-    if (!isChatWorkspace) {
-      setMobileConversationsOpen(false);
-    }
-    if (!isChat) {
-      setTasksEventsPanelOpen(false);
-    }
-  }, [isChat, isChatWorkspace]);
 
   useEffect(() => {
     if (isSettingsPage || settingsInitialSection === null) {
@@ -558,125 +256,6 @@ export function App() {
             <StreamView />
           </main>
         </div>
-      ) : isChatWorkspace ? (
-        <div
-          key={`chat-shell-${tab}`}
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header
-            mobileLeft={mobileChatControls}
-            tasksEventsPanelOpen={
-              isChat && (isChatMobileLayout ? tasksEventsPanelOpen : true)
-            }
-            onToggleTasksPanel={
-              isChat && isChatMobileLayout
-                ? () => setTasksEventsPanelOpen((o) => !o)
-                : undefined
-            }
-          />
-          <div className="flex flex-1 min-h-0 relative">
-            {!isChatMobileLayout && isChat ? (
-              <div
-                className="pointer-events-none absolute inset-x-0 bottom-0 h-[5.75rem]"
-                data-chat-shell-composer-underlay
-              />
-            ) : null}
-            {isChatMobileLayout ? (
-              <>
-                <div className="flex flex-col flex-1 min-h-0 min-w-0 overflow-hidden pt-2 px-2">
-                  {isChat ? <ChatView /> : <ConnectorsPageView />}
-                </div>
-
-                {mobileConversationsOpen && (
-                  <DrawerSheet
-                    open={mobileConversationsOpen}
-                    onOpenChange={setMobileConversationsOpen}
-                  >
-                    <DrawerSheetContent
-                      aria-describedby={undefined}
-                      className="h-[min(calc(100dvh-1rem-var(--safe-area-top,0px)-var(--safe-area-bottom,0px)),46rem)] p-0"
-                      showCloseButton
-                    >
-                      <DrawerSheetHeader className="sr-only">
-                        <DrawerSheetTitle>
-                          {t("conversations.chats")}
-                        </DrawerSheetTitle>
-                      </DrawerSheetHeader>
-                      <ConversationsSidebar
-                        key="chat-sidebar-mobile"
-                        mobile
-                        onClose={() => setMobileConversationsOpen(false)}
-                      />
-                    </DrawerSheetContent>
-                  </DrawerSheet>
-                )}
-
-                {isChat && tasksEventsPanelOpen && (
-                  <DrawerSheet
-                    open={tasksEventsPanelOpen}
-                    onOpenChange={setTasksEventsPanelOpen}
-                  >
-                    <DrawerSheetContent
-                      aria-describedby={undefined}
-                      className="h-[min(calc(100dvh-1rem-var(--safe-area-top,0px)-var(--safe-area-bottom,0px)),46rem)] p-0"
-                      showCloseButton={false}
-                    >
-                      <DrawerSheetHeader className="sr-only">
-                        <DrawerSheetTitle>
-                          {t("taskseventspanel.Title", {
-                            defaultValue: "Chat widgets",
-                          })}
-                        </DrawerSheetTitle>
-                      </DrawerSheetHeader>
-                      <TasksEventsPanel
-                        open
-                        events={activityEvents}
-                        clearEvents={clearActivityEvents}
-                        mobile
-                      />
-                    </DrawerSheetContent>
-                  </DrawerSheet>
-                )}
-              </>
-            ) : (
-              <>
-                <ConversationsSidebar key="chat-sidebar-desktop" />
-                <div className="flex flex-col flex-1 min-h-0 min-w-0 overflow-hidden">
-                  {isChat ? (
-                    <ChatView key="chat-view-desktop" />
-                  ) : (
-                    <ConnectorsPageView />
-                  )}
-                </div>
-                {isChat ? (
-                  <TasksEventsPanel
-                    open
-                    events={activityEvents}
-                    clearEvents={clearActivityEvents}
-                  />
-                ) : null}
-              </>
-            )}
-            <CustomActionsPanel
-              open={customActionsPanelOpen}
-              onClose={() => setCustomActionsPanelOpen(false)}
-              onOpenEditor={(action) => {
-                setEditingAction(action ?? null);
-                setCustomActionsEditorOpen(true);
-              }}
-            />
-          </div>
-        </div>
-      ) : isHeartbeats ? (
-        <div
-          key="heartbeats-shell"
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header />
-          <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
-            <AutomationsView key="automations-view-desktop" />
-          </div>
-        </div>
       ) : isSettingsPage ? (
         <div
           key={`settings-shell-${tab}`}
@@ -702,76 +281,14 @@ export function App() {
             />
           </div>
         </div>
-      ) : isWallets ? (
-        <div
-          key="wallets-shell"
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header />
-          <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
-            <InventoryView />
-          </div>
-        </div>
-      ) : isCharacterPage ? (
-        <div
-          key={`character-shell-${tab}`}
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header pageRightExtras={characterHeaderActions} />
-          <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
-            <ViewRouter
-              onCharacterHeaderActionsChange={setCharacterHeaderActions}
-            />
-          </div>
-        </div>
-      ) : isAppsToolPage ? (
-        <div
-          key={`apps-tool-shell-${tab}`}
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header />
-          <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
-            <ViewRouter />
-          </div>
-        </div>
-      ) : isDesktopWorkspacePage ? (
-        <div
-          key={`desktop-shell-${tab}`}
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header />
-          <div className="flex flex-1 min-h-0 min-w-0">
-            <DesktopWorkspaceSection />
-          </div>
-        </div>
-      ) : isBillingPage ? (
-        <div
-          key="billing-shell"
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header />
-          <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
-            <Suspense fallback={null}>
-              <BillingPageView />
-            </Suspense>
-          </div>
-        </div>
       ) : (
         <div
           key={`tab-shell-${tab}`}
           className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
         >
-          <Header
-            pageRightExtras={isCharacterPage ? characterHeaderActions : null}
-          />
-          <main
-            className={`flex flex-1 min-h-0 min-w-0 overflow-hidden ${
-              tab === "browser" ? "" : "px-3 xl:px-5 py-4 xl:py-6"
-            }`}
-          >
-            <ViewRouter
-              onCharacterHeaderActionsChange={setCharacterHeaderActions}
-            />
+          <Header />
+          <main className="flex flex-1 min-h-0 min-w-0 overflow-hidden px-3 xl:px-5 py-4 xl:py-6">
+            <ViewRouter />
           </main>
         </div>
       ),
@@ -781,25 +298,8 @@ export function App() {
       uiShellMode,
       isCompanionTab,
       actionNotice,
-      isChat,
-      isChatWorkspace,
-      isCharacterPage,
-      isHeartbeats,
       isSettingsPage,
-      isWallets,
-      isAppsToolPage,
-      isDesktopWorkspacePage,
-      isBillingPage,
-      isChatMobileLayout,
-      mobileConversationsOpen,
-      mobileChatControls,
-      characterHeaderActions,
-      tasksEventsPanelOpen,
-      activityEvents,
-      clearActivityEvents,
-      customActionsPanelOpen,
       settingsInitialSection,
-      t,
     ],
   );
 
