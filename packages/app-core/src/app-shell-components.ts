@@ -13,31 +13,10 @@ export { ConversationsSidebar } from "./components/conversations/ConversationsSi
 export { CustomActionEditor } from "./components/custom-actions/CustomActionEditor";
 export { CustomActionsPanel } from "./components/custom-actions/CustomActionsPanel";
 export { OnboardingWizard } from "./components/onboarding/OnboardingWizard";
-export { AdvancedPageView } from "./components/pages/AdvancedPageView";
-export { AppsPageView } from "./components/pages/AppsPageView";
-export {
-  AutomationsDesktopShell,
-  AutomationsView,
-} from "./components/pages/AutomationsView";
-export { BrowserWorkspaceView } from "./components/pages/BrowserWorkspaceView";
 export { ChatView } from "./components/pages/ChatView";
-export { ConnectorsPageView } from "./components/pages/ConnectorsPageView";
-export { DatabasePageView } from "./components/pages/DatabasePageView";
-export {
-  HeartbeatsDesktopShell,
-  HeartbeatsView,
-} from "./components/pages/HeartbeatsView";
-export { InventoryView } from "./components/pages/InventoryView";
 export { KnowledgeView } from "./components/pages/KnowledgeView";
-export { LogsPageView } from "./components/pages/LogsPageView";
-export { MemoryViewerView } from "./components/pages/MemoryViewerView";
-export { PluginsPageView } from "./components/pages/PluginsPageView";
-export { RelationshipsView } from "./components/pages/RelationshipsView";
-export { RuntimeView } from "./components/pages/RuntimeView";
 export { SettingsView } from "./components/pages/SettingsView";
-export { SkillsView } from "./components/pages/SkillsView";
 export { StreamView } from "./components/pages/StreamView";
-export { TrajectoriesView } from "./components/pages/TrajectoriesView";
 export { DesktopWorkspaceSection } from "./components/settings/DesktopWorkspaceSection";
 export { BugReportModal } from "./components/shell/BugReportModal";
 
