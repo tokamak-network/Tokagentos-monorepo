@@ -5,7 +5,6 @@
  * "ready" phase (WebSocket bindings, nav listener).
  */
 
-import { prefetchVrmToCache } from "@tokagentos/app-companion/components/avatar/VrmEngine";
 import type { AgentStatus, WalletAddresses } from "../api";
 import {
   type CodingAgentSession,
@@ -16,12 +15,7 @@ import {
 } from "../api";
 import { mapServerTasksToSessions } from "../chat/coding-agent-session-state";
 import { type AppEmoteEventDetail, dispatchAppEmoteEvent } from "../events";
-import {
-  COMPANION_ENABLED,
-  isRouteRootPath,
-  type Tab,
-  tabFromPath,
-} from "../navigation";
+import { isRouteRootPath, type Tab, tabFromPath } from "../navigation";
 import { resolveApiUrl } from "../utils";
 import {
   loadAvatarIndex,
@@ -33,7 +27,6 @@ import {
 import { shouldStartAtCharacterSelectOnLaunch } from "./shell-routing";
 import type { StartupEvent } from "./startup-coordinator";
 import type { OnboardingMode } from "./types";
-import { getVrmCount, getVrmUrl, VRM_COUNT } from "./vrm";
 
 export interface HydratingDeps {
   setStartupError: (v: null) => void;
@@ -223,33 +216,6 @@ export async function runHydrating(
       );
   }
 
-  // ── Prefetch companion VRM assets ──────────────────────────────────
-  // Warm the in-memory VRM buffer cache so that when the companion
-  // scene goes active after HYDRATION_COMPLETE, the avatar is already
-  // downloaded. This avoids a cold ~3-10 s blank screen on first
-  // companion render, especially noticeable in cloud containers where
-  // the CDN round-trip is the bottleneck.
-  //
-  // We await the active VRM prefetch (with a 15s timeout) rather than
-  // firing and forgetting. This ensures the in-memory buffer cache is
-  // populated *before* HYDRATION_COMPLETE, so the companion scene gets
-  // an instant cache hit instead of starting a duplicate network download.
-  //
-  // Additionally, fire-and-forget prefetches for ALL other VRM assets so
-  // navigating to the customize/character page doesn't trigger a full
-  // re-download of every character model.
-  if (COMPANION_ENABLED) {
-    const vrmIdx = resolvedIdx > 0 ? resolvedIdx : 1;
-    // Fire-and-forget: warm the browser cache for all VRM assets so the
-    // Character tab and companion app don't need cold downloads.
-    // Companion is now on-demand, so we don't block hydration for VRM.
-    void prefetchVrmToCache(getVrmUrl(vrmIdx));
-    const totalVrm = getVrmCount() || VRM_COUNT;
-    for (let i = 1; i <= totalVrm; i++) {
-      if (i !== vrmIdx) void prefetchVrmToCache(getVrmUrl(i));
-    }
-  }
-
   void deps.pollCloudCredits();
   await deps.fetchAutonomyReplay();
 
@@ -266,49 +232,23 @@ export async function runHydrating(
       urlTab,
     });
 
-  // Billing-redirect — when the agent reports no direct LLM provider loaded
-  // (no Anthropic/OpenAI/OpenRouter/Google-GenAI/Groq/xAI/zAI key), land
-  // root '/' on /billing instead of /chat. Character-select takes
-  // precedence (onboarding finishes first). Fail-open: any error or
-  // missing field leaves the redirect off, user lands on /chat as today.
-  let needsBilling = false;
-  if (!shouldCharSelect && isRoot && !deps.initialTabSetRef.current) {
-    try {
-      const status = await client.getStatus();
-      needsBilling = status.needsBilling === true;
-    } catch {
-      needsBilling = false;
-    }
-  }
-
   if (!deps.initialTabSetRef.current) {
     deps.initialTabSetRef.current = true;
     if (shouldCharSelect) {
       deps.onboardingCompletionCommittedRef.current = false;
       deps.setTab("character-select");
       void deps.loadCharacter();
-    } else if (isRoot && needsBilling) {
-      deps.setTab("billing");
     } else if (isRoot) {
       deps.setTab(DEFAULT_LANDING_TAB);
     }
   }
-  if (urlTab && urlTab !== "chat" && urlTab !== "companion") {
+  if (urlTab) {
     deps.setTabRaw(urlTab);
-    if (urlTab === "plugins" || urlTab === "connectors") {
-      void deps.loadPlugins();
-      if (urlTab === "plugins") void deps.loadSkills();
-    }
     if (urlTab === "settings") {
       void deps.checkExtensionStatus();
       void deps.loadWalletConfig();
-      void deps.loadCharacter();
       void deps.loadUpdateStatus();
-      void deps.loadPlugins();
     }
-    if (urlTab === "character" || urlTab === "character-select")
-      void deps.loadCharacter();
-    if (urlTab === "inventory") void deps.loadInventory();
   }
 
   if (!cancelled.current) dispatch({ type: "HYDRATION_COMPLETE" });

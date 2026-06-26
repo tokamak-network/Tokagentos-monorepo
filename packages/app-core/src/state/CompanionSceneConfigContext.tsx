@@ -41,7 +41,7 @@ export function useCompanionSceneConfig(): CompanionSceneConfig {
         customVrmUrl: "",
         customWorldUrl: "",
         uiTheme: "dark",
-        tab: "chat",
+        tab: "operator",
         companionVrmPowerMode: "balanced",
         companionHalfFramerateMode: "when_saving_power",
         companionAnimateWhenHidden: false,
