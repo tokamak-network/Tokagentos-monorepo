@@ -20,7 +20,6 @@ export * from "./character/character-greeting";
 export * from "./chat/AgentActivityBox";
 export * from "./chat/MessageContent";
 export * from "./chat/SaveCommandModal";
-export * from "./chat/TasksEventsPanel";
 export * from "./chat/widgets/shared";
 export * from "./config-ui";
 export * from "./connectors/BlueBubblesStatusPanel";
