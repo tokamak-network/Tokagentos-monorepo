@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const packageDir = path.resolve(scriptDir, "..");
@@ -18,26 +18,14 @@ const shouldInstallGeneratedFullstack =
 const shouldUseRemoteUpstream =
   process.env.TOKAGENTOS_SMOKE_REMOTE_UPSTREAM === "1";
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
-const tokagentosBinName = process.platform === "win32" ? "tokagentos.cmd" : "tokagentos";
+const tokagentosBinName =
+  process.platform === "win32" ? "tokagentos.cmd" : "tokagentos";
 const localUpstreamRepo = path.resolve(packageDir, "..", "..");
-const cliEnv =
+const useLocalUpstream =
   !shouldUseRemoteUpstream &&
   fs.existsSync(
     path.join(localUpstreamRepo, "packages", "app-core", "package.json"),
-  )
-    ? {
-        ...process.env,
-        TOKAGENTOS_UPSTREAM_BRANCH: process.env.TOKAGENTOS_UPSTREAM_BRANCH ?? "",
-        TOKAGENTOS_UPSTREAM_REPO:
-          process.env.TOKAGENTOS_UPSTREAM_REPO || localUpstreamRepo,
-      }
-    : process.env;
-const fullstackInstallEnv = {
-  ...process.env,
-  MILADY_NO_VISION_DEPS: process.env.MILADY_NO_VISION_DEPS || "1",
-  SKIP_AVATAR_CLONE: process.env.SKIP_AVATAR_CLONE || "1",
-};
-
+  );
 function run(command, args, options = {}) {
   return execFileSync(command, args, {
     cwd: options.cwd,
@@ -61,27 +49,13 @@ function getTarballName(output) {
   return tarball;
 }
 
-function getInstalledCli(smokeDir) {
-  return path.join(smokeDir, "node_modules", ".bin", tokagentosBinName);
-}
-
 function assertPathExists(targetPath) {
   if (!fs.existsSync(targetPath)) {
     throw new Error(`Expected path to exist: ${targetPath}`);
   }
 }
 
-function assertPathMissing(targetPath) {
-  if (fs.existsSync(targetPath)) {
-    throw new Error(`Expected path to be absent: ${targetPath}`);
-  }
-}
-
-function runCli(smokeDir, cwd, args) {
-  return run(getInstalledCli(smokeDir), args, { cwd, env: cliEnv });
-}
-
-function main() {
+async function main() {
   let passed = false;
 
   try {
@@ -103,68 +77,88 @@ function main() {
     );
     run(npmCommand, ["install", tarballPath], { cwd: smokeDir });
 
-    runCli(smokeDir, smokeDir, ["info"]);
+    const installedPkgDir = path.join(
+      smokeDir,
+      "node_modules",
+      "@tokagent",
+      "tokagentos",
+    );
+
+    // 1. Binary arg-parse smoke: --help and -v must work from the packaged bin.
+    const binPath = path.join(smokeDir, "node_modules", ".bin", tokagentosBinName);
+    const helpOut = run(binPath, ["--help"], { cwd: smokeDir });
+    if (/\b(upgrade|info|plugin)\b/.test(helpOut)) {
+      throw new Error(
+        `--help still advertises removed surface:\n${helpOut}`,
+      );
+    }
+    run(binPath, ["-v"], { cwd: smokeDir });
+
+    // 2. Scaffold-fn smoke: drive the headless core with fixed inputs.
+    //    Redirect HOME so preCompleteOnboarding writes under the temp dir.
+    const fakeHome = path.join(tmpRoot, "home");
+    fs.mkdirSync(fakeHome, { recursive: true });
+    process.env.HOME = fakeHome;
+    process.env.USERPROFILE = fakeHome;
+    if (useLocalUpstream) {
+      process.env.TOKAGENTOS_UPSTREAM_REPO =
+        process.env.TOKAGENTOS_UPSTREAM_REPO || localUpstreamRepo;
+      if (process.env.TOKAGENTOS_UPSTREAM_BRANCH === undefined) {
+        process.env.TOKAGENTOS_UPSTREAM_BRANCH = "";
+      }
+      if (process.env.TOKAGENTOS_UPSTREAM_COMMIT === undefined) {
+        process.env.TOKAGENTOS_UPSTREAM_COMMIT = "";
+      }
+      // The local monorepo already has Tokagent-specific content so the
+      // surgical-patch find-strings don't match upstream originals. Skip
+      // them; production runs against the pinned remote commit don't set this.
+      if (process.env.TOKAGENTOS_SKIP_SURGICAL_PATCHES === undefined) {
+        process.env.TOKAGENTOS_SKIP_SURGICAL_PATCHES = "1";
+      }
+    }
+
+    const fullstackInstallEnv = {
+      ...process.env,
+      MILADY_NO_VISION_DEPS: process.env.MILADY_NO_VISION_DEPS || "1",
+      SKIP_AVATAR_CLONE: process.env.SKIP_AVATAR_CLONE || "1",
+    };
 
     const workspaceDir = path.join(smokeDir, "workspace");
     fs.mkdirSync(workspaceDir, { recursive: true });
 
-    runCli(smokeDir, workspaceDir, [
-      "create",
-      "plugin-demo",
-      "--template",
-      "plugin",
-      "--language",
-      "typescript",
-      "--yes",
-    ]);
-    const pluginDir = path.join(workspaceDir, "plugin-demo");
-    assertPathExists(path.join(pluginDir, "package.json"));
-    assertPathExists(path.join(pluginDir, ".tokagentos", "template.json"));
-    if (shouldInstallGeneratedFullstack) {
-      run("bun", ["install"], { cwd: pluginDir });
-      run("bun", ["run", "typecheck"], { cwd: pluginDir });
-      run("bun", ["run", "build"], { cwd: pluginDir });
-    }
-    runCli(smokeDir, pluginDir, ["upgrade", "--check"]);
+    const mod = await import(
+      pathToFileURL(path.join(installedPkgDir, "dist", "index.js")).href
+    );
+    const { projectDir, envVarWritten } = mod.scaffoldProject({
+      cwd: workspaceDir,
+      projectName: "fullstack-demo",
+      providerId: "anthropic",
+      apiKey: "sk-ant-smoke",
+    });
 
-    runCli(smokeDir, workspaceDir, [
-      "create",
-      "fullstack-demo",
-      "--template",
-      "fullstack-app",
-      "--yes",
-    ]);
-    const fullstackDir = path.join(workspaceDir, "fullstack-demo");
-    assertPathExists(path.join(fullstackDir, "package.json"));
-    assertPathExists(path.join(fullstackDir, ".tokagentos", "template.json"));
-    assertPathExists(path.join(fullstackDir, "apps", "app", "package.json"));
-    assertPathExists(path.join(fullstackDir, "tokagent"));
+    assertPathExists(path.join(projectDir, "package.json"));
+    assertPathExists(path.join(projectDir, "apps", "app", "package.json"));
+    assertPathExists(path.join(projectDir, "tokagent"));
+    assertPathExists(path.join(projectDir, ".env"));
+    const dotEnvContent = fs.readFileSync(path.join(projectDir, ".env"), "utf8");
+    if (!/^ANTHROPIC_API_KEY=sk-ant-smoke$/m.test(dotEnvContent)) {
+      throw new Error(`.env missing ANTHROPIC_API_KEY line:\n${dotEnvContent}`);
+    }
+    if (envVarWritten !== "ANTHROPIC_API_KEY") {
+      throw new Error(`unexpected envVarWritten: ${envVarWritten}`);
+    }
+
     if (shouldInstallGeneratedFullstack) {
-      run("bun", ["install"], { cwd: fullstackDir, env: fullstackInstallEnv });
+      run("bun", ["install"], { cwd: projectDir, env: fullstackInstallEnv });
       run("bun", ["run", "typecheck"], {
-        cwd: fullstackDir,
+        cwd: projectDir,
         env: fullstackInstallEnv,
       });
       run("bun", ["run", "build"], {
-        cwd: fullstackDir,
+        cwd: projectDir,
         env: fullstackInstallEnv,
       });
     }
-    runCli(smokeDir, fullstackDir, ["upgrade", "--check"]);
-
-    runCli(smokeDir, workspaceDir, [
-      "create",
-      "deferred-fullstack",
-      "--template",
-      "fullstack-app",
-      "--yes",
-      "--skip-upstream",
-    ]);
-    const deferredDir = path.join(workspaceDir, "deferred-fullstack");
-    assertPathMissing(path.join(deferredDir, "tokagent"));
-    runCli(smokeDir, deferredDir, ["upgrade"]);
-    assertPathExists(path.join(deferredDir, "tokagent"));
-    assertPathExists(path.join(deferredDir, ".gitmodules"));
 
     passed = true;
     console.log("tokagentos packaged smoke test passed");
@@ -177,4 +171,4 @@ function main() {
   }
 }
 
-main();
+await main();

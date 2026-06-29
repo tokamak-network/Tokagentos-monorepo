@@ -16,10 +16,10 @@
 
 import crypto from "node:crypto";
 import type http from "node:http";
-import { logger } from "@tokagentos/core";
-import type { ElizaConfig } from "@tokagentos/agent/config/config";
-import { saveElizaConfig } from "@tokagentos/agent/config/config";
+import type { TokagentConfig } from "@tokagentos/agent/config/config";
+import { saveTokagentConfig } from "@tokagentos/agent/config/config";
 import { sendJson, sendJsonError } from "@tokagentos/app-core/api/response";
+import { logger } from "@tokagentos/core";
 
 const VINCENT_API_BASE = "https://heyvincent.ai";
 
@@ -85,22 +85,22 @@ interface VincentTokens {
 }
 
 /**
- * Read/write the `vincent` field on ElizaConfig. The schema doesn't type this
+ * Read/write the `vincent` field on TokagentConfig. The schema doesn't type this
  * field yet — keep the unsafe cast isolated in one place.
  */
-function getVincentTokens(config: ElizaConfig): VincentTokens | undefined {
+function getVincentTokens(config: TokagentConfig): VincentTokens | undefined {
   return (config as unknown as { vincent?: VincentTokens }).vincent;
 }
 
 function setVincentTokens(
-  config: ElizaConfig,
+  config: TokagentConfig,
   tokens: VincentTokens | undefined,
 ): void {
   (config as unknown as { vincent?: VincentTokens }).vincent = tokens;
 }
 
 export interface VincentRouteState {
-  config: ElizaConfig;
+  config: TokagentConfig;
 }
 
 /**
@@ -297,7 +297,7 @@ export async function handleVincentRoute(
         clientId: pending.clientId,
         connectedAt: Math.floor(Date.now() / 1000),
       });
-      await saveElizaConfig(config);
+      await saveTokagentConfig(config);
 
       logger.info("[vincent/callback] Vincent connected successfully");
       sendCallbackHtml(
@@ -403,7 +403,7 @@ export async function handleVincentRoute(
         clientId,
         connectedAt: Math.floor(Date.now() / 1000),
       });
-      await saveElizaConfig(config);
+      await saveTokagentConfig(config);
 
       logger.info("[vincent/token] Vincent connected successfully");
       sendJson(res, 200, { ok: true, connected: true });
@@ -432,7 +432,7 @@ export async function handleVincentRoute(
     try {
       const config = state.config;
       setVincentTokens(config, undefined);
-      await saveElizaConfig(config);
+      await saveTokagentConfig(config);
       logger.info("[vincent/disconnect] Vincent disconnected");
       sendJson(res, 200, { ok: true });
     } catch (err) {
@@ -560,7 +560,7 @@ export async function handleVincentRoute(
         }),
         ...(updates.dryRun !== undefined && { dryRun: updates.dryRun }),
       };
-      await saveElizaConfig(state.config);
+      await saveTokagentConfig(state.config);
       sendJson(res, 200, { ok: true, strategy: config.trading });
     } catch (err) {
       logger.error(
@@ -582,7 +582,7 @@ export async function handleVincentRoute(
       trading?: Record<string, unknown>;
     };
     config.trading = { ...(config.trading ?? {}), running: true };
-    await saveElizaConfig(state.config);
+    await saveTokagentConfig(state.config);
     logger.info("[vincent/trading] Trading loop started");
     sendJson(res, 200, { ok: true, running: true });
     return true;
@@ -599,7 +599,7 @@ export async function handleVincentRoute(
       trading?: Record<string, unknown>;
     };
     config.trading = { ...(config.trading ?? {}), running: false };
-    await saveElizaConfig(state.config);
+    await saveTokagentConfig(state.config);
     logger.info("[vincent/trading] Trading loop stopped");
     sendJson(res, 200, { ok: true, running: false });
     return true;

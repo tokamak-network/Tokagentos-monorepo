@@ -1,6 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
+import type { Trajectory } from "@tokagentos/agent/types/trajectory";
 import type {
   AgentRuntime,
   ChannelType,
@@ -8,7 +9,6 @@ import type {
   Memory,
   UUID,
 } from "@tokagentos/core";
-import type { Trajectory } from "@tokagentos/agent/types/trajectory";
 import type {
   RoleplayEpisode,
   RoleplayManifestLine,
@@ -603,8 +603,10 @@ async function resolveRuntime(runtime?: AgentRuntime): Promise<RuntimeLike> {
     return runtime as RuntimeLike;
   }
 
-  const { bootElizaRuntime } = await import("@tokagentos/agent/runtime/eliza");
-  return (await bootElizaRuntime()) as RuntimeLike;
+  const { bootTokagentRuntime } = await import(
+    "@tokagentos/agent/runtime/tokagent"
+  );
+  return (await bootTokagentRuntime()) as RuntimeLike;
 }
 
 export async function executeRoleplayEpisode(

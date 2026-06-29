@@ -1,10 +1,10 @@
 import crypto from "node:crypto";
 import type http from "node:http";
-import { loadElizaConfig } from "@tokagentos/agent/config/config";
-import type { StewardSignRequest } from "../types/steward";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import { ethers } from "ethers";
 import { deriveSolanaAddress } from "../api/wallet";
 import { resolveWalletRpcReadiness } from "../api/wallet-rpc";
+import type { StewardSignRequest } from "../types/steward";
 
 /** @internal Exported for testing. Parse a transaction value string to BigInt. */
 export function safeParseBigInt(value: string): bigint {
@@ -17,11 +17,11 @@ export function safeParseBigInt(value: string): bigint {
   }
 }
 
-import {
-  readCompatJsonBody,
-  type CompatRuntimeState,
-} from "@tokagentos/app-core/api/compat-route-shared";
 import { ensureCompatApiAuthorized } from "@tokagentos/app-core/api/auth";
+import {
+  type CompatRuntimeState,
+  readCompatJsonBody,
+} from "@tokagentos/app-core/api/compat-route-shared";
 import {
   sendJsonError as sendJsonErrorResponse,
   sendJson as sendJsonResponse,
@@ -153,7 +153,7 @@ const RPC_CACHE_TTL_MS = 30_000;
 function resolvePreferredRpcUrl(chainId: number): string | null {
   const now = Date.now();
   if (!cachedRpcReadiness || now - cachedRpcReadinessAt > RPC_CACHE_TTL_MS) {
-    cachedRpcReadiness = resolveWalletRpcReadiness(loadElizaConfig());
+    cachedRpcReadiness = resolveWalletRpcReadiness(loadTokagentConfig());
     cachedRpcReadinessAt = now;
   }
   const readiness = cachedRpcReadiness;

@@ -52,10 +52,6 @@ export function loadManifest(): TemplatesManifest {
   );
 }
 
-export function getTemplates(): TemplateDefinition[] {
-  return loadManifest().templates;
-}
-
 export function getTemplateById(id: string): TemplateDefinition | undefined {
   return loadManifest().templates.find((template) => template.id === id);
 }

@@ -40,26 +40,29 @@ export interface BillingChainAddresses {
  * LIVE production deploy. Verified on-chain (2026-06-01) against a live Ethereum
  * node: PTON 0x00D1EDcE… has bytecode, wraps the canonical TON
  * (0x2be5e8c109e2197D077D13A82dAead6a9b3433C5), faucet OFF, with real PTON in
- * circulation; ClaudeVault 0x1072f70e… has bytecode and pton()→the live PTON.
+ * circulation; ClaudeVault pton()→the live PTON.
  *
- * NOTE: An earlier revision of this entry listed Anvil mainnet-fork addresses
- * (0x1aa43c68… / 0xeae2f210…) which have ZERO bytecode on live Ethereum. Those
- * were stale fork artifacts and have been replaced with the production
- * addresses below (sourced from llm-api-gateway broadcast/Deploy.s.sol/1 and
- * confirmed live via eth_getCode + pton()/ton() reads).
+ * ClaudeVault REDEPLOYED 2026-06-09 → 0x347EaDCA53944cCbe1f43AD71Bd25677dF10EA5F
+ * (deploy tx 0x072b1d486b2eaf0c651037e13836890d0d37a3e3423167c1ad4c17269a9b6532).
+ * The prior vault 0x1072f70e… was deployed with operator=0x5b85411A…, but the
+ * billing gateway signs/sends depositX402 as 0x3ec2c9fb… (the Base operator), so
+ * every Ethereum deposit reverted NotOperator() (0x7c214f04). The new vault is a
+ * BYTE-IDENTICAL redeploy of the working Base vault (0x9481…) with operator=admin
+ * =0x3ec2c9fb… set in the constructor, so the gateway is now authorized on chain 1.
  *
- * admin = operator = 0x5b85411Afe4879B3A9DE1De93b5e83c75B6BB0bB.
+ * admin = operator = 0x3ec2c9fb15C222Aa273F3f2F20a740FA86b4F618 (the gateway key).
  */
 export const ETHEREUM_MAINNET: BillingChainAddresses = {
   chainId: 1,
   name: 'Ethereum Mainnet',
   pton: '0x00D1EDcE8E7c617891FF76224DFf501c568f1Ce0' as Address,
-  claudeVault: '0x1072f70e7c490E460fA72AC4171F7aDD1ef2d79F' as Address,
+  claudeVault: '0x347EaDCA53944cCbe1f43AD71Bd25677dF10EA5F' as Address,
   ton: '0x2be5e8c109e2197D077D13A82dAead6a9b3433C5' as Address,
   notes:
     'LIVE Ethereum mainnet deploy. PTON wraps canonical TON (0x2be5e8c1…3433C5), faucet OFF. ' +
-    'admin=operator=0x5b85411Afe4879B3A9DE1De93b5e83c75B6BB0bB. Verified on-chain 2026-06-01 ' +
-    '(both contracts have bytecode; pton()→0x00D1EDcE…, ton()→canonical TON).',
+    'ClaudeVault 0x347EaDCA… redeployed 2026-06-09 (byte-identical to the Base vault) with ' +
+    'admin=operator=0x3ec2c9fb15C222Aa273F3f2F20a740FA86b4F618 (the gateway key) so depositX402 ' +
+    'no longer reverts NotOperator(). Supersedes 0x1072f70e… (operator was 0x5b85411A…).',
 } as const;
 
 /**

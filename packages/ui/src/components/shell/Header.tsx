@@ -74,10 +74,6 @@ export function Header({
     tab,
     setTab,
     setState,
-    plugins,
-    browserEnabled,
-    walletEnabled,
-    billingEnabled,
     loadDropStatus,
     uiLanguage,
     setUiLanguage,
@@ -109,17 +105,7 @@ export function Header({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const streamingEnabled = useMemo(
-    () =>
-      plugins.some(
-        (plugin) => plugin.id === "streaming-base" && plugin.enabled,
-      ),
-    [plugins],
-  );
-  const tabGroups = useMemo(
-    () => getTabGroups(streamingEnabled, walletEnabled, browserEnabled, undefined, billingEnabled),
-    [streamingEnabled, walletEnabled, browserEnabled, billingEnabled],
-  );
+  const tabGroups = useMemo(() => getTabGroups(), []);
   const activeTabGroup = useMemo(
     () =>
       tabGroups.find((group) => group.tabs.includes(tab)) ??

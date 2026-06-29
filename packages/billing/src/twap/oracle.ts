@@ -91,13 +91,19 @@ export async function fetchTokamakApiPrice(): Promise<PriceSnapshot> {
   // { tonPrice: { current: { usd: string } } } and a flat
   // { usd: number } variant in case the API stabilizes differently.
   const raw =
-    (body as { tonPrice?: { current?: { usd?: number | string } } })
-      .tonPrice?.current?.usd ??
-    (body as { usd?: number | string }).usd;
+    (body as { tonPrice?: { current?: { usd?: number | string } } }).tonPrice
+      ?.current?.usd ?? (body as { usd?: number | string }).usd;
 
   const tonUsd = typeof raw === "string" ? Number(raw) : raw;
-  if (typeof tonUsd !== "number" || !Number.isFinite(tonUsd) || tonUsd <= 0 || tonUsd > 1_000_000) {
-    throw new Error(`tokamak api returned implausible price: ${JSON.stringify(raw)}`);
+  if (
+    typeof tonUsd !== "number" ||
+    !Number.isFinite(tonUsd) ||
+    tonUsd <= 0 ||
+    tonUsd > 1_000_000
+  ) {
+    throw new Error(
+      `tokamak api returned implausible price: ${JSON.stringify(raw)}`,
+    );
   }
 
   return {
@@ -151,8 +157,16 @@ export async function readCompositeTwap(
     );
   }
 
-  const wethPerWton = await readPoolPrice(client, oracle.wtonWethPool, oracle.twapWindowSeconds);
-  const usdcPerWeth = await readPoolPrice(client, oracle.wethUsdcPool, oracle.twapWindowSeconds);
+  const wethPerWton = await readPoolPrice(
+    client,
+    oracle.wtonWethPool,
+    oracle.twapWindowSeconds,
+  );
+  const usdcPerWeth = await readPoolPrice(
+    client,
+    oracle.wethUsdcPool,
+    oracle.twapWindowSeconds,
+  );
   // WTON/TON are value-equivalent at human scale, so USDC-per-WTON = TON-USD.
   const tonUsd = wethPerWton * usdcPerWeth;
 
@@ -186,7 +200,11 @@ async function readPoolPrice(
   pool: PoolConfig,
   twapWindowSeconds: number,
 ): Promise<number> {
-  const result = (await client.readContract({
+  // viem 2.48: bare PublicClient's readContract overload mis-resolves (demands
+  // EIP-7702 authorizationList). The call is correct at runtime; cast the method.
+  const result = (await (
+    client.readContract as unknown as (args: unknown) => Promise<unknown>
+  )({
     address: pool.address,
     abi: UNISWAP_V3_POOL_ABI,
     functionName: "observe",
@@ -197,7 +215,9 @@ async function readPoolPrice(
   const t0 = tickCumulatives[0];
   const t1 = tickCumulatives[1];
   if (t0 === undefined || t1 === undefined) {
-    throw new Error(`TWAP observe returned empty tickCumulatives for ${pool.address}`);
+    throw new Error(
+      `TWAP observe returned empty tickCumulatives for ${pool.address}`,
+    );
   }
   const delta = Number(t1 - t0);
   const avgTick = delta / twapWindowSeconds;
@@ -206,7 +226,7 @@ async function readPoolPrice(
   // get the same ratio in human-readable units.
   const dec0 = pool.baseIsToken0 ? pool.baseDecimals : pool.quoteDecimals;
   const dec1 = pool.baseIsToken0 ? pool.quoteDecimals : pool.baseDecimals;
-  const humanToken1PerToken0 = Math.pow(1.0001, avgTick) * Math.pow(10, dec0 - dec1);
+  const humanToken1PerToken0 = 1.0001 ** avgTick * 10 ** (dec0 - dec1);
 
   // If base is token0, that's already quote-per-base; otherwise invert.
   return pool.baseIsToken0 ? humanToken1PerToken0 : 1 / humanToken1PerToken0;

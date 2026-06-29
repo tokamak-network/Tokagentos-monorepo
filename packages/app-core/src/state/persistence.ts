@@ -441,29 +441,12 @@ export function saveUiShellMode(mode: UiShellMode): void {
 
 function normalizeLastNativeTab(tab: unknown): Tab {
   switch (tab) {
-    case "advanced":
-      return "fine-tuning";
-    case "chat":
-    case "stream":
-    case "apps":
-    case "inventory":
-    case "knowledge":
-    case "connectors":
-    case "triggers":
-    case "plugins":
-    case "skills":
-    case "fine-tuning":
-    case "trajectories":
-    case "relationships":
-    case "voice":
-    case "runtime":
-    case "database":
-    case "desktop":
     case "settings":
-    case "logs":
-      return tab;
+      return "settings";
+    case "operator":
+      return "operator";
     default:
-      return "chat";
+      return "operator";
   }
 }
 
@@ -471,7 +454,7 @@ export function loadLastNativeTab(): Tab {
   return tryLocalStorage(
     () =>
       normalizeLastNativeTab(localStorage.getItem(LAST_NATIVE_TAB_STORAGE_KEY)),
-    "chat",
+    "operator",
   );
 }
 

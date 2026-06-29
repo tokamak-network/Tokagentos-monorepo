@@ -9,8 +9,8 @@
  */
 import type http from "node:http";
 import {
-  type ElizaConfig,
-  loadElizaConfig,
+  loadTokagentConfig,
+  type TokagentConfig,
 } from "@tokagentos/agent/config/config";
 import {
   ensureCompatApiAuthorized,
@@ -159,7 +159,7 @@ export async function handleWalletCompatRoutes(
       return true;
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     if (config.meta?.onboardingComplete === true) {
       sendJsonResponse(res, 403, {
         error: "Wallet keys are only available during onboarding",
@@ -219,7 +219,7 @@ export async function handleWalletCompatRoutes(
       return true;
     }
 
-    const config: ElizaConfig = loadElizaConfig();
+    const config: TokagentConfig = loadTokagentConfig();
     const addresses = getWalletAddresses();
     const rpcReadiness = resolveWalletRpcReadiness(config);
     const alchemyKey = process.env.ALCHEMY_API_KEY?.trim() || null;

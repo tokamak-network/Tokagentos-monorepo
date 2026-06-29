@@ -202,6 +202,34 @@ function hasBuildOutput(dir) {
 }
 
 /**
+ * Stricter "already built?" check for the build-SKIP decision. `hasBuildOutput`
+ * returns true on *any* .js in dist/, so a partial build — e.g. one interrupted
+ * after emitting a stray sub-entry like `dist/testing/index.js` but before the
+ * real entry/declarations — false-positives as "present" and the package is
+ * skipped. For a package that declares a dist-based `types` entry (as
+ * @elizaos/core does: `"./dist/index.d.ts"`), require that .d.ts to actually be
+ * on disk; if it's missing, the package is only partially built and MUST be
+ * rebuilt — otherwise core's declarations never get generated and every
+ * dependent plugin's `tsc` fails with "Cannot find module '@elizaos/core'".
+ * Falls back to the loose check for packages without a dist-based `types`
+ * (e.g. @elizaos/shared, src-typed plugins) so their skip behavior is unchanged.
+ */
+function distOutputComplete(dir) {
+  if (!hasBuildOutput(dir)) return false;
+  let types = null;
+  try {
+    const pkg = JSON.parse(readFileSync(join(dir, "package.json"), "utf8"));
+    if (typeof pkg.types === "string") types = pkg.types;
+  } catch {
+    return true; // can't read package.json — trust hasBuildOutput
+  }
+  if (types && types.includes("dist/")) {
+    return existsSync(join(dir, types));
+  }
+  return true;
+}
+
+/**
  * Find the most-recently-modified timestamp under a directory. Used to
  * detect when `src/` has been edited after `dist/` was last built — in
  * which case the cached build is stale and must be re-run.
@@ -267,11 +295,15 @@ function srcNewerThanDist(rootDir) {
  *   - "rebuilt": dist/ was present but stale (src/ newer); rebuilt
  * Throws if build failed AND no JS output landed (hard fail).
  */
-function buildPackage(rel) {
+function buildPackage(rel, requireDts = false) {
   const dir = join(UPSTREAM_ROOT, rel);
   if (!existsSync(join(dir, "package.json"))) return "skipped";
-  if (hasBuildOutput(dir) && !srcNewerThanDist(dir)) return "present";
-  const reason = hasBuildOutput(dir) ? "src/ newer than dist/ — rebuilding" : "first build";
+  // Core packages must have real declarations on disk (requireDts); plugins
+  // may legitimately be JS-only (DTS emit tolerated), so they use the loose
+  // "any dist .js" check or they'd rebuild every run.
+  const built = requireDts ? distOutputComplete(dir) : hasBuildOutput(dir);
+  if (built && !srcNewerThanDist(dir)) return "present";
+  const reason = built ? "src/ newer than dist/ — rebuilding" : "first build";
   console.log(`[ensure-plugin-builds] ${reason}: ${rel}`);
   try {
     execFileSync("bun", ["run", "build"], { cwd: dir, stdio: "inherit" });
@@ -327,7 +359,7 @@ for (const rel of CORE_PACKAGES) {
   const dir = join(UPSTREAM_ROOT, rel);
   patchTsconfigIgnoreDeprecations(dir);
   try {
-    counts[buildPackage(rel)] += 1;
+    counts[buildPackage(rel, true)] += 1;
   } catch (err) {
     console.error(err instanceof Error ? err.message : err);
     process.exit(1);

@@ -3,41 +3,22 @@ import * as os from "node:os";
 import * as path from "node:path";
 import * as clack from "@clack/prompts";
 import pc from "picocolors";
-import { getTemplateById, getTemplates, getTemplatesDir } from "../manifest.js";
-import { getCliVersion } from "../package-info.js";
-import { writeProjectMetadata } from "../project-metadata.js";
+import { getTemplateById, getTemplatesDir } from "../manifest.js";
 import {
   buildFullstackTemplateValues,
-  buildMetadata,
-  buildPluginTemplateValues,
-  getTemplateReplacementEntries,
+  getFullstackReplacementEntries,
   hydrateGitSubmoduleWorkspace,
   initializeGitSubmodule,
   renderTemplateTree,
   resolveTemplateSourceDir,
   resolveTemplateUpstream,
 } from "../scaffold.js";
-import type {
-  CreateOptions,
-  FullstackTemplateValues,
-  PluginTemplateValues,
-} from "../types.js";
 
-const LANGUAGE_NAMES: Record<string, string> = {
-  python: "Python",
-  rust: "Rust",
-  typescript: "TypeScript",
-};
-
-const TEMPLATE_ICONS: Record<string, string> = {
-  "fullstack-app": "🧱",
-  plugin: "🔌",
-};
+const TEMPLATE_ID = "fullstack-app";
 
 /**
  * LLM providers the scaffolded project can be pre-configured for.
  * Selecting one writes <PROVIDER>_API_KEY=<key> to the project's .env.
- * The `skip` option writes no key and leaves the user to configure later.
  */
 interface LlmProvider {
   id: string;
@@ -45,10 +26,9 @@ interface LlmProvider {
   envVar: string;
   hint?: string;
   /**
-   * When true, the provider is offered for fullstack-app even though it
-   * doesn't write an API key to `.env` during scaffold. Used for x402:
-   * dispatch + billing are both configured in-app via the x402 tab after
-   * `bun run dev`, so the scaffold flow shouldn't ask for a key.
+   * When true, the provider is offered even though it doesn't write an API
+   * key to `.env` during scaffold (x402 is configured in-app via the x402
+   * tab after `bun run dev`).
    */
   configuredInApp?: boolean;
 }
@@ -57,9 +37,6 @@ const LLM_PROVIDERS: readonly LlmProvider[] = [
   {
     id: "x402",
     label: "x402 only (can be configured from the gateway)",
-    // The x402 path is configured entirely from the in-app x402 tab
-    // after the project boots (sidebar → x402 → setup wizard). The
-    // scaffold doesn't write any provider key for this option.
     envVar: "",
     hint: "Configure from the x402 tab after `bun run dev`",
     configuredInApp: true,
@@ -82,12 +59,7 @@ const LLM_PROVIDERS: readonly LlmProvider[] = [
     envVar: "GOOGLE_API_KEY",
     hint: "AIza…",
   },
-  {
-    id: "groq",
-    label: "Groq",
-    envVar: "GROQ_API_KEY",
-    hint: "gsk_…",
-  },
+  { id: "groq", label: "Groq", envVar: "GROQ_API_KEY", hint: "gsk_…" },
   {
     id: "openrouter",
     label: "OpenRouter",
@@ -99,16 +71,6 @@ const LLM_PROVIDERS: readonly LlmProvider[] = [
     label: "LiteLLM Proxy (OpenAI-compatible)",
     envVar: "LITELLM_API_KEY",
     hint: "lt-...",
-  },
-  {
-    id: "ollama",
-    label: "Ollama (local, no API key)",
-    envVar: "",
-  },
-  {
-    id: "skip",
-    label: "Skip — I'll configure later",
-    envVar: "",
   },
 ] as const;
 
@@ -142,279 +104,115 @@ function validateProjectDirectory(
   return undefined;
 }
 
-function getNextSteps(options: {
-  projectDir: string;
-  skipUpstream?: boolean;
-  templateId: string;
-}): string[] {
-  const steps = [`cd ${options.projectDir}`];
-  if (options.templateId === "fullstack-app" && options.skipUpstream) {
-    steps.push("npx tokagentos upgrade");
-  }
-  steps.push("bun install");
-  steps.push(options.templateId === "plugin" ? "bun run build" : "bun run dev");
-  return steps;
+function getNextSteps(projectDir: string): string[] {
+  return [`cd ${projectDir}`, "bun install", "bun run dev"];
 }
 
-async function promptTemplateId(initial?: string): Promise<string> {
-  if (initial) return initial;
-  const templates = getTemplates();
-  const choice = await clack.select({
-    message: "Select a template:",
-    options: templates.map((template) => ({
-      value: template.id,
-      label: `${TEMPLATE_ICONS[template.id] || "📦"} ${template.name}`,
-      hint: template.description,
-    })),
-  });
-
-  if (clack.isCancel(choice)) {
-    clack.cancel("Operation cancelled.");
-    process.exit(0);
-  }
-
-  return choice as string;
-}
-
-async function promptLanguage(
-  templateId: string,
-  initial: string | undefined,
-): Promise<string | undefined> {
-  const template = getTemplateById(templateId);
-  if (!template) return undefined;
-  if (template.languages.length <= 1) {
-    return template.languages[0];
-  }
-  if (initial) return initial;
-
-  const choice = await clack.select({
-    message: "Select a language:",
-    options: template.languages.map((language) => ({
-      value: language,
-      label: LANGUAGE_NAMES[language] || language,
-    })),
-  });
-
-  if (clack.isCancel(choice)) {
-    clack.cancel("Operation cancelled.");
-    process.exit(0);
-  }
-
-  return choice as string;
-}
-
-async function promptProjectName(
-  templateId: string,
-  initial?: string,
-): Promise<string> {
-  if (initial) return normalizeProjectName(initial);
-  const defaultValue = templateId === "plugin" ? "plugin-example" : "my-app";
+// ─── Step 1: project name ────────────────────────────────────────────────────
+async function promptProjectName(): Promise<string> {
   const input = await clack.text({
-    defaultValue,
+    defaultValue: "my-app",
     message: "Project name:",
-    placeholder: defaultValue,
+    placeholder: "my-app",
     validate: validateProjectDirectory,
   });
-
-  if (clack.isCancel(input)) {
-    clack.cancel("Operation cancelled.");
-    process.exit(0);
-  }
-
-  return normalizeProjectName(input as string);
+  return normalizeProjectName(unwrapPromptResult(input) as string);
 }
 
-async function promptLlmProvider(
-  initial: string | undefined,
-  yes: boolean,
-  required: boolean,
-): Promise<LlmProvider> {
-  if (initial) {
-    const match = findLlmProvider(initial);
-    if (!match) {
-      clack.cancel(
-        `Unknown --llm value '${initial}'. Valid: ${LLM_PROVIDERS.map((p) => p.id).join(", ")}.`,
-      );
-      process.exit(1);
-    }
-    if (required && !match.envVar && !match.configuredInApp) {
-      clack.cancel(
-        `--llm '${initial}' is not a real provider for fullstack-app. Pick one that requires an API key (openai, anthropic, google, groq, openrouter, x402).`,
-      );
-      process.exit(1);
-    }
-    return match;
-  }
-  if (yes) {
-    if (required) {
-      clack.cancel(
-        "fullstack-app requires --llm <provider> and --api-key <key> when using --yes. Provider options: openai, anthropic, google, groq, openrouter.",
-      );
-      process.exit(1);
-    }
-    return findLlmProvider("skip") as LlmProvider;
-  }
-  // For fullstack-app: hide local-only providers (ollama, skip), but keep
-  // configuredInApp options (x402 — set up via the in-app x402 tab).
+// ─── Step 2: LLM provider + key ──────────────────────────────────────────────
+async function promptLlmProvider(): Promise<LlmProvider> {
+  // Offer keyed providers + configuredInApp (x402). Local-only options are
+  // not offered for the fullstack app.
   const options = LLM_PROVIDERS.filter(
-    (p) => !required || p.envVar.length > 0 || p.configuredInApp === true,
+    (p) => p.envVar.length > 0 || p.configuredInApp === true,
   );
   const choice = await clack.select({
-    message: required
-      ? "Which LLM provider will this project use? (required)"
-      : "Which LLM provider do you want to pre-configure?",
+    message: "Which LLM provider will this project use?",
     options: options.map((p) => ({
       value: p.id,
       label: p.label,
       hint: p.envVar || undefined,
     })),
   });
-  return findLlmProvider(
-    unwrapPromptResult(choice as string),
-  ) as LlmProvider;
+  return findLlmProvider(unwrapPromptResult(choice as string)) as LlmProvider;
 }
 
-async function promptApiKey(
-  provider: LlmProvider,
-  initial: string | undefined,
-  yes: boolean,
-  required: boolean,
-): Promise<string | undefined> {
-  if (!provider.envVar) {
-    return undefined;
-  }
-  if (initial) {
-    return initial;
-  }
-  if (yes) {
-    if (required) {
-      clack.cancel(
-        `--llm ${provider.id} needs --api-key <key> when using --yes. Get one from the provider's dashboard and pass it via --api-key.`,
-      );
-      process.exit(1);
-    }
-    return undefined;
-  }
+async function promptApiKey(provider: LlmProvider): Promise<string> {
   while (true) {
     const input = await clack.password({
-      message: required
-        ? `Enter your ${provider.label} API key (required):`
-        : `Enter your ${provider.label} API key (leave empty to skip):`,
+      message: `Enter your ${provider.label} API key:`,
       mask: "·",
     });
-    if (clack.isCancel(input)) {
-      clack.cancel("Operation cancelled.");
-      process.exit(0);
-    }
-    const trimmed = (input as string).trim();
+    const trimmed = (unwrapPromptResult(input) as string).trim();
     if (trimmed.length > 0) return trimmed;
-    if (!required) return undefined;
     clack.log.warn(`API key is required for ${provider.label}. Try again.`);
   }
 }
 
-async function promptLitellmExtras(
-  options: CreateOptions,
-  yes: boolean,
-): Promise<{ baseUrl: string; smallModel: string; largeModel: string }> {
-  if (yes) {
-    const missing: string[] = [];
-    if (!options.llmBaseUrl?.trim()) missing.push("--llm-base-url");
-    if (!options.llmSmallModel?.trim()) missing.push("--llm-small-model");
-    if (!options.llmLargeModel?.trim()) missing.push("--llm-large-model");
-    if (missing.length > 0) {
-      clack.cancel(
-        `--llm litellm with --yes requires ${missing.join(", ")}. Get these values from your LiteLLM proxy admin.`,
-      );
-      process.exit(1);
-    }
-    return {
-      baseUrl: options.llmBaseUrl!.trim(),
-      smallModel: options.llmSmallModel!.trim(),
-      largeModel: options.llmLargeModel!.trim(),
-    };
-  }
-  const baseUrl = options.llmBaseUrl?.trim()
-    ? options.llmBaseUrl.trim()
-    : (unwrapPromptResult(
-        await clack.text({
-          message: "LiteLLM proxy base URL (e.g. https://litellm.company.com):",
-          placeholder: "https://litellm.company.com",
-          validate: (v) =>
-            !v?.trim() ? "Base URL is required for LiteLLM" : undefined,
-        }),
-      ) as string).trim();
-  const smallModel = options.llmSmallModel?.trim()
-    ? options.llmSmallModel.trim()
-    : (unwrapPromptResult(
-        await clack.text({
-          defaultValue: "gpt-4o-mini",
-          message:
-            "Small model alias (used for TEXT_SMALL). Default: gpt-4o-mini",
-          placeholder: "gpt-4o-mini",
-        }),
-      ) as string).trim();
-  const largeModel = options.llmLargeModel?.trim()
-    ? options.llmLargeModel.trim()
-    : (unwrapPromptResult(
-        await clack.text({
-          defaultValue: "gpt-4o",
-          message: "Large model alias (used for TEXT_LARGE). Default: gpt-4o",
-          placeholder: "gpt-4o",
-        }),
-      ) as string).trim();
+async function promptLitellmExtras(): Promise<{
+  baseUrl: string;
+  smallModel: string;
+  largeModel: string;
+}> {
+  const baseUrl = (
+    unwrapPromptResult(
+      await clack.text({
+        message: "LiteLLM proxy base URL (e.g. https://litellm.company.com):",
+        placeholder: "https://litellm.company.com",
+        validate: (v) =>
+          !v?.trim() ? "Base URL is required for LiteLLM" : undefined,
+      }),
+    ) as string
+  ).trim();
+  const smallModel = (
+    unwrapPromptResult(
+      await clack.text({
+        defaultValue: "gpt-4o-mini",
+        message:
+          "Small model alias (used for TEXT_SMALL). Default: gpt-4o-mini",
+        placeholder: "gpt-4o-mini",
+      }),
+    ) as string
+  ).trim();
+  const largeModel = (
+    unwrapPromptResult(
+      await clack.text({
+        defaultValue: "gpt-4o",
+        message: "Large model alias (used for TEXT_LARGE). Default: gpt-4o",
+        placeholder: "gpt-4o",
+      }),
+    ) as string
+  ).trim();
   return { baseUrl, smallModel, largeModel };
 }
 
 /**
  * Pre-complete the app's onboarding state so the UI skips the provider/
- * API-key prompt (the user already supplied both at `tokagentos create`
- * time). The app looks up state from `~/.eliza/<namespace>.json` — this
- * path is the upstream runtime convention (packages/agent/src/config/paths.ts
- * resolveConfigPath). The namespace is the project name passed via
- * `bun run dev --name=<project>`. The check reads
- * `config.meta.onboardingComplete === true` (packages/app-core/src/state/
- * onboarding-bootstrap.ts).
- *
- * If a config file already exists at the path, we leave it alone
- * (respects prior user state). If it doesn't, we write a minimal
- * {"meta":{"onboardingComplete":true}} plus a service routing hint
- * for the selected provider. The runtime fills in the rest.
+ * API-key prompt. State lives at `~/.eliza/<namespace>.json` (the upstream
+ * runtime convention). No-op if the file already exists or the provider sets
+ * no key (x402).
  */
 function preCompleteOnboarding(
   projectName: string,
   provider: LlmProvider,
 ): void {
-  if (!provider.envVar) return; // ollama / skip — no key set, don't claim done
+  if (!provider.envVar) return;
   const stateDir = path.join(os.homedir(), ".eliza");
   const configPath = path.join(stateDir, `${projectName}.json`);
   try {
     fs.mkdirSync(stateDir, { recursive: true });
-    if (fs.existsSync(configPath)) return; // don't clobber existing state
+    if (fs.existsSync(configPath)) return;
     const config = {
       meta: { onboardingComplete: true },
-      serviceRouting: {
-        llmText: {
-          backend: provider.id,
-          transport: "local",
-        },
-      },
+      serviceRouting: { llmText: { backend: provider.id, transport: "local" } },
     };
     fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
   } catch {
-    // Non-fatal — user can click through the onboarding flow once if
-    // filesystem prevents the write.
+    // Non-fatal — user can click through onboarding once if the write fails.
   }
 }
 
-/**
- * Materialize <projectRoot>/.env from .env.example if .env doesn't already
- * exist. No-op if .env exists (preserves any user edits from a re-run).
- *
- * Called for ALL scaffold flows (including x402-only) so the prefilled
- * BILLING_MODE=client + TOKAGENT_GATEWAY_URL values from .env.example
- * always reach the scaffolded project's .env without manual copy.
- */
+/** Materialize <projectRoot>/.env from .env.example if it doesn't exist. */
 function ensureEnvFromExample(projectRoot: string): void {
   const envPath = path.join(projectRoot, ".env");
   const examplePath = path.join(projectRoot, ".env.example");
@@ -423,20 +221,7 @@ function ensureEnvFromExample(projectRoot: string): void {
   fs.copyFileSync(examplePath, envPath);
 }
 
-/**
- * Create or update <projectRoot>/.env for a fresh scaffold.
- *
- * Strategy:
- *   1. If .env does not exist and .env.example does, start from the example.
- *      The example carries all the Tokagent config variables with safe
- *      defaults (TOKAGENT_EXECUTION_MODE=vault) and commented placeholders
- *      for the private key / vault addresses / RPC overrides. The user only
- *      has to uncomment + fill.
- *   2. Uncomment the selected LLM provider's env var line and set the user's
- *      API key. Leave other provider lines commented.
- *   3. If a user-supplied .env already existed (e.g., re-running the CLI),
- *      only update/insert the API key line — don't overwrite anything else.
- */
+/** Set or insert the selected provider's API-key line in <projectRoot>/.env. */
 function writeLlmEnvFile(
   projectRoot: string,
   provider: LlmProvider,
@@ -446,40 +231,30 @@ function writeLlmEnvFile(
   const envPath = path.join(projectRoot, ".env");
   const examplePath = path.join(projectRoot, ".env.example");
   const apiKeyLine = `${provider.envVar}=${apiKey}`;
+  const activeRe = new RegExp(`^${provider.envVar}=.*$`, "m");
+  const commentedRe = new RegExp(`^#\\s*${provider.envVar}=.*$`, "m");
 
-  // Case 1: .env exists — preserve user edits; only patch the API key line.
   if (fs.existsSync(envPath)) {
     const existing = fs.readFileSync(envPath, "utf8");
-    const activeRe = new RegExp(`^${provider.envVar}=.*$`, "m");
     if (activeRe.test(existing)) {
       fs.writeFileSync(envPath, existing.replace(activeRe, apiKeyLine));
       return;
     }
-    // Try to uncomment a commented placeholder line.
-    const commentedRe = new RegExp(`^#\\s*${provider.envVar}=.*$`, "m");
     if (commentedRe.test(existing)) {
       fs.writeFileSync(envPath, existing.replace(commentedRe, apiKeyLine));
       return;
     }
-    // Neither active nor commented — append.
     const sep = existing.endsWith("\n") ? "" : "\n";
     fs.writeFileSync(envPath, `${existing}${sep}${apiKeyLine}\n`);
     return;
   }
 
-  // Case 2: fresh .env — start from .env.example if present, else minimal file.
-  let base: string;
-  if (fs.existsSync(examplePath)) {
-    base = fs.readFileSync(examplePath, "utf8");
-  } else {
-    base = `# API key set by \`tokagentos create --llm ${provider.id}\`.\n`;
-  }
-  // Replace an active or commented placeholder line; append if neither exists.
-  const activeRe2 = new RegExp(`^${provider.envVar}=.*$`, "m");
-  const commentedRe = new RegExp(`^#\\s*${provider.envVar}=.*$`, "m");
+  const base = fs.existsSync(examplePath)
+    ? fs.readFileSync(examplePath, "utf8")
+    : `# API key set by \`tokagentos\` (${provider.id}).\n`;
   let filled: string;
-  if (activeRe2.test(base)) {
-    filled = base.replace(activeRe2, apiKeyLine);
+  if (activeRe.test(base)) {
+    filled = base.replace(activeRe, apiKeyLine);
   } else if (commentedRe.test(base)) {
     filled = base.replace(commentedRe, apiKeyLine);
   } else {
@@ -488,15 +263,7 @@ function writeLlmEnvFile(
   fs.writeFileSync(envPath, filled);
 }
 
-/**
- * Write a set of additional `.env` lines to a fresh-or-existing project .env.
- * Mirrors the behavior of writeLlmEnvFile but supports multi-key providers
- * (e.g., LiteLLM needs base URL + small model + large model in addition to
- * the API key).
- *
- * Each entry is written using the same active/commented-line resolution
- * logic as writeLlmEnvFile to play nicely with the .env.example template.
- */
+/** Write additional key=value lines to a project .env (multi-key providers). */
 function writeLlmExtraEnv(
   projectRoot: string,
   entries: Array<{ key: string; value: string }>,
@@ -504,7 +271,6 @@ function writeLlmExtraEnv(
   if (entries.length === 0) return;
   const envPath = path.join(projectRoot, ".env");
   if (!fs.existsSync(envPath)) {
-    // writeLlmEnvFile created it; should not happen, but be defensive.
     fs.writeFileSync(envPath, "");
   }
   let content = fs.readFileSync(envPath, "utf8");
@@ -523,145 +289,58 @@ function writeLlmExtraEnv(
   fs.writeFileSync(envPath, content);
 }
 
-async function promptPluginValues(
-  projectName: string,
-  options: CreateOptions,
-): Promise<PluginTemplateValues> {
-  const normalized = normalizeProjectName(projectName);
-  const defaultRepoName = normalized.startsWith("plugin-")
-    ? normalized
-    : `plugin-${normalized}`;
-  const githubUsername = options.githubUsername?.trim()
-    ? options.githubUsername.trim()
-    : options.yes
-      ? "your-github-username"
-      : (unwrapPromptResult(
-          await clack.text({
-            defaultValue: "your-github-username",
-            message: "GitHub username:",
-          }),
-        ) as string);
-  const pluginDescription = options.description?.trim()
-    ? options.description.trim()
-    : options.yes
-      ? `${defaultRepoName} plugin for tokagentOS`
-      : (unwrapPromptResult(
-          await clack.text({
-            defaultValue: `${defaultRepoName} plugin for tokagentOS`,
-            message: "Plugin description:",
-          }),
-        ) as string);
-  const repoUrl =
-    options.repoUrl?.trim() ||
-    `https://github.com/${githubUsername}/${defaultRepoName}`;
-
-  return buildPluginTemplateValues({
-    tokagentVersion: getCliVersion(),
-    githubUsername,
-    pluginDescription,
-    projectName: defaultRepoName,
-    repoUrl,
-  });
+export interface ScaffoldProjectInput {
+  cwd: string;
+  projectName: string;
+  providerId: string;
+  apiKey?: string;
+  litellm?: { baseUrl: string; smallModel: string; largeModel: string };
 }
 
-export async function create(
-  projectName: string | undefined,
-  options: CreateOptions,
-): Promise<void> {
-  clack.intro(pc.bgCyan(pc.black(" tokagentOS ")));
+export interface ScaffoldProjectResult {
+  projectDir: string;
+  envVarWritten?: string;
+}
 
-  const templateId = await promptTemplateId(options.template);
-  const template = getTemplateById(templateId);
+/**
+ * Headless project scaffolding — renders the fullstack-app template, initializes
+ * the upstream tokagent checkout, materializes .env, and pre-completes the app's
+ * onboarding. No prompts, no console UI. `create()` wraps this with the
+ * interactive flow; the packaged smoke test calls it directly.
+ */
+export function scaffoldProject(
+  input: ScaffoldProjectInput,
+): ScaffoldProjectResult {
+  const template = getTemplateById(TEMPLATE_ID);
   if (!template) {
-    clack.cancel(`Template '${templateId}' not found.`);
-    process.exit(1);
+    throw new Error(`Template '${TEMPLATE_ID}' not found.`);
+  }
+  const provider = findLlmProvider(input.providerId);
+  if (!provider) {
+    throw new Error(`Unknown LLM provider '${input.providerId}'.`);
+  }
+  const language = template.languages[0];
+  const finalName = normalizeProjectName(input.projectName);
+  const destinationDir = path.resolve(input.cwd, finalName);
+
+  if (fs.existsSync(destinationDir)) {
+    throw new Error(`Directory '${destinationDir}' already exists`);
   }
 
-  const language = await promptLanguage(template.id, options.language);
-  if (language && !template.languages.includes(language)) {
-    clack.cancel(
-      `Template '${template.name}' does not support language '${language}'.`,
-    );
-    process.exit(1);
-  }
-
-  let finalProjectName = await promptProjectName(template.id, projectName);
-  if (template.id === "plugin" && !finalProjectName.startsWith("plugin-")) {
-    finalProjectName = `plugin-${finalProjectName}`;
-  }
-
-  if (fs.existsSync(finalProjectName)) {
-    clack.cancel(`Directory '${finalProjectName}' already exists.`);
-    process.exit(1);
-  }
-
-  const values: PluginTemplateValues | FullstackTemplateValues =
-    template.id === "plugin"
-      ? await promptPluginValues(finalProjectName, options)
-      : buildFullstackTemplateValues(finalProjectName);
-
-  // LLM provider + API key — only meaningful for templates that run an
-  // agent; plugin scaffolds don't need them. For fullstack-app we require
-  // a provider + key so the scaffolded project has everything it needs
-  // to boot the agent and skip the UI onboarding flow.
-  const isFullstack = template.id === "fullstack-app";
-  const llmProvider = isFullstack
-    ? await promptLlmProvider(
-        options.llm,
-        Boolean(options.yes),
-        /* required */ true,
-      )
-    : (findLlmProvider("skip") as LlmProvider);
-  const apiKey =
-    llmProvider.envVar.length > 0
-      ? await promptApiKey(
-          llmProvider,
-          options.apiKey,
-          Boolean(options.yes),
-          /* required */ isFullstack,
-        )
-      : undefined;
-
-  let litellmExtras:
-    | { baseUrl: string; smallModel: string; largeModel: string }
-    | undefined;
-  if (llmProvider.id === "litellm") {
-    litellmExtras = await promptLitellmExtras(options, Boolean(options.yes));
-  }
-
-  if (!options.yes) {
-    const confirmed = await clack.confirm({
-      message: `Create ${pc.cyan(template.name)} in ${pc.cyan(finalProjectName)}?`,
-    });
-    if (clack.isCancel(confirmed) || !confirmed) {
-      clack.cancel("Operation cancelled.");
-      process.exit(0);
-    }
-  }
-
-  const destinationDir = path.resolve(process.cwd(), finalProjectName);
+  const values = buildFullstackTemplateValues(finalName);
   const sourceDir = resolveTemplateSourceDir({
     language,
     template,
     templatesDir: getTemplatesDir(),
   });
-  const replacements = getTemplateReplacementEntries({
-    templateId: template.id,
-    values: values as Record<string, string>,
-  });
-
-  const spinner = clack.spinner();
-  spinner.start("Creating project...");
-
-  const managedFiles = renderTemplateTree({
+  renderTemplateTree({
     destinationDir,
-    replacements,
+    replacements: getFullstackReplacementEntries(values),
     sourceDir,
   });
 
-  if (template.upstream && !options.skipUpstream) {
+  if (template.upstream) {
     const upstream = resolveTemplateUpstream(template.upstream);
-    spinner.message("Initializing upstream tokagent checkout...");
     initializeGitSubmodule({
       branch: upstream.branch,
       commit: upstream.commit,
@@ -669,68 +348,69 @@ export async function create(
       repo: upstream.repo,
       submodulePath: upstream.path,
     });
-    hydrateGitSubmoduleWorkspace({
-      projectRoot: destinationDir,
-      upstream,
-    });
+    hydrateGitSubmoduleWorkspace({ projectRoot: destinationDir, upstream });
   }
 
-  writeProjectMetadata(
-    destinationDir,
-    buildMetadata({
-      cliVersion: getCliVersion(),
-      language,
-      managedFiles,
-      template,
-      values: values as Record<string, string>,
-    }),
-  );
-
-  // Always materialize .env from .env.example so the scaffolded project boots
-  // with the BILLING_MODE=client + TOKAGENT_GATEWAY_URL prefilled values
-  // baked into the template. Without this step, x402-only scaffolds (no LLM
-  // API key path) leave .env missing entirely — billing wouldn't auto-route
-  // to the hosted gateway and users would have to copy .env.example by hand.
-  // Idempotent: if .env already exists (e.g. re-running the CLI), don't
-  // overwrite — the writeLlmEnvFile call below will patch the API-key line.
   ensureEnvFromExample(destinationDir);
 
-  if (apiKey) {
-    writeLlmEnvFile(destinationDir, llmProvider, apiKey);
-    spinner.message(
-      `Wrote ${llmProvider.envVar} to .env (${llmProvider.label})`,
-    );
-    if (litellmExtras) {
+  let envVarWritten: string | undefined;
+  if (input.apiKey && provider.envVar) {
+    writeLlmEnvFile(destinationDir, provider, input.apiKey);
+    envVarWritten = provider.envVar;
+    if (input.litellm) {
       writeLlmExtraEnv(destinationDir, [
-        { key: "LITELLM_BASE_URL", value: litellmExtras.baseUrl },
-        { key: "LITELLM_SMALL_MODEL", value: litellmExtras.smallModel },
-        { key: "LITELLM_LARGE_MODEL", value: litellmExtras.largeModel },
+        { key: "LITELLM_BASE_URL", value: input.litellm.baseUrl },
+        { key: "LITELLM_SMALL_MODEL", value: input.litellm.smallModel },
+        { key: "LITELLM_LARGE_MODEL", value: input.litellm.largeModel },
       ]);
     }
     // OpenRouter model defaults — written unconditionally so the in-app
-    // provider switcher can flip to OpenRouter later without the user
-    // having to manually edit .env. Replaces the (deleted) surgical patch
-    // on plugins/plugin-openrouter/typescript/utils/config.ts that
-    // previously hardcoded these as the plugin's source-level defaults.
-    // Override these by editing .env or via env var.
+    // provider switcher can flip to OpenRouter later without editing .env.
     writeLlmExtraEnv(destinationDir, [
       { key: "OPENROUTER_SMALL_MODEL", value: "anthropic/claude-haiku-4-5" },
       { key: "OPENROUTER_LARGE_MODEL", value: "anthropic/claude-sonnet-4.6" },
     ]);
-    // Pre-complete onboarding so the UI doesn't prompt for the key again.
-    preCompleteOnboarding(finalProjectName, llmProvider);
+    preCompleteOnboarding(finalName, provider);
   }
 
+  return { projectDir: destinationDir, envVarWritten };
+}
+
+/**
+ * Interactive two-step create flow: project name → LLM provider (+ key).
+ */
+export async function create(): Promise<void> {
+  clack.intro(pc.bgCyan(pc.black(" tokagentOS ")));
+
+  const projectName = await promptProjectName();
+
+  const provider = await promptLlmProvider();
+  const apiKey = provider.envVar ? await promptApiKey(provider) : undefined;
+  const litellm =
+    provider.id === "litellm" ? await promptLitellmExtras() : undefined;
+
+  const spinner = clack.spinner();
+  spinner.start("Creating project...");
+
+  const result = scaffoldProject({
+    cwd: process.cwd(),
+    projectName,
+    providerId: provider.id,
+    apiKey,
+    litellm,
+  });
+
+  if (result.envVarWritten) {
+    spinner.message(
+      `Wrote ${result.envVarWritten} to .env (${provider.label})`,
+    );
+  }
   spinner.stop("Project created successfully!");
 
   console.log();
   clack.note(
-    getNextSteps({
-      projectDir: finalProjectName,
-      skipUpstream: options.skipUpstream,
-      templateId: template.id,
-    }).join("\n"),
+    getNextSteps(path.basename(result.projectDir)).join("\n"),
     "Next steps",
   );
-  clack.outro(`${pc.green("✨")} Your ${template.name} project is ready!`);
+  clack.outro(`${pc.green("✨")} Your project is ready!`);
 }

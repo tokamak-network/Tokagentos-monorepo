@@ -1,3 +1,7 @@
+import type {
+  WalletBalancesResponse,
+  WalletConfigStatus,
+} from "@tokagentos/shared/contracts";
 import { Button, Input, useIntervalWhenDocumentVisible } from "@tokagentos/ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { client } from "../../api";
@@ -9,7 +13,6 @@ import type {
   BabylonLogEntry,
   BabylonPredictionMarket,
   BabylonTeamAgent,
-  BabylonWallet,
 } from "../../api/client-types-babylon";
 import { useBabylonSSE } from "../../hooks/useBabylonSSE";
 import { formatTime } from "../../utils/format";
@@ -22,7 +25,6 @@ import {
   extractChatMessages,
   extractTeamConversations,
   extractTeamDashboard,
-  extractTradingBalance,
   summarizeBabylonActivity,
 } from "./babylon-data";
 
@@ -427,18 +429,45 @@ function TeamAgentsPanel({
   );
 }
 
+function truncateAddress(address: string): string {
+  if (address.length <= 12) return address;
+  return `${address.slice(0, 6)}\u2026${address.slice(-4)}`;
+}
+
+function copyToClipboard(text: string) {
+  void navigator.clipboard.writeText(text);
+}
+
+function computeTotalUsd(balances: WalletBalancesResponse | null): number {
+  if (!balances) return 0;
+  let total = 0;
+  if (balances.evm) {
+    for (const chain of balances.evm.chains) {
+      total += Number.parseFloat(chain.nativeValueUsd) || 0;
+      for (const token of chain.tokens) {
+        total += Number.parseFloat(token.valueUsd) || 0;
+      }
+    }
+  }
+  if (balances.solana) {
+    total += Number.parseFloat(balances.solana.solValueUsd) || 0;
+    for (const token of balances.solana.tokens) {
+      total += Number.parseFloat(token.valueUsd) || 0;
+    }
+  }
+  return total;
+}
+
 function WalletPanel({
-  wallet,
-  tradingBalance,
-  summary,
+  config,
+  balances,
   loading,
 }: {
-  wallet: BabylonWallet | null;
-  tradingBalance: number;
-  summary: BabylonAgentSummaryEnvelope | null;
+  config: WalletConfigStatus | null;
+  balances: WalletBalancesResponse | null;
   loading: boolean;
 }) {
-  if (loading && !wallet) {
+  if (loading && !config) {
     return (
       <div className="flex h-full items-center justify-center text-xs italic text-muted">
         Loading wallet...
@@ -446,60 +475,129 @@ function WalletPanel({
     );
   }
 
+  if (!config && !balances) {
+    return (
+      <div className="flex h-full items-center justify-center text-xs italic text-muted">
+        No wallet configured.
+      </div>
+    );
+  }
+
+  const totalUsd = computeTotalUsd(balances);
+  const evmAddress = config?.evmAddress ?? null;
+  const solanaAddress = config?.solanaAddress ?? null;
+
+  const evmChains = balances?.evm?.chains ?? [];
+  const solana = balances?.solana ?? null;
+
   return (
     <div className="grid flex-1 min-h-0 gap-3 overflow-y-auto p-3">
-      <Section title="Balances">
-        <div className="grid grid-cols-2 gap-2">
-          <StatTile
-            label="Wallet"
-            value={formatCurrency(wallet?.balance ?? 0)}
-          />
-          <StatTile label="Trading" value={formatCurrency(tradingBalance)} />
-          <StatTile
-            label="Deposited"
-            value={formatCurrency(summary?.agent?.totalDeposited ?? 0)}
-          />
-          <StatTile
-            label="Withdrawn"
-            value={formatCurrency(summary?.agent?.totalWithdrawn ?? 0)}
-          />
+      <Section title="Portfolio">
+        <div className="grid grid-cols-1 gap-2">
+          <StatTile label="Total" value={formatCurrency(totalUsd)} />
         </div>
       </Section>
 
-      <Section title="Transactions">
-        {!wallet || wallet.transactions.length === 0 ? (
-          <div className="text-xs italic text-muted">
-            No transactions available.
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {wallet.transactions.slice(0, 20).map((transaction) => (
-              <div
-                key={transaction.id}
-                className="rounded border border-border/60 px-2 py-2"
+      <Section title="Addresses">
+        <div className="space-y-2">
+          {evmAddress ? (
+            <div className="flex items-center gap-2">
+              <span className="w-12 text-2xs uppercase tracking-[0.12em] text-muted">
+                EVM
+              </span>
+              <span className="flex-1 font-mono text-xs text-txt">
+                {truncateAddress(evmAddress)}
+              </span>
+              <button
+                type="button"
+                className="text-2xs text-muted hover:text-txt"
+                onClick={() => copyToClipboard(evmAddress)}
+                title={evmAddress}
               >
-                <div className="flex items-center gap-2">
+                Copy
+              </button>
+            </div>
+          ) : (
+            <div className="text-xs italic text-muted">No EVM address.</div>
+          )}
+          {solanaAddress ? (
+            <div className="flex items-center gap-2">
+              <span className="w-12 text-2xs uppercase tracking-[0.12em] text-muted">
+                SOL
+              </span>
+              <span className="flex-1 font-mono text-xs text-txt">
+                {truncateAddress(solanaAddress)}
+              </span>
+              <button
+                type="button"
+                className="text-2xs text-muted hover:text-txt"
+                onClick={() => copyToClipboard(solanaAddress)}
+                title={solanaAddress}
+              >
+                Copy
+              </button>
+            </div>
+          ) : (
+            <div className="text-xs italic text-muted">No Solana address.</div>
+          )}
+        </div>
+      </Section>
+
+      <Section title="Balances">
+        <div className="space-y-1">
+          {evmChains.length === 0 && !solana ? (
+            <div className="text-xs italic text-muted">
+              No balance data available.
+            </div>
+          ) : null}
+          {evmChains.map((chain) => {
+            const chainLabel =
+              chain.chain.charAt(0).toUpperCase() + chain.chain.slice(1);
+            const nativeUsd = formatCurrency(
+              Number.parseFloat(chain.nativeValueUsd) || 0,
+            );
+            return (
+              <div
+                key={chain.chainId}
+                className="flex items-center gap-2 rounded px-2 py-1 text-xs text-txt"
+              >
+                <span className="w-20 truncate font-medium">{chainLabel}</span>
+                {chain.error ? (
                   <span
-                    className={`font-mono text-xs-tight ${
-                      transaction.amount >= 0 ? "text-ok" : "text-danger"
-                    }`}
+                    className="text-2xs italic text-muted"
+                    title={chain.error}
                   >
-                    {transaction.amount >= 0 ? "+" : ""}
-                    {transaction.amount.toFixed(2)}
+                    Unavailable
                   </span>
-                  <span className="truncate text-xs-tight text-txt">
-                    {transaction.type}
-                  </span>
-                  <span className="ml-auto text-2xs text-muted">
-                    {formatTime(new Date(transaction.timestamp).getTime(), {
-                      fallback: "\u2014",
-                    })}
-                  </span>
-                </div>
+                ) : (
+                  <>
+                    <span className="font-mono">
+                      {chain.nativeBalance} {chain.nativeSymbol}
+                    </span>
+                    <span className="ml-auto font-mono text-muted">
+                      {nativeUsd}
+                    </span>
+                  </>
+                )}
               </div>
-            ))}
-          </div>
-        )}
+            );
+          })}
+          {solana ? (
+            <div className="flex items-center gap-2 rounded px-2 py-1 text-xs text-txt">
+              <span className="w-20 truncate font-medium">Solana</span>
+              {config?.solanaBalanceReady === false ? (
+                <span className="text-2xs italic text-muted">Needs RPC</span>
+              ) : (
+                <>
+                  <span className="font-mono">{solana.solBalance} SOL</span>
+                  <span className="ml-auto font-mono text-muted">
+                    {formatCurrency(Number.parseFloat(solana.solValueUsd) || 0)}
+                  </span>
+                </>
+              )}
+            </div>
+          ) : null}
+        </div>
       </Section>
     </div>
   );
@@ -812,8 +910,11 @@ export function BabylonTerminal({ appName: _appName }: BabylonTerminalProps) {
   const [agentChatMessages, setAgentChatMessages] = useState<
     BabylonChatMessage[]
   >([]);
-  const [wallet, setWallet] = useState<BabylonWallet | null>(null);
-  const [tradingBalance, setTradingBalance] = useState(0);
+  const [walletConfig, setWalletConfig] = useState<WalletConfigStatus | null>(
+    null,
+  );
+  const [walletBalances, setWalletBalances] =
+    useState<WalletBalancesResponse | null>(null);
   const [logs, setLogs] = useState<BabylonLogEntry[]>([]);
   const [logType, setLogType] = useState("");
   const [logLevel, setLogLevel] = useState("");
@@ -955,18 +1056,16 @@ export function BabylonTerminal({ appName: _appName }: BabylonTerminalProps) {
     setStatusMessage(null);
 
     try {
-      const [walletResponse, tradingBalanceResponse] = await Promise.all([
-        client.getBabylonAgentWallet(),
-        client.getBabylonAgentTradingBalance(),
+      const [configResponse, balancesResponse] = await Promise.all([
+        client.getWalletConfig(),
+        client.getWalletBalances(),
       ]);
 
-      setWallet(walletResponse);
-      setTradingBalance(extractTradingBalance(tradingBalanceResponse));
+      setWalletConfig(configResponse);
+      setWalletBalances(balancesResponse);
     } catch (error) {
       setStatusMessage(
-        error instanceof Error
-          ? error.message
-          : "Failed to load Babylon wallet data.",
+        error instanceof Error ? error.message : "Failed to load wallet data.",
       );
     } finally {
       setLoadingWallet(false);
@@ -1117,9 +1216,8 @@ export function BabylonTerminal({ appName: _appName }: BabylonTerminalProps) {
       case "wallet":
         return (
           <WalletPanel
-            wallet={wallet}
-            tradingBalance={tradingBalance}
-            summary={agentSummary}
+            config={walletConfig}
+            balances={walletBalances}
             loading={loadingWallet}
           />
         );

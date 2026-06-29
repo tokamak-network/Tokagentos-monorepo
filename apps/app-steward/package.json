@@ -16,6 +16,9 @@
     "./routes/*": "./src/routes/*.ts",
     "./actions/*": "./src/actions/*.ts",
     "./browser-workspace-wallet": "./src/browser-workspace-wallet.ts",
+    "./StewardLogo": "./src/StewardLogo.tsx",
+    "./ApprovalQueue": "./src/ApprovalQueue.tsx",
+    "./TransactionHistory": "./src/TransactionHistory.tsx",
     "./*": "./src/*"
   },
   "dependencies": {

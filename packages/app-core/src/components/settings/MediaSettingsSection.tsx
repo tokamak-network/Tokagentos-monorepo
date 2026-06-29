@@ -15,7 +15,6 @@ import {
   type VideoProvider,
   type VisionProvider,
 } from "../../api";
-import { COMPANION_ENABLED } from "../../navigation";
 import { useApp } from "../../state";
 import { MusicPlayerSettingsPanel } from "./MusicPlayerSettingsPanel";
 import { ProviderModelSelectors } from "./media-settings-providers";
@@ -279,7 +278,7 @@ export function MediaSettingsSection() {
     <div className="flex flex-col gap-4">
       <MusicPlayerSettingsPanel />
 
-      {COMPANION_ENABLED && (
+      {false && (
         <div
           className="rounded-xl border border-border bg-card/60 px-3 py-3 flex flex-col gap-3"
           data-testid="settings-companion-vrm-power"

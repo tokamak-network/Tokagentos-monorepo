@@ -25,7 +25,6 @@ import { getBootConfig } from "../config/boot-config-store";
 import { BrandingContext, DEFAULT_BRANDING } from "../config/branding";
 import type { UiLanguage } from "../i18n";
 import {
-  COMPANION_ENABLED,
   isRouteRootPath,
   resolveInitialTabForPath,
   type Tab,
@@ -151,7 +150,7 @@ export {
 } from "./internal";
 export { AGENT_READY_TIMEOUT_MS } from "./types";
 
-const DEFAULT_LANDING_TAB: Tab = COMPANION_ENABLED ? "companion" : "chat";
+const DEFAULT_LANDING_TAB: Tab = "operator";
 
 function traceGreeting(phase: string, detail?: Record<string, unknown>): void {
   try {

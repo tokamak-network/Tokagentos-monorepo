@@ -1,26 +1,23 @@
 import { describe, expect, test } from "vitest";
 import type {
-  CreateOptions,
   FullstackTemplateValues,
-  PluginTemplateValues,
   TemplateDefinition,
   TemplatesManifest,
-  UpgradeOptions,
 } from "../types.js";
 
 describe("TemplateDefinition", () => {
-  test("supports plugin and fullstack-app templates", () => {
+  test("describes the fullstack-app template", () => {
     const template: TemplateDefinition = {
-      description: "Plugin starter",
-      id: "plugin",
-      kind: "plugin",
-      languages: ["typescript", "python", "rust"],
-      name: "plugin",
+      description: "Fullstack workspace",
+      id: "fullstack-app",
+      kind: "fullstack-app",
+      languages: ["typescript"],
+      name: "fullstack-app",
       version: 1,
     };
 
-    expect(template.id).toBe("plugin");
-    expect(template.languages).toContain("rust");
+    expect(template.id).toBe("fullstack-app");
+    expect(template.languages).toContain("typescript");
   });
 });
 
@@ -48,20 +45,6 @@ describe("TemplatesManifest", () => {
 });
 
 describe("Template value types", () => {
-  test("plugin values capture scaffold substitutions", () => {
-    const values: PluginTemplateValues = {
-      displayName: "Foo",
-      tokagentVersion: "2.0.0-alpha.139",
-      githubUsername: "octocat",
-      pluginBaseName: "plugin-foo",
-      pluginDescription: "plugin-foo plugin for tokagentOS",
-      pluginSnake: "plugin_foo",
-      repoUrl: "https://github.com/octocat/plugin-foo",
-    };
-
-    expect(values.pluginBaseName).toBe("plugin-foo");
-  });
-
   test("fullstack values capture branded workspace substitutions", () => {
     const values: FullstackTemplateValues = {
       appName: "Foo App",
@@ -79,27 +62,5 @@ describe("Template value types", () => {
     };
 
     expect(values.bundleId).toContain("fooapp");
-  });
-});
-
-describe("CLI option types", () => {
-  test("create options support template selection", () => {
-    const options: CreateOptions = {
-      language: "typescript",
-      template: "fullstack-app",
-      yes: true,
-    };
-
-    expect(options.template).toBe("fullstack-app");
-  });
-
-  test("upgrade options support dry runs", () => {
-    const options: UpgradeOptions = {
-      check: true,
-      dryRun: true,
-      skipUpstream: true,
-    };
-
-    expect(options.dryRun).toBe(true);
   });
 });

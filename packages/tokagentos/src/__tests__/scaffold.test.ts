@@ -1,30 +1,21 @@
-import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 import { afterEach, describe, expect, test } from "vitest";
 import {
   buildFullstackTemplateValues,
-  buildPluginTemplateValues,
   ensurePackageJsonWorkspaces,
   ensureUpstreamCompatibilityFiles,
   getFullstackReplacementEntries,
-  getPluginReplacementEntries,
   applyUpstreamSurgicalPatches,
   pruneUpstreamPackageDependencies,
   pruneUpstreamUnusedPaths,
   removePackageJsonDependencies,
   removePackageJsonWorkspaces,
   renderTemplateTree,
-  updateManagedFiles,
 } from "../scaffold.js";
-import type { ProjectTemplateMetadata } from "../types.js";
 
 const tempDirs: string[] = [];
-
-function sha256(value: string): string {
-  return createHash("sha256").update(value).digest("hex");
-}
 
 afterEach(() => {
   for (const dir of tempDirs.splice(0)) {
@@ -33,24 +24,6 @@ afterEach(() => {
 });
 
 describe("template value builders", () => {
-  test("builds plugin naming defaults", () => {
-    const values = buildPluginTemplateValues({
-      tokagentVersion: "2.0.0-alpha.139",
-      githubUsername: "octocat",
-      pluginDescription: "Plugin Foo",
-      projectName: "foo",
-      repoUrl: "https://github.com/octocat/plugin-foo",
-    });
-
-    expect(values.pluginBaseName).toBe("plugin-foo");
-    expect(values.pluginSnake).toBe("plugin_foo");
-    expect(
-      getPluginReplacementEntries(values).some(
-        ([from, to]) => from === "plugin-starter" && to === "plugin-foo",
-      ),
-    ).toBe(true);
-  });
-
   test("builds fullstack branding defaults", () => {
     const values = buildFullstackTemplateValues("cool app");
     expect(values.projectSlug).toBe("cool-app");
@@ -83,21 +56,15 @@ describe("managed file upgrades", () => {
 
     fs.mkdirSync(path.join(sourceDir, "src", "e2e"), { recursive: true });
     fs.writeFileSync(
-      path.join(sourceDir, "src", "e2e", "plugin-starter.e2e.ts"),
-      'export const value = "plugin-starter";\n',
+      path.join(sourceDir, "src", "e2e", "__PROJECT_SLUG__.e2e.ts"),
+      'export const value = "__PROJECT_SLUG__";\n',
     );
 
-    const values = buildPluginTemplateValues({
-      tokagentVersion: "2.0.0-alpha.139",
-      githubUsername: "octocat",
-      pluginDescription: "Plugin Foo",
-      projectName: "plugin-foo",
-      repoUrl: "https://github.com/octocat/plugin-foo",
-    });
+    const values = buildFullstackTemplateValues("cool app");
 
     const managedFiles = renderTemplateTree({
       destinationDir,
-      replacements: getPluginReplacementEntries(values),
+      replacements: getFullstackReplacementEntries(values),
       sourceDir,
     });
 
@@ -105,11 +72,11 @@ describe("managed file upgrades", () => {
       destinationDir,
       "src",
       "e2e",
-      "plugin-foo.e2e.ts",
+      "cool-app.e2e.ts",
     );
     expect(fs.existsSync(renderedPath)).toBe(true);
-    expect(fs.readFileSync(renderedPath, "utf8")).toContain("plugin-foo");
-    expect(managedFiles).toHaveProperty("src/e2e/plugin-foo.e2e.ts");
+    expect(fs.readFileSync(renderedPath, "utf8")).toContain("cool-app");
+    expect(managedFiles).toHaveProperty("src/e2e/cool-app.e2e.ts");
   });
 
   test("adds missing workspace entries without duplicating existing ones", () => {
@@ -424,56 +391,4 @@ describe("managed file upgrades", () => {
     ).toBe(true);
   });
 
-  test("updates untouched managed files and reports conflicts", () => {
-    const projectRoot = fs.mkdtempSync(
-      path.join(os.tmpdir(), "tokagentos-upgrade-project-"),
-    );
-    const renderedDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), "tokagentos-upgrade-render-"),
-    );
-    tempDirs.push(projectRoot, renderedDir);
-
-    fs.mkdirSync(path.join(projectRoot, "config"), { recursive: true });
-    fs.writeFileSync(path.join(projectRoot, "config", "safe.txt"), "old\n");
-    fs.writeFileSync(
-      path.join(projectRoot, "config", "conflict.txt"),
-      "local\n",
-    );
-
-    fs.mkdirSync(path.join(renderedDir, "config"), { recursive: true });
-    fs.writeFileSync(path.join(renderedDir, "config", "safe.txt"), "new\n");
-    fs.writeFileSync(
-      path.join(renderedDir, "config", "conflict.txt"),
-      "upstream\n",
-    );
-    fs.writeFileSync(path.join(renderedDir, "config", "added.txt"), "added\n");
-
-    const metadata: ProjectTemplateMetadata = {
-      cliVersion: "2.0.0-alpha.1",
-      createdAt: "2026-04-14T00:00:00.000Z",
-      managedFiles: {
-        "config/conflict.txt": sha256("old\n"),
-        "config/safe.txt": sha256("old\n"),
-      },
-      templateId: "fullstack-app",
-      templateVersion: 1,
-      updatedAt: "2026-04-14T00:00:00.000Z",
-      values: {},
-    };
-
-    const result = updateManagedFiles({
-      currentMetadata: metadata,
-      projectRoot,
-      renderedDir,
-      renderedManagedFiles: {
-        "config/added.txt": sha256("added\n"),
-        "config/conflict.txt": sha256("upstream\n"),
-        "config/safe.txt": sha256("new\n"),
-      },
-    });
-
-    expect(result.updated).toEqual(["config/safe.txt"]);
-    expect(result.created).toEqual(["config/added.txt"]);
-    expect(result.conflicts).toEqual(["config/conflict.txt"]);
-  });
 });

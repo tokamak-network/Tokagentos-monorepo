@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-06-03T08:48:44.902Z",
+  "generatedAt": "2026-06-18T09:29:42.475Z",
   "repoUrl": "https://github.com/elizaos/eliza",
   "templates": [
     {
@@ -21,18 +21,6 @@
         "requiredSubmodules": [],
         "requiredWorkspaces": []
       }
-    },
-    {
-      "id": "plugin",
-      "name": "plugin",
-      "description": "Create an tokagentOS plugin starter",
-      "kind": "plugin",
-      "version": 1,
-      "languages": [
-        "typescript",
-        "python",
-        "rust"
-      ]
     }
   ]
 }

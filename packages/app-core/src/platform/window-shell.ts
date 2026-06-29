@@ -2,8 +2,6 @@ import { pathForTab } from "../navigation";
 import type { HistoryLike } from "./types";
 
 export type DetachedSurfaceTab =
-  | "browser"
-  | "chat"
   | "release"
   | "triggers"
   | "plugins"
@@ -17,7 +15,7 @@ export type WindowShellRoute =
 
 export interface DetachedShellTarget {
   settingsSection?: string;
-  tab: "browser" | "chat" | "connectors" | "plugins" | "settings" | "triggers";
+  tab: "operator" | "settings";
 }
 
 export function parseWindowShellRoute(search: string): WindowShellRoute {
@@ -32,8 +30,6 @@ export function parseWindowShellRoute(search: string): WindowShellRoute {
   if (shell === "surface") {
     const tab = params.get("tab");
     if (
-      tab === "browser" ||
-      tab === "chat" ||
       tab === "release" ||
       tab === "triggers" ||
       tab === "plugins" ||
@@ -77,20 +73,13 @@ export function resolveDetachedShellTarget(
   }
 
   switch (route.tab) {
-    case "browser":
-      return { tab: "browser" };
-    case "chat":
-      return { tab: "chat" };
     case "release":
       return { tab: "settings", settingsSection: "updates" };
-    case "triggers":
-      return { tab: "triggers" };
-    case "plugins":
-      return { tab: "plugins" };
-    case "connectors":
-      return { tab: "connectors" };
     case "cloud":
       return { tab: "settings", settingsSection: "cloud" };
+    default:
+      // triggers, plugins, connectors — retired surfaces redirect to operator
+      return { tab: "operator" };
   }
 }
 

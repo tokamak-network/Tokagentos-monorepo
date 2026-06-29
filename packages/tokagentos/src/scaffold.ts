@@ -1,13 +1,10 @@
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
-import * as os from "node:os";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import type {
   FullstackTemplateValues,
-  PluginTemplateValues,
-  ProjectTemplateMetadata,
   TemplateDefinition,
   TemplateUpstream,
 } from "./types.js";
@@ -270,7 +267,7 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "boot. Force-disable to silence the warning. Re-enable in upstream " +
       "deployments by removing this surgical-patch.",
     find:
-      "    // Default is \"local sidecar allowed\" — only disable if explicitly set to\n" +
+      '    // Default is "local sidecar allowed" — only disable if explicitly set to\n' +
       "    // false. Mobile forces this to false regardless of user setting.\n" +
       "    const localN8nEnabled =\n" +
       "      params.isNativePlatform === true\n" +
@@ -326,7 +323,7 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "      // If the action's name/description/parameters change in\n" +
       "      // plugins/plugin-tokagent-strategy/src/actions/register-existing-vault.ts,\n" +
       "      // update bullet 10 here to match.\n" +
-      "    ].join(\"\\n\"),\n" +
+      '    ].join("\\n"),\n' +
       "  ];\n",
   },
   {
@@ -341,22 +338,22 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "constant in-place; the doc keys/filenames stay the same so seed-by-key " +
       "deduplication continues to work across boots.",
     find:
-      'export const ELIZA_OVERVIEW_TEXT =\n' +
+      "export const ELIZA_OVERVIEW_TEXT =\n" +
       '  "Eliza is an autonomous agent powered by elizaOS, the agent framework. Users can ask Eliza to write code, add new skills, and trigger recurring workflows with heartbeats that run at regular intervals. Eliza Cloud is an open source cloud backend that simplifies deploying and delivering Eliza.";\n' +
-      '\n' +
-      'export const ELIZA_HISTORY_TEXT =\n' +
+      "\n" +
+      "export const ELIZA_HISTORY_TEXT =\n" +
       '  "ELIZA was created by Joseph Weizenbaum at MIT in the mid-1960s and is widely regarded as one of the earliest chatbots. Its best-known script, DOCTOR, used pattern matching to imitate a Rogerian psychotherapist and showed how simple language rules could feel surprisingly conversational. ELIZA helped define the history of chatbots and influenced later work on conversational agents.";\n' +
-      '\n' +
-      'export const ELIZA_CLOUD_BASICS_TEXT =\n' +
+      "\n" +
+      "export const ELIZA_CLOUD_BASICS_TEXT =\n" +
       '  "Eliza Cloud is the managed backend and app platform for Eliza when cloud mode is enabled. Builders can create an app, keep its appId, use Cloud login and redirect flows so app users can authenticate against Cloud, route chat and media APIs through Cloud, monetize app usage with inference markup and purchase-share settings, and deploy Docker containers when an app needs server-side execution.";\n',
     replaceWith:
-      'export const ELIZA_OVERVIEW_TEXT =\n' +
+      "export const ELIZA_OVERVIEW_TEXT =\n" +
       '  "Tokagent is a DeFi vault operator built on Tokamak. It runs automated strategies out of an on-chain vault that the operator controls, sizing positions against available collateral and routing every write through the vault\\u2019s allowlisted batch executor. Strategy kinds: yield-auto-compound = supply USDC to Aave v3 on Polygon and re-stake yield. polymarket-value-hunt = scan Polymarket binary markets for mispriced YES/NO outcomes and buy the cheap leg. perp-funding-arb = SINGLE-exchange (Hyperliquid only) cross-symbol funding-rate dispersion: long the symbol with the lowest hourly funding, short the symbol with the highest funding, both legs in the same Hyperliquid vault. It is NOT cross-exchange. Always call GET_TOKAGENT_STATUS at the start of a session, propose actions before executing, and never invent vault addresses, balances, or APRs.";\n' +
-      '\n' +
-      'export const ELIZA_HISTORY_TEXT =\n' +
+      "\n" +
+      "export const ELIZA_HISTORY_TEXT =\n" +
       '  "Tokagent is built on top of elizaOS, an open-source agent framework. The Tokagent product layer adds four plugins: tokagent-strategy (GET_TOKAGENT_STATUS, BUILD_STRATEGY, DEPLOY_TOKAGENT_VAULT, list/start/stop, backtest), tokagent-perps (Hyperliquid perpetual trading via vault allowlist), tokagent-polymarket (Polymarket buy/sell/redeem via vault allowlist), and tokagent-yield (Aave deposit/withdraw via vault allowlist). A vaultContext provider injects current vault and strategy state into every turn so the LLM never has to guess about deployed state. The agent uses these plugins to compose, deploy, and run strategies from chat — with a two-turn pattern: propose first, execute only after user confirmation.";\n' +
-      '\n' +
-      'export const ELIZA_CLOUD_BASICS_TEXT =\n' +
+      "\n" +
+      "export const ELIZA_CLOUD_BASICS_TEXT =\n" +
       '  "A Tokagent vault is an on-chain smart contract on Tokamak that holds operator capital and routes writes through an allowlisted batch executor. The agent never signs freelance transactions from the hot wallet by default; instead it submits batches to the vault, which validates them against the allowlist before execution. To deploy a new vault: call DEPLOY_TOKAGENT_VAULT with chain (defaults to hyperevm) and packs (defaults to the chain\\u2019s primary pack — hyperliquid-perps-hyperevm on hyperevm, aave-v3-polygon on polygon). The deploy waits for transaction receipt and persists the new vault address back to runtime settings, so the [vault-context] block on the next turn lists the deployed address. Subsequent BUILD_STRATEGY / OPEN_PERP_POSITION / DEPOSIT_TO_AAVE / etc. operate against that vault.";\n',
   },
   {
@@ -424,7 +421,7 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "      await new Promise<void>((resolve, reject) => {\n" +
       "        chatSendQueueRef.current.push({\n" +
       "          rawInput,\n" +
-      "          channelType: options?.channelType ?? \"DM\",\n" +
+      '          channelType: options?.channelType ?? "DM",\n' +
       "          conversationId: options?.conversationId,\n" +
       "          images: options?.images,\n" +
       "          metadata: buildChatViewMetadata(tab, options?.metadata),\n" +
@@ -470,7 +467,7 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "          ...prev,\n" +
       "          {\n" +
       "            id: optimisticUserMsgId as string,\n" +
-      "            role: \"user\",\n" +
+      '            role: "user",\n' +
       "            text: trimmedRawInput,\n" +
       "            timestamp: optimisticNow,\n" +
       "          },\n" +
@@ -480,7 +477,7 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "      await new Promise<void>((resolve, reject) => {\n" +
       "        chatSendQueueRef.current.push({\n" +
       "          rawInput,\n" +
-      "          channelType: options?.channelType ?? \"DM\",\n" +
+      '          channelType: options?.channelType ?? "DM",\n' +
       "          conversationId: options?.conversationId,\n" +
       "          images: options?.images,\n" +
       "          metadata: buildChatViewMetadata(tab, options?.metadata),\n" +
@@ -516,8 +513,8 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "      setCompanionMessageCutoffTs(now);\n" +
       "      setConversationMessages((prev: ConversationMessage[]) => [\n" +
       "        ...prev,\n" +
-      "        { id: userMsgId, role: \"user\", text, timestamp: now },\n" +
-      "        { id: assistantMsgId, role: \"assistant\", text: \"\", timestamp: now },\n" +
+      '        { id: userMsgId, role: "user", text, timestamp: now },\n' +
+      '        { id: assistantMsgId, role: "assistant", text: "", timestamp: now },\n' +
       "      ]);\n",
     replaceWith:
       "      const now = Date.now();\n" +
@@ -531,12 +528,12 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "        const userAlreadyPresent = prev.some((m) => m.id === userMsgId);\n" +
       "        const next: ConversationMessage[] = [...prev];\n" +
       "        if (!userAlreadyPresent) {\n" +
-      "          next.push({ id: userMsgId, role: \"user\", text, timestamp: now });\n" +
+      '          next.push({ id: userMsgId, role: "user", text, timestamp: now });\n' +
       "        }\n" +
       "        next.push({\n" +
       "          id: assistantMsgId,\n" +
-      "          role: \"assistant\",\n" +
-      "          text: \"\",\n" +
+      '          role: "assistant",\n' +
+      '          text: "",\n' +
       "          timestamp: now,\n" +
       "        });\n" +
       "        return next;\n" +
@@ -553,25 +550,25 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "plugin-served SPA at /v1/billing/dashboard.",
     find:
       "  {\n" +
-      "    label: \"Settings\",\n" +
-      "    tabs: [\"settings\"],\n" +
+      '    label: "Settings",\n' +
+      '    tabs: ["settings"],\n' +
       "    icon: Settings,\n" +
-      "    description: \"Configuration and preferences\",\n" +
+      '    description: "Configuration and preferences",\n' +
       "  },\n" +
       "];\n",
     replaceWith:
       "  {\n" +
-      "    label: \"Settings\",\n" +
-      "    tabs: [\"settings\"],\n" +
+      '    label: "Settings",\n' +
+      '    tabs: ["settings"],\n' +
       "    icon: Settings,\n" +
-      "    description: \"Configuration and preferences\",\n" +
+      '    description: "Configuration and preferences",\n' +
       "  },\n" +
       "  // [tokagent surgical-patch] x402 tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
       "  {\n" +
-      "    label: \"x402\",\n" +
-      "    tabs: [\"billing\"],\n" +
+      '    label: "x402",\n' +
+      '    tabs: ["billing"],\n' +
       "    icon: Wallet,\n" +
-      "    description: \"x402 payment rail: PTON credits, API keys, top-up, usage\",\n" +
+      '    description: "x402 payment rail: PTON credits, API keys, top-up, usage",\n' +
       "  },\n" +
       "];\n",
   },
@@ -583,18 +580,18 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "at packages/app-core/src/components/pages/BillingPageView.tsx.",
     find:
       "const SettingsView = lazyNamedView(\n" +
-      "  () => import(\"./components/pages/SettingsView\"),\n" +
-      "  \"SettingsView\",\n" +
+      '  () => import("./components/pages/SettingsView"),\n' +
+      '  "SettingsView",\n' +
       ");\n",
     replaceWith:
       "const SettingsView = lazyNamedView(\n" +
-      "  () => import(\"./components/pages/SettingsView\"),\n" +
-      "  \"SettingsView\",\n" +
+      '  () => import("./components/pages/SettingsView"),\n' +
+      '  "SettingsView",\n' +
       ");\n" +
       "// [tokagent surgical-patch] BillingPageView — overlaid via scaffold-patches.\n" +
       "const BillingPageView = lazyNamedView(\n" +
-      "  () => import(\"./components/pages/BillingPageView\"),\n" +
-      "  \"BillingPageView\",\n" +
+      '  () => import("./components/pages/BillingPageView"),\n' +
+      '  "BillingPageView",\n' +
       ");\n",
   },
   {
@@ -604,24 +601,112 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "settings case so the case-statement ordering stays stable across " +
       "upstream changes.",
     find:
-      "      case \"settings\":\n" +
+      '      case "settings":\n' +
       "        return (\n" +
       "          <TabContentView chatDisabled>\n" +
-      "            <SettingsView key=\"settings-root\" />\n" +
+      '            <SettingsView key="settings-root" />\n' +
       "          </TabContentView>\n" +
       "        );\n",
     replaceWith:
       "      // [tokagent surgical-patch] x402 tab — fixed entry, no enabled gate.\n" +
-      "      case \"billing\":\n" +
+      '      case "billing":\n' +
       "        return (\n" +
       "          <TabContentView chatDisabled>\n" +
       "            <BillingPageView />\n" +
       "          </TabContentView>\n" +
       "        );\n" +
-      "      case \"settings\":\n" +
+      '      case "settings":\n' +
       "        return (\n" +
       "          <TabContentView chatDisabled>\n" +
-      "            <SettingsView key=\"settings-root\" />\n" +
+      '            <SettingsView key="settings-root" />\n' +
+      "          </TabContentView>\n" +
+      "        );\n",
+  },
+  // ── Operator console (x402 redesign): sidebar tab + App.tsx import/case ─────
+  // These anchor on the billing-patch output above, so they MUST stay ordered
+  // after the billing patches. The OperatorShell + operator.css are overlaid via
+  // scaffold-patches at packages/app-core/src/components/pages/operator/.
+  {
+    path: "packages/app-core/src/navigation/index.ts",
+    description:
+      "Add an Operator tab (the x402 operator console: credits/top-up, " +
+      "agent-to-agent network, settlement feed, service directory, usage, " +
+      "API keys) to the sidebar, alongside the x402 billing tab.",
+    find:
+      "  // [tokagent surgical-patch] x402 tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
+      "  {\n" +
+      '    label: "x402",\n' +
+      '    tabs: ["billing"],\n' +
+      "    icon: Wallet,\n" +
+      '    description: "x402 payment rail: PTON credits, API keys, top-up, usage",\n' +
+      "  },\n" +
+      "];\n",
+    replaceWith:
+      "  // [tokagent surgical-patch] x402 tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
+      "  {\n" +
+      '    label: "x402",\n' +
+      '    tabs: ["billing"],\n' +
+      "    icon: Wallet,\n" +
+      '    description: "x402 payment rail: PTON credits, API keys, top-up, usage",\n' +
+      "  },\n" +
+      "  // [tokagent surgical-patch] Operator console — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
+      "  {\n" +
+      '    label: "Operator",\n' +
+      '    tabs: ["operator"],\n' +
+      "    icon: Wallet,\n" +
+      '    description: "Local operator console — x402 credits & agent-to-agent network",\n' +
+      "  },\n" +
+      "];\n",
+  },
+  {
+    path: "packages/app-core/src/App.tsx",
+    description:
+      "Lazy-import OperatorShell so the Operator tab has a renderer. " +
+      "OperatorShell + the operator/ tree are overlaid via scaffold-patches.",
+    find:
+      "// [tokagent surgical-patch] BillingPageView — overlaid via scaffold-patches.\n" +
+      "const BillingPageView = lazyNamedView(\n" +
+      '  () => import("./components/pages/BillingPageView"),\n' +
+      '  "BillingPageView",\n' +
+      ");\n",
+    replaceWith:
+      "// [tokagent surgical-patch] BillingPageView — overlaid via scaffold-patches.\n" +
+      "const BillingPageView = lazyNamedView(\n" +
+      '  () => import("./components/pages/BillingPageView"),\n' +
+      '  "BillingPageView",\n' +
+      ");\n" +
+      "// [tokagent surgical-patch] OperatorShell (x402 console) — overlaid via scaffold-patches.\n" +
+      "const OperatorShell = lazyNamedView(\n" +
+      '  () => import("./components/pages/operator/OperatorShell"),\n' +
+      '  "OperatorShell",\n' +
+      ");\n",
+  },
+  {
+    path: "packages/app-core/src/App.tsx",
+    description:
+      "Route the 'operator' tab to OperatorShell. Inserted after the billing " +
+      "case so case-statement ordering stays stable across upstream changes.",
+    find:
+      "      // [tokagent surgical-patch] x402 tab — fixed entry, no enabled gate.\n" +
+      '      case "billing":\n' +
+      "        return (\n" +
+      "          <TabContentView chatDisabled>\n" +
+      "            <BillingPageView />\n" +
+      "          </TabContentView>\n" +
+      "        );\n",
+    replaceWith:
+      "      // [tokagent surgical-patch] x402 tab — fixed entry, no enabled gate.\n" +
+      '      case "billing":\n' +
+      "        return (\n" +
+      "          <TabContentView chatDisabled>\n" +
+      "            <BillingPageView />\n" +
+      "          </TabContentView>\n" +
+      "        );\n" +
+      "      // [tokagent surgical-patch] Operator console — overlaid via scaffold-patches.\n" +
+      '      case "operator":\n' +
+      "        return (\n" +
+      "          <TabContentView chatDisabled>\n" +
+      "            <OperatorShell />\n" +
       "          </TabContentView>\n" +
       "        );\n",
   },
@@ -635,29 +720,29 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "rail configured from the x402 sidebar tab.",
     find:
       "  {\n" +
-      "    id: \"zai\",\n" +
-      "    name: \"z.ai\",\n" +
-      "    envKey: \"ZAI_API_KEY\",\n" +
-      "    pluginName: \"@homunculuslabs/plugin-zai\",\n" +
+      '    id: "zai",\n' +
+      '    name: "z.ai",\n' +
+      '    envKey: "ZAI_API_KEY",\n' +
+      '    pluginName: "@homunculuslabs/plugin-zai",\n' +
       "    keyPrefix: null,\n" +
-      "    description: \"GLM models via z.ai Coding Plan.\",\n" +
-      "    family: \"zai\",\n" +
-      "    authMode: \"api-key\",\n" +
-      "    group: \"local\",\n" +
+      '    description: "GLM models via z.ai Coding Plan.",\n' +
+      '    family: "zai",\n' +
+      '    authMode: "api-key",\n' +
+      '    group: "local",\n' +
       "    order: 150,\n" +
       "  },\n" +
       "] as const satisfies ReadonlyArray<ProviderOption>;\n",
     replaceWith:
       "  {\n" +
-      "    id: \"zai\",\n" +
-      "    name: \"z.ai\",\n" +
-      "    envKey: \"ZAI_API_KEY\",\n" +
-      "    pluginName: \"@homunculuslabs/plugin-zai\",\n" +
+      '    id: "zai",\n' +
+      '    name: "z.ai",\n' +
+      '    envKey: "ZAI_API_KEY",\n' +
+      '    pluginName: "@homunculuslabs/plugin-zai",\n' +
       "    keyPrefix: null,\n" +
-      "    description: \"GLM models via z.ai Coding Plan.\",\n" +
-      "    family: \"zai\",\n" +
-      "    authMode: \"api-key\",\n" +
-      "    group: \"local\",\n" +
+      '    description: "GLM models via z.ai Coding Plan.",\n' +
+      '    family: "zai",\n' +
+      '    authMode: "api-key",\n' +
+      '    group: "local",\n' +
       "    order: 150,\n" +
       "  },\n" +
       "  // [tokagent surgical-patch] x402 provider — dispatches LLM calls\n" +
@@ -665,15 +750,15 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "  // billing via the x402 rail. Configure top-up, keys, and usage\n" +
       "  // from the x402 sidebar tab.\n" +
       "  {\n" +
-      "    id: \"x402\",\n" +
-      "    name: \"x402 only (can be configured from the gateway)\",\n" +
-      "    envKey: \"OPENROUTER_API_KEY\",\n" +
-      "    pluginName: \"@elizaos/plugin-openrouter\",\n" +
-      "    keyPrefix: \"sk-or-\",\n" +
-      "    description: \"Pay-per-request via the x402 payment rail. Configure top-up, keys, and usage from the x402 sidebar tab.\",\n" +
-      "    family: \"openrouter\",\n" +
-      "    authMode: \"api-key\",\n" +
-      "    group: \"local\",\n" +
+      '    id: "x402",\n' +
+      '    name: "x402 only (can be configured from the gateway)",\n' +
+      '    envKey: "OPENROUTER_API_KEY",\n' +
+      '    pluginName: "@elizaos/plugin-openrouter",\n' +
+      '    keyPrefix: "sk-or-",\n' +
+      '    description: "Pay-per-request via the x402 payment rail. Configure top-up, keys, and usage from the x402 sidebar tab.",\n' +
+      '    family: "openrouter",\n' +
+      '    authMode: "api-key",\n' +
+      '    group: "local",\n' +
       "    order: 5,\n" +
       "  },\n" +
       "] as const satisfies ReadonlyArray<ProviderOption>;\n",
@@ -785,26 +870,6 @@ export function toDisplayName(value: string): string {
     .join(" ");
 }
 
-export function buildPluginTemplateValues(input: {
-  tokagentVersion: string;
-  githubUsername: string;
-  pluginDescription: string;
-  projectName: string;
-  repoUrl: string;
-}): PluginTemplateValues {
-  const slug = normalizeKebabCase(input.projectName);
-  const pluginBaseName = slug.startsWith("plugin-") ? slug : `plugin-${slug}`;
-  return {
-    displayName: toDisplayName(pluginBaseName.replace(/^plugin-/, "")),
-    tokagentVersion: input.tokagentVersion,
-    githubUsername: input.githubUsername,
-    pluginBaseName,
-    pluginDescription: input.pluginDescription,
-    pluginSnake: pluginBaseName.replace(/-/g, "_"),
-    repoUrl: input.repoUrl,
-  };
-}
-
 export function buildFullstackTemplateValues(
   projectName: string,
 ): FullstackTemplateValues {
@@ -828,37 +893,6 @@ export function buildFullstackTemplateValues(
   };
 }
 
-export function getPluginReplacementEntries(
-  values: PluginTemplateValues,
-): Array<[string, string]> {
-  const rustPluginName = `rust-${values.pluginBaseName}`;
-  const pythonPluginName = `python-${values.pluginBaseName}`;
-  const pythonSnake = `python_${values.pluginSnake}`;
-  return [
-    [`\${PLUGINNAME}`, values.pluginBaseName],
-    [`\${PLUGINDESCRIPTION}`, values.pluginDescription],
-    [`\${GITHUB_USERNAME}`, values.githubUsername],
-    [`\${REPO_URL}`, values.repoUrl],
-    ["__TOKAGENTOS_VERSION__", values.tokagentVersion],
-    ["@tokagentos/rust-plugin-starter", `@tokagentos/${rustPluginName}`],
-    ["@elizaos/plugin-starter", `@tokagentos/${values.pluginBaseName}`],
-    ["tokagentos_plugin_starter", `tokagentos_${values.pluginSnake}`],
-    ["tokagentos-plugin-starter", `tokagentos-${values.pluginBaseName}`],
-    ["rust_plugin_starter", `rust_${values.pluginSnake}`],
-    ["python_plugin_starter", pythonSnake],
-    ["rust-plugin-starter", rustPluginName],
-    ["python-plugin-starter", pythonPluginName],
-    ["plugin_starter", values.pluginSnake],
-    ["plugin-starter", values.pluginBaseName],
-    ["Plugin starter", `${values.displayName} plugin`],
-    ["plugin starter", `${values.displayName.toLowerCase()} plugin`],
-    [
-      "plugin starter template",
-      `${values.displayName.toLowerCase()} plugin template`,
-    ],
-  ];
-}
-
 export function getFullstackReplacementEntries(
   values: FullstackTemplateValues,
 ): Array<[string, string]> {
@@ -880,30 +914,12 @@ export function getFullstackReplacementEntries(
   ];
 }
 
-export function getTemplateReplacementEntries(options: {
-  templateId: TemplateDefinition["id"];
-  values: Record<string, string>;
-}): Array<[string, string]> {
-  if (options.templateId === "plugin") {
-    return getPluginReplacementEntries(
-      options.values as unknown as PluginTemplateValues,
-    );
-  }
-  return getFullstackReplacementEntries(
-    options.values as unknown as FullstackTemplateValues,
-  );
-}
-
 export function resolveTemplateSourceDir(options: {
   language?: string;
   template: TemplateDefinition;
   templatesDir: string;
 }): string {
-  const templateRoot = path.join(options.templatesDir, options.template.id);
-  if (options.template.id !== "plugin") {
-    return templateRoot;
-  }
-  return path.join(templateRoot, options.language ?? "typescript");
+  return path.join(options.templatesDir, options.template.id);
 }
 
 function copyRenderedTreeInternal(
@@ -964,19 +980,6 @@ export function renderTemplateTree(options: {
     options.destinationDir,
   );
   return managedFiles;
-}
-
-export function createRenderedTempDir(options: {
-  replacements: Array<[string, string]>;
-  sourceDir: string;
-}): { dir: string; managedFiles: Record<string, string> } {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "tokagentos-template-"));
-  const managedFiles = renderTemplateTree({
-    destinationDir: dir,
-    replacements: options.replacements,
-    sourceDir: options.sourceDir,
-  });
-  return { dir, managedFiles };
 }
 
 export function resolveTemplateUpstream(
@@ -1251,11 +1254,10 @@ export function removeSubmodulesFromGitmodules(
   // its URL.
   for (const submodulePath of paths) {
     try {
-      execFileSync(
-        "git",
-        ["rm", "--cached", "-rf", "--quiet", submodulePath],
-        { cwd: submoduleRoot, stdio: "ignore" },
-      );
+      execFileSync("git", ["rm", "--cached", "-rf", "--quiet", submodulePath], {
+        cwd: submoduleRoot,
+        stdio: "ignore",
+      });
     } catch {
       // Path not in index (e.g., already removed) — fine.
     }
@@ -1277,7 +1279,11 @@ export function removeSubmodulesFromGitmodules(
   const lines = fs.readFileSync(gitmodulesPath, "utf8").split("\n");
   const removalSet = new Set(paths);
 
-  type Block = { headerLine: string | null; bodyLines: string[]; path: string | null };
+  type Block = {
+    headerLine: string | null;
+    bodyLines: string[];
+    path: string | null;
+  };
   const blocks: Block[] = [];
   let current: Block = { headerLine: null, bodyLines: [], path: null };
 
@@ -1407,123 +1413,6 @@ export function ensureUpstreamCompatibilityFiles(
   return created;
 }
 
-export function buildMetadata(options: {
-  cliVersion: string;
-  language?: string;
-  managedFiles: Record<string, string>;
-  template: TemplateDefinition;
-  values: Record<string, string>;
-}): ProjectTemplateMetadata {
-  const now = new Date().toISOString();
-  return {
-    cliVersion: options.cliVersion,
-    createdAt: now,
-    language: options.language,
-    managedFiles: options.managedFiles,
-    templateId: options.template.id,
-    templateVersion: options.template.version,
-    updatedAt: now,
-    values: options.values,
-  };
-}
-
-export function updateManagedFiles(options: {
-  currentMetadata: ProjectTemplateMetadata;
-  dryRun?: boolean;
-  projectRoot: string;
-  renderedDir: string;
-  renderedManagedFiles: Record<string, string>;
-}): {
-  conflicts: string[];
-  created: string[];
-  deleted: string[];
-  nextManagedFiles: Record<string, string>;
-  unchanged: string[];
-  updated: string[];
-} {
-  const conflicts: string[] = [];
-  const created: string[] = [];
-  const deleted: string[] = [];
-  const unchanged: string[] = [];
-  const updated: string[] = [];
-  const nextManagedFiles = { ...options.renderedManagedFiles };
-
-  const previousFiles = options.currentMetadata.managedFiles;
-  const allManagedPaths = new Set([
-    ...Object.keys(previousFiles),
-    ...Object.keys(options.renderedManagedFiles),
-  ]);
-
-  for (const relativePath of allManagedPaths) {
-    const projectPath = path.join(options.projectRoot, relativePath);
-    const renderedPath = path.join(options.renderedDir, relativePath);
-    const previousHash = previousFiles[relativePath];
-    const nextHash = options.renderedManagedFiles[relativePath];
-    const hasCurrentFile = fs.existsSync(projectPath);
-    const hasRenderedFile = fs.existsSync(renderedPath);
-    const currentHash = hasCurrentFile
-      ? sha256(fs.readFileSync(projectPath))
-      : "";
-
-    if (previousHash && !hasRenderedFile) {
-      if (currentHash && currentHash !== previousHash) {
-        conflicts.push(relativePath);
-        delete nextManagedFiles[relativePath];
-        continue;
-      }
-      deleted.push(relativePath);
-      delete nextManagedFiles[relativePath];
-      if (!options.dryRun && fs.existsSync(projectPath)) {
-        fs.rmSync(projectPath, { force: true });
-      }
-      continue;
-    }
-
-    if (!previousHash && nextHash) {
-      if (currentHash && currentHash !== nextHash) {
-        conflicts.push(relativePath);
-        continue;
-      }
-      created.push(relativePath);
-      if (!options.dryRun) {
-        fs.mkdirSync(path.dirname(projectPath), { recursive: true });
-        fs.copyFileSync(renderedPath, projectPath);
-      }
-      continue;
-    }
-
-    if (currentHash === previousHash) {
-      if (currentHash === nextHash) {
-        unchanged.push(relativePath);
-        continue;
-      }
-      updated.push(relativePath);
-      if (!options.dryRun) {
-        fs.mkdirSync(path.dirname(projectPath), { recursive: true });
-        fs.copyFileSync(renderedPath, projectPath);
-      }
-      continue;
-    }
-
-    if (currentHash === nextHash) {
-      unchanged.push(relativePath);
-      continue;
-    }
-
-    conflicts.push(relativePath);
-    delete nextManagedFiles[relativePath];
-  }
-
-  return {
-    conflicts,
-    created,
-    deleted,
-    nextManagedFiles,
-    unchanged,
-    updated,
-  };
-}
-
 export function hydrateGitSubmoduleWorkspace(options: {
   dryRun?: boolean;
   projectRoot: string;
@@ -1575,11 +1464,10 @@ export function hydrateGitSubmoduleWorkspace(options: {
   // a transient submodule fetch error shouldn't block scaffold creation.
   // The required-submodule loop below re-attempts each explicitly.
   try {
-    execFileSync(
-      "git",
-      ["submodule", "update", "--init", "--recursive"],
-      { cwd: submoduleRoot, stdio: "inherit" },
-    );
+    execFileSync("git", ["submodule", "update", "--init", "--recursive"], {
+      cwd: submoduleRoot,
+      stdio: "inherit",
+    });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.warn(
@@ -1679,7 +1567,12 @@ export function hydrateGitSubmoduleWorkspace(options: {
   // Narrow surgical edits over the upstream files (post-overlay so they
   // can patch files we don't otherwise overlay). Throws loudly if the find
   // string drifted.
-  if (!options.dryRun) {
+  // TOKAGENTOS_SKIP_SURGICAL_PATCHES=1 lets the local-upstream smoke test
+  // bypass these patches (the local monorepo already has Tokagent-specific
+  // content so the find-strings don't match upstream originals).
+  const skipSurgical =
+    process.env.TOKAGENTOS_SKIP_SURGICAL_PATCHES === "1";
+  if (!options.dryRun && !skipSurgical) {
     applyUpstreamSurgicalPatches(submoduleRoot);
   }
 }
@@ -1800,73 +1693,13 @@ export function initializeGitSubmodule(options: {
   // branch tip — older pinned commits aren't in the local objects.
   const commit = options.commit?.trim();
   if (commit) {
-    execFileSync(
-      "git",
-      ["fetch", "--depth", "1", "origin", commit],
-      { cwd: submoduleRoot, stdio: "inherit" },
-    );
-    execFileSync(
-      "git",
-      ["checkout", "--detach", commit],
-      { cwd: submoduleRoot, stdio: "inherit" },
-    );
-  }
-}
-
-export function updateGitSubmodule(options: {
-  branch?: string;
-  commit?: string;
-  dryRun?: boolean;
-  projectRoot: string;
-  repo: string;
-  submodulePath: string;
-}): void {
-  if (options.dryRun) {
-    return;
-  }
-
-  ensureGitRepository(options.projectRoot);
-  const submoduleRoot = path.join(options.projectRoot, options.submodulePath);
-  if (!fs.existsSync(submoduleRoot)) {
-    initializeGitSubmodule({
-      branch: options.branch,
-      commit: options.commit,
-      projectRoot: options.projectRoot,
-      repo: options.repo,
-      submodulePath: options.submodulePath,
+    execFileSync("git", ["fetch", "--depth", "1", "origin", commit], {
+      cwd: submoduleRoot,
+      stdio: "inherit",
     });
-    return;
+    execFileSync("git", ["checkout", "--detach", commit], {
+      cwd: submoduleRoot,
+      stdio: "inherit",
+    });
   }
-
-  const localRepoRoot = resolveLocalRepoRoot(options.repo);
-  const commit = options.commit?.trim();
-  if (commit) {
-    // Pinned mode: ignore --remote (which follows branch HEAD) and
-    // force-checkout the pinned SHA so existing scaffolds stay locked
-    // to the same upstream state as fresh ones.
-    execFileSync(
-      "git",
-      ["fetch", "--depth", "1", "origin", commit],
-      { cwd: submoduleRoot, stdio: "inherit" },
-    );
-    execFileSync(
-      "git",
-      ["checkout", "--detach", commit],
-      { cwd: submoduleRoot, stdio: "inherit" },
-    );
-    return;
-  }
-
-  execFileSync(
-    "git",
-    withOptionalFileProtocol(options.repo, [
-      "submodule",
-      "update",
-      "--init",
-      "--remote",
-      ...(localRepoRoot ? ["--reference", localRepoRoot] : []),
-      options.submodulePath,
-    ]),
-    { cwd: options.projectRoot, stdio: "inherit" },
-  );
 }

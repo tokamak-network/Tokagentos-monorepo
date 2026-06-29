@@ -13,9 +13,9 @@
  */
 import type http from "node:http";
 import {
-  type ElizaConfig,
-  loadElizaConfig,
-  saveElizaConfig,
+  loadTokagentConfig,
+  saveTokagentConfig,
+  type TokagentConfig,
 } from "@tokagentos/agent/config/config";
 import { readCompatJsonBody } from "@tokagentos/app-core/api/compat-route-shared";
 import { sendJson, sendJsonError } from "@tokagentos/app-core/api/response";
@@ -25,7 +25,7 @@ import {
 } from "../api/wallet-routes";
 import { resolveWalletExportRejection } from "./server-wallet-trade";
 
-function ensureWalletKeysInEnvAndConfig(_config: ElizaConfig): boolean {
+function ensureWalletKeysInEnvAndConfig(_config: TokagentConfig): boolean {
   // Stub — auto-provisioning is disabled by default; the wallet generate
   // route handles this explicitly.
   return false;
@@ -60,7 +60,7 @@ export async function handleWalletCoreRoutes(
     return false;
   }
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
 
   return handleWalletRoutes({
     req,
@@ -68,7 +68,7 @@ export async function handleWalletCoreRoutes(
     method,
     pathname,
     config,
-    saveConfig: saveElizaConfig,
+    saveConfig: saveTokagentConfig,
     ensureWalletKeysInEnvAndConfig,
     resolveWalletExportRejection: (r, body) =>
       resolveWalletExportRejection(r, body as never) as never,

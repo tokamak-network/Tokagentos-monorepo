@@ -13,8 +13,8 @@ runtime, we overlay targeted files post-clone.
 - Each file in this tree shadows the file at the same relative path inside
   `<project>/tokagent/`.
 - Overlay patches are deterministic (same input → same output).
-- If a user later runs `tokagentos upgrade` to pull a new upstream version,
-  the overlays re-apply automatically. If upstream renamed or removed the
-  target file, `applyTokagentScaffoldPatches` reports a conflict.
+- Overlay patches are applied once, at scaffold-time, against the freshly
+  cloned upstream checkout. If upstream renamed or removed the target file,
+  `applyTokagentScaffoldPatches` reports a conflict.
 - Changes to these files are reviewable as regular source edits, not as
   runtime regex transforms.

@@ -3,87 +3,16 @@
  */
 
 import type { LucideIcon } from "lucide-react";
-import {
-  Clock3,
-  Coins,
-  Gamepad2,
-  MessageSquare,
-  Monitor,
-  PencilLine,
-  Radio,
-  Settings,
-  Wallet,
-} from "lucide-react";
-
-/** Apps are enabled by default; opt-out via VITE_ENABLE_APPS=false. */
-export const APPS_ENABLED =
-  String(import.meta.env.VITE_ENABLE_APPS ?? "true").toLowerCase() !== "false";
-
-/** Stream routes stay addressable; the nav hides the tab unless streaming is enabled. */
-export const STREAM_ENABLED = true;
-/** Companion tab — enabled by default; opt-out via VITE_ENABLE_COMPANION_MODE=false. */
-export const COMPANION_ENABLED =
-  String(import.meta.env.VITE_ENABLE_COMPANION_MODE ?? "true").toLowerCase() !==
-  "false";
+import { Gamepad2, KeyRound, Settings } from "lucide-react";
 
 /** Built-in tab identifiers. */
-export type BuiltinTab =
-  | "chat"
-  | "lifeops"
-  | "tasks"
-  | "automations"
-  | "browser"
-  | "companion"
-  | "stream"
-  | "apps"
-  | "character"
-  | "character-select"
-  | "inventory"
-  | "knowledge"
-  | "connectors"
-  | "triggers"
-  | "plugins"
-  | "skills"
-  | "advanced"
-  | "fine-tuning"
-  | "trajectories"
-  | "relationships"
-  | "memories"
-  | "rolodex"
-  | "voice"
-  | "runtime"
-  | "database"
-  | "desktop"
-  | "settings"
-  | "logs"
-  | "billing";
+export type BuiltinTab = "settings" | "operator";
 
 /**
  * Tab identifier — includes all built-in tabs plus arbitrary strings
  * for dynamic plugin-provided nav-page widgets.
  */
 export type Tab = BuiltinTab | (string & {});
-
-export const APPS_TOOL_TABS = [
-  "lifeops",
-  "plugins",
-  "skills",
-  "fine-tuning",
-  "trajectories",
-  "relationships",
-  "memories",
-  "runtime",
-  "database",
-  "logs",
-  // Legacy hidden alias for old /advanced routes.
-  "advanced",
-] as const satisfies readonly Tab[];
-
-const APPS_TOOL_TAB_SET = new Set<Tab>(APPS_TOOL_TABS);
-
-export function isAppsToolTab(tab: Tab): boolean {
-  return APPS_TOOL_TAB_SET.has(tab);
-}
 
 export interface TabGroup {
   label: string;
@@ -94,59 +23,17 @@ export interface TabGroup {
 
 export const ALL_TAB_GROUPS: TabGroup[] = [
   {
-    label: "Chat",
-    tabs: ["chat", "connectors"],
-    icon: MessageSquare,
+    label: "Operator",
+    tabs: ["operator"],
+    icon: KeyRound,
     description:
-      "Conversations with your agent, inbound messages from every connector, and connector management",
-  },
-  {
-    label: "Apps",
-    tabs: ["apps", ...APPS_TOOL_TABS],
-    icon: Gamepad2,
-    description: "Games, LifeOps, integrations, and app tools",
-  },
-  {
-    label: "Character",
-    tabs: ["character", "character-select", "knowledge"],
-    icon: PencilLine,
-    description: "Avatar identity, style, examples, and knowledge",
-  },
-  {
-    label: "Wallet",
-    tabs: ["inventory"],
-    icon: Wallet,
-    description: "Crypto wallets and token balances",
-  },
-  {
-    label: "Browser",
-    tabs: ["browser"],
-    icon: Monitor,
-    description: "Agent-controlled browser workspace",
-  },
-  {
-    label: "Stream",
-    tabs: ["stream"],
-    icon: Radio,
-    description: "Live streaming controls",
-  },
-  {
-    label: "Automations",
-    tabs: ["automations"],
-    icon: Clock3,
-    description: "Tasks, scheduled tasks, and recurring workflows",
+      "Local operator console — x402 credits & agent-to-agent network",
   },
   {
     label: "Settings",
     tabs: ["settings"],
     icon: Settings,
     description: "Configuration and preferences",
-  },
-  {
-    label: "Billing",
-    tabs: ["billing"],
-    icon: Coins,
-    description: "Credits, top-up, API keys, and usage",
   },
 ];
 
@@ -164,22 +51,9 @@ export interface DynamicNavTab {
   description?: string;
 }
 
-/** Compute visible tab groups. Pass feature flags explicitly for React reactivity. */
-export function getTabGroups(
-  streamEnabled = STREAM_ENABLED,
-  walletEnabled = true,
-  browserEnabled = true,
-  dynamicTabs?: DynamicNavTab[],
-  billingEnabled = false,
-): TabGroup[] {
-  const groups = ALL_TAB_GROUPS.filter(
-    (g) =>
-      (APPS_ENABLED || g.label !== "Apps") &&
-      (streamEnabled || g.label !== "Stream") &&
-      (walletEnabled || g.label !== "Wallet") &&
-      (browserEnabled || g.label !== "Browser") &&
-      (billingEnabled || g.label !== "Billing"),
-  );
+/** Compute visible tab groups. Accepts optional dynamic plugin-provided tabs. */
+export function getTabGroups(dynamicTabs?: DynamicNavTab[]): TabGroup[] {
+  const groups = [...ALL_TAB_GROUPS];
 
   // Merge dynamic plugin-provided nav-page tabs into groups.
   if (dynamicTabs?.length) {
@@ -207,69 +81,24 @@ export function getTabGroups(
 }
 
 const TAB_PATHS: Record<BuiltinTab, string> = {
-  chat: "/chat",
-  lifeops: "/apps/lifeops",
-  tasks: "/apps/tasks",
-  browser: "/browser",
-  companion: "/companion",
-  stream: "/stream",
-  apps: "/apps",
-  character: "/character",
-  "character-select": "/character/select",
-  automations: "/automations",
-  triggers: "/automations",
-  inventory: "/inventory",
-  knowledge: "/character/knowledge",
-  connectors: "/connectors",
-  plugins: "/apps/plugins",
-  skills: "/apps/skills",
-  advanced: "/apps/fine-tuning",
-  "fine-tuning": "/apps/fine-tuning",
-  trajectories: "/apps/trajectories",
-  relationships: "/apps/relationships",
-  memories: "/apps/memories",
-  rolodex: "/rolodex",
-  voice: "/settings/voice",
-  runtime: "/apps/runtime",
-  database: "/apps/database",
-  desktop: "/desktop",
   settings: "/settings",
-  logs: "/apps/logs",
-  billing: "/billing",
+  operator: "/operator",
 };
 
-/** Legacy path redirects — old paths that now map to new tabs. */
+/** Legacy path redirects — retired paths all redirect to the operator console. */
 const LEGACY_PATHS: Record<string, Tab> = {
-  "/game": "apps",
-  "/agent": "character",
-  "/wallets": "inventory",
-  "/features": "plugins",
-  "/admin": "fine-tuning",
-  "/config": "settings",
-  "/triggers": "automations",
-  "/heartbeats": "automations",
-  // Old top-level paths that moved under /character/
-  "/character-select": "character-select",
-  "/knowledge": "knowledge",
-  // Old top-level paths that moved under /apps/
-  "/lifeops": "lifeops",
-  "/tasks": "automations",
-  "/plugins": "plugins",
-  "/skills": "skills",
-  "/advanced": "fine-tuning",
-  "/fine-tuning": "fine-tuning",
-  "/trajectories": "trajectories",
-  "/relationships": "relationships",
-  "/memories": "memories",
-  "/runtime": "runtime",
-  "/database": "database",
-  "/logs": "logs",
-  // Old/legacy connector paths
-  "/connectors": "connectors",
-  "/settings/connectors": "connectors",
-  "/voice": "settings",
-  // /companion stays as a legacy redirect — companion is now an overlay app at /apps/companion
-  "/companion": "chat",
+  "/": "operator",
+  "/chat": "operator",
+  "/billing": "operator",
+  "/inventory": "operator",
+  "/wallets": "operator",
+  "/automations": "operator",
+  "/apps": "operator",
+  "/browser": "operator",
+  "/stream": "operator",
+  "/connectors": "operator",
+  "/character": "operator",
+  "/companion": "operator",
 };
 
 const PATH_TO_TAB = new Map(
@@ -309,79 +138,17 @@ export function resolveInitialTabForPath(
   return tabFromPath(pathname, basePath) ?? fallbackTab;
 }
 
-/** Known apps-tool sub-paths under /apps/ (not actual app slugs). */
-const APPS_SUB_TABS: Record<string, Tab> = {
-  lifeops: "lifeops",
-  tasks: "automations",
-  plugins: "plugins",
-  skills: "skills",
-  "fine-tuning": "fine-tuning",
-  trajectories: "trajectories",
-  relationships: "relationships",
-  memories: "memories",
-  runtime: "runtime",
-  database: "database",
-  logs: "logs",
-  // Note: "companion" is intentionally NOT here — /apps/companion is an app slug
-  // that AppsView auto-launches as an overlay, not a tool tab.
-};
-
 export function tabFromPath(pathname: string, basePath = ""): Tab | null {
   const normalized = normalizePathForLookup(pathname, basePath);
-  if (normalized === "/") return "chat";
-
-  if (
-    normalized === "/node-catalog" ||
-    normalized === "/automations/node-catalog"
-  ) {
-    return "automations";
-  }
-
-  // Companion disabled unless explicitly feature-flagged
-  if (
-    !COMPANION_ENABLED &&
-    (normalized === "/companion" ||
-      normalized === "/apps/companion" ||
-      normalized === "/character-select" ||
-      normalized === "/character/select")
-  ) {
-    return "chat";
-  }
-
-  // Apps disabled in production builds — redirect to chat
-  if (
-    !APPS_ENABLED &&
-    (normalized === "/apps" ||
-      normalized.startsWith("/apps/") ||
-      normalized === "/game")
-  ) {
-    return "chat";
-  }
-
-  // /apps/<sub> — known tool tabs resolve to their tab; everything else is an app slug
-  if (normalized.startsWith("/apps/")) {
-    const sub = normalized.slice("/apps/".length);
-    return APPS_SUB_TABS[sub] ?? "apps";
-  }
-
-  // /character/<sub> — resolve nested character paths
-  if (normalized.startsWith("/character/")) {
-    const sub = normalized.slice("/character/".length);
-    if (sub === "knowledge") return "knowledge";
-    if (sub === "select") return "character-select";
-    return "character";
-  }
+  if (normalized === "/") return "operator";
 
   // /settings/<sub> — resolve nested settings paths
   if (normalized.startsWith("/settings/")) {
-    const sub = normalized.slice("/settings/".length);
-    if (sub === "connectors") return "connectors";
-    if (sub === "voice") return "settings";
     return "settings";
   }
 
   // Check current paths first, then legacy redirects
-  return PATH_TO_TAB.get(normalized) ?? LEGACY_PATHS[normalized] ?? null;
+  return PATH_TO_TAB.get(normalized) ?? LEGACY_PATHS[normalized] ?? "operator";
 }
 
 function normalizeBasePath(basePath: string): string {
@@ -402,78 +169,13 @@ function normalizePath(p: string): string {
   return normalized;
 }
 
-/**
- * Extract an app slug from a `/apps/<slug>` path.
- * Returns `null` when the path doesn't contain a slug segment.
- */
-export function getAppSlugFromPath(
-  pathname: string,
-  basePath = "",
-): string | null {
-  const normalized = normalizePathForLookup(pathname, basePath);
-  if (!normalized.startsWith("/apps/")) return null;
-  const slug = normalized.slice("/apps/".length);
-  return slug || null;
-}
-
 export function titleForTab(tab: Tab): string {
   switch (tab) {
-    case "chat":
-      return "Chat";
-    case "lifeops":
-      return "LifeOps";
-    case "browser":
-      return "Browser";
-    case "companion":
-      return "Companion";
-    case "apps":
-      return "Apps";
-    case "character":
-      return "Character";
-    case "character-select":
-      return "Character Select";
-    case "automations":
-      return "Automations";
-    case "triggers":
-      return "Automations";
-    case "inventory":
-      return "Wallet";
-    case "knowledge":
-      return "Knowledge";
-    case "connectors":
-      return "Connectors";
-    case "plugins":
-      return "Plugins";
-    case "skills":
-      return "Skills";
-    case "advanced":
-      return "Fine-Tuning";
-    case "fine-tuning":
-      return "Fine-Tuning";
-    case "trajectories":
-      return "Trajectories";
-    case "relationships":
-      return "Relationships";
-    case "memories":
-      return "Memories";
-    case "rolodex":
-      return "Rolodex";
-    case "voice":
-      return "Voice";
-    case "runtime":
-      return "Runtime";
-    case "database":
-      return "Databases";
+    case "operator":
+      return "Operator";
     case "settings":
       return "Settings";
-    case "logs":
-      return "Logs";
-    case "stream":
-      return "Stream";
-    case "billing":
-      return "Billing";
     default:
-      // Dynamic plugin tabs — capitalize the tab ID as a fallback title.
       return tab.charAt(0).toUpperCase() + tab.slice(1).replace(/-/g, " ");
   }
 }

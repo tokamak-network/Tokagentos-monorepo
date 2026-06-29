@@ -1,7 +1,7 @@
-import { type Address, type Hex } from "viem";
 import { logger } from "@tokagentos/core";
-import { CLAUDE_VAULT_ABI } from "./abi/vault.js";
+import type { Address, Hex } from "viem";
 import { PTON_ABI } from "./abi/pton.js";
+import { CLAUDE_VAULT_ABI } from "./abi/vault.js";
 import type { BillingClients } from "./clients.js";
 import type { PaymentAuthorization, PaymentSignature } from "./pton.js";
 
@@ -64,7 +64,9 @@ export async function depositX402(
     chain: null,
   });
 
-  const rcpt = await clients.publicClient.waitForTransactionReceipt({ hash: txHash });
+  const rcpt = await clients.publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
   if (rcpt.status !== "success") {
     throw new Error(`depositX402 tx reverted: ${txHash}`);
   }
@@ -118,7 +120,9 @@ export async function consumeCredits(
     chain: null,
   });
 
-  const rcpt = await clients.publicClient.waitForTransactionReceipt({ hash: txHash });
+  const rcpt = await clients.publicClient.waitForTransactionReceipt({
+    hash: txHash,
+  });
   if (rcpt.status !== "success") {
     throw new Error(`consumeCredits tx reverted: ${txHash}`);
   }
@@ -151,7 +155,13 @@ export async function readCredits(
   // CLAUDE_VAULT_ABI is declared `as const`; viem infers `bigint` from the
   // uint256 output. Explicit cast was redundant and would mask future ABI
   // edits (e.g. uint128 narrowing).
-  return await clients.publicClient.readContract({
+  // viem 2.48: bare PublicClient's readContract overload mis-resolves (demands
+  // EIP-7702 authorizationList). The call is correct at runtime; cast the method.
+  return await (
+    clients.publicClient.readContract as unknown as (
+      args: unknown,
+    ) => Promise<bigint>
+  )({
     address: vaultAddress,
     abi: CLAUDE_VAULT_ABI,
     functionName: "credits",
@@ -210,7 +220,12 @@ export async function ptonBalance(
 ): Promise<bigint> {
   // PTON_ABI is declared `as const`; viem infers `bigint` from the uint256
   // output. See note on readCredits above.
-  return await clients.publicClient.readContract({
+  // viem 2.48: see note in readCredits above.
+  return await (
+    clients.publicClient.readContract as unknown as (
+      args: unknown,
+    ) => Promise<bigint>
+  )({
     address: ptonAddress,
     abi: PTON_ABI,
     functionName: "balanceOf",

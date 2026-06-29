@@ -1,4 +1,8 @@
-import { type AgentPreflightResult, client, useApp } from "@tokagentos/app-core";
+import {
+  type AgentPreflightResult,
+  client,
+  useApp,
+} from "@tokagentos/app-core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { AgentTabsSection } from "./AgentTabsSection";
 import {
@@ -23,7 +27,7 @@ import { LlmProviderSection } from "./LlmProviderSection";
 import { ModelConfigSection } from "./ModelConfigSection";
 
 export function CodingAgentSettingsSection() {
-  const { t, elizaCloudConnected } = useApp();
+  const { t, tokagentCloudConnected } = useApp();
 
   const [activeTab, setActiveTab] = useState<AgentTab | null>(null);
   const [loading, setLoading] = useState(true);
@@ -160,7 +164,7 @@ export function CodingAgentSettingsSection() {
   const rawLlmProvider = (prefs.PARALLAX_LLM_PROVIDER ||
     "subscription") as LlmProvider;
   const llmProvider: LlmProvider =
-    rawLlmProvider === "cloud" && !elizaCloudConnected
+    rawLlmProvider === "cloud" && !tokagentCloudConnected
       ? "subscription"
       : rawLlmProvider;
   const isCloud = llmProvider === "cloud";

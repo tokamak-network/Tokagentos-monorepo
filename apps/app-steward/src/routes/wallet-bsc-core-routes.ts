@@ -11,7 +11,10 @@
  *   POST /api/wallet/production-defaults
  */
 import type http from "node:http";
-import { loadElizaConfig, saveElizaConfig } from "@tokagentos/agent/config/config";
+import {
+  loadTokagentConfig,
+  saveTokagentConfig,
+} from "@tokagentos/agent/config/config";
 import { readCompatJsonBody } from "@tokagentos/app-core/api/compat-route-shared";
 import { sendJson, sendJsonError } from "@tokagentos/app-core/api/response";
 import {
@@ -47,7 +50,7 @@ export async function handleWalletBscCoreRoutes(
   );
   const pathname = url.pathname;
 
-  const config = loadElizaConfig();
+  const config = loadTokagentConfig();
 
   return handleWalletBscRoutes({
     req,
@@ -71,7 +74,7 @@ export async function handleWalletBscCoreRoutes(
       resolveTradePermissionMode: resolveTradePermissionMode as never,
       isAgentAutomationRequest,
       canUseLocalTradeExecution: canUseLocalTradeExecution as never,
-      saveElizaConfig,
+      saveTokagentConfig,
     },
   });
 }

@@ -1,59 +1,38 @@
 # tokagentOS CLI
 
-Create and upgrade tokagentOS project templates.
+Create a tokagentOS project in two steps.
 
-## Installation
-
-```bash
-# Interactive home screen
-npx tokagentos
-
-# Or run a command directly
-npx tokagentos create
-```
-
-## Commands
-
-### `tokagentos create`
-
-Create a new project from a packaged template.
+## Usage
 
 ```bash
-# Interactive template selection
-tokagentos create
-
-# Create a fullstack app workspace
-tokagentos create my-app --template fullstack-app
-
-# Create a Rust plugin starter
-tokagentos create plugin-foo --template plugin --language rust
+npx @tokagent/tokagentos@latest
 ```
 
-### `tokagentos upgrade`
+You will be asked for:
 
-Upgrade the current generated project to the latest packaged template.
+1. **Project name**
+2. **LLM provider** — then that provider's API key (LiteLLM also asks for a base
+   URL and small/large model aliases). Choose **x402** to configure billing from
+   the in-app x402 tab instead of supplying a key.
+
+The CLI scaffolds a fullstack-app workspace backed by a local `tokagent`
+checkout, writes your provider key to `.env`, and pre-completes onboarding so the
+app boots ready. Then:
 
 ```bash
-tokagentos upgrade
-tokagentos upgrade --check
+cd <project>
+bun install
+bun run dev
 ```
 
-### `tokagentos info`
+`bun run dev` launches the UI, the API server, and the headless agent runtime.
 
-Show available templates and languages.
+## Help & version
 
 ```bash
-tokagentos info
-tokagentos info --template fullstack-app
-tokagentos info --language rust
+tokagentos --help      # usage
+tokagentos -v          # version
 ```
-
-## Templates
-
-| Template | Description | Languages |
-| --- | --- | --- |
-| `plugin` | Plugin starter workspace | TypeScript, Python, Rust |
-| `fullstack-app` | Milady-style app workspace backed by a local `tokagent` checkout | TypeScript |
 
 ## Development
 

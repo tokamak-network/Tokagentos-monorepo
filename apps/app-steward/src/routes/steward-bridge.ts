@@ -1,9 +1,4 @@
 import crypto from "node:crypto";
-import { loadElizaConfig } from "@tokagentos/agent/config/config";
-import type {
-  StewardSignRequest,
-  StewardSignResponse,
-} from "../types/steward";
 import {
   type PolicyResult,
   type PolicyRule,
@@ -12,6 +7,7 @@ import {
   StewardClient,
   type TxRecord,
 } from "@stwd/sdk";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import { fetchSolanaNativeBalanceViaRpc } from "../api/wallet";
 import { fetchEvmNativeBalanceViaRpc } from "../api/wallet-evm-balance";
 import { resolveWalletRpcReadiness } from "../api/wallet-rpc";
@@ -20,6 +16,7 @@ import {
   resolveEffectiveStewardConfig,
   saveStewardCredentials,
 } from "../services/steward-credentials";
+import type { StewardSignRequest, StewardSignResponse } from "../types/steward";
 
 export interface StewardBridgeOptions {
   env?: NodeJS.ProcessEnv;
@@ -113,7 +110,7 @@ function resolveStewardRpcReadinessSafe(): ReturnType<
   typeof resolveWalletRpcReadiness
 > | null {
   try {
-    return resolveWalletRpcReadiness(loadElizaConfig());
+    return resolveWalletRpcReadiness(loadTokagentConfig());
   } catch {
     return null;
   }

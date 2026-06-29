@@ -34,7 +34,9 @@ declare module "@elizaos/plugin-telegram/account-auth-service" {
     systemVersion?: string;
     [key: string]: unknown;
   };
-  export class TelegramAccountAuthSession implements TelegramAccountAuthSessionLike {
+  export class TelegramAccountAuthSession
+    implements TelegramAccountAuthSessionLike
+  {
     constructor();
     getSnapshot(): TelegramAccountAuthSnapshot;
     getResolvedConnectorConfig(): TelegramAccountConnectorConfig | null;
@@ -69,11 +71,11 @@ declare module "telegram" {
     checkAuthorization(): Promise<boolean>;
     sendCode(
       ...args: unknown[]
-    ): Promise<{ phoneCodeHash: string; isCodeViaApp: boolean } & Record<string, unknown>>;
+    ): Promise<
+      { phoneCodeHash: string; isCodeViaApp: boolean } & Record<string, unknown>
+    >;
     invoke(request: unknown): Promise<unknown>;
-    signInWithPassword(
-      ...args: unknown[]
-    ): Promise<Record<string, unknown>>;
+    signInWithPassword(...args: unknown[]): Promise<Record<string, unknown>>;
     getDialogs(args: { limit: number }): Promise<ReadonlyArray<unknown>>;
     getEntity(target: unknown): Promise<unknown>;
     sendMessage(
@@ -111,7 +113,10 @@ declare module "telegram" {
     namespace account {}
   }
   export const Api: {
-    auth: { SignIn: typeof Api.auth.SignIn; Authorization: typeof Api.auth.Authorization };
+    auth: {
+      SignIn: typeof Api.auth.SignIn;
+      Authorization: typeof Api.auth.Authorization;
+    };
     account: Record<string, unknown>;
     [key: string]: unknown;
   };
@@ -127,6 +132,10 @@ declare module "@elizaos/plugin-local-embedding";
 declare module "@elizaos/plugin-ollama";
 declare module "@elizaos/plugin-openai";
 declare module "@tokagentos/signal-native";
+// Optional bundled-skills package; resolved at runtime via dynamic import with a
+// try/catch fallback (skill-discovery-helpers.ts, runtime/tokagent.ts). Declared
+// here so the agent typechecks/builds whether or not the package is installed.
+declare module "@tokagentos/skills";
 declare module "qrcode";
 
 declare module "@tokagentos/app-knowledge/routes" {
@@ -200,7 +209,6 @@ declare module "@tokagentos/app-training/routes/trajectory" {
     ...args: unknown[]
   ) => Promise<boolean> | boolean;
 }
-
 
 declare module "@tokagentos/app-training/routes/training" {
   export type TrainingRouteHelpers = unknown;

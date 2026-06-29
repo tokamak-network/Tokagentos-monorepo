@@ -1,4 +1,4 @@
-import type { ElizaConfig } from "@tokagentos/agent/config/config";
+import type { TokagentConfig } from "@tokagentos/agent/config/config";
 import {
   isElizaCloudServiceSelectedInConfig,
   migrateLegacyRuntimeConfig,
@@ -62,7 +62,7 @@ export const DEFAULT_PUBLIC_SOLANA_TESTNET_RPC_URLS = [
   "https://api.devnet.solana.com",
 ] as const;
 
-type WalletCapableConfig = Pick<ElizaConfig, "cloud" | "env"> & {
+type WalletCapableConfig = Pick<TokagentConfig, "cloud" | "env"> & {
   wallet?: {
     rpcProviders?: Partial<Record<keyof WalletRpcSelections, string>>;
     network?: "mainnet" | "testnet";
@@ -280,7 +280,7 @@ export function resolveCloudApiBaseUrl(
 }
 
 export function resolveCloudApiKey(
-  config?: Pick<ElizaConfig, "cloud"> | null,
+  config?: Pick<TokagentConfig, "cloud"> | null,
 ): string | null {
   return normalizeSecret(
     config?.cloud?.apiKey ?? process.env.ELIZAOS_CLOUD_API_KEY,

@@ -11,8 +11,8 @@
  */
 
 import type http from "node:http";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import type { Plugin, Route } from "@tokagentos/core";
-import { loadElizaConfig } from "@tokagentos/agent/config/config";
 import { handleVincentRoute } from "./routes";
 
 // ---------------------------------------------------------------------------
@@ -22,11 +22,15 @@ import { handleVincentRoute } from "./routes";
 // ---------------------------------------------------------------------------
 
 function vincentRouteHandler(pathname: string) {
-  return async (req: unknown, res: unknown, _runtime: unknown): Promise<void> => {
+  return async (
+    req: unknown,
+    res: unknown,
+    _runtime: unknown,
+  ): Promise<void> => {
     const httpReq = req as http.IncomingMessage;
     const httpRes = res as http.ServerResponse;
     const method = (httpReq.method ?? "GET").toUpperCase();
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     await handleVincentRoute(httpReq, httpRes, pathname, method, { config });
   };
 }

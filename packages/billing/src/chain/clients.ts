@@ -1,12 +1,12 @@
 import {
   createPublicClient,
   createWalletClient,
+  type Hex,
   http,
   type PublicClient,
   type WalletClient,
-  type Hex,
 } from "viem";
-import { privateKeyToAccount, type PrivateKeyAccount } from "viem/accounts";
+import { type PrivateKeyAccount, privateKeyToAccount } from "viem/accounts";
 
 /**
  * Set of viem clients the billing layer needs.
@@ -68,7 +68,9 @@ export interface BillingClientsConfig {
  * });
  * ```
  */
-export function createBillingClients(cfg: BillingClientsConfig): BillingClients {
+export function createBillingClients(
+  cfg: BillingClientsConfig,
+): BillingClients {
   const operatorAccount = privateKeyToAccount(cfg.operatorPrivateKey);
 
   const publicClient = createPublicClient({
@@ -84,5 +86,14 @@ export function createBillingClients(cfg: BillingClientsConfig): BillingClients 
     transport: http(cfg.mainnetRpcUrl),
   });
 
-  return { publicClient, walletClient, mainnetClient, operatorAccount };
+  // viem 2.48's inferred client types don't structurally match the bare
+  // PublicClient/WalletClient aliases used in BillingClients (account-field
+  // variance); the runtime objects are correct. See readContract casts in
+  // chain/vault.ts + twap/oracle.ts.
+  return {
+    publicClient,
+    walletClient,
+    mainnetClient,
+    operatorAccount,
+  } as unknown as BillingClients;
 }

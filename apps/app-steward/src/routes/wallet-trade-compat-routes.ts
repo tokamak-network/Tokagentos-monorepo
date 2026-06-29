@@ -6,18 +6,18 @@
  *   POST /api/wallet/transfer/execute — token / BNB transfer execution
  */
 import type http from "node:http";
-import { loadElizaConfig } from "@tokagentos/agent/config/config";
-import {
-  readCompatJsonBody,
-  type CompatRuntimeState,
-} from "@tokagentos/app-core/api/compat-route-shared";
+import { type PolicyResult, StewardApiError } from "@stwd/sdk";
+import { loadTokagentConfig } from "@tokagentos/agent/config/config";
 import { ensureCompatApiAuthorized } from "@tokagentos/app-core/api/auth";
+import {
+  type CompatRuntimeState,
+  readCompatJsonBody,
+} from "@tokagentos/app-core/api/compat-route-shared";
 import {
   sendJsonError as sendJsonErrorResponse,
   sendJson as sendJsonResponse,
 } from "@tokagentos/app-core/api/response";
 import { logger } from "@tokagentos/core";
-import { type PolicyResult, StewardApiError } from "@stwd/sdk";
 import { ethers } from "ethers";
 import {
   buildBscApproveUnsignedTx,
@@ -190,7 +190,7 @@ export async function handleWalletTradeCompatRoutes(
       return true;
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const tradePermissionMode = _resolveTradePermissionMode(config);
     const canExecuteLocally = _canUseLocalTradeExecution(
       tradePermissionMode,
@@ -512,7 +512,7 @@ export async function handleWalletTradeCompatRoutes(
       return true;
     }
 
-    const config = loadElizaConfig();
+    const config = loadTokagentConfig();
     const tradePermissionMode = _resolveTradePermissionMode(config);
     const canExecuteLocally = _canUseLocalTradeExecution(
       tradePermissionMode,

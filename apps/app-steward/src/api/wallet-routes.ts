@@ -3,10 +3,14 @@ import type {
   RouteHelpers,
   RouteRequestMeta,
 } from "@tokagentos/agent/api/route-helpers";
-import type { ElizaConfig } from "@tokagentos/agent/config/config";
+import type { TokagentConfig } from "@tokagentos/agent/config/config";
 import { createIntegrationTelemetrySpan } from "@tokagentos/agent/diagnostics";
 import type { AgentRuntime } from "@tokagentos/core";
 import { logger } from "@tokagentos/core";
+import type {
+  WalletExportRejection as WalletExportRejectionLike,
+  WalletExportRequestBody,
+} from "@tokagentos/shared/contracts";
 import {
   normalizeWalletRpcSelections,
   type WalletConfigUpdateRequest,
@@ -32,11 +36,6 @@ import {
   resolveWalletNetworkMode,
   resolveWalletRpcReadiness,
 } from "./wallet-rpc";
-
-import type {
-  WalletExportRequestBody,
-  WalletExportRejection as WalletExportRejectionLike,
-} from "@tokagentos/shared/contracts";
 
 // Rate limiter for wallet export.
 // In test/CI mode the limit is relaxed to avoid blocking E2E suites.
@@ -167,9 +166,9 @@ export const DEFAULT_WALLET_ROUTE_DEPENDENCIES: WalletRouteDependencies = {
 export interface WalletRouteContext
   extends RouteRequestMeta,
     Pick<RouteHelpers, "readJsonBody" | "json" | "error"> {
-  config: ElizaConfig;
-  saveConfig: (config: ElizaConfig) => void;
-  ensureWalletKeysInEnvAndConfig: (config: ElizaConfig) => boolean;
+  config: TokagentConfig;
+  saveConfig: (config: TokagentConfig) => void;
+  ensureWalletKeysInEnvAndConfig: (config: TokagentConfig) => boolean;
   resolveWalletExportRejection: (
     req: http.IncomingMessage,
     body: WalletExportRequestBody,

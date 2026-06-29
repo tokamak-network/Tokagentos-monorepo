@@ -417,6 +417,10 @@ export interface AppState {
 
   // Billing (runtime flag — fetched from GET /v1/billing/status at boot)
   billingEnabled: boolean;
+  // Cloud-dashboard sub-view selector (set on cloud inference notices to surface
+  // billing/overview). Optional + not yet in the setState setterMap, so writes are
+  // currently inert until a reader is wired.
+  cloudDashboardView?: "billing" | "overview";
 
   // Wallet / Inventory
   walletEnabled: boolean;

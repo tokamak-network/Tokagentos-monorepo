@@ -5,10 +5,10 @@ import { CORE_PLUGINS, createTokagentPlugin } from "@tokagentos/agent/runtime";
 import {
   AgentRuntime,
   type Content,
-  tokagentLogger,
   type Memory,
   type Plugin,
   stringToUuid,
+  tokagentLogger,
 } from "@tokagentos/core";
 import dotenv from "dotenv";
 import {
@@ -264,7 +264,7 @@ export async function startBenchmarkServer() {
 
   // Plugins to skip in benchmark context — these require external auth or
   // interfere with benchmark operation
-  const skipPlugins = new Set([]);
+  const skipPlugins = new Set<string>();
 
   // Load all CORE_PLUGINS — these are what the production Tokagent runtime uses
   for (const pluginName of CORE_PLUGINS) {
@@ -655,7 +655,9 @@ export async function startBenchmarkServer() {
           );
         } catch (err: unknown) {
           const errorMessage = err instanceof Error ? err.message : String(err);
-          tokagentLogger.error(`[bench] Reset error: ${formatUnknownError(err)}`);
+          tokagentLogger.error(
+            `[bench] Reset error: ${formatUnknownError(err)}`,
+          );
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(JSON.stringify({ error: errorMessage }));
         }

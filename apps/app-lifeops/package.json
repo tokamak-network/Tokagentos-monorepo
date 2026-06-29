@@ -12,6 +12,7 @@
   "exports": {
     "./package.json": "./package.json",
     ".": "./src/index.ts",
+    "./public": "./src/public.ts",
     "./client": "./src/client.ts",
     "./inbox/types": "./src/inbox/types.ts",
     "./types": "./src/types/index.ts",

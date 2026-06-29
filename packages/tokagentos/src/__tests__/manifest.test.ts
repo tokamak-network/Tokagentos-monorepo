@@ -13,7 +13,7 @@ describe("templates-manifest.json", () => {
     ).toBe(true);
   });
 
-  test("manifest contains expected template entries", () => {
+  test("manifest contains only the fullstack-app template", () => {
     const manifest = JSON.parse(
       fs.readFileSync(
         path.join(PACKAGE_ROOT, "templates-manifest.json"),
@@ -24,15 +24,15 @@ describe("templates-manifest.json", () => {
     expect(Array.isArray(manifest.templates)).toBe(true);
     expect(
       manifest.templates.map((template: { id: string }) => template.id),
-    ).toEqual(expect.arrayContaining(["plugin", "fullstack-app"]));
+    ).toEqual(["fullstack-app"]);
   });
 
-  test("packaged templates directory contains the expected source templates", () => {
-    expect(fs.existsSync(path.join(PACKAGE_ROOT, "templates", "plugin"))).toBe(
-      true,
-    );
+  test("packaged templates directory contains fullstack-app and not plugin", () => {
     expect(
       fs.existsSync(path.join(PACKAGE_ROOT, "templates", "fullstack-app")),
     ).toBe(true);
+    expect(fs.existsSync(path.join(PACKAGE_ROOT, "templates", "plugin"))).toBe(
+      false,
+    );
   });
 });

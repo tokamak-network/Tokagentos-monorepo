@@ -1,34 +1,77 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import type {
-  LifeOpsConnectorSide,
-} from "@tokagentos/shared/contracts/lifeops";
 import { resolveOAuthDir } from "@tokagentos/agent/config/paths";
+import type { LifeOpsConnectorSide } from "@tokagentos/shared/contracts/lifeops";
 
 // `@tokagentos/plugin-telegram` is unrecoverable — submodule URL returns 404.
 // Local stubs let boot complete without telegram-account features.
 // See: docs/eng-tickets/2026-05-16-tokagentos-boot-vs-plugin-sql-version-skew.md
-type TelegramAccountAuthSnapshot = unknown;
-type TelegramAccountConnectorConfig = unknown;
+// Type-only shapes mirroring @tokagentos/plugin-telegram so the (disabled)
+// telegram-account code paths still typecheck. Runtime construction throws.
+type TelegramAccountAuthSnapshot = {
+  status: string;
+  phone?: string | null;
+  error: string | null;
+  account?: {
+    id: string;
+    username?: string | null;
+    firstName?: string | null;
+  } | null;
+  [key: string]: unknown;
+};
+type TelegramAccountConnectorConfig = {
+  appId?: string;
+  appHash?: string;
+  deviceModel?: string;
+  systemVersion?: string;
+  [key: string]: unknown;
+};
 interface TelegramAccountAuthSessionLike {
-  // Minimal shape so callers that type-only reference this work; runtime
-  // construction throws.
   readonly snapshot?: TelegramAccountAuthSnapshot;
+  getSnapshot(): TelegramAccountAuthSnapshot;
+  getResolvedConnectorConfig(): TelegramAccountConnectorConfig | null;
+  start(args: {
+    phone: string;
+    credentials: { apiId: number; apiHash: string } | null;
+  }): Promise<TelegramAccountAuthSnapshot>;
+  submit(
+    input:
+      | { provisioningCode: string }
+      | { telegramCode: string }
+      | { password: string },
+  ): Promise<TelegramAccountAuthSnapshot>;
+  getSessionString(): string;
+  stop(): Promise<void>;
 }
+const TELEGRAM_STUB_MESSAGE =
+  "[stub] @tokagentos/plugin-telegram is not available in this build. " +
+  "Telegram-account features are disabled until the plugin is restored.";
 class TelegramAccountAuthSession implements TelegramAccountAuthSessionLike {
   constructor(..._args: unknown[]) {
-    throw new Error(
-      "[stub] @tokagentos/plugin-telegram is not available in this build. " +
-        "Telegram-account features are disabled until the plugin is restored.",
-    );
+    throw new Error(TELEGRAM_STUB_MESSAGE);
+  }
+  getSnapshot(): TelegramAccountAuthSnapshot {
+    throw new Error(TELEGRAM_STUB_MESSAGE);
+  }
+  getResolvedConnectorConfig(): TelegramAccountConnectorConfig | null {
+    throw new Error(TELEGRAM_STUB_MESSAGE);
+  }
+  start(..._args: unknown[]): Promise<TelegramAccountAuthSnapshot> {
+    throw new Error(TELEGRAM_STUB_MESSAGE);
+  }
+  submit(..._args: unknown[]): Promise<TelegramAccountAuthSnapshot> {
+    throw new Error(TELEGRAM_STUB_MESSAGE);
+  }
+  getSessionString(): string {
+    throw new Error(TELEGRAM_STUB_MESSAGE);
+  }
+  stop(): Promise<void> {
+    throw new Error(TELEGRAM_STUB_MESSAGE);
   }
 }
 
-export type {
-  TelegramAccountAuthSnapshot,
-  TelegramAccountConnectorConfig,
-};
+export type { TelegramAccountAuthSnapshot, TelegramAccountConnectorConfig };
 
 // ---------------------------------------------------------------------------
 // Types
@@ -136,16 +179,17 @@ function resolveApiHash(
 export function hasManagedTelegramCredentials(
   env: NodeJS.ProcessEnv = process.env,
 ): boolean {
-  return resolveApiId(undefined, env) !== null && resolveApiHash(undefined, env) !== null;
+  return (
+    resolveApiId(undefined, env) !== null &&
+    resolveApiHash(undefined, env) !== null
+  );
 }
 
 // ---------------------------------------------------------------------------
 // Storage helpers
 // ---------------------------------------------------------------------------
 
-function telegramStorageRoot(
-  env: NodeJS.ProcessEnv = process.env,
-): string {
+function telegramStorageRoot(env: NodeJS.ProcessEnv = process.env): string {
   return path.join(resolveOAuthDir(env), "lifeops", "telegram");
 }
 
@@ -285,7 +329,10 @@ function cleanupExpiredSessions(): void {
     }
   }
   for (const session of listPendingTelegramSessions()) {
-    if (now - new Date(session.createdAt).getTime() > TELEGRAM_AUTH_SESSION_TTL_MS) {
+    if (
+      now - new Date(session.createdAt).getTime() >
+      TELEGRAM_AUTH_SESSION_TTL_MS
+    ) {
       deletePendingTelegramSession(session.sessionId);
     }
   }
@@ -310,7 +357,9 @@ function clearPendingSessionsForSide(
 }
 
 /** Map plugin-telegram's status names to LifeOps auth state names. */
-function mapSnapshotStatus(snapshot: TelegramAccountAuthSnapshot): TelegramAuthState {
+function mapSnapshotStatus(
+  snapshot: TelegramAccountAuthSnapshot,
+): TelegramAuthState {
   switch (snapshot.status) {
     case "idle":
       return "idle";
@@ -390,10 +439,11 @@ function persistRetryableTelegramAuthState(
   session.state = nextState;
   session.error = error;
 
-  const authSessionInternal = session.authSession as TelegramAccountAuthSessionLike & {
-    snapshot?: TelegramAccountAuthSnapshot;
-    persistAuthState?: () => void;
-  };
+  const authSessionInternal =
+    session.authSession as TelegramAccountAuthSessionLike & {
+      snapshot?: TelegramAccountAuthSnapshot;
+      persistAuthState?: () => void;
+    };
   if (authSessionInternal.snapshot) {
     authSessionInternal.snapshot.status = pluginStatusForRetryState(nextState);
     authSessionInternal.snapshot.error = error;
@@ -497,8 +547,7 @@ export async function startTelegramAuth(args: {
 
   // Start the real auth flow. If credentials are provided, it goes straight
   // to Telegram code. If not, it starts provisioning via my.telegram.org.
-  const credentials =
-    apiId && apiHash ? { apiId, apiHash } : null;
+  const credentials = apiId && apiHash ? { apiId, apiHash } : null;
 
   try {
     const snapshot = await authSession.start({
@@ -510,8 +559,7 @@ export async function startTelegramAuth(args: {
     session.identity = mapSnapshotIdentity(snapshot);
   } catch (error) {
     session.state = "error";
-    session.error =
-      error instanceof Error ? error.message : String(error);
+    session.error = error instanceof Error ? error.message : String(error);
   }
 
   return session;
@@ -658,7 +706,9 @@ function persistTelegramToken(session: PendingTelegramAuthSession): void {
     // The session string is persisted by TelegramAccountAuthSession
     // in ~/.eliza/telegram-account/session.txt — we store the path reference.
     sessionString: connectorConfig?.appId ? "persisted" : "",
-    apiId: connectorConfig ? Number(connectorConfig.appId) : (session.apiId ?? 0),
+    apiId: connectorConfig
+      ? Number(connectorConfig.appId)
+      : (session.apiId ?? 0),
     apiHash: connectorConfig?.appHash ?? session.apiHash ?? "",
     phone: session.phone,
     identity: session.identity ?? { id: "", username: "", firstName: "" },
