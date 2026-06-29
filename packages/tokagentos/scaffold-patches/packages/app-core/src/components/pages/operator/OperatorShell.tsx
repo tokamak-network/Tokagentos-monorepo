@@ -50,16 +50,6 @@ export function OperatorShell({
   return (
     <div className="op-root" data-theme="dark">
       <div className="win">
-        <div className="win-titlebar">
-          <div className="traffic">
-            <span className="r" />
-            <span className="y" />
-            <span className="g" />
-          </div>
-          <div className="win-title">
-            tokagentOS · operator · <b>localhost:2138</b>
-          </div>
-        </div>
         <div className="win-body">
           <Sidebar
             page={page}

@@ -297,7 +297,8 @@ function normalizePathForLookup(pathname: string, basePath = ""): string {
 
 export function pathForTab(tab: Tab, basePath = ""): string {
   const base = normalizeBasePath(basePath);
-  const p = TAB_PATHS[tab as BuiltinTab] ?? `/${tab}`;
+  // Operator-only gateway: the operator console lives at the root path.
+  const p = tab === "operator" ? "/" : (TAB_PATHS[tab as BuiltinTab] ?? `/${tab}`);
   return base ? `${base}${p}` : p;
 }
 
