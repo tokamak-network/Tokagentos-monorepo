@@ -149,9 +149,6 @@ export function AutomationsPage({
             ) : (
               <span className="chip mute">⟩ example values</span>
             )}
-            <button type="button" className="btn btn-gold">
-              + New automation
-            </button>
           </div>
         </div>
 
