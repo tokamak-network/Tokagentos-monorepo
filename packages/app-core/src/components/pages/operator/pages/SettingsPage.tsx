@@ -349,8 +349,8 @@ export function SettingsPage({
             <span className="mono" style={{ color: "var(--gold-hi)" }}>
               config.env
             </span>{" "}
-            on the local agent; the runtime restarts to apply them. Never sent to
-            any remote service.
+            on the local agent; the runtime restarts to apply them. Never sent
+            to any remote service.
           </p>
 
           <div
@@ -415,16 +415,18 @@ export function SettingsPage({
               No RPC endpoints — only the private key will be written.
             </p>
           ) : (
-            <div
-              style={{ display: "flex", flexDirection: "column", gap: 10 }}
-            >
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {rpcRows.map((row) => {
                 const urlInvalid =
                   row.url.length > 0 && !isQuickHttpUrl(row.url);
                 return (
                   <div
                     key={row.rowId}
-                    style={{ display: "flex", gap: 8, alignItems: "flex-start" }}
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      alignItems: "flex-start",
+                    }}
                   >
                     <select
                       value={row.chain}

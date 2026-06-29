@@ -124,10 +124,7 @@ export interface CommandItem extends CommandDef {
 
 // Static navigation commands — always present; palette builder binds setTab.
 export const NAV_COMMANDS: readonly { id: string; label: string; tab: Tab }[] =
-  [
-    { id: "nav-operator", label: "Open Operator", tab: "operator" },
-    { id: "nav-settings", label: "Open Settings", tab: "settings" },
-  ] as const;
+  [{ id: "nav-operator", label: "Open Operator", tab: "operator" }] as const;
 
 export interface BuildCommandsArgs {
   agentState: string;
