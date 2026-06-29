@@ -15,7 +15,6 @@ export { CustomActionsPanel } from "./components/custom-actions/CustomActionsPan
 export { OnboardingWizard } from "./components/onboarding/OnboardingWizard";
 export { ChatView } from "./components/pages/ChatView";
 export { KnowledgeView } from "./components/pages/KnowledgeView";
-export { SettingsView } from "./components/pages/SettingsView";
 export { StreamView } from "./components/pages/StreamView";
 export { DesktopWorkspaceSection } from "./components/settings/DesktopWorkspaceSection";
 export { BugReportModal } from "./components/shell/BugReportModal";

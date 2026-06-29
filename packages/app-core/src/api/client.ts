@@ -224,7 +224,6 @@ import "./client-automations";
 import "./client-browser-workspace";
 import "./client-chat";
 import "./client-n8n";
-import "./client-quick-config";
 import "./client-wallet";
 import "./client-cloud";
 import "./client-skills";

@@ -42,7 +42,6 @@ export * from "./pages/ChatModalView";
 export * from "./pages/ChatView";
 export * from "./pages/KnowledgeView";
 export * from "./pages/ReleaseCenterView";
-export * from "./pages/SettingsView";
 export * from "./pages/StreamView";
 export * from "./settings/ApiKeyConfig";
 export * from "./settings/DesktopWorkspaceSection";
