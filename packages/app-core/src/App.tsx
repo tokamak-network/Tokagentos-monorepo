@@ -26,6 +26,7 @@ import { getOverlayApp } from "./components/apps/overlay-app-registry";
 import { SaveCommandModal } from "./components/chat/SaveCommandModal";
 import { CustomActionEditor } from "./components/custom-actions/CustomActionEditor";
 import { MusicPlayerGlobal } from "./components/music/MusicPlayerGlobal";
+import { StreamView } from "./components/pages/StreamView";
 import { BugReportModal } from "./components/shell/BugReportModal";
 import { ConnectionFailedBanner } from "./components/shell/ConnectionFailedBanner";
 import { ConnectionLostOverlay } from "./components/shell/ConnectionLostOverlay";
@@ -33,9 +34,27 @@ import { Header } from "./components/shell/Header";
 import { ShellOverlays } from "./components/shell/ShellOverlays";
 import { StartupShell } from "./components/shell/StartupShell";
 import { SystemWarningBanner } from "./components/shell/SystemWarningBanner";
-import { BugReportProvider, useBugReportState, useContextMenu } from "./hooks";
+import {
+  BugReportProvider,
+  useBugReportState,
+  useContextMenu,
+  useStreamPopoutNavigation,
+} from "./hooks";
 import { isIOS, isNative } from "./platform/init";
 import { useApp } from "./state";
+
+/** Check if we're in pop-out mode (StreamView only, no chrome) — used by the
+ *  headless browser-capture service + the electrobun screen-capture popout. */
+function useIsPopout(): boolean {
+  const [popout] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const params = new URLSearchParams(
+      window.location.search || window.location.hash.split("?")[1] || "",
+    );
+    return params.has("popout") && params.get("popout") !== "false";
+  });
+  return popout;
+}
 
 function TabContentView({ children }: { children: ReactNode }) {
   return (
@@ -73,6 +92,7 @@ export function App() {
     t,
   } = useApp();
 
+  const isPopout = useIsPopout();
   const companionShellVisible = activeOverlayApp !== null;
   // Don't initialize the 3D scene while the system is still booting — this
   // prevents VrmEngine's Three.js setup from blocking the JS thread and
@@ -84,6 +104,8 @@ export function App() {
       ? getOverlayApp(activeOverlayApp)
       : undefined;
   const contextMenu = useContextMenu();
+
+  useStreamPopoutNavigation(setTab);
 
   useEffect(() => {
     if (startupCoordinator.phase !== "ready") return;
@@ -194,6 +216,16 @@ export function App() {
     ),
     [tab],
   );
+
+  // Pop-out mode — render only StreamView, skip startup gates. Used by the
+  // headless browser-capture service (opens the app with ?popout) + electrobun.
+  if (isPopout) {
+    return (
+      <div className="flex flex-col h-screen w-screen font-body text-txt bg-bg overflow-hidden">
+        <StreamView />
+      </div>
+    );
+  }
 
   // StartupCoordinator gate — the coordinator is the sole startup authority.
   // Non-ready phases are handled by StartupShell (which renders the appropriate
