@@ -244,12 +244,12 @@ export async function runHydrating(
   }
   if (urlTab) {
     deps.setTabRaw(urlTab);
-    if (urlTab === "settings") {
-      void deps.checkExtensionStatus();
-      void deps.loadWalletConfig();
-      void deps.loadUpdateStatus();
-    }
   }
+  // Operator-only: the console surfaces wallet/credits + extension/update status,
+  // so load these panels on every startup (previously gated on /settings).
+  void deps.checkExtensionStatus();
+  void deps.loadWalletConfig();
+  void deps.loadUpdateStatus();
 
   if (!cancelled.current) dispatch({ type: "HYDRATION_COMPLETE" });
 }

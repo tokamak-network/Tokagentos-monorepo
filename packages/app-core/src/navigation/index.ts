@@ -3,10 +3,10 @@
  */
 
 import type { LucideIcon } from "lucide-react";
-import { Gamepad2, KeyRound, Settings } from "lucide-react";
+import { Gamepad2, KeyRound } from "lucide-react";
 
 /** Built-in tab identifiers. */
-export type BuiltinTab = "settings" | "operator";
+export type BuiltinTab = "operator";
 
 /**
  * Tab identifier — includes all built-in tabs plus arbitrary strings
@@ -28,12 +28,6 @@ export const ALL_TAB_GROUPS: TabGroup[] = [
     icon: KeyRound,
     description:
       "Local operator console — x402 credits & agent-to-agent network",
-  },
-  {
-    label: "Settings",
-    tabs: ["settings"],
-    icon: Settings,
-    description: "Configuration and preferences",
   },
 ];
 
@@ -81,13 +75,13 @@ export function getTabGroups(dynamicTabs?: DynamicNavTab[]): TabGroup[] {
 }
 
 const TAB_PATHS: Record<BuiltinTab, string> = {
-  settings: "/settings",
   operator: "/operator",
 };
 
 /** Legacy path redirects — retired paths all redirect to the operator console. */
 const LEGACY_PATHS: Record<string, Tab> = {
   "/": "operator",
+  "/settings": "operator",
   "/chat": "operator",
   "/billing": "operator",
   "/inventory": "operator",
@@ -142,11 +136,6 @@ export function tabFromPath(pathname: string, basePath = ""): Tab | null {
   const normalized = normalizePathForLookup(pathname, basePath);
   if (normalized === "/") return "operator";
 
-  // /settings/<sub> — resolve nested settings paths
-  if (normalized.startsWith("/settings/")) {
-    return "settings";
-  }
-
   // Check current paths first, then legacy redirects
   return PATH_TO_TAB.get(normalized) ?? LEGACY_PATHS[normalized] ?? "operator";
 }
@@ -173,8 +162,6 @@ export function titleForTab(tab: Tab): string {
   switch (tab) {
     case "operator":
       return "Operator";
-    case "settings":
-      return "Settings";
     default:
       return tab.charAt(0).toUpperCase() + tab.slice(1).replace(/-/g, " ");
   }

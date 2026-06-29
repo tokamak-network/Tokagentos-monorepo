@@ -7,9 +7,9 @@ describe("navigation", () => {
     expect(tabFromPath("/")).toBe("operator");
   });
 
-  it("exposes only the operator and settings tab groups", () => {
+  it("exposes only the operator tab group", () => {
     const labels = getTabGroups().map((g) => g.label);
-    expect(labels).toEqual(["Operator", "Settings"]);
+    expect(labels).toEqual(["Operator"]);
   });
 
   it("redirects retired paths to the operator console", () => {
@@ -18,7 +18,7 @@ describe("navigation", () => {
     expect(tabFromPath("/automations")).toBe("operator");
   });
 
-  it("keeps settings addressable", () => {
-    expect(tabFromPath("/settings")).toBe("settings");
+  it("redirects the retired /settings path to the operator console", () => {
+    expect(tabFromPath("/settings")).toBe("operator");
   });
 });

@@ -439,15 +439,9 @@ export function saveUiShellMode(mode: UiShellMode): void {
   }, undefined);
 }
 
-function normalizeLastNativeTab(tab: unknown): Tab {
-  switch (tab) {
-    case "settings":
-      return "settings";
-    case "operator":
-      return "operator";
-    default:
-      return "operator";
-  }
+function normalizeLastNativeTab(_tab: unknown): Tab {
+  // Operator-only app — every persisted/legacy native tab resolves to operator.
+  return "operator";
 }
 
 export function loadLastNativeTab(): Tab {

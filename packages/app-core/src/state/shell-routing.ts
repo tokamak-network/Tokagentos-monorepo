@@ -6,8 +6,8 @@ export function deriveUiShellModeForTab(_tab: Tab): UiShellMode {
   return "native";
 }
 
-export function getTabForShellView(_view: ShellView, lastNativeTab: Tab): Tab {
-  return lastNativeTab === "settings" ? "settings" : "operator";
+export function getTabForShellView(_view: ShellView, _lastNativeTab: Tab): Tab {
+  return "operator";
 }
 
 export function shouldStartAtCharacterSelectOnLaunch(_params: {
