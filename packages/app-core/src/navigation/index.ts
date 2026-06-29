@@ -75,7 +75,7 @@ export function getTabGroups(dynamicTabs?: DynamicNavTab[]): TabGroup[] {
 }
 
 const TAB_PATHS: Record<BuiltinTab, string> = {
-  operator: "/operator",
+  operator: "/",
 };
 
 /** Legacy path redirects — retired paths all redirect to the operator console. */

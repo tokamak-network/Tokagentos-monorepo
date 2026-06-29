@@ -30,7 +30,6 @@ import { StreamView } from "./components/pages/StreamView";
 import { BugReportModal } from "./components/shell/BugReportModal";
 import { ConnectionFailedBanner } from "./components/shell/ConnectionFailedBanner";
 import { ConnectionLostOverlay } from "./components/shell/ConnectionLostOverlay";
-import { Header } from "./components/shell/Header";
 import { ShellOverlays } from "./components/shell/ShellOverlays";
 import { StartupShell } from "./components/shell/StartupShell";
 import { SystemWarningBanner } from "./components/shell/SystemWarningBanner";
@@ -201,15 +200,15 @@ export function App() {
   }, [startupCoordinator.phase, startupError, startupCoordinator.retry]);
 
   // shellContent is memoized before early returns to satisfy the Rules of Hooks.
-  // Operator-only: a single shell renders the Header + operator console.
+  // Operator-only: the operator console fills the shell full-bleed — no app
+  // header, no chrome (the console is the whole app).
   const shellContent = useMemo(
     () => (
       <div
         key={`tab-shell-${tab}`}
         className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
       >
-        <Header />
-        <main className="flex flex-1 min-h-0 min-w-0 overflow-hidden px-3 xl:px-5 py-4 xl:py-6">
+        <main className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
           <ViewRouter />
         </main>
       </div>
