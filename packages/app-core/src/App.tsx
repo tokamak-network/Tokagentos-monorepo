@@ -26,8 +26,6 @@ import { getOverlayApp } from "./components/apps/overlay-app-registry";
 import { SaveCommandModal } from "./components/chat/SaveCommandModal";
 import { CustomActionEditor } from "./components/custom-actions/CustomActionEditor";
 import { MusicPlayerGlobal } from "./components/music/MusicPlayerGlobal";
-import { SettingsView } from "./components/pages/SettingsView";
-import { StreamView } from "./components/pages/StreamView";
 import { BugReportModal } from "./components/shell/BugReportModal";
 import { ConnectionFailedBanner } from "./components/shell/ConnectionFailedBanner";
 import { ConnectionLostOverlay } from "./components/shell/ConnectionLostOverlay";
@@ -35,27 +33,9 @@ import { Header } from "./components/shell/Header";
 import { ShellOverlays } from "./components/shell/ShellOverlays";
 import { StartupShell } from "./components/shell/StartupShell";
 import { SystemWarningBanner } from "./components/shell/SystemWarningBanner";
-import { useBootConfig } from "./config";
-import {
-  BugReportProvider,
-  useBugReportState,
-  useContextMenu,
-  useStreamPopoutNavigation,
-} from "./hooks";
+import { BugReportProvider, useBugReportState, useContextMenu } from "./hooks";
 import { isIOS, isNative } from "./platform/init";
 import { useApp } from "./state";
-
-/** Check if we're in pop-out mode (StreamView only, no chrome). */
-function useIsPopout(): boolean {
-  const [popout] = useState(() => {
-    if (typeof window === "undefined") return false;
-    const params = new URLSearchParams(
-      window.location.search || window.location.hash.split("?")[1] || "",
-    );
-    return params.has("popout") && params.get("popout") !== "false";
-  });
-  return popout;
-}
 
 function TabContentView({ children }: { children: ReactNode }) {
   return (
@@ -66,28 +46,15 @@ function TabContentView({ children }: { children: ReactNode }) {
 }
 
 function ViewRouter() {
-  const { tab } = useApp();
-  const view = (() => {
-    switch (tab) {
-      case "settings":
-        return (
-          <TabContentView>
-            <SettingsView key="settings-root" />
-          </TabContentView>
-        );
-      case "operator":
-      default:
-        return (
-          <TabContentView>
-            <Suspense fallback={null}>
-              <OperatorShell />
-            </Suspense>
-          </TabContentView>
-        );
-    }
-  })();
-
-  return <ErrorBoundary>{view}</ErrorBoundary>;
+  return (
+    <ErrorBoundary>
+      <TabContentView>
+        <Suspense fallback={null}>
+          <OperatorShell />
+        </Suspense>
+      </TabContentView>
+    </ErrorBoundary>
+  );
 }
 
 export function App() {
@@ -103,12 +70,9 @@ export function App() {
     backendConnection,
     activeGameViewerUrl,
     gameOverlayEnabled,
-    uiShellMode,
     t,
   } = useApp();
-  const { companionShell: CompanionShell } = useBootConfig();
 
-  const isPopout = useIsPopout();
   const companionShellVisible = activeOverlayApp !== null;
   // Don't initialize the 3D scene while the system is still booting — this
   // prevents VrmEngine's Three.js setup from blocking the JS thread and
@@ -120,8 +84,6 @@ export function App() {
       ? getOverlayApp(activeOverlayApp)
       : undefined;
   const contextMenu = useContextMenu();
-
-  useStreamPopoutNavigation(setTab);
 
   useEffect(() => {
     if (startupCoordinator.phase !== "ready") return;
@@ -152,28 +114,15 @@ export function App() {
   }, [activeOverlayApp, backendConnection?.state, startupCoordinator.phase]);
 
   const [customActionsEditorOpen, setCustomActionsEditorOpen] = useState(false);
-  const [settingsInitialSection, setSettingsInitialSection] = useState<
-    string | null
-  >(null);
   const [editingAction, setEditingAction] = useState<
     import("./api").CustomActionDef | null
   >(null);
   const [desktopShuttingDown, setDesktopShuttingDown] = useState(false);
 
-  const isCompanionTab = tab === "companion";
-  const isSettingsPage = tab === "settings" || tab === "voice";
-
   const handleEditorSave = useCallback(() => {
     setCustomActionsEditorOpen(false);
     setEditingAction(null);
   }, []);
-
-  useEffect(() => {
-    if (isSettingsPage || settingsInitialSection === null) {
-      return;
-    }
-    setSettingsInitialSection(null);
-  }, [isSettingsPage, settingsInitialSection]);
 
   useEffect(() => {
     if (!isNative || !isIOS) {
@@ -230,88 +179,21 @@ export function App() {
   }, [startupCoordinator.phase, startupError, startupCoordinator.retry]);
 
   // shellContent is memoized before early returns to satisfy the Rules of Hooks.
-  // Deps are local state/callbacks — not high-frequency AppContext fields like
-  // ptySessions/agentStatus — so CompanionSceneHost stays stable across polls.
+  // Operator-only: a single shell renders the Header + operator console.
   const shellContent = useMemo(
-    () =>
-      uiShellMode === "companion" &&
-      tab !== "character" &&
-      tab !== "character-select" &&
-      CompanionShell ? (
-        <CompanionShell tab="companion" actionNotice={actionNotice} />
-      ) : isCompanionTab ? (
-        // Native mode with companion tab: the overlay app renders the companion UI.
-        // Render an empty shell so the overlay app is unobstructed and no Header appears.
-        <div
-          key="companion-shell"
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        />
-      ) : tab === "stream" ? (
-        <div
-          key="stream-shell"
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header />
-          <main className="flex-1 min-h-0 overflow-hidden">
-            <StreamView />
-          </main>
-        </div>
-      ) : isSettingsPage ? (
-        <div
-          key={`settings-shell-${tab}`}
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header />
-          <div className="flex flex-1 min-h-0 min-w-0 overflow-hidden">
-            <SettingsView
-              key={
-                tab === "voice"
-                  ? "settings-media"
-                  : tab === "connectors"
-                    ? "settings-connectors"
-                    : "settings-root"
-              }
-              initialSection={
-                tab === "voice"
-                  ? "media"
-                  : tab === "connectors"
-                    ? "connectors"
-                    : (settingsInitialSection ?? undefined)
-              }
-            />
-          </div>
-        </div>
-      ) : (
-        <div
-          key={`tab-shell-${tab}`}
-          className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
-        >
-          <Header />
-          <main className="flex flex-1 min-h-0 min-w-0 overflow-hidden px-3 xl:px-5 py-4 xl:py-6">
-            <ViewRouter />
-          </main>
-        </div>
-      ),
-    [
-      CompanionShell,
-      tab,
-      uiShellMode,
-      isCompanionTab,
-      actionNotice,
-      isSettingsPage,
-      settingsInitialSection,
-    ],
-  );
-
-  // Pop-out mode — render only StreamView, skip startup gates.
-  // Platform init is skipped in main.tsx; AppProvider hydrates WS in background.
-  if (isPopout) {
-    return (
-      <div className="flex flex-col h-screen w-screen font-body text-txt bg-bg overflow-hidden">
-        <StreamView />
+    () => (
+      <div
+        key={`tab-shell-${tab}`}
+        className="flex flex-col flex-1 min-h-0 w-full font-body text-txt bg-bg"
+      >
+        <Header />
+        <main className="flex flex-1 min-h-0 min-w-0 overflow-hidden px-3 xl:px-5 py-4 xl:py-6">
+          <ViewRouter />
+        </main>
       </div>
-    );
-  }
+    ),
+    [tab],
+  );
 
   // StartupCoordinator gate — the coordinator is the sole startup authority.
   // Non-ready phases are handled by StartupShell (which renders the appropriate
@@ -340,7 +222,7 @@ export function App() {
         <resolvedOverlayApp.Component
           exitToApps={() => {
             setState("activeOverlayApp", null);
-            setTab("apps");
+            setTab("operator");
           }}
           uiTheme={uiTheme === "dark" ? "dark" : "light"}
           t={t}
