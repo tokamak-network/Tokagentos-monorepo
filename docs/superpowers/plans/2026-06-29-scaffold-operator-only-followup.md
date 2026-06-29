@@ -1,6 +1,15 @@
 # Follow-up plan: propagate operator-only UI into the scaffold (`tokagentos create`)
 
-> **Status:** Deferred from the 2026-06-29 operator-only migration. The app-core side is **done + merged to alpha** (commits `91fcc9ff..73bcc4af`). This plan covers ONLY the remaining scaffold work, which needs an environment where a scaffold can be generated **and built** to verify.
+> **STATUS: DONE (2026-06-29, commit `bbfad944` on alpha).** Implemented via the **nav-overlay + default-tab** approach (not a full App.tsx overlay — the upstream eliza App.tsx is structurally different). Verified by generating a real scaffold (clones `elizaos/eliza@db00cf61`): the generated nav has a single **Operator** group, `tabFromPath("/")` + `DEFAULT_LANDING_TAB` (both upstream state files) land on operator, and OperatorShell is wired + overlaid. `tokagentos` typecheck passes; the scaffold-patches nav test was updated.
+>
+> **What was done:** (1) `scaffold-patches/.../navigation/index.ts` `ALL_TAB_GROUPS` → Operator-only + `tabFromPath` root → operator; (2) removed the x402 + operator **nav** surgical patches from `scaffold.ts` (operator now in the overlay; x402 is an operator internal sub-page); (3) added surgical patches flipping `DEFAULT_LANDING_TAB` → operator in `state/startup-phase-hydrate.ts` + `state/AppContext.tsx`.
+>
+> **Known caveats (acceptable / minor follow-ups):** the App.tsx ViewRouter cases + page overlays for the other views REMAIN (they're upstream eliza code, unsafe to delete) — unreachable via nav, but a **direct URL** like `/settings` can still resolve to a hidden view (the nav-hiding approach doesn't block direct routing). The live-gated, non-CI `packages/app-core/test/app/qa-checklist.real.e2e.test.ts` route-checklist (`/settings`→`settings-shell`, `/triggers`, `/plugins`, …) is now stale for operator-only and should be reworked when that suite is next run against an operator-only target. Full build verification of a generated app (`bun install` + `tsc`) was not run (heavy network/disk; gated behind `TOKAGENTOS_SMOKE_FULLSTACK_INSTALL=1`); structural verification of the generated tree + `tokagentos` typecheck stand in.
+>
+> ---
+> _Original deferral notes below (for context)._
+>
+> The app-core side is **done + merged to alpha** (commits `91fcc9ff..73bcc4af`). This plan covers ONLY the remaining scaffold work, which needs an environment where a scaffold can be generated **and built** to verify.
 >
 > **Why deferred:** the scaffold does NOT use the monorepo `@tokagentos/app-core`. It clones a **pinned remote `elizaos/eliza`** base (`packages/tokagentos/templates/fullstack-app/template.json` → repo `elizaos/eliza`, commit `db00cf61…`, `git-submodule`) and overlays `scaffold-patches/**` + applies `UPSTREAM_SURGICAL_PATCHES` (`scaffold.ts`) onto *that* clone. So changing app-core does nothing for the scaffolded product, and any change here can only be validated by running `tokagentos create` + building the generated app. That was not possible in the migration session (network clone + heavy build), and shipping unverified changes risks breaking `tokagentos create` for all users.
 
