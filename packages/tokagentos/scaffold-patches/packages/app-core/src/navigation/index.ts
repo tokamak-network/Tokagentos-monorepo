@@ -9,6 +9,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   Clock3,
   Gamepad2,
+  KeyRound,
   MessageSquare,
   Monitor,
   PencilLine,
@@ -138,29 +139,14 @@ export function isAndroidPhoneSurfaceEnabled(
  * downstream consumers that import other names continue to work.
  */
 export const ALL_TAB_GROUPS: TabGroup[] = [
+  // [tokagent] Operator-only gateway — the operator console is the sole
+  // top-level surface; chat/wallet/automations/settings live inside it.
   {
-    label: "Chat",
-    tabs: ["chat"],
-    icon: MessageSquare,
-    description: "Conversations with your agent",
-  },
-  {
-    label: "Automations",
-    tabs: ["automations"],
-    icon: Clock3,
-    description: "Scheduled tasks and recurring workflows",
-  },
-  {
-    label: "Wallet",
-    tabs: ["inventory"],
-    icon: Wallet,
-    description: "Crypto wallets and token balances",
-  },
-  {
-    label: "Settings",
-    tabs: ["settings"],
-    icon: Settings,
-    description: "Configuration and preferences",
+    label: "Operator",
+    tabs: ["operator"],
+    icon: KeyRound,
+    description:
+      "Local operator console — x402 credits & agent-to-agent network",
   },
 ];
 
@@ -408,7 +394,7 @@ const APPS_SUB_TABS: Record<string, Tab> = {
 
 export function tabFromPath(pathname: string, basePath = ""): Tab | null {
   const normalized = normalizePathForLookup(pathname, basePath);
-  if (normalized === "/") return "chat";
+  if (normalized === "/") return "operator";
 
   if (
     normalized === "/node-catalog" ||

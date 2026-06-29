@@ -115,15 +115,15 @@ describe("applyTokagentScaffoldPatches", () => {
       path.join(root, "packages/app-core/src/navigation/index.ts"),
       "utf-8",
     );
-    // Must keep Chat, Automations, Wallet, Settings (Tokagent DeFi tab set)
-    expect(navSource).toMatch(/label:\s*"Chat"/);
-    expect(navSource).toMatch(/label:\s*"Automations"/);
-    expect(navSource).toMatch(/label:\s*"Wallet"/);
-    expect(navSource).toMatch(/label:\s*"Settings"/);
-    // Must NOT contain the removed tab groups (general-purpose / consumer tabs)
+    // Operator-only gateway: the overlay ships ONLY the Operator tab group;
+    // chat/wallet/automations/settings now live inside the operator console.
+    expect(navSource).toMatch(/label:\s*"Operator"/);
+    // Must NOT contain any other top-level tab group (collapsed into operator).
+    expect(navSource).not.toMatch(/label:\s*"Chat"/);
+    expect(navSource).not.toMatch(/label:\s*"Automations"/);
+    expect(navSource).not.toMatch(/label:\s*"Wallet"/);
+    expect(navSource).not.toMatch(/label:\s*"Settings"/);
     expect(navSource).not.toMatch(/label:\s*"Apps"/);
-    expect(navSource).not.toMatch(/label:\s*"Character"/);
-    expect(navSource).not.toMatch(/label:\s*"Browser"/);
     expect(navSource).not.toMatch(/label:\s*"Stream"/);
 
     // cleanup

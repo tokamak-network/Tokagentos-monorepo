@@ -540,39 +540,6 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "      });\n",
   },
   {
-    path: "packages/app-core/src/navigation/index.ts",
-    description:
-      "Add a fixed Billing tab to the scaffold's sidebar. The tab is " +
-      "ALWAYS visible (no enabled-flag gate) so the operator can reach " +
-      "the setup wizard before they've configured billing, and the " +
-      "dashboard once they have. The tab content is rendered by " +
-      "BillingPageView (added via scaffold-patches) which iframes the " +
-      "plugin-served SPA at /v1/billing/dashboard.",
-    find:
-      "  {\n" +
-      '    label: "Settings",\n' +
-      '    tabs: ["settings"],\n' +
-      "    icon: Settings,\n" +
-      '    description: "Configuration and preferences",\n' +
-      "  },\n" +
-      "];\n",
-    replaceWith:
-      "  {\n" +
-      '    label: "Settings",\n' +
-      '    tabs: ["settings"],\n' +
-      "    icon: Settings,\n" +
-      '    description: "Configuration and preferences",\n' +
-      "  },\n" +
-      "  // [tokagent surgical-patch] x402 tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
-      "  {\n" +
-      '    label: "x402",\n' +
-      '    tabs: ["billing"],\n' +
-      "    icon: Wallet,\n" +
-      '    description: "x402 payment rail: PTON credits, API keys, top-up, usage",\n' +
-      "  },\n" +
-      "];\n",
-  },
-  {
     path: "packages/app-core/src/App.tsx",
     description:
       "Lazy-import the BillingPageView component so the Billing tab " +
@@ -622,42 +589,12 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "          </TabContentView>\n" +
       "        );\n",
   },
-  // ── Operator console (x402 redesign): sidebar tab + App.tsx import/case ─────
-  // These anchor on the billing-patch output above, so they MUST stay ordered
-  // after the billing patches. The OperatorShell + operator.css are overlaid via
-  // scaffold-patches at packages/app-core/src/components/pages/operator/.
-  {
-    path: "packages/app-core/src/navigation/index.ts",
-    description:
-      "Add an Operator tab (the x402 operator console: credits/top-up, " +
-      "agent-to-agent network, settlement feed, service directory, usage, " +
-      "API keys) to the sidebar, alongside the x402 billing tab.",
-    find:
-      "  // [tokagent surgical-patch] x402 tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
-      "  {\n" +
-      '    label: "x402",\n' +
-      '    tabs: ["billing"],\n' +
-      "    icon: Wallet,\n" +
-      '    description: "x402 payment rail: PTON credits, API keys, top-up, usage",\n' +
-      "  },\n" +
-      "];\n",
-    replaceWith:
-      "  // [tokagent surgical-patch] x402 tab — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
-      "  {\n" +
-      '    label: "x402",\n' +
-      '    tabs: ["billing"],\n' +
-      "    icon: Wallet,\n" +
-      '    description: "x402 payment rail: PTON credits, API keys, top-up, usage",\n' +
-      "  },\n" +
-      "  // [tokagent surgical-patch] Operator console — see scaffold.ts UPSTREAM_SURGICAL_PATCHES.\n" +
-      "  {\n" +
-      '    label: "Operator",\n' +
-      '    tabs: ["operator"],\n' +
-      "    icon: Wallet,\n" +
-      '    description: "Local operator console — x402 credits & agent-to-agent network",\n' +
-      "  },\n" +
-      "];\n",
-  },
+  // ── Operator console (x402 redesign): App.tsx import/case ───────────────────
+  // The Operator sidebar tab now lives in the scaffold-patches navigation
+  // overlay (operator-only nav). These App.tsx patches anchor on the
+  // billing-patch output above, so they MUST stay ordered after the billing
+  // patches. OperatorShell + operator.css are overlaid via scaffold-patches at
+  // packages/app-core/src/components/pages/operator/.
   {
     path: "packages/app-core/src/App.tsx",
     description:
@@ -709,6 +646,27 @@ export const UPSTREAM_SURGICAL_PATCHES: ReadonlyArray<{
       "            <OperatorShell />\n" +
       "          </TabContentView>\n" +
       "        );\n",
+  },
+  // ── Operator-only gateway: default landing tab → operator ───────────────────
+  // The Operator sidebar tab is the sole top-level surface (see the
+  // scaffold-patches navigation overlay), so the app must LAND on it. The
+  // initial tab is state-driven (DEFAULT_LANDING_TAB), so flip it in both
+  // upstream state files (not nav).
+  {
+    path: "packages/app-core/src/state/startup-phase-hydrate.ts",
+    description:
+      "Operator-only gateway: land on the Operator console by default instead " +
+      "of chat (initial tab is state-driven, not URL-driven).",
+    find: 'const DEFAULT_LANDING_TAB: Tab = "chat";',
+    replaceWith: 'const DEFAULT_LANDING_TAB: Tab = "operator";',
+  },
+  {
+    path: "packages/app-core/src/state/AppContext.tsx",
+    description:
+      "Operator-only gateway: default the initial tab to the Operator console " +
+      "instead of chat.",
+    find: 'const DEFAULT_LANDING_TAB: Tab = "chat";',
+    replaceWith: 'const DEFAULT_LANDING_TAB: Tab = "operator";',
   },
   {
     path: "packages/shared/src/contracts/onboarding.ts",
