@@ -429,3 +429,53 @@ export function updateConfig(patch: Record<string, unknown>): Promise<unknown> {
     body: JSON.stringify(patch),
   });
 }
+
+/* ── Settings · quick-setup writer (private key + per-chain RPC URLs) ─────────
+ * Ported from app-core's client-quick-config so the operator Settings tab owns
+ * the wallet quick-setup. Same-origin POST to the LOCAL agent (NOT the billing
+ * proxy) so config.env is actually written + the runtime restarts. Unlike the
+ * read helpers above this surfaces the server's { error } message so the card
+ * can show why a save failed. Zero app-core imports (portability contract). */
+
+export type GwQuickConfigChain =
+  | "ethereum"
+  | "polygon"
+  | "base"
+  | "arbitrum"
+  | "optimism"
+  | "bsc";
+export interface GwQuickConfigRpcEntry {
+  chain: GwQuickConfigChain;
+  url: string;
+}
+export interface GwQuickConfigSaveRequest {
+  privateKey: string;
+  rpcs: GwQuickConfigRpcEntry[];
+}
+export interface GwQuickConfigSaveResponse {
+  ok: true;
+  written: string[];
+  restarting: boolean;
+}
+
+export async function saveQuickConfig(
+  payload: GwQuickConfigSaveRequest,
+): Promise<GwQuickConfigSaveResponse> {
+  const res = await fetch("/api/config/quick-setup", {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    let message = `saveQuickConfig failed (${res.status})`;
+    try {
+      const body = (await res.json()) as { error?: string };
+      if (typeof body?.error === "string") message = body.error;
+    } catch {
+      // body wasn't JSON — keep the generic message.
+    }
+    throw new Error(message);
+  }
+  return (await res.json()) as GwQuickConfigSaveResponse;
+}

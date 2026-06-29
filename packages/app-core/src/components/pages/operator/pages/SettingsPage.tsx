@@ -18,7 +18,10 @@ import { useLive } from "../client-billing";
 import {
   fetchConfig,
   fetchSecrets,
+  type GwQuickConfigChain,
+  type GwQuickConfigSaveResponse,
   type GwSecret,
+  saveQuickConfig,
   updateConfig,
 } from "../client-gateway";
 import {
@@ -110,6 +113,43 @@ const TOGGLE_CONFIG_KEYS: Record<SettingToggle["id"], string[]> = {
   c: ["exposeAsService", "expose_as_service", "paidService"],
 };
 
+/* ── Quick setup (wallet) — migrated from the standalone SettingsView page ─────
+ * Paste the operator private key + one RPC URL per chain → POST to the local
+ * agent (saveQuickConfig), which writes config.env and restarts the runtime. */
+const QUICK_PK_PATTERN = /^0x[0-9a-fA-F]{64}$/;
+const QUICK_CHAINS: { value: GwQuickConfigChain; label: string }[] = [
+  { value: "ethereum", label: "Ethereum mainnet" },
+  { value: "polygon", label: "Polygon" },
+  { value: "base", label: "Base" },
+  { value: "arbitrum", label: "Arbitrum" },
+  { value: "optimism", label: "Optimism" },
+  { value: "bsc", label: "BNB Chain" },
+];
+
+interface QuickRpcRow {
+  rowId: string;
+  chain: GwQuickConfigChain;
+  url: string;
+}
+
+function newQuickRowId(): string {
+  return `rpc-${Math.random().toString(36).slice(2, 10)}`;
+}
+
+function defaultQuickRows(): QuickRpcRow[] {
+  return [{ rowId: newQuickRowId(), chain: "ethereum", url: "" }];
+}
+
+function isQuickHttpUrl(value: string): boolean {
+  if (value.length === 0) return false;
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function SettingsPage({
   env = ENV_ROWS,
   settings = SETTING_TOGGLES,
@@ -176,6 +216,60 @@ export function SettingsPage({
     [isLive, data],
   );
 
+  // ── Quick setup (wallet) state — private key + per-chain RPC URLs ──────────
+  const [privateKey, setPrivateKey] = useState("");
+  const [showKey, setShowKey] = useState(false);
+  const [rpcRows, setRpcRows] = useState<QuickRpcRow[]>(defaultQuickRows);
+  const [quickBusy, setQuickBusy] = useState(false);
+  const [quickError, setQuickError] = useState<string | null>(null);
+  const [quickResult, setQuickResult] =
+    useState<GwQuickConfigSaveResponse | null>(null);
+
+  const chainsInUse = new Set(rpcRows.map((r) => r.chain));
+  const pkValid = QUICK_PK_PATTERN.test(privateKey);
+  const rpcsValid =
+    rpcRows.length === 0 || rpcRows.every((r) => isQuickHttpUrl(r.url));
+  const canQuickSubmit = pkValid && rpcsValid && !quickBusy;
+
+  const updateRpcRow = useCallback(
+    (rowId: string, patch: Partial<QuickRpcRow>) => {
+      setRpcRows((prev) =>
+        prev.map((r) => (r.rowId === rowId ? { ...r, ...patch } : r)),
+      );
+    },
+    [],
+  );
+  const removeRpcRow = useCallback((rowId: string) => {
+    setRpcRows((prev) => prev.filter((r) => r.rowId !== rowId));
+  }, []);
+  const addRpcRow = useCallback(() => {
+    setRpcRows((prev) => {
+      const used = new Set(prev.map((r) => r.chain));
+      const next =
+        QUICK_CHAINS.find((o) => !used.has(o.value))?.value ?? "ethereum";
+      return [...prev, { rowId: newQuickRowId(), chain: next, url: "" }];
+    });
+  }, []);
+  const onQuickSave = useCallback(async () => {
+    if (!canQuickSubmit) return;
+    setQuickBusy(true);
+    setQuickError(null);
+    setQuickResult(null);
+    try {
+      const result = await saveQuickConfig({
+        privateKey,
+        rpcs: rpcRows.map((r) => ({ chain: r.chain, url: r.url.trim() })),
+      });
+      setQuickResult(result);
+    } catch (err) {
+      setQuickError(
+        err instanceof Error ? err.message : "Failed to save settings.",
+      );
+    } finally {
+      setQuickBusy(false);
+    }
+  }, [canQuickSubmit, privateKey, rpcRows]);
+
   return (
     <div className="page">
       <div className="page-pad">
@@ -241,6 +335,208 @@ export function SettingsPage({
               />
             </div>
           ))}
+        </div>
+
+        <div className="sec-head">
+          <div className="sec-title">
+            <span className="num">KEY</span> Quick setup · wallet
+          </div>
+        </div>
+        <div className="card">
+          <p className="page-sub" style={{ marginTop: 0 }}>
+            Paste the operator private key and one RPC URL per chain, then save.
+            Written to{" "}
+            <span className="mono" style={{ color: "var(--gold-hi)" }}>
+              config.env
+            </span>{" "}
+            on the local agent; the runtime restarts to apply them. Never sent to
+            any remote service.
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 6,
+              marginBottom: 16,
+            }}
+          >
+            <div className="setting-name">Operator private key</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <div className="amount-field" style={{ flex: 1 }}>
+                <input
+                  type={showKey ? "text" : "password"}
+                  value={privateKey}
+                  onChange={(e) => setPrivateKey(e.target.value.trim())}
+                  placeholder="0x…"
+                  autoComplete="off"
+                  spellCheck={false}
+                  aria-label="Operator private key"
+                  aria-invalid={privateKey.length > 0 && !pkValid}
+                />
+              </div>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => setShowKey((v) => !v)}
+              >
+                {showKey ? "Hide" : "Show"}
+              </button>
+            </div>
+            {privateKey.length > 0 && !pkValid && (
+              <span style={{ color: "#ff8f8f", fontSize: 12 }}>
+                Must be 0x followed by exactly 64 hex characters.
+              </span>
+            )}
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 8,
+              marginBottom: 8,
+            }}
+          >
+            <div className="setting-name">RPC endpoints</div>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={addRpcRow}
+              disabled={rpcRows.length >= QUICK_CHAINS.length}
+            >
+              + Add chain
+            </button>
+          </div>
+
+          {rpcRows.length === 0 ? (
+            <p className="page-sub" style={{ marginTop: 0 }}>
+              No RPC endpoints — only the private key will be written.
+            </p>
+          ) : (
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: 10 }}
+            >
+              {rpcRows.map((row) => {
+                const urlInvalid =
+                  row.url.length > 0 && !isQuickHttpUrl(row.url);
+                return (
+                  <div
+                    key={row.rowId}
+                    style={{ display: "flex", gap: 8, alignItems: "flex-start" }}
+                  >
+                    <select
+                      value={row.chain}
+                      onChange={(e) =>
+                        updateRpcRow(row.rowId, {
+                          chain: e.target.value as GwQuickConfigChain,
+                        })
+                      }
+                      aria-label="Chain"
+                      style={{
+                        width: 168,
+                        flexShrink: 0,
+                        background: "var(--bg)",
+                        color: "inherit",
+                        border: "1px solid rgba(240,185,11,0.25)",
+                        borderRadius: 8,
+                        padding: "9px 10px",
+                        fontFamily: "'JetBrains Mono', monospace",
+                        fontSize: 13,
+                      }}
+                    >
+                      {QUICK_CHAINS.map((opt) => (
+                        <option
+                          key={opt.value}
+                          value={opt.value}
+                          disabled={
+                            opt.value !== row.chain &&
+                            chainsInUse.has(opt.value)
+                          }
+                        >
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <div
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 4,
+                      }}
+                    >
+                      <div className="amount-field">
+                        <input
+                          value={row.url}
+                          onChange={(e) =>
+                            updateRpcRow(row.rowId, { url: e.target.value })
+                          }
+                          placeholder="https://eth.llamarpc.com"
+                          aria-label="RPC URL"
+                          aria-invalid={urlInvalid}
+                        />
+                      </div>
+                      {urlInvalid && (
+                        <span style={{ color: "#ff8f8f", fontSize: 12 }}>
+                          Must be an http(s) URL.
+                        </span>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => removeRpcRow(row.rowId)}
+                      aria-label="Remove RPC row"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              marginTop: 16,
+            }}
+          >
+            <span className="page-sub" style={{ margin: 0 }}>
+              Saving writes config.env and restarts the local agent.
+            </span>
+            <button
+              type="button"
+              className="btn btn-gold btn-sm"
+              onClick={() => void onQuickSave()}
+              disabled={!canQuickSubmit}
+            >
+              {quickBusy ? "Saving…" : "Save & Restart"}
+            </button>
+          </div>
+
+          {quickError && (
+            <p style={{ color: "#ff8f8f", fontSize: 12, marginTop: 8 }}>
+              {quickError}
+            </p>
+          )}
+          {quickResult && (
+            <p className="page-sub" style={{ marginTop: 8 }}>
+              Wrote {quickResult.written.length} key(s):{" "}
+              <span className="mono" style={{ color: "var(--gold-hi)" }}>
+                {quickResult.written.join(", ")}
+              </span>
+              .{" "}
+              {quickResult.restarting
+                ? "Runtime restart triggered."
+                : "Runtime restart scheduled."}
+            </p>
+          )}
         </div>
       </div>
     </div>
