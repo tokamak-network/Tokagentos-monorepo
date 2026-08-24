@@ -8,7 +8,7 @@
 #   docker build -f tokagentos/apps/billing-server/Dockerfile tokagentos/
 
 # ---- Stage 1: install + build ----
-FROM oven/bun:1.3-debian AS builder
+FROM oven/bun:1.4-debian AS builder
 
 # Native-deps build toolchain. node-llama-cpp's postinstall checks for a
 # usable prebuilt binary first; if missing, falls back to cloning llama.cpp
@@ -139,7 +139,7 @@ RUN cd /workspace/packages/billing \
 # dist, re-enable these two RUN lines for defense-in-depth.
 
 # ---- Stage 2: runtime ----
-FROM oven/bun:1.3-debian AS runtime
+FROM oven/bun:1.4-debian AS runtime
 
 # Run as non-root. (Debian syntax — alpine uses -S; not portable.)
 # Why debian: native deps (onnxruntime-node, node-llama-cpp) ship glibc-linked
